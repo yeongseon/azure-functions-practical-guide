@@ -190,10 +190,25 @@ nav:
     - troubleshooting/architecture.md
     - troubleshooting/evidence-map.md
     - troubleshooting/first-10-minutes.md
-    - troubleshooting/playbooks.md
+    - Playbooks:
+      - troubleshooting/playbooks/index.md
+      - troubleshooting/playbooks.md
+      - troubleshooting/playbooks/functions-not-executing.md
+      - troubleshooting/playbooks/high-latency.md
+      - troubleshooting/playbooks/functions-failing.md
+      - troubleshooting/playbooks/queue-piling-up.md
+      - troubleshooting/playbooks/blob-trigger-not-firing.md
+      - troubleshooting/playbooks/deployment-failures.md
     - troubleshooting/methodology.md
     - troubleshooting/kql.md
-    - troubleshooting/lab-guides.md
+    - Lab Guides:
+      - troubleshooting/lab-guides/index.md
+      - troubleshooting/lab-guides.md
+      - troubleshooting/lab-guides/cold-start.md
+      - troubleshooting/lab-guides/storage-access-failure.md
+      - troubleshooting/lab-guides/queue-backlog-scaling.md
+      - troubleshooting/lab-guides/dns-vnet-resolution.md
+      - troubleshooting/lab-guides/managed-identity-auth.md
   - Reference:
     - reference/index.md
     - reference/cli-cheatsheet.md

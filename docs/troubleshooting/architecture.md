@@ -9,7 +9,7 @@ Use it as a fast index from symptom category to architecture layer ownership.
     Read each diagram left-to-right as an evidence path: symptom → likely layer → telemetry/CLI confirmation.
 
 !!! tip "Troubleshooting workflow"
-    Start with [First 10 Minutes](first-10-minutes.md), apply [Methodology](methodology.md), run focused queries from [KQL Query Library](kql.md), and then execute scenario fixes from [Functions not executing](playbooks.md#functions-not-executing), [High latency / slow responses](playbooks.md#high-latency-slow-responses), [Functions failing with errors](playbooks.md#functions-failing-with-errors), or [Deployment failures](playbooks.md#deployment-failures).
+    Start with [First 10 Minutes](first-10-minutes.md), apply [Methodology](methodology.md), run focused queries from [KQL Query Library](kql.md), and then execute scenario fixes from [Functions not executing](playbooks/functions-not-executing.md), [High latency / slow responses](playbooks/high-latency.md), [Functions failing with errors](playbooks/functions-failing.md), or [Deployment failures](playbooks/deployment-failures.md).
 
 ## Request path architecture (where user-facing failures surface)
 
@@ -209,7 +209,7 @@ Use this as the first routing table when symptom ownership is unclear.
 |---|---|---|---|
 | 5xx responses | Frontend / Worker | `requests` table, `Http5xx` metric | KQL: failed requests by resultCode |
 | Startup failure | Host process | `traces` table, platform logs | KQL: host startup events |
-| DNS or SNAT failure | Network / outbound | `dependencies` + `exceptions`, app logs | Run [High latency / slow responses](playbooks.md#high-latency-slow-responses) checks and SNAT detector + `TcpSynSent` metric |
+| DNS or SNAT failure | Network / outbound | `dependencies` + `exceptions`, app logs | Run [High latency / slow responses](playbooks/high-latency.md) checks and SNAT detector + `TcpSynSent` metric |
 | Trigger silence | Listener / storage | `traces` table, queue metrics | CLI: function list + storage peek |
 | Slow responses | Worker / dependency | `dependencies` table | KQL: dependency p95 |
 | Recycle or restart | Platform events | Activity Log, `traces` | KQL: host shutdown/startup timeline |
@@ -238,10 +238,10 @@ flowchart TD
 - [First 10 Minutes](first-10-minutes.md)
 - [Systematic Troubleshooting Methodology](methodology.md)
 - [KQL Query Library](kql.md)
-- [Functions not executing playbook](playbooks.md#functions-not-executing)
-- [High latency / slow responses playbook](playbooks.md#high-latency-slow-responses)
-- [Functions failing with errors playbook](playbooks.md#functions-failing-with-errors)
-- [Deployment failures playbook](playbooks.md#deployment-failures)
+- [Functions not executing playbook](playbooks/functions-not-executing.md)
+- [High latency / slow responses playbook](playbooks/high-latency.md)
+- [Functions failing with errors playbook](playbooks/functions-failing.md)
+- [Deployment failures playbook](playbooks/deployment-failures.md)
 - [Monitoring](../operations/monitoring.md)
 
 ## Sources
