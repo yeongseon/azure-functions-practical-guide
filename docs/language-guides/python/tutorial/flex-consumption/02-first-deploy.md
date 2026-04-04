@@ -51,7 +51,8 @@ export APP_NAME="flexdemo-func"
 export PLAN_NAME="flexdemo-plan"
 export STORAGE_NAME="flexdemostorage"
 export APPINSIGHTS_NAME="flexdemo-insights"
-export LOCATION="eastus2"
+export LOCATION="koreacentral"
+```
 
 Expected output:
 
@@ -61,6 +62,7 @@ Expected output:
 ## Step 3 - Provision Infrastructure with Bicep
 
 This track uses the Flex template at `infra/flex-consumption/main.bicep`.
+It configures identity-based host storage with a user-assigned managed identity (UAMI), so Flex uses blob container deployment and does **not** require `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING`.
 
 ```bash
 az group create --name "$RG" --location "$LOCATION" --output json
@@ -94,7 +96,7 @@ Expected output:
 Flex does not expose Kudu/SCM workflows; publish with Core Tools (or One Deploy in CI/CD).
 
 ```bash
-cd app
+cd apps/python
 func azure functionapp publish "$APP_NAME" --python
 ```
 
@@ -123,7 +125,7 @@ Expected output:
 {
   "id": "/subscriptions/<subscription-id>/resourceGroups/rg-flexdemo/providers/Microsoft.Web/serverfarms/flexdemo-plan",
   "kind": "functionapp",
-  "location": "eastus2",
+  "location": "koreacentral",
   "name": "flexdemo-plan",
   "reserved": true,
   "sku": {
@@ -131,6 +133,7 @@ Expected output:
     "tier": "FlexConsumption"
   }
 }
+```
 
 ## Step 6 - Test Production Endpoint
 
@@ -141,7 +144,7 @@ curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
 Expected output:
 
 ```json
-{"status":"healthy","timestamp":"2026-01-01T00:00:00Z","version":"1.0.0"}
+{"status":"healthy","timestamp":"2026-04-04T05:38:46Z","version":"1.0.0"}
 ```
 
 ## Step 7 - Validate Flex-Specific Behaviors
@@ -151,6 +154,16 @@ Expected output:
 - Instance memory is selectable (512 MB, 2048 MB, 4096 MB).
 - Default timeout is 30 minutes; max can be unlimited.
 - Deployment slots are not supported on Flex.
+
+## Deployment Verification Results
+
+Endpoint test results from the Korea Central deployment (all returned HTTP 200):
+
+- `GET /api/health` → `{"status": "healthy", "timestamp": "2026-04-04T05:38:46Z", "version": "1.0.0"}`
+- `GET /api/info` → `{"name": "azure-functions-field-guide", "version": "1.0.0", "python": "3.11.14", "environment": "production", "telemetryMode": "basic"}`
+- `GET /api/requests/log-levels` → `{"message": "Logged at all levels", "levels": ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]}`
+- `GET /api/dependencies/external` → `{"status": "success", "statusCode": 200, "responseTime": "783ms", "url": "https://httpbin.org/get"}`
+- `GET /api/exceptions/test-error` → `{"error": "Handled exception", "type": "ValueError", "message": "Simulated error for testing"}`
 
 ## Next Steps
 

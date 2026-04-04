@@ -27,7 +27,7 @@ def configure_telemetry() -> None:
 
             configure_azure_monitor(
                 connection_string=connection_string,
-                logger_name="azure-functions-python-guide",
+                logger_name="azure-functions-field-guide",
             )
             logger.info(
                 "Azure Monitor OpenTelemetry configured (mode=%s)",
@@ -39,9 +39,7 @@ def configure_telemetry() -> None:
                 "skipping Azure Monitor configuration"
             )
         except Exception as exc:
-            logger.warning(
-                "Failed to configure Azure Monitor: %s", exc
-            )
+            logger.warning("Failed to configure Azure Monitor: %s", exc)
     else:
         logger.info(
             "APPLICATIONINSIGHTS_CONNECTION_STRING not set; "

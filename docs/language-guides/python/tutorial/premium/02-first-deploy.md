@@ -6,7 +6,7 @@ Deploy a Python Function App to an Elastic Premium plan (`EP1`) with VNet integr
 
 - You completed [01 - Run Locally](01-local-run.md).
 - You are signed in to Azure CLI and have Contributor access.
-- You already exported: `$RG`, `$APP_NAME`, `$PLAN_NAME`, `$STORAGE_NAME`, `$LOCATION`.
+- You already exported: `$RG`, `$APP_NAME`, `$PLAN_NAME`, `$STORAGE_NAME`, `$LOCATION` (use `koreacentral` for this guide).
 
 ## Steps
 
@@ -52,6 +52,13 @@ Deploy a Python Function App to an Elastic Premium plan (`EP1`) with VNet integr
       --functions-version "4" \
       --os-type "Linux"
     ```
+
+!!! warning "Enterprise policy: Shared key access"
+    Some enterprise subscriptions enforce Azure Policy that sets `allowSharedKeyAccess: false` on all storage accounts. Premium (EP1) requires `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING` with a connection string that uses shared key access to create the content file share during provisioning. If your subscription has this policy, the Function App creation will fail with a 403 error. Solutions:
+
+    - Request a policy exemption from your Azure administrator
+    - Use Flex Consumption (FC1) which supports identity-based blob storage without shared keys
+    - Use Dedicated (B1) which uses `WEBSITE_RUN_FROM_PACKAGE` without a content file share
 
 4. Configure app settings using classic `siteConfig.appSettings` model values.
 
@@ -120,7 +127,7 @@ Deploy a Python Function App to an Elastic Premium plan (`EP1`) with VNet integr
 7. Publish function code (Premium supports file share-based deployment and SCM/Kudu).
 
     ```bash
-    cd app
+    cd apps/python
     func azure functionapp publish "$APP_NAME" --python
     ```
 
@@ -137,9 +144,12 @@ Deploy a Python Function App to an Elastic Premium plan (`EP1`) with VNet integr
 
 ## Expected Output
 
+### Expected output when policy allows shared key access
+
 ```json
 {
   "id": "/subscriptions/<subscription-id>/resourceGroups/rg-func-premium-demo/providers/Microsoft.Web/sites/func-premium-demo",
+  "location": "koreacentral",
   "name": "func-premium-demo",
   "state": "Running",
   "defaultHostName": "func-premium-demo.azurewebsites.net"
@@ -161,6 +171,24 @@ Functions in func-premium-demo:
 ```json
 {"status":"healthy","timestamp":"2026-01-01T00:00:00Z","version":"1.0.0"}
 ```
+
+### Deployment Verification Results
+
+!!! warning "Blocked by enterprise policy"
+    In our Korea Central deployment, EP1 Premium was blocked during provisioning by the same `allowSharedKeyAccess: false` policy as Consumption. Premium plans also require `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING` with shared key access for the content file share.
+
+    **Observed error:**
+
+    ```text
+    ERROR: Creation of storage file share failed with: 'The remote server returned an error: (403) Forbidden.'.
+    Please check if the storage account is accessible.
+    ```
+
+    **Workarounds:**
+
+    - Request a policy exemption from your Azure administrator
+    - Use Flex Consumption (FC1) which supports identity-based blob storage
+    - Use Dedicated (B1) which uses `WEBSITE_RUN_FROM_PACKAGE` without a content file share
 
 ```mermaid
 flowchart LR

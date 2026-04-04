@@ -23,4 +23,4 @@ app.register_blueprint(exceptions_bp)
 app.register_blueprint(scheduled_bp)
 app.register_blueprint(blob_processor_bp)
 
-logger.info("Azure Functions Python Guide application initialized")
+logger.info("Azure Functions Field Guide application initialized")

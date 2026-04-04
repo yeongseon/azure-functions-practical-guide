@@ -12,7 +12,7 @@ export RG="rg-func-dedicated-dev"
 export APP_NAME="func-dedi-<unique-suffix>"
 export PLAN_NAME="asp-dedi-b1-dev"
 export STORAGE_NAME="stdedidev<unique>"
-export LOCATION="eastus"
+export LOCATION="koreacentral"
 ```
 
 ## Steps
@@ -71,10 +71,11 @@ az functionapp config set \
 ### Step 5 - Deploy code
 
 ```bash
+cd apps/python
 func azure functionapp publish $APP_NAME --python
 ```
 
-Dedicated uses App Service file share-based deployment storage and exposes Kudu/SCM endpoints for operational workflows.
+Dedicated deployment here uses remote Oryx build via `func azure functionapp publish --python` with `WEBSITE_RUN_FROM_PACKAGE=1`. Unlike Consumption and Premium content share scenarios, B1 does not require `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING`.
 
 ### Step 6 - Verify deployment
 
@@ -109,6 +110,7 @@ flowchart LR
 {
   "id": "/subscriptions/<subscription-id>/resourceGroups/rg-func-dedicated-dev/providers/Microsoft.Web/serverfarms/asp-dedi-b1-dev",
   "kind": "linux",
+  "location": "koreacentral",
   "name": "asp-dedi-b1-dev",
   "resourceGroup": "rg-func-dedicated-dev",
   "sku": {
@@ -135,10 +137,20 @@ flowchart LR
 ```json
 {
   "status": "healthy",
-  "timestamp": "2026-04-03T10:05:00Z",
+  "timestamp": "2026-04-04T05:38:46Z",
   "version": "1.0.0"
 }
 ```
+
+## Deployment Verification Results
+
+Endpoint test results from the Korea Central deployment (all returned HTTP 200):
+
+- `GET /api/health` → `{"status": "healthy", "timestamp": "2026-04-04T05:38:46Z", "version": "1.0.0"}`
+- `GET /api/info` → `{"name": "azure-functions-field-guide", "version": "1.0.0", "python": "3.11.13", "environment": "development", "telemetryMode": "basic"}`
+- `GET /api/requests/log-levels` → `{"message": "Logged at all levels", "levels": ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]}`
+- `GET /api/dependencies/external` → `{"status": "success", "statusCode": 200, "responseTime": "1143ms", "url": "https://httpbin.org/get"}`
+- `GET /api/exceptions/test-error` → `{"error": "Handled exception", "type": "ValueError", "message": "Simulated error for testing"}`
 
 ## Next Steps
 

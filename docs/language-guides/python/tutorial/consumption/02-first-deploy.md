@@ -19,7 +19,7 @@ Deploy the app to Azure Functions Consumption (Y1) using long-form CLI commands 
 export RG="rg-func-consumption-demo"
 export APP_NAME="func-consumption-demo-001"
 export STORAGE_NAME="stconsumptiondemo001"
-export LOCATION="eastus"
+export LOCATION="koreacentral"
 
 az login
 az account set --subscription "<subscription-id>"
@@ -56,9 +56,17 @@ az functionapp create \
 
 Windows is also supported on Consumption; this track keeps Linux commands for consistency.
 
+!!! warning "Enterprise policy: Shared key access"
+    Some enterprise subscriptions enforce Azure Policy that sets `allowSharedKeyAccess: false` on all storage accounts. Consumption (Y1) requires `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING` with a connection string that uses shared key access to create the content file share during provisioning. If your subscription has this policy, the Function App creation will fail with a 403 error. Solutions:
+
+    - Request a policy exemption from your Azure administrator
+    - Use Flex Consumption (FC1) which supports identity-based blob storage without shared keys
+    - Use Dedicated (B1) which uses `WEBSITE_RUN_FROM_PACKAGE` without a content file share
+
 ### Step 4 - Publish function code
 
 ```bash
+cd apps/python
 func azure functionapp publish "$APP_NAME" --python
 ```
 
@@ -97,13 +105,15 @@ flowchart LR
 
 ## Expected Output
 
+### Expected output when policy allows shared key access
+
 Resource creation output excerpt:
 
 ```json
 {
   "id": "/subscriptions/<subscription-id>/resourceGroups/rg-func-consumption-demo/providers/Microsoft.Web/sites/func-consumption-demo-001",
   "kind": "functionapp,linux",
-  "location": "eastus",
+  "location": "koreacentral",
   "state": "Running"
 }
 ```
@@ -125,6 +135,24 @@ Health response:
 ```json
 {"status":"healthy","timestamp":"2026-04-03T09:20:00Z","version":"1.0.0"}
 ```
+
+### Deployment Verification Results
+
+!!! warning "Blocked by enterprise policy"
+    In our Korea Central deployment, Y1 Consumption was blocked during provisioning. The subscription's Azure Policy enforced `allowSharedKeyAccess: false` on the storage account, which prevented the platform from creating the required content file share.
+
+    **Observed error:**
+
+    ```text
+    ERROR: Creation of storage file share failed with: 'The remote server returned an error: (403) Forbidden.'.
+    Please check if the storage account is accessible.
+    ```
+
+    **Workarounds:**
+
+    - Request a policy exemption from your Azure administrator
+    - Use Flex Consumption (FC1) which supports identity-based blob storage
+    - Use Dedicated (B1) which uses `WEBSITE_RUN_FROM_PACKAGE` without a content file share
 
 ## Next Steps
 

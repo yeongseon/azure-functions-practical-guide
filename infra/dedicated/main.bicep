@@ -2,13 +2,15 @@
 //
 // Deploys:
 // - Linux Function App on Dedicated App Service Plan (B1 Basic by default)
+// - System-assigned managed identity with RBAC for identity-based host storage
 // - Shared monitoring (Log Analytics + Application Insights)
-// - Storage account with Azure Files content share for file share-based deployment
 //
 // Key characteristics:
 // - alwaysOn enabled for Dedicated hosting
+// - Uses AzureWebJobsStorage__accountName (identity-based, no connection string)
 // - Uses classic siteConfig.appSettings (not functionAppConfig)
 // - No VNet integration on B1; upgrade to S1+ for VNet features
+// - WEBSITE_RUN_FROM_PACKAGE=1 for zip-based deployment (no content share needed)
 //
 // Deploy:
 // az deployment group create --template-file infra/dedicated/main.bicep --parameters baseName=myapp
@@ -34,9 +36,11 @@ var appInsightsName = '${baseName}-insights'
 var storageAccountName = toLower(replace('${baseName}storage', '-', ''))
 var appServicePlanName = '${baseName}-plan'
 var functionAppName = '${baseName}-func'
-var contentShareName = toLower(replace('${baseName}-content', '-', ''))
 
-var storageConnectionString = 'DefaultEndpointsProtocol=https;AccountName=${storageModule.outputs.name};AccountKey=${storageModule.outputs.accessKey};EndpointSuffix=${environment().suffixes.storage}'
+// RBAC role definition IDs
+var storageBlobDataOwnerRoleId = 'b7e6dc6d-f1e8-4753-8033-0f276bb0955b'
+var storageAccountContributorRoleId = '17d1049b-9a84-46fb-8f53-869881c3d3ab'
+var storageQueueDataContributorRoleId = '974c5e8b-45b9-4653-ba55-5f855dd0fb88'
 
 module appInsightsModule '../modules/app-insights.bicep' = {
   name: 'appInsightsModule'
@@ -52,25 +56,12 @@ module storageModule '../modules/storage-account.bicep' = {
     name: storageAccountName
     location: location
     allowPublicAccess: true
-    allowSharedKeyAccess: true
+    allowSharedKeyAccess: false
   }
 }
 
-resource fileService 'Microsoft.Storage/storageAccounts/fileServices@2023-05-01' = {
-  name: '${storageAccountName}/default'
-  dependsOn: [
-    storageModule
-  ]
-}
-
-resource contentShare 'Microsoft.Storage/storageAccounts/fileServices/shares@2023-05-01' = {
-  name: '${storageAccountName}/default/${contentShareName}'
-  properties: {
-    accessTier: 'TransactionOptimized'
-  }
-  dependsOn: [
-    fileService
-  ]
+resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' existing = {
+  name: storageAccountName
 }
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2024-04-01' = {
@@ -90,6 +81,9 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
   name: functionAppName
   location: location
   kind: 'functionapp,linux'
+  identity: {
+    type: 'SystemAssigned'
+  }
   properties: {
     serverFarmId: appServicePlan.id
     httpsOnly: true
@@ -108,16 +102,12 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
           value: 'python'
         }
         {
-          name: 'WEBSITE_CONTENTSHARE'
-          value: contentShareName
+          name: 'AzureWebJobsStorage__accountName'
+          value: storageAccountName
         }
         {
-          name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
-          value: storageConnectionString
-        }
-        {
-          name: 'AzureWebJobsStorage'
-          value: storageConnectionString
+          name: 'AzureWebJobsStorage__credential'
+          value: 'managedidentity'
         }
         {
           name: 'WEBSITE_RUN_FROM_PACKAGE'
@@ -134,9 +124,42 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
       ]
     }
   }
-  dependsOn: [
-    contentShare
-  ]
+}
+
+// RBAC: Storage Blob Data Owner
+resource blobDataOwnerAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(storageAccount.id, functionApp.id, storageBlobDataOwnerRoleId)
+  scope: storageAccount
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', storageBlobDataOwnerRoleId)
+    principalId: functionApp.identity.principalId
+    principalType: 'ServicePrincipal'
+  }
+  dependsOn: [storageModule]
+}
+
+// RBAC: Storage Account Contributor
+resource storageAccountContributorAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(storageAccount.id, functionApp.id, storageAccountContributorRoleId)
+  scope: storageAccount
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', storageAccountContributorRoleId)
+    principalId: functionApp.identity.principalId
+    principalType: 'ServicePrincipal'
+  }
+  dependsOn: [storageModule]
+}
+
+// RBAC: Storage Queue Data Contributor
+resource queueDataContributorAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(storageAccount.id, functionApp.id, storageQueueDataContributorRoleId)
+  scope: storageAccount
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', storageQueueDataContributorRoleId)
+    principalId: functionApp.identity.principalId
+    principalType: 'ServicePrincipal'
+  }
+  dependsOn: [storageModule]
 }
 
 output functionAppName string = functionApp.name
