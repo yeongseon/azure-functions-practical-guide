@@ -233,6 +233,10 @@
          <lastmod>2026-04-04</lastmod>
     </url>
     <url>
+         <loc>https://yeongseon.github.io/azure-functions/operations/cost-optimization/</loc>
+         <lastmod>2026-04-04</lastmod>
+    </url>
+    <url>
          <loc>https://yeongseon.github.io/azure-functions/operations/deployment/</loc>
          <lastmod>2026-04-04</lastmod>
     </url>
@@ -282,6 +286,30 @@
     </url>
     <url>
          <loc>https://yeongseon.github.io/azure-functions/platform/triggers-and-bindings/</loc>
+         <lastmod>2026-04-04</lastmod>
+    </url>
+    <url>
+         <loc>https://yeongseon.github.io/azure-functions/reference/</loc>
+         <lastmod>2026-04-04</lastmod>
+    </url>
+    <url>
+         <loc>https://yeongseon.github.io/azure-functions/reference/cli-cheatsheet/</loc>
+         <lastmod>2026-04-04</lastmod>
+    </url>
+    <url>
+         <loc>https://yeongseon.github.io/azure-functions/reference/environment-variables/</loc>
+         <lastmod>2026-04-04</lastmod>
+    </url>
+    <url>
+         <loc>https://yeongseon.github.io/azure-functions/reference/host-json/</loc>
+         <lastmod>2026-04-04</lastmod>
+    </url>
+    <url>
+         <loc>https://yeongseon.github.io/azure-functions/reference/platform-limits/</loc>
+         <lastmod>2026-04-04</lastmod>
+    </url>
+    <url>
+         <loc>https://yeongseon.github.io/azure-functions/reference/troubleshooting/</loc>
          <lastmod>2026-04-04</lastmod>
     </url>
     <url>
