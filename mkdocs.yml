@@ -1,5 +1,5 @@
 site_name: Azure Functions Practical Guide
-site_url: https://yeongseon.github.io/azure-functions-practical-guide-practical-guide/
+site_url: https://yeongseon.github.io/azure-functions-practical-guide/
 site_description: Comprehensive guide for running serverless applications on Azure Functions
 site_author: yeongseon
 
@@ -79,7 +79,7 @@ validation:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/yeongseon/azure-functions
+      link: https://github.com/yeongseon/azure-functions-practical-guide
 
 nav:
   - Home: index.md
