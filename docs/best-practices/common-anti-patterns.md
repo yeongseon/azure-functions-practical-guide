@@ -356,7 +356,7 @@ Use this anti-pattern checklist at three control points:
 - [Platform: Scaling](../platform/scaling.md)
 - [Troubleshooting Playbooks](../troubleshooting/playbooks.md)
 
-## References
+## Sources
 
 - [Improve performance and reliability of Azure Functions (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/performance-reliability)
 - [Azure Functions best practices (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-best-practices)

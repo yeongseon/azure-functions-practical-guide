@@ -158,7 +158,7 @@ Your first Dedicated deployment is live. Next you will configure app settings, s
 
 > **Next:** [03 - Configuration](03-configuration.md)
 
-## References
+## Sources
 
 - [Create a Function App in an App Service plan (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-how-to-use-azure-function-app-settings)
 - [App Service Always On (Microsoft Learn)](https://learn.microsoft.com/azure/app-service/configure-common)

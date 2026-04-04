@@ -241,6 +241,6 @@ resource functionApp 'Microsoft.Web/sites@2023-01-01' = {
 - [Platform Security Design](../../../platform/security.md) — authentication architecture, Easy Auth, key management design
 - [Security Operations](../../../operations/security.md) — key rotation, RBAC audit, CORS, TLS enforcement
 
-## References
+## Sources
 - [Key Vault References in App Service (Microsoft Learn)](https://learn.microsoft.com/azure/app-service/app-service-key-vault-references)
 - [Managed Identity Tutorial (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial)

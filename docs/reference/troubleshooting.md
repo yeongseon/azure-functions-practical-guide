@@ -428,6 +428,6 @@ See also: [Networking operations](../platform/networking.md) for the full Privat
 - [Observability](../operations/monitoring.md)
 - [Networking Operations](../platform/networking.md)
 
-## References
+## Sources
 - [Python v2 Programming Model (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-reference-python)
 - [Develop Azure Functions Locally (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-develop-local)

@@ -180,7 +180,7 @@ Deployment completed successfully.
 
 > **Next:** [06 - CI/CD](06-ci-cd.md)
 
-## References
+## Sources
 
 - [Bicep overview](https://learn.microsoft.com/azure/azure-resource-manager/bicep/overview)
 - [Flex Consumption plan hosting](https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan)

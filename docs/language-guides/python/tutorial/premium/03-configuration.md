@@ -136,7 +136,7 @@ Configure runtime settings, storage options, and networking-related app configur
 
 > **Next:** [04 - Logging and Monitoring](04-logging-monitoring.md)
 
-## References
+## Sources
 
 - [App settings reference for Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-app-settings)
 - [Functions scale and hosting](https://learn.microsoft.com/azure/azure-functions/functions-scale)

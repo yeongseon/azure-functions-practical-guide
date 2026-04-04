@@ -164,7 +164,7 @@ Expected output:
 
 > **Next:** [02 - First Deploy](02-first-deploy.md)
 
-## References
+## Sources
 
 - [Run Azure Functions locally](https://learn.microsoft.com/azure/azure-functions/functions-run-local)
 - [Flex Consumption plan](https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan)

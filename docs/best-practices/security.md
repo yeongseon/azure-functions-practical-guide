@@ -323,7 +323,7 @@ az role assignment create \
 - [Configuration Operations](../operations/configuration.md)
 - [Networking Best Practices](./networking.md)
 
-## References
+## Sources
 
 - [Azure Functions security concepts](https://learn.microsoft.com/azure/azure-functions/security-concepts)
 - [Tutorial: Create a function app that connects to Azure services using identities](https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial)

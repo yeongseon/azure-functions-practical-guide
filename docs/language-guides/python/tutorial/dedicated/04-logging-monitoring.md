@@ -159,7 +159,7 @@ Monitoring is now in place with logs, queries, and alerts. Next you will codify 
 
 > **Next:** [05 - Infrastructure as Code](05-infrastructure-as-code.md)
 
-## References
+## Sources
 
 - [Monitor Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-monitoring)
 - [Application Insights for Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-monitoring#application-insights)

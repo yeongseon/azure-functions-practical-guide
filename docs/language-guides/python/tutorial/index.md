@@ -129,7 +129,7 @@ Traditional App Service hosting with predictable pricing. Best when you already 
 - [Networking](../../../platform/networking.md) — VNet integration and private endpoint concepts
 - [Cost Optimization](../../../start-here/hosting-options.md) — Choosing the right plan for your budget
 
-## References
+## Sources
 
 - [Azure Functions hosting options (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-scale)
 - [Flex Consumption plan (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan)

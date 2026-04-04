@@ -253,5 +253,5 @@ def schedule_delayed(req: func.HttpRequest) -> func.HttpResponse:
 - [HTTP API Patterns](http-api.md)
 - [Managed Identity Recipe](managed-identity.md)
 
-## References
+## Sources
 - [Azure Functions Queue Storage Bindings (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue)

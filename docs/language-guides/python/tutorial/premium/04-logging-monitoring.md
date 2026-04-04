@@ -113,7 +113,7 @@ Timestamp                  Name    ResultCode    Duration
 
 > **Next:** [05 - Infrastructure as Code](05-infrastructure-as-code.md)
 
-## References
+## Sources
 
 - [Monitor Azure Functions](https://learn.microsoft.com/azure/azure-functions/monitor-functions)
 - [Application Insights query with Azure CLI](https://learn.microsoft.com/azure/azure-monitor/app/azure-cli)

@@ -90,7 +90,7 @@ You now have local parity and can deploy to Azure Consumption (Y1).
 
 > **Next:** [02 - First Deploy](02-first-deploy.md)
 
-## References
+## Sources
 
 - [Run Functions locally with Core Tools](https://learn.microsoft.com/azure/azure-functions/functions-run-local)
 - [Azure Functions Consumption plan](https://learn.microsoft.com/azure/azure-functions/consumption-plan)

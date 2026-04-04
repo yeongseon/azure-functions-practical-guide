@@ -163,7 +163,7 @@ Operationally, Event Grid models provide clearer event-flow visibility and reduc
 - [Platform: Scaling](../platform/scaling.md)
 - [Operations: Retries and Poison Handling](../operations/retries-and-poison-handling.md)
 
-## References
+## Sources
 
 - [Azure Functions triggers and bindings (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings)
 - [Azure Blob storage trigger for Azure Functions (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-blob-trigger)

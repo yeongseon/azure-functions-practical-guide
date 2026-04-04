@@ -257,5 +257,5 @@ The `host.json` file is deployed with your code and applies in both local and pr
 - [Observability](../operations/monitoring.md)
 - [Cost Optimization](../operations/configuration.md)
 
-## References
+## Sources
 - [host.json Reference (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-host-json)

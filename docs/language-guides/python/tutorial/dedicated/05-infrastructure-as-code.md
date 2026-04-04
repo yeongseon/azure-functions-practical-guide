@@ -175,7 +175,7 @@ You now have reproducible Dedicated infrastructure in Bicep. Next you will autom
 
 > **Next:** [06 - CI/CD](06-ci-cd.md)
 
-## References
+## Sources
 
 - [Bicep documentation](https://learn.microsoft.com/azure/azure-resource-manager/bicep/)
 - [Microsoft.Web/serverfarms resource reference](https://learn.microsoft.com/azure/templates/microsoft.web/serverfarms)

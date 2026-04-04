@@ -169,7 +169,7 @@ Endpoint test results from the Korea Central deployment (all returned HTTP 200):
 
 > **Next:** [03 - Configuration](03-configuration.md)
 
-## References
+## Sources
 
 - [Flex Consumption plan hosting](https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan)
 - [Create and manage Flex Consumption apps](https://learn.microsoft.com/azure/azure-functions/flex-consumption-how-to)

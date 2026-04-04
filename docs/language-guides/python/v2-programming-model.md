@@ -360,7 +360,7 @@ This creates three endpoints:
 - `GET /api/products/{product_id}` — Get a product by ID
 - `POST /api/products` — Create a new product
 
-## References
+## Sources
 - [Python v2 Programming Model (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-reference-python)
 - [Azure Functions Overview (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-overview)
 - [HTTP Trigger Reference (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-bindings-http-webhook)

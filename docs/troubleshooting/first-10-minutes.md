@@ -426,7 +426,7 @@ Route to [Playbooks](playbooks.md) for trigger-specific mitigations and [Methodo
 - [Azure Functions monitoring](https://learn.microsoft.com/azure/azure-functions/functions-monitoring)
 - [Azure Service Health overview](https://learn.microsoft.com/azure/service-health/overview)
 
-## References
+## Sources
 
 - [Azure Service Health overview](https://learn.microsoft.com/azure/service-health/overview)
 - [Monitor Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-monitoring)

@@ -164,7 +164,18 @@ Further reading for deeper understanding.
 
 - [Related Doc 1](../category/related-doc.md)
 - [Related Doc 2](../category/another-doc.md)
+
+## Sources
+
+- [Microsoft Learn Article](https://learn.microsoft.com/azure/...)
 ```
+
+| Section | Content | Notes |
+|---------|---------|-------|
+| `## See Also` | Internal cross-reference links | Other pages within this guide |
+| `## Sources` | Microsoft Learn links | External sources and references |
+
+**Order**: `## See Also` always comes before `## Sources`.
 
 ### Cross-Reference Pattern
 

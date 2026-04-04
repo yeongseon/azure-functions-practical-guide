@@ -160,7 +160,7 @@ Next, configure settings and behavior specific to Consumption using classic app 
 
 > **Next:** [03 - Configuration](03-configuration.md)
 
-## References
+## Sources
 
 - [Create a function app in Azure using CLI](https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-python)
 - [Azure Functions deployment technologies](https://learn.microsoft.com/azure/azure-functions/functions-deployment-technologies)

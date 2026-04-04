@@ -104,7 +104,7 @@ Functions:
 
 > **Next:** [02 - First Deploy](02-first-deploy.md)
 
-## References
+## Sources
 
 - [Run Azure Functions locally](https://learn.microsoft.com/azure/azure-functions/functions-run-local)
 - [Azure Functions Premium plan](https://learn.microsoft.com/azure/azure-functions/functions-premium-plan)

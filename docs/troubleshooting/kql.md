@@ -414,7 +414,7 @@ union isfuzzy=true
 - [Azure Monitor Logs query overview](https://learn.microsoft.com/azure/azure-monitor/logs/log-query-overview)
 - [Application Insights data model](https://learn.microsoft.com/azure/azure-monitor/app/data-model)
 
-## References
+## Sources
 
 - [Kusto Query Language overview](https://learn.microsoft.com/azure/data-explorer/kusto/query/)
 - [Application Insights telemetry data model](https://learn.microsoft.com/azure/azure-monitor/app/data-model-complete)

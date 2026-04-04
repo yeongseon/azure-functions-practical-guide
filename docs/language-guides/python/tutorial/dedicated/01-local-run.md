@@ -119,7 +119,7 @@ You now have a working local baseline. Next you will provision a Basic (B1) Dedi
 
 > **Next:** [02 - First Deploy](02-first-deploy.md)
 
-## References
+## Sources
 
 - [Run functions locally (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-run-local)
 - [Azure Functions Python developer guide (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-reference-python)

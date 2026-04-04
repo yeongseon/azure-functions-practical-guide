@@ -173,7 +173,7 @@ You now have a repeatable Dedicated deployment pipeline with optional slot-based
 
 > **Next:** [07 - Extending with Triggers](07-extending-triggers.md)
 
-## References
+## Sources
 
 - [Zip deployment for Azure Functions](https://learn.microsoft.com/azure/azure-functions/deployment-zip-push)
 - [Deploy Azure Functions with GitHub Actions](https://learn.microsoft.com/azure/azure-functions/functions-how-to-github-actions)

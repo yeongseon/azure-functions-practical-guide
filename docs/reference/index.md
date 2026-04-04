@@ -35,7 +35,7 @@ Reference documents currently cover Python-specific content. As additional langu
 
 - [Python Language Guide](../language-guides/python/index.md)
 
-## References
+## Sources
 
 - [Azure Functions Documentation (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/)
 - [Azure Functions host.json Reference (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-host-json)

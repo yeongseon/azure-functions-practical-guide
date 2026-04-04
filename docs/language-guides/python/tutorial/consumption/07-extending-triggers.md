@@ -127,7 +127,7 @@ You completed the Consumption tutorial track. Continue with core runtime concept
 
 > **Next:** [How Functions Works](../../../../platform/architecture.md)
 
-## References
+## Sources
 
 - [Azure Functions triggers and bindings](https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings)
 - [Azure Queue Storage trigger for Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue-trigger)

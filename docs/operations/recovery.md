@@ -89,15 +89,15 @@ After recovery action:
 - Measured achieved RTO/RPO versus targets.
 - Action items tracked for gaps found during drill.
 
-## References
-
-- [Reliability in Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-best-practices)
-- [Business continuity and disaster recovery for Azure applications](https://learn.microsoft.com/azure/architecture/framework/resiliency/disaster-recovery)
-- [Azure Storage redundancy options](https://learn.microsoft.com/azure/storage/common/storage-redundancy)
-- [Deployment slots in Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-deployment-slots)
-
 ## See Also
 
 - [Deployment](deployment.md)
 - [Alerts](alerts.md)
 - [Troubleshooting Methodology](../troubleshooting/methodology.md)
+
+## Sources
+
+- [Reliability in Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-best-practices)
+- [Business continuity and disaster recovery for Azure applications](https://learn.microsoft.com/azure/architecture/framework/resiliency/disaster-recovery)
+- [Azure Storage redundancy options](https://learn.microsoft.com/azure/storage/common/storage-redundancy)
+- [Deployment slots in Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-deployment-slots)

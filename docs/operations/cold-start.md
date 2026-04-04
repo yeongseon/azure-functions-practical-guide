@@ -109,15 +109,15 @@ Correlate duration spikes with scale-out and instance changes to separate code r
 2. If p95 remains unstable, enable plan-native warm capacity.
 3. If strict low-latency is mandatory, use Premium or Dedicated with warm strategy.
 
-## References
-
-- [Azure Functions hosting options and scaling](https://learn.microsoft.com/azure/azure-functions/functions-scale)
-- [Flex Consumption plan for Azure Functions](https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan)
-- [Azure Functions Premium plan](https://learn.microsoft.com/azure/azure-functions/functions-premium-plan)
-- [Improve performance and reliability of Azure Functions](https://learn.microsoft.com/azure/azure-functions/performance-reliability)
-
 ## See Also
 
 - [Monitoring](monitoring.md)
 - [Deployment](deployment.md)
 - [Platform Hosting](../platform/hosting.md)
+
+## Sources
+
+- [Azure Functions hosting options and scaling](https://learn.microsoft.com/azure/azure-functions/functions-scale)
+- [Flex Consumption plan for Azure Functions](https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan)
+- [Azure Functions Premium plan](https://learn.microsoft.com/azure/azure-functions/functions-premium-plan)
+- [Improve performance and reliability of Azure Functions](https://learn.microsoft.com/azure/azure-functions/performance-reliability)

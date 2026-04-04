@@ -174,7 +174,7 @@ flowchart TD
 - [Azure Monitor overview](https://learn.microsoft.com/azure/azure-monitor/overview)
 - [Azure Functions monitoring](https://learn.microsoft.com/azure/azure-functions/functions-monitoring)
 
-## References
+## Sources
 
 - [Monitor Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-monitoring)
 - [Configure monitoring for Azure Functions](https://learn.microsoft.com/azure/azure-functions/configure-monitoring)

@@ -160,15 +160,15 @@ Weekly:
 - Over-sampling that removes needed forensic signals.
 - No version marker in logs, making release impact hard to isolate.
 
-## References
-
-- [Monitor Azure Functions](https://learn.microsoft.com/azure/azure-functions/monitor-functions)
-- [Application Insights overview](https://learn.microsoft.com/azure/azure-monitor/app/app-insights-overview)
-- [Logs in Azure Monitor](https://learn.microsoft.com/azure/azure-monitor/logs/data-platform-logs)
-- [Create and share Azure Monitor workbooks](https://learn.microsoft.com/azure/azure-monitor/visualize/workbooks-overview)
-
 ## See Also
 
 - [Alerts](alerts.md)
 - [Cold Start](cold-start.md)
 - [Troubleshooting KQL](../troubleshooting/kql.md)
+
+## Sources
+
+- [Monitor Azure Functions](https://learn.microsoft.com/azure/azure-functions/monitor-functions)
+- [Application Insights overview](https://learn.microsoft.com/azure/azure-monitor/app/app-insights-overview)
+- [Logs in Azure Monitor](https://learn.microsoft.com/azure/azure-monitor/logs/data-platform-logs)
+- [Create and share Azure Monitor workbooks](https://learn.microsoft.com/azure/azure-monitor/visualize/workbooks-overview)

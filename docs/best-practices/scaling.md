@@ -194,7 +194,7 @@ flowchart LR
 - [Operations: Cold Start](../operations/cold-start.md)
 - [Platform: Triggers and Bindings](../platform/triggers-and-bindings.md)
 
-## References
+## Sources
 
 - [Azure Functions event-driven scaling (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/event-driven-scaling)
 - [Azure Functions concurrency (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-concurrency)

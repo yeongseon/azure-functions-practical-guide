@@ -324,7 +324,7 @@ az functionapp config access-restriction show \
 - [Security Best Practices](./security.md)
 - [Platform Security](../platform/security.md)
 
-## References
+## Sources
 
 - [Azure Functions networking options](https://learn.microsoft.com/azure/azure-functions/functions-networking-options)
 - [Integrate Azure Functions with an Azure virtual network](https://learn.microsoft.com/azure/azure-functions/functions-create-vnet)

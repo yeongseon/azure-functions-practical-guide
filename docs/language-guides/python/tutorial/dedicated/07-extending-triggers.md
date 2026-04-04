@@ -166,7 +166,7 @@ You now have a full Dedicated track implementation with HTTP, timer, blob, and q
 
 > **Next:** [How Azure Functions Works](../../../../platform/architecture.md)
 
-## References
+## Sources
 
 - [Azure Functions triggers and bindings concepts](https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings)
 - [Timer trigger for Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-bindings-timer)

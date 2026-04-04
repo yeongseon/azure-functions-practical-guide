@@ -147,7 +147,7 @@ You now have a correctly configured Dedicated app with explicit runtime settings
 
 > **Next:** [04 - Logging & Monitoring](04-logging-monitoring.md)
 
-## References
+## Sources
 
 - [App settings reference for Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-app-settings)
 - [Configure App Service app settings](https://learn.microsoft.com/azure/app-service/configure-common)

@@ -113,15 +113,15 @@ Start with this minimum set and tune after two to four weeks of production data:
 - Rule avoids duplicate pages for same incident.
 - Rule is reviewed after every major incident.
 
-## References
-
-- [Create and manage action groups](https://learn.microsoft.com/azure/azure-monitor/alerts/action-groups)
-- [Create metric alerts in Azure Monitor](https://learn.microsoft.com/azure/azure-monitor/alerts/alerts-metric)
-- [Create log search alerts in Azure Monitor](https://learn.microsoft.com/azure/azure-monitor/alerts/alerts-log)
-- [Smart detection in Application Insights](https://learn.microsoft.com/azure/azure-monitor/alerts/proactive-diagnostics)
-
 ## See Also
 
 - [Monitoring](monitoring.md)
 - [Recovery](recovery.md)
 - [Troubleshooting Playbooks](../troubleshooting/playbooks.md)
+
+## Sources
+
+- [Create and manage action groups](https://learn.microsoft.com/azure/azure-monitor/alerts/action-groups)
+- [Create metric alerts in Azure Monitor](https://learn.microsoft.com/azure/azure-monitor/alerts/alerts-metric)
+- [Create log search alerts in Azure Monitor](https://learn.microsoft.com/azure/azure-monitor/alerts/alerts-log)
+- [Smart detection in Application Insights](https://learn.microsoft.com/azure/azure-monitor/alerts/proactive-diagnostics)

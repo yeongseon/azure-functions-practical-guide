@@ -280,6 +280,6 @@ async def get_status(req: func.HttpRequest, client: df.DurableOrchestrationClien
 - [HTTP API Patterns](http-api.md)
 - [Queue Recipe](queue.md)
 
-## References
+## Sources
 - [Durable Functions Overview (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-overview)
 - [Python v2 Programming Model (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-reference-python)

@@ -145,15 +145,15 @@ az functionapp config appsettings set \
 - Secrets come from Key Vault references.
 - `host.json` changes are validated before production rollout.
 
-## References
-
-- [App settings reference for Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-app-settings)
-- [host.json reference for Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-host-json)
-- [Use Key Vault references in App Service and Functions](https://learn.microsoft.com/azure/app-service/app-service-key-vault-references)
-- [Azure Functions identity-based connections](https://learn.microsoft.com/azure/azure-functions/functions-reference#configure-an-identity-based-connection)
-
 ## See Also
 
 - [Deployment](deployment.md)
 - [Monitoring](monitoring.md)
 - [Platform Security](../platform/security.md)
+
+## Sources
+
+- [App settings reference for Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-app-settings)
+- [host.json reference for Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-host-json)
+- [Use Key Vault references in App Service and Functions](https://learn.microsoft.com/azure/app-service/app-service-key-vault-references)
+- [Azure Functions identity-based connections](https://learn.microsoft.com/azure/azure-functions/functions-reference#configure-an-identity-based-connection)

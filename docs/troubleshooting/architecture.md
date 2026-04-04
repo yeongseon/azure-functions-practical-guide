@@ -244,7 +244,7 @@ flowchart TD
 - [Deployment failures playbook](playbooks.md#deployment-failures)
 - [Monitoring](../operations/monitoring.md)
 
-## References
+## Sources
 
 - [Azure Functions monitoring](https://learn.microsoft.com/azure/azure-functions/functions-monitoring)
 - [Azure Functions networking options](https://learn.microsoft.com/azure/azure-functions/functions-networking-options)

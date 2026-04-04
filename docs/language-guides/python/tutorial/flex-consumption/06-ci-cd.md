@@ -172,7 +172,7 @@ Expected output:
 
 > **Next:** [07 - Extending Triggers](07-extending-triggers.md)
 
-## References
+## Sources
 
 - [Deploy Azure Functions with GitHub Actions](https://learn.microsoft.com/azure/azure-functions/functions-how-to-github-actions)
 - [Use OIDC with GitHub Actions and Azure](https://learn.microsoft.com/azure/developer/github/connect-from-azure-openid-connect)

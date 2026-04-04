@@ -117,7 +117,7 @@ Functions in func-premium-demo:
 
 > **Next:** [How Azure Functions Works](../../../../platform/architecture.md)
 
-## References
+## Sources
 
 - [Azure Functions triggers and bindings](https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings)
 - [Blob trigger for Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-blob-trigger)

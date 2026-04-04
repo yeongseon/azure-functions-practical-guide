@@ -266,7 +266,7 @@ flowchart TD
 - [Operations: Monitoring](../operations/monitoring.md)
 - [Operations: Alerts](../operations/alerts.md)
 
-## References
+## Sources
 
 - [Azure Functions Consumption plan costs (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-consumption-costs)
 - [Azure Functions pricing (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/pricing)

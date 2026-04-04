@@ -256,6 +256,6 @@ def handle_blob_event(event: func.EventGridEvent) -> None:
 - [HTTP API Patterns](http-api.md)
 - [Queue Recipe](queue.md)
 
-## References
+## Sources
 - [Azure Functions Event Grid Bindings (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-bindings-event-grid)
 - [Azure Functions Triggers and Bindings (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings)

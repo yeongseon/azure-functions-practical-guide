@@ -146,7 +146,7 @@ Use these criteria as a minimum quality bar before production go-live:
 - [Triggers and Bindings](../platform/triggers-and-bindings.md)
 - [Scaling Behavior](../platform/scaling.md)
 
-## References
+## Sources
 
 - [Azure Functions documentation (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/)
 - [Azure Functions hosting options and scaling (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-scale)

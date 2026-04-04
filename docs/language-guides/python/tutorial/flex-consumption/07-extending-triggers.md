@@ -230,7 +230,7 @@ Expected output:
 
 > **Next:** [How Azure Functions Works](../../../../platform/architecture.md)
 
-## References
+## Sources
 
 - [Azure Functions trigger and binding concepts](https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings)
 - [Event Grid blob trigger for Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-event-grid-blob-trigger)

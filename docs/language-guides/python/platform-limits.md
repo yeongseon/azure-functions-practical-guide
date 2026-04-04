@@ -193,5 +193,5 @@ For high-throughput scenarios, consider using a dedicated storage account for `A
 - [Python Runtime](python-runtime.md)
 - [host.json Reference](host-json.md)
 
-## References
+## Sources
 - [Azure Functions Scale and Service Limits (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-scale#service-limits)

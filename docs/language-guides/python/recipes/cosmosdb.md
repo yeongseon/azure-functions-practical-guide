@@ -270,6 +270,6 @@ The binding now uses the Managed Identity automatically — no connection string
 - [Managed Identity Recipe](managed-identity.md)
 - [HTTP API Patterns](http-api.md)
 
-## References
+## Sources
 - [Azure Functions Cosmos DB Bindings (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-bindings-cosmosdb-v2)
 - [Managed Identity Tutorial (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial)

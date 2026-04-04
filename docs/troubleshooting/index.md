@@ -97,7 +97,7 @@ flowchart TD
 - [Application Insights for Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-monitoring#application-insights)
 - [Scale and hosting options](https://learn.microsoft.com/azure/azure-functions/functions-scale)
 
-## References
+## Sources
 
 - [Monitor Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-monitoring)
 - [Troubleshoot Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-recover-from-failed-host)

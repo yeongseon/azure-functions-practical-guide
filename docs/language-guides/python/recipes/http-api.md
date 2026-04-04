@@ -331,6 +331,6 @@ def delete_item(req: func.HttpRequest) -> func.HttpResponse:
 - [HTTP Authentication](http-auth.md)
 - [Cosmos DB Integration](cosmosdb.md)
 
-## References
+## Sources
 - [Azure Functions HTTP Trigger (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-bindings-http-webhook)
 - [Python v2 Programming Model (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-reference-python)

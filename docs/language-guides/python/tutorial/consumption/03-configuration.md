@@ -111,7 +111,7 @@ Now enable operational visibility with logs and monitoring.
 
 > **Next:** [04 - Logging and Monitoring](04-logging-monitoring.md)
 
-## References
+## Sources
 
 - [App settings reference for Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-app-settings)
 - [Identity-based host storage for Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-reference#connecting-to-host-storage-with-an-identity)

@@ -158,7 +158,7 @@ Expected output:
 
 > **Next:** [05 - Infrastructure as Code](05-infrastructure-as-code.md)
 
-## References
+## Sources
 
 - [Monitor Azure Functions](https://learn.microsoft.com/azure/azure-functions/monitor-functions)
 - [Azure Monitor Logs query overview](https://learn.microsoft.com/azure/azure-monitor/logs/log-query-overview)

@@ -150,7 +150,7 @@ Automate deployments in CI/CD with GitHub Actions.
 
 > **Next:** [06 - CI/CD](06-ci-cd.md)
 
-## References
+## Sources
 
 - [Bicep for Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-infrastructure-as-code)
 - [Bicep language reference](https://learn.microsoft.com/azure/azure-resource-manager/bicep/)

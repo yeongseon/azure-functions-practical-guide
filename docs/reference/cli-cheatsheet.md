@@ -323,7 +323,7 @@ az monitor metrics list \
 ## See Also
 - [Deployments](../operations/deployment.md)
 
-## References
+## Sources
 - [Azure Functions Core Tools Reference (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-run-local)
 - [Azure Functions CLI Reference (Microsoft Learn)](https://learn.microsoft.com/cli/azure/functionapp)
 - [Develop Azure Functions Locally (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-develop-local)

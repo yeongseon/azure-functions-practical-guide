@@ -207,7 +207,7 @@ Use this minimum operating cadence and tighten based on risk and regulation.
 !!! note "Control ownership"
     Assign explicit owners: platform team for RBAC/TLS/network controls, application team for key-consumer rollout, and operations team for monitoring triage and evidence retention.
 
-## References
+## Sources
 
 - [Azure Functions security concepts](https://learn.microsoft.com/azure/azure-functions/security-concepts)
 - [Work with access keys in Azure Functions](https://learn.microsoft.com/azure/azure-functions/function-keys-how-to)

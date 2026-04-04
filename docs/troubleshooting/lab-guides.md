@@ -266,7 +266,7 @@ Each lab trains specific diagnostic skills:
 - [KQL Query Library](kql.md)
 - [Azure Functions reliability guidance](https://learn.microsoft.com/azure/azure-functions/functions-best-practices)
 
-## References
+## Sources
 
 - [Azure Functions monitoring](https://learn.microsoft.com/azure/azure-functions/functions-monitoring)
 - [Application Insights for Azure Functions](https://learn.microsoft.com/azure/azure-functions/configure-monitoring)

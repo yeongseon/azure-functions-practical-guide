@@ -176,7 +176,7 @@ Syncing triggers...
 
 > **Next:** [07 - Extending Triggers](07-extending-triggers.md)
 
-## References
+## Sources
 
 - [Deploy to Azure Functions using GitHub Actions](https://learn.microsoft.com/azure/azure-functions/functions-how-to-github-actions)
 - [Deployment slots for Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-deployment-slots)

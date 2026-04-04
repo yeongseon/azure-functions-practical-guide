@@ -170,5 +170,5 @@ Timer triggers require Azure Storage (`AzureWebJobsStorage`) to maintain schedul
 - [HTTP API Patterns](http-api.md)
 - [Scaling](../../../platform/scaling.md)
 
-## References
+## Sources
 - [Azure Functions Timer Trigger (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-bindings-timer)

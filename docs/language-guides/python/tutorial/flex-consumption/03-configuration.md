@@ -171,7 +171,7 @@ Expected output:
 
 > **Next:** [04 - Logging and Monitoring](04-logging-monitoring.md)
 
-## References
+## Sources
 
 - [App settings reference for Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-app-settings)
 - [Flex Consumption how-to](https://learn.microsoft.com/azure/azure-functions/flex-consumption-how-to)

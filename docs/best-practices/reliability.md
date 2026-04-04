@@ -267,7 +267,7 @@ flowchart TD
 - [Recovery](../operations/recovery.md)
 - [Security Best Practices](./security.md)
 
-## References
+## Sources
 
 - [Designing Azure Functions for identical input (idempotency)](https://learn.microsoft.com/azure/azure-functions/functions-idempotent)
 - [Reliable event processing in Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-reliable-event-processing)

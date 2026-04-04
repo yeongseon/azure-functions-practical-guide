@@ -203,7 +203,7 @@ flowchart LR
 
 > **Next:** [03 - Configuration](03-configuration.md)
 
-## References
+## Sources
 
 - [Azure Functions Premium plan](https://learn.microsoft.com/azure/azure-functions/functions-premium-plan)
 - [Integrate your app with an Azure virtual network](https://learn.microsoft.com/azure/app-service/configure-vnet-integration-enable)

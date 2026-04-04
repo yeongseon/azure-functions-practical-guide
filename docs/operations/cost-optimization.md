@@ -180,7 +180,7 @@ az consumption budget create \
 - [Hosting Plans](../platform/hosting.md)
 - [Scaling](../platform/scaling.md)
 
-## References
+## Sources
 
 - [Consumption Plan (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/consumption-plan)
 - [Premium Plan (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-premium-plan)

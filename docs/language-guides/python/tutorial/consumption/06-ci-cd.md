@@ -110,7 +110,7 @@ Add non-HTTP triggers and verify scaling behavior for Consumption.
 
 > **Next:** [07 - Extending Triggers](07-extending-triggers.md)
 
-## References
+## Sources
 
 - [Azure Functions GitHub Action](https://github.com/Azure/functions-action)
 - [Deploy Azure Functions with Zip Deploy](https://learn.microsoft.com/azure/azure-functions/deployment-zip-push)

@@ -145,7 +145,7 @@ Before finalizing a plan decision, hand off these concrete items to operations:
 - [Operations: Cost Optimization](../operations/cost-optimization.md)
 - [Best Practices: Scaling](./scaling.md)
 
-## References
+## Sources
 
 - [Azure Functions hosting options and scaling (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-scale)
 - [Azure Functions Flex Consumption plan (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan)

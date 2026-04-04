@@ -229,6 +229,6 @@ If your function app uses large packages (ML libraries like `scikit-learn`, `ten
 - [Platform Limits](platform-limits.md)
 - [Scaling](../../platform/scaling.md)
 
-## References
+## Sources
 - [Python v2 Programming Model (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-reference-python)
 - [Azure Functions Overview (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-overview)

@@ -270,6 +270,6 @@ curl -H "Authorization: Bearer $TOKEN" \
 - [Platform Security Design](../../../platform/security.md) — authentication architecture, Easy Auth, key management design
 - [Security Operations](../../../operations/security.md) — key rotation, RBAC audit, CORS, TLS enforcement
 
-## References
+## Sources
 - [Azure Functions Security Concepts (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/security-concepts)
 - [Easy Auth Overview (Microsoft Learn)](https://learn.microsoft.com/azure/app-service/overview-authentication-authorization)

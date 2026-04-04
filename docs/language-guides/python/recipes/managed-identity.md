@@ -238,5 +238,5 @@ resource storageRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-
 - [Security Operations](../../../operations/security.md) — key rotation, RBAC audit, CORS, TLS enforcement
 - [Blob Storage Recipe](blob-storage.md)
 
-## References
+## Sources
 - [Managed Identity Tutorial (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial)

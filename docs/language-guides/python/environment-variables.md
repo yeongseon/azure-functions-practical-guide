@@ -193,5 +193,5 @@ resource functionApp 'Microsoft.Web/sites@2023-01-01' = {
 - [Python Runtime](python-runtime.md)
 - [Troubleshooting](troubleshooting.md)
 
-## References
+## Sources
 - [Python v2 Programming Model (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-reference-python)

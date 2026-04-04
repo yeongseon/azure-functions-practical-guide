@@ -236,7 +236,7 @@ dependencies
 - [Azure Functions Incident Playbooks](playbooks.md)
 - [Monitoring](../operations/monitoring.md)
 
-## References
+## Sources
 
 - [Azure Functions monitoring](https://learn.microsoft.com/azure/azure-functions/functions-monitoring)
 - [Monitor Azure Functions with Application Insights](https://learn.microsoft.com/azure/azure-functions/analyze-telemetry-data)

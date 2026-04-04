@@ -237,7 +237,7 @@ pe-func-premium-demo              Microsoft.Network/privateEndpoints
 
 > **Next:** [06 - CI/CD](06-ci-cd.md)
 
-## References
+## Sources
 
 - [Azure Functions infrastructure as code](https://learn.microsoft.com/azure/azure-functions/functions-infrastructure-as-code)
 - [Azure Functions Premium plan](https://learn.microsoft.com/azure/azure-functions/functions-premium-plan)

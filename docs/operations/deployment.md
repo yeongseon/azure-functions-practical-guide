@@ -166,15 +166,15 @@ az functionapp deployment source config-zip \
 - Duration percentiles stay within expected range.
 - Queue backlog does not grow unexpectedly.
 
-## References
-
-- [Deploy Azure Functions from package files](https://learn.microsoft.com/azure/azure-functions/run-functions-from-deployment-package)
-- [Deploy Azure Functions with GitHub Actions](https://learn.microsoft.com/azure/azure-functions/functions-how-to-github-actions)
-- [Deployment slots in Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-deployment-slots)
-- [Functions Core Tools reference](https://learn.microsoft.com/azure/azure-functions/functions-run-local)
-
 ## See Also
 
 - [Configuration](configuration.md)
 - [Monitoring](monitoring.md)
 - [Recovery](recovery.md)
+
+## Sources
+
+- [Deploy Azure Functions from package files](https://learn.microsoft.com/azure/azure-functions/run-functions-from-deployment-package)
+- [Deploy Azure Functions with GitHub Actions](https://learn.microsoft.com/azure/azure-functions/functions-how-to-github-actions)
+- [Deployment slots in Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-deployment-slots)
+- [Functions Core Tools reference](https://learn.microsoft.com/azure/azure-functions/functions-run-local)

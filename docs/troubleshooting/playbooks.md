@@ -632,7 +632,7 @@ Sample host traces after deploy:
 - [KQL Query Library](kql.md)
 - [Troubleshooting Lab Guides](lab-guides.md)
 
-## References
+## Sources
 - [Azure Functions best practices](https://learn.microsoft.com/azure/azure-functions/functions-best-practices)
 - [Monitor Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-monitoring)
 - [Analyze telemetry in Application Insights](https://learn.microsoft.com/azure/azure-monitor/app/app-insights-overview)
