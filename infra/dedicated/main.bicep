@@ -1,4 +1,4 @@
-// Azure Functions Field Guide - Dedicated Plan (B1 default)
+// Azure Functions Practical Guide - Dedicated Plan (B1 default)
 //
 // Deploys:
 // - Linux Function App on Dedicated App Service Plan (B1 Basic by default)

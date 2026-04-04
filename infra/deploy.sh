@@ -2,7 +2,7 @@
 set -euo pipefail
 
 echo "============================================"
-echo "Azure Functions Field Guide — Python Reference App Deploy"
+echo "Azure Functions Practical Guide — Python Reference App Deploy"
 echo "Flex Consumption + VNet + Private Endpoint"
 echo "============================================"
 echo ""

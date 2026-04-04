@@ -1,4 +1,4 @@
-// Azure Functions Field Guide — Python Reference Infrastructure
+// Azure Functions Practical Guide — Python Reference Infrastructure
 // Flex Consumption Plan + VNet Integration + Private Endpoint (Blob) + Storage Account
 //
 // Architecture:

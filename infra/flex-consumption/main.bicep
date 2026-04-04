@@ -1,4 +1,4 @@
-// Azure Functions Field Guide - Flex Consumption Plan (FC1)
+// Azure Functions Practical Guide - Flex Consumption Plan (FC1)
 //
 // Deploys:
 // - Linux Function App on Flex Consumption (FC1)

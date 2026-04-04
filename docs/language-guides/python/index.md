@@ -12,7 +12,7 @@ If you are new to Azure Functions, this track is the fastest way to understand h
 - Full tutorial coverage across **all four hosting plans**.
 - Complete recipe set for common Azure integrations.
 - Dedicated runtime/reference docs for operational concerns.
-- Backed by a populated reference app in [`apps/python/`](https://github.com/yeongseon/azure-functions/tree/main/apps/python).
+- Backed by a populated reference app in [`apps/python/`](https://github.com/yeongseon/azure-functions-practical-guide/tree/main/apps/python).
 
 ## Start here
 
@@ -72,7 +72,7 @@ See [Recipes Index](recipes/index.md) for full links and category grouping.
 
 The Python guide is backed by a working reference app:
 
-- [`apps/python/`](https://github.com/yeongseon/azure-functions/tree/main/apps/python)
+- [`apps/python/`](https://github.com/yeongseon/azure-functions-practical-guide/tree/main/apps/python)
 
 Use it to validate tutorial steps, copy implementation patterns, and test hosting-plan-specific behavior.
 

@@ -1,4 +1,4 @@
-// Azure Functions Field Guide - Premium Plan (EP1)
+// Azure Functions Practical Guide - Premium Plan (EP1)
 //
 // Deploys:
 // - Linux Function App on Elastic Premium (EP1)

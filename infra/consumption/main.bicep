@@ -1,4 +1,4 @@
-// Azure Functions Field Guide - Consumption Plan (Y1)
+// Azure Functions Practical Guide - Consumption Plan (Y1)
 //
 // Deploys:
 // - Linux Function App on classic Consumption plan (Y1 / Dynamic)

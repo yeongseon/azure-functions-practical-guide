@@ -1,10 +1,10 @@
-site_name: Azure Functions Field Guide
-site_url: https://yeongseon.github.io/azure-functions/
+site_name: Azure Functions Practical Guide
+site_url: https://yeongseon.github.io/azure-functions-practical-guide-practical-guide/
 site_description: Comprehensive guide for running serverless applications on Azure Functions
 site_author: yeongseon
 
-repo_name: yeongseon/azure-functions
-repo_url: https://github.com/yeongseon/azure-functions
+repo_name: yeongseon/azure-functions-practical-guide
+repo_url: https://github.com/yeongseon/azure-functions-practical-guide
 
 theme:
   name: material

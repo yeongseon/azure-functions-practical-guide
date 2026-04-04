@@ -1,4 +1,4 @@
-# Azure Functions Field Guide
+# Azure Functions Practical Guide
 
 Comprehensive guide for running serverless applications on Azure Functions — from first deployment to production troubleshooting.
 
@@ -6,13 +6,13 @@ Comprehensive guide for running serverless applications on Azure Functions — f
 
 | Section | Description |
 |---------|-------------|
-| [Start Here](https://yeongseon.github.io/azure-functions/) | Overview, learning paths, and repository map |
-| [Platform](https://yeongseon.github.io/azure-functions/platform/) | Architecture, hosting plans, scaling, networking, security |
-| [Best Practices](https://yeongseon.github.io/azure-functions/best-practices/) | Hosting selection, triggers, scaling, reliability, security, deployment |
-| [Language Guides](https://yeongseon.github.io/azure-functions/language-guides/) | Step-by-step tutorials for Python, Node.js, Java, and .NET |
-| [Operations](https://yeongseon.github.io/azure-functions/operations/) | Deployment, monitoring, alerts, cost optimization, recovery |
-| [Troubleshooting](https://yeongseon.github.io/azure-functions/troubleshooting/) | Playbooks, KQL queries, methodology, and hands-on labs |
-| [Reference](https://yeongseon.github.io/azure-functions/reference/) | CLI cheatsheet, host.json, platform limits |
+| [Start Here](https://yeongseon.github.io/azure-functions-practical-guide-practical-guide/) | Overview, learning paths, and repository map |
+| [Platform](https://yeongseon.github.io/azure-functions-practical-guide-practical-guide/platform/) | Architecture, hosting plans, scaling, networking, security |
+| [Best Practices](https://yeongseon.github.io/azure-functions-practical-guide-practical-guide/best-practices/) | Hosting selection, triggers, scaling, reliability, security, deployment |
+| [Language Guides](https://yeongseon.github.io/azure-functions-practical-guide-practical-guide/language-guides/) | Step-by-step tutorials for Python, Node.js, Java, and .NET |
+| [Operations](https://yeongseon.github.io/azure-functions-practical-guide-practical-guide/operations/) | Deployment, monitoring, alerts, cost optimization, recovery |
+| [Troubleshooting](https://yeongseon.github.io/azure-functions-practical-guide-practical-guide/troubleshooting/) | Playbooks, KQL queries, methodology, and hands-on labs |
+| [Reference](https://yeongseon.github.io/azure-functions-practical-guide-practical-guide/reference/) | CLI cheatsheet, host.json, platform limits |
 
 ## Language Guides
 
@@ -27,7 +27,7 @@ Each guide covers: local development, first deploy, configuration, logging, infr
 
 ```bash
 # Clone the repository
-git clone https://github.com/yeongseon/azure-functions.git
+git clone https://github.com/yeongseon/azure-functions-practical-guide.git
 
 # Install MkDocs dependencies
 pip install mkdocs-material mkdocs-minify-plugin

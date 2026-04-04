@@ -25,4 +25,4 @@ app.register_blueprint(scheduled_bp)
 app.register_blueprint(blob_processor_bp)
 app.register_blueprint(diagnostics_bp)
 
-logger.info("Azure Functions Field Guide application initialized")
+logger.info("Azure Functions Practical Guide application initialized")

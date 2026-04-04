@@ -20,7 +20,7 @@ Run labs in a non-production environment and treat them like live incidents: det
 - **Scenario:** Function app shows elevated first-request latency after idle periods.
 - **What you practice:** Distinguishing cold start from dependency latency, validating startup traces, and choosing mitigation paths by hosting plan.
 - **Signals to watch:** startup traces, p95 latency, first-invocation duration.
-- **Lab guide:** [cold-start](https://github.com/yeongseon/azure-functions/tree/main/labs/cold-start)
+- **Lab guide:** [cold-start](https://github.com/yeongseon/azure-functions-practical-guide/tree/main/labs/cold-start)
 
 ### Expected evidence timeline
 
@@ -63,7 +63,7 @@ In FC1, host startup was fast (`Host started (363ms)`), but end-to-end first-req
 - **Scenario:** Triggers stop processing due to storage authentication or connectivity issues.
 - **What you practice:** Identifying storage-related host errors, validating identity-based access, and restoring trigger listeners safely.
 - **Signals to watch:** host listener errors, authorization failures, trigger execution drop.
-- **Lab guide:** [storage-access-failure](https://github.com/yeongseon/azure-functions/tree/main/labs/storage-access-failure)
+- **Lab guide:** [storage-access-failure](https://github.com/yeongseon/azure-functions-practical-guide/tree/main/labs/storage-access-failure)
 
 ### Expected evidence timeline
 
@@ -103,7 +103,7 @@ In the FC1 run, `AuthorizationPermissionMismatch` appeared in storage probes, th
 - **Scenario:** Queue depth grows faster than processing throughput.
 - **What you practice:** Backlog triage, poison-message identification, scale bottleneck analysis, and throughput recovery.
 - **Signals to watch:** queue length, queue message age, invocation rate, retry patterns.
-- **Lab guide:** [queue-backlog-scaling](https://github.com/yeongseon/azure-functions/tree/main/labs/queue-backlog-scaling)
+- **Lab guide:** [queue-backlog-scaling](https://github.com/yeongseon/azure-functions-practical-guide/tree/main/labs/queue-backlog-scaling)
 
 !!! warning "Custom instrumentation required"
     Queue processing metrics (`QueueMessageAgeMs`, `QueueProcessingLatencyMs`) are not emitted by the Azure Functions runtime by default. These queries require your application to explicitly emit custom metrics. For built-in queue monitoring, use Azure Storage metrics via Azure Monitor.
@@ -143,7 +143,7 @@ If queue depth grows while execution count is capped, either scale limits are re
 - **Scenario:** Function app cannot resolve or reach private dependencies after network changes.
 - **What you practice:** Diagnosing DNS path issues, VNet integration checks, and dependency-call verification.
 - **Signals to watch:** dependency timeout spikes, name resolution errors, network-related exceptions.
-- **Lab guide:** [dns-vnet-resolution](https://github.com/yeongseon/azure-functions/tree/main/labs/dns-vnet-resolution)
+- **Lab guide:** [dns-vnet-resolution](https://github.com/yeongseon/azure-functions-practical-guide/tree/main/labs/dns-vnet-resolution)
 
 ### Expected evidence timeline
 
@@ -182,7 +182,7 @@ If failures occur only from the function subnet and a private DNS zone link is m
 - **Scenario:** Managed identity calls fail after RBAC or scope changes.
 - **What you practice:** Verifying principal identity, role assignments, propagation delays, and least-privilege correction.
 - **Signals to watch:** `403`/`AuthorizationFailed`, dependency failures, exception trends.
-- **Lab guide:** [managed-identity-auth](https://github.com/yeongseon/azure-functions/tree/main/labs/managed-identity-auth)
+- **Lab guide:** [managed-identity-auth](https://github.com/yeongseon/azure-functions-practical-guide/tree/main/labs/managed-identity-auth)
 
 ### Expected evidence timeline
 
@@ -219,11 +219,11 @@ In this FC1 incident, `AuthorizationPermissionMismatch` correlated with listener
 
 Start with broad reliability issues, then move into specialized scenarios:
 
-1. [cold-start](https://github.com/yeongseon/azure-functions/tree/main/labs/cold-start)
-2. [queue-backlog-scaling](https://github.com/yeongseon/azure-functions/tree/main/labs/queue-backlog-scaling)
-3. [storage-access-failure](https://github.com/yeongseon/azure-functions/tree/main/labs/storage-access-failure)
-4. [managed-identity-auth](https://github.com/yeongseon/azure-functions/tree/main/labs/managed-identity-auth)
-5. [dns-vnet-resolution](https://github.com/yeongseon/azure-functions/tree/main/labs/dns-vnet-resolution)
+1. [cold-start](https://github.com/yeongseon/azure-functions-practical-guide/tree/main/labs/cold-start)
+2. [queue-backlog-scaling](https://github.com/yeongseon/azure-functions-practical-guide/tree/main/labs/queue-backlog-scaling)
+3. [storage-access-failure](https://github.com/yeongseon/azure-functions-practical-guide/tree/main/labs/storage-access-failure)
+4. [managed-identity-auth](https://github.com/yeongseon/azure-functions-practical-guide/tree/main/labs/managed-identity-auth)
+5. [dns-vnet-resolution](https://github.com/yeongseon/azure-functions-practical-guide/tree/main/labs/dns-vnet-resolution)
 
 ## Practice checklist
 
@@ -240,11 +240,11 @@ For each lab, confirm your team can do all of the following without guesswork:
 
 | Incident type | Best lab |
 |---|---|
-| Latency regression after idle periods | [cold-start](https://github.com/yeongseon/azure-functions/tree/main/labs/cold-start) |
-| Trigger pipeline stalls | [storage-access-failure](https://github.com/yeongseon/azure-functions/tree/main/labs/storage-access-failure) |
-| Event ingestion cannot keep up | [queue-backlog-scaling](https://github.com/yeongseon/azure-functions/tree/main/labs/queue-backlog-scaling) |
-| Private endpoint dependency outages | [dns-vnet-resolution](https://github.com/yeongseon/azure-functions/tree/main/labs/dns-vnet-resolution) |
-| RBAC/identity breakages | [managed-identity-auth](https://github.com/yeongseon/azure-functions/tree/main/labs/managed-identity-auth) |
+| Latency regression after idle periods | [cold-start](https://github.com/yeongseon/azure-functions-practical-guide/tree/main/labs/cold-start) |
+| Trigger pipeline stalls | [storage-access-failure](https://github.com/yeongseon/azure-functions-practical-guide/tree/main/labs/storage-access-failure) |
+| Event ingestion cannot keep up | [queue-backlog-scaling](https://github.com/yeongseon/azure-functions-practical-guide/tree/main/labs/queue-backlog-scaling) |
+| Private endpoint dependency outages | [dns-vnet-resolution](https://github.com/yeongseon/azure-functions-practical-guide/tree/main/labs/dns-vnet-resolution) |
+| RBAC/identity breakages | [managed-identity-auth](https://github.com/yeongseon/azure-functions-practical-guide/tree/main/labs/managed-identity-auth) |
 
 ## Evidence collection skills
 
