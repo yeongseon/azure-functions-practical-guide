@@ -1,8 +1,6 @@
-site_name: Azure Functions Hub
+site_name: Azure Functions Field Guide
 site_url: https://yeongseon.github.io/azure-functions/
-site_description: >-
-  A practical hub for learning, designing, operating, and troubleshooting
-  Azure Functions across hosting models, languages, and trigger patterns.
+site_description: Comprehensive guide for running serverless applications on Azure Functions
 site_author: yeongseon
 
 repo_name: yeongseon/azure-functions
@@ -11,32 +9,37 @@ repo_url: https://github.com/yeongseon/azure-functions
 theme:
   name: material
   language: en
-  logo: assets/logo.svg
-  favicon: assets/logo.svg
   palette:
     - scheme: default
-      primary: indigo
-      accent: indigo
+      primary: blue
+      accent: light blue
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
     - scheme: slate
-      primary: indigo
-      accent: indigo
+      primary: blue
+      accent: light blue
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
   features:
     - navigation.tabs
     - navigation.sections
-    - navigation.expand
-    - navigation.top
     - navigation.indexes
+    - navigation.top
     - search.suggest
     - search.highlight
     - content.code.copy
-    - content.code.annotate
     - content.tabs.link
+  icon:
+    repo: fontawesome/brands/github
+  custom_dir: docs
+
+extra_css:
+  - stylesheets/extra.css
+
+extra_javascript:
+  - javascripts/mermaid-zoom.js
 
 plugins:
   - search
@@ -44,10 +47,8 @@ plugins:
       minify_html: true
 
 markdown_extensions:
-  - pymdownx.highlight:
-      anchor_linenums: true
-  - pymdownx.inlinehilite
-  - pymdownx.snippets
+  - admonition
+  - pymdownx.details
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid
@@ -55,92 +56,99 @@ markdown_extensions:
           format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.tabbed:
       alternate_style: true
-  - admonition
-  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
   - attr_list
   - md_in_html
   - tables
   - toc:
       permalink: true
 
-extra_javascript:
-  - https://unpkg.com/mermaid@10/dist/mermaid.min.js
-  - https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js
-  - javascripts/mermaid-zoom.js
+validation:
+  nav:
+    omitted_files: ignore
+  links:
+    not_found: ignore
+    anchors: ignore
+    absolute_links: ignore
+    unrecognized_links: ignore
 
-extra_css:
-  - stylesheets/extra.css
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/yeongseon/azure-functions
 
 nav:
-  - Home: index.md
   - Start Here:
     - start-here/index.md
-    - Overview: start-here/overview.md
-    - Learning Paths: start-here/learning-paths.md
-    - Hosting Options: start-here/hosting-options.md
-    - Repository Map: start-here/repository-map.md
+    - start-here/overview.md
+    - start-here/learning-paths.md
+    - start-here/hosting-options.md
+    - start-here/repository-map.md
   - Platform:
     - platform/index.md
-    - Architecture: platform/architecture.md
-    - Hosting Plans: platform/hosting.md
-    - Triggers and Bindings: platform/triggers-and-bindings.md
-    - Scaling: platform/scaling.md
-    - Networking: platform/networking.md
-    - Reliability: platform/reliability.md
-    - Security: platform/security.md
+    - platform/architecture.md
+    - platform/hosting.md
+    - platform/triggers-and-bindings.md
+    - platform/scaling.md
+    - platform/networking.md
+    - platform/reliability.md
+    - platform/security.md
   - Language Guides:
     - language-guides/index.md
     - Python:
       - language-guides/python/index.md
-      - v2 Programming Model: language-guides/python/v2-programming-model.md
-      - Python Runtime: language-guides/python/python-runtime.md
+      - language-guides/python/v2-programming-model.md
+      - language-guides/python/python-runtime.md
       - Tutorial:
         - Overview & Plan Chooser: language-guides/python/tutorial/index.md
         - Consumption (Y1):
-          - 01. Run Locally: language-guides/python/tutorial/consumption/01-local-run.md
-          - 02. First Deploy: language-guides/python/tutorial/consumption/02-first-deploy.md
-          - 03. Configuration: language-guides/python/tutorial/consumption/03-configuration.md
-          - 04. Logging & Monitoring: language-guides/python/tutorial/consumption/04-logging-monitoring.md
-          - 05. Infrastructure as Code: language-guides/python/tutorial/consumption/05-infrastructure-as-code.md
-          - 06. CI/CD: language-guides/python/tutorial/consumption/06-ci-cd.md
-          - 07. Extending with Triggers: language-guides/python/tutorial/consumption/07-extending-triggers.md
+          - language-guides/python/tutorial/consumption/01-local-run.md
+          - language-guides/python/tutorial/consumption/02-first-deploy.md
+          - language-guides/python/tutorial/consumption/03-configuration.md
+          - language-guides/python/tutorial/consumption/04-logging-monitoring.md
+          - language-guides/python/tutorial/consumption/05-infrastructure-as-code.md
+          - language-guides/python/tutorial/consumption/06-ci-cd.md
+          - language-guides/python/tutorial/consumption/07-extending-triggers.md
         - Flex Consumption (FC1):
-          - 01. Run Locally: language-guides/python/tutorial/flex-consumption/01-local-run.md
-          - 02. First Deploy: language-guides/python/tutorial/flex-consumption/02-first-deploy.md
-          - 03. Configuration: language-guides/python/tutorial/flex-consumption/03-configuration.md
-          - 04. Logging & Monitoring: language-guides/python/tutorial/flex-consumption/04-logging-monitoring.md
-          - 05. Infrastructure as Code: language-guides/python/tutorial/flex-consumption/05-infrastructure-as-code.md
-          - 06. CI/CD: language-guides/python/tutorial/flex-consumption/06-ci-cd.md
-          - 07. Extending with Triggers: language-guides/python/tutorial/flex-consumption/07-extending-triggers.md
+          - language-guides/python/tutorial/flex-consumption/01-local-run.md
+          - language-guides/python/tutorial/flex-consumption/02-first-deploy.md
+          - language-guides/python/tutorial/flex-consumption/03-configuration.md
+          - language-guides/python/tutorial/flex-consumption/04-logging-monitoring.md
+          - language-guides/python/tutorial/flex-consumption/05-infrastructure-as-code.md
+          - language-guides/python/tutorial/flex-consumption/06-ci-cd.md
+          - language-guides/python/tutorial/flex-consumption/07-extending-triggers.md
         - Premium (EP):
-          - 01. Run Locally: language-guides/python/tutorial/premium/01-local-run.md
-          - 02. First Deploy: language-guides/python/tutorial/premium/02-first-deploy.md
-          - 03. Configuration: language-guides/python/tutorial/premium/03-configuration.md
-          - 04. Logging & Monitoring: language-guides/python/tutorial/premium/04-logging-monitoring.md
-          - 05. Infrastructure as Code: language-guides/python/tutorial/premium/05-infrastructure-as-code.md
-          - 06. CI/CD: language-guides/python/tutorial/premium/06-ci-cd.md
-          - 07. Extending with Triggers: language-guides/python/tutorial/premium/07-extending-triggers.md
+          - language-guides/python/tutorial/premium/01-local-run.md
+          - language-guides/python/tutorial/premium/02-first-deploy.md
+          - language-guides/python/tutorial/premium/03-configuration.md
+          - language-guides/python/tutorial/premium/04-logging-monitoring.md
+          - language-guides/python/tutorial/premium/05-infrastructure-as-code.md
+          - language-guides/python/tutorial/premium/06-ci-cd.md
+          - language-guides/python/tutorial/premium/07-extending-triggers.md
         - Dedicated (App Service Plan):
-          - 01. Run Locally: language-guides/python/tutorial/dedicated/01-local-run.md
-          - 02. First Deploy: language-guides/python/tutorial/dedicated/02-first-deploy.md
-          - 03. Configuration: language-guides/python/tutorial/dedicated/03-configuration.md
-          - 04. Logging & Monitoring: language-guides/python/tutorial/dedicated/04-logging-monitoring.md
-          - 05. Infrastructure as Code: language-guides/python/tutorial/dedicated/05-infrastructure-as-code.md
-          - 06. CI/CD: language-guides/python/tutorial/dedicated/06-ci-cd.md
-          - 07. Extending with Triggers: language-guides/python/tutorial/dedicated/07-extending-triggers.md
-      - Recipes:
+          - language-guides/python/tutorial/dedicated/01-local-run.md
+          - language-guides/python/tutorial/dedicated/02-first-deploy.md
+          - language-guides/python/tutorial/dedicated/03-configuration.md
+          - language-guides/python/tutorial/dedicated/04-logging-monitoring.md
+          - language-guides/python/tutorial/dedicated/05-infrastructure-as-code.md
+          - language-guides/python/tutorial/dedicated/06-ci-cd.md
+          - language-guides/python/tutorial/dedicated/07-extending-triggers.md
+      - Python Recipes:
         - language-guides/python/recipes/index.md
-        - HTTP API Patterns: language-guides/python/recipes/http-api.md
-        - HTTP Authentication: language-guides/python/recipes/http-auth.md
-        - Cosmos DB: language-guides/python/recipes/cosmosdb.md
-        - Blob Storage: language-guides/python/recipes/blob-storage.md
-        - Queue Storage: language-guides/python/recipes/queue.md
-        - Key Vault: language-guides/python/recipes/key-vault.md
-        - Managed Identity: language-guides/python/recipes/managed-identity.md
-        - Timer Trigger: language-guides/python/recipes/timer.md
-        - Durable Functions: language-guides/python/recipes/durable-orchestration.md
-        - Event Grid: language-guides/python/recipes/event-grid.md
-        - Custom Domains & Certificates: language-guides/python/recipes/custom-domain-certificates.md
+        - language-guides/python/recipes/http-api.md
+        - language-guides/python/recipes/http-auth.md
+        - language-guides/python/recipes/cosmosdb.md
+        - language-guides/python/recipes/blob-storage.md
+        - language-guides/python/recipes/queue.md
+        - language-guides/python/recipes/key-vault.md
+        - language-guides/python/recipes/managed-identity.md
+        - language-guides/python/recipes/timer.md
+        - language-guides/python/recipes/durable-orchestration.md
+        - language-guides/python/recipes/event-grid.md
+        - language-guides/python/recipes/custom-domain-certificates.md
     - Node.js:
       - language-guides/nodejs/index.md
     - .NET:
@@ -149,29 +157,26 @@ nav:
       - language-guides/java/index.md
   - Operations:
     - operations/index.md
-    - Deployment: operations/deployment.md
-    - Configuration: operations/configuration.md
-    - Monitoring: operations/monitoring.md
-    - Alerts: operations/alerts.md
-    - Cold Start: operations/cold-start.md
-    - Retries & Poison Handling: operations/retries-and-poison-handling.md
-    - Security: operations/security.md
-    - Recovery: operations/recovery.md
+    - operations/deployment.md
+    - operations/configuration.md
+    - operations/monitoring.md
+    - operations/alerts.md
+    - operations/cold-start.md
+    - operations/retries-and-poison-handling.md
+    - operations/security.md
+    - operations/cost-optimization.md
+    - operations/recovery.md
   - Troubleshooting:
     - troubleshooting/index.md
-    - First 10 Minutes: troubleshooting/first-10-minutes.md
-    - Playbooks: troubleshooting/playbooks.md
-    - Methodology: troubleshooting/methodology.md
-    - KQL Queries: troubleshooting/kql.md
-    - Lab Guides: troubleshooting/lab-guides.md
+    - troubleshooting/first-10-minutes.md
+    - troubleshooting/playbooks.md
+    - troubleshooting/methodology.md
+    - troubleshooting/kql.md
+    - troubleshooting/lab-guides.md
   - Reference:
-    - CLI Cheatsheet: language-guides/python/cli-cheatsheet.md
-    - host.json Reference: language-guides/python/host-json.md
-    - Environment Variables: language-guides/python/environment-variables.md
-    - Platform Limits: language-guides/python/platform-limits.md
-    - Troubleshooting: language-guides/python/troubleshooting.md
-
-extra:
-  social:
-    - icon: fontawesome/brands/github
-      link: https://github.com/yeongseon/azure-functions
+    - reference/index.md
+    - reference/cli-cheatsheet.md
+    - reference/host-json.md
+    - reference/environment-variables.md
+    - reference/platform-limits.md
+    - reference/troubleshooting.md

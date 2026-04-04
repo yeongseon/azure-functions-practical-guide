@@ -321,7 +321,7 @@ az monitor metrics list \
 | Deploy Bicep | `az deployment group create --resource-group $RG --template-file infra/main.bicep` |
 
 ## See Also
-- [Deployments](../../operations/deployment.md)
+- [Deployments](../operations/deployment.md)
 
 ## References
 - [Azure Functions Core Tools Reference (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-run-local)

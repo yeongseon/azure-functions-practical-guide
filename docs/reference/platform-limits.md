@@ -54,7 +54,7 @@ When a function exceeds the timeout, the host terminates the worker process. For
 }
 ```
 
-> **Tip:** For operations that might exceed the timeout, use [Durable Functions](recipes/durable-orchestration.md) to break the work into smaller activity functions that each complete within the timeout.
+> **Tip:** For operations that might exceed the timeout, use [Durable Functions](../language-guides/python/recipes/durable-orchestration.md) to break the work into smaller activity functions that each complete within the timeout.
 
 ## Instance Limits
 
@@ -188,9 +188,9 @@ For high-throughput scenarios, consider using a dedicated storage account for `A
 | Custom domains | 500 per function app |
 
 ## See Also
-- [Scaling](../../platform/scaling.md)
-- [Cost Optimization](../../start-here/hosting-options.md)
-- [Python Runtime](python-runtime.md)
+- [Scaling](../platform/scaling.md)
+- [Cost Optimization](../start-here/hosting-options.md)
+- [Python Runtime](../language-guides/python/python-runtime.md)
 - [host.json Reference](host-json.md)
 
 ## References

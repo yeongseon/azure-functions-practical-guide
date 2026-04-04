@@ -190,7 +190,7 @@ resource functionApp 'Microsoft.Web/sites@2023-01-01' = {
 
 ## See Also
 - [host.json Reference](host-json.md)
-- [Python Runtime](python-runtime.md)
+- [Python Runtime](../language-guides/python/python-runtime.md)
 - [Troubleshooting](troubleshooting.md)
 
 ## References

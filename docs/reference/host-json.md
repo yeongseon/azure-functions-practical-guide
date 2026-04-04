@@ -163,7 +163,7 @@ Control how much telemetry is sent to Application Insights:
 | `maxTelemetryItemsPerSecond` | `20` | Target telemetry rate per second per instance |
 | `excludedTypes` | `""` | Telemetry types to never sample. Options: `Dependency`, `Event`, `Exception`, `PageView`, `Request`, `Trace` |
 
-> **Cost Tip:** Set `excludedTypes` to `"Request;Exception"` to ensure you never lose error data, while allowing traces and dependencies to be sampled. See [Cost Optimization](../../operations/configuration.md).
+> **Cost Tip:** Set `excludedTypes` to `"Request;Exception"` to ensure you never lose error data, while allowing traces and dependencies to be sampled. See [Cost Optimization](../operations/configuration.md).
 
 ### extensions.http
 
@@ -203,7 +203,7 @@ To remove the `/api` prefix (so routes are `https://your-func.azurewebsites.net/
 
 ### extensions.queues
 
-Configure Queue trigger behaviour (see [Queue recipe](recipes/queue.md)):
+Configure Queue trigger behaviour (see [Queue recipe](../language-guides/python/recipes/queue.md)):
 
 ```json
 {
@@ -254,8 +254,8 @@ The `host.json` file is deployed with your code and applies in both local and pr
 
 ## See Also
 - [Environment Variables](environment-variables.md)
-- [Observability](../../operations/monitoring.md)
-- [Cost Optimization](../../operations/configuration.md)
+- [Observability](../operations/monitoring.md)
+- [Cost Optimization](../operations/configuration.md)
 
 ## References
 - [host.json Reference (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-host-json)

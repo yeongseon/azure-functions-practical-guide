@@ -35,6 +35,13 @@
 │   │   │   ├── environment-variables.md
 │   │   │   ├── platform-limits.md
 │   │   │   └── troubleshooting.md
+│   ├── reference/              # Cross-language reference (mirrors language-guides for lookup)
+│   │   ├── index.md
+│   │   ├── cli-cheatsheet.md
+│   │   ├── host-json.md
+│   │   ├── environment-variables.md
+│   │   ├── platform-limits.md
+│   │   └── troubleshooting.md
 │   │   ├── nodejs/             # Node.js (stub)
 │   │   ├── dotnet/             # .NET (stub)
 │   │   └── java/               # Java (stub)

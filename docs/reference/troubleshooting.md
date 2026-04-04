@@ -119,7 +119,7 @@ Verify `requirements.txt` is in the correct location (same directory as `functio
 }
 ```
 
-See the [Scaling guide](../../platform/scaling.md) for detailed cold start mitigation strategies.
+See the [Scaling guide](../platform/scaling.md) for detailed cold start mitigation strategies.
 
 ---
 
@@ -329,7 +329,7 @@ az functionapp vnet-integration list \
   --output table
 ```
 
-Expected output: one row showing the subnet resource ID. An empty table means VNet integration is not configured — see the [Networking operations guide](../../platform/networking.md) to set it up.
+Expected output: one row showing the subnet resource ID. An empty table means VNet integration is not configured — see the [Networking operations guide](../platform/networking.md) to set it up.
 
 For traffic to private resources, ensure `WEBSITE_VNET_ROUTE_ALL` is set to `1`:
 
@@ -380,7 +380,7 @@ az functionapp show \
 Add **all** IPs in `possibleOutboundIpAddresses` to the target service's allowlist — not just the currently active ones, as the active set can rotate.
 
 !!! warning "NAT Gateway for stable egress"
-    If you need a single, stable egress IP that does not change as the app scales, attach a NAT Gateway to the VNet integration subnet. See [Networking operations](../../platform/networking.md) for the setup steps.
+    If you need a single, stable egress IP that does not change as the app scales, attach a NAT Gateway to the VNet integration subnet. See [Networking operations](../platform/networking.md) for the setup steps.
 
 ---
 
@@ -420,13 +420,13 @@ nslookup <account-name>.documents.azure.com
 
 Expected result: resolves to a `10.x.x.x` address, not a public IP.
 
-See also: [Networking operations](../../platform/networking.md) for the full Private Endpoint setup walkthrough.
+See also: [Networking operations](../platform/networking.md) for the full Private Endpoint setup walkthrough.
 
 ## See Also
 - [Environment Variables](environment-variables.md)
 - [host.json Reference](host-json.md)
-- [Observability](../../operations/monitoring.md)
-- [Networking Operations](../../platform/networking.md)
+- [Observability](../operations/monitoring.md)
+- [Networking Operations](../platform/networking.md)
 
 ## References
 - [Python v2 Programming Model (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-reference-python)
