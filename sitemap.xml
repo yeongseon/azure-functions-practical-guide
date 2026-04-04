@@ -5,6 +5,46 @@
          <lastmod>2026-04-04</lastmod>
     </url>
     <url>
+         <loc>https://yeongseon.github.io/azure-functions/best-practices/</loc>
+         <lastmod>2026-04-04</lastmod>
+    </url>
+    <url>
+         <loc>https://yeongseon.github.io/azure-functions/best-practices/common-anti-patterns/</loc>
+         <lastmod>2026-04-04</lastmod>
+    </url>
+    <url>
+         <loc>https://yeongseon.github.io/azure-functions/best-practices/cost-optimization/</loc>
+         <lastmod>2026-04-04</lastmod>
+    </url>
+    <url>
+         <loc>https://yeongseon.github.io/azure-functions/best-practices/deployment/</loc>
+         <lastmod>2026-04-04</lastmod>
+    </url>
+    <url>
+         <loc>https://yeongseon.github.io/azure-functions/best-practices/hosting-plan-selection/</loc>
+         <lastmod>2026-04-04</lastmod>
+    </url>
+    <url>
+         <loc>https://yeongseon.github.io/azure-functions/best-practices/networking/</loc>
+         <lastmod>2026-04-04</lastmod>
+    </url>
+    <url>
+         <loc>https://yeongseon.github.io/azure-functions/best-practices/reliability/</loc>
+         <lastmod>2026-04-04</lastmod>
+    </url>
+    <url>
+         <loc>https://yeongseon.github.io/azure-functions/best-practices/scaling/</loc>
+         <lastmod>2026-04-04</lastmod>
+    </url>
+    <url>
+         <loc>https://yeongseon.github.io/azure-functions/best-practices/security/</loc>
+         <lastmod>2026-04-04</lastmod>
+    </url>
+    <url>
+         <loc>https://yeongseon.github.io/azure-functions/best-practices/trigger-and-binding/</loc>
+         <lastmod>2026-04-04</lastmod>
+    </url>
+    <url>
          <loc>https://yeongseon.github.io/azure-functions/language-guides/</loc>
          <lastmod>2026-04-04</lastmod>
     </url>
@@ -334,6 +374,14 @@
     </url>
     <url>
          <loc>https://yeongseon.github.io/azure-functions/troubleshooting/</loc>
+         <lastmod>2026-04-04</lastmod>
+    </url>
+    <url>
+         <loc>https://yeongseon.github.io/azure-functions/troubleshooting/architecture/</loc>
+         <lastmod>2026-04-04</lastmod>
+    </url>
+    <url>
+         <loc>https://yeongseon.github.io/azure-functions/troubleshooting/evidence-map/</loc>
          <lastmod>2026-04-04</lastmod>
     </url>
     <url>
