@@ -69,7 +69,8 @@ az rest --method get \
 EventName                          ResourceGroup    ResourceType                Status
 ---------------------------------  ---------------  --------------------------  ---------
 MICROSOFT.WEB/SITES/WRITE          rg-myapp-prod    microsoft.web/sites         Succeeded
-MICROSOFT.INSIGHTS/ALERTS/FIRED    rg-myapp-prod    microsoft.insights/alerts   Succeeded
+MICROSOFT.INSIGHTS/COMPONENTS/WRITE rg-myapp-prod   microsoft.insights/components Succeeded
+MICROSOFT.WEB/SITES/CONFIG/WRITE   rg-myapp-prod    microsoft.web/sites/config  Succeeded
 
 # Platform event (investigate platform advisory)
 EventName                          ResourceGroup    ResourceType         Status
@@ -120,20 +121,29 @@ az monitor metrics list \
 ### Example Output
 
 ```text
-# Normal
+# Traditional (Y1/EP/Dedicated) - Normal
 MetricName            TimeGrain  Total    Average
 --------------------  ---------  -------  ---------
 Requests              PT1M       1240
 Http5xx               PT1M       0
 AverageResponseTime   PT1M                112.7
 
-# Abnormal (failure spike)
+# Traditional (Y1/EP/Dedicated) - Abnormal (failure spike)
 MetricName            TimeGrain  Total    Average
 --------------------  ---------  -------  ---------
 Requests              PT1M       1315
 Http5xx               PT1M       187
 AverageResponseTime   PT1M                1842.3
+
+# FC1 Flex Consumption
+MetricName                        TimeGrain  Total
+--------------------------------  ---------  -------
+OnDemandFunctionExecutionCount    PT1M       156
+OnDemandFunctionExecutionUnits    PT1M       214
 ```
+
+!!! tip "FC1 Flex Consumption Metrics"
+    Flex Consumption plans use `OnDemandFunctionExecutionCount` and `OnDemandFunctionExecutionUnits` instead of `Requests` and `FunctionExecutionCount`. If the standard metrics return empty results, check these FC1-specific metric names.
 
 ### How to Read This
 
@@ -174,12 +184,17 @@ curl --silent --show-error --location \
 ### Example Output
 
 ```text
-# Healthy
+# az functionapp show --query "state"
+# Traditional plans (Y1, EP, Dedicated)
 Running
-{"status":"healthy","version":"2026.04.0"}
 
-# Host reachable but unhealthy
-Running
+# FC1 Flex Consumption
+null
+
+# Health endpoint - healthy
+{"status":"healthy","timestamp":"2026-04-04T11:41:00Z","version":"1.0.0"}
+
+# Health endpoint - host reachable but unhealthy
 {"status":"unhealthy","reason":"storage-auth-failed"}
 # HTTP status: 503
 
@@ -193,6 +208,7 @@ curl: (28) Operation timed out after 10001 milliseconds with 0 bytes received
 |---|---|---|
 | `200` + healthy payload | Host is up; failure likely function-level or dependency-level | Move to Step 4 for function-specific evidence |
 | `503` | Host is running but critical dependency/function check failing | Inspect startup and dependency errors in Step 4 |
+| `null` state on FC1 | Normal for Flex Consumption — FC1 does not expose traditional state | Check function list and health endpoint instead |
 | Timeout/no response | Host not responding (startup failure, networking, or platform path issue) | Prioritize host lifecycle and restart evidence in Step 4/5 |
 
 ### Next Query to Run
@@ -232,17 +248,18 @@ az monitor log-analytics query \
 # traces (startup succeeded)
 timestamp                    message
 ---------------------------  ----------------------------------------------
-2026-04-04T01:12:44.120000Z  Starting Host (HostId=func-myapp-prod-xxxx)
-2026-04-04T01:12:48.310000Z  Host started (4200ms)
-2026-04-04T01:13:02.020000Z  Executing 'Functions.HttpTrigger'
+2026-04-04T11:32:26.390000Z  Starting Host (HostId=func-myapp-prod-xxxx, Version=4.1047.100.26071)
+2026-04-04T11:32:26.455000Z  Host started (64ms)
+2026-04-04T11:32:26.455000Z  Job host started
+2026-04-04T11:36:21.414000Z  Host lock lease acquired by instance ID 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
 
 # traces (problematic)
 timestamp                    message
 ---------------------------  ----------------------------------------------
-2026-04-04T01:12:44.120000Z  Starting Host (HostId=func-myapp-prod-xxxx)
-2026-04-04T01:12:59.000000Z  Host lock lease acquired by instance ID '...'
-2026-04-04T01:13:22.781000Z  Worker process failed to initialize in time
-2026-04-04T01:13:22.900000Z  Timeout value of 00:00:20 exceeded by startup operation
+2026-04-04T11:32:26.390000Z  Starting Host (HostId=func-myapp-prod-xxxx, Version=4.1047.100.26071)
+2026-04-04T11:32:46.000000Z  Host lock lease acquired by instance ID 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
+2026-04-04T11:32:46.781000Z  Worker process failed to initialize in time
+2026-04-04T11:32:46.900000Z  Timeout value of 00:00:20 exceeded by startup operation
 ```
 
 ### How to Read This
@@ -293,15 +310,17 @@ az functionapp config appsettings list \
 # Recent activity
 EventTimestamp                OperationName                      Status
 ---------------------------  ---------------------------------  ---------
-2026-04-04T00:57:31.000000Z  MICROSOFT.WEB/SITES/DEPLOYMENTS   Succeeded
-2026-04-04T00:58:02.000000Z  MICROSOFT.WEB/SITES/CONFIG/WRITE  Succeeded
+2026-04-04T11:36:00.000000Z  MICROSOFT.WEB/SITES/WRITE         Succeeded
+2026-04-04T11:39:00.000000Z  MICROSOFT.INSIGHTS/COMPONENTS/WRITE  Succeeded
 
 # App settings snapshot (masked)
 Name                                   Value
 -------------------------------------  --------------------------------
 AzureWebJobsStorage__accountName       stmyappprod
+AzureWebJobsStorage__credential        managedidentity
+AzureWebJobsStorage__clientId          xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 APPLICATIONINSIGHTS_CONNECTION_STRING  InstrumentationKey=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx;...
-FEATURE_FLAG_X                         true
+AZURE_FUNCTIONS_ENVIRONMENT            production
 ```
 
 ### How to Read This
@@ -333,7 +352,7 @@ Plot both on the same time axis.
 ```bash
 az monitor metrics list \
   --resource "/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RG/providers/Microsoft.Web/sites/$APP_NAME" \
-  --metric "FunctionExecutionCount" "FunctionExecutionUnits" \
+  --metric "OnDemandFunctionExecutionCount" "OnDemandFunctionExecutionUnits" \
   --interval PT1M \
   --aggregation Total \
   --offset 30m \
@@ -352,10 +371,10 @@ az monitor metrics list \
 
 ```text
 # Function execution metrics
-MetricName                TimeGrain  Total
-------------------------  ---------  -------
-FunctionExecutionCount    PT1M       2380
-FunctionExecutionUnits    PT1M       2510
+MetricName                        TimeGrain  Total
+--------------------------------  ---------  -------
+OnDemandFunctionExecutionCount    PT1M       156
+OnDemandFunctionExecutionUnits    PT1M       214
 
 # Queue depth metrics (abnormal backlog growth)
 MetricName         TimeGrain  Average
@@ -365,6 +384,8 @@ QueueMessageCount  PT1M       860
 QueueMessageCount  PT1M       2140
 ```
 
+> **FC1 metric names:** Flex Consumption uses `OnDemandFunctionExecutionCount` / `OnDemandFunctionExecutionUnits`. Traditional plans use `FunctionExecutionCount` / `FunctionExecutionUnits`.
+
 ### How to Read This
 
 | Pattern | Interpretation | Action |
@@ -373,7 +394,7 @@ QueueMessageCount  PT1M       2140
 | Queue depth up + executions flat | Scaling bottleneck or trigger stall | Inspect trigger listener health and scale-controller evidence |
 | Queue depth up + executions up but latency worsens | Downstream dependency bottleneck | Prioritize dependency timeout/error evidence |
 
-QueueMessageCount up + FunctionExecutionCount flat is a high-confidence scaling bottleneck indicator.
+QueueMessageCount up + FunctionExecutionCount (traditional) or OnDemandFunctionExecutionCount (FC1) flat is a high-confidence scaling bottleneck indicator.
 
 ### Next Query to Run
 

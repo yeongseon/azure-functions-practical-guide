@@ -55,9 +55,11 @@ requests
 
 | FunctionName | Invocations | Failures | FailureRatePercent | P95Ms |
 |---|---|---|---|---|
-| Functions.QueueProcessor | 4,521 | 12 | 0.27 | 245 |
-| Functions.HttpTrigger | 8,932 | 2,104 | 23.56 | 12,500 |
-| Functions.TimerCleanup | 240 | 0 | 0.00 | 180 |
+| Functions.HttpTrigger | 50 | 0 | 0.00 | 1729.33 |
+| Functions.ExternalDependency | 30 | 0 | 0.00 | 2473.75 |
+| Functions.QueueProcessor | 20 | 0 | 0.00 | 15.19 |
+| Functions.TimerCleanup | 3 | 0 | 0.00 | 12.38 |
+| Functions.ErrorHandler | 15 | 15 | 100.00 | 13.73 |
 
 **How to interpret:**
 
@@ -106,9 +108,9 @@ requests
 
 | timestamp | operation_Id | FunctionName | resultCode | duration | ExceptionType | ExceptionMessage |
 |---|---|---|---|---|---|---|
-| 2026-04-04T09:11:22Z | op-9f2a1c73 | Functions.HttpTrigger | 500 | 00:00:10.845 | System.UnauthorizedAccessException | Access to downstream API denied for managed identity. |
-| 2026-04-04T09:10:58Z | op-75d31e9b | Functions.QueueProcessor | 500 | 00:00:03.294 | Azure.RequestFailedException | Status: 403 (Forbidden) on storage queue update. |
-| 2026-04-04T09:10:41Z | op-c2bb6d44 | Functions.HttpTrigger | 502 | 00:00:07.511 | System.Net.Http.HttpRequestException | Connection timed out to backend endpoint. |
+| 2026-04-04T11:33:00Z | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | Functions.ErrorHandler | 500 | 13.092 | Microsoft.Azure.WebJobs.Script.Workers.Rpc.RpcException | Exception while executing function: Functions.ErrorHandler |
+| 2026-04-04T11:32:45Z | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | Functions.ErrorHandler | 500 | 13.092 | Microsoft.Azure.WebJobs.Script.Workers.Rpc.RpcException | Exception while executing function: Functions.ErrorHandler |
+| 2026-04-04T11:32:30Z | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | Functions.ErrorHandler | 500 | 13.092 | Microsoft.Azure.WebJobs.Script.Workers.Rpc.RpcException | Exception while executing function: Functions.ErrorHandler |
 
 **How to interpret:**
 
@@ -146,17 +148,19 @@ traces
 
 | timestamp | StartupEvents | FirstInvocation | FirstDurationMs |
 |---|---|---|---|
-| 2026-04-04T09:00:00Z | 3 | 2026-04-04T09:00:24Z | 00:00:06.842 |
-| 2026-04-04T08:45:00Z | 1 | 2026-04-04T08:45:02Z | 00:00:00.412 |
-| 2026-04-04T08:30:00Z | 4 | 2026-04-04T08:30:31Z | 00:00:08.901 |
+| 2026-04-04T11:30:00Z | 83 | 2026-04-04T11:30:00.003Z | 3.0249 |
+| 2026-04-04T11:15:00Z | 19 | 2026-04-04T11:29:25.000Z | 1600.4633 |
 
 **How to interpret:**
 
 | Indicator | Normal | Warning | Critical |
 |---|---|---|---|
-| StartupEvents per 15m bin | 0-1 | 2 | >= 3 |
+| StartupEvents per 15m bin | Consistent with plan type (FC1: dozens per bin is normal; Y1/EP: 1-3 per bin) | Sudden spike vs baseline (for example 10x normal) | Startup events with no subsequent successful invocations |
 | FirstDurationMs after startup | < 1000ms | 1000-5000ms | > 5000ms |
 | Startup-to-first-invocation gap | < 5s | 5-20s | > 20s |
+
+!!! tip "FC1 Flex Consumption"
+    Flex Consumption plans scale by spinning up many worker instances rapidly. Seeing 50-100+ startup events in a 15-minute bin is normal under load. Focus on whether startup events correlate with successful invocations, not the raw count.
 
 !!! note "Normal vs abnormal"
     **Normal:** One startup event and first invocation under 1 second.
@@ -183,9 +187,7 @@ dependencies
 
 | target | type | Calls | Failed | FailureRatePercent | P95Ms |
 |---|---|---|---|---|---|
-| api.contoso.internal | HTTP | 6,140 | 1,248 | 20.33 | 4,920 |
-| stfuncprod.queue.core.windows.net | Azure queue | 8,022 | 12 | 0.15 | 182 |
-| sql-prod.contoso.database.windows.net | SQL | 3,104 | 4 | 0.13 | 275 |
+| api.partner.internal | HTTP | 28 | 0 | 0.00 | 1260 |
 
 **How to interpret:**
 
@@ -224,6 +226,8 @@ customMetrics
 | QueueMessageAgeMs | 2026-04-04T09:05:00Z | 41,800 | 79,200 | 124,000 |
 | QueueDequeueDelayMs | 2026-04-04T09:05:00Z | 3,880 | 7,120 | 11,340 |
 
+> This query returned no results because the reference application does not emit custom queue metrics. In production, you would see data here only if your application explicitly emits `QueueMessageAgeMs`, `QueueProcessingLatencyMs`, or `QueueDequeueDelayMs` via `TelemetryClient.TrackMetric()` or the OpenTelemetry SDK.
+
 **How to interpret:**
 
 | Indicator | Normal | Warning | Critical |
@@ -252,11 +256,9 @@ exceptions
 
 | timestamp | type | Count |
 |---|---|---|
-| 2026-04-04T09:00:00Z | Azure.RequestFailedException | 3 |
-| 2026-04-04T09:15:00Z | Azure.RequestFailedException | 5 |
-| 2026-04-04T09:30:00Z | Azure.RequestFailedException | 96 |
-| 2026-04-04T09:45:00Z | Azure.RequestFailedException | 118 |
-| 2026-04-04T09:45:00Z | System.TimeoutException | 12 |
+| 2026-04-04T11:30:00Z | Microsoft.Azure.WebJobs.Script.Workers.Rpc.RpcException | 30 |
+
+> **Note:** Each unhandled function error typically generates multiple exception records (the `RpcException` wrapper from the host plus the inner application exception), so the exception count may be higher than the invocation failure count.
 
 **How to interpret:**
 
@@ -298,10 +300,10 @@ traces
 
 | timestamp | severityLevel | message |
 |---|---|---|
-| 2026-04-04T09:20:44Z | 1 | Scaling out worker count from 2 to 4 based on queue pressure. |
-| 2026-04-04T09:20:47Z | 1 | New instance allocated: instanceId=rd0003ffxxxx. |
-| 2026-04-04T09:21:13Z | 2 | Drain mode enabled for instance rd0003aaxxxx before recycle. |
-| 2026-04-04T09:21:42Z | 1 | Concurrency manager increased max concurrent invocations to 32. |
+| 2026-04-04T11:32:20Z | 1 | Worker process started and initialized. |
+| 2026-04-04T11:31:50Z | 1 | Worker process started and initialized. |
+| 2026-04-04T11:31:20Z | 1 | Worker process started and initialized. |
+| 2026-04-04T11:30:50Z | 1 | Worker process started and initialized. |
 
 **How to interpret:**
 
@@ -332,10 +334,10 @@ traces
 
 | timestamp | severityLevel | message | Pattern |
 |---|---|---|---|
-| 2026-04-04T09:00:12Z | 1 | Host started (284ms) | Healthy |
-| 2026-04-04T08:58:31Z | 2 | Host is shutting down | Unhealthy cycle |
-| 2026-04-04T08:58:24Z | 1 | Job host started | Unhealthy cycle |
-| 2026-04-04T08:57:52Z | 2 | Stopping JobHost | Unhealthy cycle |
+| 2026-04-04T11:36:20Z | 1 | Host lock lease acquired by instance ID 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' | Healthy |
+| 2026-04-04T11:32:30Z | 1 | Host started (64ms) | Healthy |
+| 2026-04-04T11:32:30Z | 1 | Job host started | Healthy |
+| 2026-04-04T11:32:30Z | 1 | Starting Host (HostId=func-myapp-prod, Version=4.1047.100.26071, InstanceId=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx) | Healthy |
 
 **How to interpret:**
 
@@ -344,6 +346,7 @@ traces
 | Host start count per hour | 1-2 | 3-5 | > 5 |
 | Start-stop cycle interval | N/A | 10-30m | < 10m |
 | Shutdown messages with errors nearby | None | Occasional | Repeated |
+| Multiple `Host started` entries in short succession on FC1 | Normal scaling behavior | Review only if accompanied by error bursts | Persistent restarts with failures and no successful invocations |
 
 !!! note "Normal vs abnormal"
     **Normal:** One startup event after deployment or planned restart.
@@ -384,11 +387,11 @@ union isfuzzy=true
 
 | timestamp | itemType | name | success | resultCode | duration | details |
 |---|---|---|---|---|---|---|
-| 2026-04-04T09:10:40.101Z | request | Functions.HttpTrigger | false | 500 | 00:00:07.511 | https://func-myapp-prod.azurewebsites.net/api/orders |
-| 2026-04-04T09:10:40.414Z | dependency | api.contoso.internal | false | 403 | 00:00:02.103 | POST /v1/orders/validate |
-| 2026-04-04T09:10:42.622Z | exception | Azure.RequestFailedException | false |  |  | Status: 403 (Forbidden). Managed identity lacks role assignment. |
-| 2026-04-04T09:10:42.781Z | trace | trace | true |  |  | Retry attempt 1 of 3 for outbound validation call. |
-| 2026-04-04T09:10:47.612Z | trace | trace | true |  |  | Invocation failed and message moved to poison queue after retries. |
+| 2026-04-04T11:32:30.000Z | request | Functions.ErrorHandler | false | 500 | 12.80 | https://func-myapp-prod.azurewebsites.net/api/exceptions/unhandled |
+| 2026-04-04T11:32:30.000Z | trace | trace | true |  |  | Executing 'Functions.ErrorHandler' (Reason='This function was programmatically called via the host APIs.', Id=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx) |
+| 2026-04-04T11:32:30.000Z | trace | trace | true |  |  | Unhandled exception endpoint requested |
+| 2026-04-04T11:32:30.000Z | exception | Microsoft.Azure.WebJobs.Script.Workers.Rpc.RpcException | false |  |  | Exception while executing function: Functions.ErrorHandler |
+| 2026-04-04T11:32:30.000Z | trace | trace | true |  |  | Executed 'Functions.ErrorHandler' (Failed, Id=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx, Duration=8ms) |
 
 **How to interpret:**
 

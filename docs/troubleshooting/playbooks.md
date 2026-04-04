@@ -56,7 +56,7 @@ az monitor log-analytics query \
 Name             Trigger    IsDisabled
 ---------------  ---------  ----------
 QueueProcessor   queue      true
-HttpPing         http       false
+health           http       false
 
 Name                                              Value
 ------------------------------------------------  ----------------------------------------------------------------
@@ -65,8 +65,9 @@ AzureWebJobsStorage                               DefaultEndpointsProtocol=https
 
 Timestamp                    Message
 ---------------------------  ---------------------------------------------------------------------------------
-2024-01-15T10:30:05.000000Z  Listener for 'QueueTrigger' was unable to start. Connection refused.
-2024-01-15T10:30:00.000000Z  Function 'QueueProcessor' is disabled via app setting 'AzureWebJobs.QueueProcessor.Disabled'.
+2026-04-03T08:12:01.000000Z  Host started (64ms)
+2026-04-03T08:12:02.000000Z  Worker process started and initialized.
+2026-04-03T08:12:03.000000Z  Function 'QueueProcessor' is disabled via app setting 'AzureWebJobs.QueueProcessor.Disabled'.
 ```
 
 ### How to interpret the results
@@ -100,7 +101,8 @@ Timestamp                    Message
 | FunctionName | Invocations | Failures | FailureRate% | P95Ms |
 |---|---|---|---|---|
 | Functions.QueueProcessor | 0 | 0 | 0 | 0 |
-| Functions.HttpPing | 1245 | 2 | 0.16 | 180 |
+| Functions.health | 50 | 0 | 0 | 140 |
+| Functions.unhandled_error | 15 | 15 | 100 | 410 |
 
 FailureRate% is derived as `Failures / Invocations * 100`.
 
@@ -157,15 +159,14 @@ az monitor log-analytics query \
 ```text
 MetricName            TimeGrain  Average   Total
 --------------------  ---------  --------  ------
-AverageResponseTime   PT1M       421       0
-AverageResponseTime   PT1M       16620     0
-Requests              PT1M       0         892
-Http5xx               PT1M       0         74
+AverageResponseTime   PT1M       330       0
+AverageResponseTime   PT1M       1420      0
+Requests              PT1M       0         158
+Http5xx               PT1M       0         15
 
 target                          p95      failures
 ------------------------------  -------  --------
-api.partner.internal            28400    116
-sql-prod.database.windows.net   9100     12
+api.partner.internal            1260     0
 ```
 
 ### How to interpret the results
@@ -199,9 +200,7 @@ sql-prod.database.windows.net   9100     12
 ### Example KQL result
 | target | Calls | Failed | FailureRate% | P95Ms |
 |---|---|---|---|---|
-| api.partner.internal | 612 | 116 | 18.95 | 28400 |
-| sql-prod.database.windows.net | 1890 | 12 | 0.63 | 9100 |
-| cache.redis.cache.windows.net | 4310 | 0 | 0.00 | 120 |
+| api.partner.internal | 28 | 0 | 0.00 | 1260 |
 
 FailureRate% is derived as `Failed / Calls * 100`.
 
@@ -252,9 +251,7 @@ az functionapp config show --name "$APP_NAME" --resource-group "$RG" --output js
 ```text
 type                                 outerMessage                                         count_
 -----------------------------------  ---------------------------------------------------  ------
-System.UnauthorizedAccessException   The client does not have authorization               932
-System.Net.Sockets.SocketException   Connection refused                                   188
-Microsoft.WindowsAzure.Storage...    Storage operation failed: (403) Forbidden            174
+Microsoft.Azure.WebJobs.Script.Workers.Rpc.RpcException  Result: Failure Exception: RuntimeError: unhandled test exception  15
 
 {
   "id": "/subscriptions/<subscription-id>/resourceGroups/rg-myapp-prod/providers/Microsoft.Web/sites/func-myapp-prod/config/web",
@@ -294,9 +291,9 @@ Microsoft.WindowsAzure.Storage...    Storage operation failed: (403) Forbidden  
 ### Example KQL result
 | ExceptionType | Message | Count |
 |---|---|---|
-| System.UnauthorizedAccessException | The client does not have authorization | 932 |
-| Microsoft.WindowsAzure.Storage.StorageException | Storage operation failed: (403) Forbidden | 174 |
-| System.Net.Sockets.SocketException | Connection refused | 188 |
+| Microsoft.Azure.WebJobs.Script.Workers.Rpc.RpcException | Result: Failure Exception: RuntimeError: unhandled test exception | 15 |
+
+> **Note:** The exception count here (15) matches the number of failed invocations. The KQL `exceptions` table may show a higher count (e.g., 30) because each failure can generate both a host-level `RpcException` wrapper and the inner application exception.
 
 ### Common misdiagnoses
 - Retrying aggressively when the root cause is permanent auth failure.
