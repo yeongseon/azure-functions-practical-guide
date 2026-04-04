@@ -1,193 +1,87 @@
 # AGENTS.md
 
-> Knowledge base for AI agents working on this repository.
+Guidance for AI agents working in this repository.
 
 ## Project Overview
 
-**Azure Functions Hub** — A practical hub for learning, designing, operating, and troubleshooting Azure Functions across hosting models, languages, and trigger patterns.
+**Azure Functions Field Guide** — a unified documentation hub, reference applications, and hands-on troubleshooting labs for building and operating serverless applications on Azure Functions.
 
-### Repository Structure
+- **Live site**: <https://yeongseon.github.io/azure-functions/>
+- **Repository**: <https://github.com/yeongseon/azure-functions>
 
-```
-├── docs/
-│   ├── index.md                # Hub landing page
-│   ├── start-here/             # Onboarding content
-│   │   ├── overview.md         # What is Azure Functions
-│   │   ├── learning-paths.md   # Guided learning paths
-│   │   ├── hosting-options.md  # Plan comparison and selection
-│   │   └── repository-map.md   # Hub navigation + DX toolkit links
-│   ├── platform/               # Design decisions (architecture, hosting, scaling)
-│   │   ├── architecture.md     # Runtime architecture, host/worker model
-│   │   ├── hosting.md          # Plan deep-dive (Y1, FC1, EP, Dedicated)
-│   │   ├── triggers-and-bindings.md
-│   │   ├── scaling.md          # Scaling behavior per plan
-│   │   ├── networking.md       # VNet, private endpoints, hybrid
-│   │   ├── reliability.md      # Retry policies, poison handling, availability zones
-│   │   └── security.md         # Auth, managed identity, network security
-│   ├── best-practices/          # Operational best practices
-│   │   ├── index.md            # Section landing page
-│   │   ├── hosting-plan-selection.md
-│   │   ├── trigger-and-binding.md
-│   │   ├── scaling.md
-│   │   ├── reliability.md
-│   │   ├── networking.md
-│   │   ├── security.md
-│   │   ├── deployment.md
-│   │   ├── cost-optimization.md
-│   │   └── common-anti-patterns.md
-│   ├── language-guides/        # Language-specific content
-│   │   ├── python/             # Python (reference implementation)
-│   │   │   ├── tutorial/       # 4 plans × 7 tutorials
-│   │   │   ├── recipes/        # Integration guides
-│   │   │   ├── v2-programming-model.md
-│   │   │   ├── python-runtime.md
-│   │   │   ├── cli-cheatsheet.md
-│   │   │   ├── host-json.md
-│   │   │   ├── environment-variables.md
-│   │   │   ├── platform-limits.md
-│   │   │   └── troubleshooting.md
-│   ├── reference/              # Cross-language reference (mirrors language-guides for lookup)
-│   │   ├── index.md
-│   │   ├── cli-cheatsheet.md
-│   │   ├── host-json.md
-│   │   ├── environment-variables.md
-│   │   ├── platform-limits.md
-│   │   └── troubleshooting.md
-│   ├── operations/             # Operational execution
-│   │   ├── deployment.md       # Deploy methods, slots, rollback
-│   │   ├── configuration.md    # App settings, host.json, secrets
-│   │   ├── monitoring.md       # App Insights, metrics, dashboards
-│   │   ├── alerts.md           # Alert rules, action groups
-│   │   ├── cold-start.md       # Mitigation strategies per plan
-│   │   ├── retries-and-poison-handling.md
-│   │   ├── security.md         # Network and identity security operations
-│   │   ├── cost-optimization.md # Cost guardrails and telemetry controls
-│   │   └── recovery.md         # Disaster recovery, backup
-│   └── troubleshooting/        # Incident response
-│       ├── index.md            # Decision tree, mental model, section map
-│       ├── architecture.md     # Request/runtime/deploy/network paths with failure points
-│       ├── evidence-map.md     # Question→source mapping, log pattern inventory
-│       ├── first-10-minutes.md # Triage guide with Portal+CLI structure
-│       ├── playbooks.md        # Scenario-based playbooks with sample logs
-│       ├── methodology.md      # Systematic troubleshooting with evidence patterns
-│       ├── kql.md              # KQL query library with sample results
-│       └── lab-guides.md       # Hands-on labs with evidence timelines
-├── apps/                       # Reference function apps
-│   ├── python/                 # Python reference app
+## Repository Structure
+
+```text
+.
+├── .github/
+│   └── workflows/              # GitHub Pages deployment
+├── apps/
+│   ├── python/                 # Python reference application (v2 model)
 │   ├── nodejs/                 # Node.js (stub)
 │   ├── dotnet/                 # .NET (stub)
 │   └── java/                   # Java (stub)
-├── labs/                       # Hands-on reproducible scenarios
+├── docs/
+│   ├── assets/                 # Images, icons
+│   ├── best-practices/         # Production patterns and anti-patterns (9 pages)
+│   ├── javascripts/            # Mermaid zoom JS
+│   ├── language-guides/
+│   │   ├── python/             # Python — 4 plans × 7 tutorials + recipes
+│   │   ├── nodejs/             # Node.js (stub)
+│   │   ├── java/               # Java (stub)
+│   │   └── dotnet/             # .NET (stub)
+│   ├── operations/             # Day-2 operational execution (9 pages)
+│   ├── platform/               # Architecture and design decisions (7 pages)
+│   ├── reference/              # CLI cheatsheet, host.json, limits (5 pages)
+│   ├── start-here/             # Overview, learning paths, repository map (4 pages)
+│   ├── stylesheets/            # Custom CSS (mermaid zoom, etc.)
+│   └── troubleshooting/        # Troubleshooting hub (7 pages)
+│       ├── architecture.md
+│       ├── evidence-map.md
+│       ├── first-10-minutes.md
+│       ├── kql.md
+│       ├── lab-guides.md
+│       ├── methodology.md
+│       └── playbooks.md
+├── infra/                      # Bicep templates for all hosting plans
+│   ├── consumption/
+│   ├── flex-consumption/
+│   ├── premium/
+│   ├── dedicated/
+│   └── modules/
+├── labs/                       # Lab infrastructure + app source
 │   ├── cold-start/
-│   ├── storage-access-failure/
-│   ├── queue-backlog-scaling/
 │   ├── dns-vnet-resolution/
-│   └── managed-identity-auth/
-├── .github/workflows/          # CI/CD
-└── mkdocs.yml                  # Documentation configuration
+│   ├── managed-identity-auth/
+│   ├── queue-backlog-scaling/
+│   └── storage-access-failure/
+└── mkdocs.yml                  # MkDocs Material configuration (7-tab nav)
 ```
 
-### Design Principles
+## Content Categories
 
-1. **Platform = Design Decisions** — Architecture, hosting, scaling, networking choices
-2. **Best Practices = Operational Safety** — Execution model, triggers, scaling, reliability, security best practices
-3. **Operations = Execution** — Day-2 tasks: deploy, monitor, alert, recover
-4. **Language Guides = Language-Specific** — Tutorials, recipes, runtime specifics per language
-5. **Troubleshooting = Incident Response** — When things break, start here
-6. **Apps = Reference Implementations** — Not samples, but capability-driven reference apps
+The documentation is organized by intent and lifecycle stage:
 
-### DX Toolkit Repos (linked, not merged)
+| Section | Purpose | Page Count |
+|---|---|---|
+| **Start Here** | Entry points, learning paths, repository map | 4 |
+| **Platform** | Architecture, design decisions — WHAT and HOW it works | 7 |
+| **Best Practices** | Production patterns — HOW to use the platform well | 9 |
+| **Language Guides** | Per-language step-by-step tutorials and recipes | 40+ |
+| **Operations** | Day-2 execution — HOW to run in production | 9 |
+| **Troubleshooting** | Diagnosis and resolution — hypothesis-driven | 7 |
+| **Reference** | Quick lookup — CLI, host.json, platform limits | 5 |
 
-| Repository | Description |
-|------------|-------------|
-| [azure-functions-openapi](https://github.com/yeongseon/azure-functions-openapi) | OpenAPI integration |
-| [azure-functions-validation](https://github.com/yeongseon/azure-functions-validation) | Input validation |
-| [azure-functions-doctor](https://github.com/yeongseon/azure-functions-doctor) | Diagnostics tool |
-| [azure-functions-scaffold](https://github.com/yeongseon/azure-functions-scaffold) | Project scaffolding |
-| [azure-functions-logging](https://github.com/yeongseon/azure-functions-logging) | Structured logging |
-| [azure-functions-python-cookbook](https://github.com/yeongseon/azure-functions-python-cookbook) | Python recipes |
-
-## Azure Functions Specifics
-
-### Key Concepts
-
-1. **Hosting Plan** — Consumption (Y1), Flex Consumption (FC1), Premium (EP), Dedicated (App Service Plan)
-2. **Trigger** — Event source that invokes a function (HTTP, Timer, Queue, Blob, etc.)
-3. **Binding** — Declarative connection to input/output data sources
-4. **Function App** — The deployment unit containing one or more functions
-5. **Host Process** — .NET runtime managing triggers, bindings, and scaling
-6. **Language Worker** — Separate process executing your code (Python, Node.js, Java, .NET in-process/isolated)
-
-### Supported Languages
-
-| Language | Worker Model | Programming Model |
-|----------|-------------|-------------------|
-| Python | Out-of-process (gRPC) | v2 decorator-based |
-| Node.js | Out-of-process (gRPC) | v4 `app.http()` |
-| Java | Out-of-process (gRPC) | Annotation-based |
-| .NET | In-process or Isolated | Attribute-based |
-
-### Common Gotchas
-
-1. **Blob trigger on Flex Consumption** — Standard polling NOT supported; use Event Grid-based blob trigger
-2. **Cold start** — Flex Consumption has always-ready instances; Premium has permanently warm instances
-3. **Deployment on Flex Consumption** — No Kudu/SCM; use `func azure functionapp publish` or One Deploy
-4. **Identity-based storage** — `AzureWebJobsStorage__accountName` required on Flex Consumption
-5. **Timeout** — Flex Consumption defaults to 30 min (unbounded max); classic Consumption defaults to 5 min
+!!! info "Platform vs Best Practices vs Operations"
+    - **Platform** = Understand the concepts and architecture.
+    - **Best Practices** = Apply practical patterns and avoid common mistakes.
+    - **Operations** = Execute day-2 tasks in production.
 
 ## Documentation Conventions
 
 ### File Naming
 
-- Start Here / Platform / Operations / Troubleshooting: `topic-name.md` (kebab-case)
-- Tutorials: `XX-topic-name.md` (numbered for sequence), in per-plan subdirectories
-- Language guides: nested under `language-guides/{language}/`
-
-### Document Structure (ALL documents follow this pattern)
-
-```markdown
-# Title
-
-Brief introduction (1-2 sentences)
-
-## Prerequisites (if applicable)
-
-## Main Content
-
-### Subsections with code examples
-
-## Advanced Topics
-
-Further reading for deeper understanding.
-
-## See Also
-
-- [Related Doc 1](../category/related-doc.md)
-- [Related Doc 2](../category/another-doc.md)
-
-## Sources
-
-- [Microsoft Learn Article](https://learn.microsoft.com/azure/...)
-```
-
-| Section | Content | Notes |
-|---------|---------|-------|
-| `## See Also` | Internal cross-reference links | Other pages within this guide |
-| `## Sources` | Microsoft Learn links | External sources and references |
-
-**Order**: `## See Also` always comes before `## Sources`.
-
-### Cross-Reference Pattern
-
-Use admonitions to link between sections:
-
-```markdown
-!!! tip "Platform Guide"
-    For the architecture behind this feature, see [Architecture](../platform/architecture.md).
-
-!!! tip "Language Guide"
-    For Python-specific implementation, see [v2 Programming Model](../language-guides/python/v2-programming-model.md).
-```
+- Tutorial: `XX-topic-name.md` (numbered for sequence)
+- All others: `topic-name.md` (kebab-case)
 
 ### CLI Command Style
 
@@ -196,25 +90,26 @@ Use admonitions to link between sections:
 az functionapp create --resource-group $RG --name $APP_NAME --plan $PLAN_NAME --runtime python
 
 # NEVER use short flags in documentation
-az functionapp create -g $RG -n $APP_NAME  # DON'T do this
+az functionapp create -g $RG -n $APP_NAME  # ❌ Don't do this
 ```
 
 ### Variable Naming Convention
 
 | Variable | Description | Example |
 |----------|-------------|---------|
-| `$RG` | Resource Group | `rg-myapp` |
-| `$APP_NAME` | Function App Name | `func-myapp-abc123` |
-| `$PLAN_NAME` | Hosting Plan | `plan-myapp` |
-| `$STORAGE_NAME` | Storage Account | `stmyapp` |
-| `$LOCATION` | Azure Region | `koreacentral` |
-| `$SUBSCRIPTION_ID` | Azure Subscription ID | `<subscription-id>` |
+| `$RG` | Resource group name | `rg-functions-demo` |
+| `$APP_NAME` | Function app name | `func-demo-app` |
+| `$PLAN_NAME` | Hosting plan | `plan-demo-functions` |
+| `$STORAGE_NAME` | Storage account | `stdemofunctions` |
+| `$LOCATION` | Azure region | `koreacentral` |
+| `$SUBSCRIPTION_ID` | Subscription identifier placeholder | `<subscription-id>` |
 
 ### PII Removal (Quality Gate)
 
 **CRITICAL**: All CLI output examples MUST have PII removed.
 
 Patterns to mask:
+
 - UUIDs: `xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`
 - Subscription IDs: `<subscription-id>`
 - Tenant IDs: `<tenant-id>`
@@ -222,66 +117,206 @@ Patterns to mask:
 - Emails: Remove or mask
 - Secrets/Tokens: NEVER include
 
-```bash
-# Example of properly masked output
-{
-  "id": "/subscriptions/<subscription-id>/resourceGroups/rg-myapp/providers/...",
-  "principalId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-  "tenantId": "<tenant-id>"
-}
+### Admonition Indentation Rule
+
+For MkDocs admonitions (`!!!` / `???`), every line in the body must be indented by **4 spaces**.
+
+```markdown
+!!! warning "Important"
+    This line is correctly indented.
+
+    - List item also inside
 ```
 
 ### Mermaid Diagrams
 
-All architectural diagrams use Mermaid. Test with `mkdocs build --strict`.
+All architectural diagrams use Mermaid. Every documentation page should include at least one diagram. Test with `mkdocs build --strict`.
 
-````markdown
-```mermaid
-graph LR
-    A[Client] --> B[HTTP Trigger]
-    B --> C[Function App]
-    C --> D[Storage/DB]
-```
-````
+### Nested List Indentation
 
-## Documentation Format Quality Gate
-
-Before committing any documentation changes, verify these format rules:
-
-### 1. Admonition Body Indentation (CRITICAL)
-
-All content inside `!!!` or `???` admonition blocks **must be indented with 4 spaces**. Content without indentation renders as plain text outside the admonition box.
+All nested list items MUST use **4-space indent** (Python-Markdown standard).
 
 ```markdown
-# CORRECT — body indented 4 spaces
-!!! warning "Title"
-    This content is inside the admonition box.
+# CORRECT (4-space)
+1. **Item**
+    - Sub item
+    - Another sub item
+        - Third level
 
-    - List item also inside
-    - Another item inside
-
-# WRONG — body not indented
-!!! warning "Title"
-This content renders OUTSIDE the box.
-- This list is also outside
+# WRONG (2 or 3 spaces)
+1. **Item**
+  - Sub item          ← 2 spaces ❌
+   - Sub item         ← 3 spaces ❌
 ```
 
-### 2. Code Fence Balance
+### Tail Section Naming
 
-Every opening ` ``` ` must have a matching closing ` ``` `. An odd number of fences breaks all subsequent rendering.
+Every document ends with these tail sections (in this order):
 
-### 3. Final Validation
+| Section | Purpose | Content |
+|---|---|---|
+| `## See Also` | Internal cross-links within this repository | Links to other pages in this guide |
+| `## Sources` | External authoritative references | Links to Microsoft Learn (primary) |
 
-```bash
-# Must pass with zero warnings/errors
-mkdocs build --strict
+- `## See Also` is required on every page.
+- `## Sources` is required when external references are cited. Omit if none exist.
+- Order is always `## See Also` → `## Sources` (never reversed).
+- All content must be based on Microsoft Learn with cited sources.
+
+### Canonical Document Templates
+
+Every document follows one of 7 templates based on its section. Do not invent new structures.
+
+#### Platform docs
+
+```text
+# Title
+Brief introduction (1-2 sentences)
+## Prerequisites (optional — only if hands-on/CLI content)
+## Main Content
+### Subsections (H3 under Main Content)
+#### Sub-subsections (H4 as needed)
+## Advanced Topics (optional)
+## Language-Specific Details (optional)
+## See Also
+## Sources (optional)
 ```
 
-## Build & Validate
+#### Best Practices docs
+
+```text
+# Title
+Brief introduction
+## Prerequisites (optional)
+## Why This Matters
+## Recommended Practices
+## Common Mistakes / Anti-Patterns
+## Validation Checklist
+## Advanced Topics (optional)
+## See Also
+## Sources (optional)
+```
+
+#### Operations docs
+
+```text
+# Title
+Brief introduction
+## Prerequisites
+## When to Use
+## Procedure
+## Verification
+## Rollback / Troubleshooting
+## Advanced Topics (optional)
+## See Also
+## Sources (optional)
+```
+
+#### Tutorial docs (Language Guides)
+
+```text
+# Title
+Brief introduction
+## Prerequisites
+## What You'll Build
+## Steps
+## Verification
+## Next Steps / Clean Up (optional)
+## See Also
+## Sources (optional)
+```
+
+#### Playbooks
+
+```text
+# Title (no intro paragraph — Summary covers it)
+## 1. Summary
+## 2. Common Misreadings
+## 3. Competing Hypotheses
+## 4. What to Check First
+## 5. Evidence to Collect
+## 6. Validation and Disproof by Hypothesis
+## 7. Likely Root Cause Patterns
+## 8. Immediate Mitigations
+## 9. Prevention (optional)
+## See Also
+## Sources (optional)
+```
+
+#### Lab Guides
+
+```text
+# Title
+Brief introduction
+## Lab Metadata (table: difficulty, duration, tier, etc.)
+## 1) Background
+## 2) Hypothesis
+## 3) Runbook
+## 4) Experiment Log
+## Expected Evidence
+## Clean Up
+## Related Playbook
+## See Also
+## Sources
+```
+
+#### Reference docs
+
+```text
+# Title
+Brief introduction
+## Prerequisites (optional)
+## Topic/Command Groups
+## Usage Notes (optional)
+## See Also
+## Sources (optional)
+```
+
+## Troubleshooting Content Standards
+
+### Playbooks
+
+Each playbook includes:
+
+1. Symptom description and hypotheses
+2. Evidence collection steps
+3. **Sample Log Patterns** — real log lines from Azure deployment
+4. **KQL Queries with Example Output** — 2-3 queries with result tables + `!!! tip "How to Read This"` interpretation
+5. **CLI Investigation Commands** — with example output and interpretation
+6. **Normal vs Abnormal Comparison** — table
+7. **Common Misdiagnoses** section
+8. **Related Labs** — cross-links to lab guide docs
+
+### Lab Guides
+
+Each lab guide includes:
+
+1. Background and failure progression model
+2. Falsifiable hypothesis
+3. Step-by-step runbook
+4. Experiment log with real artifact data
+5. **Expected Evidence** section:
+    - Before Trigger (Baseline)
+    - During Incident
+    - After Recovery
+    - Evidence Timeline (Mermaid)
+    - Evidence Chain: Why This Proves the Hypothesis (falsification logic)
+6. Related Playbook cross-links
+
+### Data Verification
+
+All playbook evidence and lab guide data should be collected from real Azure deployments:
+
+- Azure Functions hosting plans (Consumption, Flex Consumption, Premium, Dedicated)
+- Data sources: FunctionAppLogs, AppMetrics, traces, dependencies
+- KQL collected via REST API or Application Insights portal
+- All data sanitized (PII removed)
+
+## Build & Preview
 
 ```bash
 # Install MkDocs dependencies
-pip install mkdocs-material pymdown-extensions mkdocs-minify-plugin
+pip install mkdocs-material mkdocs-minify-plugin
 
 # Build documentation (strict mode catches broken links)
 mkdocs build --strict
@@ -290,33 +325,10 @@ mkdocs build --strict
 mkdocs serve
 ```
 
-## Git Commit Conventions
+## Git Commit Style
 
-```
+```text
 type: short description
-
-- feat: New feature
-- fix: Bug fix
-- docs: Documentation changes
-- chore: Maintenance tasks
-- refactor: Code restructuring
 ```
 
-### Logical Commit Units
-
-When making large changes, split into logical commits:
-1. Add scaffold structure
-2. Add content by section (start-here, platform, operations, etc.)
-3. Update configuration last
-
-## Related Resources
-
-- [Azure Functions Documentation](https://learn.microsoft.com/azure/azure-functions/)
-- [Flex Consumption Plan](https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan)
-- [Flex Consumption How-To](https://learn.microsoft.com/azure/azure-functions/flex-consumption-how-to)
-- [Python on Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-reference-python)
-- [Node.js on Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-reference-node)
-- [Java on Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-reference-java)
-- [.NET on Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-dotnet-class-library)
-- [Event Grid Blob Trigger](https://learn.microsoft.com/azure/azure-functions/functions-event-grid-blob-trigger)
-- [Bicep Documentation](https://learn.microsoft.com/azure/azure-resource-manager/bicep/)
+Allowed types: `feat`, `fix`, `docs`, `chore`, `refactor`

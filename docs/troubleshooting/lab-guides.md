@@ -54,7 +54,7 @@ Run labs in a non-production environment and treat them like live incidents: det
 
 In FC1, host startup was fast (`Host started (363ms)`), but end-to-end first-request cold start still reached 30.5s, showing instance provisioning dominated latency rather than host initialization. After warm-up, server-side execution stayed at 3-6ms (with 67-99ms client-side including network), while scale events produced intermediate latency spikes around 1.7-1.8s server-side.
 
-**Related playbook**: [Playbook: High latency / slow responses](playbooks.md#high-latency--slow-responses)
+**Related playbook**: [Playbook: High latency / slow responses](playbooks.md#high-latency-slow-responses)
 
 **Related playbook**: [Playbook: Deployment failures](playbooks.md#deployment-failures)
 

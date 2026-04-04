@@ -60,6 +60,7 @@ markdown_extensions:
       anchor_linenums: true
   - pymdownx.inlinehilite
   - pymdownx.snippets
+  - pymdownx.mark
   - attr_list
   - md_in_html
   - tables
@@ -68,12 +69,12 @@ markdown_extensions:
 
 validation:
   nav:
-    omitted_files: ignore
+    omitted_files: warn
   links:
-    not_found: ignore
-    anchors: ignore
-    absolute_links: ignore
-    unrecognized_links: ignore
+    not_found: warn
+    anchors: warn
+    absolute_links: warn
+    unrecognized_links: warn
 
 extra:
   social:
@@ -81,6 +82,7 @@ extra:
       link: https://github.com/yeongseon/azure-functions
 
 nav:
+  - Home: index.md
   - Start Here:
     - start-here/index.md
     - start-here/overview.md
@@ -160,6 +162,12 @@ nav:
         - language-guides/python/recipes/durable-orchestration.md
         - language-guides/python/recipes/event-grid.md
         - language-guides/python/recipes/custom-domain-certificates.md
+      - Python Reference:
+        - language-guides/python/cli-cheatsheet.md
+        - language-guides/python/environment-variables.md
+        - language-guides/python/host-json.md
+        - language-guides/python/platform-limits.md
+        - language-guides/python/troubleshooting.md
     - Node.js:
       - language-guides/nodejs/index.md
     - .NET:
