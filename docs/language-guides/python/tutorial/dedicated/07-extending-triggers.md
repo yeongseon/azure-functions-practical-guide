@@ -1,0 +1,174 @@
+# 07 - Extending with Triggers (Dedicated)
+
+This tutorial extends your Dedicated Function App beyond HTTP with timer, blob, and queue triggers. On Dedicated, all standard triggers are supported, timer workloads benefit from Always On, and blob trigger polling works normally.
+
+## Prerequisites
+
+- Completed [06 - CI/CD](06-ci-cd.md)
+- Variables exported:
+
+```bash
+export RG="rg-func-dedicated-dev"
+export APP_NAME="func-dedi-<unique-suffix>"
+export PLAN_NAME="asp-dedi-b1-dev"
+export STORAGE_NAME="stdedidev<unique>"
+export LOCATION="eastus"
+```
+
+## Steps
+
+### Step 1 - Keep Always On enabled for background reliability
+
+```bash
+az functionapp config set \
+  --name $APP_NAME \
+  --resource-group $RG \
+  --always-on true
+```
+
+Timer triggers are most reliable when Always On is enabled on Dedicated.
+
+### Step 2 - Add a timer trigger
+
+Create `app/blueprints/scheduled_jobs.py`:
+
+```python
+import datetime
+import logging
+import azure.functions as func
+
+bp = func.Blueprint()
+
+@bp.function_name(name="cleanup_timer")
+@bp.timer_trigger(schedule="0 */5 * * * *", arg_name="timer")
+def cleanup_timer(timer: func.TimerRequest) -> None:
+    logging.info("Cleanup timer executed at %s", datetime.datetime.utcnow().isoformat())
+```
+
+Register the blueprint in `app/function_app.py`.
+
+### Step 3 - Add a blob trigger (standard polling)
+
+Create `app/blueprints/blob_processor.py`:
+
+```python
+import logging
+import azure.functions as func
+
+bp = func.Blueprint()
+
+@bp.function_name(name="blob_ingest")
+@bp.blob_trigger(arg_name="input_blob", path="uploads/{name}", connection="AzureWebJobsStorage")
+def blob_ingest(input_blob: func.InputStream) -> None:
+    logging.info("Blob trigger fired for %s (%s bytes)", input_blob.name, input_blob.length)
+```
+
+Blob polling works on Dedicated App Service Plan.
+
+### Step 4 - Add a queue trigger
+
+Create `app/blueprints/queue_processor.py`:
+
+```python
+import logging
+import azure.functions as func
+
+bp = func.Blueprint()
+
+@bp.function_name(name="queue_worker")
+@bp.queue_trigger(arg_name="msg", queue_name="jobs", connection="AzureWebJobsStorage")
+def queue_worker(msg: func.QueueMessage) -> None:
+    logging.info("Queue message processed: %s", msg.get_body().decode("utf-8"))
+```
+
+### Step 5 - Deploy and test triggers
+
+```bash
+func azure functionapp publish $APP_NAME --python
+
+az storage container create \
+  --name uploads \
+  --account-name $STORAGE_NAME
+
+az storage queue create \
+  --name jobs \
+  --account-name $STORAGE_NAME
+
+az storage blob upload \
+  --account-name $STORAGE_NAME \
+  --container-name uploads \
+  --name sample.txt \
+  --file ./README.md
+
+az storage message put \
+  --account-name $STORAGE_NAME \
+  --queue-name jobs \
+  --content "run-job-001"
+```
+
+### Step 6 - Review runtime and scale behavior
+
+- Dedicated is always running and does not scale to zero.
+- Autoscale is manual or rules-based at the App Service Plan level.
+- Typical max scale is 10-30 instances depending on plan tier.
+- Timeout default is 30 minutes and max is unlimited.
+- Memory depends on selected plan SKU.
+
+!!! info "Requires Standard tier or higher"
+    VNet integration is not available on Basic (B1) tier. Upgrade to Standard (S1) or Premium (P1v2) for VNet support.
+
+!!! info "Requires Standard tier or higher"
+    Private endpoints are not available on Basic (B1) tier. Upgrade to Standard (S1) or Premium (P1v2).
+
+## Expected Output
+
+`func azure functionapp publish $APP_NAME --python`:
+
+```text
+Getting site publishing info...
+Creating archive for current directory...
+Uploading 8.4 MB [########################################################]
+Deployment successful.
+Syncing triggers...
+Functions in func-dedi-<unique-suffix>:
+    health - [httpTrigger]
+    info - [httpTrigger]
+    cleanup_timer - [timerTrigger]
+    blob_ingest - [blobTrigger]
+    queue_worker - [queueTrigger]
+```
+
+`az storage message put ...`:
+
+```json
+{
+  "content": "run-job-001",
+  "dequeueCount": 0,
+  "expirationTime": "2026-04-10T11:55:17+00:00",
+  "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+  "insertionTime": "2026-04-03T11:55:17+00:00",
+  "popReceipt": "<masked>",
+  "timeNextVisible": "2026-04-03T11:55:17+00:00"
+}
+```
+
+Application log sample (Kudu/Log Stream):
+
+```text
+[Information] Cleanup timer executed at 2026-04-03T11:55:00.102341
+[Information] Blob trigger fired for uploads/sample.txt (12457 bytes)
+[Information] Queue message processed: run-job-001
+```
+
+## Next Steps
+
+You now have a full Dedicated track implementation with HTTP, timer, blob, and queue triggers, plus deployment and operations foundations.
+
+> **Next:** [How Azure Functions Works](../../../../platform/architecture.md)
+
+## References
+
+- [Azure Functions triggers and bindings concepts](https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings)
+- [Timer trigger for Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-bindings-timer)
+- [Blob trigger for Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-blob-trigger)
+- [Queue trigger for Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue-trigger)

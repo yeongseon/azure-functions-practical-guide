@@ -1,0 +1,43 @@
+# DX toolkit repos (separate git repos)
+azure-functions-doctor/
+azure-functions-openapi/
+azure-functions-python-cookbook/
+azure-functions-scaffold/
+azure-functions-validation/
+msgfix_doctor.sh
+
+# MkDocs build output
+site/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+.env
+
+# Node.js
+node_modules/
+dist/
+
+# .NET
+bin/
+obj/
+
+# Java
+target/
+*.class
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Azure Functions
+local.settings.json
