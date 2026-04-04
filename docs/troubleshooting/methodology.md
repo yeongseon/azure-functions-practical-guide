@@ -12,6 +12,21 @@ A repeatable method helps teams:
 - avoid guess-driven configuration changes,
 - and produce reusable runbooks after resolution.
 
+## Troubleshooting mental model
+
+Use this classification to select the first evidence source before deep dives.
+
+| Category | Examples | First Check | Typical Evidence |
+|---|---|---|---|
+| Request path issue | 5xx, timeout, 403, connection refused | `requests` + `exceptions` tables | HTTP status codes, error types |
+| App startup issue | Host not starting, container ping failure, health check timeout | `traces` table (host lifecycle) | `Host started` missing, startup duration |
+| Runtime degradation | Memory pressure, GIL contention, thread pool starvation | `customMetrics`, process metrics | CPU/memory trends, cold start frequency |
+| Dependency / outbound issue | DNS failure, SNAT exhaustion, private endpoint unreachable | `dependencies` table | Failed dependency calls, target resolution |
+| Deployment / recycle event | Post-deploy failures, slot swap issues, config drift | Activity Log, `traces` | Deploy events, host restart events |
+
+!!! note "About customMetrics"
+    Most metrics in the `customMetrics` table require explicit instrumentation from your application code. Only a few runtime metrics (for example, `FunctionExecutionCount`) are automatically emitted. Queue processing metrics, latency measurements, and business metrics must be explicitly tracked.
+
 !!! tip "Operations Guide"
     For monitoring setup and alert configuration, see [Monitoring](../operations/monitoring.md) and [Alerts](../operations/alerts.md).
 
@@ -52,6 +67,18 @@ Prioritize hypotheses by:
 - impact severity,
 - likelihood given recent change history,
 - speed and safety of validation.
+
+## Evidence collection patterns
+
+Before testing, map each hypothesis to the minimum evidence set.
+
+| Hypothesis Type | Evidence Needed | Tool | Example Query |
+|---|---|---|---|
+| Request failure is application logic | 5xx trend + top exception type | Log Analytics (`requests`, `exceptions`) | `requests | where timestamp > ago(30m) | where resultCode startswith "5" | summarize count() by operation_Name` |
+| Host startup regression after change | Startup lifecycle logs + deploy timestamp | Log Analytics (`traces`) + Activity Log | `traces | where timestamp > ago(30m) | where message has "Host started" or message has "Starting Host"` |
+| Outbound dependency timeout | Failed dependency calls by target | Application Insights (`dependencies`) | `dependencies | where timestamp > ago(30m) | where success == false | summarize count(), avg(duration) by target, type` |
+| Trigger listener unhealthy | Listener/lock/trigger errors | Log Analytics (`traces`) | `traces | where timestamp > ago(30m) | where message has_any ("listener", "Host lock", "trigger")` |
+| Scale bottleneck on event trigger | Backlog growth vs execution flatline | Azure Monitor Metrics | `az monitor metrics list --resource "/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RG/providers/Microsoft.Web/sites/$APP_NAME" --metric "FunctionExecutionCount" --interval PT1M --aggregation Total --offset 30m` |
 
 ## 3) Test
 
@@ -132,10 +159,12 @@ flowchart TD
 
 ## Anti-patterns to avoid
 
-- Restarting repeatedly without collecting evidence.
-- Expanding incident scope without data.
-- Applying multiple config changes at once.
-- Declaring resolved without observing stability window.
+| Anti-pattern | Why It's Dangerous | Better Approach |
+|---|---|---|
+| Restarting without evidence | Destroys diagnostic state and erases startup timing clues | Collect `traces`, `exceptions`, and recent Activity Log first, then restart once if needed |
+| Expanding incident scope without data | Pulls teams into unrelated systems and delays mitigation | Constrain scope to confirmed blast radius, then widen only with evidence |
+| Applying multiple config changes at once | Creates attribution ambiguity and raises rollback risk | Apply one reversible change at a time and measure impact window |
+| Declaring resolved without stability window | Causes incident reopen and underestimates latent failures | Observe at least one sustained low-error window before closeout |
 
 ## See Also
 
@@ -144,3 +173,9 @@ flowchart TD
 - [KQL Query Library](kql.md)
 - [Azure Monitor overview](https://learn.microsoft.com/azure/azure-monitor/overview)
 - [Azure Functions monitoring](https://learn.microsoft.com/azure/azure-functions/functions-monitoring)
+
+## References
+
+- [Monitor Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-monitoring)
+- [Configure monitoring for Azure Functions](https://learn.microsoft.com/azure/azure-functions/configure-monitoring)
+- [Troubleshoot Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-recover-from-failed-host)

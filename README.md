@@ -8,6 +8,7 @@ Comprehensive guide for running serverless applications on Azure Functions — f
 |---------|-------------|
 | [Start Here](https://yeongseon.github.io/azure-functions/) | Overview, learning paths, and repository map |
 | [Platform](https://yeongseon.github.io/azure-functions/platform/) | Architecture, hosting plans, scaling, networking, security |
+| [Best Practices](https://yeongseon.github.io/azure-functions/best-practices/) | Hosting selection, triggers, scaling, reliability, security, deployment |
 | [Language Guides](https://yeongseon.github.io/azure-functions/language-guides/) | Step-by-step tutorials for Python, Node.js, Java, and .NET |
 | [Operations](https://yeongseon.github.io/azure-functions/operations/) | Deployment, monitoring, alerts, cost optimization, recovery |
 | [Troubleshooting](https://yeongseon.github.io/azure-functions/troubleshooting/) | Playbooks, KQL queries, methodology, and hands-on labs |

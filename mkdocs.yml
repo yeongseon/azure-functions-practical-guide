@@ -96,6 +96,17 @@ nav:
     - platform/networking.md
     - platform/reliability.md
     - platform/security.md
+  - Best Practices:
+    - best-practices/index.md
+    - best-practices/hosting-plan-selection.md
+    - best-practices/trigger-and-binding.md
+    - best-practices/scaling.md
+    - best-practices/reliability.md
+    - best-practices/networking.md
+    - best-practices/security.md
+    - best-practices/deployment.md
+    - best-practices/cost-optimization.md
+    - best-practices/common-anti-patterns.md
   - Language Guides:
     - language-guides/index.md
     - Python:
@@ -168,6 +179,8 @@ nav:
     - operations/recovery.md
   - Troubleshooting:
     - troubleshooting/index.md
+    - troubleshooting/architecture.md
+    - troubleshooting/evidence-map.md
     - troubleshooting/first-10-minutes.md
     - troubleshooting/playbooks.md
     - troubleshooting/methodology.md

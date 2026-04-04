@@ -24,6 +24,17 @@
 │   │   ├── networking.md       # VNet, private endpoints, hybrid
 │   │   ├── reliability.md      # Retry policies, poison handling, availability zones
 │   │   └── security.md         # Auth, managed identity, network security
+│   ├── best-practices/          # Operational best practices
+│   │   ├── index.md            # Section landing page
+│   │   ├── hosting-plan-selection.md
+│   │   ├── trigger-and-binding.md
+│   │   ├── scaling.md
+│   │   ├── reliability.md
+│   │   ├── networking.md
+│   │   ├── security.md
+│   │   ├── deployment.md
+│   │   ├── cost-optimization.md
+│   │   └── common-anti-patterns.md
 │   ├── language-guides/        # Language-specific content
 │   │   ├── python/             # Python (reference implementation)
 │   │   │   ├── tutorial/       # 4 plans × 7 tutorials
@@ -42,9 +53,6 @@
 │   │   ├── environment-variables.md
 │   │   ├── platform-limits.md
 │   │   └── troubleshooting.md
-│   │   ├── nodejs/             # Node.js (stub)
-│   │   ├── dotnet/             # .NET (stub)
-│   │   └── java/               # Java (stub)
 │   ├── operations/             # Operational execution
 │   │   ├── deployment.md       # Deploy methods, slots, rollback
 │   │   ├── configuration.md    # App settings, host.json, secrets
@@ -52,13 +60,18 @@
 │   │   ├── alerts.md           # Alert rules, action groups
 │   │   ├── cold-start.md       # Mitigation strategies per plan
 │   │   ├── retries-and-poison-handling.md
+│   │   ├── security.md         # Network and identity security operations
+│   │   ├── cost-optimization.md # Cost guardrails and telemetry controls
 │   │   └── recovery.md         # Disaster recovery, backup
 │   └── troubleshooting/        # Incident response
-│       ├── first-10-minutes.md # Triage guide
-│       ├── playbooks.md        # Scenario-based playbooks
-│       ├── methodology.md      # Systematic troubleshooting
-│       ├── kql.md              # KQL query library
-│       └── lab-guides.md       # Links to hands-on labs
+│       ├── index.md            # Decision tree, mental model, section map
+│       ├── architecture.md     # Request/runtime/deploy/network paths with failure points
+│       ├── evidence-map.md     # Question→source mapping, log pattern inventory
+│       ├── first-10-minutes.md # Triage guide with Portal+CLI structure
+│       ├── playbooks.md        # Scenario-based playbooks with sample logs
+│       ├── methodology.md      # Systematic troubleshooting with evidence patterns
+│       ├── kql.md              # KQL query library with sample results
+│       └── lab-guides.md       # Hands-on labs with evidence timelines
 ├── apps/                       # Reference function apps
 │   ├── python/                 # Python reference app
 │   ├── nodejs/                 # Node.js (stub)
@@ -77,10 +90,11 @@
 ### Design Principles
 
 1. **Platform = Design Decisions** — Architecture, hosting, scaling, networking choices
-2. **Operations = Execution** — Day-2 tasks: deploy, monitor, alert, recover
-3. **Language Guides = Language-Specific** — Tutorials, recipes, runtime specifics per language
-4. **Troubleshooting = Incident Response** — When things break, start here
-5. **Apps = Reference Implementations** — Not samples, but capability-driven reference apps
+2. **Best Practices = Operational Safety** — Execution model, triggers, scaling, reliability, security best practices
+3. **Operations = Execution** — Day-2 tasks: deploy, monitor, alert, recover
+4. **Language Guides = Language-Specific** — Tutorials, recipes, runtime specifics per language
+5. **Troubleshooting = Incident Response** — When things break, start here
+6. **Apps = Reference Implementations** — Not samples, but capability-driven reference apps
 
 ### DX Toolkit Repos (linked, not merged)
 
