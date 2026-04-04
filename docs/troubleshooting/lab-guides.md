@@ -35,20 +35,24 @@ Run labs in a non-production environment and treat them like live incidents: det
 **During incident you should see:**
 
 ```text
-[2026-04-04T09:00:12Z] Host started (6842ms)
-[2026-04-04T09:00:24Z] Executing 'Functions.HttpTrigger' (Reason='This function was programmatically called via the host APIs.')
+[2026-04-04T12:15:42Z] Initializing Warmup Extension.
+[2026-04-04T12:15:42Z] Initializing Host. OperationId: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'.
+[2026-04-04T12:15:42Z] Starting Host (HostId=xxxxxxxx, InstanceId=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx, Version=4.1047.100.26071, ProcessId=338)
+[2026-04-04T12:15:42Z] Initializing function HTTP routes
+[2026-04-04T12:15:42Z] Host started (363ms)
+[2026-04-04T12:15:42Z] Job host started
 ```
 
 **After recovery you should see:**
 
 ```text
-[2026-04-04T09:05:03Z] Executed 'Functions.HttpTrigger' (Succeeded, Duration=312ms)
-[2026-04-04T09:05:09Z] Executed 'Functions.HttpTrigger' (Succeeded, Duration=287ms)
+[2026-04-04T12:32:57Z] Executed 'Functions.health' (Succeeded, Duration=4ms)
+[2026-04-04T12:32:46Z] Executed 'Functions.health' (Succeeded, Duration=5ms)
 ```
 
 ### Why this proves the hypothesis
 
-If `Host started` exceeds 5000ms and aligns with first-invocation latency spikes in the same time bin, cold start is confirmed. If host start time is low while latency remains high, investigate dependencies instead.
+In FC1, host startup was fast (`Host started (363ms)`), but end-to-end first-request cold start still reached 30.5s, showing instance provisioning dominated latency rather than host initialization. After warm-up, server-side execution stayed at 3-6ms (with 67-99ms client-side including network), while scale events produced intermediate latency spikes around 1.7-1.8s server-side.
 
 **Related playbook**: [Playbook: High latency / slow responses](playbooks.md#high-latency--slow-responses)
 
@@ -74,20 +78,21 @@ If `Host started` exceeds 5000ms and aligns with first-invocation latency spikes
 **During incident you should see:**
 
 ```text
-[2026-04-04T09:10:41Z] Storage operation failed: (403) Forbidden
-[2026-04-04T09:10:42Z] Listener for 'QueueTrigger' was unable to start
+[2026-04-04T12:17:54Z] Storage probe failed: AuthorizationPermissionMismatch (325ms)
+[2026-04-04T12:15:42Z] The listener for function 'Functions.scheduled_cleanup' was unable to start.
+[2026-04-04T12:22:53Z] Process reporting unhealthy: azure.functions.webjobs.storage: Unhealthy (AuthorizationPermissionMismatch)
 ```
 
 **After recovery you should see:**
 
 ```text
-[2026-04-04T09:16:08Z] Host started (234ms)
-[2026-04-04T09:16:09Z] Listener started for function 'QueueProcessor'
+[2026-04-04T12:24:31Z] Storage probe succeeded (70ms, 4 containers)
+[2026-04-04T12:24:31Z] Executed 'Functions.storage_probe' (Succeeded, Duration=75ms)
 ```
 
 ### Why this proves the hypothesis
 
-If storage `403` appears immediately after an RBAC change in the activity log and listeners fail in the same window, identity or permission drift is the direct cause.
+In the FC1 run, `AuthorizationPermissionMismatch` appeared in storage probes, the `Functions.scheduled_cleanup` listener failed to start, and the process health degraded for `azure.functions.webjobs.storage` in the same incident window. Recovery evidence (`Storage probe succeeded`, successful `Functions.storage_probe`) confirms storage permission restoration resolved trigger startup and health.
 
 **Related playbook**: [Playbook: Functions not executing](playbooks.md#functions-not-executing)
 
@@ -192,20 +197,21 @@ If failures occur only from the function subnet and a private DNS zone link is m
 **During incident you should see:**
 
 ```text
-[2026-04-04T09:12:10Z] AuthorizationFailed: The client '<object-id>' does not have authorization to perform action
-[2026-04-04T09:12:11Z] Dependency response: 403 Forbidden from https://storage.azure.com/
+[2026-04-04T12:17:54Z] AuthorizationPermissionMismatch: This request is not authorized to perform this operation using this permission.
+[2026-04-04T12:15:42Z] The listener for function 'Functions.scheduled_cleanup' was unable to start.
+[2026-04-04T12:22:42Z] Process reporting unhealthy: azure.functions.webjobs.storage: Unhealthy (AuthorizationPermissionMismatch)
 ```
 
 **After recovery you should see:**
 
 ```text
-[2026-04-04T09:20:42Z] Role assignment update detected for principal <object-id>
-[2026-04-04T09:21:03Z] Dependency response: 200 OK from https://storage.azure.com/
+[2026-04-04T12:24:31Z] Storage probe succeeded (70ms, 4 containers)
+[2026-04-04T12:23:57Z] Executed 'Functions.scheduled_cleanup' (Succeeded, Duration=34ms)
 ```
 
 ### Why this proves the hypothesis
 
-If role assignment removal or scope change aligns with onset of `AuthorizationFailed` and dependency `403`, the outage is RBAC-driven. Recovery after role restoration confirms identity path correctness.
+In this FC1 incident, `AuthorizationPermissionMismatch` correlated with listener startup failure and unhealthy storage subsystem status, indicating managed-identity authorization drift rather than code failure. When authorization was corrected, storage probes succeeded and `Functions.scheduled_cleanup` executions resumed, confirming RBAC/identity as the root cause.
 
 **Related playbook**: [Playbook: Functions failing with errors](playbooks.md#functions-failing-with-errors)
 

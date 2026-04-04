@@ -88,6 +88,11 @@ Timestamp                    Message
 # Normal: Healthy listener
 [2024-01-15T10:30:00Z] Listener started for function 'QueueProcessor'
 [2024-01-15T10:30:00Z] Host started (234ms)
+
+# Real-world: Listener failure from RBAC permission removal (FC1, 2026-04-04)
+[2026-04-04T12:15:42Z] The listener for function 'Functions.scheduled_cleanup' was unable to start.
+[2026-04-04T12:16:06Z] The listener for function 'Functions.scheduled_cleanup' was unable to start.
+[2026-04-04T12:22:53Z] Process reporting unhealthy: azure.functions.webjobs.storage: Unhealthy (AuthorizationPermissionMismatch)
 ```
 
 ### KQL queries
@@ -188,6 +193,19 @@ api.partner.internal            1260     0
 # Normal: warm startup and stable dependency
 [2024-01-15T11:20:00Z] Host started (200ms)
 [2024-01-15T11:20:01Z] Dependency call success: target=api.partner.internal, duration=84ms
+
+# Real-world: FC1 cold start and scale events (Korea Central, 2026-04-04)
+# Host startup is fast (363ms), but client sees 30.5s due to instance provisioning
+[2026-04-04T12:15:42Z] Host started (363ms)
+[2026-04-04T12:13:37Z] Host started (453ms)
+
+# Scale event latency — new instances added mid-traffic
+# Server-side: 1719ms - 1842ms per request during scale events
+# Client-side: 3.0s - 3.5s total
+
+# Fully warm baseline
+# Server-side: 3.63ms - 5.86ms
+# Client-side: 67ms - 99ms
 ```
 
 ### KQL queries
@@ -260,6 +278,17 @@ Microsoft.Azure.WebJobs.Script.Workers.Rpc.RpcException  Result: Failure Excepti
 }
 ```
 
+```text
+# Real-world: RBAC permission removal causing cascading failures (FC1, 2026-04-04)
+type                                                         outerMessage                                                                    count_
+-----------------------------------------------------------  ------------------------------------------------------------------------------  ------
+Microsoft.Azure.WebJobs.Host.Listeners.FunctionListenerException  The listener for function 'Functions.scheduled_cleanup' was unable to start.  10
+
+# KQL: Host health check revealed the root cause
+traces | where message contains "unhealthy"
+→ "azure.functions.webjobs.storage": {"status":"Unhealthy","description":"Unable to access AzureWebJobsStorage","errorCode":"AuthorizationPermissionMismatch"}
+```
+
 ### How to interpret the results
 | Pattern | Normal | Abnormal | Interpretation |
 |---|---|---|---|
@@ -279,6 +308,11 @@ Microsoft.Azure.WebJobs.Script.Workers.Rpc.RpcException  Result: Failure Excepti
 # Normal: occasional transient with successful retry
 [2024-01-15T12:20:07Z] Dependency timeout on attempt 1.
 [2024-01-15T12:20:09Z] Retry succeeded on attempt 2.
+
+# Real-world: Managed identity RBAC failure (FC1, 2026-04-04)
+[2026-04-04T12:17:54Z] Storage operation failed: Status: 403 (AuthorizationPermissionMismatch)
+[2026-04-04T12:15:42Z] The listener for function 'Functions.scheduled_cleanup' was unable to start.
+[2026-04-04T12:22:42Z] Process reporting unhealthy: azure.functions.webjobs.storage: Unhealthy
 ```
 
 ### KQL queries

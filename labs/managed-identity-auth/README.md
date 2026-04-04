@@ -35,14 +35,19 @@ The exercise validates both success and expected authorization failures.
    ```
 5. Provision Azure resources.
    ```bash
-   az group create --name rg-mi-lab --location eastus
-   az storage account create --name stmilab123 --resource-group rg-mi-lab --location eastus --sku Standard_LRS
-   az keyvault create --name kv-mi-lab-123 --resource-group rg-mi-lab --location eastus --sku standard
-   az functionapp create --name func-mi-lab-123 --resource-group rg-mi-lab --storage-account stmilab123 --consumption-plan-location eastus --runtime python --runtime-version 3.11 --functions-version 4
+   az group create --name rg-mi-lab --location koreacentral
+   az storage account create --name stmilab123 --resource-group rg-mi-lab --location koreacentral --sku Standard_LRS
+   az keyvault create --name kv-mi-lab-123 --resource-group rg-mi-lab --location koreacentral --sku standard
+   az functionapp create --name func-mi-lab-123 --resource-group rg-mi-lab --storage-account stmilab123 --flexconsumption-location koreacentral --runtime python --runtime-version 3.11
    ```
 6. Enable system-assigned identity on the Function App.
    ```bash
    az functionapp identity assign --name func-mi-lab-123 --resource-group rg-mi-lab
+   ```
+   For FC1 validation in this lab, use a user-assigned managed identity and configure the storage identity client ID:
+   ```bash
+   az functionapp identity assign --name func-mi-lab-123 --resource-group rg-mi-lab --identities "<user-assigned-identity-resource-id>"
+   az functionapp config appsettings set --name func-mi-lab-123 --resource-group rg-mi-lab --settings AzureWebJobsStorage__accountName=stmilab123 AzureWebJobsStorage__clientId=<user-assigned-client-id>
    ```
 7. Capture principal ID output for role assignments.
 8. Grant least-privilege roles.
@@ -63,12 +68,110 @@ The exercise validates both success and expected authorization failures.
 13. Document minimum required roles for each dependency.
 14. Capture final validation outputs with masked IDs only.
 
+!!! note "User-assigned vs system-assigned identity"
+    System-assigned identity is lifecycle-coupled to the Function App and is sufficient for many scenarios.
+    User-assigned identity is reusable across apps and requires explicitly setting `AzureWebJobsStorage__clientId` when used for `AzureWebJobsStorage` identity-based connections.
+    This lab's real FC1 deployment results use a user-assigned identity.
+
 ## Expected Behavior
 - Local runs authenticate via signed-in developer identity.
-- Azure runs authenticate via system-assigned managed identity.
+- Azure runs authenticate via managed identity (system-assigned or user-assigned, depending on configuration).
 - Missing role assignments return authorization errors.
 - Restoring least-privilege roles restores function success.
 - Endpoint tests should not require any secret material in app settings.
+
+## Real Deployment Results (FC1 — Korea Central)
+The managed identity lab was validated using the same FC1 deployment as the storage-access-failure lab, since both scenarios test RBAC-based access. The `diagnostics/storage-probe` endpoint tests managed identity access to Azure Blob Storage.
+
+**Baseline — identity access working:**
+```bash
+curl https://<app-name>.azurewebsites.net/api/diagnostics/storage-probe
+```
+```json
+{
+    "status": "success",
+    "account": "<storage-account>",
+    "containers": ["azure-webjobs-hosts", "azure-webjobs-secrets", "deployment-packages", "uploads"],
+    "elapsedMs": 293
+}
+```
+
+**Role assignments before removal:**
+```
+Role
+------------------------------
+Storage Blob Data Owner
+Storage Queue Data Contributor
+Storage Account Contributor
+```
+
+**After removing Storage Blob Data Owner + Storage Account Contributor:**
+```json
+{
+    "status": "error",
+    "account": "<storage-account>",
+    "error": "HttpResponseError",
+    "message": "This request is not authorized to perform this operation using this permission.\nErrorCode:AuthorizationPermissionMismatch",
+    "elapsedMs": 325
+}
+```
+
+**KQL: Exception pattern during role removal:**
+```
+Total exceptions: 10 over 6 minutes
+innermostType: Azure.RequestFailedException
+innermostMessage: Status: 403 (AuthorizationPermissionMismatch)
+```
+
+**KQL: Host health reporting during failure:**
+```json
+{
+  "azure.functions.web_host.lifecycle": {"status": "Healthy"},
+  "azure.functions.script_host.lifecycle": {"status": "Healthy"},
+  "azure.functions.webjobs.storage": {
+    "status": "Unhealthy",
+    "description": "Unable to access AzureWebJobsStorage",
+    "errorCode": "AuthorizationPermissionMismatch"
+  }
+}
+```
+
+**Cascading listener failures (real):**
+```
+outerType: Microsoft.Azure.WebJobs.Host.Listeners.FunctionListenerException
+outerMessage: The listener for function 'Functions.scheduled_cleanup' was unable to start.
+innermostType: Azure.RequestFailedException
+innermostMessage: Status: 403 (AuthorizationPermissionMismatch)
+```
+
+**Role restoration and recovery:**
+```bash
+az role assignment create \
+  --assignee-object-id "<principal-id>" \
+  --assignee-principal-type ServicePrincipal \
+  --role "Storage Blob Data Owner" \
+  --scope "<storage-resource-id>"
+```
+Recovery time: ~120 seconds after role restoration for token cache to refresh
+
+**Post-recovery:**
+```json
+{
+    "status": "success",
+    "account": "<storage-account>",
+    "containers": ["azure-webjobs-hosts", "azure-webjobs-secrets", "deployment-packages", "uploads"],
+    "elapsedMs": 70
+}
+```
+
+### Key Observations
+- User-assigned managed identity was used (not system-assigned), configured via `AzureWebJobsStorage__clientId`.
+- RBAC propagation takes 60-120 seconds in both directions (removal and restoration).
+- Removing blob data access causes cascading failures: blob triggers, timer triggers (which use blob leases), and any blob-dependent functions all fail.
+- The host health check `azure.functions.webjobs.storage` detects the issue within 30 seconds.
+- During prolonged RBAC outage, the function app can become completely unresponsive.
+- `az functionapp restart` forces new token acquisition and can speed up recovery.
+- Minimum roles required for AzureWebJobsStorage: Storage Blob Data Owner + Storage Queue Data Contributor + Storage Account Contributor (for blob, queue, and management operations).
 
 ## Cleanup
 ```bash

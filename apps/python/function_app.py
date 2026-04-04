@@ -9,6 +9,7 @@ from blueprints.dependencies import bp as dependencies_bp
 from blueprints.exceptions import bp as exceptions_bp
 from blueprints.scheduled import bp as scheduled_bp
 from blueprints.blob_processor import bp as blob_processor_bp
+from blueprints.diagnostics import bp as diagnostics_bp
 
 configure_telemetry()
 logger = logging.getLogger(__name__)
@@ -22,5 +23,6 @@ app.register_blueprint(dependencies_bp)
 app.register_blueprint(exceptions_bp)
 app.register_blueprint(scheduled_bp)
 app.register_blueprint(blob_processor_bp)
+app.register_blueprint(diagnostics_bp)
 
 logger.info("Azure Functions Field Guide application initialized")
