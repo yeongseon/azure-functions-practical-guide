@@ -45,8 +45,8 @@ Output:
 
 ```json
 {
-  "principalId": "abcd1234-...",
-  "tenantId": "efgh5678-...",
+  "principalId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+  "tenantId": "<tenant-id>",
   "type": "SystemAssigned"
 }
 ```
@@ -71,15 +71,15 @@ Grant the identity access to specific Azure resources using role-based access co
 ```bash
 # Storage Blob Data Contributor
 az role assignment create \
-  --assignee "<principalId>" \
+  --assignee "<object-id>" \
   --role "Storage Blob Data Contributor" \
-  --scope "/subscriptions/<sub>/resourceGroups/your-rg/providers/Microsoft.Storage/storageAccounts/yourstorage"
+  --scope "/subscriptions/<subscription-id>/resourceGroups/your-rg/providers/Microsoft.Storage/storageAccounts/yourstorage"
 
 # Key Vault Secrets User
 az role assignment create \
-  --assignee "<principalId>" \
+  --assignee "<object-id>" \
   --role "Key Vault Secrets User" \
-  --scope "/subscriptions/<sub>/resourceGroups/your-rg/providers/Microsoft.KeyVault/vaults/your-kv"
+  --scope "/subscriptions/<subscription-id>/resourceGroups/your-rg/providers/Microsoft.KeyVault/vaults/your-kv"
 ```
 
 > **Tip:** Scope role assignments to the specific resource (storage account, Key Vault) rather than the resource group or subscription. This follows the principle of least privilege.
@@ -196,7 +196,7 @@ def get_secret(secret_name: str) -> str:
 az login
 
 # Set your subscription
-az account set --subscription "<your-subscription-id>"
+az account set --subscription "<subscription-id>"
 
 # Your code now uses your az login credentials automatically
 func host start
@@ -234,7 +234,8 @@ resource storageRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-
 
 ## See Also
 - [Key Vault Integration Recipe](key-vault.md)
-- [Security Operations](../../../platform/security.md)
+- [Platform Security Design](../../../platform/security.md) — authentication architecture, Easy Auth, key management design
+- [Security Operations](../../../operations/security.md) — key rotation, RBAC audit, CORS, TLS enforcement
 - [Blob Storage Recipe](blob-storage.md)
 
 ## References

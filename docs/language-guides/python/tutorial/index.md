@@ -40,7 +40,7 @@ flowchart TD
 | **Scale to zero** | ✅ | ✅ | ❌ (min 1 instance) | ❌ |
 | **VNet integration** | ❌ | ✅ | ✅ | ✅ (Standard+) |
 | **Private endpoints** | ❌ | ✅ | ✅ | ✅ (Standard+) |
-| **Deployment slots** | ❌ | ❌ | ✅ | ✅ (Standard+) |
+| **Deployment slots** | ✅ (2 incl. production) | ❌ | ✅ | ✅ (Standard+) |
 | **Max instances** | 100 (Linux) / 200 (Windows) | 1,000 | 100 (region-dependent) | 10–30 |
 | **Default timeout** | 5 min | 30 min | 30 min | 30 min |
 | **Max timeout** | 10 min | Unlimited | Unlimited | Unlimited |

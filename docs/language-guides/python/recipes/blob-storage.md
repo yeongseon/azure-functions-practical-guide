@@ -330,9 +330,9 @@ Use Managed Identity instead of connection strings to access Blob Storage:
    az functionapp identity assign --name your-func --resource-group your-rg
 
    az role assignment create \
-     --assignee "<principalId>" \
-     --role "Storage Blob Data Contributor" \
-     --scope "/subscriptions/<sub>/resourceGroups/your-rg/providers/Microsoft.Storage/storageAccounts/yourstorage"
+      --assignee "<object-id>" \
+      --role "Storage Blob Data Contributor" \
+      --scope "/subscriptions/<subscription-id>/resourceGroups/your-rg/providers/Microsoft.Storage/storageAccounts/yourstorage"
    ```
 
 2. For bindings, use identity-based connection:

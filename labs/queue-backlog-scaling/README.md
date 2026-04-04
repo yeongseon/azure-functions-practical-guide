@@ -75,6 +75,6 @@ Delete local artifacts and Azurite data folder.
 Remove test queues from both local and Azure storage accounts.
 
 ## See Also
-- [Scaling and plans](../../docs/platform/scaling-and-plans.md)
+- [Scaling and plans](../../docs/platform/scaling.md)
 - [Queue trigger guidance](../../docs/language-guides/python/recipes/queue.md)
-- [Operational scaling playbook](../../docs/operations/scaling.md)
+- [Operational scaling playbook](../../docs/platform/hosting.md)

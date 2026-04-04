@@ -60,8 +60,7 @@ Deploy a Python Function App to an Elastic Premium plan (`EP1`) with VNet integr
       --name "$APP_NAME" \
       --resource-group "$RG" \
       --settings \
-        "FUNCTIONS_WORKER_RUNTIME=python" \
-        "AzureWebJobsFeatureFlags=EnableWorkerIndexing"
+        "FUNCTIONS_WORKER_RUNTIME=python"
     ```
 
     For Premium, both host-storage models are valid:

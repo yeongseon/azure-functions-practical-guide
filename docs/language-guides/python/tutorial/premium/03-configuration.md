@@ -29,7 +29,6 @@ Configure runtime settings, storage options, and networking-related app configur
       --settings \
         "FUNCTIONS_WORKER_RUNTIME=python" \
         "FUNCTIONS_EXTENSION_VERSION=~4" \
-        "AzureWebJobsFeatureFlags=EnableWorkerIndexing" \
         "WEBSITE_RUN_FROM_PACKAGE=1"
     ```
 

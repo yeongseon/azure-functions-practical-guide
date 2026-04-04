@@ -74,14 +74,14 @@ The function app's Managed Identity needs permission to read secrets:
 az keyvault set-policy \
   --name your-kv \
   --resource-group your-rg \
-  --object-id <principalId> \
+  --object-id <object-id> \
   --secret-permissions get list
 
 # Or using RBAC (recommended for new deployments)
 az role assignment create \
-  --assignee <principalId> \
+  --assignee <object-id> \
   --role "Key Vault Secrets User" \
-  --scope "/subscriptions/<sub>/resourceGroups/your-rg/providers/Microsoft.KeyVault/vaults/your-kv"
+  --scope "/subscriptions/<subscription-id>/resourceGroups/your-rg/providers/Microsoft.KeyVault/vaults/your-kv"
 ```
 
 #### Step 4: Reference the Secret in App Settings
@@ -238,7 +238,8 @@ resource functionApp 'Microsoft.Web/sites@2023-01-01' = {
 
 ## See Also
 - [Managed Identity Recipe](managed-identity.md)
-- [Security Operations](../../../platform/security.md)
+- [Platform Security Design](../../../platform/security.md) — authentication architecture, Easy Auth, key management design
+- [Security Operations](../../../operations/security.md) — key rotation, RBAC audit, CORS, TLS enforcement
 
 ## References
 - [Key Vault References in App Service (Microsoft Learn)](https://learn.microsoft.com/azure/app-service/app-service-key-vault-references)

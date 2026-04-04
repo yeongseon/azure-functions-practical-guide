@@ -18,7 +18,6 @@ Azure Functions uses environment variables for runtime configuration, connection
   "Values": {
     "FUNCTIONS_WORKER_RUNTIME": "python",
     "FUNCTIONS_EXTENSION_VERSION": "~4",
-    "AzureWebJobsFeatureFlags": "EnableWorkerIndexing",
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "APPLICATIONINSIGHTS_CONNECTION_STRING": "",
     "AZURE_FUNCTIONS_ENVIRONMENT": "Development",
@@ -38,7 +37,7 @@ These variables are required or consumed by the Azure Functions runtime:
 | `FUNCTIONS_WORKER_RUNTIME` | Tells the host which language worker to use | — | **Yes** |
 | `FUNCTIONS_EXTENSION_VERSION` | Functions runtime version (`~4` for v4) | — | **Yes** (in Azure) |
 | `AzureWebJobsStorage` | Connection string or identity-based settings for the internal storage account used by the Functions host. On Flex Consumption, use identity-based format (`AzureWebJobsStorage__accountName`) | — | **Yes** (for non-HTTP triggers, Durable Functions, timer triggers) |
-| `AzureWebJobsFeatureFlags` | Feature flags for the Functions host | — | **Yes** (must include `EnableWorkerIndexing` for v2 model) |
+| `AzureWebJobsFeatureFlags` | Feature flags for the Functions host | — | No (legacy scenarios only) |
 | `AZURE_FUNCTIONS_ENVIRONMENT` | Current environment name (`Development`, `Staging`, `Production`) | `Production` | No |
 | `WEBSITE_SITE_NAME` | Name of the function app (set automatically by Azure) | — | No (auto-set) |
 | `WEBSITE_HOSTNAME` | Hostname of the function app (e.g., `your-func.azurewebsites.net`) | — | No (auto-set) |
@@ -67,7 +66,9 @@ az functionapp config appsettings set \
 
 ### AzureWebJobsFeatureFlags
 
-For the v2 Python programming model (decorator-based), this **must** include `EnableWorkerIndexing`. Without it, the runtime looks for `function.json` files and will not discover your decorator-defined functions:
+Current runtimes (4.x+) enable worker indexing by default, so this setting is not required for the v2 Python programming model.
+
+> **Note:** Older runtimes (< 4.x) may need this flag.
 
 ```bash
 az functionapp config appsettings set \
@@ -177,7 +178,6 @@ resource functionApp 'Microsoft.Web/sites@2023-01-01' = {
       appSettings: [
         { name: 'FUNCTIONS_WORKER_RUNTIME', value: 'python' }
         { name: 'FUNCTIONS_EXTENSION_VERSION', value: '~4' }
-        { name: 'AzureWebJobsFeatureFlags', value: 'EnableWorkerIndexing' }
         { name: 'AzureWebJobsStorage__accountName', value: storageAccountName }
         { name: 'APPLICATIONINSIGHTS_CONNECTION_STRING', value: appInsights.properties.ConnectionString }
       ]

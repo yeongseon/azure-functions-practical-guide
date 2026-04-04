@@ -14,7 +14,7 @@ Azure Functions supports four main hosting models:
 | Dedicated (App Service Plan) | Predictable, fixed-capacity workloads | Manual/autoscale by plan rules | None (always on) |
 
 !!! tip "Decision rule"
-    Start with Flex Consumption for most new serverless workloads, then choose Premium when you need permanently warm behavior and App Service premium features such as deployment slots.
+    Start with Flex Consumption for most new serverless workloads, then choose Premium when you need permanently warm behavior and advanced App Service premium features.
 
 ## Consumption plan (classic)
 
@@ -80,7 +80,7 @@ Premium (Elastic Premium) is designed for consistently low latency and enterpris
 - cold start must be eliminated,
 - private networking is mandatory,
 - long-running executions are expected,
-- and you need features like deployment slots.
+- and you need features like always-warm baseline instances.
 
 ## Dedicated plan (App Service Plan)
 
@@ -106,7 +106,7 @@ Dedicated runs Functions on pre-provisioned App Service compute.
 | Scale to zero | Yes | Yes | No | No |
 | VNet integration | No | Yes | Yes | Yes |
 | Inbound private endpoint | No | Yes | Yes | Yes |
-| Deployment slots | No | No | Yes | Yes |
+| Deployment slots | Yes (2 including production) | No | Yes | Yes |
 | Kudu/SCM | Yes | No | Yes | Yes |
 | Apps per plan | Multiple | One | Multiple | Multiple |
 

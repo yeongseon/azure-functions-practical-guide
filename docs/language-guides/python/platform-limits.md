@@ -6,17 +6,17 @@ Azure Functions has platform-imposed limits that vary by hosting plan. Understan
 
 | Limit | Consumption (Y1) | Flex Consumption (FC1) | Premium (EP1-EP3) | Dedicated (B1-P3v3) |
 |-------|------------------|------------------------|-------------------|---------------------|
-| **Max execution timeout** | 10 min | Unlimited | 60 min (unlimited with config) | 30 min (unlimited with `Always On`) |
+| **Max execution timeout** | 10 min | SKU-dependent (default unbounded) | Unlimited | Unlimited (`Always On` required) |
 | **Default execution timeout** | 5 min | 30 min | 30 min | 30 min |
 | **Max instances (scale-out)** | 200 | 1,000 | 100 | 10-30 (varies by tier) |
-| **Max request size** | 100 MB | 100 MB | 100 MB | 100 MB |
+| **Max request size** | 210 MB | 210 MB | 210 MB | 210 MB |
 | **Max response size** | 100 MB | 100 MB | 100 MB | 100 MB |
-| **Max connections per instance** | 600 active, 1200 total | 600 active, 1200 total | 600 active, 1200 total | Unlimited (OS limits) |
+| **Max connections per instance** | 600 active, 1200 total | Unbounded | Unbounded | See App Service limits |
 | **Memory per instance** | 1.5 GB (fixed) | 512 / 2048 / 4096 MB | 3.5-14 GB (varies by tier) | 1.75-14 GB (varies by tier) |
 | **Storage per app** | 1 GB (Consumption share) | Deployment package in blob container | 250 GB | 50-1000 GB |
 | **Function apps per plan** | Multiple | **1** | Multiple | Multiple |
 | **VNet integration** | ❌ | ✅ | ✅ | ✅ |
-| **Deployment slots** | No | No | Yes | Yes |
+| **Deployment slots** | 2 (including production) | 0 | 20 | 1-20 (varies by tier) |
 | **Always On** | ❌ (scales to zero) | Optional always-ready | ✅ (always-ready instances) | ✅ |
 
 ## Execution Timeout
@@ -45,12 +45,12 @@ When a function exceeds the timeout, the host terminates the worker process. For
 | Setting | Value |
 |---------|-------|
 | Default timeout | 30 minutes |
-| Maximum configurable timeout | 60 minutes |
-| Unlimited timeout | Set `"functionTimeout": "-1"` (not recommended) |
+| Maximum configurable timeout | Unlimited |
+| Unlimited timeout | Set `"functionTimeout": "-1"` or remove `functionTimeout` |
 
 ```json
 {
-  "functionTimeout": "00:60:00"
+  "functionTimeout": "-1"
 }
 ```
 
@@ -60,42 +60,42 @@ When a function exceeds the timeout, the host terminates the worker process. For
 
 ### Consumption Plan: 200 Instances
 
-The Consumption plan can scale to a maximum of 200 instances. You can set a lower limit to control costs:
-
-```bash
-az functionapp config set \
-  --name your-func \
-  --resource-group your-rg \
-  --max-worker-count 50
-```
+The Consumption plan can scale to a maximum of 200 instances. Scale is event-driven and there isn't a per-app instance cap command for this plan.
 
 ### Premium Plan: 100 Instances
 
-The Premium plan scales to a maximum of 100 instances by default. You can configure always-ready and pre-warmed instances:
+The Premium plan scales to a maximum of 100 instances by default (region and OS can affect practical limits). Configure always-ready and pre-warmed behavior in the Azure portal or with ARM/Bicep templates.
 
 ```bash
-# Set minimum (always-ready) instances
-az functionapp update \
-  --name your-func \
-  --resource-group your-rg \
-  --min-elastic-worker-count 2
-
-# Set maximum instances
-az functionapp update \
-  --name your-func \
-  --resource-group your-rg \
-  --max-elastic-worker-count 50
+# Premium pre-warmed and always-ready settings are managed in
+# the Azure portal or in ARM/Bicep resource configuration.
 ```
 
 ### Flex Consumption Plan: 1,000 Instances
 
-Flex Consumption supports up to 1,000 instances with per-function scaling behavior and optional always-ready instances. Capacity planning should account for subnet sizing and outbound networking capacity when VNet integration is enabled.
+Flex Consumption supports up to 1,000 instances with per-function scaling behavior and optional always-ready instances.
+
+```bash
+# Set Flex maximum instance count
+az functionapp scale config set \
+  --resource-group <resource-group> \
+  --name <function-app-name> \
+  --maximum-instance-count <count>
+
+# Configure always-ready instances for HTTP triggers
+az functionapp scale config always-ready set \
+  --resource-group <resource-group> \
+  --name <function-app-name> \
+  --settings http=<count>
+```
+
+Capacity planning should account for subnet sizing and outbound networking capacity when VNet integration is enabled.
 
 ## HTTP Request and Response Limits
 
 | Limit | Value | Notes |
 |-------|-------|-------|
-| Max request body size | 100 MB | Applies to all hosting plans |
+| Max request body size | 210 MB | Applies to all hosting plans |
 | Max response body size | 100 MB | Applies to all hosting plans |
 | Max URL length | 8,192 bytes | Standard HTTP limit |
 | Max header size | 32 KB | Total across all headers |
@@ -105,13 +105,14 @@ Flex Consumption supports up to 1,000 instances with per-function scaling behavi
 
 ## Concurrent Connections
 
-Each function instance has limits on outbound connections:
+Outbound connection limits differ by hosting plan:
 
 | Limit | Value |
 |-------|-------|
-| Active connections | 600 per host instance |
-| Total connections | 1,200 per host instance |
-| Outbound connections (Consumption) | 600 per instance |
+| Consumption (active/total) | 600 active / 1,200 total per instance |
+| Flex Consumption | Unbounded |
+| Premium | Unbounded |
+| Dedicated | See App Service limits |
 
 ### Avoiding Connection Exhaustion
 

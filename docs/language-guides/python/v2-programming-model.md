@@ -40,7 +40,7 @@ app/
 | **Function config** | `function.json` per function | Python decorators |
 | **Discovery** | Host scans filesystem | Worker indexes decorators |
 | **Project structure** | One folder per function | Flat or modular (your choice) |
-| **Feature flag** | Not needed | `EnableWorkerIndexing` required |
+| **Feature flag** | Not needed | Not required on current runtimes (4.x+) |
 | **Bindings** | JSON properties | Decorator parameters |
 | **Entry point** | `__init__.py` per folder | `function_app.py` (single entry) |
 | **Modularity** | Folders | `Blueprint` class |

@@ -49,7 +49,7 @@ az functionapp show \
 
 ```bash
 az functionapp config hostname add \
-  --webapp-name $APP_NAME \
+  --name $APP_NAME \
   --resource-group $RG \
   --hostname api.contoso.com
 ```

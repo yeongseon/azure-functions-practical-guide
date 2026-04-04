@@ -37,7 +37,6 @@ az functionapp config appsettings set \
   --resource-group "$RG" \
   --settings \
     "FUNCTIONS_WORKER_RUNTIME=python" \
-    "AzureWebJobsFeatureFlags=EnableWorkerIndexing" \
     "AzureWebJobsStorage=DefaultEndpointsProtocol=https;AccountName=$STORAGE_NAME;AccountKey=<masked-key>;EndpointSuffix=core.windows.net" \
     "APP_ENV=production" \
     "LOG_LEVEL=Information"

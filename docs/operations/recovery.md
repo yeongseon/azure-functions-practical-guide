@@ -25,9 +25,9 @@ For Premium and Dedicated plans, deployment slots are the fastest rollback path.
 ```bash
 az functionapp deployment slot swap \
     --resource-group <resource-group> \
-    --name <app-name> \
-    --slot production \
-    --target-slot staging
+    --name <function-app-name> \
+    --slot staging \
+    --target-slot production
 ```
 
 For plans without slot support, redeploy the last known good artifact.

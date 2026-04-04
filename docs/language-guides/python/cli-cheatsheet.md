@@ -123,11 +123,17 @@ az functionapp config appsettings delete \
 ### Configuration
 
 ```bash
-# Set scale limit (max instances)
-az functionapp config set \
-  --name your-func \
-  --resource-group your-rg \
-  --max-worker-count 50
+# Set Flex Consumption maximum instance count
+az functionapp scale config set \
+  --resource-group <resource-group> \
+  --name <function-app-name> \
+  --maximum-instance-count <count>
+
+# Configure Flex always-ready instances for HTTP triggers
+az functionapp scale config always-ready set \
+  --resource-group <resource-group> \
+  --name <function-app-name> \
+  --settings http=<count>
 
 # Set minimum TLS version
 az functionapp config set \

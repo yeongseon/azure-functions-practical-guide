@@ -164,7 +164,7 @@ FUNCTION_URL="https://your-func.azurewebsites.net/runtime/webhooks/eventgrid?fun
 # Create the subscription
 az eventgrid event-subscription create \
   --name order-events-sub \
-  --source-resource-id "/subscriptions/<sub>/resourceGroups/your-rg/providers/Microsoft.EventGrid/topics/your-topic" \
+  --source-resource-id "/subscriptions/<subscription-id>/resourceGroups/your-rg/providers/Microsoft.EventGrid/topics/your-topic" \
   --endpoint "$FUNCTION_URL" \
   --endpoint-type webhook
 ```
@@ -236,7 +236,7 @@ Event Grid natively integrates with many Azure services. For example, receive ev
 ```bash
 az eventgrid event-subscription create \
   --name blob-created-sub \
-  --source-resource-id "/subscriptions/<sub>/resourceGroups/your-rg/providers/Microsoft.Storage/storageAccounts/yourstorage" \
+  --source-resource-id "/subscriptions/<subscription-id>/resourceGroups/your-rg/providers/Microsoft.Storage/storageAccounts/yourstorage" \
   --included-event-types "Microsoft.Storage.BlobCreated" \
   --endpoint "https://your-func.azurewebsites.net/runtime/webhooks/eventgrid?functionName=handle_blob_event&code=<host-key>" \
   --endpoint-type webhook

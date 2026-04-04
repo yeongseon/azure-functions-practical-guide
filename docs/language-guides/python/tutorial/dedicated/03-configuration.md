@@ -45,7 +45,6 @@ az functionapp config appsettings set \
   --settings \
     FUNCTIONS_WORKER_RUNTIME=python \
     AzureWebJobsStorage="$STORAGE_CONNECTION_STRING" \
-    AzureWebJobsFeatureFlags=EnableWorkerIndexing \
     APP_ENV=dedicated-dev
 ```
 
@@ -126,7 +125,6 @@ az functionapp config show \
   "name": "appsettings",
   "properties": {
     "APP_ENV": "dedicated-dev",
-    "AzureWebJobsFeatureFlags": "EnableWorkerIndexing",
     "AzureWebJobsStorage": "DefaultEndpointsProtocol=https;AccountName=<masked>;AccountKey=<masked>;EndpointSuffix=core.windows.net",
     "FUNCTIONS_WORKER_RUNTIME": "python"
   }

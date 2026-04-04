@@ -6,18 +6,13 @@ This reference covers the most common issues encountered when developing and dep
 
 **Problem:** After deploying to Azure, navigating to the function app shows no functions. The Functions list in the Azure Portal is empty, and hitting endpoints returns 404.
 
-**Cause:** The `AzureWebJobsFeatureFlags` app setting is missing or does not include `EnableWorkerIndexing`. Without this flag, the Azure Functions host looks for `function.json` files instead of scanning Python decorators.
+**Cause:** On current runtimes (4.x+), worker indexing is enabled by default. An empty function list is more commonly caused by startup/import failures during app load.
 
 **Solution:**
 
 ```bash
-az functionapp config appsettings set \
-  --name your-func \
-  --resource-group your-rg \
-  --settings "AzureWebJobsFeatureFlags=EnableWorkerIndexing"
-
-# Restart to pick up the change
-az functionapp restart \
+# Check startup errors first
+az functionapp log tail \
   --name your-func \
   --resource-group your-rg
 ```
@@ -27,10 +22,12 @@ Verify in `local.settings.json` for local development:
 ```json
 {
   "Values": {
-    "AzureWebJobsFeatureFlags": "EnableWorkerIndexing"
+    "FUNCTIONS_WORKER_RUNTIME": "python"
   }
 }
 ```
+
+> **Note:** Older runtimes (< 4.x) may need `AzureWebJobsFeatureFlags=EnableWorkerIndexing` as a legacy workaround.
 
 ---
 
@@ -147,7 +144,6 @@ If no example file exists, create one manually:
   "IsEncrypted": false,
   "Values": {
     "FUNCTIONS_WORKER_RUNTIME": "python",
-    "AzureWebJobsFeatureFlags": "EnableWorkerIndexing",
     "AzureWebJobsStorage": "UseDevelopmentStorage=true"
   }
 }
@@ -244,13 +240,13 @@ Option C — For HTTP-only functions, set an empty connection string:
 ```bash
 # Check current role assignments
 az role assignment list \
-  --assignee "<principalId>" \
+  --assignee "<object-id>" \
   --all \
   --output table
 
 # Assign the needed role
 az role assignment create \
-  --assignee "<principalId>" \
+  --assignee "<object-id>" \
   --role "<role-name>" \
   --scope "<resource-id>"
 ```

@@ -69,7 +69,6 @@ Update `app/local.settings.json` to include local development values:
   "IsEncrypted": false,
   "Values": {
     "FUNCTIONS_WORKER_RUNTIME": "python",
-    "AzureWebJobsFeatureFlags": "EnableWorkerIndexing",
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "AZURE_FUNCTIONS_ENVIRONMENT": "Development"
   }

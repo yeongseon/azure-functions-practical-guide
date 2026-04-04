@@ -39,13 +39,12 @@ Use this when low-latency response is required without moving to Premium.
 Premium supports always-ready instances and pre-warmed capacity for scale-out events.
 This is the strongest built-in mitigation for latency-sensitive serverless workloads.
 
-Configure minimum elastic worker count:
+Premium always-ready and pre-warmed settings are configured in the Azure portal or with ARM/Bicep templates (CLI support varies by API version):
 
 ```bash
-az functionapp update \
-    --resource-group <resource-group> \
-    --name <app-name> \
-    --min-elastic-worker-count <count>
+# Premium always-ready/pre-warmed configuration:
+# Use Azure portal (Function App > Scale out)
+# or ARM/Bicep properties for the plan.
 ```
 
 ### Dedicated plan
@@ -55,7 +54,7 @@ Enable Always On so the app remains loaded:
 ```bash
 az functionapp config set \
     --resource-group <resource-group> \
-    --name <app-name> \
+    --name <function-app-name> \
     --always-on true
 ```
 

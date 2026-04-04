@@ -46,7 +46,6 @@ export LOCATION="eastus2"
       "IsEncrypted": false,
       "Values": {
         "FUNCTIONS_WORKER_RUNTIME": "python",
-        "AzureWebJobsFeatureFlags": "EnableWorkerIndexing",
         "AzureWebJobsStorage": "UseDevelopmentStorage=true",
         "AZURE_FUNCTIONS_ENVIRONMENT": "Development"
       }

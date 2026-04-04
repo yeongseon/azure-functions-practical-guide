@@ -115,20 +115,27 @@ Easy Auth adds authentication at the platform level — before your function cod
 ### Enable Easy Auth for Azure AD
 
 ```bash
-az functionapp auth update \
-  --name your-func \
-  --resource-group your-rg \
-  --enabled true \
-  --action LoginWithAzureActiveDirectory \
-  --aad-client-id "<your-app-client-id>" \
-  --aad-token-issuer-url "https://login.microsoftonline.com/<tenant-id>/v2.0"
+az webapp auth update \
+    --resource-group <resource-group> \
+    --name <function-app-name> \
+    --enabled true \
+    --action LoginWithAzureActiveDirectory \
+    --aad-client-id <client-id> \
+    --aad-token-issuer-url "https://login.microsoftonline.com/<tenant-id>/v2.0"
 ```
+
+> **Note:** Azure Functions uses the same App Service Authentication (Easy Auth) as Web Apps. The `az webapp auth` commands apply to function apps as well.
 
 ### Accessing User Identity in Code
 
 When Easy Auth is enabled, the platform injects identity information into request headers:
 
 ```python
+import json
+import azure.functions as func
+
+bp = func.Blueprint()
+
 @bp.route(route="profile", methods=["GET"], auth_level=func.AuthLevel.ANONYMOUS)
 def profile(req: func.HttpRequest) -> func.HttpResponse:
     """Returns the authenticated user's profile.
@@ -260,7 +267,8 @@ curl -H "Authorization: Bearer $TOKEN" \
 
 ## See Also
 - [HTTP API Patterns](http-api.md)
-- [Security Operations](../../../platform/security.md)
+- [Platform Security Design](../../../platform/security.md) — authentication architecture, Easy Auth, key management design
+- [Security Operations](../../../operations/security.md) — key rotation, RBAC audit, CORS, TLS enforcement
 
 ## References
 - [Azure Functions Security Concepts (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/security-concepts)

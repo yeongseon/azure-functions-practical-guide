@@ -79,6 +79,6 @@ Delete local project and Azurite artifacts when done.
 If you created test storage containers manually, remove them as well.
 
 ## See Also
-- [Hosting options and scaling](../../docs/platform/scaling-and-plans.md)
+- [Hosting options and scaling](../../docs/platform/scaling.md)
 - [Monitoring and diagnostics](../../docs/operations/monitoring.md)
 - [Python runtime guidance](../../docs/language-guides/python/python-runtime.md)

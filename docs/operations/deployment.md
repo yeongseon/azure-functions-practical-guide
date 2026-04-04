@@ -97,9 +97,11 @@ steps:
       package: <artifact-path>
 ```
 
-## Deployment slots (Premium and Dedicated)
+## Deployment slots (Consumption, Premium, and Dedicated)
 
 Use slots for safe cutover and fast rollback.
+
+> **Note:** Classic Consumption supports 2 slots total (including production). Flex Consumption does not support deployment slots.
 
 ### Create staging slot
 
@@ -143,9 +145,9 @@ Preferred sequence:
 ```bash
 az functionapp deployment slot swap \
     --resource-group <resource-group> \
-    --name <app-name> \
-    --slot production \
-    --target-slot staging
+    --name <function-app-name> \
+    --slot staging \
+    --target-slot production
 ```
 
 ### Artifact rollback

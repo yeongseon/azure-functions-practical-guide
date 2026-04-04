@@ -95,8 +95,8 @@ Consumption scaling reminder:
 !!! info "Not available on Consumption"
     Private endpoints require Flex Consumption, Premium, or Dedicated plan.
 
-!!! info "Not available on Consumption"
-    Deployment slots are not supported on Consumption (Y1).
+!!! info "Consumption slot support"
+    Consumption (Y1) supports deployment slots (2 total, including production).
 
 ## Expected Output
 

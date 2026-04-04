@@ -110,7 +110,7 @@ az functionapp config set --name "$APP_NAME" --resource-group "$RG" --min-tls-ve
 Custom domain and certificate operations:
 
 ```bash
-az functionapp config hostname add --webapp-name "$APP_NAME" --resource-group "$RG" --hostname "api.contoso.example"
+az functionapp config hostname add --name "$APP_NAME" --resource-group "$RG" --hostname "api.contoso.example"
 az functionapp config ssl bind --name "$APP_NAME" --resource-group "$RG" --certificate-thumbprint "<certificate-thumbprint>" --ssl-type "SNI"
 ```
 
