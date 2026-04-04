@@ -85,7 +85,7 @@ az functionapp update \
 | Feature | Consumption | Flex Consumption | Premium | Dedicated |
 |---------|-------------|------------------|---------|-----------|
 | Custom domain | CNAME only | CNAME only | Full (A + CNAME) | Full |
-| Managed certificate | Yes | Yes | Yes | Yes |
+| Managed certificate | Yes | No | Yes | Yes |
 | IP-based SSL | No | No | Yes | Yes |
 
 !!! note "Flex Consumption certificate limitations"

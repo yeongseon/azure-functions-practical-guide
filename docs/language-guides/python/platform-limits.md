@@ -6,7 +6,7 @@ Azure Functions has platform-imposed limits that vary by hosting plan. Understan
 
 | Limit | Consumption (Y1) | Flex Consumption (FC1) | Premium (EP1-EP3) | Dedicated (B1-P3v3) |
 |-------|------------------|------------------------|-------------------|---------------------|
-| **Max execution timeout** | 10 min | SKU-dependent (default unbounded) | Unlimited | Unlimited (`Always On` required) |
+| **Max execution timeout** | 10 min | Unbounded | Unlimited | Unlimited (`Always On` required) |
 | **Default execution timeout** | 5 min | 30 min | 30 min | 30 min |
 | **Max instances (scale-out)** | 200 | 1,000 | 100 | 10-30 (varies by tier) |
 | **Max request size** | 210 MB | 210 MB | 210 MB | 210 MB |
@@ -16,7 +16,7 @@ Azure Functions has platform-imposed limits that vary by hosting plan. Understan
 | **Storage per app** | 1 GB (Consumption share) | Deployment package in blob container | 250 GB | 50-1000 GB |
 | **Function apps per plan** | Multiple | **1** | Multiple | Multiple |
 | **VNet integration** | ❌ | ✅ | ✅ | ✅ |
-| **Deployment slots** | 2 (including production) | 0 | 20 | 1-20 (varies by tier) |
+| **Deployment slots** | 2 (including production) | 0 | 3 (including production) | 1-20 (varies by tier) |
 | **Always On** | ❌ (scales to zero) | Optional always-ready | ✅ (always-ready instances) | ✅ |
 
 ## Execution Timeout
