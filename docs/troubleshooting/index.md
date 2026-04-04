@@ -9,6 +9,8 @@ It is designed for incident response first, then root-cause analysis and prevent
 ## What this section covers
 
 - [First 10 Minutes](first-10-minutes.md): incident triage checklist for rapid stabilization.
+- [Decision Tree](decision-tree.md): visual routing from symptom to investigation path.
+- [Mental Model](mental-model.md): conceptual framework for Azure Functions troubleshooting.
 - [Playbooks](playbooks.md): scenario runbooks with symptoms, diagnosis, and fixes.
 - [Methodology](methodology.md): repeatable troubleshooting workflow for complex incidents.
 - [KQL Query Library](kql.md): ready-to-use Application Insights and Log Analytics queries.
@@ -77,6 +79,8 @@ flowchart TD
 | Document | Coverage |
 |---|---|
 | [First 10 Minutes](first-10-minutes.md) | Time-boxed triage checks for active incidents |
+| [Decision Tree](decision-tree.md) | Visual routing from symptom to investigation path |
+| [Mental Model](mental-model.md) | Conceptual framework for Azure Functions troubleshooting |
 | [Playbooks](playbooks.md) | Scenario-based diagnostics and mitigations |
 | [Methodology](methodology.md) | Reproducible Observe → Hypothesize → Test → Fix → Verify workflow |
 | [KQL Query Library](kql.md) | Reusable telemetry and evidence queries |

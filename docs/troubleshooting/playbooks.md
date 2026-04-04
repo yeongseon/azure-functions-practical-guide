@@ -10,12 +10,21 @@ graph TD
     B --> D[Performance]
     B --> E[Queue / Event Processing]
     B --> F[Deployment]
-    C --> G[Functions not executing]
-    C --> H[Functions failing with errors]
-    D --> I[High latency / slow responses]
-    E --> J[Queue messages piling up]
-    E --> K[Blob trigger not firing]
-    F --> L[Deployment failures]
+    B --> G[Triggers]
+    B --> H[Scaling]
+    B --> I[Auth / Config]
+    C --> C1[Functions not executing]
+    C --> C2[Functions failing with errors]
+    D --> D1[High latency / slow responses]
+    E --> E1[Queue messages piling up]
+    E --> E2[Blob trigger not firing]
+    F --> F1[Deployment failures]
+    G --> G1[Timeout / Execution Limit]
+    G --> G2[Event Hub / Service Bus Lag]
+    H --> H1[Out of Memory / Worker Crash]
+    H --> H2[Durable Orchestration Stuck]
+    I --> I1[Managed Identity / RBAC Failure]
+    I --> I2[App Settings Misconfiguration]
 ```
 
 ## Prerequisites
@@ -96,6 +105,63 @@ Deployment fails or app degrades immediately after release.
 
 → **[Full playbook: Deployment Failures](playbooks/deployment-failures.md)**
 
+## Timeout / Execution Limit
+
+Functions terminate early or hit maximum execution duration.
+
+**Hypotheses**: Function exceeds plan timeout, synchronous dependency blocking, Durable Functions replay overhead.
+
+→ **[Full playbook: Timeout / Execution Limit](playbooks/triggers/timeout-execution-limit.md)**
+
+---
+
+## Event Hub / Service Bus Lag
+
+Event-driven processing falls behind and checkpoint lag grows.
+
+**Hypotheses**: Slow per-event processing, batch size misconfiguration, checkpoint frequency too low, downstream bottleneck.
+
+→ **[Full playbook: Event Hub / Service Bus Lag](playbooks/triggers/event-hub-service-bus-lag.md)**
+
+---
+
+## Out of Memory / Worker Crash
+
+Workers restart or fail under memory pressure.
+
+**Hypotheses**: Large payload buffering, memory leak, plan memory limit reached, unbounded concurrency.
+
+→ **[Full playbook: Out of Memory / Worker Crash](playbooks/scaling/out-of-memory-worker-crash.md)**
+
+---
+
+## Durable Orchestration Stuck
+
+Durable orchestrations hang or replay excessively.
+
+**Hypotheses**: Orchestration history bloat, replay storm, task hub contention, missing activity completion.
+
+→ **[Full playbook: Durable Orchestration Stuck](playbooks/scaling/durable-orchestration-stuck.md)**
+
+---
+
+## Managed Identity / RBAC Failure
+
+Identity-based access fails after RBAC or scope changes.
+
+**Hypotheses**: Missing role assignment, wrong scope, token cache stale, system vs user-assigned mismatch.
+
+→ **[Full playbook: Managed Identity / RBAC Failure](playbooks/auth-config/managed-identity-rbac-failure.md)**
+
+---
+
+## App Settings Misconfiguration
+
+Functions fail due to missing, wrong, or stale application settings.
+
+**Hypotheses**: Missing connection string, wrong runtime version, slot setting not sticky, Key Vault reference failure.
+
+→ **[Full playbook: App Settings Misconfiguration](playbooks/auth-config/app-settings-misconfiguration.md)**
 ---
 
 ## How to Use These Playbooks

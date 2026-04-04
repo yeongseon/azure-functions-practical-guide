@@ -189,7 +189,14 @@ nav:
     - troubleshooting/index.md
     - troubleshooting/architecture.md
     - troubleshooting/evidence-map.md
-    - troubleshooting/first-10-minutes.md
+    - troubleshooting/decision-tree.md
+    - troubleshooting/mental-model.md
+    - First 10 Minutes:
+      - troubleshooting/first-10-minutes.md
+      - troubleshooting/first-10-minutes/index.md
+      - troubleshooting/first-10-minutes/triggers-not-firing.md
+      - troubleshooting/first-10-minutes/high-latency.md
+      - troubleshooting/first-10-minutes/scaling-issues.md
     - Playbooks:
       - troubleshooting/playbooks/index.md
       - troubleshooting/playbooks.md
@@ -199,8 +206,26 @@ nav:
       - troubleshooting/playbooks/queue-piling-up.md
       - troubleshooting/playbooks/blob-trigger-not-firing.md
       - troubleshooting/playbooks/deployment-failures.md
-    - troubleshooting/methodology.md
-    - troubleshooting/kql.md
+      - Triggers:
+        - troubleshooting/playbooks/triggers/timeout-execution-limit.md
+        - troubleshooting/playbooks/triggers/event-hub-service-bus-lag.md
+      - Scaling:
+        - troubleshooting/playbooks/scaling/out-of-memory-worker-crash.md
+        - troubleshooting/playbooks/scaling/durable-orchestration-stuck.md
+      - Auth / Config:
+        - troubleshooting/playbooks/auth-config/managed-identity-rbac-failure.md
+        - troubleshooting/playbooks/auth-config/app-settings-misconfiguration.md
+    - Methodology:
+      - troubleshooting/methodology.md
+      - troubleshooting/methodology/troubleshooting-method.md
+      - troubleshooting/methodology/detector-map.md
+    - KQL Query Library:
+      - troubleshooting/kql.md
+      - troubleshooting/kql/index.md
+      - troubleshooting/kql/execution/index.md
+      - troubleshooting/kql/scaling/index.md
+      - troubleshooting/kql/dependencies/index.md
+      - troubleshooting/kql/correlation/index.md
     - Lab Guides:
       - troubleshooting/lab-guides/index.md
       - troubleshooting/lab-guides.md
@@ -209,6 +234,11 @@ nav:
       - troubleshooting/lab-guides/queue-backlog-scaling.md
       - troubleshooting/lab-guides/dns-vnet-resolution.md
       - troubleshooting/lab-guides/managed-identity-auth.md
+      - troubleshooting/lab-guides/out-of-memory-crash.md
+      - troubleshooting/lab-guides/deployment-not-running.md
+      - troubleshooting/lab-guides/durable-replay-storm.md
+      - troubleshooting/lab-guides/timer-missed-schedules.md
+      - troubleshooting/lab-guides/event-hub-checkpoint-lag.md
   - Reference:
     - reference/index.md
     - reference/cli-cheatsheet.md

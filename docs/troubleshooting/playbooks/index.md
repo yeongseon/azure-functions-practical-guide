@@ -11,12 +11,21 @@ graph TD
     B --> D[Performance]
     B --> E[Queue / Event Processing]
     B --> F[Deployment]
-    C --> G[Functions not executing]
-    C --> H[Functions failing with errors]
-    D --> I[High latency / slow responses]
-    E --> J[Queue messages piling up]
-    E --> K[Blob trigger not firing]
-    F --> L[Deployment failures]
+    B --> G[Triggers]
+    B --> H[Scaling]
+    B --> I[Auth / Config]
+    C --> C1[Functions not executing]
+    C --> C2[Functions failing with errors]
+    D --> D1[High latency / slow responses]
+    E --> E1[Queue messages piling up]
+    E --> E2[Blob trigger not firing]
+    F --> F1[Deployment failures]
+    G --> G1[Timeout / Execution Limit]
+    G --> G2[Event Hub / Service Bus Lag]
+    H --> H1[Out of Memory / Worker Crash]
+    H --> H2[Durable Orchestration Stuck]
+    I --> I1[Managed Identity / RBAC Failure]
+    I --> I2[App Settings Misconfiguration]
 ```
 
 ---
@@ -47,6 +56,26 @@ graph TD
 |----------|---------|
 | [Deployment Failures](deployment-failures.md) | Deployment fails or app degrades immediately after release |
 
+## Triggers
+
+| Playbook | Symptom |
+|----------|---------|
+| [Timeout / Execution Limit](triggers/timeout-execution-limit.md) | Functions terminate early or hit maximum execution duration |
+| [Event Hub / Service Bus Lag](triggers/event-hub-service-bus-lag.md) | Event-driven processing falls behind and checkpoint lag grows |
+
+## Scaling
+
+| Playbook | Symptom |
+|----------|---------|
+| [Out of Memory / Worker Crash](scaling/out-of-memory-worker-crash.md) | Workers restart or fail under memory pressure |
+| [Durable Orchestration Stuck](scaling/durable-orchestration-stuck.md) | Durable orchestrations hang or replay excessively |
+
+## Auth / Config
+
+| Playbook | Symptom |
+|----------|---------|
+| [Managed Identity / RBAC Failure](auth-config/managed-identity-rbac-failure.md) | Identity-based access fails after RBAC or scope changes |
+| [App Settings Misconfiguration](auth-config/app-settings-misconfiguration.md) | Functions fail due to missing, wrong, or stale application settings |
 ---
 
 ## How to Use These Playbooks

@@ -8,11 +8,18 @@ graph TD
     A[Hands-on Labs] --> B[Performance]
     A --> C[Storage / Identity]
     A --> D[Network]
-    B --> E[Cold Start]
-    B --> F[Queue Backlog Scaling]
-    C --> G[Storage Access Failure]
-    C --> H[Managed Identity Auth]
-    D --> I[DNS / VNet Resolution]
+    A --> E[Execution / Runtime]
+    A --> F[Event Processing]
+    B --> B1[Cold Start]
+    B --> B2[Queue Backlog Scaling]
+    C --> C1[Storage Access Failure]
+    C --> C2[Managed Identity Auth]
+    D --> D1[DNS / VNet Resolution]
+    E --> E1[Out of Memory Crash]
+    E --> E2[Deployment Not Running]
+    E --> E3[Durable Replay Storm]
+    F --> F1[Timer Missed Schedules]
+    F --> F2[Event Hub Checkpoint Lag]
 ```
 
 ## How Labs Work
@@ -44,6 +51,21 @@ Each lab includes:
 | Lab | Symptom | Related Playbook |
 |-----|---------|-----------------|
 | [DNS / VNet Resolution](dns-vnet-resolution.md) | Function app cannot resolve or reach private dependencies | [Blob Trigger Not Firing](../playbooks/blob-trigger-not-firing.md) |
+
+### Execution / Runtime
+
+| Lab | Symptom | Related Playbook |
+|-----|---------|-----------------|
+| [Out of Memory Crash](out-of-memory-crash.md) | Workers crash under memory pressure with large payloads | [Out of Memory / Worker Crash](../playbooks/scaling/out-of-memory-worker-crash.md) |
+| [Deployment Not Running](deployment-not-running.md) | Deployment succeeds but functions never execute | [Deployment Failures](../playbooks/deployment-failures.md) |
+| [Durable Replay Storm](durable-replay-storm.md) | Durable orchestrations replay excessively with growing latency | [Durable Orchestration Stuck](../playbooks/scaling/durable-orchestration-stuck.md) |
+
+### Event Processing
+
+| Lab | Symptom | Related Playbook |
+|-----|---------|-----------------|
+| [Timer Missed Schedules](timer-missed-schedules.md) | Timer triggers miss scheduled executions after idle | [Timeout / Execution Limit](../playbooks/triggers/timeout-execution-limit.md) |
+| [Event Hub Checkpoint Lag](event-hub-checkpoint-lag.md) | Event Hub processing falls behind and checkpoint lag grows | [Event Hub / Service Bus Lag](../playbooks/triggers/event-hub-service-bus-lag.md) |
 
 ## Prerequisites
 
@@ -86,6 +108,11 @@ Start with broad reliability issues, then move into specialized scenarios:
 3. [Storage Access Failure](storage-access-failure.md) — Storage auth and host errors
 4. [Managed Identity Auth](managed-identity-auth.md) — RBAC and identity troubleshooting
 5. [DNS / VNet Resolution](dns-vnet-resolution.md) — Network path and DNS diagnosis
+6. [Out of Memory Crash](out-of-memory-crash.md) — Memory limits and worker recycling
+7. [Deployment Not Running](deployment-not-running.md) — Successful deploy with no function execution
+8. [Durable Replay Storm](durable-replay-storm.md) — Orchestration replay performance
+9. [Timer Missed Schedules](timer-missed-schedules.md) — Missed timer executions
+10. [Event Hub Checkpoint Lag](event-hub-checkpoint-lag.md) — Checkpoint lag and throughput
 
 ## Practice Checklist
 
@@ -103,12 +130,16 @@ For each lab, confirm your team can do all of the following without guesswork:
 Each lab trains specific diagnostic skills:
 
 | Lab | Primary Skill | Secondary Skill |
-|---|---|---|
 | Cold Start | Correlating host startup with request latency | Reading trace timeline |
 | Storage Access Failure | Identifying auth errors in host logs | Verifying RBAC with CLI |
 | Queue Backlog Scaling | Reading queue metrics vs execution metrics | Identifying poison message loops |
 | DNS / VNet Resolution | Diagnosing DNS errors in dependency calls | Verifying private DNS zone configuration |
 | Managed Identity Auth | Tracing RBAC changes in activity log | Correlating exceptions with config changes |
+| Out of Memory Crash | Detecting OOM exceptions and worker restarts | Correlating memory pressure with payload size |
+| Deployment Not Running | Reading function discovery logs | Validating project structure and runtime config |
+| Durable Replay Storm | Measuring replay duration growth | Identifying orchestration history bloat |
+| Timer Missed Schedules | Verifying timer execution gaps | Using isPastDue and RunOnStartup parameters |
+| Event Hub Checkpoint Lag | Measuring checkpoint offset vs partition tail | Tuning batch size and prefetch settings |
 
 ## Mapping Labs to Common Production Incidents
 
@@ -119,6 +150,11 @@ Each lab trains specific diagnostic skills:
 | Event ingestion cannot keep up | [Queue Backlog Scaling](queue-backlog-scaling.md) |
 | Private endpoint dependency outages | [DNS / VNet Resolution](dns-vnet-resolution.md) |
 | RBAC / identity breakages | [Managed Identity Auth](managed-identity-auth.md) |
+| Worker crashes under load | [Out of Memory Crash](out-of-memory-crash.md) |
+| Deploy succeeded but nothing runs | [Deployment Not Running](deployment-not-running.md) |
+| Orchestration latency grows over time | [Durable Replay Storm](durable-replay-storm.md) |
+| Scheduled tasks not running on time | [Timer Missed Schedules](timer-missed-schedules.md) |
+| Event stream processing falling behind | [Event Hub Checkpoint Lag](event-hub-checkpoint-lag.md) |
 
 ## See Also
 
