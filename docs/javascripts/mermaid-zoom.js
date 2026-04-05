@@ -2,6 +2,8 @@
  * Mermaid Diagram Zoom
  * Click any mermaid diagram to open a fullscreen zoomable/pannable overlay.
  * Press Escape or click the close button to dismiss.
+ * 
+ * Supports MkDocs Material 9.x which renders Mermaid SVGs inside Shadow DOM.
  */
 (function () {
   "use strict";
@@ -143,13 +145,41 @@
     });
   }
 
+  /**
+   * Find SVG in mermaid element, checking both regular DOM and Shadow DOM
+   * MkDocs Material 9.x renders Mermaid SVGs inside Shadow DOM
+   */
+  function findSvgInMermaid(mermaidEl) {
+    // First, try regular DOM query
+    var svg = mermaidEl.querySelector("svg");
+    if (svg) return svg;
+
+    // Check for Shadow DOM (MkDocs Material 9.x)
+    var children = mermaidEl.children;
+    for (var i = 0; i < children.length; i++) {
+      var child = children[i];
+      if (child.shadowRoot) {
+        svg = child.shadowRoot.querySelector("svg");
+        if (svg) return svg;
+      }
+    }
+
+    // Also check if mermaidEl itself has shadowRoot
+    if (mermaidEl.shadowRoot) {
+      svg = mermaidEl.shadowRoot.querySelector("svg");
+      if (svg) return svg;
+    }
+
+    return null;
+  }
+
   function openDiagram(mermaidEl) {
     // Remove existing overlay if any
     var existing = document.getElementById(OVERLAY_ID);
     if (existing && existing.parentNode) existing.parentNode.removeChild(existing);
 
     var parts = createOverlay();
-    var svgSource = mermaidEl.querySelector("svg");
+    var svgSource = findSvgInMermaid(mermaidEl);
     if (!svgSource) return;
 
     var svgClone = svgSource.cloneNode(true);
@@ -176,7 +206,7 @@
   function init() {
     document.addEventListener("click", function (e) {
       var mermaidEl = e.target.closest(".mermaid");
-      if (mermaidEl && mermaidEl.querySelector("svg")) {
+      if (mermaidEl && findSvgInMermaid(mermaidEl)) {
         openDiagram(mermaidEl);
       }
     });
