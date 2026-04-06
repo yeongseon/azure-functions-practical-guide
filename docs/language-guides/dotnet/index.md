@@ -28,9 +28,8 @@ The .NET guide will follow the same 7-step tutorial structure used by the [Pytho
 | In-process | Legacy/compatibility path | Functions runtime and app code run in one process |
 | Isolated worker | **Recommended** | App code runs in separate worker process with explicit host setup |
 
-## Runtime Support Baseline
 
-- **.NET 8 (LTS)** is the hub baseline for new .NET guidance; validate target framework and extension compatibility in Microsoft Learn before production rollouts.
+.NET 8 (LTS) is the hub baseline for new .NET guidance; validate target framework and extension compatibility in Microsoft Learn before production rollouts.
 
 ## In-Process vs Isolated: Practical Differences
 
@@ -86,6 +85,7 @@ The following content is planned for the .NET track:
 
 - **Tutorial track**: Local development, first deploy, configuration, monitoring, IaC, CI/CD across all four hosting plans.
 - **Recipes**: Storage, Cosmos DB, Key Vault, Managed Identity, durable workflows.
+- **Reference docs**: Runtime/version matrix, host settings mapping, and troubleshooting baseline for isolated worker projects.
 - **Reference app**: `apps/dotnet/` parity implementation aligned to Python capability set.
 
 ## See Also
@@ -95,7 +95,7 @@ The following content is planned for the .NET track:
 - [Node.js Guide](../nodejs/index.md)
 - [Java Guide](../java/index.md)
 - [Platform: Architecture](../../platform/architecture.md)
-- [Platform: Reliability](../../platform/reliability.md)
+- [Platform: Hosting](../../platform/hosting.md)
 - [Operations: Deployment](../../operations/deployment.md)
 - [Operations: Monitoring](../../operations/monitoring.md)
 

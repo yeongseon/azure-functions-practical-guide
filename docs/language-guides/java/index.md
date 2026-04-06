@@ -30,7 +30,6 @@ The Java guide will follow the same 7-step tutorial structure used by the [Pytho
 | Worker model | Out-of-process Java worker managed by the Functions host |
 | Supported runtimes | Java 8, 11, 17, 21 |
 
-## Key Concepts
 
 - Function entry methods are grouped in Java classes.
 - Trigger and binding behavior is declared via annotations.
@@ -92,7 +91,7 @@ The following content is planned for the Java track:
 - **Tutorial track**: Local run, deployment, configuration, monitoring, IaC, CI/CD across all four hosting plans.
 - **Recipes**: Storage, Cosmos DB, Event Grid, Key Vault, Managed Identity.
 - **Reference docs**: Runtime/version matrix notes, host settings mapping, troubleshooting patterns.
-- **Reference app**: `apps/java/` parity build-out matching hub capability targets.
+- **Reference app**: Planned `apps/java/` implementation that mirrors the Python reference app patterns.
 
 ## See Also
 
@@ -100,10 +99,10 @@ The following content is planned for the Java track:
 - [Python Guide (reference implementation)](../python/index.md)
 - [Node.js Guide](../nodejs/index.md)
 - [.NET Guide](../dotnet/index.md)
-- [Platform: Triggers and Bindings](../../platform/triggers-and-bindings.md)
+- [Platform: Architecture](../../platform/architecture.md)
 - [Platform: Hosting](../../platform/hosting.md)
 - [Operations: Deployment](../../operations/deployment.md)
-- [Troubleshooting: Methodology](../../troubleshooting/methodology.md)
+- [Operations: Monitoring](../../operations/monitoring.md)
 
 ## Sources
 

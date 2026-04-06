@@ -101,3 +101,12 @@ When in doubt, validate against Microsoft Learn first, then update local runbook
 - [Operations](operations/index.md)
 - [Troubleshooting](troubleshooting/index.md)
 - [Reference](reference/index.md)
+
+## Sources
+
+- [Azure Functions scale and hosting options](https://learn.microsoft.com/azure/azure-functions/functions-scale)
+- [Flex Consumption plan](https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan)
+- [Premium plan](https://learn.microsoft.com/azure/azure-functions/functions-premium-plan)
+- [Dedicated plan](https://learn.microsoft.com/azure/azure-functions/dedicated-plan)
+- [Consumption plan (legacy)](https://learn.microsoft.com/azure/azure-functions/consumption-plan)
+- [Supported languages in Azure Functions](https://learn.microsoft.com/azure/azure-functions/supported-languages)
