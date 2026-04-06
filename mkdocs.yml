@@ -98,6 +98,7 @@ nav:
     - platform/networking.md
     - platform/reliability.md
     - platform/security.md
+    - platform/functions-vs-app-service.md
   - Best Practices:
     - best-practices/index.md
     - best-practices/hosting-plan-selection.md
@@ -170,10 +171,175 @@ nav:
         - language-guides/python/troubleshooting.md
     - Node.js:
       - language-guides/nodejs/index.md
+      - language-guides/nodejs/v4-programming-model.md
+      - language-guides/nodejs/nodejs-runtime.md
+      - Tutorial:
+        - Overview & Plan Chooser: language-guides/nodejs/tutorial/index.md
+        - Consumption (Y1):
+          - language-guides/nodejs/tutorial/consumption/01-local-run.md
+          - language-guides/nodejs/tutorial/consumption/02-first-deploy.md
+          - language-guides/nodejs/tutorial/consumption/03-configuration.md
+          - language-guides/nodejs/tutorial/consumption/04-logging-monitoring.md
+          - language-guides/nodejs/tutorial/consumption/05-infrastructure-as-code.md
+          - language-guides/nodejs/tutorial/consumption/06-ci-cd.md
+          - language-guides/nodejs/tutorial/consumption/07-extending-triggers.md
+        - Flex Consumption (FC1):
+          - language-guides/nodejs/tutorial/flex-consumption/01-local-run.md
+          - language-guides/nodejs/tutorial/flex-consumption/02-first-deploy.md
+          - language-guides/nodejs/tutorial/flex-consumption/03-configuration.md
+          - language-guides/nodejs/tutorial/flex-consumption/04-logging-monitoring.md
+          - language-guides/nodejs/tutorial/flex-consumption/05-infrastructure-as-code.md
+          - language-guides/nodejs/tutorial/flex-consumption/06-ci-cd.md
+          - language-guides/nodejs/tutorial/flex-consumption/07-extending-triggers.md
+        - Premium (EP):
+          - language-guides/nodejs/tutorial/premium/01-local-run.md
+          - language-guides/nodejs/tutorial/premium/02-first-deploy.md
+          - language-guides/nodejs/tutorial/premium/03-configuration.md
+          - language-guides/nodejs/tutorial/premium/04-logging-monitoring.md
+          - language-guides/nodejs/tutorial/premium/05-infrastructure-as-code.md
+          - language-guides/nodejs/tutorial/premium/06-ci-cd.md
+          - language-guides/nodejs/tutorial/premium/07-extending-triggers.md
+        - Dedicated (App Service Plan):
+          - language-guides/nodejs/tutorial/dedicated/01-local-run.md
+          - language-guides/nodejs/tutorial/dedicated/02-first-deploy.md
+          - language-guides/nodejs/tutorial/dedicated/03-configuration.md
+          - language-guides/nodejs/tutorial/dedicated/04-logging-monitoring.md
+          - language-guides/nodejs/tutorial/dedicated/05-infrastructure-as-code.md
+          - language-guides/nodejs/tutorial/dedicated/06-ci-cd.md
+          - language-guides/nodejs/tutorial/dedicated/07-extending-triggers.md
+      - Node.js Recipes:
+        - language-guides/nodejs/recipes/index.md
+        - language-guides/nodejs/recipes/http-api.md
+        - language-guides/nodejs/recipes/http-auth.md
+        - language-guides/nodejs/recipes/cosmosdb.md
+        - language-guides/nodejs/recipes/blob-storage.md
+        - language-guides/nodejs/recipes/queue.md
+        - language-guides/nodejs/recipes/key-vault.md
+        - language-guides/nodejs/recipes/managed-identity.md
+        - language-guides/nodejs/recipes/timer.md
+        - language-guides/nodejs/recipes/durable-orchestration.md
+        - language-guides/nodejs/recipes/event-grid.md
+        - language-guides/nodejs/recipes/custom-domain-certificates.md
+      - Node.js Reference:
+        - language-guides/nodejs/cli-cheatsheet.md
+        - language-guides/nodejs/environment-variables.md
+        - language-guides/nodejs/host-json.md
+        - language-guides/nodejs/platform-limits.md
+        - language-guides/nodejs/troubleshooting.md
     - .NET:
       - language-guides/dotnet/index.md
+      - language-guides/dotnet/isolated-worker-model.md
+      - language-guides/dotnet/dotnet-runtime.md
+      - Tutorial:
+        - Overview & Plan Chooser: language-guides/dotnet/tutorial/index.md
+        - Consumption (Y1):
+          - language-guides/dotnet/tutorial/consumption/01-local-run.md
+          - language-guides/dotnet/tutorial/consumption/02-first-deploy.md
+          - language-guides/dotnet/tutorial/consumption/03-configuration.md
+          - language-guides/dotnet/tutorial/consumption/04-logging-monitoring.md
+          - language-guides/dotnet/tutorial/consumption/05-infrastructure-as-code.md
+          - language-guides/dotnet/tutorial/consumption/06-ci-cd.md
+          - language-guides/dotnet/tutorial/consumption/07-extending-triggers.md
+        - Flex Consumption (FC1):
+          - language-guides/dotnet/tutorial/flex-consumption/01-local-run.md
+          - language-guides/dotnet/tutorial/flex-consumption/02-first-deploy.md
+          - language-guides/dotnet/tutorial/flex-consumption/03-configuration.md
+          - language-guides/dotnet/tutorial/flex-consumption/04-logging-monitoring.md
+          - language-guides/dotnet/tutorial/flex-consumption/05-infrastructure-as-code.md
+          - language-guides/dotnet/tutorial/flex-consumption/06-ci-cd.md
+          - language-guides/dotnet/tutorial/flex-consumption/07-extending-triggers.md
+        - Premium (EP):
+          - language-guides/dotnet/tutorial/premium/01-local-run.md
+          - language-guides/dotnet/tutorial/premium/02-first-deploy.md
+          - language-guides/dotnet/tutorial/premium/03-configuration.md
+          - language-guides/dotnet/tutorial/premium/04-logging-monitoring.md
+          - language-guides/dotnet/tutorial/premium/05-infrastructure-as-code.md
+          - language-guides/dotnet/tutorial/premium/06-ci-cd.md
+          - language-guides/dotnet/tutorial/premium/07-extending-triggers.md
+        - Dedicated (App Service Plan):
+          - language-guides/dotnet/tutorial/dedicated/01-local-run.md
+          - language-guides/dotnet/tutorial/dedicated/02-first-deploy.md
+          - language-guides/dotnet/tutorial/dedicated/03-configuration.md
+          - language-guides/dotnet/tutorial/dedicated/04-logging-monitoring.md
+          - language-guides/dotnet/tutorial/dedicated/05-infrastructure-as-code.md
+          - language-guides/dotnet/tutorial/dedicated/06-ci-cd.md
+          - language-guides/dotnet/tutorial/dedicated/07-extending-triggers.md
+      - .NET Recipes:
+        - language-guides/dotnet/recipes/index.md
+        - language-guides/dotnet/recipes/http-api.md
+        - language-guides/dotnet/recipes/http-auth.md
+        - language-guides/dotnet/recipes/cosmosdb.md
+        - language-guides/dotnet/recipes/blob-storage.md
+        - language-guides/dotnet/recipes/queue.md
+        - language-guides/dotnet/recipes/key-vault.md
+        - language-guides/dotnet/recipes/managed-identity.md
+        - language-guides/dotnet/recipes/timer.md
+        - language-guides/dotnet/recipes/durable-orchestration.md
+        - language-guides/dotnet/recipes/event-grid.md
+        - language-guides/dotnet/recipes/custom-domain-certificates.md
+      - .NET Reference:
+        - language-guides/dotnet/cli-cheatsheet.md
+        - language-guides/dotnet/environment-variables.md
+        - language-guides/dotnet/host-json.md
+        - language-guides/dotnet/platform-limits.md
+        - language-guides/dotnet/troubleshooting.md
     - Java:
       - language-guides/java/index.md
+      - language-guides/java/annotation-programming-model.md
+      - language-guides/java/java-runtime.md
+      - Tutorial:
+        - Overview & Plan Chooser: language-guides/java/tutorial/index.md
+        - Consumption (Y1):
+          - language-guides/java/tutorial/consumption/01-local-run.md
+          - language-guides/java/tutorial/consumption/02-first-deploy.md
+          - language-guides/java/tutorial/consumption/03-configuration.md
+          - language-guides/java/tutorial/consumption/04-logging-monitoring.md
+          - language-guides/java/tutorial/consumption/05-infrastructure-as-code.md
+          - language-guides/java/tutorial/consumption/06-ci-cd.md
+          - language-guides/java/tutorial/consumption/07-extending-triggers.md
+        - Flex Consumption (FC1):
+          - language-guides/java/tutorial/flex-consumption/01-local-run.md
+          - language-guides/java/tutorial/flex-consumption/02-first-deploy.md
+          - language-guides/java/tutorial/flex-consumption/03-configuration.md
+          - language-guides/java/tutorial/flex-consumption/04-logging-monitoring.md
+          - language-guides/java/tutorial/flex-consumption/05-infrastructure-as-code.md
+          - language-guides/java/tutorial/flex-consumption/06-ci-cd.md
+          - language-guides/java/tutorial/flex-consumption/07-extending-triggers.md
+        - Premium (EP):
+          - language-guides/java/tutorial/premium/01-local-run.md
+          - language-guides/java/tutorial/premium/02-first-deploy.md
+          - language-guides/java/tutorial/premium/03-configuration.md
+          - language-guides/java/tutorial/premium/04-logging-monitoring.md
+          - language-guides/java/tutorial/premium/05-infrastructure-as-code.md
+          - language-guides/java/tutorial/premium/06-ci-cd.md
+          - language-guides/java/tutorial/premium/07-extending-triggers.md
+        - Dedicated (App Service Plan):
+          - language-guides/java/tutorial/dedicated/01-local-run.md
+          - language-guides/java/tutorial/dedicated/02-first-deploy.md
+          - language-guides/java/tutorial/dedicated/03-configuration.md
+          - language-guides/java/tutorial/dedicated/04-logging-monitoring.md
+          - language-guides/java/tutorial/dedicated/05-infrastructure-as-code.md
+          - language-guides/java/tutorial/dedicated/06-ci-cd.md
+          - language-guides/java/tutorial/dedicated/07-extending-triggers.md
+      - Java Recipes:
+        - language-guides/java/recipes/index.md
+        - language-guides/java/recipes/http-api.md
+        - language-guides/java/recipes/http-auth.md
+        - language-guides/java/recipes/cosmosdb.md
+        - language-guides/java/recipes/blob-storage.md
+        - language-guides/java/recipes/queue.md
+        - language-guides/java/recipes/key-vault.md
+        - language-guides/java/recipes/managed-identity.md
+        - language-guides/java/recipes/timer.md
+        - language-guides/java/recipes/durable-orchestration.md
+        - language-guides/java/recipes/event-grid.md
+        - language-guides/java/recipes/custom-domain-certificates.md
+      - Java Reference:
+        - language-guides/java/cli-cheatsheet.md
+        - language-guides/java/environment-variables.md
+        - language-guides/java/host-json.md
+        - language-guides/java/platform-limits.md
+        - language-guides/java/troubleshooting.md
   - Operations:
     - operations/index.md
     - operations/deployment.md
@@ -246,3 +412,5 @@ nav:
     - reference/environment-variables.md
     - reference/platform-limits.md
     - reference/troubleshooting.md
+  - Contributing:
+    - contributing/cross-guide-baseline.md
