@@ -9,6 +9,8 @@ repo_url: https://github.com/yeongseon/azure-functions-practical-guide
 theme:
   name: material
   language: en
+  favicon: assets/favicon.svg
+  logo: assets/logo.svg
   palette:
     - scheme: default
       primary: blue
@@ -39,6 +41,7 @@ extra_css:
   - stylesheets/extra.css
 
 extra_javascript:
+  - https://unpkg.com/mermaid@10/dist/mermaid.min.js
   - javascripts/mermaid-zoom.js
 
 plugins:
