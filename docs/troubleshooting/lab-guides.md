@@ -14,6 +14,7 @@ graph TD
     B --> B2[Queue Backlog Scaling]
     C --> C1[Storage Access Failure]
     C --> C2[Managed Identity Auth]
+    C --> C3[Code Storage Verification]
     D --> D1[DNS / VNet Resolution]
     E --> E1[Out of Memory Crash]
     E --> E2[Deployment Not Running]
@@ -44,6 +45,7 @@ Each lab includes:
 | Lab | Symptom | Related Playbook |
 |-----|---------|-----------------|
 | [Storage Access Failure](lab-guides/storage-access-failure.md) | Triggers stop processing due to storage auth or connectivity issues | [Functions Not Executing](playbooks/functions-not-executing.md) |
+| [Code Storage Verification](lab-guides/code-storage-verification.md) | Plan-specific storage misconfiguration produces predictable startup failures | [Functions Not Executing](playbooks/functions-not-executing.md) |
 | [Managed Identity Auth](lab-guides/managed-identity-auth.md) | Managed identity calls fail after RBAC or scope changes | [Functions Failing with Errors](playbooks/functions-failing.md) |
 
 ### Network
@@ -106,13 +108,14 @@ Start with broad reliability issues, then move into specialized scenarios:
 1. [Cold Start](lab-guides/cold-start.md) — Understand cold start vs dependency latency
 2. [Queue Backlog Scaling](lab-guides/queue-backlog-scaling.md) — Backlog triage and throughput analysis
 3. [Storage Access Failure](lab-guides/storage-access-failure.md) — Storage auth and host errors
-4. [Managed Identity Auth](lab-guides/managed-identity-auth.md) — RBAC and identity troubleshooting
-5. [DNS / VNet Resolution](lab-guides/dns-vnet-resolution.md) — Network path and DNS diagnosis
-6. [Out of Memory Crash](lab-guides/out-of-memory-crash.md) — Memory limits and worker recycling
-7. [Deployment Not Running](lab-guides/deployment-not-running.md) — Successful deploy with no function execution
-8. [Durable Replay Storm](lab-guides/durable-replay-storm.md) — Orchestration replay performance
-9. [Timer Missed Schedules](lab-guides/timer-missed-schedules.md) — Missed timer executions
-10. [Event Hub Checkpoint Lag](lab-guides/event-hub-checkpoint-lag.md) — Checkpoint lag and throughput
+4. [Code Storage Verification](lab-guides/code-storage-verification.md) — Plan-specific code storage baseline checks
+5. [Managed Identity Auth](lab-guides/managed-identity-auth.md) — RBAC and identity troubleshooting
+6. [DNS / VNet Resolution](lab-guides/dns-vnet-resolution.md) — Network path and DNS diagnosis
+7. [Out of Memory Crash](lab-guides/out-of-memory-crash.md) — Memory limits and worker recycling
+8. [Deployment Not Running](lab-guides/deployment-not-running.md) — Successful deploy with no function execution
+9. [Durable Replay Storm](lab-guides/durable-replay-storm.md) — Orchestration replay performance
+10. [Timer Missed Schedules](lab-guides/timer-missed-schedules.md) — Missed timer executions
+11. [Event Hub Checkpoint Lag](lab-guides/event-hub-checkpoint-lag.md) — Checkpoint lag and throughput
 
 ## See Also
 

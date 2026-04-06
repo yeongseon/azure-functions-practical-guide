@@ -400,6 +400,7 @@ nav:
       - troubleshooting/lab-guides.md
       - troubleshooting/lab-guides/cold-start.md
       - troubleshooting/lab-guides/storage-access-failure.md
+      - troubleshooting/lab-guides/code-storage-verification.md
       - troubleshooting/lab-guides/queue-backlog-scaling.md
       - troubleshooting/lab-guides/dns-vnet-resolution.md
       - troubleshooting/lab-guides/managed-identity-auth.md
