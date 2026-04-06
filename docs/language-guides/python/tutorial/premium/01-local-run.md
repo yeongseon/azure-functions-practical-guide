@@ -104,6 +104,14 @@ Functions:
 
 > **Next:** [02 - First Deploy](02-first-deploy.md)
 
+## See Also
+
+- [Tutorial Overview & Plan Chooser](../index.md)
+- [Python Language Guide](../../index.md)
+- [Platform: Hosting Plans](../../../../platform/hosting.md)
+- [Operations: Deployment](../../../../operations/deployment.md)
+- [Recipes Index](../../recipes/index.md)
+
 ## Sources
 
 - [Run Azure Functions locally](https://learn.microsoft.com/azure/azure-functions/functions-run-local)

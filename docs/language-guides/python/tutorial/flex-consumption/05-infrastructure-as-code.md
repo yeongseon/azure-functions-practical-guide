@@ -20,10 +20,10 @@ export PLAN_NAME="flexdemo-plan"
 export STORAGE_NAME="flexdemostorage"
 export APPINSIGHTS_NAME="flexdemo-insights"
 export LOCATION="eastus2"
+```
 
 Expected output:
 
-```
 
 ```text
 ```
@@ -38,14 +38,12 @@ az bicep build --file "infra/flex-consumption/main.bicep"
 
 Expected output:
 
-```
 
 ```text
 ```
 
 ## Step 3 - Preview Deployment Changes
 
-```
 
 ```bash
 az group create --name "$RG" --location "$LOCATION" --output json
@@ -54,7 +52,6 @@ az deployment group what-if --resource-group "$RG" --template-file "infra/flex-c
 
 Expected output:
 
-```
 
 ```json
 {
@@ -70,7 +67,6 @@ Expected output:
 
 ## Step 4 - Deploy Infrastructure
 
-```
 
 ```bash
 az deployment group create --resource-group "$RG" --template-file "infra/flex-consumption/main.bicep" --parameters baseName="$BASE_NAME" location="$LOCATION" --output json
@@ -78,7 +74,6 @@ az deployment group create --resource-group "$RG" --template-file "infra/flex-co
 
 Expected output:
 
-```
 
 ```json
 {
@@ -92,7 +87,6 @@ Expected output:
 
 ## Step 5 - Validate Flex IaC Requirements
 
-```
 
 ```bash
 az appservice plan show --name "$PLAN_NAME" --resource-group "$RG" --query "sku" --output json
@@ -101,7 +95,6 @@ az functionapp show --name "$APP_NAME" --resource-group "$RG" --query "propertie
 
 Expected output:
 
-```
 
 ```json
 {
@@ -110,7 +103,6 @@ Expected output:
 }
 ```
 
-```
 
 ```json
 {
@@ -134,7 +126,6 @@ Expected output:
 
 Flex subnet delegation must target `Microsoft.App/environments`.
 
-```
 
 ```bash
 az network vnet subnet show --resource-group "$RG" --vnet-name "flexdemo-vnet" --name "subnet-integration" --query "delegations" --output json
@@ -142,7 +133,6 @@ az network vnet subnet show --resource-group "$RG" --vnet-name "flexdemo-vnet" -
 
 Expected output:
 
-```
 
 ```json
 [
@@ -157,7 +147,6 @@ Expected output:
 
 `infra/deploy.sh` is prewired for this track and references `infra/flex-consumption/main.bicep` as the infrastructure entry point.
 
-```
 
 ```bash
 cd infra
@@ -167,7 +156,6 @@ cp .env.example .env
 
 Expected output:
 
-```
 
 ```text
 Step 3/5: Deploying infrastructure (Bicep)...
@@ -179,6 +167,14 @@ Deployment completed successfully.
 ## Next Steps
 
 > **Next:** [06 - CI/CD](06-ci-cd.md)
+
+## See Also
+
+- [Tutorial Overview & Plan Chooser](../index.md)
+- [Python Language Guide](../../index.md)
+- [Platform: Hosting Plans](../../../../platform/hosting.md)
+- [Operations: Deployment](../../../../operations/deployment.md)
+- [Recipes Index](../../recipes/index.md)
 
 ## Sources
 

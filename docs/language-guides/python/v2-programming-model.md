@@ -360,6 +360,13 @@ This creates three endpoints:
 - `GET /api/products/{product_id}` — Get a product by ID
 - `POST /api/products` — Create a new product
 
+## See Also
+
+- [Python Language Guide](index.md)
+- [Python Runtime](python-runtime.md)
+- [Tutorial Overview & Plan Chooser](tutorial/index.md)
+- [Recipes Index](recipes/index.md)
+
 ## Sources
 - [Python v2 Programming Model (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-reference-python)
 - [Azure Functions Overview (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-overview)

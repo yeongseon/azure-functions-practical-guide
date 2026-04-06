@@ -110,6 +110,14 @@ Add non-HTTP triggers and verify scaling behavior for Consumption.
 
 > **Next:** [07 - Extending Triggers](07-extending-triggers.md)
 
+## See Also
+
+- [Tutorial Overview & Plan Chooser](../index.md)
+- [Python Language Guide](../../index.md)
+- [Platform: Hosting Plans](../../../../platform/hosting.md)
+- [Operations: Deployment](../../../../operations/deployment.md)
+- [Recipes Index](../../recipes/index.md)
+
 ## Sources
 
 - [Azure Functions GitHub Action](https://github.com/Azure/functions-action)

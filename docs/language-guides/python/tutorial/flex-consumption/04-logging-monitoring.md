@@ -20,17 +20,16 @@ export PLAN_NAME="flexdemo-plan"
 export STORAGE_NAME="flexdemostorage"
 export APPINSIGHTS_NAME="flexdemo-insights"
 export LOCATION="eastus2"
+```
 
 Expected output:
 
-```
 
 ```text
 ```
 
 ## Step 2 - Confirm Application Insights Wiring
 
-```
 
 ```bash
 az monitor app-insights component show --app "$APPINSIGHTS_NAME" --resource-group "$RG" --output json
@@ -39,7 +38,6 @@ az functionapp config appsettings list --name "$APP_NAME" --resource-group "$RG"
 
 Expected output:
 
-```
 
 ```json
 {
@@ -50,7 +48,6 @@ Expected output:
 }
 ```
 
-```
 
 ```json
 [
@@ -64,7 +61,6 @@ Expected output:
 
 ## Step 3 - Generate Traffic
 
-```
 
 ```bash
 curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
@@ -74,13 +70,11 @@ curl --request GET "https://$APP_NAME.azurewebsites.net/api/exceptions/test-erro
 
 Expected output:
 
-```
 
 ```json
 {"status":"healthy","timestamp":"2026-01-01T00:00:00Z","version":"1.0.0"}
 ```
 
-```
 
 ```json
 {"error":"simulated failure"}
@@ -88,7 +82,6 @@ Expected output:
 
 ## Step 4 - Query Request and Exception Telemetry
 
-```
 
 ```bash
 az monitor app-insights query --app "$APPINSIGHTS_NAME" --analytics-query "requests | where timestamp > ago(30m) | project timestamp, name, resultCode, duration | order by timestamp desc | take 20" --output json
@@ -97,7 +90,6 @@ az monitor app-insights query --app "$APPINSIGHTS_NAME" --analytics-query "excep
 
 Expected output:
 
-```
 
 ```json
 {
@@ -121,7 +113,6 @@ Expected output:
 
 Flex can scale to zero and out to 1000 instances, so monitor cold starts, errors, and dependency latency.
 
-```
 
 ```bash
 az monitor app-insights query --app "$APPINSIGHTS_NAME" --analytics-query "traces | where timestamp > ago(30m) | where message contains 'Function started' or message contains 'Host lock lease acquired' | project timestamp, severityLevel, message | order by timestamp desc | take 50" --output json
@@ -129,7 +120,6 @@ az monitor app-insights query --app "$APPINSIGHTS_NAME" --analytics-query "trace
 
 Expected output:
 
-```
 
 ```json
 {
@@ -157,6 +147,14 @@ Expected output:
 ## Next Steps
 
 > **Next:** [05 - Infrastructure as Code](05-infrastructure-as-code.md)
+
+## See Also
+
+- [Tutorial Overview & Plan Chooser](../index.md)
+- [Python Language Guide](../../index.md)
+- [Platform: Hosting Plans](../../../../platform/hosting.md)
+- [Operations: Deployment](../../../../operations/deployment.md)
+- [Recipes Index](../../recipes/index.md)
 
 ## Sources
 

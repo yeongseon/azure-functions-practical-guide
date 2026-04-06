@@ -21,10 +21,10 @@ export PLAN_NAME="flexdemo-plan"
 export STORAGE_NAME="flexdemostorage"
 export APPINSIGHTS_NAME="flexdemo-insights"
 export LOCATION="eastus2"
+```
 
 Expected output:
 
-```
 
 ```text
 ```
@@ -33,7 +33,6 @@ Expected output:
 
 Create `app/blueprints/scheduled.py` and register it in `app/function_app.py`.
 
-```
 
 ```python
 import azure.functions as func
@@ -49,7 +48,6 @@ def scheduled_cleanup(timer: func.TimerRequest) -> None:
 
 Expected output:
 
-```
 
 ```text
 ```
@@ -58,7 +56,6 @@ Expected output:
 
 Queue-triggered functions on Flex scale independently from other functions in the same app.
 
-```
 
 ```python
 import azure.functions as func
@@ -73,7 +70,6 @@ def process_queue_message(msg: func.QueueMessage) -> None:
 
 Expected output:
 
-```
 
 ```text
 ```
@@ -82,7 +78,6 @@ Expected output:
 
 For Flex Consumption, production blob triggers **must** use the Event Grid-based blob trigger. The standard polling blob trigger is not supported on Flex Consumption. Use the `source="EventGrid"` parameter on `@bp.blob_trigger()` to enable Event Grid delivery.
 
-```
 
 ```python
 import azure.functions as func
@@ -111,7 +106,6 @@ def process_blob_event(input_blob: func.InputStream) -> None:
 
 Expected output:
 
-```
 
 ```text
 ```
@@ -126,7 +120,6 @@ https://<APP_NAME>.azurewebsites.net/runtime/webhooks/blobs?functionName=Host.Fu
 
 Retrieve the system key and create the subscription:
 
-```
 
 ```bash
 # Get the blob extension system key
@@ -148,7 +141,6 @@ az eventgrid event-subscription create \
 
 Expected output:
 
-```
 
 ```json
 {
@@ -160,7 +152,6 @@ Expected output:
 
 ## Step 6 - Publish and Validate Trigger Registration
 
-```
 
 ```bash
 cd app
@@ -170,7 +161,6 @@ az functionapp function list --name "$APP_NAME" --resource-group "$RG" --output 
 
 Expected output:
 
-```
 
 ```text
 Name                         Trigger
@@ -185,7 +175,6 @@ process_blob_event           blobTrigger
 
 Send a queue message:
 
-```
 
 ```bash
 az storage message put --queue-name "tasks" --content '{"task":"reindex"}' --account-name "$STORAGE_NAME" --auth-mode login --output json
@@ -193,7 +182,6 @@ az storage message put --queue-name "tasks" --content '{"task":"reindex"}' --acc
 
 Upload a blob to emit Event Grid event:
 
-```
 
 ```bash
 az storage blob upload --container-name "uploads" --name "sample.txt" --file "/tmp/sample.txt" --account-name "$STORAGE_NAME" --auth-mode login --output json
@@ -201,7 +189,6 @@ az storage blob upload --container-name "uploads" --name "sample.txt" --file "/t
 
 Expected output:
 
-```
 
 ```json
 {
@@ -210,7 +197,6 @@ Expected output:
 }
 ```
 
-```
 
 ```json
 {
@@ -229,6 +215,14 @@ Expected output:
 ## Next Steps
 
 > **Next:** [How Azure Functions Works](../../../../platform/architecture.md)
+
+## See Also
+
+- [Tutorial Overview & Plan Chooser](../index.md)
+- [Python Language Guide](../../index.md)
+- [Platform: Hosting Plans](../../../../platform/hosting.md)
+- [Operations: Deployment](../../../../operations/deployment.md)
+- [Recipes Index](../../recipes/index.md)
 
 ## Sources
 

@@ -150,6 +150,14 @@ Automate deployments in CI/CD with GitHub Actions.
 
 > **Next:** [06 - CI/CD](06-ci-cd.md)
 
+## See Also
+
+- [Tutorial Overview & Plan Chooser](../index.md)
+- [Python Language Guide](../../index.md)
+- [Platform: Hosting Plans](../../../../platform/hosting.md)
+- [Operations: Deployment](../../../../operations/deployment.md)
+- [Recipes Index](../../recipes/index.md)
+
 ## Sources
 
 - [Bicep for Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-infrastructure-as-code)

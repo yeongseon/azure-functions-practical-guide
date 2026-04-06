@@ -4,24 +4,24 @@ This guide introduces Azure Functions for Node.js using the **v4 programming mod
 
 In v4, functions are registered directly in code with APIs such as `app.http()` and `app.timer()`, which is a major shift from older folder-based patterns.
 
-## Current scope in this hub
+!!! warning "Under Development"
+    The Node.js tutorial track and recipes are under active development. This page provides a programming model overview, quick start, and cross-language comparison. For production architecture decisions, pair this page with [Platform](../../platform/index.md) and [Operations](../../operations/index.md).
 
-This page is a roadmap-backed starter for Node.js. It includes:
+## Main Content
 
-- Worker/programming model overview
-- Runtime support baseline
-- Python-to-Node.js mental model mapping
-- A minimal HTTP trigger quick start
-- Planned content tracks for full parity
+```mermaid
+flowchart LR
+    A[01 Local Run] --> B[02 First Deploy]
+    B --> C[03 Configuration]
+    C --> D[04 Logging & Monitoring]
+    D --> E[05 Infrastructure as Code]
+    E --> F[06 CI/CD]
+    F --> G[07 Extending Triggers]
+```
 
-## Official reference
+The Node.js guide will follow the same 7-step tutorial structure used by the [Python guide](../python/index.md), covering all four hosting plans.
 
-- [Azure Functions Node.js developer guide (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-reference-node)
-
-!!! note "Source of truth"
-    Runtime/version support and binding capabilities should be validated against Microsoft Learn for production decisions.
-
-## Node.js model at a glance
+## Node.js v4 Model at a Glance
 
 | Topic | Node.js v4 |
 |------|-------------|
@@ -32,7 +32,7 @@ This page is a roadmap-backed starter for Node.js. It includes:
 | Worker model | Out-of-process language worker via Azure Functions host |
 | Supported runtimes | Node.js 18, 20, 22 |
 
-## Key differences from Python v2 model
+## Key Differences from Python v2 Model
 
 | Concern | Python | Node.js |
 |--------|--------|---------|
@@ -42,7 +42,7 @@ This page is a roadmap-backed starter for Node.js. It includes:
 | Handler signature | Python function with typed params | JavaScript/TypeScript handler with request/context |
 | Package management | `requirements.txt` | `package.json` |
 
-## Quick start: HTTP trigger (Node.js v4 model)
+## Quick Start: HTTP Trigger (Node.js v4 Model)
 
 ```javascript
 const { app } = require('@azure/functions');
@@ -72,26 +72,27 @@ app.http('helloHttp', {
 - Structured response object with status and JSON body.
 - Logging through function execution context.
 
-## Planned content (Coming Soon)
+## Tutorial Roadmap
 
-- **Tutorial track**: local run, first deploy, configuration, monitoring, IaC, CI/CD, trigger expansion.
+The following content is planned for the Node.js track:
+
+- **Tutorial track**: Local run, first deploy, configuration, monitoring, IaC, CI/CD, trigger expansion across all four hosting plans.
 - **Recipes**: HTTP auth, Storage patterns, Cosmos DB, Key Vault, Managed Identity, Event Grid.
-- **Reference docs**: runtime/version guide, host configuration mapping, troubleshooting baseline.
+- **Reference docs**: Runtime/version guide, host configuration mapping, troubleshooting baseline.
 - **Reference app**: `apps/nodejs/` parity implementation with the Python app capabilities.
-
-!!! tip "Use platform docs now"
-    Until full Node.js tracks are published, pair this page with [Platform](../../platform/index.md) and [Operations](../../operations/index.md) to make architecture and production decisions.
-
-## Cross-language links
-
-- [Language Guides overview](../index.md)
-- [Python guide (reference implementation)](../python/index.md)
-- [.NET guide](../dotnet/index.md)
-- [Java guide](../java/index.md)
 
 ## See Also
 
+- [Language Guides Overview](../index.md)
+- [Python Guide (reference implementation)](../python/index.md)
+- [Java Guide](../java/index.md)
+- [.NET Guide](../dotnet/index.md)
 - [Platform: Architecture](../../platform/architecture.md)
 - [Platform: Hosting](../../platform/hosting.md)
 - [Operations: Deployment](../../operations/deployment.md)
 - [Operations: Monitoring](../../operations/monitoring.md)
+
+## Sources
+
+- [Azure Functions Node.js developer guide](https://learn.microsoft.com/azure/azure-functions/functions-reference-node)
+- [Azure Functions JavaScript SDK v4 reference](https://learn.microsoft.com/azure/azure-functions/functions-reference-node?tabs=javascript%2Cwindows%2Cazure-cli&pivots=nodejs-model-v4)

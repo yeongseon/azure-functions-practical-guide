@@ -158,6 +158,14 @@ Your first Dedicated deployment is live. Next you will configure app settings, s
 
 > **Next:** [03 - Configuration](03-configuration.md)
 
+## See Also
+
+- [Tutorial Overview & Plan Chooser](../index.md)
+- [Python Language Guide](../../index.md)
+- [Platform: Hosting Plans](../../../../platform/hosting.md)
+- [Operations: Deployment](../../../../operations/deployment.md)
+- [Recipes Index](../../recipes/index.md)
+
 ## Sources
 
 - [Create a Function App in an App Service plan (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-how-to-use-azure-function-app-settings)

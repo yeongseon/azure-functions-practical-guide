@@ -20,10 +20,10 @@ export PLAN_NAME="flexdemo-plan"
 export STORAGE_NAME="flexdemostorage"
 export APPINSIGHTS_NAME="flexdemo-insights"
 export LOCATION="eastus2"
+```
 
 Expected output:
 
-```
 
 ```text
 ```
@@ -32,7 +32,6 @@ Expected output:
 
 Flex Consumption host storage must be identity-based. Use `AzureWebJobsStorage__accountName` and related identity keys, not connection strings.
 
-```
 
 ```bash
 az functionapp config appsettings set \
@@ -50,7 +49,6 @@ az functionapp config appsettings set \
 
 Expected output:
 
-```
 
 ```json
 [
@@ -76,7 +74,6 @@ Expected output:
 
 On Flex Consumption, the runtime name and version are defined in `functionAppConfig` (not in `FUNCTIONS_WORKER_RUNTIME`). Set only the remaining app-level settings here.
 
-```
 
 ```bash
 az functionapp config appsettings set \
@@ -92,7 +89,6 @@ az functionapp config appsettings set \
 
 Expected output:
 
-```
 
 ```json
 [
@@ -108,7 +104,6 @@ Expected output:
 
 On Flex, runtime/version and scale settings are defined in `functionAppConfig` (resource properties), not classic `siteConfig.appSettings` for runtime identity.
 
-```
 
 ```bash
 az functionapp show --name "$APP_NAME" --resource-group "$RG" --query "properties.functionAppConfig" --output json
@@ -116,7 +111,6 @@ az functionapp show --name "$APP_NAME" --resource-group "$RG" --query "propertie
 
 Expected output:
 
-```
 
 ```json
 {
@@ -138,7 +132,6 @@ Expected output:
 
 ## Step 5 - Confirm Flex Plan Characteristics
 
-```
 
 ```bash
 az appservice plan show --name "$PLAN_NAME" --resource-group "$RG" --query "{sku:sku,reserved:reserved,kind:kind}" --output json
@@ -146,7 +139,6 @@ az appservice plan show --name "$PLAN_NAME" --resource-group "$RG" --query "{sku
 
 Expected output:
 
-```
 
 ```json
 {
@@ -170,6 +162,14 @@ Expected output:
 ## Next Steps
 
 > **Next:** [04 - Logging and Monitoring](04-logging-monitoring.md)
+
+## See Also
+
+- [Tutorial Overview & Plan Chooser](../index.md)
+- [Python Language Guide](../../index.md)
+- [Platform: Hosting Plans](../../../../platform/hosting.md)
+- [Operations: Deployment](../../../../operations/deployment.md)
+- [Recipes Index](../../recipes/index.md)
 
 ## Sources
 

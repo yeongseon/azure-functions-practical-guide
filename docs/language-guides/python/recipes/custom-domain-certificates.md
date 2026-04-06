@@ -125,6 +125,13 @@ curl -I https://api.contoso.com
 | TLS certificate not issued | Domain not fully validated | Confirm hostname binding and DNS resolution first |
 | HTTP still accessible | HTTPS-only not enabled | Run `az functionapp update --set httpsOnly=true` |
 
+## See Also
+
+- [Recipes Index](index.md)
+- [Python Language Guide](../index.md)
+- [Platform: Networking](../../../platform/networking.md)
+- [Platform: Security](../../../platform/security.md)
+
 ## Sources
 - [Map a custom domain to App Service (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/app-service/app-service-web-tutorial-custom-domain)
 - [Add and manage TLS/SSL certificates in App Service (Microsoft Learn)](https://learn.microsoft.com/azure/app-service/configure-ssl-certificate)

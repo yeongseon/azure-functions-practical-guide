@@ -23,17 +23,16 @@ export PLAN_NAME="flexdemo-plan"
 export STORAGE_NAME="flexdemostorage"
 export APPINSIGHTS_NAME="flexdemo-insights"
 export LOCATION="eastus2"
+```
 
 Expected output:
 
-```
 
 ```text
 ```
 
 ## Step 2 - Create and Activate a Virtual Environment
 
-```
 
 ```bash
 python3 --version
@@ -45,7 +44,6 @@ pip install --requirement app/requirements.txt
 
 Expected output:
 
-```
 
 ```text
 Python 3.11.x
@@ -54,7 +52,6 @@ Successfully installed ...
 
 ## Step 3 - Create Local Settings
 
-```
 
 ```bash
 cp app/local.settings.json.example app/local.settings.json
@@ -62,7 +59,6 @@ cp app/local.settings.json.example app/local.settings.json
 
 Update `app/local.settings.json` to include local development values:
 
-```
 
 ```json
 {
@@ -77,7 +73,6 @@ Update `app/local.settings.json` to include local development values:
 
 Expected output:
 
-```
 
 ```text
 ```
@@ -86,7 +81,6 @@ Expected output:
 
 Flex Consumption in Azure uses identity-based host storage, but local development still uses Azurite with `UseDevelopmentStorage=true`.
 
-```
 
 ```bash
 azurite --silent --location /tmp/azurite --debug /tmp/azurite/debug.log
@@ -94,7 +88,6 @@ azurite --silent --location /tmp/azurite --debug /tmp/azurite/debug.log
 
 Expected output:
 
-```
 
 ```text
 Azurite Blob service is starting at http://127.0.0.1:10000
@@ -106,7 +99,6 @@ Azurite Table service is starting at http://127.0.0.1:10002
 
 In another terminal:
 
-```
 
 ```bash
 cd app
@@ -115,7 +107,6 @@ func host start
 
 Expected output:
 
-```
 
 ```text
 Azure Functions Core Tools
@@ -130,7 +121,6 @@ Functions:
 
 ## Step 6 - Verify Endpoints
 
-```
 
 ```bash
 curl --request GET "http://localhost:7071/api/health"
@@ -139,13 +129,11 @@ curl --request GET "http://localhost:7071/api/info"
 
 Expected output:
 
-```
 
 ```json
 {"status":"healthy","timestamp":"2026-01-01T00:00:00Z","version":"1.0.0"}
 ```
 
-```
 
 ```json
 {"name":"azure-functions-python-guide","plan":"Flex Consumption"}
@@ -163,6 +151,14 @@ Expected output:
 ## Next Steps
 
 > **Next:** [02 - First Deploy](02-first-deploy.md)
+
+## See Also
+
+- [Tutorial Overview & Plan Chooser](../index.md)
+- [Python Language Guide](../../index.md)
+- [Platform: Hosting Plans](../../../../platform/hosting.md)
+- [Operations: Deployment](../../../../operations/deployment.md)
+- [Recipes Index](../../recipes/index.md)
 
 ## Sources
 

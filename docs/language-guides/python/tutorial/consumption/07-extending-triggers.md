@@ -127,6 +127,14 @@ You completed the Consumption tutorial track. Continue with core runtime concept
 
 > **Next:** [How Functions Works](../../../../platform/architecture.md)
 
+## See Also
+
+- [Tutorial Overview & Plan Chooser](../index.md)
+- [Python Language Guide](../../index.md)
+- [Platform: Hosting Plans](../../../../platform/hosting.md)
+- [Operations: Deployment](../../../../operations/deployment.md)
+- [Recipes Index](../../recipes/index.md)
+
 ## Sources
 
 - [Azure Functions triggers and bindings](https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings)

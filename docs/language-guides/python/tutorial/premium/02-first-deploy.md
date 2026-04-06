@@ -203,6 +203,14 @@ flowchart LR
 
 > **Next:** [03 - Configuration](03-configuration.md)
 
+## See Also
+
+- [Tutorial Overview & Plan Chooser](../index.md)
+- [Python Language Guide](../../index.md)
+- [Platform: Hosting Plans](../../../../platform/hosting.md)
+- [Operations: Deployment](../../../../operations/deployment.md)
+- [Recipes Index](../../recipes/index.md)
+
 ## Sources
 
 - [Azure Functions Premium plan](https://learn.microsoft.com/azure/azure-functions/functions-premium-plan)

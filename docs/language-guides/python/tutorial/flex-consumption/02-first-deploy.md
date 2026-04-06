@@ -54,10 +54,8 @@ export APPINSIGHTS_NAME="flexdemo-insights"
 export LOCATION="koreacentral"
 ```
 
-Expected output:
-
-```text
-```
+!!! note "No output"
+    `export` commands set shell variables silently. No output is expected.
 
 ## Step 3 - Provision Infrastructure with Bicep
 
@@ -168,6 +166,14 @@ Endpoint test results from the Korea Central deployment (all returned HTTP 200):
 ## Next Steps
 
 > **Next:** [03 - Configuration](03-configuration.md)
+
+## See Also
+
+- [Tutorial Overview & Plan Chooser](../index.md)
+- [Python Language Guide](../../index.md)
+- [Platform: Hosting Plans](../../../../platform/hosting.md)
+- [Operations: Deployment](../../../../operations/deployment.md)
+- [Recipes Index](../../recipes/index.md)
 
 ## Sources
 

@@ -175,6 +175,14 @@ You now have reproducible Dedicated infrastructure in Bicep. Next you will autom
 
 > **Next:** [06 - CI/CD](06-ci-cd.md)
 
+## See Also
+
+- [Tutorial Overview & Plan Chooser](../index.md)
+- [Python Language Guide](../../index.md)
+- [Platform: Hosting Plans](../../../../platform/hosting.md)
+- [Operations: Deployment](../../../../operations/deployment.md)
+- [Recipes Index](../../recipes/index.md)
+
 ## Sources
 
 - [Bicep documentation](https://learn.microsoft.com/azure/azure-resource-manager/bicep/)

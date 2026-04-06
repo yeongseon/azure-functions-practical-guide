@@ -173,6 +173,14 @@ You now have a repeatable Dedicated deployment pipeline with optional slot-based
 
 > **Next:** [07 - Extending with Triggers](07-extending-triggers.md)
 
+## See Also
+
+- [Tutorial Overview & Plan Chooser](../index.md)
+- [Python Language Guide](../../index.md)
+- [Platform: Hosting Plans](../../../../platform/hosting.md)
+- [Operations: Deployment](../../../../operations/deployment.md)
+- [Recipes Index](../../recipes/index.md)
+
 ## Sources
 
 - [Zip deployment for Azure Functions](https://learn.microsoft.com/azure/azure-functions/deployment-zip-push)

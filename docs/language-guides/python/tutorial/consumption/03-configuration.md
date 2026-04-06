@@ -111,6 +111,14 @@ Now enable operational visibility with logs and monitoring.
 
 > **Next:** [04 - Logging and Monitoring](04-logging-monitoring.md)
 
+## See Also
+
+- [Tutorial Overview & Plan Chooser](../index.md)
+- [Python Language Guide](../../index.md)
+- [Platform: Hosting Plans](../../../../platform/hosting.md)
+- [Operations: Deployment](../../../../operations/deployment.md)
+- [Recipes Index](../../recipes/index.md)
+
 ## Sources
 
 - [App settings reference for Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-app-settings)

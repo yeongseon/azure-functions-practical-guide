@@ -4,14 +4,24 @@ This guide introduces Azure Functions for Java using the annotation-based progra
 
 Java functions are declared with `@FunctionName` and trigger/binding annotations such as `@HttpTrigger`, providing explicit metadata in familiar Java class structure.
 
-## Official reference
+!!! warning "Under Development"
+    The Java tutorial track and recipes are under active development. This page provides a programming model overview, quick start, and cross-language comparison. For production architecture decisions, pair this page with [Platform](../../platform/index.md) and [Operations](../../operations/index.md).
 
-- [Azure Functions Java developer guide (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-reference-java)
+## Main Content
 
-!!! note "Authoritative runtime guidance"
-    Validate Java runtime and feature availability with Microsoft Learn before production rollout decisions.
+```mermaid
+flowchart LR
+    A[01 Local Run] --> B[02 First Deploy]
+    B --> C[03 Configuration]
+    C --> D[04 Logging & Monitoring]
+    D --> E[05 Infrastructure as Code]
+    E --> F[06 CI/CD]
+    F --> G[07 Extending Triggers]
+```
 
-## Java model at a glance
+The Java guide will follow the same 7-step tutorial structure used by the [Python guide](../python/index.md), covering all four hosting plans.
+
+## Java Model at a Glance
 
 | Topic | Java on Azure Functions |
 |-------|--------------------------|
@@ -20,14 +30,14 @@ Java functions are declared with `@FunctionName` and trigger/binding annotations
 | Worker model | Out-of-process Java worker managed by the Functions host |
 | Supported runtimes | Java 8, 11, 17, 21 |
 
-## Key concepts
+## Key Concepts
 
 - Function entry methods are grouped in Java classes.
 - Trigger and binding behavior is declared via annotations.
 - Execution context and logging are provided to handler methods.
 - Dependency management follows Maven/Gradle Java ecosystem conventions.
 
-## Java vs Python mental model
+## Java vs Python Mental Model
 
 | Concern | Python v2 | Java |
 |---------|-----------|------|
@@ -36,7 +46,7 @@ Java functions are declared with `@FunctionName` and trigger/binding annotations
 | Dependency management | `requirements.txt` | `pom.xml` or `build.gradle` |
 | Common HTTP pattern | `@app.route(...)` | `@FunctionName` + `@HttpTrigger` |
 
-## Quick start: HTTP trigger (Java)
+## Quick Start: HTTP Trigger (Java)
 
 ```java
 package com.example;
@@ -75,26 +85,27 @@ public class HelloFunction {
 - Route parameter extraction with `@BindingName`.
 - Logging through `ExecutionContext`.
 
-## Planned content (Coming Soon)
+## Tutorial Roadmap
 
-- **Tutorial track**: local run, deployment, configuration, monitoring, IaC, CI/CD.
+The following content is planned for the Java track:
+
+- **Tutorial track**: Local run, deployment, configuration, monitoring, IaC, CI/CD across all four hosting plans.
 - **Recipes**: Storage, Cosmos DB, Event Grid, Key Vault, Managed Identity.
-- **Reference docs**: runtime/version matrix notes, host settings mapping, troubleshooting patterns.
+- **Reference docs**: Runtime/version matrix notes, host settings mapping, troubleshooting patterns.
 - **Reference app**: `apps/java/` parity build-out matching hub capability targets.
-
-!!! tip "Use shared hub guidance now"
-    While Java-specific sections expand, rely on [Platform](../../platform/index.md), [Operations](../../operations/index.md), and [Troubleshooting](../../troubleshooting/index.md) for architecture and runbook decisions.
-
-## Cross-language links
-
-- [Language Guides overview](../index.md)
-- [Python guide](../python/index.md)
-- [Node.js guide](../nodejs/index.md)
-- [.NET guide](../dotnet/index.md)
 
 ## See Also
 
+- [Language Guides Overview](../index.md)
+- [Python Guide (reference implementation)](../python/index.md)
+- [Node.js Guide](../nodejs/index.md)
+- [.NET Guide](../dotnet/index.md)
 - [Platform: Triggers and Bindings](../../platform/triggers-and-bindings.md)
 - [Platform: Hosting](../../platform/hosting.md)
 - [Operations: Deployment](../../operations/deployment.md)
 - [Troubleshooting: Methodology](../../troubleshooting/methodology.md)
+
+## Sources
+
+- [Azure Functions Java developer guide](https://learn.microsoft.com/azure/azure-functions/functions-reference-java)
+- [Quickstart: Create a Java function in Azure Functions](https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-java)

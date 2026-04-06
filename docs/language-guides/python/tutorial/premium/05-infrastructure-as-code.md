@@ -170,9 +170,9 @@ Deploy Azure Functions Premium infrastructure with Bicep from `infra/premium/mai
     ```
 
     !!! note "Connection strings vs identity-based storage"
-The Premium plan tutorial uses **connection-string-based** storage (`AzureWebJobsStorage` with a full connection string) and **Azure Files** for content share deployment (`WEBSITE_CONTENTSHARE` + `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING`). This is the standard approach for Premium and matches `infra/premium/main.bicep`. For identity-based storage on Premium, see the [Managed Identity recipe](../../recipes/managed-identity.md).
+        The Premium plan tutorial uses **connection-string-based** storage (`AzureWebJobsStorage` with a full connection string) and **Azure Files** for content share deployment (`WEBSITE_CONTENTSHARE` + `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING`). This is the standard approach for Premium and matches `infra/premium/main.bicep`. For identity-based storage on Premium, see the [Managed Identity recipe](../../recipes/managed-identity.md).
 
-    Premium uses classic `siteConfig.appSettings` and does not use `functionAppConfig`.
+        Premium uses classic `siteConfig.appSettings` and does not use `functionAppConfig`.
 
 5. Deploy the template.
 
@@ -211,8 +211,6 @@ The Premium plan tutorial uses **connection-string-based** storage (`AzureWebJob
 
 ## Expected Output
 
-```
-
 ```text
 Name                              ResourceType
 --------------------------------  --------------------------------------
@@ -221,8 +219,6 @@ func-premium-demo                 Microsoft.Web/sites
 stpremdemo123                     Microsoft.Storage/storageAccounts
 vnet-premium-demo                 Microsoft.Network/virtualNetworks
 pe-func-premium-demo              Microsoft.Network/privateEndpoints
-```
-
 ```
 
 ```json
@@ -236,6 +232,14 @@ pe-func-premium-demo              Microsoft.Network/privateEndpoints
 ## Next Steps
 
 > **Next:** [06 - CI/CD](06-ci-cd.md)
+
+## See Also
+
+- [Tutorial Overview & Plan Chooser](../index.md)
+- [Python Language Guide](../../index.md)
+- [Platform: Hosting Plans](../../../../platform/hosting.md)
+- [Operations: Deployment](../../../../operations/deployment.md)
+- [Recipes Index](../../recipes/index.md)
 
 ## Sources
 

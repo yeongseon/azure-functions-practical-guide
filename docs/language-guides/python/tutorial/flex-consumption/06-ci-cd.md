@@ -21,10 +21,10 @@ export STORAGE_NAME="flexdemostorage"
 export APPINSIGHTS_NAME="flexdemo-insights"
 export LOCATION="eastus2"
 export SUBSCRIPTION_ID="<subscription-id>"
+```
 
 Expected output:
 
-```
 
 ```text
 ```
@@ -38,7 +38,6 @@ az ad sp create --id "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" --output json
 
 Expected output:
 
-```
 
 ```json
 {
@@ -50,7 +49,6 @@ Expected output:
 
 ## Step 3 - Add Federated Credential for GitHub OIDC
 
-```
 
 ```bash
 az ad app federated-credential create --id "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" --parameters '{"name":"github-main","issuer":"https://token.actions.githubusercontent.com","subject":"repo:your-org/azure-functions-python-guide:ref:refs/heads/main","audiences":["api://AzureADTokenExchange"]}' --output json
@@ -58,7 +56,6 @@ az ad app federated-credential create --id "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 
 Expected output:
 
-```
 
 ```json
 {
@@ -70,7 +67,6 @@ Expected output:
 
 ## Step 4 - Grant Deployment Permissions
 
-```
 
 ```bash
 az role assignment create --assignee "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" --role "Contributor" --scope "/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RG" --output json
@@ -78,7 +74,6 @@ az role assignment create --assignee "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" --ro
 
 Expected output:
 
-```
 
 ```json
 {
@@ -103,7 +98,6 @@ Set these repository or environment variables in GitHub Actions:
 
 Create `.github/workflows/deploy-flex.yml`:
 
-```
 
 ```yaml
 name: Deploy Flex Consumption Function App
@@ -153,7 +147,6 @@ For Flex Consumption, `azure/functions-action@v1` follows a One Deploy-compatibl
 
 ## Step 7 - Verify Deployment Health
 
-```
 
 ```bash
 curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
@@ -162,7 +155,6 @@ az monitor app-insights query --app "$APPINSIGHTS_NAME" --analytics-query "reque
 
 Expected output:
 
-```
 
 ```json
 {"status":"healthy","timestamp":"2026-01-01T00:00:00Z","version":"1.0.0"}
@@ -171,6 +163,14 @@ Expected output:
 ## Next Steps
 
 > **Next:** [07 - Extending Triggers](07-extending-triggers.md)
+
+## See Also
+
+- [Tutorial Overview & Plan Chooser](../index.md)
+- [Python Language Guide](../../index.md)
+- [Platform: Hosting Plans](../../../../platform/hosting.md)
+- [Operations: Deployment](../../../../operations/deployment.md)
+- [Recipes Index](../../recipes/index.md)
 
 ## Sources
 

@@ -4,31 +4,35 @@ This guide introduces Azure Functions for .NET with emphasis on the **isolated w
 
 The isolated model gives clearer dependency boundaries, independent .NET versioning, and modern hosting patterns aligned with current platform direction.
 
-## Official reference
+!!! warning "Under Development"
+    The .NET tutorial track and recipes are under active development. This page provides a programming model overview, quick start, and cross-language comparison. For production architecture decisions, pair this page with [Platform](../../platform/index.md) and [Operations](../../operations/index.md).
 
-- [Azure Functions .NET class library guide (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-dotnet-class-library)
+## Main Content
 
-!!! note "Recommendation baseline"
-    For new apps, prefer the isolated worker model unless you have a specific compatibility dependency on in-process behavior.
+```mermaid
+flowchart LR
+    A[01 Local Run] --> B[02 First Deploy]
+    B --> C[03 Configuration]
+    C --> D[04 Logging & Monitoring]
+    D --> E[05 Infrastructure as Code]
+    E --> F[06 CI/CD]
+    F --> G[07 Extending Triggers]
+```
 
-## .NET worker model overview
+The .NET guide will follow the same 7-step tutorial structure used by the [Python guide](../python/index.md), covering all four hosting plans.
 
-| Model | Status for new projects | Characteristics |
+## .NET Worker Model Overview
+
+| Model | Status for New Projects | Characteristics |
 |-------|--------------------------|-----------------|
 | In-process | Legacy/compatibility path | Functions runtime and app code run in one process |
 | Isolated worker | **Recommended** | App code runs in separate worker process with explicit host setup |
 
-## Runtime support baseline
+## Runtime Support Baseline
 
 - **.NET 8 (LTS)** is the hub baseline for new .NET guidance; validate target framework and extension compatibility in Microsoft Learn before production rollouts.
 
-## Key concepts
-
-- Attribute-based trigger and binding declarations.
-- Dependency injection via modern host builder patterns.
-- Separation between Functions host process and isolated worker process.
-
-## In-process vs isolated: practical differences
+## In-Process vs Isolated: Practical Differences
 
 | Concern | In-process | Isolated |
 |---------|------------|----------|
@@ -37,7 +41,7 @@ The isolated model gives clearer dependency boundaries, independent .NET version
 | Middleware/control | More constrained | More explicit/extensible pipeline control |
 | Recommended for net-new | No | Yes |
 
-## Quick start: HTTP trigger (.NET isolated)
+## Quick Start: HTTP Trigger (.NET Isolated)
 
 ```csharp
 using Microsoft.Azure.Functions.Worker;
@@ -76,25 +80,26 @@ public class HelloFunction
 - DI-driven logging in isolated worker.
 - `HttpRequestData`/`HttpResponseData` primitives.
 
-## Planned content (Coming Soon)
+## Tutorial Roadmap
 
-- **Tutorial track**: local development, first deploy, configuration, monitoring, IaC, CI/CD.
+The following content is planned for the .NET track:
+
+- **Tutorial track**: Local development, first deploy, configuration, monitoring, IaC, CI/CD across all four hosting plans.
 - **Recipes**: Storage, Cosmos DB, Key Vault, Managed Identity, durable workflows.
 - **Reference app**: `apps/dotnet/` parity implementation aligned to Python capability set.
 
-!!! tip "Use shared sections while .NET track expands"
-    Combine this page with [Platform](../../platform/index.md), [Operations](../../operations/index.md), and [Troubleshooting](../../troubleshooting/index.md) for production-ready guidance today.
-
-## Cross-language links
-
-- [Language Guides overview](../index.md)
-- [Python guide](../python/index.md)
-- [Node.js guide](../nodejs/index.md)
-- [Java guide](../java/index.md)
-
 ## See Also
 
+- [Language Guides Overview](../index.md)
+- [Python Guide (reference implementation)](../python/index.md)
+- [Node.js Guide](../nodejs/index.md)
+- [Java Guide](../java/index.md)
 - [Platform: Architecture](../../platform/architecture.md)
 - [Platform: Reliability](../../platform/reliability.md)
 - [Operations: Deployment](../../operations/deployment.md)
 - [Operations: Monitoring](../../operations/monitoring.md)
+
+## Sources
+
+- [Azure Functions .NET developer guide](https://learn.microsoft.com/azure/azure-functions/functions-dotnet-class-library)
+- [Guide for running C# Azure Functions in the isolated worker model](https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide)
