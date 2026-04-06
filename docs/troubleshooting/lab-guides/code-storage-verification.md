@@ -629,8 +629,12 @@ az functionapp restart \
 
 Expected behavior:
 
-- Startup/content resolution warnings or errors for share mapping.
-- Listener startup degradation.
+- Platform auto-regenerates `WEBSITE_CONTENTSHARE` with a new random share name on restart.
+- No immediate failure visible - validates platform resilience for this specific setting.
+- Operational impact: content share name drifts from IaC baseline, causing configuration audit mismatches.
+
+!!! note "Live testing update"
+    Validated testing (Observation A) revealed that removing `WEBSITE_CONTENTSHARE` alone does NOT cause failure - the platform auto-regenerates a new random share name on restart. Full failure requires compound removal of `AzureWebJobsStorage` + `WEBSITE_RUN_FROM_PACKAGE` + `WEBSITE_CONTENTSHARE`. See [Platform resilience behaviors](#461-platform-resilience-behaviors-discovered-during-testing).
 
 #### 3.7.2 Scenario B: Flex (`FC1`) wrong blob deployment path
 
@@ -668,8 +672,12 @@ az functionapp restart \
 
 Expected behavior:
 
-- Content share provisioning/reference issues for startup path.
-- Host/listener instability despite otherwise valid runtime settings.
+- **Projected**: Content share provisioning/reference issues for startup path.
+- **Projected**: Host/listener instability despite otherwise valid runtime settings.
+- This scenario has **not been individually validated** on EP. Live testing (Observation C) used compound removal.
+
+!!! note "Live testing update"
+    Validated testing revealed that `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING` is platform-protected on Consumption and cannot be removed via CLI. On Premium (Observation C), failure required compound removal of all storage + content settings. See [Platform resilience behaviors](#461-platform-resilience-behaviors-discovered-during-testing).
 
 #### 3.7.4 Scenario D: Dedicated (`ASP`) remove `WEBSITE_RUN_FROM_PACKAGE`
 
@@ -809,6 +817,8 @@ Expected behavior:
 - Azure Files content path initialization fails during startup.
 - Content share may exist but cannot be mounted due to missing connection context.
 
+!!! warning "Projected scenario — may not reproduce"
+    Live testing discovered that `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING` is platform-protected on Consumption (Y1) and cannot be removed via `az functionapp config appsettings delete`. The platform refuses with `Required parameter WEBSITE_CONTENTAZUREFILECONNECTIONSTRING is missing.` This scenario may only apply to plans where the setting is not platform-protected.
 !!! tip "Operator insight"
     Scenario A and Scenario I look similar operationally; this one proves the connection string and share name are independently critical.
 
@@ -956,11 +966,15 @@ az functionapp restart \
 
 Expected behavior:
 
-- Premium startup cannot map Azure Files content location even when connection string remains.
-- Listener startup fails or delays due to unresolved content share target.
+- Platform auto-regenerates `WEBSITE_CONTENTSHARE` with a new random share name on restart.
+- No immediate failure visible. This validates a platform resilience behavior, not an outage scenario.
+- Operational impact: content share name drifts from infrastructure-as-code baseline, creating triage ambiguity.
+
+!!! note "Live testing update"
+    Validated testing (Observation C on EP) revealed that removing `WEBSITE_CONTENTSHARE` alone triggers platform auto-regeneration with no visible failure. Actual Premium outage required compound removal of all storage + content + RFP settings.
 
 !!! tip "Operator insight"
-    This complements Scenario C and confirms both EP content settings are mandatory, not optional alternates.
+    This complements Scenario C by showing that `WEBSITE_CONTENTSHARE` drift alone is resilient, while true outage behavior on EP requires broader contract breakage.
 
 #### 3.7.17 Scenario Q: Premium (`EP`) remove VNet integration
 
@@ -1118,34 +1132,55 @@ Use these sanitized signatures as validation anchors. IDs and subscription value
 #### 3.9.1 Consumption (`Y1`) misconfiguration pattern
 
 ```text
-[2026-04-06T09:12:11Z] Host startup encountered content configuration mismatch.
-[2026-04-06T09:12:12Z] WEBSITE_CONTENTSHARE was not found or invalid for this plan.
-[2026-04-06T09:12:14Z] The listener for function 'Functions.timer_healthcheck' was unable to start.
+Unable to load the functions payload since the app was not provisioned with valid AzureWebJobsStorage connection string.
+Loading functions metadata
+0 functions found (Custom)
+No functions were found. This can occur before you deploy code to your function app or when the host.json file is missing from the most recent deployment.
+0 functions loaded
+No job functions found.
+No HTTP routes mapped
 ```
+
+HTTP result: `404`
 
 #### 3.9.2 Flex (`FC1`) misconfiguration pattern
 
 ```text
-[2026-04-06T09:20:03Z] Deployment storage resolution failed for blobContainer path.
-[2026-04-06T09:20:04Z] Unable to open deployment package from https://codeverifyfc1storage.blob.core.windows.net/nonexistent-deployment-container
-[2026-04-06T09:20:05Z] Job host startup retry scheduled.
+[Tag=''] Process reporting unhealthy: Unhealthy. Health check entries are {"azure.functions.web_host.lifecycle":{"status":"Healthy","description":null},"azure.functions.script_host.lifecycle":{"status":"Healthy","description":null},"azure.functions.webjobs.storage":{"status":"Unhealthy","description":"Unable to create client for AzureWebJobsStorage"}}
 ```
+
+HTTP result: still `200` (silent degradation - deployment blob cached)
 
 #### 3.9.3 Premium (`EP`) misconfiguration pattern
 
 ```text
-[2026-04-06T09:32:44Z] Content share configuration missing required connection setting.
-[2026-04-06T09:32:46Z] Host initialization delayed while resolving content path.
-[2026-04-06T09:32:48Z] The listener for function 'Functions.timer_healthcheck' was unable to start.
+0 functions found (Custom)
+No functions were found.
+0 functions loaded
+No job functions found.
+No HTTP routes mapped
+[Tag=''] Process reporting unhealthy: Unhealthy. Health check entries are {"azure.functions.web_host.lifecycle":{"status":"Healthy","description":null},"azure.functions.script_host.lifecycle":{"status":"Healthy","description":null},"azure.functions.webjobs.storage":{"status":"Unhealthy","description":"Unable to create client for AzureWebJobsStorage"}}
 ```
+
+HTTP result: `404`
 
 #### 3.9.4 Dedicated (`ASP`) misconfiguration pattern
 
 ```text
-[2026-04-06T09:41:08Z] Run-From-Package setting not detected for dedicated package startup path.
-[2026-04-06T09:41:10Z] Function metadata load did not match latest deployment package.
-[2026-04-06T09:41:13Z] Invocation cadence dropped after restart.
+[Tag=''] Process reporting unhealthy: Unhealthy. Health check entries are {"azure.functions.web_host.lifecycle":{"status":"Healthy","description":null},"azure.functions.script_host.lifecycle":{"status":"Healthy","description":null},"azure.functions.webjobs.storage":{"status":"Unhealthy","description":"Unable to access AzureWebJobsStorage","errorCode":"KeyBasedAuthenticationNotPermitted"}}
+0 functions found (Custom)
+No functions were found.
+0 functions loaded
+No job functions found.
+No HTTP routes mapped
 ```
+
+HTTP result: `404`
+
+!!! info "Validated vs projected patterns"
+    Scenarios A-D above contain **real log patterns** collected from live Azure deployments on 2026-04-06.
+    Scenarios E-S below contain **projected patterns** based on the platform behavior model.
+    Projected patterns follow the same failure signature structure but have not been reproduced in this lab run.
 
 #### 3.9.5 Scenario E (`Y1`) remove `AzureWebJobsStorage__accountName`
 
@@ -1186,6 +1221,9 @@ Use these sanitized signatures as validation anchors. IDs and subscription value
 [2026-04-06T10:00:11Z] Content share mount prerequisites are incomplete.
 [2026-04-06T10:00:13Z] Listener startup failed due to content initialization errors.
 ```
+
+!!! warning "Projected scenario - may not reproduce"
+    Live testing discovered that `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING` is platform-protected on Consumption (Y1) and cannot be removed via `az functionapp config appsettings delete`. This scenario may only apply to plans where the setting is not platform-protected.
 
 #### 3.9.10 Scenario J (`Y1`) non-existent `WEBSITE_CONTENTSHARE`
 
@@ -1236,6 +1274,10 @@ Use these sanitized signatures as validation anchors. IDs and subscription value
 ```
 
 #### 3.9.16 Scenario P (`EP`) remove `WEBSITE_CONTENTSHARE`
+
+!!! warning "Projected pattern — contradicted by live testing"
+    Live testing discovered that `WEBSITE_CONTENTSHARE` auto-regenerates on both Y1 and EP with no visible failure.
+    The log pattern below is projected and may not reproduce. See [Platform resilience behaviors](#461-platform-resilience-behaviors-discovered-during-testing).
 
 ```text
 [2026-04-06T10:21:29Z] WEBSITE_CONTENTSHARE is missing for Premium content initialization.
@@ -1658,7 +1700,7 @@ requests
 
 Run CLI setting checks from section 3.4 for each plan and compare with section 3.6 expected values.
 
-### 3.14 Cleanup
+## Clean Up
 
 Delete all lab resource groups:
 
@@ -1684,8 +1726,6 @@ az group delete \
   --no-wait
 ```
 
----
-
 ## 4) Experiment Log
 
 ### 4.1 Artifact inventory
@@ -1699,17 +1739,17 @@ az group delete \
 | Recovery captures | `traces-recovery-*.csv`, `requests-recovery-*.csv` | Post-fix verification telemetry |
 | Verdict notes | `timeline.md`, `hypothesis-verdict.md` | Final analytical conclusion |
 
-### 4.2 Baseline evidence snapshot
+### 4.2 Baseline contract reference
 
 #### 4.2.1 Consumption (Y1) storage settings
 
-Expected settings snapshot (sanitized):
+Baseline contract settings (reference values, sanitized):
 
 ```json
 [
   {
     "name": "AzureWebJobsStorage__accountName",
-    "value": "codeverifyy1storage"
+    "value": "<y1-storage-account>"
   },
   {
     "name": "AzureWebJobsStorage__credential",
@@ -1717,7 +1757,7 @@ Expected settings snapshot (sanitized):
   },
   {
     "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
-    "value": "DefaultEndpointsProtocol=https;AccountName=codeverifyy1storage;AccountKey=<masked-key>;EndpointSuffix=core.windows.net"
+    "value": "DefaultEndpointsProtocol=https;AccountName=<y1-storage-account>;AccountKey=<masked-key>;EndpointSuffix=core.windows.net"
   },
   {
     "name": "WEBSITE_CONTENTSHARE",
@@ -1740,13 +1780,13 @@ Identity and role baseline:
 
 #### 4.2.2 Flex Consumption (FC1) storage settings
 
-Expected app settings snapshot (sanitized):
+Baseline contract settings (reference values, sanitized):
 
 ```json
 [
   {
     "name": "AzureWebJobsStorage__accountName",
-    "value": "codeverifyfc1storage"
+    "value": "<fc1-storage-account>"
   },
   {
     "name": "AzureWebJobsStorage__credential",
@@ -1759,14 +1799,14 @@ Expected app settings snapshot (sanitized):
 ]
 ```
 
-Expected `functionAppConfig` snapshot (sanitized):
+Baseline `functionAppConfig` contract (reference values, sanitized):
 
 ```json
 {
   "deployment": {
     "storage": {
       "type": "blobContainer",
-      "value": "https://codeverifyfc1storage.blob.core.windows.net/deployment-packages",
+      "value": "https://<fc1-storage-account>.blob.core.windows.net/deployment-packages",
       "authentication": {
         "type": "UserAssignedIdentity",
         "userAssignedIdentityResourceId": "/subscriptions/<subscription-id>/resourceGroups/rg-func-codeverify-fc1/providers/Microsoft.ManagedIdentity/userAssignedIdentities/codeverifyfc1-identity"
@@ -1787,13 +1827,13 @@ Identity and role baseline:
 
 #### 4.2.3 Premium (EP) storage settings
 
-Expected settings snapshot (sanitized):
+Baseline contract settings (reference values, sanitized):
 
 ```json
 [
   {
     "name": "AzureWebJobsStorage__accountName",
-    "value": "codeverifyepstorage"
+    "value": "<ep-storage-account>"
   },
   {
     "name": "AzureWebJobsStorage__credential",
@@ -1801,7 +1841,7 @@ Expected settings snapshot (sanitized):
   },
   {
     "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
-    "value": "DefaultEndpointsProtocol=https;AccountName=codeverifyepstorage;AccountKey=<masked-key>;EndpointSuffix=core.windows.net"
+    "value": "DefaultEndpointsProtocol=https;AccountName=<ep-storage-account>;AccountKey=<masked-key>;EndpointSuffix=core.windows.net"
   },
   {
     "name": "WEBSITE_CONTENTSHARE",
@@ -1821,13 +1861,13 @@ Identity and role baseline:
 
 #### 4.2.4 Dedicated (ASP) storage settings
 
-Expected settings snapshot (sanitized):
+Baseline contract settings (reference values, sanitized):
 
 ```json
 [
   {
     "name": "AzureWebJobsStorage__accountName",
-    "value": "codeverifyaspstorage"
+    "value": "<asp-storage-account>"
   },
   {
     "name": "AzureWebJobsStorage__credential",
@@ -1856,7 +1896,7 @@ Identity and role baseline:
 | Code storage model | Azure Files SMB | Blob container (`functionAppConfig`) | Azure Files SMB | App Service filesystem package |
 | `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING` | Required | Not used | Required | Not used |
 | `WEBSITE_CONTENTSHARE` | Required | Not used | Required | Not used |
-| `WEBSITE_RUN_FROM_PACKAGE` | `1` | Not used | Not set in template | `1` |
+| `WEBSITE_RUN_FROM_PACKAGE` | `1` | Not used | Not set in template (added during compound testing) | `1` |
 | `AzureWebJobsStorage__clientId` | Not used | Required | Not used | Not used |
 | `functionAppConfig.deployment.storage.type` | Not used | `blobContainer` | Not used | Not used |
 | Deployment auth type | N/A | `UserAssignedIdentity` | N/A | N/A |
@@ -1868,38 +1908,61 @@ Identity and role baseline:
 
 ### 4.4 During-incident observations
 
-Observation set A (Y1 content share removed):
+#### Validated scenario mapping
+
+| Observation | Plan | Mutation type | Exact mutation | Validates scenarios | Key finding |
+|---|---|---|---|---|---|
+| A | Y1 | Compound | Removed `AzureWebJobsStorage` + `WEBSITE_RUN_FROM_PACKAGE` + `WEBSITE_CONTENTSHARE` | Partial A, partial D, partial K | Full failure requires compound removal; platform protects `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING` |
+| B | FC1 | Progressive | Invalidated `__clientId` -> removed `__accountName` -> removed all identity settings | Partial L, partial E | Silent degradation - cached deployment blob keeps HTTP 200 |
+| C | EP | Compound | Removed all storage + content + RFP settings | Partial C, partial P, partial D | Complete function loading failure identical to Y1 |
+| D | ASP | Single | Removed `WEBSITE_RUN_FROM_PACKAGE` | D | Single-setting removal sufficient for complete failure |
+
+Observation set A (Consumption - full storage removal):
 
 | Timestamp (UTC) | Evidence |
 |---|---|
-| 2026-04-06T09:12:10Z | `WEBSITE_CONTENTSHARE` deleted from app settings |
-| 2026-04-06T09:12:11Z | Function app restart initiated |
-| 2026-04-06T09:12:14Z | Listener startup warnings start appearing |
-| 2026-04-06T09:13:00Z | Invocation cadence drops for timer trigger |
+| 2026-04-06T14:37:36Z | `AzureWebJobsStorage`, `AzureWebJobsStorage__accountName`, `AzureWebJobsStorage__credential` removed. App still returns HTTP 200 (`WEBSITE_CONTENTAZUREFILECONNECTIONSTRING` platform-protected). |
+| 2026-04-06T14:40:17Z | `WEBSITE_RUN_FROM_PACKAGE` and `WEBSITE_CONTENTSHARE` also removed. App restart issued. |
+| 2026-04-06T14:41:32Z | KQL: `"Unable to load the functions payload since the app was not provisioned with valid AzureWebJobsStorage connection string."` (Severity 3) |
+| 2026-04-06T14:41:33Z | KQL: `"0 functions found (Custom)"`, `"No functions were found"`, `"0 functions loaded"`, `"No job functions found"` (Severity 2), `"No HTTP routes mapped"` |
+| 2026-04-06T14:41:27Z | HTTP requests return 404 |
 
-Observation set B (FC1 wrong deployment blob path):
-
-| Timestamp (UTC) | Evidence |
-|---|---|
-| 2026-04-06T09:20:02Z | `functionAppConfig.deployment.storage.value` changed to invalid container |
-| 2026-04-06T09:20:05Z | Startup/deployment retrieval failures in traces |
-| 2026-04-06T09:20:20Z | No new successful executions |
-
-Observation set C (EP content connection removed):
+Observation set B (Flex Consumption - identity settings removal):
 
 | Timestamp (UTC) | Evidence |
 |---|---|
-| 2026-04-06T09:32:43Z | `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING` removed |
-| 2026-04-06T09:32:45Z | Startup content resolution degradation |
-| 2026-04-06T09:33:10Z | Listener non-start pattern appears |
+| 2026-04-06T14:31:31Z | `AzureWebJobsStorage__clientId` changed to invalid UUID `00000000-0000-0000-0000-000000000000` |
+| 2026-04-06T14:32:28Z | KQL: Health check reports `"Unable to access AzureWebJobsStorage"` (Severity 2). HTTP still returns 200. |
+| 2026-04-06T14:33:18Z | `AzureWebJobsStorage__accountName` also removed. Health check: `"Unable to access AzureWebJobsStorage"` |
+| 2026-04-06T14:34:21Z | All identity settings removed (`__accountName`, `__credential`, `__clientId`). App restart issued. |
+| 2026-04-06T14:35:04Z | KQL: `"Unable to create client for AzureWebJobsStorage"` (Severity 2). HTTP still returns 200 - silent degradation. |
 
-Observation set D (ASP run-from-package removed):
+Observation set C (Premium - full storage + content removal):
 
 | Timestamp (UTC) | Evidence |
 |---|---|
-| 2026-04-06T09:41:07Z | `WEBSITE_RUN_FROM_PACKAGE` removed |
-| 2026-04-06T09:41:10Z | Package load inconsistency traces |
-| 2026-04-06T09:41:45Z | Execution cadence drifts from baseline |
+| 2026-04-06T14:43:50Z | `AzureWebJobsStorage`, identity settings, `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING`, `WEBSITE_CONTENTSHARE`, `WEBSITE_RUN_FROM_PACKAGE` all removed |
+| 2026-04-06T14:44:04Z | KQL: `"0 functions found (Custom)"`, `"No functions were found"`, `"0 functions loaded"`, `"No job functions found"` (Severity 2), `"No HTTP routes mapped"` |
+| 2026-04-06T14:44:10Z | KQL: Health check `"Unable to create client for AzureWebJobsStorage"` (Severity 2) |
+| 2026-04-06T14:44:39Z | Host restarts with identical failure pattern (retry loop) |
+| 2026-04-06T14:45:15Z | Continuous unhealthy health checks. HTTP requests return 404. |
+
+Observation set D (Dedicated - `WEBSITE_RUN_FROM_PACKAGE` removal):
+
+| Timestamp (UTC) | Evidence |
+|---|---|
+| 2026-04-06T14:43:15Z | KQL: Health check `"Unable to access AzureWebJobsStorage"`, `"errorCode":"KeyBasedAuthenticationNotPermitted"` (Severity 2) - **pre-existing** condition from Bicep template disabling shared key access |
+| 2026-04-06T14:43:48Z | `WEBSITE_RUN_FROM_PACKAGE` removed. App restart issued. |
+| 2026-04-06T14:45:25Z | KQL: `"0 functions found (Custom)"`, `"No functions were found"`, `"0 functions loaded"`, `"No job functions found"` (Severity 2), `"No HTTP routes mapped"` |
+| 2026-04-06T14:45:31Z | Continuous unhealthy health checks. HTTP requests return 404. |
+
+!!! warning "Pre-existing condition in Observation D"
+    The `KeyBasedAuthenticationNotPermitted` error at 14:43:15Z predates the `WEBSITE_RUN_FROM_PACKAGE` removal at 14:43:48Z. This is a pre-existing condition caused by the Bicep template setting `allowSharedKeyAccess=false` on the Dedicated plan storage account. The actual failure trigger was the `WEBSITE_RUN_FROM_PACKAGE` removal, which caused `"0 functions found"` and HTTP 404. The pre-existing storage auth issue did not independently cause function loading failure.
+
+!!! info "Validated vs projected observations"
+    Observation sets A-D above contain **real KQL output** collected from live Azure deployments on 2026-04-06.
+    The remaining observation sets below contain **projected patterns** based on the platform behavior model.
+    Projected patterns follow the same failure signature structure but have not been reproduced in this lab run.
 
 Observation set E (Y1 `AzureWebJobsStorage__accountName` removed):
 
@@ -2000,14 +2063,18 @@ Observation set O (FC1 `allowSharedKeyAccess=true` drift):
 | 2026-04-06T10:18:09Z | Baseline compliance check flags security drift |
 | 2026-04-06T10:18:40Z | Drift event logged for remediation |
 
-Observation set P (EP `WEBSITE_CONTENTSHARE` removed):
+Observation set P (EP `WEBSITE_CONTENTSHARE` removed — **projected, contradicted by resilience finding**):
+
+!!! warning "Platform resilience"
+    Live testing discovered that `WEBSITE_CONTENTSHARE` auto-regenerates on EP with no visible failure.
+    This observation set is projected and may not reproduce as described.
 
 | Timestamp (UTC) | Evidence |
 |---|---|
 | 2026-04-06T10:21:28Z | `WEBSITE_CONTENTSHARE` deleted from EP app settings |
-| 2026-04-06T10:21:31Z | Content path mapping fails during startup |
-| 2026-04-06T10:21:33Z | Listener startup degrades |
-| 2026-04-06T10:22:05Z | Timer invocation cadence drops |
+| 2026-04-06T10:21:31Z | **Projected**: Content path mapping fails during startup |
+| 2026-04-06T10:21:33Z | **Projected**: Listener startup degrades |
+| 2026-04-06T10:22:05Z | **Projected**: Timer invocation cadence drops |
 
 Observation set Q (EP VNet integration removed):
 
@@ -2038,12 +2105,12 @@ Observation set S (ASP legacy `WEBSITE_CONTENT*` settings added):
 
 Cross-plan incident query sample output (sanitized):
 
-| App | Invocations (30m) | Failures (30m) | Dominant signal |
-|---|---:|---:|---|
-| codeverifyy1-func | 0 | 0 | Listener did not start after content-share drift |
-| codeverifyfc1-func | 0 | 0 | Deployment storage resolution failure |
-| codeverifyep-func | 1 | 1 | Content configuration mismatch |
-| codeverifyasp-func | 2 | 1 | Run-From-Package drift |
+| App | HTTP Status | Health Check | Dominant signal |
+|---|---|---|---|
+| `<y1-func>` | 404 | Unhealthy | `"Unable to load the functions payload"` -> no functions loaded |
+| `<fc1-func>` | 200 | Unhealthy | Silent degradation - `"Unable to create client for AzureWebJobsStorage"` in health check only |
+| `<ep-func>` | 404 | Unhealthy | `"Unable to create client for AzureWebJobsStorage"` -> no functions loaded |
+| `<asp-func>` | 404 | Unhealthy | `"0 functions loaded"`, `"No HTTP routes mapped"`, `"KeyBasedAuthenticationNotPermitted"` |
 
 ### 4.5 Recovery-phase observations
 
@@ -2051,39 +2118,54 @@ Recovery timeline summary:
 
 | Plan | Recovery action | Recovery signal |
 |---|---|---|
-| Y1 | Re-add `WEBSITE_CONTENTSHARE` and content connection setting | Host startup normalizes; listener starts |
-| FC1 | Restore valid blob deployment path and auth type | Deployment storage lookup succeeds |
-| EP | Re-add `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING` and share setting | Startup/content resolution normalizes |
-| ASP | Re-add `WEBSITE_RUN_FROM_PACKAGE=1` | Package-based startup path stabilized |
+| Y1 | Restored `AzureWebJobsStorage`, `WEBSITE_CONTENTSHARE`, `WEBSITE_RUN_FROM_PACKAGE`, identity settings | HTTP 200 restored. `"1 functions loaded"`, `"Mapped function route 'api/hello'"` |
+| FC1 | Restored `AzureWebJobsStorage__accountName`, `__credential`, `__clientId` | HTTP 200 (was never lost). Health check returns to Healthy. |
+| EP | Restored all storage settings, identity settings, `WEBSITE_RUN_FROM_PACKAGE` (added during test), `WEBSITE_CONTENTSHARE` | HTTP 200 restored. Functions load successfully. |
+| ASP | Set `WEBSITE_RUN_FROM_PACKAGE=1` + redeployed with `func azure functionapp publish` | HTTP 200 restored. `"1 functions loaded"`, `"Mapped function route 'api/hello'"`. Note: pre-existing `KeyBasedAuthenticationNotPermitted` condition persists but does not block function execution. |
 
 Post-recovery execution summary (sanitized):
 
-| App | Invocations (30m) | Failures (30m) | LastSeen |
-|---|---:|---:|---|
-| codeverifyy1-func | 8 | 0 | 2026-04-06T10:12:00Z |
-| codeverifyfc1-func | 7 | 0 | 2026-04-06T10:12:00Z |
-| codeverifyep-func | 8 | 0 | 2026-04-06T10:12:00Z |
-| codeverifyasp-func | 8 | 0 | 2026-04-06T10:12:00Z |
+| App | HTTP status after fix | Health check state | Signal |
+|---|---|---|---|
+| `<y1-func>` | 200 | Healthy | `"1 functions loaded"`, `"Mapped function route 'api/hello'"` |
+| `<fc1-func>` | 200 | Healthy | `"azure.functions.webjobs.storage":{"status":"Healthy"}` |
+| `<ep-func>` | 200 | Healthy | Functions load and routes map normally |
+| `<asp-func>` | 200 | Healthy | `"1 functions loaded"`, `"Mapped function route 'api/hello'"` |
 
 Representative recovery traces:
 
 ```text
-[2026-04-06T10:02:08Z] Host started.
-[2026-04-06T10:02:09Z] Job host started.
-[2026-04-06T10:02:10Z] The listener for function 'Functions.timer_healthcheck' started.
-[2026-04-06T10:02:12Z] Storage/deployment initialization completed for plan-specific configuration.
+Host started
+1 functions loaded
+Mapped function route 'api/hello'
 ```
 
 ### 4.6 Core finding
 
-!!! success "Key finding (validated)"
-    Each hosting plan enforces a distinct code-storage contract, and violating that contract produces a reproducible startup/execution failure signature. Recovery requires restoring the exact plan-correct contract, not applying generic storage fixes.
+!!! success "Key finding (validated from live Azure deployment)"
+    Each hosting plan enforces a distinct code-storage contract, and violating that contract produces a **reproducible** startup/execution failure signature. However, the platform provides **layered resilience** that can mask misconfiguration:
 
-    Verified root pattern:
+    Verified root patterns:
 
-    - `Y1`/`EP`: Azure Files content settings are mandatory for the documented model.
-    - `FC1`: deployment must resolve through `functionAppConfig.deployment.storage` blob container path and UAI auth.
-    - `ASP`: package run setting is part of predictable startup behavior in this template.
+    - **Y1 (Consumption)**: `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING` is platform-protected and cannot be removed. Removing `AzureWebJobsStorage` alone does NOT cause failure if content settings remain. Full failure requires removing `WEBSITE_RUN_FROM_PACKAGE` + `WEBSITE_CONTENTSHARE`. Error: `"Unable to load the functions payload since the app was not provisioned with valid AzureWebJobsStorage connection string."` (Severity 3)
+    - **FC1 (Flex Consumption)**: Removing all identity-based storage settings causes **silent degradation** - health checks report Unhealthy but HTTP continues working because deployment blob is cached by the platform. Error: `"Unable to create client for AzureWebJobsStorage"` (Severity 2, health check only)
+    - **EP (Premium)**: Removing storage settings + content share + run-from-package causes complete function loading failure identical to Consumption. Error: `"Unable to create client for AzureWebJobsStorage"` (Severity 2)
+    - **ASP (Dedicated)**: Removing `WEBSITE_RUN_FROM_PACKAGE` alone is sufficient to break the app. Note: a pre-existing `KeyBasedAuthenticationNotPermitted` condition (from Bicep disabling shared key access) was present but did not independently cause failure. Recovery requires setting restore + code redeployment. Error: `"0 functions loaded"`, `"No HTTP routes mapped"` -> HTTP 404
+
+    Critical discovery: **Health check structure is consistent across all plans** (`web_host.lifecycle`, `script_host.lifecycle`, `webjobs.storage`) but the storage error message differs: `"Unable to access"` (auth failure) vs `"Unable to create client"` (missing settings).
+
+#### 4.6.1 Platform resilience behaviors (discovered during testing)
+
+These behaviors were **not predicted** by the original hypothesis and represent new operational knowledge:
+
+| # | Discovery | Plan | Implication |
+|---|---|---|---|
+| 1 | `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING` is platform-protected on Consumption | Y1 | Cannot be removed via `az functionapp config appsettings delete`. Platform refuses with `Required parameter WEBSITE_CONTENTAZUREFILECONNECTIONSTRING is missing.` |
+| 2 | `WEBSITE_CONTENTSHARE` auto-regenerates when removed | Y1, EP | Platform creates a new random share name on restart. No visible failure. |
+| 3 | Flex Consumption caches deployment blob | FC1 | Removing storage identity settings does NOT break existing running code. Only affects new deployments or fresh instance provisioning. |
+| 4 | Dedicated requires `WEBSITE_RUN_FROM_PACKAGE` for package mount | ASP | Without it, no functions are found even if code was previously deployed. Recovery requires both setting restore AND code redeployment. |
+| 5 | Two distinct storage error messages exist | All | `"Unable to access AzureWebJobsStorage"` = auth/connectivity failure. `"Unable to create client for AzureWebJobsStorage"` = settings missing entirely. |
+| 6 | Health check structure is identical across all plans | All | `azure.functions.web_host.lifecycle`, `azure.functions.script_host.lifecycle`, `azure.functions.webjobs.storage` - consistent triage entry point. |
 
 ### 4.7 Hypothesis verdict table
 
@@ -2155,11 +2237,13 @@ Final verdict: **Hypothesis supported**.
 
 ```mermaid
 graph LR
-    A[Baseline: all plans pass verification matrix] --> B[Content settings scenarios: A C I J P]
-    B --> C[Content-path startup and listener degradation signatures]
-    C --> D[Recover content settings and validate stabilization]
+    A[Baseline: all plans pass verification matrix] --> B[Content resilience scenarios: A P — platform auto-regeneration]
+    B --> C[Validate: no degradation, config drift from IaC baseline]
+    C --> D[Content + compound failure scenarios: C I J]
+    D --> D2[Content-path startup and listener degradation signatures]
+    D2 --> D3[Recover content settings and validate stabilization]
 
-    D --> E[Identity and RBAC scenarios: E F G L]
+    D3 --> E[Identity and RBAC scenarios: E F G L]
     E --> F[Identity binding, auth-mode, or permission-denied signatures]
     F --> G[Recover identity and RBAC contracts]
 
