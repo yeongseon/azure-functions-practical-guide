@@ -2,7 +2,7 @@
 //
 // Deploys:
 // - Linux Function App on Elastic Premium (EP1)
-// - VNet integration and private endpoint for the Function App (sites)
+// - VNet integration, storage PEs (blob/queue/table/file), and site PE
 // - System-assigned managed identity with RBAC for identity-based host storage
 // - Storage account with Azure Files content share for file share-based deployment
 // - Shared monitoring (Log Analytics + Application Insights)
@@ -58,7 +58,7 @@ module storageModule '../modules/storage-account.bicep' = {
   params: {
     name: storageAccountName
     location: location
-    allowPublicAccess: true
+    allowPublicAccess: false
     allowSharedKeyAccess: true
   }
 }
@@ -119,6 +119,8 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
     serverFarmId: appServicePlan.id
     httpsOnly: true
     virtualNetworkSubnetId: vnetModule.outputs.integrationSubnetId
+    vnetContentShareEnabled: true
+    vnetRouteAllEnabled: true
     siteConfig: {
       linuxFxVersion: 'Python|${pythonVersion}'
       minTlsVersion: '1.2'
@@ -161,6 +163,10 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
   }
   dependsOn: [
     contentShare
+    blobDnsZoneGroup
+    queueDnsZoneGroup
+    tableDnsZoneGroup
+    fileDnsZoneGroup
   ]
 }
 
@@ -210,6 +216,218 @@ resource fileDataContributorAssignment 'Microsoft.Authorization/roleAssignments@
     principalType: 'ServicePrincipal'
   }
   dependsOn: [storageModule]
+}
+
+resource blobPrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-11-01' = {
+  name: '${baseName}-pe-blob'
+  location: location
+  properties: {
+    subnet: {
+      id: vnetModule.outputs.peSubnetId
+    }
+    privateLinkServiceConnections: [
+      {
+        name: '${baseName}-plsc-blob'
+        properties: {
+          privateLinkServiceId: storageModule.outputs.id
+          groupIds: [
+            'blob'
+          ]
+        }
+      }
+    ]
+  }
+}
+
+resource blobPrivateDnsZone 'Microsoft.Network/privateDnsZones@2024-06-01' = {
+  name: 'privatelink.blob.core.windows.net'
+  location: 'global'
+}
+
+resource blobDnsZoneLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2024-06-01' = {
+  parent: blobPrivateDnsZone
+  name: '${baseName}-blob-dns-link'
+  location: 'global'
+  properties: {
+    virtualNetwork: {
+      id: vnetModule.outputs.vnetId
+    }
+    registrationEnabled: false
+  }
+}
+
+resource blobDnsZoneGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2023-11-01' = {
+  parent: blobPrivateEndpoint
+  name: 'blob-dns-zone-group'
+  properties: {
+    privateDnsZoneConfigs: [
+      {
+        name: 'blob-config'
+        properties: {
+          privateDnsZoneId: blobPrivateDnsZone.id
+        }
+      }
+    ]
+  }
+}
+
+resource queuePrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-11-01' = {
+  name: '${baseName}-pe-queue'
+  location: location
+  properties: {
+    subnet: {
+      id: vnetModule.outputs.peSubnetId
+    }
+    privateLinkServiceConnections: [
+      {
+        name: '${baseName}-plsc-queue'
+        properties: {
+          privateLinkServiceId: storageModule.outputs.id
+          groupIds: [
+            'queue'
+          ]
+        }
+      }
+    ]
+  }
+}
+
+resource queuePrivateDnsZone 'Microsoft.Network/privateDnsZones@2024-06-01' = {
+  name: 'privatelink.queue.core.windows.net'
+  location: 'global'
+}
+
+resource queueDnsZoneLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2024-06-01' = {
+  parent: queuePrivateDnsZone
+  name: '${baseName}-queue-dns-link'
+  location: 'global'
+  properties: {
+    virtualNetwork: {
+      id: vnetModule.outputs.vnetId
+    }
+    registrationEnabled: false
+  }
+}
+
+resource queueDnsZoneGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2023-11-01' = {
+  parent: queuePrivateEndpoint
+  name: 'queue-dns-zone-group'
+  properties: {
+    privateDnsZoneConfigs: [
+      {
+        name: 'queue-config'
+        properties: {
+          privateDnsZoneId: queuePrivateDnsZone.id
+        }
+      }
+    ]
+  }
+}
+
+resource tablePrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-11-01' = {
+  name: '${baseName}-pe-table'
+  location: location
+  properties: {
+    subnet: {
+      id: vnetModule.outputs.peSubnetId
+    }
+    privateLinkServiceConnections: [
+      {
+        name: '${baseName}-plsc-table'
+        properties: {
+          privateLinkServiceId: storageModule.outputs.id
+          groupIds: [
+            'table'
+          ]
+        }
+      }
+    ]
+  }
+}
+
+resource tablePrivateDnsZone 'Microsoft.Network/privateDnsZones@2024-06-01' = {
+  name: 'privatelink.table.core.windows.net'
+  location: 'global'
+}
+
+resource tableDnsZoneLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2024-06-01' = {
+  parent: tablePrivateDnsZone
+  name: '${baseName}-table-dns-link'
+  location: 'global'
+  properties: {
+    virtualNetwork: {
+      id: vnetModule.outputs.vnetId
+    }
+    registrationEnabled: false
+  }
+}
+
+resource tableDnsZoneGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2023-11-01' = {
+  parent: tablePrivateEndpoint
+  name: 'table-dns-zone-group'
+  properties: {
+    privateDnsZoneConfigs: [
+      {
+        name: 'table-config'
+        properties: {
+          privateDnsZoneId: tablePrivateDnsZone.id
+        }
+      }
+    ]
+  }
+}
+
+resource filePrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-11-01' = {
+  name: '${baseName}-pe-file'
+  location: location
+  properties: {
+    subnet: {
+      id: vnetModule.outputs.peSubnetId
+    }
+    privateLinkServiceConnections: [
+      {
+        name: '${baseName}-plsc-file'
+        properties: {
+          privateLinkServiceId: storageModule.outputs.id
+          groupIds: [
+            'file'
+          ]
+        }
+      }
+    ]
+  }
+}
+
+resource filePrivateDnsZone 'Microsoft.Network/privateDnsZones@2024-06-01' = {
+  name: 'privatelink.file.core.windows.net'
+  location: 'global'
+}
+
+resource fileDnsZoneLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2024-06-01' = {
+  parent: filePrivateDnsZone
+  name: '${baseName}-file-dns-link'
+  location: 'global'
+  properties: {
+    virtualNetwork: {
+      id: vnetModule.outputs.vnetId
+    }
+    registrationEnabled: false
+  }
+}
+
+resource fileDnsZoneGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2023-11-01' = {
+  parent: filePrivateEndpoint
+  name: 'file-dns-zone-group'
+  properties: {
+    privateDnsZoneConfigs: [
+      {
+        name: 'file-config'
+        properties: {
+          privateDnsZoneId: filePrivateDnsZone.id
+        }
+      }
+    ]
+  }
 }
 
 resource functionAppPrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-11-01' = {

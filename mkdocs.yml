@@ -410,6 +410,8 @@ nav:
       - troubleshooting/lab-guides/durable-replay-storm.md
       - troubleshooting/lab-guides/timer-missed-schedules.md
       - troubleshooting/lab-guides/event-hub-checkpoint-lag.md
+      - troubleshooting/lab-guides/hosting-plan-security-matrix.md
+      - troubleshooting/lab-guides/hosting-plan-comparison-matrix.md
   - Reference:
     - reference/index.md
     - reference/cli-cheatsheet.md

@@ -140,3 +140,54 @@ def dns_resolve(req: func.HttpRequest) -> func.HttpResponse:
             }
         )
         return func.HttpResponse(body, mimetype="application/json", status_code=502)
+
+
+@bp.route(route="diagnostics/identity-probe", methods=["GET"])
+def identity_probe(req: func.HttpRequest) -> func.HttpResponse:
+    """Probe managed identity token acquisition and expiry."""
+    logger.info("Identity probe requested")
+    start = time.monotonic()
+
+    try:
+        from azure.identity import ManagedIdentityCredential
+        from datetime import datetime
+
+        client_id = os.environ.get("AzureWebJobsStorage__clientId")
+        identity_type = "user-assigned" if client_id else "system-assigned"
+
+        credential = ManagedIdentityCredential(client_id=client_id)
+        token = credential.get_token("https://storage.azure.com/.default")
+        elapsed_ms = round((time.monotonic() - start) * 1000)
+
+        # Parse token expiry (token object has expires_on attribute in seconds since epoch)
+        token_expires_on = datetime.utcfromtimestamp(token.expires_on).isoformat() + "Z"
+
+        logger.info(
+            "Identity probe succeeded (type=%s, elapsedMs=%d)",
+            identity_type,
+            elapsed_ms,
+        )
+        body = json.dumps(
+            {
+                "status": "success",
+                "identityType": identity_type,
+                "clientId": client_id if client_id else None,
+                "tokenAcquired": True,
+                "tokenExpiresOn": token_expires_on,
+                "elapsedMs": elapsed_ms,
+            }
+        )
+        return func.HttpResponse(body, mimetype="application/json", status_code=200)
+
+    except Exception as exc:
+        elapsed_ms = round((time.monotonic() - start) * 1000)
+        logger.error("Identity probe failed: %s (%dms)", exc, elapsed_ms)
+        body = json.dumps(
+            {
+                "status": "error",
+                "error": type(exc).__name__,
+                "message": str(exc),
+                "elapsedMs": elapsed_ms,
+            }
+        )
+        return func.HttpResponse(body, mimetype="application/json", status_code=502)

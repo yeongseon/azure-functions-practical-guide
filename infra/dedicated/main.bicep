@@ -1,16 +1,18 @@
-// Azure Functions Practical Guide - Dedicated Plan (B1 default)
+// Azure Functions Practical Guide - Dedicated Plan (S1 default)
 //
 // Deploys:
-// - Linux Function App on Dedicated App Service Plan (B1 Basic by default)
+// - Linux Function App on Dedicated App Service Plan (S1 Standard by default)
+// - VNet integration and private endpoint for the Function App (sites)
+// - Private endpoints for Storage blob/queue/table services
 // - System-assigned managed identity with RBAC for identity-based host storage
 // - Shared monitoring (Log Analytics + Application Insights)
 //
 // Key characteristics:
 // - alwaysOn enabled for Dedicated hosting
+// - Integration subnet delegated to Microsoft.Web/serverFarms
 // - Uses AzureWebJobsStorage__accountName (identity-based, no connection string)
 // - Uses classic siteConfig.appSettings (not functionAppConfig)
-// - No VNet integration on B1; upgrade to S1+ for VNet features
-// - WEBSITE_RUN_FROM_PACKAGE=1 for zip-based deployment (no content share needed)
+// - WEBSITE_RUN_FROM_PACKAGE=1 for zip-based deployment (no Azure Files/content share)
 //
 // Deploy:
 // az deployment group create --template-file infra/dedicated/main.bicep --parameters baseName=myapp
@@ -27,10 +29,10 @@ param location string = resourceGroup().location
 param pythonVersion string = '3.11'
 
 @description('Dedicated plan SKU name')
-param skuName string = 'B1'
+param skuName string = 'S1'
 
 @description('Dedicated plan SKU tier')
-param skuTier string = 'Basic'
+param skuTier string = 'Standard'
 
 var appInsightsName = '${baseName}-insights'
 var storageAccountName = toLower(replace('${baseName}storage', '-', ''))
@@ -55,13 +57,183 @@ module storageModule '../modules/storage-account.bicep' = {
   params: {
     name: storageAccountName
     location: location
-    allowPublicAccess: true
+    allowPublicAccess: false
     allowSharedKeyAccess: false
   }
 }
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' existing = {
   name: storageAccountName
+}
+
+module vnetModule '../modules/vnet.bicep' = {
+  name: 'vnetModule'
+  params: {
+    baseName: baseName
+    location: location
+    integrationSubnetDelegation: 'Microsoft.Web/serverFarms'
+    integrationSubnetPrefix: '10.0.1.0/24'
+    peSubnetPrefix: '10.0.2.0/24'
+  }
+}
+
+resource blobPrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-11-01' = {
+  name: '${baseName}-pe-blob'
+  location: location
+  properties: {
+    subnet: {
+      id: vnetModule.outputs.peSubnetId
+    }
+    privateLinkServiceConnections: [
+      {
+        name: '${baseName}-plsc-blob'
+        properties: {
+          privateLinkServiceId: storageModule.outputs.id
+          groupIds: [
+            'blob'
+          ]
+        }
+      }
+    ]
+  }
+}
+
+resource blobPrivateDnsZone 'Microsoft.Network/privateDnsZones@2024-06-01' = {
+  name: 'privatelink.blob.${environment().suffixes.storage}'
+  location: 'global'
+}
+
+resource blobDnsZoneLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2024-06-01' = {
+  parent: blobPrivateDnsZone
+  name: '${baseName}-blob-dns-link'
+  location: 'global'
+  properties: {
+    virtualNetwork: {
+      id: vnetModule.outputs.vnetId
+    }
+    registrationEnabled: false
+  }
+}
+
+resource blobDnsZoneGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2023-11-01' = {
+  parent: blobPrivateEndpoint
+  name: 'blob-dns-zone-group'
+  properties: {
+    privateDnsZoneConfigs: [
+      {
+        name: 'blob-config'
+        properties: {
+          privateDnsZoneId: blobPrivateDnsZone.id
+        }
+      }
+    ]
+  }
+}
+
+resource queuePrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-11-01' = {
+  name: '${baseName}-pe-queue'
+  location: location
+  properties: {
+    subnet: {
+      id: vnetModule.outputs.peSubnetId
+    }
+    privateLinkServiceConnections: [
+      {
+        name: '${baseName}-plsc-queue'
+        properties: {
+          privateLinkServiceId: storageModule.outputs.id
+          groupIds: [
+            'queue'
+          ]
+        }
+      }
+    ]
+  }
+}
+
+resource queuePrivateDnsZone 'Microsoft.Network/privateDnsZones@2024-06-01' = {
+  name: 'privatelink.queue.${environment().suffixes.storage}'
+  location: 'global'
+}
+
+resource queueDnsZoneLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2024-06-01' = {
+  parent: queuePrivateDnsZone
+  name: '${baseName}-queue-dns-link'
+  location: 'global'
+  properties: {
+    virtualNetwork: {
+      id: vnetModule.outputs.vnetId
+    }
+    registrationEnabled: false
+  }
+}
+
+resource queueDnsZoneGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2023-11-01' = {
+  parent: queuePrivateEndpoint
+  name: 'queue-dns-zone-group'
+  properties: {
+    privateDnsZoneConfigs: [
+      {
+        name: 'queue-config'
+        properties: {
+          privateDnsZoneId: queuePrivateDnsZone.id
+        }
+      }
+    ]
+  }
+}
+
+resource tablePrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-11-01' = {
+  name: '${baseName}-pe-table'
+  location: location
+  properties: {
+    subnet: {
+      id: vnetModule.outputs.peSubnetId
+    }
+    privateLinkServiceConnections: [
+      {
+        name: '${baseName}-plsc-table'
+        properties: {
+          privateLinkServiceId: storageModule.outputs.id
+          groupIds: [
+            'table'
+          ]
+        }
+      }
+    ]
+  }
+}
+
+resource tablePrivateDnsZone 'Microsoft.Network/privateDnsZones@2024-06-01' = {
+  name: 'privatelink.table.${environment().suffixes.storage}'
+  location: 'global'
+}
+
+resource tableDnsZoneLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2024-06-01' = {
+  parent: tablePrivateDnsZone
+  name: '${baseName}-table-dns-link'
+  location: 'global'
+  properties: {
+    virtualNetwork: {
+      id: vnetModule.outputs.vnetId
+    }
+    registrationEnabled: false
+  }
+}
+
+resource tableDnsZoneGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2023-11-01' = {
+  parent: tablePrivateEndpoint
+  name: 'table-dns-zone-group'
+  properties: {
+    privateDnsZoneConfigs: [
+      {
+        name: 'table-config'
+        properties: {
+          privateDnsZoneId: tablePrivateDnsZone.id
+        }
+      }
+    ]
+  }
 }
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2024-04-01' = {
@@ -87,6 +259,8 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
   properties: {
     serverFarmId: appServicePlan.id
     httpsOnly: true
+    virtualNetworkSubnetId: vnetModule.outputs.integrationSubnetId
+    vnetRouteAllEnabled: true
     siteConfig: {
       alwaysOn: true
       linuxFxVersion: 'Python|${pythonVersion}'
@@ -123,6 +297,64 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
         }
       ]
     }
+  }
+  dependsOn: [
+    blobDnsZoneGroup
+    queueDnsZoneGroup
+    tableDnsZoneGroup
+  ]
+}
+
+resource functionAppPrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-11-01' = {
+  name: '${baseName}-pe-site'
+  location: location
+  properties: {
+    subnet: {
+      id: vnetModule.outputs.peSubnetId
+    }
+    privateLinkServiceConnections: [
+      {
+        name: '${baseName}-plsc-site'
+        properties: {
+          privateLinkServiceId: functionApp.id
+          groupIds: [
+            'sites'
+          ]
+        }
+      }
+    ]
+  }
+}
+
+resource webPrivateDnsZone 'Microsoft.Network/privateDnsZones@2024-06-01' = {
+  name: 'privatelink.azurewebsites.net'
+  location: 'global'
+}
+
+resource webDnsZoneLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2024-06-01' = {
+  parent: webPrivateDnsZone
+  name: '${baseName}-web-dns-link'
+  location: 'global'
+  properties: {
+    virtualNetwork: {
+      id: vnetModule.outputs.vnetId
+    }
+    registrationEnabled: false
+  }
+}
+
+resource webDnsZoneGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2023-11-01' = {
+  parent: functionAppPrivateEndpoint
+  name: 'web-dns-zone-group'
+  properties: {
+    privateDnsZoneConfigs: [
+      {
+        name: 'web-config'
+        properties: {
+          privateDnsZoneId: webPrivateDnsZone.id
+        }
+      }
+    ]
   }
 }
 

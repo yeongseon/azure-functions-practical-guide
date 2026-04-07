@@ -50,6 +50,9 @@ resource peSubnet 'Microsoft.Network/virtualNetworks/subnets@2023-11-01' = {
     addressPrefix: peSubnetPrefix
     privateEndpointNetworkPolicies: 'Disabled'
   }
+  dependsOn: [
+    integrationSubnet
+  ]
 }
 
 output vnetId string = vnet.id

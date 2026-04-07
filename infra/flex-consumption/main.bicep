@@ -180,6 +180,165 @@ resource blobDnsZoneGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGrou
   }
 }
 
+resource queuePrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-11-01' = {
+  name: '${baseName}-pe-queue'
+  location: location
+  properties: {
+    subnet: {
+      id: vnetModule.outputs.peSubnetId
+    }
+    privateLinkServiceConnections: [
+      {
+        name: '${baseName}-plsc-queue'
+        properties: {
+          privateLinkServiceId: storageModule.outputs.id
+          groupIds: [
+            'queue'
+          ]
+        }
+      }
+    ]
+  }
+}
+
+resource queuePrivateDnsZone 'Microsoft.Network/privateDnsZones@2024-06-01' = {
+  name: 'privatelink.queue.core.windows.net'
+  location: 'global'
+}
+
+resource queueDnsZoneLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2024-06-01' = {
+  parent: queuePrivateDnsZone
+  name: '${baseName}-queue-dns-link'
+  location: 'global'
+  properties: {
+    virtualNetwork: {
+      id: vnetModule.outputs.vnetId
+    }
+    registrationEnabled: false
+  }
+}
+
+resource queueDnsZoneGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2023-11-01' = {
+  parent: queuePrivateEndpoint
+  name: 'queue-dns-zone-group'
+  properties: {
+    privateDnsZoneConfigs: [
+      {
+        name: 'queue-config'
+        properties: {
+          privateDnsZoneId: queuePrivateDnsZone.id
+        }
+      }
+    ]
+  }
+}
+
+resource tablePrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-11-01' = {
+  name: '${baseName}-pe-table'
+  location: location
+  properties: {
+    subnet: {
+      id: vnetModule.outputs.peSubnetId
+    }
+    privateLinkServiceConnections: [
+      {
+        name: '${baseName}-plsc-table'
+        properties: {
+          privateLinkServiceId: storageModule.outputs.id
+          groupIds: [
+            'table'
+          ]
+        }
+      }
+    ]
+  }
+}
+
+resource tablePrivateDnsZone 'Microsoft.Network/privateDnsZones@2024-06-01' = {
+  name: 'privatelink.table.core.windows.net'
+  location: 'global'
+}
+
+resource tableDnsZoneLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2024-06-01' = {
+  parent: tablePrivateDnsZone
+  name: '${baseName}-table-dns-link'
+  location: 'global'
+  properties: {
+    virtualNetwork: {
+      id: vnetModule.outputs.vnetId
+    }
+    registrationEnabled: false
+  }
+}
+
+resource tableDnsZoneGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2023-11-01' = {
+  parent: tablePrivateEndpoint
+  name: 'table-dns-zone-group'
+  properties: {
+    privateDnsZoneConfigs: [
+      {
+        name: 'table-config'
+        properties: {
+          privateDnsZoneId: tablePrivateDnsZone.id
+        }
+      }
+    ]
+  }
+}
+
+resource filePrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-11-01' = {
+  name: '${baseName}-pe-file'
+  location: location
+  properties: {
+    subnet: {
+      id: vnetModule.outputs.peSubnetId
+    }
+    privateLinkServiceConnections: [
+      {
+        name: '${baseName}-plsc-file'
+        properties: {
+          privateLinkServiceId: storageModule.outputs.id
+          groupIds: [
+            'file'
+          ]
+        }
+      }
+    ]
+  }
+}
+
+resource filePrivateDnsZone 'Microsoft.Network/privateDnsZones@2024-06-01' = {
+  name: 'privatelink.file.core.windows.net'
+  location: 'global'
+}
+
+resource fileDnsZoneLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2024-06-01' = {
+  parent: filePrivateDnsZone
+  name: '${baseName}-file-dns-link'
+  location: 'global'
+  properties: {
+    virtualNetwork: {
+      id: vnetModule.outputs.vnetId
+    }
+    registrationEnabled: false
+  }
+}
+
+resource fileDnsZoneGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2023-11-01' = {
+  parent: filePrivateEndpoint
+  name: 'file-dns-zone-group'
+  properties: {
+    privateDnsZoneConfigs: [
+      {
+        name: 'file-config'
+        properties: {
+          privateDnsZoneId: filePrivateDnsZone.id
+        }
+      }
+    ]
+  }
+}
+
 resource appServicePlan 'Microsoft.Web/serverfarms@2024-04-01' = {
   name: appServicePlanName
   location: location
@@ -238,6 +397,9 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
     storageAccountContributorAssignment
     queueDataContributorAssignment
     blobDnsZoneGroup
+    queueDnsZoneGroup
+    tableDnsZoneGroup
+    fileDnsZoneGroup
     blobService
     deploymentContainer
   ]
