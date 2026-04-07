@@ -199,7 +199,9 @@ exceptions
 ```bash
 az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "exceptions | where timestamp > ago(1h) | where cloud_RoleName =~ '$APP_NAME' | summarize count() by type, outerMessage | order by count_ desc" --output table
 az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "traces | where timestamp > ago(1h) | where cloud_RoleName =~ '$APP_NAME' | where message has_any ('unhealthy','Unable to access AzureWebJobsStorage','AuthorizationPermissionMismatch') | project timestamp, severityLevel, message | order by timestamp desc" --output table
-az role assignment list --assignee "<principal-id>" --scope "/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RG" --output table
+# Note: If the storage account is in a different resource group, adjust $RG accordingly
+STORAGE_ID=$(az storage account show --resource-group "$RG" --name "$STORAGE_NAME" --query id --output tsv)
+az role assignment list --scope "$STORAGE_ID" --query "[?principalId=='<principal-id>'].{role:roleDefinitionName, scope:scope}" --output table
 az monitor activity-log list --subscription "$SUBSCRIPTION_ID" --resource-group "$RG" --max-events 50 --output table
 ```
 
@@ -212,10 +214,11 @@ type                                                         outerMessage       
 System.UnauthorizedAccessException                           Storage operation failed: Status: 403 (AuthorizationPermissionMismatch)         18
 Microsoft.Azure.WebJobs.Host.Listeners.FunctionListenerException  The listener for function 'Functions.scheduled_cleanup' was unable to start.  18
 
-$ az role assignment list --assignee "<principal-id>" --scope "/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RG" --output table
-Principal                             Role                              Scope
-------------------------------------  --------------------------------  --------------------------------------------------------------
-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx  Storage Blob Data Contributor     /subscriptions/<subscription-id>/resourceGroups/rg-app-prod
+$ STORAGE_ID=$(az storage account show --resource-group "$RG" --name "$STORAGE_NAME" --query id --output tsv)
+$ az role assignment list --scope "$STORAGE_ID" --query "[?principalId=='<principal-id>'].{role:roleDefinitionName, scope:scope}" --output table
+Role                              Scope
+--------------------------------  -------------------------------------------------------------------------------------------------------------
+Storage Blob Data Contributor     /subscriptions/<subscription-id>/resourceGroups/rg-app-prod/providers/Microsoft.Storage/storageAccounts/stfuncprod
 ```
 
 ## 6. Validation and Disproof by Hypothesis
@@ -257,8 +260,10 @@ traces
 
 ```bash
 az functionapp identity show --resource-group "$RG" --name "$APP_NAME" --output json
-az role assignment list --assignee "<principal-id>" --scope "/subscriptions/$SUBSCRIPTION_ID" --output table
-az storage account show --resource-group "$RG" --name "<storage-account-name>" --query "id" --output tsv
+PRINCIPAL_ID=$(az functionapp identity show --resource-group "$RG" --name "$APP_NAME" --query principalId --output tsv)
+# Note: If the storage account is in a different resource group, adjust $RG accordingly
+STORAGE_ID=$(az storage account show --resource-group "$RG" --name "$STORAGE_NAME" --query id --output tsv)
+az role assignment list --scope "$STORAGE_ID" --query "[?principalId=='$PRINCIPAL_ID'].{role:roleDefinitionName, scope:scope}" --output table
 ```
 
 ### H2: Function timeout reached
@@ -362,26 +367,29 @@ az functionapp log deployment show --resource-group "$RG" --name "$APP_NAME"
 
 ```kusto
 let appName = "func-myapp-prod";
+let timeGrain = 1h;
 let exceptionTrend = exceptions
 | where timestamp > ago(24h)
 | where cloud_RoleName =~ appName
-| summarize ExceptionCount=count() by bin(timestamp, 15m), type;
+| summarize ExceptionCount=count() by bin(timestamp, timeGrain), type;
 let requestFailureTrend = requests
 | where timestamp > ago(24h)
 | where cloud_RoleName =~ appName
 | where operation_Name startswith "Functions."
-| summarize Failures=countif(success == false) by bin(timestamp, 15m), operation_Name;
+| where success == false
+| summarize FailedRequests=count() by bin(timestamp, timeGrain), operation_Name;
 exceptionTrend
-| join kind=leftouter requestFailureTrend on timestamp
+| join kind=inner requestFailureTrend on timestamp
+| project timestamp, operation_Name, type, ExceptionCount, FailedRequests
 | order by timestamp desc
 ```
 
 **Example Output**
 
-| timestamp | type | ExceptionCount | operation_Name | Failures |
-|---|---|---:|---|---:|
-| 2026-04-04T12:15:00Z | Microsoft.Azure.WebJobs.Script.Workers.Rpc.RpcException | 32 | Functions.ErrorHandler | 15 |
-| 2026-04-04T12:00:00Z | Microsoft.Azure.WebJobs.Script.Workers.Rpc.RpcException | 2 | Functions.ErrorHandler | 0 |
+| timestamp | operation_Name | type | ExceptionCount | FailedRequests |
+|---|---|---|---:|---:|
+| 2026-04-04T12:00:00Z | Functions.ErrorHandler | Microsoft.Azure.WebJobs.Script.Workers.Rpc.RpcException | 2 | 1 |
+| 2026-04-04T11:00:00Z | Functions.ErrorHandler | Microsoft.Azure.WebJobs.Script.Workers.Rpc.RpcException | 32 | 15 |
 
 !!! tip "How to Read This"
     Hard step-change at release time across exceptions and request failures is strong regression evidence.

@@ -76,7 +76,7 @@ flowchart TD
 ```bash
 az functionapp show --name <app-name> --resource-group <resource-group> --query "{kind:kind,state:state,defaultHostName:defaultHostName}" --output table
 az functionapp config appsettings list --name <app-name> --resource-group <resource-group> --output table
-az monitor app-insights query --app <app-insights-name> --resource-group <resource-group> --analytics-query "FunctionAppLogs | where TimeGenerated > ago(30m) | where Message has_any ('timeout','FunctionTimeoutException','Execution was canceled') | project TimeGenerated, Level, Message | take 20" --output table
+az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "FunctionAppLogs | where TimeGenerated > ago(30m) | where Message has_any ('timeout','FunctionTimeoutException','Execution was canceled') | project TimeGenerated, Level, Message | take 20" --output table
 ```
 
 ### Example output
@@ -102,6 +102,9 @@ TimeGenerated                 Level    Message
 ```
 
 ## 5. Evidence to Collect
+!!! note "KQL Table Names"
+    Most queries use Application Insights table names (`traces`, `requests`, `dependencies`) with classic columns (`timestamp`, `duration`). `FunctionAppLogs` and `AppMetrics` are Log Analytics tables and use `TimeGenerated`.
+
 | Source | Query/Command | Purpose |
 |---|---|---|
 | `FunctionAppLogs` | Timeout/error pattern query by function name and operation ID | Identify exact timeout signature and impacted handlers |
@@ -120,7 +123,6 @@ TimeGenerated                 Level    Message
 FunctionAppLogs
 | where TimeGenerated > ago(6h)
 | where Message has_any ("FunctionTimeoutException", "Timeout value", "Execution was canceled")
-| extend FunctionName = coalesce(tostring(CustomDimensions.FunctionName), tostring(split(OperationName, "/")[0]))
 | summarize TimeoutCount=count(), FirstSeen=min(TimeGenerated), LastSeen=max(TimeGenerated) by FunctionName
 | order by TimeoutCount desc
 ```
@@ -140,15 +142,15 @@ If timeout events are absent or durations remain comfortably below the configure
 #### Confirming KQL
 ```kusto
 requests
-| where TimeGenerated > ago(6h)
-| where CloudRoleName =~ "contoso-func-timeout"
-| summarize p50=percentile(DurationMs, 50), p95=percentile(DurationMs, 95), p99=percentile(DurationMs, 99), max=max(DurationMs) by bin(TimeGenerated, 15m)
-| order by TimeGenerated asc
+| where timestamp > ago(6h)
+| where cloud_RoleName =~ "contoso-func-timeout"
+| summarize p50=percentile(duration, 50), p95=percentile(duration, 95), p99=percentile(duration, 99), max=max(duration) by bin(timestamp, 15m)
+| order by timestamp asc
 ```
 
 #### Expected output
 ```text
-TimeGenerated            p50     p95      p99      max
+timestamp                p50     p95      p99      max
 ----------------------   ------  -------  -------  -------
 2026-04-05T01:00:00Z     1200    284000   598000   600000
 2026-04-05T01:15:00Z     1300    289500   599400   600000
@@ -162,15 +164,15 @@ If max duration varies widely and does not cluster near known boundaries (for ex
 #### Confirming KQL
 ```kusto
 requests
-| where TimeGenerated > ago(6h)
-| where Name startswith "POST /api/"
-| summarize Failures=countif(Success == false), p95=percentile(DurationMs, 95), p99=percentile(DurationMs, 99), near230=countif(DurationMs between (225000 .. 235000)) by Name
+| where timestamp > ago(6h)
+| where name startswith "POST /api/"
+| summarize Failures=countif(success == false), p95=percentile(duration, 95), p99=percentile(duration, 99), near230=countif(duration >= 225000 and duration < 235000) by name
 | order by near230 desc
 ```
 
 #### Expected output
 ```text
-Name                               Failures  p95      p99      near230
+name                               Failures  p95      p99      near230
 ---------------------------------  --------  -------  -------  -------
 POST /api/generate-report          128       229400   230100   119
 POST /api/sync-catalog             42        227900   230050   37
@@ -183,15 +185,15 @@ If failures occur at diverse durations and non-HTTP triggers fail similarly, do 
 #### Confirming KQL
 ```kusto
 dependencies
-| where TimeGenerated > ago(6h)
-| where Target has_any ("database.windows.net", "servicebus.windows.net", "blob.core.windows.net")
-| summarize depCount=count(), depFail=countif(Success == false), depP95=percentile(DurationMs, 95), depP99=percentile(DurationMs, 99) by Name, Target, bin(TimeGenerated, 15m)
+| where timestamp > ago(6h)
+| where target has_any ("database.windows.net", "servicebus.windows.net", "blob.core.windows.net")
+| summarize depCount=count(), depFail=countif(success == false), depP95=percentile(duration, 95), depP99=percentile(duration, 99) by name, target, bin(timestamp, 15m)
 | order by depP99 desc
 ```
 
 #### Expected output
 ```text
-Name                 Target                       depCount  depFail  depP95   depP99
+name                 target                       depCount  depFail  depP95   depP99
 -------------------  ---------------------------  --------  -------  -------  -------
 ExecuteReader        contoso-sql.database.windows.net  932      67       84000    168000
 SendMessage          contoso-bus.servicebus.windows.net  1210     84       54000    121000
@@ -205,10 +207,10 @@ If dependency p95/p99 remains stable during the incident while function runtime 
 #### Confirming KQL
 ```kusto
 traces
-| where TimeGenerated > ago(6h)
-| where Message has_any ("Durable", "orchestrator", "activity")
-| extend FunctionName=tostring(CustomDimensions.FunctionName)
-| summarize LongSteps=countif(tolong(CustomDimensions.DurationMs) > 300000), TotalSteps=count() by FunctionName
+| where timestamp > ago(6h)
+| where message has_any ("Durable", "orchestrator", "activity")
+| extend FunctionName=tostring(customDimensions.FunctionName)
+| summarize LongSteps=countif(tolong(customDimensions.DurationMs) > 300000), TotalSteps=count() by FunctionName
 | extend LongStepRatio=toreal(LongSteps) / iif(TotalSteps == 0, 1.0, toreal(TotalSteps))
 | order by LongStepRatio desc
 ```
@@ -228,15 +230,15 @@ If step-level durations are short and evenly distributed, orchestration granular
 #### Confirming KQL
 ```kusto
 traces
-| where TimeGenerated > ago(6h)
-| where Message has_any ("Host is shutting down", "Stopping JobHost", "Cancellation requested", "Drain mode")
-| project TimeGenerated, SeverityLevel, Message, OperationId, AppRoleInstance
-| order by TimeGenerated desc
+| where timestamp > ago(6h)
+| where message has_any ("Host is shutting down", "Stopping JobHost", "Cancellation requested", "Drain mode")
+| project timestamp, severityLevel, message, operation_Id, cloud_RoleInstance
+| order by timestamp desc
 ```
 
 #### Expected output
 ```text
-TimeGenerated                 SeverityLevel  Message                                      OperationId                             AppRoleInstance
+timestamp                     severityLevel  message                                      operation_Id                            cloud_RoleInstance
 ---------------------------   -------------  -------------------------------------------  --------------------------------------  ----------------------
 2026-04-05T03:14:22Z          2              Host is shutting down                        xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx    instance-04
 2026-04-05T03:14:22Z          2              Cancellation requested for running invocation xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx   instance-04
@@ -265,7 +267,7 @@ flowchart TD
     B -->|Non-HTTP| D[host.json functionTimeout applies]
     D --> E{Hosting plan cap}
     E -->|Consumption| F[Default 5m / Max 10m]
-    E -->|Premium| G[Default 30m / Max 60m]
+    E -->|Premium| G[Default 30m / Max unlimited]
     E -->|Dedicated| H[Default 30m / Max unlimited]
     C --> I[Client sees timeout]
     F --> J[Runtime cancellation]
@@ -279,16 +281,16 @@ flowchart TD
 FunctionAppLogs
 | where TimeGenerated > ago(3h)
 | where Message has_any ("FunctionTimeoutException", "Execution was canceled", "Timeout value")
-| summarize TimeoutCount=count() by bin(TimeGenerated, 5m), OperationId, AppRoleInstance
+| summarize TimeoutCount=count() by bin(TimeGenerated, 5m), FunctionName, RoleInstance
 | order by TimeGenerated desc
 ```
 
 ```text
-TimeGenerated            OperationId                               AppRoleInstance  TimeoutCount
+TimeGenerated            FunctionName                              RoleInstance     TimeoutCount
 ----------------------   --------------------------------------    ---------------  ------------
-2026-04-05T03:40:00Z     xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx     instance-02      7
-2026-04-05T03:35:00Z     xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx     instance-04      6
-2026-04-05T03:30:00Z     xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx     instance-02      5
+2026-04-05T03:40:00Z     ProcessInvoiceBatch                       instance-02      7
+2026-04-05T03:35:00Z     ProcessInvoiceBatch                       instance-04      6
+2026-04-05T03:30:00Z     ReconcileOrders                           instance-02      5
 ```
 
 #### Requests and dependency join for timeout windows
@@ -296,21 +298,21 @@ TimeGenerated            OperationId                               AppRoleInstan
 let timeoutOps = FunctionAppLogs
 | where TimeGenerated > ago(3h)
 | where Message has_any ("FunctionTimeoutException", "Execution was canceled")
-| distinct OperationId;
+| distinct FunctionInvocationId;
 requests
-| where TimeGenerated > ago(3h)
+| where timestamp > ago(3h)
 | join kind=leftouter (
     dependencies
-    | where TimeGenerated > ago(3h)
-    | summarize depP95=percentile(DurationMs,95), depFail=countif(Success == false) by OperationId
-) on OperationId
-| join kind=inner timeoutOps on OperationId
-| project TimeGenerated, Name, DurationMs, Success, depP95, depFail, OperationId
-| order by TimeGenerated desc
+    | where timestamp > ago(3h)
+    | summarize depP95=percentile(duration,95), depFail=countif(success == false) by operation_Id
+) on $left.operation_Id == $right.operation_Id
+| where operation_Id in (timeoutOps)
+| project timestamp, name, duration, success, depP95, depFail, operation_Id
+| order by timestamp desc
 ```
 
 ```text
-TimeGenerated                 Name                         DurationMs  Success  depP95  depFail  OperationId
+timestamp                     name                         duration    success  depP95  depFail  operation_Id
 ---------------------------   ---------------------------  ----------  -------  ------  -------  --------------------------------------
 2026-04-05T03:43:09Z          ProcessInvoiceBatch          600000      false    112000  4        xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 2026-04-05T03:42:11Z          ReconcileOrders              600000      false    98600   3        xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
@@ -319,14 +321,14 @@ TimeGenerated                 Name                         DurationMs  Success  
 #### Host lifecycle check for graceful shutdown overlap
 ```kusto
 traces
-| where TimeGenerated > ago(3h)
-| where Message has_any ("Host is shutting down", "Stopping JobHost", "Drain mode")
-| summarize LifecycleEvents=count(), First=min(TimeGenerated), Last=max(TimeGenerated) by AppRoleInstance
+| where timestamp > ago(3h)
+| where message has_any ("Host is shutting down", "Stopping JobHost", "Drain mode")
+| summarize LifecycleEvents=count(), First=min(timestamp), Last=max(timestamp) by cloud_RoleInstance
 | order by LifecycleEvents desc
 ```
 
 ```text
-AppRoleInstance  LifecycleEvents  First                     Last
+cloud_RoleInstance  LifecycleEvents  First                     Last
 ---------------  ---------------  ------------------------  ------------------------
 instance-04      12               2026-04-05T02:58:03Z      2026-04-05T03:36:14Z
 instance-02      3                2026-04-05T03:11:40Z      2026-04-05T03:19:08Z
@@ -369,11 +371,15 @@ Use these three queries together when initial evidence is conflicting. If timeou
 }
 ```
 
+!!! warning "Plan restriction"
+    `functionTimeout: "-1"` (unlimited) applies only to Premium and Dedicated plans.
+    Consumption plans have a hard 10-minute maximum; Flex Consumption allows up to 4 hours.
+
 3. Cap per-invocation work size (batch splitting, pagination, checkpoint boundaries) so each unit finishes well below timeout envelope.
 4. Execute rapid dependency health check and fail fast for slow downstream calls to avoid consuming full timeout budget:
 
 ```bash
-az monitor app-insights query --app <app-insights-name> --resource-group <resource-group> --analytics-query "dependencies | where TimeGenerated > ago(30m) | summarize p95=percentile(DurationMs,95), fail=countif(Success == false) by Target" --output table
+az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "dependencies | where timestamp > ago(30m) | summarize p95=percentile(duration,95), fail=countif(success == false) by target" --output table
 ```
 
 5. If retries amplify incident, temporarily reduce intake by scaling upstream producers or pausing non-critical schedules:

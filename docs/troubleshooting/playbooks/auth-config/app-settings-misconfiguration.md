@@ -113,7 +113,7 @@ flowchart LR
 ```bash
 az functionapp config appsettings list --name "$APP_NAME" --resource-group "$RG" --output table
 az functionapp config show --name "$APP_NAME" --resource-group "$RG" --output json
-az monitor app-insights query --app "$APP_NAME" --resource-group "$RG" --analytics-query "traces | where timestamp > ago(30m) | where cloud_RoleName =~ '$APP_NAME' | where message has_any ('Host started','Host initialization','WorkerConfig','FUNCTIONS_WORKER_RUNTIME','AzureWebJobsStorage','KeyVault','Error indexing method') | project timestamp, severityLevel, message | order by timestamp desc" --output table
+az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "traces | where timestamp > ago(30m) | where cloud_RoleName =~ '$APP_NAME' | where message has_any ('Host started','Host initialization','WorkerConfig','FUNCTIONS_WORKER_RUNTIME','AzureWebJobsStorage','KeyVault','Error indexing method') | project timestamp, severityLevel, message | order by timestamp desc" --output table
 ```
 
 ### Example output
@@ -135,6 +135,10 @@ timestamp                    severityLevel  message
 ```
 
 ## 5. Evidence to Collect
+!!! note "KQL Table Names"
+    Queries in this playbook use Application Insights table names (`traces`, `requests`, `dependencies`).
+    When querying from the Log Analytics workspace directly, use equivalent workspace tables such as `AppTraces`, `AppRequests`, and `AppDependencies`; some workspaces also expose function-host records in `FunctionAppLogs`.
+
 | Source | Query/Command | Purpose |
 |---|---|---|
 | Current app settings snapshot | `az functionapp config appsettings list --name "$APP_NAME" --resource-group "$RG" --output json` | Capture exact key/value state at incident time |
@@ -168,6 +172,10 @@ timestamp                    severityLevel  operation_Id                        
 2026-04-05T02:43:57.000000Z  2              xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx   The listener for function 'Functions.QueueProcessor' was unable to start.
 ```
 
+!!! tip "How to Read This"
+    If `AzureWebJobsStorage` resolution errors and listener startup failures appear in the same timestamp window, prioritize storage setting correctness before code-level checks.
+    A severity level of `3` on repeated startup attempts indicates hard startup blockers, not transient retries.
+
 #### Disproving check
 If host startup completes, listeners start, and storage dependencies return successful codes against the expected account endpoint, H1 is unlikely. Confirm by comparing `AzureWebJobsStorage` account name to intended environment naming standards.
 
@@ -191,6 +199,10 @@ timestamp                    severityLevel  operation_Id                        
 2026-04-05T02:41:14.000000Z  2              xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx   WorkerConfig for runtime 'node' loaded, but function metadata expects 'python'.
 2026-04-05T02:41:12.000000Z  2              xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx   FUNCTIONS_WORKER_RUNTIME is set to 'node'.
 ```
+
+!!! tip "How to Read This"
+    Treat `No job functions found` as a runtime alignment signal when it appears with worker-config mismatch messages.
+    If the configured runtime and function metadata language disagree, fix `FUNCTIONS_WORKER_RUNTIME` first and re-check function discovery.
 
 #### Disproving check
 When `FUNCTIONS_WORKER_RUNTIME` matches the application language and expected functions are discovered after restart, H2 is disproven. Verify function count with invocation activity in `requests`.
@@ -386,7 +398,7 @@ timestamp                    message
    ```
 6. Verify startup and discovery recovery using a bounded query.
    ```bash
-   az monitor app-insights query --app "$APP_NAME" --resource-group "$RG" --analytics-query "traces | where timestamp > ago(15m) | where cloud_RoleName =~ '$APP_NAME' | where message has_any ('Host started','Error indexing method','No job functions found') | project timestamp, message | order by timestamp desc" --output table
+   az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "traces | where timestamp > ago(15m) | where cloud_RoleName =~ '$APP_NAME' | where message has_any ('Host started','Error indexing method','No job functions found') | project timestamp, message | order by timestamp desc" --output table
    ```
 
 ## 9. Prevention
@@ -402,6 +414,7 @@ timestamp                    message
 - [KQL Query Guide](../../kql.md)
 - [Troubleshooting Playbooks Index](../index.md)
 - [Managed Identity and RBAC Authentication Failure](./managed-identity-rbac-failure.md)
+- [Storage Access Failure Lab](../../lab-guides/storage-access-failure.md)
 
 ## Sources
 - [Azure Functions app settings reference](https://learn.microsoft.com/azure/azure-functions/functions-app-settings)

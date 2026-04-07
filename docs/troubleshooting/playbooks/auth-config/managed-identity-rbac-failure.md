@@ -176,6 +176,10 @@ timestamp                    severityLevel  operation_Id                        
 2026-04-05T01:14:49.000000Z  2              xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx   DefaultAzureCredential failed to retrieve a token from the included credentials.
 ```
 
+!!! tip "How to Read This"
+    If `ManagedIdentityCredential authentication unavailable` appears first, identity enablement or endpoint availability is the primary fault domain.
+    If only user-assigned identity errors appear, validate that the exact user-assigned identity resource ID is attached to the app.
+
 #### Disproving check
 If traces show successful token acquisition for the intended principal and there are no identity-unavailable messages in the same window, H1 is weakened. Confirm with `az functionapp identity show` that `principalId` and expected user-assigned identity IDs match deployment intent.
 
@@ -199,6 +203,10 @@ Azure blob      BlobContainerClient.GetProperties    403     182       ["stfuncp
 Azure ServiceBus ServiceBusReceiver.ReceiveMessages  403     146       ["sb-func-prod.servicebus.windows.net"]
 Azure Key Vault SecretClient.GetSecret               403     91        ["kv-func-prod.vault.azure.net"]
 ```
+
+!!! tip "How to Read This"
+    Rank targets by `Failures` to identify the highest-impact missing role first.
+    Consistent `403` across multiple dependency types usually indicates RBAC assignment gaps, not transient SDK or network behavior.
 
 #### Disproving check
 If required roles are present at the exact data-plane scope and 403 events disappear without role changes, H2 is unlikely. Validate with `az role assignment list --assignee "$PRINCIPAL_ID" --scope "$RESOURCE_ID" --output table` for each affected resource.
@@ -355,6 +363,10 @@ timeline
 1. Re-enable or attach the expected managed identity.
    ```bash
    az functionapp identity assign --name "$APP_NAME" --resource-group "$RG" --output json
+
+   # For user-assigned identity:
+   az functionapp identity assign --resource-group "$RG" --name "$APP_NAME" \
+     --identities "/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RG/providers/Microsoft.ManagedIdentity/userAssignedIdentities/$IDENTITY_NAME"
    ```
 2. Grant missing blob data-plane permissions for blob-trigger workloads.
    ```bash
@@ -365,6 +377,10 @@ timeline
    az role assignment create --assignee-object-id "$PRINCIPAL_ID" --assignee-principal-type ServicePrincipal --role "Azure Service Bus Data Receiver" --scope "$SERVICEBUS_RESOURCE_ID" --output json
    ```
 4. Align Key Vault permission mode and grants.
+   !!! warning "Verify Before Switching"
+       Switching from access-policy to RBAC authorization may break existing access-policy-based consumers.
+       Verify all Key Vault consumers support RBAC before running this command.
+
    ```bash
    az keyvault update --name "$KV_NAME" --resource-group "$RG" --enable-rbac-authorization true --output json
    ```
@@ -374,7 +390,7 @@ timeline
    ```
 6. Validate recovery with bounded log checks before incident closure.
    ```bash
-   az monitor app-insights query --app "$APP_NAME" --resource-group "$RG" --analytics-query "dependencies | where timestamp > ago(15m) | summarize AuthFailures=countif(resultCode in ('401','403'))" --output table
+   az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "dependencies | where timestamp > ago(15m) | summarize AuthFailures=countif(resultCode in ('401','403'))" --output table
    ```
 
 ## 9. Prevention
@@ -389,7 +405,8 @@ timeline
 - [Troubleshooting Architecture](../../architecture.md)
 - [Troubleshooting Methodology](../../methodology.md)
 - [KQL Query Guide](../../kql.md)
-- [Troubleshooting Lab Guides Index](../../lab-guides/index.md)
+- [Troubleshooting Lab Guides](../../lab-guides/index.md)
+- [Managed Identity Authentication Lab](../../lab-guides/managed-identity-auth.md)
 - [App Settings Misconfiguration Playbook](./app-settings-misconfiguration.md)
 
 ## Sources

@@ -105,8 +105,8 @@ sequenceDiagram
 ```bash
 az functionapp show --name $APP_NAME --resource-group $RG --output table
 az rest --method get --url "https://$APP_NAME.azurewebsites.net/runtime/webhooks/durabletask/instances/$INSTANCE_ID?taskHub=$TASK_HUB&connection=Storage&code=$DURABLE_API_KEY&showHistory=true&showHistoryOutput=true" --output json
-az monitor app-insights query --app $APP_INSIGHTS_NAME --resource-group $RG --analytics-query "traces | where timestamp > ago(30m) | where message has_any ('Durable', 'orchestration', 'replay', 'nondeterministic') | project timestamp, operation_Id, message" --output table
-az monitor app-insights query --app $APP_INSIGHTS_NAME --resource-group $RG --analytics-query "requests | where timestamp > ago(30m) | where name has_any ('orchestrator','activity') | summarize total=count(), failed=countif(success == false), p95=percentile(duration,95) by name" --output table
+az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "traces | where timestamp > ago(30m) | where message has_any ('Durable', 'orchestration', 'replay', 'nondeterministic') | project timestamp, operation_Id, message" --output table
+az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "requests | where timestamp > ago(30m) | where name has_any ('orchestrator','activity') | summarize total=count(), failed=countif(success == false), p95=percentile(duration,95) by name" --output table
 ```
 
 ### Example output
@@ -123,7 +123,7 @@ func-prod-workflow  rg-functions-prod      Running  ~4                func-prod-
   "lastUpdatedTime": "2026-04-05T03:40:51.909Z",
   "input": "{\"orderId\":\"ORD-102948\"}",
   "customStatus": "WaitingForPaymentConfirmed",
-  "historyEvents": 18462
+  "historyEventCount": 18462
 }
 
 timestamp                   operation_Id                           message
@@ -138,13 +138,16 @@ ChargePaymentActivity         540     217      00:00:04.118
 ```
 
 ## 5. Evidence to Collect
+!!! note "KQL Table Names"
+    Most queries use Application Insights table names (`traces`, `requests`, `dependencies`) with classic columns (`timestamp`, `duration`). The `AppMetrics` table is a Log Analytics-only table and uses `TimeGenerated` instead of `timestamp`.
+
 | Source | Query/Command | Purpose |
 |---|---|---|
 | Durable status API (`az rest`) | Retrieve `runtimeStatus`, `lastUpdatedTime`, history depth | Verify true stuck vs active progression |
 | `traces` | Filter for replay, non-determinism, event wait, activity failure | Classify failure mode quickly |
 | `requests` | Orchestrator and activity request outcomes and durations | Quantify throughput and stall location |
 | `dependencies` | Storage/HTTP/DB latency and failure around stuck windows | Identify external bottleneck contribution |
-| `FunctionAppLogs` | Host startup, listener, task hub operational events | Detect host-level processing gaps |
+| `traces` | Host startup, listener, task hub operational events | Detect host-level processing gaps |
 | `AppMetrics` | Throughput, queue age, execution count trends | Confirm starvation or replay amplification |
 | Release metadata | Deployment timestamp and changed function code | Correlate issue onset with code/config changes |
 | App settings / `host.json` | Durable task and concurrency settings | Validate configuration risks and throttles |
@@ -156,14 +159,15 @@ ChargePaymentActivity         540     217      00:00:04.118
 traces
 | where timestamp > ago(12h)
 | where message has_any ("replay", "Replaying", "DurableTask")
-| extend instanceId = tostring(customDimensions["InstanceId"])
+| extend instanceId = coalesce(tostring(customDimensions["prop__InstanceId"]), tostring(customDimensions["InstanceId"]))
 | summarize replayEvents=count(), firstSeen=min(timestamp), lastSeen=max(timestamp) by instanceId, operation_Name
 | join kind=leftouter (
     requests
     | where timestamp > ago(12h)
     | where name has "orchestrator"
-    | summarize orchestrationRequests=count(), p95Duration=percentile(duration,95) by operation_Id
-) on $left.instanceId == $right.operation_Id
+    | extend instanceId = coalesce(tostring(customDimensions["prop__InstanceId"]), tostring(customDimensions["InstanceId"]))
+    | summarize orchestrationRequests=count(), p95Duration=percentile(duration,95) by instanceId
+) on instanceId
 | order by replayEvents desc
 ```
 
@@ -313,15 +317,15 @@ Normal vs abnormal dependency profile:
 #### Confirming KQL
 ```kusto
 AppMetrics
-| where timestamp > ago(12h)
+| where TimeGenerated > ago(12h)
 | where Name in ("FunctionExecutionCount", "FunctionExecutionUnits", "RequestsInQueue")
-| summarize avgValue=avg(Value), maxValue=max(Value) by Name, bin(timestamp, 10m)
-| order by timestamp asc
+| summarize avgValue=avg(Value), maxValue=max(Value) by Name, bin(TimeGenerated, 10m)
+| order by TimeGenerated asc
 ```
 
 #### Expected output
 ```text
-Name                    timestamp                   avgValue   maxValue
+Name                    TimeGenerated               avgValue   maxValue
 ---------------------   --------------------------  --------   --------
 FunctionExecutionCount  2026-04-05T03:00:00.000Z   210        260
 FunctionExecutionCount  2026-04-05T03:10:00.000Z   182        201
@@ -366,18 +370,19 @@ flowchart TD
    ```bash
    az functionapp deployment source config-zip --name $APP_NAME --resource-group $RG --src ./deployments/durable-continue-as-new-hotfix.zip --output table
    ```
-3. Add explicit retry policy for critical activity calls and bounded timeout handling for external events.
+3. Add explicit retry policy for critical activity calls in code. Durable Functions retries are defined per `CallActivityWithRetryAsync` in the orchestrator, not via app settings.
    ```bash
-   az functionapp config appsettings set --name $APP_NAME --resource-group $RG --settings "DURABLE_ACTIVITY_RETRY_MAX_ATTEMPTS=6" "DURABLE_ACTIVITY_RETRY_FIRST_DELAY_SECONDS=10" --output table
+   # Redeploy with retry policy added to orchestrator code
+   az functionapp deployment source config-zip --name $APP_NAME --resource-group $RG --src ./deployments/durable-retry-policy-hotfix.zip --output table
    ```
 4. Validate host and plan settings to avoid worker starvation and under-provisioned execution.
    ```bash
    az functionapp show --name $APP_NAME --resource-group $RG --query "{state:state,plan:serverFarmId,kind:kind}" --output json
    az functionapp plan update --name $PLAN_NAME --resource-group $RG --number-of-workers 2 --output table
    ```
-5. If external events are missing, replay from upstream message source or publish compensating event safely.
+5. If external events are missing, replay from upstream message source or use the Durable HTTP API to raise the event manually.
    ```bash
-   az functionapp config appsettings set --name $APP_NAME --resource-group $RG --settings "ENABLE_EXTERNAL_EVENT_REDRIVE=true" --output table
+   az rest --method post --url "https://$APP_NAME.azurewebsites.net/runtime/webhooks/durabletask/instances/$INSTANCE_ID/raiseEvent/$EVENT_NAME?taskHub=$TASK_HUB&connection=Storage&code=$DURABLE_API_KEY" --body '{"status":"compensated"}' --output json
    ```
 6. Restart host only after status snapshots are captured so forensic data is preserved.
    ```bash
@@ -395,7 +400,7 @@ flowchart TD
 - [Troubleshooting architecture](../../architecture.md)
 - [Troubleshooting methodology](../../methodology.md)
 - [Troubleshooting KQL guide](../../kql.md)
-- [Troubleshooting lab guides](../../lab-guides.md)
+- [Durable replay storm lab guide](../../lab-guides/durable-replay-storm.md)
 - [Out of memory / worker crash playbook](./out-of-memory-worker-crash.md)
 
 ## Sources

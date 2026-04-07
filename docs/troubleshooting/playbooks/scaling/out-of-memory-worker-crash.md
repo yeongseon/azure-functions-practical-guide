@@ -101,8 +101,8 @@ sequenceDiagram
 ### Quick CLI checks
 ```bash
 az functionapp show --name $APP_NAME --resource-group $RG --output table
-az monitor app-insights query --app $APP_INSIGHTS_NAME --resource-group $RG --analytics-query "traces | where timestamp > ago(30m) | where message contains 'OutOfMemory' | project timestamp, cloud_RoleInstance, operation_Id, message" --output table
-az monitor app-insights query --app $APP_INSIGHTS_NAME --resource-group $RG --analytics-query "AppMetrics | where timestamp > ago(30m) | where Name in ('WorkingSet','PrivateBytes') | summarize avg(Value), max(Value) by Name, bin(timestamp, 5m)" --output table
+az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "traces | where timestamp > ago(30m) | where message contains 'OutOfMemory' | project timestamp, cloud_RoleInstance, operation_Id, message" --output table
+az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "AppMetrics | where TimeGenerated > ago(30m) | where Name in ('WorkingSet','PrivateBytes') | summarize avg(Value), max(Value) by Name, bin(TimeGenerated, 5m)" --output table
 ```
 
 ### Example output
@@ -116,17 +116,20 @@ timestamp                   cloud_RoleInstance              operation_Id        
 2026-04-05T03:10:11.220Z    RD281878D4A1C2                 xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx   System.OutOfMemoryException: Exception of type...
 2026-04-05T03:10:11.907Z    RD281878D4A1C2                 xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx   Worker process terminated due to memory pressure
 
-Name         timestamp                   avg_Value      max_Value
+Name         TimeGenerated               avg_Value      max_Value
 -----------  --------------------------  ------------   ------------
 WorkingSet   2026-04-05T03:05:00.000Z   1287348224     1499822080
 WorkingSet   2026-04-05T03:10:00.000Z   1519804416     1602242560
 ```
 
 ## 5. Evidence to Collect
+!!! note "KQL Table Names"
+    Most queries use Application Insights table names (`traces`, `requests`, `dependencies`) with classic columns (`timestamp`, `duration`). The `AppMetrics` table is a Log Analytics-only table and uses `TimeGenerated` instead of `timestamp`.
+
 | Source | Query/Command | Purpose |
 |---|---|---|
 | `traces` | Search for `System.OutOfMemoryException`, `worker process`, `recycle` | Establish explicit crash/error signatures |
-| `FunctionAppLogs` | Filter by host/worker restart events | Confirm process-level disruption timeline |
+| `traces` | Filter by host/worker restart events | Confirm process-level disruption timeline |
 | `AppMetrics` | WorkingSet, PrivateBytes, GC metrics by 1-5 minute bins | Measure memory growth and saturation trend |
 | `AppMetrics` | Analyze GC pause and allocation counters by role instance | Distinguish leak-like growth from bursty allocations |
 | `requests` | Failed/timeout requests per operation | Quantify customer impact and hot endpoints |
@@ -198,15 +201,15 @@ If blob dependencies are small, infrequent, or absent around crash periods, bulk
 #### Confirming KQL
 ```kusto
 AppMetrics
-| where timestamp > ago(12h)
+| where TimeGenerated > ago(12h)
 | where Name in ("WorkingSet", "PrivateBytes")
-| summarize avgValue=avg(Value), maxValue=max(Value) by Name, cloud_RoleInstance, bin(timestamp, 10m)
-| order by cloud_RoleInstance asc, timestamp asc
+| summarize avgValue=avg(Value), maxValue=max(Value) by Name, cloud_RoleInstance, bin(TimeGenerated, 10m)
+| order by cloud_RoleInstance asc, TimeGenerated asc
 ```
 
 #### Expected output
 ```text
-Name         cloud_RoleInstance   timestamp                   avgValue      maxValue
+Name         cloud_RoleInstance   TimeGenerated               avgValue      maxValue
 -----------  -------------------  --------------------------  ------------  ------------
 WorkingSet   RD281878D4A1C2       2026-04-05T02:40:00.000Z   1042284544    1090519040
 WorkingSet   RD281878D4A1C2       2026-04-05T02:50:00.000Z   1170837504    1222311936
@@ -225,7 +228,7 @@ If memory exhibits healthy sawtooth behavior with periodic drops after GC and wo
 dependencies
 | where timestamp > ago(6h)
 | where type in~ ("SQL", "Azure SQL")
-| summarize depCount=count(), failed=countif(success == false), p95DurationMs=percentile(duration,95) by operation_Id
+| summarize depCount=count(), failed=countif(success == false), p95Duration=percentile(duration,95) by operation_Id
 | join kind=leftouter (
     traces
     | where timestamp > ago(6h)
@@ -233,13 +236,13 @@ dependencies
     | project operation_Id, traceMsg=message
 ) on operation_Id
 | where isnotempty(traceMsg)
-| project operation_Id, depCount, failed, p95DurationMs, traceMsg
+| project operation_Id, depCount, failed, p95Duration, traceMsg
 | order by depCount desc
 ```
 
 #### Expected output
 ```text
-operation_Id                           depCount   failed   p95DurationMs   traceMsg
+operation_Id                           depCount   failed   p95Duration     traceMsg
 ------------------------------------   --------   ------   -------------   ------------------------------------------------------------
 xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx   184        12       00:00:01.214    DbContext retained across invocations; memory pressure rising
 xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx   171        8        00:00:01.009    System.OutOfMemoryException after repeated query materialization
@@ -280,15 +283,15 @@ If media-related requests are absent or successful during failure windows, prior
 #### Confirming KQL
 ```kusto
 AppMetrics
-| where timestamp > ago(24h)
+| where TimeGenerated > ago(24h)
 | where Name == "WorkingSet"
-| summarize p95=percentile(Value,95), p99=percentile(Value,99), peak=max(Value) by cloud_RoleInstance, bin(timestamp, 1h)
-| order by timestamp desc
+| summarize p95=percentile(Value,95), p99=percentile(Value,99), peak=max(Value) by cloud_RoleInstance, bin(TimeGenerated, 1h)
+| order by TimeGenerated desc
 ```
 
 #### Expected output
 ```text
-cloud_RoleInstance   timestamp                   p95          p99          peak
+cloud_RoleInstance   TimeGenerated               p95          p99          peak
 -------------------  --------------------------  -----------  -----------  -----------
 RD281878D4A1C2       2026-04-05T03:00:00.000Z   1459617792   1542449152   1602242560
 RD281878D4A1C2       2026-04-05T04:00:00.000Z   1480589312   1559238656   1601048576
@@ -335,13 +338,22 @@ flowchart TD
    ```bash
    az functionapp plan update --name $PLAN_NAME --resource-group $RG --sku EP2 --number-of-workers 2 --output table
    ```
-4. Apply guardrails for payload size and reject or chunk oversized work units.
+4. Apply guardrails for payload size at the application level. Validate incoming payload size in function code and reject oversized items before buffering.
    ```bash
-   az functionapp config appsettings set --name $APP_NAME --resource-group $RG --settings "MAX_PAYLOAD_MB=20" "ENABLE_CHUNKED_PROCESSING=true" --output table
+   # Redeploy with payload validation guards added to function handlers
+   az functionapp deployment source config-zip --name $APP_NAME --resource-group $RG --src ./deployments/payload-guard-hotfix.zip --output table
    ```
-5. Add retry backoff and dead-letter policies so repeated crash retries do not amplify memory pressure.
-   ```bash
-   az functionapp config appsettings set --name $APP_NAME --resource-group $RG --settings "RETRY_MODE=exponential" "RETRY_MAX_ATTEMPTS=5" --output table
+5. Configure queue poison-queue threshold and retry interval via `host.json` extensions so repeated crash retries do not amplify memory pressure. Messages exceeding `maxDequeueCount` are moved to the poison queue; `visibilityTimeout` controls the delay between retry attempts.
+   ```json
+   {
+     "version": "2.0",
+     "extensions": {
+       "queues": {
+         "maxDequeueCount": 5,
+         "visibilityTimeout": "00:01:00"
+       }
+     }
+   }
    ```
 6. Confirm `host.json` memory-sensitive settings are explicit and aligned with runtime behavior.
 
@@ -391,7 +403,7 @@ Plan memory guidance for escalation decisions:
 - [Troubleshooting architecture](../../architecture.md)
 - [Troubleshooting methodology](../../methodology.md)
 - [Troubleshooting KQL guide](../../kql.md)
-- [Troubleshooting lab guides](../../lab-guides.md)
+- [Out of memory crash lab guide](../../lab-guides/out-of-memory-crash.md)
 - [Durable orchestration stuck playbook](./durable-orchestration-stuck.md)
 
 ## Sources

@@ -169,9 +169,8 @@ az monitor metrics list \
     --offset 1h \
     --output table
 
-az monitor app-insights query \
-    --app "$APP_NAME" \
-    --resource-group "$RG" \
+az monitor log-analytics query \
+    --workspace "$WORKSPACE_ID" \
     --analytics-query "requests | where timestamp > ago(30m) | where operation_Name startswith 'Functions.QueueProcessor' | summarize Invocations=count(), Failures=countif(success == false), P95Ms=percentile(duration,95)"
 
 az monitor log-analytics query \
@@ -332,9 +331,8 @@ requests
     Tail latency growth with low failure-rate change indicates throughput collapse from slow successes, not only failures.
 **CLI check**
 ```bash
-az monitor app-insights query \
-    --app "$APP_NAME" \
-    --resource-group "$RG" \
+az monitor log-analytics query \
+    --workspace "$WORKSPACE_ID" \
     --analytics-query "requests | where timestamp > ago(6h) | where operation_Name startswith 'Functions.QueueProcessor' | summarize AvgMs=avg(duration), P95Ms=percentile(duration,95), P99Ms=percentile(duration,99) by bin(timestamp,15m)"
 ```
 
@@ -370,9 +368,8 @@ dependencies
     A dependency target with high failure rate and high P95 during backlog growth strongly supports H4.
 **CLI check**
 ```bash
-az monitor app-insights query \
-    --app "$APP_NAME" \
-    --resource-group "$RG" \
+az monitor log-analytics query \
+    --workspace "$WORKSPACE_ID" \
     --analytics-query "dependencies | where timestamp > ago(1h) | summarize Calls=count(), Failures=countif(success == false), P95Ms=percentile(duration,95) by target, resultCode"
 ```
 

@@ -102,7 +102,6 @@ requests
 
 | FunctionName | Invocations | Failures | FailureRatePercent | P95Ms |
 |---|---|---|---|---|
-| Functions.BlobIngestor | 0 | 0 | 0.00 | 0 |
 | Functions.HttpHealth | 102 | 0 | 0.00 | 193.81 |
 
 #### Query 8: Host startup/shutdown events + trigger context
@@ -381,6 +380,12 @@ az functionapp show \
     --query "{name:name, kind:kind, state:state}" \
     --output table
 
+az functionapp plan show \
+    --resource-group "$RG" \
+    --name "$PLAN_NAME" \
+    --query "{name:name, sku:sku.name, tier:sku.tier}" \
+    --output table
+
 az eventgrid event-subscription list \
     --source-resource-id "/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RG/providers/Microsoft.Storage/storageAccounts/<storage-account-name>" \
     --output table
@@ -393,6 +398,10 @@ Name              Kind                State
 ----------------  ------------------  -------
 func-myapp-prod   functionapp,linux   Running
 
+Name               Sku  Tier
+-----------------  ---  ----------------
+plan-functions-fc  FC1  FlexConsumption
+
 # Event subscription list
 []
 
@@ -401,7 +410,7 @@ func-myapp-prod   functionapp,linux   Running
 ```
 
 !!! tip "How to Read This"
-    This pattern indicates architecture mismatch: `FC1` without Event Grid trigger path.
+    Confirm `FC1` from the plan check (`Sku=FC1`, `Tier=FlexConsumption`) and then interpret empty Event Grid subscriptions as architecture mismatch.
     Reintroduce Event Grid wiring before tuning host or function code.
 
 ## 7. Likely Root Cause Patterns

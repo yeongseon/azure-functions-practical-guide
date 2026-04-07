@@ -76,7 +76,7 @@ flowchart TD
 ```bash
 az eventhubs eventhub show --name <event-hub-name> --namespace-name <event-hubs-namespace> --resource-group <resource-group> --output table
 az servicebus queue show --name <queue-name> --namespace-name <service-bus-namespace> --resource-group <resource-group> --output table
-az monitor app-insights query --app <app-insights-name> --resource-group <resource-group> --analytics-query "FunctionAppLogs | where TimeGenerated > ago(30m) | where Message has_any ('lag','checkpoint','lock lost','dead-letter','timeout') | project TimeGenerated, Level, Message | take 30" --output table
+az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "FunctionAppLogs | where TimeGenerated > ago(30m) | where Message has_any ('lag','checkpoint','lock lost','dead-letter','timeout') | project TimeGenerated, Level, Message | take 30" --output table
 ```
 
 ### Example output
@@ -97,6 +97,9 @@ TimeGenerated                 Level    Message
 ```
 
 ## 5. Evidence to Collect
+!!! note "KQL Table Names"
+    Most queries use Application Insights table names (`traces`, `requests`, `dependencies`) with classic columns (`timestamp`, `duration`). `FunctionAppLogs` and `AppMetrics` are Log Analytics tables and use `TimeGenerated`.
+
 | Source | Query/Command | Purpose |
 |---|---|---|
 | `FunctionAppLogs` | Trigger execution duration, batch size, checkpoint and lock messages | Detect processing slowdown and settlement failures |
@@ -115,9 +118,8 @@ TimeGenerated                 Level    Message
 FunctionAppLogs
 | where TimeGenerated > ago(6h)
 | where Message has_any ("EventHubTrigger", "ServiceBusTrigger", "Processed", "batch")
-| extend FunctionName = tostring(CustomDimensions.FunctionName)
-| extend BatchSize = toint(CustomDimensions.BatchSize)
-| extend DurationMs = toreal(CustomDimensions.DurationMs)
+| extend BatchSize = toint(extract("batch.*?(\\d+)", 1, Message))
+| extend DurationMs = toreal(extract("duration.*?(\\d+\\.?\\d*)", 1, Message))
 | summarize AvgBatch=avg(BatchSize), P95Duration=percentile(DurationMs, 95), Runs=count() by FunctionName, bin(TimeGenerated, 15m)
 | order by P95Duration desc
 ```
@@ -138,11 +140,11 @@ If duration stays low while lag grows, misconfiguration is less likely. Shift an
 #### Confirming KQL
 ```kusto
 traces
-| where TimeGenerated > ago(6h)
-| where Message has_any ("dead-letter", "poison", "DeliveryCount", "MessageLockLost", "Abandon")
-| extend FunctionName=tostring(CustomDimensions.FunctionName)
-| extend MessageId=tostring(CustomDimensions.MessageId)
-| summarize Attempts=count(), FirstSeen=min(TimeGenerated), LastSeen=max(TimeGenerated) by FunctionName, MessageId
+| where timestamp > ago(6h)
+| where message has_any ("dead-letter", "poison", "DeliveryCount", "MessageLockLost", "Abandon")
+| extend FunctionName=tostring(customDimensions.FunctionName)
+| extend MessageId=tostring(customDimensions.MessageId)
+| summarize Attempts=count(), FirstSeen=min(timestamp), LastSeen=max(timestamp) by FunctionName, MessageId
 | where Attempts >= 3
 | order by Attempts desc
 ```
@@ -162,15 +164,15 @@ If repeated message IDs are absent and dead-letter remains flat, poison-message 
 #### Confirming KQL
 ```kusto
 dependencies
-| where TimeGenerated > ago(6h)
-| where Target has_any ("servicebus.windows.net", "eventhub.windows.net", "database.windows.net", "vault.azure.net")
-| summarize Count=count(), Failures=countif(Success == false), P95=percentile(DurationMs, 95), P99=percentile(DurationMs, 99) by Target, Name, bin(TimeGenerated, 15m)
+| where timestamp > ago(6h)
+| where target has_any ("servicebus.windows.net", "eventhub.windows.net", "database.windows.net", "vault.azure.net")
+| summarize Count=count(), Failures=countif(success == false), P95=percentile(duration, 95), P99=percentile(duration, 99) by target, name, bin(timestamp, 15m)
 | order by P99 desc
 ```
 
 #### Expected output
 ```text
-Target                                  Name              Count  Failures  P95     P99
+target                                  name              Count  Failures  P95     P99
 --------------------------------------  ----------------  -----  --------  ------  ------
 contoso-bus.servicebus.windows.net      CompleteMessage   1820   96        48000   111000
 contoso-hub.servicebus.windows.net      ReceiveMessages   2410   131       39000   94000
@@ -210,8 +212,8 @@ If lag is uniform across partitions with similar growth rates, partition skew is
 FunctionAppLogs
 | where TimeGenerated > ago(6h)
 | where Message has_any ("MessageLockLost", "lock expired", "CompleteAsync", "Abandon", "RenewLock")
-| extend FunctionName=tostring(CustomDimensions.FunctionName)
-| summarize LockErrors=count(), DistinctOps=dcount(OperationId) by FunctionName, bin(TimeGenerated, 15m)
+| extend FunctionName = tostring(FunctionName)
+| summarize LockErrors=count(), DistinctOps=dcount(FunctionInvocationId) by FunctionName, bin(TimeGenerated, 15m)
 | order by LockErrors desc
 ```
 
@@ -231,8 +233,7 @@ If lock-related errors are negligible and completion succeeds consistently, sett
 ```kusto
 FunctionAppLogs
 | where TimeGenerated > ago(6h)
-| where Message has_any ("FunctionTimeoutException", "Execution was canceled", "checkpoint")
-| extend FunctionName=tostring(CustomDimensions.FunctionName)
+| where Message has_any ("FunctionTimeoutException", "Execution was canceled")
 | summarize TimeoutCount=count(), LastSeen=max(TimeGenerated) by FunctionName
 | order by TimeoutCount desc
 ```
@@ -281,10 +282,10 @@ let lagSeries = AppMetrics
 | where Name has_any ("eventhub_partition_lag", "servicebus_queue_lag")
 | summarize LagValue=avg(Value) by bin(TimeGenerated, 5m);
 let durationSeries = requests
-| where TimeGenerated > ago(3h)
-| summarize P95Duration=percentile(DurationMs,95) by bin(TimeGenerated, 5m);
+| where timestamp > ago(3h)
+| summarize P95Duration=percentile(duration,95) by bin(timestamp, 5m);
 lagSeries
-| join kind=inner durationSeries on TimeGenerated
+| join kind=inner durationSeries on $left.TimeGenerated == $right.timestamp
 | project TimeGenerated, LagValue, P95Duration
 | order by TimeGenerated asc
 ```
@@ -303,12 +304,12 @@ TimeGenerated            LagValue  P95Duration
 FunctionAppLogs
 | where TimeGenerated > ago(3h)
 | where Message has_any ("MessageLockLost", "lock expired", "RenewLock")
-| summarize LockErrors=count() by AppRoleInstance, bin(TimeGenerated, 5m)
+| summarize LockErrors=count() by RoleInstance, bin(TimeGenerated, 5m)
 | order by TimeGenerated desc
 ```
 
 ```text
-AppRoleInstance  TimeGenerated            LockErrors
+RoleInstance     TimeGenerated            LockErrors
 ---------------  -----------------------  ----------
 instance-01      2026-04-05T03:30:00Z    17
 instance-01      2026-04-05T03:25:00Z    14
@@ -318,14 +319,14 @@ instance-03      2026-04-05T03:25:00Z    5
 #### Dependency failures during lag acceleration
 ```kusto
 dependencies
-| where TimeGenerated > ago(3h)
-| where Target has_any ("servicebus.windows.net", "eventhub.windows.net", "database.windows.net")
-| summarize Failures=countif(Success == false), P99=percentile(DurationMs,99) by Target, bin(TimeGenerated, 5m)
-| order by TimeGenerated desc
+| where timestamp > ago(3h)
+| where target has_any ("servicebus.windows.net", "eventhub.windows.net", "database.windows.net")
+| summarize Failures=countif(success == false), P99=percentile(duration,99) by target, bin(timestamp, 5m)
+| order by timestamp desc
 ```
 
 ```text
-Target                                  TimeGenerated            Failures  P99
+target                                  timestamp                Failures  P99
 --------------------------------------  -----------------------  --------  ------
 contoso-bus.servicebus.windows.net      2026-04-05T03:30:00Z    22        118000
 contoso-hub.servicebus.windows.net      2026-04-05T03:30:00Z    19        97000
@@ -365,16 +366,17 @@ When lag slope and p95 duration rise together, throughput is constrained by proc
 }
 ```
 
-2. Quarantine poison messages by moving repeated failures to dead-letter for offline handling, then continue forward progress.
+2. Quarantine poison messages: for Service Bus, configure `maxDeliveryCount` to dead-letter repeated failures quickly. For Event Hub, add application-level exception handling to skip poison payloads and log them for offline analysis.
 
-```bash
-az servicebus queue show --name <queue-name> --namespace-name <service-bus-namespace> --resource-group <resource-group> --output json
-```
+   ```bash
+   # Check Service Bus dead-letter count and queue health
+   az servicebus queue show --name <queue-name> --namespace-name <service-bus-namespace> --resource-group <resource-group> --query "{activeMessageCount:countDetails.activeMessageCount, deadLetterMessageCount:countDetails.deadLetterMessageCount}" --output table
+   ```
 
 3. Validate broker and downstream latency before scaling out consumers blindly:
 
 ```bash
-az monitor app-insights query --app <app-insights-name> --resource-group <resource-group> --analytics-query "dependencies | where TimeGenerated > ago(30m) | summarize p95=percentile(DurationMs,95), failures=countif(Success == false) by Target" --output table
+az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "dependencies | where timestamp > ago(30m) | summarize p95=percentile(duration,95), failures=countif(success == false) by target" --output table
 ```
 
 4. Temporarily throttle producer throughput or apply backpressure policy to stop uncontrolled lag growth while draining backlog.
@@ -382,6 +384,9 @@ az monitor app-insights query --app <app-insights-name> --resource-group <resour
 ```bash
 az eventhubs eventhub authorization-rule keys list --name <rule-name> --eventhub-name <event-hub-name> --namespace-name <event-hubs-namespace> --resource-group <resource-group> --output table
 ```
+
+!!! note
+    Producer throttling is application-specific. The auth key listed above is for connection verification, not throttling. Coordinate with the upstream producer team to reduce send rate.
 
 5. Increase partition count only when partition skew and sustained producer throughput justify repartitioning plan.
 
@@ -406,7 +411,7 @@ az functionapp deployment source config-zip --name <app-name> --resource-group <
 - [Troubleshooting Architecture](../../architecture.md)
 - [Troubleshooting Methodology](../../methodology.md)
 - [Troubleshooting KQL Guide](../../kql.md)
-- [Troubleshooting Lab Guides](../../lab-guides.md)
+- [Event Hub checkpoint lag lab guide](../../lab-guides/event-hub-checkpoint-lag.md)
 - [Timeout / Execution Time Limit Exceeded](./timeout-execution-limit.md)
 
 ## Sources

@@ -341,7 +341,7 @@ az monitor log-analytics query \
   --output table
 az functionapp plan show \
   --resource-group "$RG" \
-  --name "$APP_NAME" \
+  --name "$PLAN_NAME" \
   --output json
 ```
 **Example output:**

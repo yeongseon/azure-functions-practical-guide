@@ -67,7 +67,7 @@ flowchart TD
 ```bash
 az functionapp function list --name "$APP_NAME" --resource-group "$RG" --output table
 az functionapp config appsettings list --name "$APP_NAME" --resource-group "$RG" --output table
-az monitor app-insights query --app "$APP_NAME" --resource-group "$RG" --analytics-query "traces | where timestamp > ago(30m) | where cloud_RoleName =~ '$APP_NAME' | where message has_any ('disabled','listener','Host started','unable to start') | project timestamp, severityLevel, message | order by timestamp desc" --output table
+az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "traces | where timestamp > ago(30m) | where cloud_RoleName =~ '$APP_NAME' | where message has_any ('disabled','listener','Host started','unable to start') | project timestamp, severityLevel, message | order by timestamp desc" --output table
 ```
 ### Example output
 ```text
@@ -131,11 +131,10 @@ requests
 ```
 | FunctionName | Invocations | Failures | FailureRatePercent | P95Ms |
 |---|---|---|---|---|
-| Functions.QueueProcessor | 0 | 0 | 0.00 | 0 |
 | Functions.health | 50 | 0 | 0.00 | 140 |
 | Functions.unhandled_error | 15 | 15 | 100.00 | 410 |
 !!! tip "How to Read This"
-    `Invocations=0` for one trigger while others execute usually indicates trigger-path failure, not app-wide outage.
+    A function that is absent from this table while others appear means it received zero invocations — indicating a trigger-path failure, not an app-wide outage.
 #### Query 2: Failed invocations with error details
 ```kusto
 let appName = "$APP_NAME";
@@ -165,7 +164,7 @@ let appName = "$APP_NAME";
 traces
 | where timestamp > ago(12h)
 | where cloud_RoleName =~ appName
-| where message has_any ("Host started", "Job host started", "Host shutdown", "Host is shutting down", "Stopping JobHost")
+| where message has_any ("Host started", "Job host started", "Host shutdown", "Host is shutting down", "Stopping JobHost", "Host lock lease")
 | project timestamp, severityLevel, message
 | order by timestamp desc
 ```
@@ -290,7 +289,7 @@ traces
 | order by timestamp desc
 ```
 ```bash
-az monitor app-insights query --app "$APP_NAME" --resource-group "$RG" --analytics-query "traces | where timestamp > ago(2h) | where cloud_RoleName =~ '$APP_NAME' | where message has_any ('Host started','Host is shutting down') | project timestamp, message | order by timestamp desc" --output table
+az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "traces | where timestamp > ago(2h) | where cloud_RoleName =~ '$APP_NAME' | where message has_any ('Host started','Host is shutting down') | project timestamp, message | order by timestamp desc" --output table
 ```
 Example output:
 | timestamp | Starts | Stops |
@@ -351,7 +350,6 @@ az monitor metrics list --resource "/subscriptions/$SUBSCRIPTION_ID/resourceGrou
 Example output:
 | timestamp | FunctionName | Invocations |
 |---|---|---|
-| 2026-04-04T12:15:00Z | Functions.QueueProcessor | 0 |
 | 2026-04-04T12:15:00Z | Functions.health | 22 |
 Disproof condition:
 - Source activity confirmed while target function remains non-executing.
@@ -366,7 +364,7 @@ Disproof condition:
 - Same artifact healthy in equivalent environment.
 **What to verify**
 ```bash
-az monitor app-insights query --app "$APP_NAME" --resource-group "$RG" --analytics-query "traces | where timestamp > ago(2h) | where cloud_RoleName =~ '$APP_NAME' | where message has_any ('Worker process started and initialized','Failed to start language worker process','did not find functions with language','Host started') | project timestamp, message | order by timestamp desc" --output table
+az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "traces | where timestamp > ago(2h) | where cloud_RoleName =~ '$APP_NAME' | where message has_any ('Worker process started and initialized','Failed to start language worker process','did not find functions with language','Host started') | project timestamp, message | order by timestamp desc" --output table
 az functionapp config show --name "$APP_NAME" --resource-group "$RG" --output json
 ```
 Example output:
