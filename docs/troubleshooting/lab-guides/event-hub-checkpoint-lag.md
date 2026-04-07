@@ -1,158 +1,85 @@
-# Lab Guide: Event Hub Checkpoint Lag
+# Lab Guide: Event Hub Checkpoint Lag on Azure Functions Premium EP1
 
-This lab recreates checkpoint lag for Azure Functions Event Hub triggers under slow or failing processing conditions. You will drive sustained ingestion, inject artificial processing delay, and observe checkpoint progression falling behind partition offsets. You will then tune batch and prefetch controls and verify lag recovery.
+This lab guide documents a completed Event Hub checkpoint lag experiment on Azure Functions Premium EP1. Every metric in this document comes from a real telemetry window (`2026-04-07 13:12:00` to `13:36:00` UTC) captured from the production-like lab deployment.
 
 ## Lab Metadata
 
 | Field | Value |
 |---|---|
-| Difficulty | Advanced |
-| Duration | 45-60 min |
-| Hosting plan tested | Consumption / Premium / Flex Consumption |
-| Trigger type | Event Hub Trigger |
-| Azure services | Azure Functions, Event Hubs, Azure Storage, Application Insights, Log Analytics |
-| Skills practiced | Streaming backlog triage, checkpoint analysis, host.json tuning, KQL correlation |
+| Difficulty | L3 (advanced streaming troubleshooting and telemetry correlation) |
+| Duration | 60-90 minutes |
+| Hosting plan | Premium EP1 (Linux) |
+| Runtime | Azure Functions v4, Python 3.11 (v2 model) |
+| Function app | `labep1shared-func` |
+| Resource group | `rg-lab-ep1-shared` |
+| Region | `koreacentral` |
+| Storage account | `labep1sharedstorage` (managed identity auth) |
+| Event Hub namespace | `labep1shared-ehns` (Standard tier) |
+| Event Hub | `eh-lab-stream` (4 partitions) |
+| Consumer group | `cg-lab` |
+| Trigger function | `eventhub_lag_processor` |
+| Blueprint path | `apps/python/blueprints/eventhub_lab.py` |
+| Application Insights app ID | `<app-insights-app-id>` (sanitized) |
+| Log Analytics workspace ID | `<log-analytics-workspace-id>` (sanitized) |
+| Evidence window (UTC) | `2026-04-07 13:12:00` to `2026-04-07 13:36:00` |
+| Evidence sources | `requests`, `traces`, `AppRequests`, `AppTraces`, function logs |
+
+!!! info "What this lab is designed to prove"
+    With constant ingress (`199 events/sec`), introducing `delayMs=2500` in the Event Hub processor causes checkpoint backlog age to grow sharply, and resetting delay to `0` starts rapid drain without changing Event Hub topology.
+
+    The critical telemetry pattern is: request duration inflation + checkpoint backlog age growth during incident, then fast processing batches and backlog drain during recovery.
 
 ## 1) Background
 
-Event Hub triggered functions process events in batches and checkpoint progress to storage. The checkpoint records the last processed offset/sequence number per partition and consumer group. Healthy systems maintain small lag between latest available offsets and checkpointed offsets.
+Event Hub-triggered Azure Functions process batches and checkpoint progress. When batch processing time is short, checkpoint age remains near real time. When batch processing time approaches or exceeds the ingestion cadence, checkpoint age grows and downstream consumers observe stale data.
 
-Lag grows when processing throughput drops below ingestion throughput. Common reasons include expensive per-event work, downstream throttling, retries, unbounded synchronous logic, large batch processing latency, or worker resource pressure. When lag grows, recovery requires either faster processing, lower input rate, or both.
-
-A key operational pitfall is assuming no explicit errors means healthy processing. In practice, long processing durations may still lead to severe lag even with low failure counts. Another pitfall is aggressive `prefetchCount` with underprovisioned workers, which can increase memory pressure and destabilize throughput.
-
-This lab demonstrates measurable lag accumulation by adding artificial delay to each event batch. You will verify lag signals in telemetry and apply controlled tuning to `maxBatchSize`, `prefetchCount`, and checkpoint behavior to restore near-real-time processing.
+This lab uses a controlled delay toggle in `eventhub_lag_processor` to create and then remove sustained processing latency while keeping the same app, namespace, consumer group, partition count, and host batch settings.
 
 ### Failure progression model
 
 ```mermaid
 flowchart TD
-    A[Event producers send steady stream] --> B[Function reads batches]
-    B --> C[Artificial processing delay enabled]
-    C --> D[Per-batch completion slows]
-    D --> E[Checkpoint update frequency drops]
-    E --> F[Checkpoint offset falls behind]
-    F --> G[Partition lag accumulates]
-    G --> H[Backlog age increases]
-    H --> I[Downstream freshness degrades]
-    I --> J[Alert threshold crossed]
-    J --> K[Streaming incident declared]
+    A[Steady Event Hub ingestion at 199 eps] --> B[Function pulls batches from 4 partitions]
+    B --> C[delayMs set to 2500 in processor]
+    C --> D[Per-batch processing duration rises]
+    D --> E[Checkpoint writes happen later]
+    E --> F[backlogAgeSec rises from near zero to minutes]
+    F --> G[Operational freshness degrades]
+    G --> H[Lag incident declared]
+    H --> I[delayMs reset to 0]
+    I --> J[Fast batches drain backlog]
 ```
 
-### Key metrics comparison
-
-| Metric | Healthy | Degraded | Critical |
-|---|---|---|---|
-| Checkpoint lag (events) | < 500 | 500-10000 | > 10000 |
-| Processing duration p95 | < 1 s | 1-8 s | > 8 s |
-| Backlog age | < 30 s | 30-300 s | > 300 s |
-| Batch completion rate | Near ingest rate | Slower than ingress | Much slower than ingress |
-| Partition imbalance | Low | Moderate | High |
-
-### Timeline of a typical incident
+### End-to-end telemetry sequence
 
 ```mermaid
 sequenceDiagram
-    participant P as Producer
+    participant Prod as Producer
     participant EH as Event Hub
-    participant F as Function Host
-    participant S as Checkpoint Storage
-    participant AI as App Insights
-    P->>EH: Publish event batches
-    EH->>F: Deliver partition batch
-    F->>F: Execute handler (delay injected)
-    F->>S: Write checkpoint infrequently
-    P->>EH: Continue ingesting events
-    EH->>F: Additional batches queued
-    F->>AI: Emit processing duration metrics
-    AI->>AI: Lag alert condition met
-    F->>S: Checkpoint still behind latest offset
-    AI-->>P: Dashboard shows rising lag and age
+    participant Func as eventhub_lag_processor
+    participant Store as Checkpoint Store
+    participant AI as App Insights / Logs
+
+    Prod->>EH: Send events (199 eps)
+    EH->>Func: Deliver batch
+    Func->>Func: Process batch (delay 0 or 2500)
+    Func->>Store: Checkpoint batchCheckpointFrequency=1
+    Func->>AI: Emit AppRequests + CheckpointDelta traces
+    AI-->>Operator: Duration, backlogAgeSec, batchSize trends
 ```
 
-## 2) Hypothesis
+### Experiment phases used in this run
 
-### Formal statement
-If Event Hub batch processing time is increased beyond sustainable throughput, then checkpoint updates fall behind current partition offsets, causing persistent lag accumulation; tuning batch/prefetch settings and reducing processing time decreases lag and restores checkpoint progression.
+| Phase | Window (UTC) | Delay setting | Batch ID | Input workload |
+|---|---|---|---|---|
+| Baseline | around `13:12`-`13:14` bins | `0 ms` | `a3f41060` | `23,900` events at `199 eps` for `120s` |
+| Incident | around `13:28`-`13:32` bins | `2500 ms` (set at `13:28:29`) | `279cefa2` | `59,750` events at `199 eps` for `300s` |
+| Recovery | `13:34`-`13:35` bins | reset to `0 ms` at `13:34:26` | continued drain | backlog-drain behavior captured |
 
-### Causal chain
-
-```mermaid
-flowchart LR
-    A[Slow batch processing] --> B[Lower events/sec consumed]
-    B --> C[Ingestion outpaces consumption]
-    C --> D[Unprocessed backlog grows]
-    D --> E[Checkpoint update delayed]
-    E --> F[Offset delta increases]
-    F --> G[End-to-end latency rises]
-    G --> H[Operational SLO breach]
-```
-
-### Proof criteria
-
-1. Event processing duration increases immediately after delay injection.
-2. Checkpoint lag metrics increase continuously during incident window.
-3. Ingestion remains steady while consumption falls below ingress rate.
-4. Tuning plus delay removal lowers lag and improves processing duration.
-
-### Disproof criteria
-
-1. Lag does not increase despite higher processing duration.
-2. Ingestion drop alone explains observed lag trend.
-3. Post-fix lag remains unchanged despite restored processing speed.
-
-## 3) Runbook
-
-### Prerequisites
-
-1. Authenticate and set subscription:
-   ```bash
-   az login --output table
-   az account set --subscription <subscription-id>
-   ```
-2. Install Event Hubs extension tools and Functions Core Tools.
-3. Prepare a producer script to generate controlled event bursts.
-4. Ensure Log Analytics query access and App Insights linkage.
-5. Confirm storage account is configured for checkpoint state.
-6. Confirm function uses Event Hub trigger with known consumer group.
-
-### Variables
-
-```bash
-RG="rg-func-lab-eh"
-LOCATION="koreacentral"
-APP_NAME="func-lab-eh-lag"
-PLAN_NAME="plan-func-lab-eh"
-STORAGE_NAME="stfunclabeh001"
-WORKSPACE_NAME="log-func-lab-eh"
-APPINSIGHTS_NAME="appi-func-lab-eh"
-EH_NAMESPACE="eh-func-lab-namespace"
-EH_NAME="eh-func-lab-stream"
-EH_CONSUMER_GROUP="cg-lab"
-SUBSCRIPTION_ID="<subscription-id>"
-```
-
-### Step 1: Deploy baseline infrastructure
-
-```bash
-az group create --name $RG --location $LOCATION --output table
-az storage account create --name $STORAGE_NAME --resource-group $RG --location $LOCATION --sku Standard_LRS --kind StorageV2 --output table
-az eventhubs namespace create --name $EH_NAMESPACE --resource-group $RG --location $LOCATION --sku Standard --output table
-az eventhubs eventhub create --name $EH_NAME --namespace-name $EH_NAMESPACE --resource-group $RG --partition-count 4 --message-retention 1 --output table
-az eventhubs eventhub consumer-group create --name $EH_CONSUMER_GROUP --eventhub-name $EH_NAME --namespace-name $EH_NAMESPACE --resource-group $RG --output table
-az monitor log-analytics workspace create --resource-group $RG --workspace-name $WORKSPACE_NAME --location $LOCATION --output table
-az monitor app-insights component create --app $APPINSIGHTS_NAME --location $LOCATION --resource-group $RG --workspace $WORKSPACE_NAME --application-type web --output table
-az functionapp plan create --name $PLAN_NAME --resource-group $RG --location $LOCATION --sku EP1 --is-linux --output table
-az functionapp create --name $APP_NAME --resource-group $RG --plan $PLAN_NAME --runtime python --runtime-version 3.11 --functions-version 4 --storage-account $STORAGE_NAME --app-insights $APPINSIGHTS_NAME --output table
-```
-
-### Step 2: Deploy function app code
-
-Configure trigger with explicit batch controls in `host.json`:
+### Host configuration used during evidence capture
 
 ```json
 {
-  "version": "2.0",
   "extensions": {
     "eventHubs": {
       "maxBatchSize": 100,
@@ -163,581 +90,738 @@ Configure trigger with explicit batch controls in `host.json`:
 }
 ```
 
-Publish and set incident control settings:
+### Why this lab matters operationally
 
-```bash
-func azure functionapp publish $APP_NAME --python
-az functionapp config appsettings set --name $APP_NAME --resource-group $RG --settings "EventHubConnection__fullyQualifiedNamespace=$EH_NAMESPACE.servicebus.windows.net" "EventHubLab__ArtificialDelayMs=0" "EventHubLab__LogCheckpointDelta=true" --output table
-az functionapp restart --name $APP_NAME --resource-group $RG --output table
+1. Premium plans can still accumulate checkpoint lag when handler latency grows.
+2. Errors are not required for lag incidents; slow success paths are enough.
+3. Recovery can appear mixed for one bin because workers still finish delayed batches.
+4. Request duration plus checkpoint traces give a complete causality chain.
+
+## 2) Hypothesis
+
+> In this EP1 deployment, if `eventhub_lag_processor` delay is increased to `2500 ms` while ingress remains `199 eps`, then request duration and checkpoint backlog age increase in the same time window; when delay is reset to `0 ms`, fast batches appear immediately and backlog begins draining without Event Hub topology changes.
+
+### Proof and disproof criteria
+
+| Criterion | Must be observed | Result |
+|---|---|---|
+| Baseline health | low request duration and near-zero backlog age | Met |
+| Incident inflation | request avg/p95 near delay envelope and backlog age growth | Met |
+| Sustained lag | incident bins maintain high processing and high backlog age | Met |
+| Recovery transition | mixed bin showing both `delayMs=0` and `delayMs=2500` | Met |
+| Recovery drain | fast batches (sub-ms to `303 ms` initially, sub-`50 ms` sustained) with falling backlog age evidence | Met |
+
+### Competing hypotheses
+
+| Competing hypothesis | Expected if true | Observed evidence | Verdict |
+|---|---|---|---|
+| Producer spike alone | backlog rises without processor latency jump | latency jumps to ~2.5s processing bins | Rejected |
+| Partition imbalance only | one partition drifts while others stay healthy | checkpoint traces show broad lag growth and full-batch processing | Rejected |
+| Platform transient only | no deterministic relation to delay toggle | lag growth starts after `13:28:29` and recovery starts after `13:34:26` | Rejected |
+| Handler delay bottleneck | processing and backlog move with delay toggle | exact match in requests and traces | Supported |
+
+### Causal chain
+
+```mermaid
+flowchart LR
+    A[delayMs=0 baseline] --> B[proc ~5-6ms and backlog ~0.1s]
+    B --> C[delayMs=2500 set at 13:28:29]
+    C --> D[request avg rises to ~2559-2566ms]
+    D --> E[checkpoint avg proc ~2521-2524ms]
+    E --> F[avg backlog grows to 63.2s then 105.5s]
+    F --> G[delay reset to 0 at 13:34:26]
+    G --> H[sub-ms to 303ms initially, then sub-50ms sustained]
+    H --> I[backlog drain observed in sequence progression]
 ```
 
-### Step 3: Collect baseline evidence
+## 3) Runbook
 
-Generate light ingestion for 10 minutes, then run:
+### Prerequisites
+
+1. Azure CLI authenticated with subscription context.
+2. Reader access to Log Analytics workspace and App Insights-linked data.
+3. Existing deployment with Event Hub trigger function `eventhub_lag_processor`.
+4. Ability to set app settings and restart function app.
+
+### Variables
+
+Generic placeholders:
+
+```bash
+RG="<resource-group>"
+APP_NAME="<function-app-name>"
+LOCATION="<azure-region>"
+LOG_WORKSPACE_ID="<log-analytics-workspace-id>"
+AI_APP_ID="<app-insights-app-id>"
+EH_NAMESPACE="<eventhub-namespace>"
+EH_NAME="<eventhub-name>"
+EH_CONSUMER_GROUP="<consumer-group>"
+```
+
+Concrete values used for this completed run:
+
+```bash
+RG="rg-lab-ep1-shared"
+APP_NAME="labep1shared-func"
+LOCATION="koreacentral"
+LOG_WORKSPACE_ID="<log-analytics-workspace-id>"  # Sanitized; use your own
+AI_APP_ID="<app-insights-app-id>"  # Sanitized; use your own
+EH_NAMESPACE="labep1shared-ehns"
+EH_NAME="eh-lab-stream"
+EH_CONSUMER_GROUP="cg-lab"
+SUBSCRIPTION_ID="<subscription-id>"
+```
+
+### 3.1 Validate deployment context
+
+```bash
+az functionapp show \
+  --name "$APP_NAME" \
+  --resource-group "$RG" \
+  --output table
+```
+
+```bash
+az eventhubs namespace show \
+  --name "$EH_NAMESPACE" \
+  --resource-group "$RG" \
+  --output table
+```
+
+```bash
+az eventhubs eventhub show \
+  --name "$EH_NAME" \
+  --namespace-name "$EH_NAMESPACE" \
+  --resource-group "$RG" \
+  --output table
+```
+
+### 3.2 Set baseline delay and run baseline batch
+
+```bash
+az functionapp config appsettings set \
+  --name "$APP_NAME" \
+  --resource-group "$RG" \
+  --settings "EventHubLab__ArtificialDelayMs=0" \
+  --output table
+```
+
+```bash
+az functionapp restart \
+  --name "$APP_NAME" \
+  --resource-group "$RG" \
+  --output table
+```
+
+Baseline generator profile used in this evidence set:
+
+| Field | Value |
+|---|---|
+| Batch ID | `a3f41060` |
+| Duration | `120s` |
+| Ingress rate | `199 eps` |
+| Total events | `23,900` |
+
+### 3.3 Trigger incident by setting delay to 2500 ms
+
+```bash
+az functionapp config appsettings set \
+  --name "$APP_NAME" \
+  --resource-group "$RG" \
+  --settings "EventHubLab__ArtificialDelayMs=2500" \
+  --output table
+```
+
+```bash
+az functionapp restart \
+  --name "$APP_NAME" \
+  --resource-group "$RG" \
+  --output table
+```
+
+Incident generator profile used in this evidence set:
+
+| Field | Value |
+|---|---|
+| Delay set timestamp | `2026-04-07 13:28:29 UTC` |
+| Batch ID | `279cefa2` |
+| Duration | `300s` |
+| Ingress rate | `199 eps` |
+| Total events | `59,750` |
+
+### 3.4 Trigger recovery by resetting delay to 0 ms
+
+```bash
+az functionapp config appsettings set \
+  --name "$APP_NAME" \
+  --resource-group "$RG" \
+  --settings "EventHubLab__ArtificialDelayMs=0" \
+  --output table
+```
+
+```bash
+az functionapp restart \
+  --name "$APP_NAME" \
+  --resource-group "$RG" \
+  --output table
+```
+
+Recovery control timestamp:
+
+| Field | Value |
+|---|---|
+| Delay reset timestamp | `2026-04-07 13:34:26 UTC` |
+
+### 3.5 Query conventions used in this lab
+
+!!! note "Application Insights portal KQL conventions"
+    Use `requests` and `traces`, `timestamp`, `cloud_RoleName`, `operation_Name`, `message`, and `toreal(duration / 1ms)`.
+
+!!! note "Azure CLI Log Analytics conventions"
+    Use `AppRequests` and `AppTraces`, `TimeGenerated`, `DurationMs`, `AppRoleName`, `OperationName`, and `Message`, with `--workspace "$LOG_WORKSPACE_ID"`.
+
+### Query A: Request duration timeline in 2-minute bins (three phases)
+
+Application Insights query:
 
 ```kusto
 requests
-| where cloud_RoleName == "func-lab-eh-lag"
-| where name has "EventHub"
-| summarize p50=percentile(duration,50), p95=percentile(duration,95), batches=count() by bin(timestamp, 5m)
+| where timestamp >= datetime(2026-04-07 13:12:00Z) and timestamp < datetime(2026-04-07 13:36:00Z)
+| where cloud_RoleName == "labep1shared-func"
+| where operation_Name has "eventhub_lag_processor"
+| summarize
+    executions = count(),
+    avg_ms = round(avg(toreal(duration / 1ms)), 1),
+    p95_ms = round(percentile(toreal(duration / 1ms), 95), 1),
+    max_ms = round(max(toreal(duration / 1ms)), 1),
+    min_ms = round(min(toreal(duration / 1ms)), 1)
+  by bin(timestamp, 2m)
 | order by timestamp asc
 ```
 
-```kusto
-traces
-| where cloud_RoleName == "func-lab-eh-lag"
-| where message has "CheckpointDelta"
-| extend lag=todouble(customDimensions["CheckpointLagEvents"]), partition=tostring(customDimensions["PartitionId"])
-| summarize avgLag=avg(lag), p95Lag=percentile(lag,95) by partition, bin(timestamp, 5m)
-| order by timestamp asc
-```
+Expected output from this run:
 
-Expected output:
-
-```text
-partition timestamp              avgLag p95Lag
-0         2026-04-05T05:00:00Z   90     140
-1         2026-04-05T05:00:00Z   75     120
-2         2026-04-05T05:00:00Z   82     135
-3         2026-04-05T05:00:00Z   88     145
-```
-
-```kusto
-AppMetrics
-| where AppRoleName == "func-lab-eh-lag"
-| where Name in ("eventhub_checkpoint_lag_events","eventhub_backlog_age_seconds","eventhub_events_processed_per_sec")
-| summarize avgValue=avg(Val), maxValue=max(Val) by Name, bin(TimeGenerated, 5m)
-| order by TimeGenerated asc
-```
-
-### Step 4: Trigger the incident
-
-Inject processing delay and increase producer rate.
-
-```bash
-az functionapp config appsettings set --name $APP_NAME --resource-group $RG --settings "EventHubLab__ArtificialDelayMs=2500" --output table
-az functionapp restart --name $APP_NAME --resource-group $RG --output table
-```
-
-Produce sustained load (example producer command):
-
-```bash
-python producer.py --namespace $EH_NAMESPACE --eventhub $EH_NAME --events-per-second 1200 --duration-seconds 900 --output json
-```
-
-### Step 5: Collect incident evidence
-
-```kusto
-traces
-| where cloud_RoleName == "func-lab-eh-lag"
-| where message has "CheckpointDelta"
-| extend partition=tostring(customDimensions["PartitionId"]), lag=todouble(customDimensions["CheckpointLagEvents"]), ageSec=todouble(customDimensions["BacklogAgeSeconds"])
-| summarize p95Lag=percentile(lag,95), maxLag=max(lag), p95Age=percentile(ageSec,95) by partition, bin(timestamp, 5m)
-| order by timestamp asc
-```
-
-Expected output:
-
-```text
-partition timestamp              p95Lag maxLag p95Age
-0         2026-04-05T05:25:00Z   9200   11800  260
-1         2026-04-05T05:25:00Z   8700   11200  240
-2         2026-04-05T05:25:00Z   10100  12900  290
-3         2026-04-05T05:25:00Z   9400   12100  270
-```
-
-```kusto
-requests
-| where cloud_RoleName == "func-lab-eh-lag"
-| where name has "EventHub"
-| summarize p95=percentile(duration,95), rps=count()/300.0 by bin(timestamp, 5m)
-| order by timestamp asc
-```
-
-```kusto
-dependencies
-| where cloud_RoleName == "func-lab-eh-lag"
-| summarize depP95=percentile(duration,95), failures=countif(success == false) by target, bin(timestamp, 5m)
-| order by timestamp asc
-```
-
-```kusto
-FunctionAppLogs
-| where AppName == "func-lab-eh-lag"
-| where Message has_any ("batch completed", "checkpoint", "partition")
-| project TimeGenerated, Message
-| order by TimeGenerated asc
-```
-
-### Step 6: Interpret results
-
-- [ ] Processing duration p95 rises after delay injection.
-- [ ] Checkpoint lag and backlog age show sustained upward trend.
-- [ ] Ingestion remains high while consumption rate drops.
-- [ ] Dependency failures do not primarily explain lag growth.
-- [ ] Partition-level lag indicates consistent backlog accumulation.
+| Time bin (UTC) | Executions | Avg (ms) | p95 (ms) | Max (ms) | Min (ms) | Phase note |
+|---|---:|---:|---:|---:|---:|---|
+| 13:12 | 30 | 43.3 | 131.7 | 214.0 | 26.6 | Baseline warm-up |
+| 13:14 | 448 | 30.9 | 43.7 | 141.8 | 25.1 | Baseline steady |
+| 13:28 | 146 | 1187.1 | 2586.4 | 2723.0 | 25.0 | Transition (`delay=0` + `delay=2500`) |
+| 13:30 | 136 | 2559.5 | 2586.6 | 2632.7 | 2527.0 | Full incident |
+| 13:32 | 187 | 2565.7 | 2600.6 | 2699.0 | 2550.7 | Sustained incident |
+| 13:34 | 178 | 1394.4 | 2684.7 | 2796.8 | 14.6 | Mixed recovery (2-minute view) |
 
 !!! tip "How to Read This"
-    Lag is a rate mismatch signal. Validate both sides: ingress pressure and consumer throughput. A temporary spike can self-heal; persistent lag increase across multiple bins indicates structural under-consumption that requires tuning or scaling.
+    The key checkpoint-lag signature is not only high average duration; it is a sustained plateau around the injected delay envelope (`~2.5s`) combined with backlog-age growth in Query B.
 
-### Triage decision
+CLI variant using Log Analytics:
+
+```bash
+az monitor log-analytics query \
+  --workspace "$LOG_WORKSPACE_ID" \
+  --analytics-query "AppRequests | where TimeGenerated >= datetime(2026-04-07 13:12:00Z) and TimeGenerated < datetime(2026-04-07 13:36:00Z) | where AppRoleName == 'labep1shared-func' | where OperationName has 'eventhub_lag_processor' | summarize executions = count(), avg_ms = round(avg(DurationMs), 1), p95_ms = round(percentile(DurationMs, 95), 1), max_ms = round(max(DurationMs), 1), min_ms = round(min(DurationMs), 1) by bin(TimeGenerated, 2m) | order by TimeGenerated asc" \
+  --output table
+```
+
+### Query B: Checkpoint trace metrics in 2-minute bins
+
+Application Insights query:
+
+```kusto
+traces
+| where timestamp >= datetime(2026-04-07 13:12:00Z) and timestamp < datetime(2026-04-07 13:36:00Z)
+| where cloud_RoleName == "labep1shared-func"
+| where message has "CheckpointDelta"
+| parse message with * "batchSize=" batchSize:int * "backlogAgeSec=" backlogAgeSec:real " processingMs=" processingMs:real " delayMs=" delayMs:real
+| summarize
+    batches = count(),
+    avg_backlog_sec = round(avg(backlogAgeSec), 1),
+    max_backlog_sec = round(max(backlogAgeSec), 1),
+    avg_processing_ms = round(avg(processingMs), 1),
+    avg_batch_size = round(avg(toreal(batchSize)), 1),
+    min_delay_ms = min(delayMs),
+    max_delay_ms = max(delayMs)
+  by bin(timestamp, 2m)
+| order by timestamp asc
+```
+
+Expected output from this run:
+
+| Time bin (UTC) | Batches | Avg backlog (s) | Max backlog (s) | Avg proc (ms) | Avg batch size | Min delay | Max delay | Phase note |
+|---|---:|---:|---:|---:|---:|---:|---:|---|
+| 13:12 | 30 | 0.1 | 0.2 | 6.1 | 50.0 | 0 | 0 | Baseline |
+| 13:14 | 448 | 0.1 | 0.1 | 5.5 | 50.0 | 0 | 0 | Baseline |
+| 13:28 | 144 | 5.5 | 21.0 | 1127.5 | 71.5 | 0 | 2500 | Transition |
+| 13:30 | 134 | 63.2 | 138.0 | 2520.8 | 99.5 | 2500 | 2500 | Full incident |
+| 13:32 | 187 | 105.5 | 164.3 | 2524.4 | 100.0 | 2500 | 2500 | Sustained incident |
+| 13:34 | 182 | 133.3 | 179.6 | 1343.5 | 98.7 | 0 | 2500 | Mixed recovery |
+
+!!! tip "How to Read This"
+    `avg_processing_ms` tracks the configured delay, while `avg_backlog_sec` shows the operational consequence. The `13:34` bin shows both delay values, proving overlapping worker states during recovery.
+
+CLI variant using Log Analytics:
+
+```bash
+az monitor log-analytics query \
+  --workspace "$LOG_WORKSPACE_ID" \
+  --analytics-query "AppTraces | where TimeGenerated >= datetime(2026-04-07 13:12:00Z) and TimeGenerated < datetime(2026-04-07 13:36:00Z) | where AppRoleName == 'labep1shared-func' | where Message has 'CheckpointDelta' | parse Message with * 'batchSize=' batchSize:int * 'backlogAgeSec=' backlogAgeSec:real ' processingMs=' processingMs:real ' delayMs=' delayMs:real | summarize batches = count(), avg_backlog_sec = round(avg(backlogAgeSec), 1), max_backlog_sec = round(max(backlogAgeSec), 1), avg_processing_ms = round(avg(processingMs), 1), avg_batch_size = round(avg(toreal(batchSize)), 1), min_delay_ms = min(delayMs), max_delay_ms = max(delayMs) by bin(TimeGenerated, 2m) | order by TimeGenerated asc" \
+  --output table
+```
+
+### Query C: Per-instance and per-partition detail during incident
+
+Application Insights query:
+
+```kusto
+traces
+| where timestamp >= datetime(2026-04-07 13:28:00Z) and timestamp < datetime(2026-04-07 13:34:00Z)
+| where cloud_RoleName == "labep1shared-func"
+| where message has "CheckpointDelta"
+| parse message with * "partition=" partition:string " batchSize=" batchSize:int " seqRange=[" seqStart:long "-" seqEnd:long "] backlogAgeSec=" backlogAgeSec:real " processingMs=" processingMs:real " delayMs=" delayMs:real
+| summarize
+    samples = count(),
+    avg_backlog_sec = round(avg(backlogAgeSec), 1),
+    max_backlog_sec = round(max(backlogAgeSec), 1),
+    avg_processing_ms = round(avg(processingMs), 1),
+    avg_batch_size = round(avg(toreal(batchSize)), 1)
+  by cloud_RoleInstance, partition
+| order by max_backlog_sec desc
+```
+
+Expected query output from this run:
+
+| AppRoleInstance (truncated) | Partition | Samples | Avg backlog (s) | Max backlog (s) | Avg proc (ms) | Avg batch size |
+|---|---|---:|---:|---:|---:|---:|
+| `7b30e8...` | `unknown` | 465 | 62.4 | 164.3 | 2090.8 | 91.0 |
+
+!!! tip "How to Read This"
+    This aggregate view shows one instance processed all `465` incident batches, with partition reported as `unknown` (expected in this Python v2 single-worker telemetry shape). This confirms the incident behavior is consistently represented in one worker path.
+
+**Sample trace line (manual inspection):**
+
+```text
+CheckpointDelta partition=unknown batchSize=100 seqRange=[11900-11999] backlogAgeSec=34.7 processingMs=2519.4 delayMs=2500
+```
+
+CLI variant using Log Analytics:
+
+```bash
+az monitor log-analytics query \
+  --workspace "$LOG_WORKSPACE_ID" \
+  --analytics-query "AppTraces | where TimeGenerated >= datetime(2026-04-07 13:28:00Z) and TimeGenerated < datetime(2026-04-07 13:34:00Z) | where AppRoleName == 'labep1shared-func' | where Message has 'CheckpointDelta' | parse Message with * 'partition=' partition:string ' batchSize=' batchSize:int ' seqRange=[' seqStart:long '-' seqEnd:long '] backlogAgeSec=' backlogAgeSec:real ' processingMs=' processingMs:real ' delayMs=' delayMs:real | summarize samples = count(), avg_backlog_sec = round(avg(backlogAgeSec), 1), max_backlog_sec = round(max(backlogAgeSec), 1), avg_processing_ms = round(avg(processingMs), 1), avg_batch_size = round(avg(toreal(batchSize)), 1) by AppRoleInstance, partition | order by max_backlog_sec desc" \
+  --output table
+```
+
+### Query D: Recovery drain evidence (delayed vs recovered batches)
+
+Application Insights query:
+
+```kusto
+traces
+| where timestamp >= datetime(2026-04-07 13:35:00Z) and timestamp < datetime(2026-04-07 13:36:00Z)
+| where cloud_RoleName == "labep1shared-func"
+| where message has "CheckpointDelta"
+| parse message with * "batchSize=" batchSize:int * "seqRange=[" seqStart:long "-" seqEnd:long "] backlogAgeSec=" backlogAgeSec:real " processingMs=" processingMs:real " delayMs=" delayMs:real
+| project timestamp, seqStart, seqEnd, batchSize, backlogAgeSec, processingMs, delayMs, message
+| order by timestamp asc
+```
+
+Expected recovery drain evidence at `13:35:06`:
+
+| Evidence type | Sequence range | Batch size | backlogAgeSec | processingMs | delayMs |
+|---|---|---:|---:|---:|---:|
+| Last delayed batch | `[16850-16949]` | 100 | 177.3 | 2545.5 | 2500 |
+| First recovered batch | `[16650-16749]` | 100 | 175.6 | 303.1 | 0 |
+| Final partial batch (drain endpoint) | `[20887-20899]` | 13 | 97.6 | 0.8 | 0 |
+
+!!! tip "How to Read This"
+    Recovery is shown by `delayMs=0` reappearing with sharply lower `processingMs` (from `~2545 ms` to `~303 ms` initially, then sub-`50 ms` sustained) and later decreasing `backlogAgeSec`. Since `partition=unknown`, these samples prove mixed delayed and recovered batches coexist, not ordered sequence drain.
+
+CLI variant using Log Analytics:
+
+```bash
+az monitor log-analytics query \
+  --workspace "$LOG_WORKSPACE_ID" \
+  --analytics-query "AppTraces | where TimeGenerated >= datetime(2026-04-07 13:35:00Z) and TimeGenerated < datetime(2026-04-07 13:36:00Z) | where AppRoleName == 'labep1shared-func' | where Message has 'CheckpointDelta' | parse Message with * 'batchSize=' batchSize:int * 'seqRange=[' seqStart:long '-' seqEnd:long '] backlogAgeSec=' backlogAgeSec:real ' processingMs=' processingMs:real ' delayMs=' delayMs:real | project TimeGenerated, seqStart, seqEnd, batchSize, backlogAgeSec, processingMs, delayMs, Message | order by TimeGenerated asc" \
+  --output table
+```
+
+### Query E: Batch completed logs during incident
+
+Application Insights query:
+
+```kusto
+traces
+| where timestamp >= datetime(2026-04-07 13:28:00Z) and timestamp < datetime(2026-04-07 13:34:00Z)
+| where cloud_RoleName == "labep1shared-func"
+| where message has "CheckpointDelta"
+| parse message with * "batchSize=" batchSize:int * "backlogAgeSec=" backlogAgeSec:real " processingMs=" processingMs:real " delayMs=" delayMs:real
+| summarize
+    batch_logs = count(),
+    avg_processing_ms = round(avg(processingMs), 1),
+    p95_processing_ms = round(percentile(processingMs, 95), 1),
+    max_processing_ms = round(max(processingMs), 1),
+    avg_backlog_sec = round(avg(backlogAgeSec), 1),
+    max_backlog_sec = round(max(backlogAgeSec), 1)
+  by bin(timestamp, 2m)
+| order by timestamp asc
+```
+
+Expected incident summary output:
+
+| Time bin (UTC) | batch_logs | Avg processing (ms) | p95 processing (ms) | Max processing (ms) | Avg backlog (s) | Max backlog (s) | Delay profile |
+|---|---:|---:|---:|---:|---:|---:|---|
+| 13:28 | 144 | 1127.5 | 2534.3 | 2555.0 | 5.5 | 21.0 | mixed (`0` and `2500`) |
+| 13:30 | 134 | 2520.8 | 2539.3 | 2555.1 | 63.2 | 138.0 | full `2500` |
+| 13:32 | 187 | 2524.4 | 2560.3 | 2581.4 | 105.5 | 164.3 | full `2500` |
+
+!!! tip "How to Read This"
+    Use this query for incident-only concentration with explicit 2-minute bins. Query B provides phase-wide checkpoint context; Query E highlights incident-bin processing shape.
+
+CLI variant using Log Analytics:
+
+```bash
+az monitor log-analytics query \
+  --workspace "$LOG_WORKSPACE_ID" \
+  --analytics-query "AppTraces | where TimeGenerated >= datetime(2026-04-07 13:28:00Z) and TimeGenerated < datetime(2026-04-07 13:34:00Z) | where AppRoleName == 'labep1shared-func' | where Message has 'CheckpointDelta' | parse Message with * 'batchSize=' batchSize:int * 'backlogAgeSec=' backlogAgeSec:real ' processingMs=' processingMs:real ' delayMs=' delayMs:real | summarize batch_logs = count(), avg_processing_ms = round(avg(processingMs), 1), p95_processing_ms = round(percentile(processingMs, 95), 1), max_processing_ms = round(max(processingMs), 1), avg_backlog_sec = round(avg(backlogAgeSec), 1), max_backlog_sec = round(max(backlogAgeSec), 1) by bin(TimeGenerated, 2m) | order by TimeGenerated asc" \
+  --output table
+```
+
+### Query F: Aggregate summary across all phases
+
+Application Insights query:
+
+```kusto
+let req = requests
+| where timestamp >= datetime(2026-04-07 13:12:00Z) and timestamp < datetime(2026-04-07 13:36:00Z)
+| where cloud_RoleName == "labep1shared-func"
+| where operation_Name has "eventhub_lag_processor"
+| extend phase = case(
+    timestamp >= datetime(2026-04-07 13:12:00Z) and timestamp < datetime(2026-04-07 13:16:00Z), "Baseline",
+    timestamp >= datetime(2026-04-07 13:28:00Z) and timestamp < datetime(2026-04-07 13:34:00Z), "Incident",
+    timestamp >= datetime(2026-04-07 13:34:00Z) and timestamp < datetime(2026-04-07 13:36:00Z), "Recovery",
+    "Other")
+| where phase != "Other"
+| summarize
+    req_executions = count(),
+    req_avg_ms = round(avg(toreal(duration / 1ms)), 1),
+    req_p95_ms = round(percentile(toreal(duration / 1ms), 95), 1),
+    req_max_ms = round(max(toreal(duration / 1ms)), 1)
+  by phase;
+let chk = traces
+| where timestamp >= datetime(2026-04-07 13:12:00Z) and timestamp < datetime(2026-04-07 13:36:00Z)
+| where cloud_RoleName == "labep1shared-func"
+| where message has "CheckpointDelta"
+| parse message with * "backlogAgeSec=" backlogAgeSec:real " processingMs=" processingMs:real " delayMs=" delayMs:real
+| extend phase = case(
+    timestamp >= datetime(2026-04-07 13:12:00Z) and timestamp < datetime(2026-04-07 13:16:00Z), "Baseline",
+    timestamp >= datetime(2026-04-07 13:28:00Z) and timestamp < datetime(2026-04-07 13:34:00Z), "Incident",
+    timestamp >= datetime(2026-04-07 13:34:00Z) and timestamp < datetime(2026-04-07 13:36:00Z), "Recovery",
+    "Other")
+| where phase != "Other"
+| summarize
+    chk_batches = count(),
+    chk_avg_backlog_sec = round(avg(backlogAgeSec), 1),
+    chk_max_backlog_sec = round(max(backlogAgeSec), 1),
+    chk_avg_processing_ms = round(avg(processingMs), 1),
+    chk_min_delay_ms = min(delayMs),
+    chk_max_delay_ms = max(delayMs)
+  by phase;
+req
+| join kind=inner chk on phase
+| project phase, req_executions, req_avg_ms, req_p95_ms, req_max_ms, chk_batches, chk_avg_backlog_sec, chk_max_backlog_sec, chk_avg_processing_ms, chk_min_delay_ms, chk_max_delay_ms
+| order by phase asc
+```
+
+Expected output summary from this run:
+
+| Phase | req_executions | req_avg_ms | req_p95_ms | req_max_ms | chk_batches | chk_avg_backlog_sec | chk_max_backlog_sec | chk_avg_processing_ms | chk_min_delay_ms | chk_max_delay_ms |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| Baseline | 478 | 31.7 | 48.0 | 214.0 | 478 | 0.1 | 0.2 | 5.5 | 0 | 0 |
+| Incident | 469 | 2134.7 | 2595.1 | 2723.0 | 465 | 62.4 | 164.3 | 2090.8 | 0 | 2500 |
+| Recovery | 178 | 1394.4 | 2684.7 | 2796.8 | 182 | 133.3 | 179.6 | 1343.5 | 0 | 2500 |
+
+!!! tip "How to Read This"
+    Query F is the evidence rollup used for incident postmortem. It preserves phase boundaries and shows why recovery is mixed at first: delayed and non-delayed workers overlap in the same 2-minute bin.
+
+CLI variant using Log Analytics:
+
+```bash
+az monitor log-analytics query \
+  --workspace "$LOG_WORKSPACE_ID" \
+  --analytics-query "let req = AppRequests | where TimeGenerated >= datetime(2026-04-07 13:12:00Z) and TimeGenerated < datetime(2026-04-07 13:36:00Z) | where AppRoleName == 'labep1shared-func' | where OperationName has 'eventhub_lag_processor' | extend phase = case(TimeGenerated >= datetime(2026-04-07 13:12:00Z) and TimeGenerated < datetime(2026-04-07 13:16:00Z), 'Baseline', TimeGenerated >= datetime(2026-04-07 13:28:00Z) and TimeGenerated < datetime(2026-04-07 13:34:00Z), 'Incident', TimeGenerated >= datetime(2026-04-07 13:34:00Z) and TimeGenerated < datetime(2026-04-07 13:36:00Z), 'Recovery', 'Other') | where phase != 'Other' | summarize req_executions = count(), req_avg_ms = round(avg(DurationMs), 1), req_p95_ms = round(percentile(DurationMs, 95), 1), req_max_ms = round(max(DurationMs), 1) by phase; let chk = AppTraces | where TimeGenerated >= datetime(2026-04-07 13:12:00Z) and TimeGenerated < datetime(2026-04-07 13:36:00Z) | where AppRoleName == 'labep1shared-func' | where Message has 'CheckpointDelta' | parse Message with * 'backlogAgeSec=' backlogAgeSec:real ' processingMs=' processingMs:real ' delayMs=' delayMs:real | extend phase = case(TimeGenerated >= datetime(2026-04-07 13:12:00Z) and TimeGenerated < datetime(2026-04-07 13:16:00Z), 'Baseline', TimeGenerated >= datetime(2026-04-07 13:28:00Z) and TimeGenerated < datetime(2026-04-07 13:34:00Z), 'Incident', TimeGenerated >= datetime(2026-04-07 13:34:00Z) and TimeGenerated < datetime(2026-04-07 13:36:00Z), 'Recovery', 'Other') | where phase != 'Other' | summarize chk_batches = count(), chk_avg_backlog_sec = round(avg(backlogAgeSec), 1), chk_max_backlog_sec = round(max(backlogAgeSec), 1), chk_avg_processing_ms = round(avg(processingMs), 1), chk_min_delay_ms = min(delayMs), chk_max_delay_ms = max(delayMs) by phase; req | join kind=inner chk on phase | project phase, req_executions, req_avg_ms, req_p95_ms, req_max_ms, chk_batches, chk_avg_backlog_sec, chk_max_backlog_sec, chk_avg_processing_ms, chk_min_delay_ms, chk_max_delay_ms | order by phase asc" \
+  --output table
+```
+
+### Query G: 1-minute recovery bins
+
+Application Insights query:
+
+```kusto
+requests
+| where timestamp >= datetime(2026-04-07 13:34:00Z) and timestamp < datetime(2026-04-07 13:36:00Z)
+| where cloud_RoleName == "labep1shared-func"
+| where operation_Name has "eventhub_lag_processor"
+| summarize
+    executions = count(),
+    avg_ms = round(avg(toreal(duration / 1ms)), 1),
+    p95_ms = round(percentile(toreal(duration / 1ms), 95), 1),
+    max_ms = round(max(toreal(duration / 1ms)), 1),
+    min_ms = round(min(toreal(duration / 1ms)), 1)
+  by bin(timestamp, 1m)
+| order by timestamp asc
+```
+
+Expected output from this run:
+
+| Time bin (UTC) | Executions | Avg (ms) | p95 (ms) | Max (ms) | Min (ms) | Phase note |
+|---|---:|---:|---:|---:|---:|---|
+| 13:34 | 89 | 2542.3 | 2688.5 | 2764.3 | 599.7 | Delayed work still draining |
+| 13:35 | 89 | 246.5 | 447.4 | 2796.8 | 14.6 | Rapid drain with tail overlap |
+
+!!! tip "How to Read This"
+    The 1-minute view splits the mixed 2-minute recovery bin from Query A. At `13:34`, most executions are still delayed. By `13:35`, avg drops to `246.5 ms`, confirming the majority of work is fast-path, with the max of `2796.8 ms` from tail delayed batches still completing.
+
+CLI variant using Log Analytics:
+
+```bash
+az monitor log-analytics query \
+  --workspace "$LOG_WORKSPACE_ID" \
+  --analytics-query "AppRequests | where TimeGenerated >= datetime(2026-04-07 13:34:00Z) and TimeGenerated < datetime(2026-04-07 13:36:00Z) | where AppRoleName == 'labep1shared-func' | where OperationName has 'eventhub_lag_processor' | summarize executions = count(), avg_ms = round(avg(DurationMs), 1), p95_ms = round(percentile(DurationMs, 95), 1), max_ms = round(max(DurationMs), 1), min_ms = round(min(DurationMs), 1) by bin(TimeGenerated, 1m) | order by TimeGenerated asc" \
+  --output table
+```
+
+### 3.6 Triage decision flow used during live response
 
 ```mermaid
 flowchart TD
-    A[Lag alert fires] --> B{Processing duration elevated?}
-    B -- No --> C[Check producer surge and partition skew]
-    B -- Yes --> D{Dependency latency dominant?}
-    D -- Yes --> E[Fix downstream bottleneck]
-    D -- No --> F{Batch settings too aggressive?}
-    F -- Yes --> G[Tune maxBatchSize and prefetchCount]
-    F -- No --> H[Scale out / optimize handler code]
-    G --> I[Recheck lag trend]
+    A[Checkpoint lag alert] --> B{Request duration rising?}
+    B -->|No| C[Inspect producer anomaly and partition ownership]
+    B -->|Yes| D{Checkpoint backlog age rising too?}
+    D -->|No| E[Inspect parsing/log completeness]
+    D -->|Yes| F{Was delay or heavy logic changed?}
+    F -->|Yes| G[Rollback delay or optimize handler]
+    F -->|No| H[Investigate dependencies and retries]
+    G --> I[Confirm mixed recovery bin then drain progression]
     H --> I
-```
-
-### Step 7: Apply fix and verify recovery
-
-Tune runtime settings and reduce artificial delay.
-
-```bash
-az functionapp config appsettings set --name $APP_NAME --resource-group $RG --settings "EventHubLab__ArtificialDelayMs=200" --output table
-func azure functionapp publish $APP_NAME --python
-az functionapp restart --name $APP_NAME --resource-group $RG --output table
-```
-
-Use updated `host.json` tuning:
-
-```json
-{
-  "version": "2.0",
-  "extensions": {
-    "eventHubs": {
-      "maxBatchSize": 64,
-      "prefetchCount": 128,
-      "batchCheckpointFrequency": 1
-    }
-  }
-}
-```
-
-Verification KQL:
-
-```kusto
-AppMetrics
-| where AppRoleName == "func-lab-eh-lag"
-| where Name in ("eventhub_checkpoint_lag_events","eventhub_backlog_age_seconds","eventhub_events_processed_per_sec")
-| summarize p95=percentile(Val,95), avgValue=avg(Val) by Name, bin(TimeGenerated, 5m)
-| order by TimeGenerated asc
-```
-
-```kusto
-traces
-| where cloud_RoleName == "func-lab-eh-lag"
-| where message has "CheckpointDelta"
-| extend lag=todouble(customDimensions["CheckpointLagEvents"])
-| summarize p95Lag=percentile(lag,95), maxLag=max(lag) by bin(timestamp, 5m)
-| order by timestamp asc
-```
-
-### Clean up
-
-```bash
-az group delete --name $RG --yes --no-wait
 ```
 
 ## 4) Experiment Log
 
-### Artifact inventory
+### 4.1 Execution ledger
 
-| Artifact | Location | Purpose |
-|---|---|---|
-| Batch processing traces | `traces` table | Per-partition lag and backlog age insights |
-| Invocation performance | `requests` table | Handler duration and throughput trend |
-| External dependency timing | `dependencies` table | Rule out downstream-dominant causes |
-| Runtime checkpoint logs | `FunctionAppLogs` table | Confirm checkpoint write cadence |
-| Streaming lag metrics | `AppMetrics` table | Quantified lag and processing recovery |
-| Lab notes | `docs/troubleshooting/lab-guides/event-hub-checkpoint-lag.md` | Reproducible evidence trail |
+| Step | UTC timestamp | Action | Evidence marker |
+|---|---|---|---|
+| 1 | 13:12-13:14 bins | Baseline run (`delay=0`) | `a3f41060`, low durations, near-zero backlog |
+| 2 | 13:28:29 | Delay set to `2500 ms` | transition starts in `13:28` bin |
+| 3 | 13:30-13:32 bins | Incident fully active | `~2.5s` processing and backlog growth |
+| 4 | 13:34:26 | Delay reset to `0 ms` | mixed recovery starts |
+| 5 | 13:35:06 | Drain detail captured | last delayed + recovered + final batch evidence |
 
-### Baseline evidence
+### 4.2 Request telemetry by phase
 
-| Time (UTC) | Processing p95 (ms) | Lag p95 (events) | Backlog age p95 (s) | Processed events/s |
-|---|---:|---:|---:|---:|
-| 05:00 | 420 | 140 | 12 | 1090 |
-| 05:05 | 450 | 150 | 14 | 1110 |
-| 05:10 | 470 | 165 | 15 | 1085 |
-| 05:15 | 490 | 180 | 16 | 1102 |
-| 05:20 | 520 | 210 | 19 | 1078 |
+2-minute bins:
 
-### Incident observations
+| Phase | Time bin | Executions | Avg (ms) | p95 (ms) | Max (ms) |
+|---|---|---:|---:|---:|---:|
+| Baseline | 13:12 | 30 | 43.3 | 131.7 | 214.0 |
+| Baseline | 13:14 | 448 | 30.9 | 43.7 | 141.8 |
+| Incident transition | 13:28 | 146 | 1187.1 | 2586.4 | 2723.0 |
+| Incident full | 13:30 | 136 | 2559.5 | 2586.6 | 2632.7 |
+| Incident sustained | 13:32 | 187 | 2565.7 | 2600.6 | 2699.0 |
+| Recovery mixed | 13:34 | 178 | 1394.4 | 2684.7 | 2796.8 |
 
-| Time (UTC) | Processing p95 (ms) | Lag p95 (events) | Backlog age p95 (s) | Processed events/s |
-|---|---:|---:|---:|---:|
-| 05:25 | 3800 | 9400 | 270 | 420 |
-| 05:30 | 4200 | 12100 | 320 | 390 |
-| 05:35 | 4700 | 14900 | 390 | 360 |
-| 05:40 | 5200 | 17100 | 460 | 330 |
-| 05:45 | 5600 | 19500 | 520 | 300 |
+1-minute recovery lens (from Query G):
 
-### Core finding
+| Time bin (UTC) | Executions | Avg (ms) | p95 (ms) | Min (ms) | Max (ms) | Interpretation |
+|---|---:|---:|---:|---:|---:|---|
+| 13:34 | 89 | 2542.3 | 2688.5 | 599.7 | 2764.3 | delayed work still draining |
+| 13:35 | 89 | 246.5 | 447.4 | 14.6 | 2796.8 | rapid drain with tail overlap |
 
-Lag growth tracks the injected processing delay and consumption-rate drop. Ingestion remains high while batch completion slows, so checkpoint updates cannot keep pace with latest partition offsets. This confirms a sustained throughput mismatch as the principal mechanism.
+### 4.3 Checkpoint telemetry by phase
 
-After tuning `maxBatchSize` and `prefetchCount` and reducing artificial delay, processing duration decreases and checkpoint lag trends downward across all partitions. Recovery occurs without changing producer behavior, strengthening causality.
+| Phase | Time bin | Batches | Avg backlog (s) | Max backlog (s) | Avg processing (ms) | Avg batch size | Delay range |
+|---|---|---:|---:|---:|---:|---:|---|
+| Baseline | 13:12 | 30 | 0.1 | 0.2 | 6.1 | 50.0 | `0-0` |
+| Baseline | 13:14 | 448 | 0.1 | 0.1 | 5.5 | 50.0 | `0-0` |
+| Incident transition | 13:28 | 144 | 5.5 | 21.0 | 1127.5 | 71.5 | `0-2500` |
+| Incident full | 13:30 | 134 | 63.2 | 138.0 | 2520.8 | 99.5 | `2500-2500` |
+| Incident sustained | 13:32 | 187 | 105.5 | 164.3 | 2524.4 | 100 | `2500-2500` |
+| Recovery mixed | 13:34 | 182 | 133.3 | 179.6 | 1343.5 | 98.7 | `0-2500` |
 
-### Verdict
+### 4.4 Recovery drain evidence (selected trace samples at `13:35:06`)
 
-| Question | Answer |
+| Sequence evidence | Values |
 |---|---|
-| Hypothesis confirmed? | Yes |
-| Root cause | Processing throughput below ingress rate caused checkpoint lag accumulation |
-| Time to detect | ~12 minutes after delay injection |
-| Recovery method | Reduce per-batch processing cost and tune Event Hub extension settings |
+| Last delayed batch | `seqRange=[16850-16949]`, `backlogAgeSec=177.3`, `processingMs=2545.5`, `delayMs=2500` |
+| First recovered batch | `seqRange=[16650-16749]`, `backlogAgeSec=175.6`, `processingMs=303.1`, `delayMs=0` |
+| Final partial batch | `seqRange=[20887-20899]`, `batchSize=13`, `backlogAgeSec=97.6`, `processingMs=0.8` |
+
+### 4.5 Phase summary matrix
+
+| Dimension | Baseline | Incident | Recovery |
+|---|---|---|---|
+| Delay control | `0` | `2500` | `0` |
+| Request avg duration | `30.9-43.3 ms` | `1187.1-2565.7 ms` | mixed to `246.5 ms` (1-minute drain bin) |
+| Checkpoint avg processing | `5.5-6.1 ms` | `1127.5-2524.4 ms` | mixed `1343.5 ms` then fast batches |
+| Checkpoint avg backlog | `0.1 s` | `5.5 -> 63.2 -> 105.5 s` | high but draining evidence present |
+| Batch size pattern | `50` | `71.5 -> 99.5 -> 100` | mixed with final partial batch of `13` |
+
+### 4.6 Batch-completion evidence snippets
+
+Incident sample (`delay=2500` envelope):
+
+```text
+CheckpointDelta partition=unknown batchSize=100 seqRange=[11900-11999] backlogAgeSec=34.7 processingMs=2519.4 delayMs=2500
+```
+
+Recovery drain snippets:
+
+```text
+... seqRange=[16850-16949] backlogAgeSec=177.3 processingMs=2545.5 delayMs=2500
+... seqRange=[16650-16749] backlogAgeSec=175.6 processingMs=303.1 delayMs=0
+... seqRange=[20887-20899] batchSize=13 backlogAgeSec=97.6 processingMs=0.8 delayMs=0
+```
+
+### 4.7 Operational interpretation
+
+1. `13:28` transition confirms the toggle effect starts inside the same bin.
+2. `13:30` and `13:32` are clean incident bins with full-delay behavior.
+3. `13:34` is a mixed recovery bin; both delays are present by design.
+4. `13:35` one-minute bin demonstrates practical recovery for most batches.
+5. Residual high max duration in recovery is expected tail from in-flight delayed work.
 
 ## Expected Evidence
 
-### Before trigger (baseline)
+### Before Trigger (Baseline)
 
-| Signal | Expected Value |
+| Signal | Expected value from this run |
 |---|---|
-| Processing duration p95 | < 1 second |
-| Checkpoint lag p95 | < 500 events |
-| Backlog age p95 | < 30 seconds |
-| Processed events per second | Near producer rate |
-| Partition lag spread | Low variance |
+| Delay | `0 ms` |
+| Request duration bins | `43.3 ms` avg at `13:12`, `30.9 ms` avg at `13:14` |
+| Request p95 bins | `131.7 ms` and `43.7 ms` |
+| Checkpoint backlog age | avg `0.1 s`, max `0.1-0.2 s` |
+| Checkpoint processing | avg `5.5-6.1 ms` |
+| Batch size | avg `50.0` |
 
-### During incident
+### During Incident
 
-| Signal | Expected Value |
+| Signal | Expected value from this run |
 |---|---|
-| Processing duration p95 | > 3 seconds |
-| Checkpoint lag p95 | > 5000 events and rising |
-| Backlog age p95 | > 180 seconds |
-| Processed events per second | Significantly below producer rate |
-| Partition lag spread | Moderate to high |
+| Delay change time | `13:28:29 UTC` |
+| Request duration bins | `1187.1 ms` avg (transition), then `2559.5 ms`, `2565.7 ms` |
+| Request p95 bins | `2586.4`, `2586.6`, `2600.6 ms` |
+| Checkpoint backlog age | avg `5.5 -> 63.2 -> 105.5 s`, max up to `164.3 s` |
+| Checkpoint processing | avg `1127.5 -> 2520.8 -> 2524.4 ms` |
+| Batch size | avg `71.5` (transition) then `99.5`-`100` |
+| Sample batch evidence | `seqRange=[11900-11999]` with `processingMs=2519.4` |
 
-### After recovery
+### After Recovery
 
-| Signal | Expected Value |
+| Signal | Expected value from this run |
 |---|---|
-| Processing duration p95 | Downward trend to near baseline |
-| Checkpoint lag p95 | Decreasing across consecutive bins |
-| Backlog age p95 | Returns below alert threshold |
-| Processed events per second | Approaches producer rate |
-| Partition lag spread | Reduced |
+| Delay reset time | `13:34:26 UTC` |
+| Request 1-minute bins | `13:34` avg `2542.3 ms`, `13:35` avg `246.5 ms` |
+| Recovery mixed 2-minute bin | `13:34` avg `1394.4 ms`, p95 `2684.7 ms`, max `2796.8 ms` |
+| Checkpoint mixed 2-minute bin | avg backlog `133.3 s`, max `179.6 s`, avg proc `1343.5 ms`, delay range `0-2500` |
+| First recovered batch evidence | `seqRange=[16650-16749]`, `processingMs=303.1` (initial recovery, not yet fully fast) |
+| Drain endpoint evidence | final batch `seqRange=[20887-20899]`, `batchSize=13`, `processingMs=0.8` |
 
-### Evidence timeline
+### Evidence Timeline
 
 ```mermaid
 gantt
-    title Event Hub Checkpoint Lag Evidence Timeline
-    dateFormat  HH:mm
+    title Event Hub Checkpoint Lag Evidence Timeline (UTC)
+    dateFormat  HH:mm:ss
     axisFormat  %H:%M
     section Baseline
-    Baseline ingestion and capture   :done, e1, 05:00, 20m
-    section Trigger
-    Delay injection + high ingress   :done, e2, 05:20, 25m
+    Baseline 2-minute bins captured              :done, b1, 13:12:00, 4m
     section Incident
-    Lag accumulation observation     :done, e3, 05:30, 20m
+    Delay set to 2500                            :milestone, i0, 13:28:29, 0s
+    Transition bin (mixed)                       :crit, i1, 13:28:00, 2m
+    Full incident bin                            :crit, i2, 13:30:00, 2m
+    Sustained incident bin                        :crit, i3, 13:32:00, 2m
     section Recovery
-    Runtime tuning deployment        :done, e4, 05:50, 10m
-    Recovery verification            :done, e5, 06:00, 20m
+    Delay reset to 0                             :milestone, r0, 13:34:26, 0s
+    Mixed recovery bin                            :done, r1, 13:34:00, 2m
+    Drain evidence point                          :milestone, r2, 13:35:06, 0s
 ```
 
-### Evidence chain: why this proves the hypothesis
+### Evidence Chain: Why this proves the hypothesis
 
-1. Processing-duration increase occurred immediately after delay injection, establishing intervention effect.
-2. Checkpoint lag and backlog age rose continuously while ingress stayed high.
-3. Dependency telemetry did not show dominant failure/latency patterns.
-4. Throughput tuning reduced lag trend, demonstrating causal reversibility.
+!!! success "Falsification logic passed"
+    1. Baseline and incident use the same app, plan, consumer group, and host settings.
 
-### Extended partition lag sample
+    2. Delay toggle time and telemetry inflection align: duration and backlog rise right after `13:28:29`.
 
-```text
-B001 p=0 lag=90 age=12 proc_ms=420 eps=280
-B002 p=1 lag=75 age=11 proc_ms=430 eps=275
-B003 p=2 lag=82 age=12 proc_ms=440 eps=272
-B004 p=3 lag=88 age=13 proc_ms=450 eps=270
-B005 p=0 lag=95 age=13 proc_ms=455 eps=278
-B006 p=1 lag=80 age=12 proc_ms=460 eps=274
-B007 p=2 lag=85 age=13 proc_ms=468 eps=271
-B008 p=3 lag=90 age=14 proc_ms=472 eps=269
-B009 p=0 lag=98 age=14 proc_ms=475 eps=277
-B010 p=1 lag=84 age=13 proc_ms=478 eps=273
-B011 p=2 lag=89 age=14 proc_ms=482 eps=270
-B012 p=3 lag=94 age=15 proc_ms=486 eps=268
-B013 p=0 lag=102 age=15 proc_ms=490 eps=276
-B014 p=1 lag=88 age=14 proc_ms=492 eps=272
-B015 p=2 lag=93 age=15 proc_ms=495 eps=269
-B016 p=3 lag=98 age=16 proc_ms=498 eps=267
-B017 p=0 lag=106 age=16 proc_ms=500 eps=275
-B018 p=1 lag=92 age=15 proc_ms=502 eps=271
-B019 p=2 lag=97 age=16 proc_ms=505 eps=268
-B020 p=3 lag=102 age=17 proc_ms=508 eps=266
-B021 p=0 lag=110 age=17 proc_ms=510 eps=274
-B022 p=1 lag=96 age=16 proc_ms=512 eps=270
-B023 p=2 lag=101 age=17 proc_ms=515 eps=267
-B024 p=3 lag=106 age=18 proc_ms=518 eps=265
-B025 p=0 lag=115 age=18 proc_ms=520 eps=273
-B026 p=1 lag=100 age=17 proc_ms=523 eps=269
-B027 p=2 lag=105 age=18 proc_ms=526 eps=266
-B028 p=3 lag=110 age=19 proc_ms=529 eps=264
-B029 p=0 lag=120 age=19 proc_ms=532 eps=272
-B030 p=1 lag=104 age=18 proc_ms=535 eps=268
-B031 p=2 lag=109 age=19 proc_ms=538 eps=265
-B032 p=3 lag=114 age=20 proc_ms=541 eps=263
-B033 p=0 lag=125 age=20 proc_ms=544 eps=271
-B034 p=1 lag=108 age=19 proc_ms=547 eps=267
-B035 p=2 lag=113 age=20 proc_ms=550 eps=264
-B036 p=3 lag=118 age=21 proc_ms=553 eps=262
-B037 p=0 lag=130 age=21 proc_ms=556 eps=270
-B038 p=1 lag=112 age=20 proc_ms=559 eps=266
-B039 p=2 lag=117 age=21 proc_ms=562 eps=263
-B040 p=3 lag=122 age=22 proc_ms=565 eps=261
-B041 p=0 lag=136 age=22 proc_ms=568 eps=269
-B042 p=1 lag=116 age=21 proc_ms=571 eps=265
-B043 p=2 lag=121 age=22 proc_ms=574 eps=262
-B044 p=3 lag=126 age=23 proc_ms=577 eps=260
-B045 p=0 lag=142 age=23 proc_ms=580 eps=268
-B046 p=1 lag=120 age=22 proc_ms=583 eps=264
-B047 p=2 lag=125 age=23 proc_ms=586 eps=261
-B048 p=3 lag=130 age=24 proc_ms=589 eps=259
-B049 p=0 lag=149 age=24 proc_ms=592 eps=267
-B050 p=1 lag=124 age=23 proc_ms=595 eps=263
-B051 p=2 lag=129 age=24 proc_ms=598 eps=260
-B052 p=3 lag=134 age=25 proc_ms=601 eps=258
-B053 p=0 lag=156 age=25 proc_ms=604 eps=266
-B054 p=1 lag=128 age=24 proc_ms=607 eps=262
-B055 p=2 lag=133 age=25 proc_ms=610 eps=259
-B056 p=3 lag=138 age=26 proc_ms=613 eps=257
-B057 p=0 lag=164 age=26 proc_ms=616 eps=265
-B058 p=1 lag=132 age=25 proc_ms=619 eps=261
-B059 p=2 lag=137 age=26 proc_ms=622 eps=258
-B060 p=3 lag=142 age=27 proc_ms=625 eps=256
-B061 p=0 lag=172 age=27 proc_ms=628 eps=264
-B062 p=1 lag=136 age=26 proc_ms=631 eps=260
-B063 p=2 lag=141 age=27 proc_ms=634 eps=257
-B064 p=3 lag=146 age=28 proc_ms=637 eps=255
-B065 p=0 lag=181 age=28 proc_ms=640 eps=263
-B066 p=1 lag=140 age=27 proc_ms=643 eps=259
-B067 p=2 lag=145 age=28 proc_ms=646 eps=256
-B068 p=3 lag=150 age=29 proc_ms=649 eps=254
-B069 p=0 lag=190 age=29 proc_ms=652 eps=262
-B070 p=1 lag=145 age=28 proc_ms=655 eps=258
-B071 p=2 lag=150 age=29 proc_ms=658 eps=255
-B072 p=3 lag=155 age=30 proc_ms=661 eps=253
-B073 p=0 lag=200 age=30 proc_ms=664 eps=261
-B074 p=1 lag=150 age=29 proc_ms=667 eps=257
-B075 p=2 lag=155 age=30 proc_ms=670 eps=254
-B076 p=3 lag=160 age=31 proc_ms=673 eps=252
-B077 p=0 lag=211 age=31 proc_ms=676 eps=260
-B078 p=1 lag=155 age=30 proc_ms=679 eps=256
-B079 p=2 lag=160 age=31 proc_ms=682 eps=253
-B080 p=3 lag=165 age=32 proc_ms=685 eps=251
-B081 p=0 lag=223 age=32 proc_ms=688 eps=259
-B082 p=1 lag=160 age=31 proc_ms=691 eps=255
-B083 p=2 lag=165 age=32 proc_ms=694 eps=252
-B084 p=3 lag=170 age=33 proc_ms=697 eps=250
-B085 p=0 lag=236 age=33 proc_ms=700 eps=258
-B086 p=1 lag=165 age=32 proc_ms=703 eps=254
-B087 p=2 lag=170 age=33 proc_ms=706 eps=251
-B088 p=3 lag=175 age=34 proc_ms=709 eps=249
-B089 p=0 lag=250 age=34 proc_ms=712 eps=257
-B090 p=1 lag=170 age=33 proc_ms=715 eps=253
-I001 p=0 lag=9400 age=270 proc_ms=3800 eps=110
-I002 p=1 lag=8700 age=240 proc_ms=3900 eps=105
-I003 p=2 lag=10100 age=290 proc_ms=4100 eps=98
-I004 p=3 lag=9400 age=270 proc_ms=4000 eps=102
-I005 p=0 lag=9800 age=280 proc_ms=3950 eps=108
-I006 p=1 lag=9100 age=250 proc_ms=4050 eps=103
-I007 p=2 lag=10600 age=305 proc_ms=4250 eps=96
-I008 p=3 lag=9900 age=282 proc_ms=4120 eps=100
-I009 p=0 lag=10300 age=295 proc_ms=4100 eps=106
-I010 p=1 lag=9500 age=265 proc_ms=4200 eps=101
-I011 p=2 lag=11100 age=320 proc_ms=4400 eps=94
-I012 p=3 lag=10400 age=298 proc_ms=4270 eps=98
-I013 p=0 lag=10900 age=310 proc_ms=4250 eps=104
-I014 p=1 lag=10000 age=280 proc_ms=4350 eps=99
-I015 p=2 lag=11700 age=335 proc_ms=4550 eps=92
-I016 p=3 lag=11000 age=315 proc_ms=4420 eps=96
-I017 p=0 lag=11600 age=330 proc_ms=4400 eps=102
-I018 p=1 lag=10600 age=300 proc_ms=4500 eps=97
-I019 p=2 lag=12400 age=350 proc_ms=4700 eps=90
-I020 p=3 lag=11700 age=332 proc_ms=4570 eps=94
-I021 p=0 lag=12300 age=350 proc_ms=4550 eps=100
-I022 p=1 lag=11200 age=315 proc_ms=4650 eps=95
-I023 p=2 lag=13100 age=370 proc_ms=4850 eps=88
-I024 p=3 lag=12400 age=350 proc_ms=4720 eps=92
-I025 p=0 lag=13100 age=372 proc_ms=4700 eps=98
-I026 p=1 lag=11900 age=336 proc_ms=4800 eps=93
-I027 p=2 lag=13900 age=392 proc_ms=5000 eps=86
-I028 p=3 lag=13200 age=372 proc_ms=4870 eps=90
-I029 p=0 lag=14000 age=395 proc_ms=4850 eps=96
-I030 p=1 lag=12700 age=355 proc_ms=4950 eps=91
-I031 p=2 lag=14800 age=416 proc_ms=5150 eps=84
-I032 p=3 lag=14100 age=396 proc_ms=5020 eps=88
-I033 p=0 lag=15000 age=420 proc_ms=5000 eps=94
-I034 p=1 lag=13600 age=375 proc_ms=5100 eps=89
-I035 p=2 lag=15800 age=442 proc_ms=5300 eps=82
-I036 p=3 lag=15100 age=422 proc_ms=5170 eps=86
-I037 p=0 lag=16100 age=446 proc_ms=5150 eps=92
-I038 p=1 lag=14600 age=400 proc_ms=5250 eps=87
-I039 p=2 lag=16800 age=468 proc_ms=5450 eps=80
-I040 p=3 lag=16000 age=446 proc_ms=5320 eps=84
-I041 p=0 lag=17200 age=475 proc_ms=5300 eps=90
-I042 p=1 lag=15600 age=425 proc_ms=5400 eps=85
-I043 p=2 lag=17800 age=492 proc_ms=5600 eps=78
-I044 p=3 lag=17000 age=468 proc_ms=5470 eps=82
-I045 p=0 lag=18400 age=505 proc_ms=5450 eps=88
-I046 p=1 lag=16600 age=450 proc_ms=5550 eps=83
-I047 p=2 lag=18900 age=516 proc_ms=5750 eps=76
-I048 p=3 lag=18000 age=490 proc_ms=5620 eps=80
-I049 p=0 lag=19500 age=520 proc_ms=5600 eps=86
-I050 p=1 lag=17600 age=470 proc_ms=5700 eps=81
-I051 p=2 lag=20100 age=540 proc_ms=5900 eps=74
-I052 p=3 lag=19100 age=510 proc_ms=5770 eps=78
-I053 p=0 lag=20700 age=545 proc_ms=5750 eps=84
-I054 p=1 lag=18600 age=495 proc_ms=5850 eps=79
-I055 p=2 lag=21400 age=565 proc_ms=6050 eps=72
-I056 p=3 lag=20200 age=535 proc_ms=5920 eps=76
-I057 p=0 lag=21900 age=570 proc_ms=5900 eps=82
-I058 p=1 lag=19600 age=520 proc_ms=6000 eps=77
-I059 p=2 lag=22700 age=590 proc_ms=6200 eps=70
-I060 p=3 lag=21400 age=560 proc_ms=6070 eps=74
-I061 p=0 lag=23100 age=595 proc_ms=6050 eps=80
-I062 p=1 lag=20600 age=545 proc_ms=6150 eps=75
-I063 p=2 lag=24000 age=615 proc_ms=6350 eps=68
-I064 p=3 lag=22600 age=585 proc_ms=6220 eps=72
-I065 p=0 lag=24400 age=620 proc_ms=6200 eps=78
-I066 p=1 lag=21600 age=570 proc_ms=6300 eps=73
-I067 p=2 lag=25300 age=640 proc_ms=6500 eps=66
-I068 p=3 lag=23800 age=610 proc_ms=6370 eps=70
-I069 p=0 lag=25800 age=645 proc_ms=6350 eps=76
-I070 p=1 lag=22600 age=595 proc_ms=6450 eps=71
-I071 p=2 lag=26700 age=665 proc_ms=6650 eps=64
-I072 p=3 lag=25100 age=635 proc_ms=6520 eps=68
-I073 p=0 lag=27300 age=670 proc_ms=6500 eps=74
-I074 p=1 lag=23600 age=620 proc_ms=6600 eps=69
-I075 p=2 lag=28100 age=690 proc_ms=6800 eps=62
-I076 p=3 lag=26400 age=660 proc_ms=6670 eps=66
-I077 p=0 lag=28900 age=700 proc_ms=6650 eps=72
-I078 p=1 lag=24700 age=645 proc_ms=6750 eps=67
-I079 p=2 lag=29600 age=715 proc_ms=6950 eps=60
-I080 p=3 lag=27700 age=685 proc_ms=6820 eps=64
-I081 p=0 lag=30400 age=725 proc_ms=6800 eps=70
-I082 p=1 lag=25900 age=670 proc_ms=6900 eps=65
-I083 p=2 lag=31100 age=740 proc_ms=7100 eps=58
-I084 p=3 lag=29100 age=710 proc_ms=6970 eps=62
-I085 p=0 lag=32000 age=750 proc_ms=6950 eps=68
-I086 p=1 lag=27100 age=695 proc_ms=7050 eps=63
-I087 p=2 lag=32700 age=765 proc_ms=7250 eps=56
-I088 p=3 lag=30500 age=735 proc_ms=7120 eps=60
-I089 p=0 lag=33600 age=775 proc_ms=7100 eps=66
-I090 p=1 lag=28300 age=720 proc_ms=7200 eps=61
-R001 p=0 lag=16000 age=380 proc_ms=2200 eps=210
-R002 p=1 lag=14500 age=350 proc_ms=2100 eps=220
-R003 p=2 lag=17100 age=410 proc_ms=2300 eps=205
-R004 p=3 lag=15800 age=390 proc_ms=2250 eps=212
-R005 p=0 lag=14800 age=360 proc_ms=2050 eps=225
-R006 p=1 lag=13300 age=330 proc_ms=1980 eps=235
-R007 p=2 lag=15900 age=385 proc_ms=2180 eps=218
-R008 p=3 lag=14600 age=365 proc_ms=2120 eps=226
-R009 p=0 lag=13600 age=340 proc_ms=1920 eps=238
-R010 p=1 lag=12200 age=310 proc_ms=1850 eps=248
-R011 p=2 lag=14600 age=360 proc_ms=2050 eps=232
-R012 p=3 lag=13400 age=345 proc_ms=1980 eps=240
-R013 p=0 lag=12500 age=320 proc_ms=1780 eps=250
-R014 p=1 lag=11200 age=290 proc_ms=1710 eps=260
-R015 p=2 lag=13300 age=335 proc_ms=1910 eps=244
-R016 p=3 lag=12200 age=320 proc_ms=1840 eps=252
-R017 p=0 lag=11400 age=300 proc_ms=1640 eps=262
-R018 p=1 lag=10200 age=275 proc_ms=1580 eps=272
-R019 p=2 lag=12100 age=315 proc_ms=1760 eps=256
-R020 p=3 lag=11100 age=300 proc_ms=1700 eps=264
-R021 p=0 lag=10400 age=285 proc_ms=1520 eps=274
-R022 p=1 lag=9300 age=260 proc_ms=1460 eps=284
-R023 p=2 lag=11100 age=295 proc_ms=1630 eps=268
-R024 p=3 lag=10200 age=280 proc_ms=1580 eps=276
-R025 p=0 lag=9600 age=270 proc_ms=1420 eps=286
-R026 p=1 lag=8600 age=245 proc_ms=1370 eps=296
-R027 p=2 lag=10200 age=275 proc_ms=1520 eps=280
-R028 p=3 lag=9400 age=262 proc_ms=1470 eps=288
-R029 p=0 lag=8900 age=255 proc_ms=1320 eps=298
-R030 p=1 lag=8000 age=232 proc_ms=1270 eps=308
-R031 p=2 lag=9500 age=260 proc_ms=1410 eps=292
-R032 p=3 lag=8800 age=248 proc_ms=1360 eps=300
-R033 p=0 lag=8400 age=242 proc_ms=1220 eps=310
-R034 p=1 lag=7600 age=220 proc_ms=1180 eps=320
-R035 p=2 lag=9000 age=245 proc_ms=1300 eps=304
-R036 p=3 lag=8400 age=235 proc_ms=1260 eps=312
-R037 p=0 lag=8000 age=230 proc_ms=1140 eps=322
-R038 p=1 lag=7300 age=210 proc_ms=1100 eps=332
-R039 p=2 lag=8600 age=232 proc_ms=1210 eps=316
-R040 p=3 lag=8100 age=224 proc_ms=1170 eps=324
-R041 p=0 lag=7700 age=220 proc_ms=1060 eps=334
-R042 p=1 lag=7000 age=202 proc_ms=1030 eps=344
-R043 p=2 lag=8200 age=222 proc_ms=1120 eps=328
-R044 p=3 lag=7700 age=214 proc_ms=1090 eps=336
-R045 p=0 lag=7400 age=210 proc_ms=980 eps=346
-R046 p=1 lag=6800 age=194 proc_ms=960 eps=356
-R047 p=2 lag=7900 age=212 proc_ms=1040 eps=340
-R048 p=3 lag=7500 age=205 proc_ms=1010 eps=348
-R049 p=0 lag=7200 age=202 proc_ms=920 eps=358
-R050 p=1 lag=6600 age=188 proc_ms=900 eps=368
-R051 p=2 lag=7600 age=205 proc_ms=980 eps=352
-R052 p=3 lag=7200 age=198 proc_ms=950 eps=360
-R053 p=0 lag=6900 age=195 proc_ms=880 eps=370
-R054 p=1 lag=6300 age=182 proc_ms=860 eps=380
-R055 p=2 lag=7300 age=198 proc_ms=930 eps=364
-R056 p=3 lag=6900 age=192 proc_ms=910 eps=372
-R057 p=0 lag=6600 age=190 proc_ms=840 eps=382
-R058 p=1 lag=6100 age=178 proc_ms=820 eps=392
-R059 p=2 lag=7000 age=192 proc_ms=890 eps=376
-R060 p=3 lag=6700 age=186 proc_ms=870 eps=384
-R061 p=0 lag=6400 age=184 proc_ms=800 eps=394
-R062 p=1 lag=5900 age=172 proc_ms=780 eps=404
-R063 p=2 lag=6800 age=186 proc_ms=850 eps=388
-R064 p=3 lag=6500 age=180 proc_ms=830 eps=396
-R065 p=0 lag=6200 age=178 proc_ms=760 eps=406
-R066 p=1 lag=5700 age=168 proc_ms=740 eps=416
-R067 p=2 lag=6600 age=180 proc_ms=810 eps=400
-R068 p=3 lag=6300 age=174 proc_ms=790 eps=408
-R069 p=0 lag=6000 age=172 proc_ms=720 eps=418
-R070 p=1 lag=5500 age=164 proc_ms=700 eps=428
-R071 p=2 lag=6400 age=174 proc_ms=770 eps=412
-R072 p=3 lag=6100 age=168 proc_ms=750 eps=420
-R073 p=0 lag=5800 age=166 proc_ms=680 eps=430
-R074 p=1 lag=5400 age=158 proc_ms=660 eps=440
-R075 p=2 lag=6200 age=168 proc_ms=730 eps=424
-R076 p=3 lag=5900 age=162 proc_ms=710 eps=432
-R077 p=0 lag=5600 age=160 proc_ms=640 eps=442
-R078 p=1 lag=5200 age=152 proc_ms=620 eps=452
-R079 p=2 lag=6000 age=162 proc_ms=690 eps=436
-R080 p=3 lag=5700 age=156 proc_ms=670 eps=444
-R081 p=0 lag=5400 age=154 proc_ms=600 eps=454
-R082 p=1 lag=5000 age=146 proc_ms=590 eps=462
-R083 p=2 lag=5800 age=156 proc_ms=650 eps=446
-R084 p=3 lag=5500 age=150 proc_ms=630 eps=454
-R085 p=0 lag=5200 age=148 proc_ms=580 eps=464
-R086 p=1 lag=4800 age=142 proc_ms=560 eps=472
-R087 p=2 lag=5600 age=150 proc_ms=620 eps=456
-R088 p=3 lag=5300 age=145 proc_ms=600 eps=464
-R089 p=0 lag=5000 age=144 proc_ms=550 eps=474
-R090 p=1 lag=4600 age=138 proc_ms=530 eps=482
+    3. Incident bins stabilize around `~2.5s` processing, matching injected delay magnitude.
+
+    4. Recovery begins immediately after delay reset (`13:34:26`) with mixed-delay bin evidence.
+
+    5. Recovery batches with `delayMs=0` reappear with sharply lower `processingMs` (sub-`50 ms` sustained), proving active draining after control reset.
+
+    6. No Event Hub topology change is needed to explain behavior change; delay control is sufficient.
+
+Evidence chain matrix:
+
+| Link | Claim | Supporting evidence |
+|---|---|---|
+| L1 | Baseline healthy | Query A + Query B baseline bins |
+| L2 | Incident onset tied to control change | delay set at `13:28:29`, transition bins |
+| L3 | Sustained lag under full delay | `13:30` and `13:32` bins |
+| L4 | Recovery is real but mixed initially | `13:34` mixed delay range |
+| L5 | Drain starts immediately after reset | `13:35:06` drain detail |
+
+### Query-to-evidence mapping
+
+| Objective | Query |
+|---|---|
+| Request latency inflation by phase | Query A |
+| Checkpoint backlog and processing by phase | Query B |
+| Incident batch shape and partition detail | Query C |
+| Sequence-level drain progression | Query D |
+| Incident batch completion concentration | Query E |
+| Postmortem aggregate phase summary | Query F |
+| 1-minute recovery progression | Query G |
+
+### Operator verification checklist
+
+1. Confirm every App Insights duration conversion uses `toreal(duration / 1ms)`.
+2. Confirm all time filters use `>=` and `<`.
+3. Confirm CLI queries use `az monitor log-analytics query --workspace "$LOG_WORKSPACE_ID"`.
+4. Confirm no short flags are used in CLI commands.
+5. Confirm no synthetic telemetry IDs (`B001`, `I001`, `R001`) appear.
+6. Confirm all numerical values in output tables match captured evidence.
+7. Confirm `## See Also` appears before `## Sources`.
+
+## Clean Up
+
+If this environment is temporary, remove the resource group:
+
+```bash
+az group delete \
+  --name "$RG" \
+  --yes \
+  --no-wait
 ```
+
+If this is a shared troubleshooting environment, keep resources and only disable lab traffic generation.
 
 ## Related Playbook
+
 - [Event Hub trigger lag playbook](../playbooks.md)
 
 ## See Also
+
 - [Troubleshooting architecture](../architecture.md)
-- [Evidence map](../evidence-map.md)
-- [KQL guide](../kql.md)
+- [Troubleshooting evidence map](../evidence-map.md)
 - [Troubleshooting methodology](../methodology.md)
-- [Lab guides index](../lab-guides.md)
+- [KQL quick reference](../kql.md)
+- [Troubleshooting lab guides](../lab-guides.md)
 
 ## Sources
+
 - https://learn.microsoft.com/azure/azure-functions/functions-bindings-event-hubs
 - https://learn.microsoft.com/azure/azure-functions/functions-host-json
+- https://learn.microsoft.com/azure/azure-functions/functions-best-practices
 - https://learn.microsoft.com/azure/event-hubs/event-hubs-scalability
-- https://learn.microsoft.com/azure/azure-functions/monitor-functions
 - https://learn.microsoft.com/azure/azure-monitor/logs/log-query-overview

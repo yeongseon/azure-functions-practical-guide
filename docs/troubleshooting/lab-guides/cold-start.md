@@ -9,7 +9,7 @@ This Level 3 lab reproduces and analyzes Azure Functions cold-start behavior acr
 | Tier | Azure Functions Flex Consumption (FC1) primary; comparison with Consumption (Y1) and Premium (EP) |
 | Runtime | Python 3.11 / Functions v4 (HTTP trigger scenario) |
 | Trigger mechanism | Idle period -> first HTTP request, restart cycle, and scale event observation |
-| Key endpoints | `/api/health`, `/api/version`, `/api/ping`, `/api/http_trigger` |
+| Key endpoints | `/api/health`, `/api/info` |
 | Diagnostic categories | `requests`, `traces`, `dependencies`, App Insights query exports |
 | Artifact root | `labs/cold-start/artifacts/` |
 !!! info "What this lab is designed to prove"
@@ -165,16 +165,18 @@ Use this runbook exactly as written to collect reproducible evidence.
 | Functions Core Tools | `func --version` | v4.x |
 | Python runtime | `python3 --version` | `Python 3.11.x` |
 | curl | `curl --version` | curl version line |
-| App Insights query access | `az monitor app-insights component show --app "$APP_NAME" --resource-group "$RG" --output table` | Component details |
+| App Insights query access | `az monitor app-insights component show --app "$AI_NAME" --resource-group "$RG" --output table` | Component details |
 | Lab source present | `ls "labs/cold-start"` | Contains lab assets (at minimum `README.md`) |
 ### 3.2 Variables
 Use the repository variable conventions in commands.
 ```bash
 RG="rg-coldstart-lab-krc"
-APP_NAME="func-coldstart-lab-<suffix>"
+BASE_NAME="coldstartlab"
+APP_NAME="${BASE_NAME}-func"
+AI_NAME="${BASE_NAME}-insights"
 LOCATION="koreacentral"
 ```
-For consistency in documentation and triage notes, reference these as `$RG`, `$APP_NAME`, and `$LOCATION`.
+For consistency in documentation and triage notes, reference these as `$RG`, `$BASE_NAME`, `$APP_NAME`, `$AI_NAME`, and `$LOCATION`. The Bicep template derives resource names from `$BASE_NAME`, so `$APP_NAME` and `$AI_NAME` are computed to match.
 Optional helper variables:
 ```bash
 APP_URL="https://$APP_NAME.azurewebsites.net"
@@ -183,27 +185,21 @@ ARTIFACT_ROOT="labs/cold-start/artifacts/$START_TS_UTC"
 mkdir -p "$ARTIFACT_ROOT"
 ```
 ### 3.3 Deploy infrastructure
-Deploy the lab infrastructure from `labs/cold-start/`.
+Deploy the lab infrastructure from `infra/flex-consumption/`.
 ```bash
 az group create \
   --name "$RG" \
   --location "$LOCATION"
 az deployment group create \
   --resource-group "$RG" \
-  --template-file "labs/cold-start/main.bicep" \
-  --parameters "appName=$APP_NAME" "location=$LOCATION"
+  --template-file "infra/flex-consumption/main.bicep" \
+  --parameters baseName="$BASE_NAME"
 ```
-If your local lab path uses a parameter file:
-```bash
-az deployment group create \
-  --resource-group "$RG" \
-  --template-file "labs/cold-start/main.bicep" \
-  --parameters "@labs/cold-start/main.parameters.json"
-```
-Deploy application package when required:
+Deploy application package from the `apps/python/` directory:
 ```bash
 func azure functionapp publish "$APP_NAME" --python
 ```
+Run this command from `apps/python/` where `function_app.py` and `host.json` reside.
 ### 3.4 Verify baseline configuration
 Run baseline checks before triggering cold path measurements.
 ```bash
@@ -215,7 +211,7 @@ az functionapp config show \
   --resource-group "$RG" \
   --name "$APP_NAME"
 curl --silent --show-error "$APP_URL/api/health"
-curl --silent --show-error "$APP_URL/api/version"
+curl --silent --show-error "$APP_URL/api/info"
 ```
 Expected baseline snippets (sanitized):
 ```text
@@ -224,7 +220,7 @@ DefaultHostName    <masked-function-app>.azurewebsites.net
 Kind               functionapp,linux
 ```
 ```json
-{"status":"ok","service":"cold-start-lab","utc":"2026-04-04T11:11:32Z"}
+{"status":"healthy","timestamp":"2026-04-04T11:11:32Z","version":"1.0.0"}
 ```
 ### 3.5 Trigger measurement workflow
 Execute the measurement workflow in this order:
@@ -294,7 +290,7 @@ requests
     Invocations = count(),
     Failures = countif(success == false),
     FailureRatePercent = round(100.0 * countif(success == false) / count(), 2),
-    P95Ms = percentile(duration, 95)
+    P95Ms = round(percentile(duration, 95), 2)
   by FunctionName = operation_Name
 | order by Failures desc, P95Ms desc
 ```
@@ -305,13 +301,13 @@ traces
 | where timestamp > ago(6h)
 | where cloud_RoleName =~ appName
 | where message has_any ("Host started", "Initializing Host", "Host lock lease acquired")
-| summarize StartupEvents=count() by bin(timestamp, 15m)
+| summarize StartupEvents=count() by bin(timestamp, 5m)
 | join kind=leftouter (
     requests
     | where timestamp > ago(6h)
     | where cloud_RoleName =~ appName
     | where operation_Name startswith "Functions."
-    | summarize FirstInvocation=min(timestamp), FirstDurationMs=arg_min(timestamp, toreal(duration / 1ms)) by bin(timestamp, 15m)
+    | summarize FirstInvocation=min(timestamp), FirstDurationMs=arg_min(timestamp, round(duration, 2)) by bin(timestamp, 5m)
 ) on timestamp
 | order by timestamp desc
 ```
@@ -331,22 +327,45 @@ let appName = "func-myapp-prod";
 traces
 | where timestamp > ago(12h)
 | where cloud_RoleName =~ appName
-| where message has_any ("Host started", "Job host started", "Host shutdown", "Host is shutting down", "Stopping JobHost")
+| where message has_any ("Starting Host", "Host started", "Job host started", "Host shutdown", "Host is shutting down", "Stopping JobHost")
 | project timestamp, severityLevel, message
 | order by timestamp desc
 ```
 CLI execution examples for App Insights:
 ```bash
 az monitor app-insights query \
-  --app "$APP_NAME" \
+  --apps "$AI_NAME" \
   --resource-group "$RG" \
-  --analytics-query "traces | where timestamp > ago(12h) | where cloud_RoleName =~ '$APP_NAME' | where message has_any ('Host started','Job host started','Host shutdown','Host is shutting down','Stopping JobHost') | project timestamp, severityLevel, message | order by timestamp desc" \
+  --analytics-query "traces | where timestamp > ago(12h) | where cloud_RoleName =~ '$APP_NAME' | where message has_any ('Starting Host','Host started','Job host started','Host shutdown','Host is shutting down','Stopping JobHost') | project timestamp, severityLevel, message | order by timestamp desc" \
   --output table
 az monitor app-insights query \
-  --app "$APP_NAME" \
+  --apps "$AI_NAME" \
   --resource-group "$RG" \
   --analytics-query "traces | where timestamp > ago(6h) | where cloud_RoleName =~ '$APP_NAME' | where message has_any ('scale','instance','worker','concurrency','drain') | project timestamp, severityLevel, message | order by timestamp desc" \
   --output table
+```
+Export JSON artifacts for incident evidence:
+```bash
+az monitor app-insights query \
+  --apps "$AI_NAME" \
+  --resource-group "$RG" \
+  --analytics-query "let appName = '$APP_NAME'; requests | where timestamp > ago(1h) | where cloud_RoleName =~ appName | where operation_Name startswith 'Functions.' | summarize Invocations = count(), Failures = countif(success == false), FailureRatePercent = round(100.0 * countif(success == false) / count(), 2), P95Ms = round(percentile(duration, 95), 2) by FunctionName = operation_Name | order by Failures desc, P95Ms desc" \
+  --output json > "$ARTIFACT_ROOT/kql-query1-function-execution-summary.json"
+az monitor app-insights query \
+  --apps "$AI_NAME" \
+  --resource-group "$RG" \
+  --analytics-query "let appName = '$APP_NAME'; traces | where timestamp > ago(6h) | where cloud_RoleName =~ appName | where message has_any ('Host started', 'Initializing Host', 'Host lock lease acquired') | summarize StartupEvents=count() by bin(timestamp, 5m) | join kind=leftouter (requests | where timestamp > ago(6h) | where cloud_RoleName =~ appName | where operation_Name startswith 'Functions.' | summarize FirstInvocation=min(timestamp), FirstDurationMs=arg_min(timestamp, round(duration, 2)) by bin(timestamp, 5m)) on timestamp | order by timestamp desc" \
+  --output json > "$ARTIFACT_ROOT/kql-query3-cold-start-analysis.json"
+az monitor app-insights query \
+  --apps "$AI_NAME" \
+  --resource-group "$RG" \
+  --analytics-query "let appName = '$APP_NAME'; traces | where timestamp > ago(6h) | where cloud_RoleName =~ appName | where message has_any ('scale', 'instance', 'worker', 'concurrency', 'drain') | project timestamp, severityLevel, message | order by timestamp desc" \
+  --output json > "$ARTIFACT_ROOT/kql-query7-scaling-events.json"
+az monitor app-insights query \
+  --apps "$AI_NAME" \
+  --resource-group "$RG" \
+  --analytics-query "let appName = '$APP_NAME'; traces | where timestamp > ago(12h) | where cloud_RoleName =~ appName | where message has_any ('Starting Host', 'Host started', 'Job host started', 'Host shutdown', 'Host is shutting down', 'Stopping JobHost') | project timestamp, severityLevel, message | order by timestamp desc" \
+  --output json > "$ARTIFACT_ROOT/kql-query8-host-startup-shutdown.json"
 ```
 ### 3.8 Real output snippets
 The following snippets are from the repository's real FC1 lab evidence (sanitized).
@@ -374,7 +393,7 @@ warm_after_restart 200 0.074
 ```text
 health function:
 - warm: 3.63ms to 5.86ms
-- cold/scale event: 1719ms to 1842ms
+- cold start or scale-out warm-up (attribution requires correlation with traces): 1719ms to 1842ms
 ```
 #### Scaling timeline snippet
 ```text
@@ -383,6 +402,7 @@ health function:
 2026-04-04T11:31:20Z  Worker process started and initialized.
 2026-04-04T11:30:50Z  Worker process started and initialized.
 ```
+`Worker process started and initialized` may indicate scale-out, restart, or initial startup.
 ### 3.9 Interpretation checklist
 Use this checklist while triaging:
 | Check | Evidence source | Pass condition | Interpretation if failed |
@@ -406,17 +426,6 @@ flowchart TD
     E -->|Neither| I[Check dependency latency and retries]
     D --> J[Correlate dependencies, exceptions, concurrency]
     F --> K[Review startup code, extension load, config]
-```
-### 3.11 Cleanup
-```bash
-az group delete \
-  --name "$RG" \
-  --yes \
-  --no-wait
-```
-Optional local cleanup:
-```bash
-rm -rf "labs/cold-start/artifacts"
 ```
 ---
 ## 4) Experiment Log (Artifact-Based)
@@ -446,17 +455,16 @@ DefaultHostName   <masked-function-app>.azurewebsites.net
 #### 4.2.2 Baseline health
 ```json
 {
-  "status": "ok",
-  "service": "cold-start-lab",
-  "runtime": "python-3.11",
-  "utc": "2026-04-04T11:10:52Z"
+  "status": "healthy",
+  "timestamp": "2026-04-04T11:10:52Z",
+  "version": "1.0.0"
 }
 ```
 #### 4.2.3 Baseline plan assumptions table
 | Plan assumption | Baseline value | Why it matters |
 |---|---|---|
 | Hosting profile | FC1 Flex Consumption | Can scale to zero and scale out rapidly |
-| Initial idle period before cold sample | ~13 minutes | Forces full idle cold path |
+| Initial idle period before cold sample | ~13 minutes | Increases likelihood of triggering full idle cold path |
 | Endpoint for measurement | `/api/health` | Lightweight endpoint isolates startup path |
 | Runtime | Python 3.11 | Startup profile includes worker initialization |
 | Region | `koreacentral` | Keeps measurements region-specific |
@@ -530,7 +538,7 @@ Sample interpretation table:
 | FunctionName | Invocations | Failures | P95Ms | Interpretation |
 |---|---:|---:|---:|---|
 | `Functions.health` | 40+ | 0 | Low baseline with occasional outlier | Healthy function path |
-| `Functions.http_trigger` | Variable | 0 | Higher when cold bins included | Correlate with startup events |
+| `Functions.info` | Variable | 0 | Higher when cold bins included | Correlate with startup events |
 #### 4.6.2 Query 3 cold-start analysis highlights
 What to validate:
 1. Startup event bins appear in same windows as elevated first invocation duration.
@@ -552,7 +560,7 @@ Representative lines seen in this repository context:
 2026-04-04T11:30:50Z Worker process started and initialized.
 ```
 Interpretation:
-- Burst of worker-initialization messages aligns with scale activity.
+- Burst of worker-initialization messages may indicate scale-out, restart, or initial startup.
 - Intermediate latency (`~1.7s-1.8s`) is expected during such events.
 #### 4.6.4 Query 8 host startup/shutdown highlights
 Expected healthy sequence:
@@ -573,12 +581,18 @@ Abnormal pattern to watch:
 | Scale behavior | Rapid worker events; intermediate latency possible |
 | Mitigation path | Always-ready instances and startup optimization |
 #### 4.7.2 Y1 (Consumption)
+!!! note "Comparison context"
+    The following values are typical expectations from Microsoft documentation, not measured evidence from this lab run.
+
 | Characteristic | Typical expectation |
 |---|---|
 | Full idle cold path | Commonly 5-15s (workload dependent) |
 | Always-ready support | Not available |
 | Operational profile | Cost-efficient, latency variance higher |
 #### 4.7.3 EP (Premium)
+!!! note "Comparison context"
+    The following values are typical expectations from Microsoft documentation, not measured evidence from this lab run.
+
 | Characteristic | Typical expectation |
 |---|---|
 | Baseline availability | At least one always-ready instance practical baseline |
@@ -591,7 +605,7 @@ Abnormal pattern to watch:
 | Host startup traces | `Host started (363ms)`, `Host started (453ms)` | Host startup phase itself can be fast | It does not measure pre-allocation delay |
 | Warm request client latency | `67ms-99ms` | Warm path healthy | It does not describe cold path alone |
 | Warm request server-side | `3.63ms-5.86ms` | Function logic is lightweight | It does not include frontend/client path |
-| Scale-event server-side | `1719ms-1842ms` | Scale events add moderate latency | It is not equivalent to full idle cold |
+| Scale-event server-side | `1719ms-1842ms` | Cold start or scale-out warm-up (attribution requires correlation with traces) can add moderate latency | It is not equivalent to full idle cold |
 | Post-restart cold | `3.156s` | Restart cold path differs from full idle cold | It does not represent worst-case idle-provisioning |
 ### 4.9 Core finding and explanation
 !!! success "Core finding (validated with real FC1 evidence)"
@@ -664,6 +678,8 @@ graph LR
     3. Warm steady-state remains healthy (`67-99ms` client, `3.63-5.86ms` server), ruling out sustained regression.
     If warm path does not recover, or host startup durations are consistently large and close to first-hit totals, this hypothesis should be rejected and alternative causes investigated (dependency latency, runtime crash loop, or application startup regression).
 ### Repeated-Run Worksheet
+Use this worksheet template to record results from multiple runs. Row 1 contains the reference FC1 data; fill in rows 2 and 3 with your own measurements.
+
 Use this worksheet to run at least three cycles and reduce one-off noise.
 | Cycle | Idle duration (min) | First hit (s) | Restart hit (s) | Warm mean (s) | Host started ms values | Scale-event ms band | Verdict |
 |---|---:|---:|---:|---:|---|---|---|
@@ -683,6 +699,17 @@ Operational handoff checklist:
 | FC1 vs Y1 vs EP mitigation recommendation documented | [ ] |
 | Related playbook cross-reference included in incident summary | [ ] |
 | PII check completed on exported artifacts | [ ] |
+## Clean Up
+```bash
+az group delete \
+  --name "$RG" \
+  --yes \
+  --no-wait
+```
+Optional local cleanup:
+```bash
+rm -rf "labs/cold-start/artifacts"
+```
 ## Related Playbook
 - [High Latency / Slow Responses](../playbooks/high-latency.md)
 ## See Also

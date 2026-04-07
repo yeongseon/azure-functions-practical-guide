@@ -183,7 +183,7 @@ traces
 dependencies
 | where timestamp > ago(6h)
 | summarize total_calls=count(), failed_calls=countif(success == false), p95_duration=percentile(duration, 95) by target, type
-| extend failure_rate = todouble(failed_calls) / iif(total_calls == 0, 1.0, todouble(total_calls))
+| extend failure_rate = toreal(failed_calls) / iif(total_calls == 0, 1.0, toreal(total_calls))
 | order by failure_rate desc, failed_calls desc
 ```
 

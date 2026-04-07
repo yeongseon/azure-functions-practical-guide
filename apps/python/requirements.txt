@@ -1,5 +1,8 @@
 azure-functions
+azure-functions-durable
 azure-identity
 azure-monitor-opentelemetry
 azure-storage-blob
+azure-storage-queue
+azure-eventhub
 requests

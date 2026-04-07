@@ -124,7 +124,7 @@ let lookback = 5m;
 requests
 | where timestamp > ago(lookback)
 | summarize total_requests=count(), failed_requests=countif(success == false) by operation_Name
-| extend failure_ratio=todouble(failed_requests) / todouble(total_requests)
+| extend failure_ratio=toreal(failed_requests) / toreal(total_requests)
 | where total_requests >= 50
 | where failure_ratio > 0.05
 | project operation_Name, total_requests, failed_requests, failure_ratio
@@ -141,7 +141,7 @@ az monitor scheduled-query create \
     --evaluation-frequency "PT5M" \
     --window-size "PT5M" \
     --condition "count 'Custom log search' > 0" \
-    --condition-query "let lookback = 5m; requests | where timestamp > ago(lookback) | summarize total_requests=count(), failed_requests=countif(success == false) by operation_Name | extend failure_ratio=todouble(failed_requests) / todouble(total_requests) | where total_requests >= 50 | where failure_ratio > 0.05 | project operation_Name, total_requests, failed_requests, failure_ratio" \
+    --condition-query "let lookback = 5m; requests | where timestamp > ago(lookback) | summarize total_requests=count(), failed_requests=countif(success == false) by operation_Name | extend failure_ratio=toreal(failed_requests) / toreal(total_requests) | where total_requests >= 50 | where failure_ratio > 0.05 | project operation_Name, total_requests, failed_requests, failure_ratio" \
     --action-groups "$ACTION_GROUP_ID" \
     --auto-mitigate true
 ```

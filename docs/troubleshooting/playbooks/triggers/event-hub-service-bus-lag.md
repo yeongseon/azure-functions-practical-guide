@@ -117,7 +117,7 @@ FunctionAppLogs
 | where Message has_any ("EventHubTrigger", "ServiceBusTrigger", "Processed", "batch")
 | extend FunctionName = tostring(CustomDimensions.FunctionName)
 | extend BatchSize = toint(CustomDimensions.BatchSize)
-| extend DurationMs = todouble(CustomDimensions.DurationMs)
+| extend DurationMs = toreal(CustomDimensions.DurationMs)
 | summarize AvgBatch=avg(BatchSize), P95Duration=percentile(DurationMs, 95), Runs=count() by FunctionName, bin(TimeGenerated, 15m)
 | order by P95Duration desc
 ```

@@ -4,7 +4,8 @@
     "applicationInsights": {
       "samplingSettings": {
         "isEnabled": true,
-        "maxTelemetryItemsPerSecond": 20
+        "maxTelemetryItemsPerSecond": 100,
+        "excludedTypes": ""
       }
     }
   },
@@ -15,6 +16,25 @@
   "extensions": {
     "http": {
       "routePrefix": "api"
+    },
+    "queues": {
+      "messageEncoding": "none",
+      "maxDequeueCount": 5,
+      "visibilityTimeout": "00:00:30",
+      "batchSize": 16,
+      "newBatchThreshold": 8
+    },
+    "durableTask": {
+      "storageProvider": {
+        "type": "AzureStorage"
+      },
+      "maxConcurrentActivityFunctions": 10,
+      "maxConcurrentOrchestratorFunctions": 5
+    },
+    "eventHubs": {
+      "maxBatchSize": 100,
+      "prefetchCount": 300,
+      "batchCheckpointFrequency": 1
     }
   }
 }

@@ -209,7 +209,7 @@ traces
 | where Message has_any ("Durable", "orchestrator", "activity")
 | extend FunctionName=tostring(CustomDimensions.FunctionName)
 | summarize LongSteps=countif(tolong(CustomDimensions.DurationMs) > 300000), TotalSteps=count() by FunctionName
-| extend LongStepRatio=todouble(LongSteps) / iif(TotalSteps == 0, 1.0, todouble(TotalSteps))
+| extend LongStepRatio=toreal(LongSteps) / iif(TotalSteps == 0, 1.0, toreal(TotalSteps))
 | order by LongStepRatio desc
 ```
 

@@ -89,6 +89,8 @@ For common host flows, these roles are typically required for the identity used 
 |---|---|
 | Blob container operations for host artifacts | `Storage Blob Data Owner` |
 | Queue-related runtime operations | `Storage Queue Data Contributor` |
+|| Storage account-level operations | `Storage Account Contributor` |
+|| Lease and table operations for host state | `Storage Table Data Contributor` |
 
 The exact least-privilege set depends on trigger and extension mix, but removing these roles is sufficient to reproduce deterministic startup failures in this lab scenario.
 
@@ -307,7 +309,7 @@ requests
     Invocations = count(),
     Failures = countif(success == false),
     FailureRatePercent = round(100.0 * countif(success == false) / count(), 2),
-    P95Ms = percentile(duration, 95)
+    P95Ms = round(percentile(duration, 95), 2)
   by FunctionName = operation_Name
 | order by Failures desc, P95Ms desc
 ```
@@ -373,6 +375,11 @@ Remove required roles (failure trigger):
 ```bash
 az role assignment delete \
   --assignee-object-id "$APP_PRINCIPAL_ID" \
+  --role "Storage Account Contributor" \
+  --scope "$STORAGE_ID"
+
+az role assignment delete \
+  --assignee-object-id "$APP_PRINCIPAL_ID" \
   --role "Storage Blob Data Owner" \
   --scope "$STORAGE_ID"
 
@@ -380,6 +387,15 @@ az role assignment delete \
   --assignee-object-id "$APP_PRINCIPAL_ID" \
   --role "Storage Queue Data Contributor" \
   --scope "$STORAGE_ID"
+
+az role assignment delete \
+  --assignee-object-id "$APP_PRINCIPAL_ID" \
+  --role "Storage Table Data Contributor" \
+  --scope "$STORAGE_ID"
+
+
+
+
 ```
 
 Restart Function App so host performs fresh storage initialization:
@@ -450,21 +466,30 @@ dependencies
 
 ### 3.8 Real incident log patterns to verify
 
-Use these exact patterns as validation anchors.
+Use these representative patterns as validation anchors. The failure phase shows event log snippets derived from live telemetry:
 
 #### 3.8.1 Failure-phase log snippets
 
 ```text
+Process reporting unhealthy: Unhealthy. Health check entries are {
+  "azure.functions.web_host.lifecycle": {"status":"Healthy"},
+  "azure.functions.script_host.lifecycle": {"status":"Healthy"},
+  "azure.functions.webjobs.storage": {
+    "status":"Unhealthy",
+    "description":"Unable to access AzureWebJobsStorage",
+    "errorCode":"AuthorizationPermissionMismatch"
+  }
+}
 [2026-04-04T12:17:54Z] Storage operation failed: Status: 403 (AuthorizationPermissionMismatch) after 325ms while probing AzureWebJobsStorage.
 [2026-04-04T12:15:42Z] The listener for function 'Functions.scheduled_cleanup' was unable to start.
-[2026-04-04T12:22:42Z] Process reporting unhealthy: azure.functions.webjobs.storage: Unhealthy
-[2026-04-04T12:22:42Z] Unable to access AzureWebJobsStorage. Status: 403 (AuthorizationPermissionMismatch)
 ```
 
 #### 3.8.2 Recovery-phase log snippet
 
 ```text
-[2026-04-04T12:31:08Z] Storage probe succeeded (70ms, 4 containers). Listener initialization resumed.
+[2026-04-04T12:31:08Z] Storage probe succeeded (70ms, 4 containers).
+[2026-04-04T12:31:10Z] Job host started.
+[2026-04-04T12:31:11Z] The listener for function 'Functions.scheduled_cleanup' started.
 ```
 
 ### 3.9 Interpretation checklist
@@ -502,6 +527,11 @@ Re-add required roles:
 ```bash
 az role assignment create \
   --assignee-object-id "$APP_PRINCIPAL_ID" \
+  --role "Storage Account Contributor" \
+  --scope "$STORAGE_ID"
+
+az role assignment create \
+  --assignee-object-id "$APP_PRINCIPAL_ID" \
   --role "Storage Blob Data Owner" \
   --scope "$STORAGE_ID"
 
@@ -509,6 +539,12 @@ az role assignment create \
   --assignee-object-id "$APP_PRINCIPAL_ID" \
   --role "Storage Queue Data Contributor" \
   --scope "$STORAGE_ID"
+
+az role assignment create \
+  --assignee-object-id "$APP_PRINCIPAL_ID" \
+  --role "Storage Table Data Contributor" \
+  --scope "$STORAGE_ID"
+
 ```
 
 Restart the app:
@@ -528,7 +564,7 @@ Recovery validation query:
 ```kusto
 let appName = "func-lab-storageaccess";
 traces
-| where timestamp > ago(30m)
+|| where timestamp > ago(10m)
 | where cloud_RoleName =~ appName
 | where message has_any ("Storage probe succeeded", "listener", "Host started", "Job host started")
 | project timestamp, severityLevel, message
@@ -540,7 +576,7 @@ Invocation recovery query:
 ```kusto
 let appName = "func-lab-storageaccess";
 requests
-| where timestamp > ago(30m)
+|| where timestamp > ago(10m)
 | where cloud_RoleName =~ appName
 | where operation_Name =~ "Functions.scheduled_cleanup"
 | summarize Invocations=count(), Failures=countif(success == false), LastSeen=max(timestamp)
@@ -552,16 +588,6 @@ Expected recovery indicators:
 - Listener startup failures stop.
 - Scheduled trigger invocations resume.
 
-### 3.13 Cleanup
-
-```bash
-az group delete \
-  --name "$RG" \
-  --yes \
-  --no-wait
-```
-
----
 
 ## 4) Experiment Log
 
@@ -583,8 +609,10 @@ This section documents artifact-centered observations and links each finding to 
 
 | Role | Scope | Expected |
 |---|---|---|
+| Storage Account Contributor | Storage account scope | Present |
 | Storage Blob Data Owner | Storage account scope | Present |
-| Storage Queue Data Contributor | Storage account scope | Present |
+|| Storage Queue Data Contributor | Storage account scope | Present |
+|| Storage Table Data Contributor | Storage account scope | Present |
 
 #### 4.2.2 Baseline host traces
 
@@ -607,10 +635,14 @@ Representative pattern before break:
 RBAC break operation timestamped:
 
 ```text
-2026-04-04T12:14:58Z  Removed role: Storage Blob Data Owner
+2026-04-04T12:14:58Z  Removed role: Storage Account Contributor
+2026-04-04T12:15:02Z  Removed role: Storage Blob Data Owner
 2026-04-04T12:15:02Z  Removed role: Storage Queue Data Contributor
 2026-04-04T12:15:12Z  Function app restart initiated
 ```
+
+!!! note "Role coverage in this experiment"
+    This experiment removed three of the four required roles. Storage Table Data Contributor was not present in the original assignment and therefore was not removed. In production, ensure all four roles are verified.
 
 ### 4.4 During-incident KQL observations
 
@@ -648,10 +680,14 @@ RBAC break operation timestamped:
 Role restoration and restart executed:
 
 ```text
-2026-04-04T12:28:14Z  Added role: Storage Blob Data Owner
+2026-04-04T12:28:14Z  Added role: Storage Account Contributor
+2026-04-04T12:28:18Z  Added role: Storage Blob Data Owner
 2026-04-04T12:28:18Z  Added role: Storage Queue Data Contributor
 2026-04-04T12:28:31Z  Function app restart initiated
 ```
+
+!!! note "Role coverage in this experiment"
+    This experiment restored three of the four required roles. Storage Table Data Contributor should also be verified and assigned in production scenarios for complete coverage of table-based operations.
 
 Recovery traces:
 
@@ -739,7 +775,7 @@ This section defines the expected observation pattern before, during, and after 
 
 | Evidence Source | Expected State | Key Indicator |
 |---|---|---|
-| Role assignments | Required roles restored | Role list confirms both roles |
+| Role assignments | Required roles restored | Role list confirms required storage roles are present |
 | `traces` | Storage probe returns success | `Storage probe succeeded (70ms, 4 containers)` |
 | `traces` | Listener starts successfully | Listener start message present |
 | `requests` | Timer invocations resume | Success count increases |
@@ -774,6 +810,15 @@ graph LR
     7. Storage probe success (`70ms`, `4 containers`) and invocation recovery.
 
     Hypothesis is falsified if this chain cannot be established and an alternative cause explains the data better.
+
+## Clean Up
+
+```bash
+az group delete \
+  --name "$RG" \
+  --yes \
+  --no-wait
+```
 
 ## Related Playbook
 

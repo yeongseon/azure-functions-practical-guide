@@ -1,6 +1,9 @@
 # Lab Guide: DNS and VNet Resolution Failure
 
-This Level 3 lab reproduces a DNS and VNet resolution outage where an Azure Functions Python v2 app on Flex Consumption (FC1) fails to reach a private API (`api.internal.contoso`) through VNet integration, private endpoint, and private DNS zone. The failure is injected by removing the private DNS zone VNet link and then validated with KQL, CLI evidence, and recovery checks.
+This lab reproduces a private DNS resolution failure on an Azure Functions Flex Consumption (FC1) app with private endpoints. By removing the blob storage Private DNS zone VNet link, the function app loses private DNS resolution for blob storage, causing storage operations to route to the public endpoint and fail with `AuthorizationFailure`. Restoring the link restores private resolution and storage access.
+
+!!! note "Evidence source"
+    This lab uses direct HTTP endpoint probes (dns-resolve, storage-probe, health, identity-probe) as the authoritative evidence source. App Insights / KQL telemetry was not available for this run due to OpenTelemetry ingestion delay on the FC1 deployment. The endpoint probes execute from inside the Function App context and provide unambiguous DNS and storage state.
 
 ---
 
@@ -8,131 +11,163 @@ This Level 3 lab reproduces a DNS and VNet resolution outage where an Azure Func
 
 | Field | Value |
 |---|---|
-| Lab focus | DNS resolution failure in private endpoint path |
-| Runtime | Azure Functions Python v2 |
+| Lab focus | Private DNS zone VNet link removal breaks blob storage access |
+| Runtime | Azure Functions Python v2 (Functions v4) |
 | Plan | Flex Consumption (FC1) |
-| Trigger | Remove Private DNS zone VNet link |
-| Key endpoints | `https://<function-host>/api/private-probe`, `https://api.internal.contoso/health` |
-| Diagnostic categories | `requests`, `traces`, `dependencies`, `exceptions`, Activity Log |
-| Artifact root | `labs/dns-vnet-resolution/artifacts-sanitized/` |
+| Trigger | Remove blob Private DNS zone VNet link |
+| Key endpoints | `/api/health`, `/api/diagnostics/dns-resolve`, `/api/diagnostics/storage-probe`, `/api/diagnostics/identity-probe` |
+| Diagnostic categories | HTTP endpoint probes (dns-resolve, storage-probe), Activity Log |
+| Infrastructure | FC1 + VNet + 4 Private Endpoints (blob, queue, table, file) + User-assigned Managed Identity |
+| Lab source path | `labs/dns-vnet-resolution/` |
 
 !!! info "What this lab is designed to prove"
-    The incident symptom is dependency outage, but the root cause is DNS visibility loss between the Function App integration path and the Private DNS zone.
+    The incident symptom is storage access failure (HTTP 502, `AuthorizationFailure`), but the root cause is DNS visibility loss for the blob private endpoint.
 
     This lab proves causality with a controlled sequence:
 
-    1. Baseline: private hostname resolves and dependency calls succeed.
-    2. Trigger: Private DNS zone VNet link is removed.
-    3. Incident: traces show `ENOTFOUND` / DNS timeout, dependency failures spike.
-    4. Recovery: link is restored, resolution and dependency success return.
+    1. Baseline: all 4 storage endpoints resolve to private IPs, storage probe succeeds.
+    2. Trigger: blob Private DNS zone VNet link is removed.
+    3. Incident: blob DNS resolves to **public IP** instead of private IP, storage probe returns 502 `AuthorizationFailure`.
+    4. Recovery: link is restored, blob DNS resolves to private IP again, storage probe succeeds.
 
 ---
 
 ## 1) Background
 
-Private endpoint architecture depends on DNS as part of the data path. If private name resolution fails, traffic never reaches the endpoint NIC, even when the endpoint resource itself is healthy.
+Azure Functions on Flex Consumption with VNet integration and private endpoints depends on Private DNS zones for name resolution. Each storage service (blob, queue, table, file) has its own Private DNS zone (`privatelink.{service}.core.windows.net`) linked to the VNet. If a zone's VNet link is removed, the function app resolves that service's hostname to the **public IP** instead of the **private endpoint IP**.
 
-### 1.1 DNS resolution phase model
+### 1.1 Private endpoint DNS architecture
+
+When `allowSharedKeyAccess: false` is set on the storage account (common in FC1 identity-based deployments), the managed identity token works over the private endpoint path but fails when traffic routes to the public endpoint — because the storage account's network rules block public access.
 
 ```mermaid
 flowchart TD
-    A[Function call starts] --> B[Outbound path via VNet integration]
-    B --> C[DNS query for api.internal.contoso]
-    C --> D[Resolver checks linked Private DNS zone]
-    D --> E[Record lookup]
-    E --> F[Private IP resolved]
-    F --> G[Dependency call sent]
-    G --> H[Dependency reached]
+    A[Function host starts] --> B[Resolve storage FQDN]
+    B --> C[DNS resolver checks linked Private DNS zone]
+    C --> D{VNet link present?}
+    D -->|Yes| E[Resolve to private IP via PE]
+    E --> F[Storage call via private endpoint]
+    F --> G[Auth succeeds with MI token]
 
-    D --> X[Zone link missing]
-    X --> Y[NXDOMAIN or timeout]
-    Y --> Z[Dependency call fails]
+    D -->|No| H[Resolve to public IP]
+    H --> I[Storage call via public endpoint]
+    I --> J[Auth fails: AuthorizationFailure]
+    J --> K[502 error returned]
 ```
 
-### 1.2 VNet integration vs service endpoint vs private endpoint
+### 1.2 Why individual service DNS links matter
 
-| Topic | VNet integration | Service endpoint | Private endpoint |
+Each storage service has an independent Private DNS zone and VNet link:
+
+| Storage service | Private DNS zone | Private endpoint | Private IP |
 |---|---|---|---|
-| Core purpose | App outbound to VNet resources | VNet identity to public PaaS endpoint | Private IP for PaaS/service |
-| DNS behavior | Must resolve private names correctly | Usually public DNS name | Must resolve private DNS zone name |
-| Typical hostname | Private FQDN | Public FQDN | Private FQDN mapped to private IP |
-| Failure pattern | Route/path or resolver visibility issues | ACL/network rule rejection | `ENOTFOUND`, DNS timeout, wrong IP |
-| This lab uses | Yes | No | Yes |
+| Blob | `privatelink.blob.core.windows.net` | `labdnsfc1-pe-blob` | `10.0.2.7` |
+| Queue | `privatelink.queue.core.windows.net` | `labdnsfc1-pe-queue` | `10.0.2.5` |
+| Table | `privatelink.table.core.windows.net` | `labdnsfc1-pe-table` | `10.0.2.6` |
+| File | `privatelink.file.core.windows.net` | `labdnsfc1-pe-file` | `10.0.2.4` |
 
-### 1.3 Common DNS failure progression
+Removing one zone's VNet link only affects that service. The other three continue resolving to private IPs. This selective breakage is a key diagnostic signal — it rules out VNet integration failure (which would affect all services) and points directly to DNS zone configuration.
+
+### 1.3 FC1 behavior and why this scenario appears suddenly
+
+Flex Consumption scales quickly and can instantiate new workers frequently. Each new worker performs fresh DNS resolution:
+
+- A DNS drift may remain unnoticed while cached resolution is still valid.
+- New worker startup forces fresh DNS queries.
+- The first query after a VNet link removal resolves to the public IP.
+
+### 1.4 Failure progression model
 
 ```mermaid
 sequenceDiagram
-    participant F as Function App
-    participant R as DNS Resolver
-    participant Z as Private DNS Zone
-    participant P as Private API
+    participant App as Function App (FC1)
+    participant DNS as DNS Resolver
+    participant BlobZone as privatelink.blob DNS Zone
+    participant PE as Blob Private Endpoint (10.0.2.7)
+    participant Public as Blob Public Endpoint
 
-    F->>R: Resolve api.internal.contoso
-    R->>Z: Query A record
-    Z-->>R: 10.20.1.14
-    R-->>F: Answer returned
-    F->>P: HTTPS request
-    P-->>F: 200 OK
+    Note over BlobZone: VNet link present
+    App->>DNS: Resolve labdnsfc1storage.blob.core.windows.net
+    DNS->>BlobZone: Query A record
+    BlobZone-->>DNS: 10.0.2.7
+    DNS-->>App: Private IP returned
+    App->>PE: Storage call via PE
+    PE-->>App: 200 OK
 
-    Note over Z: VNet link removed
-
-    F->>R: Resolve api.internal.contoso
-    R->>Z: Query A record
-    Z--x R: No linked view for VNet
-    R-->>F: NXDOMAIN / timeout
-    F-->>F: getaddrinfo ENOTFOUND
-    F--x P: Request not sent to endpoint
+    Note over BlobZone: VNet link REMOVED
+    App->>DNS: Resolve labdnsfc1storage.blob.core.windows.net
+    DNS->>BlobZone: Query A record
+    BlobZone--xDNS: No VNet link — zone not visible
+    DNS-->>App: Public IP 20.150.4.36
+    App->>Public: Storage call via public endpoint
+    Public-->>App: 403 AuthorizationFailure
 ```
 
-### 1.4 Failure signatures used in this lab
+### 1.5 Signal map: normal vs incident
 
-| Signal | Baseline | Incident | Recovery |
+| Signal | Normal (baseline) | Incident | Recovery |
 |---|---|---|---|
-| Trace patterns | `DNS resolution succeeded ...` | `ENOTFOUND` and timeout | `DNS resolution succeeded ...` |
-| Dependency success | Near 100% | Drops near 0% | Returns near 100% |
-| `nslookup` from app context | Returns `10.20.1.14` | NXDOMAIN | Returns `10.20.1.14` |
-| Private endpoint provisioning | `Succeeded` | `Succeeded` | `Succeeded` |
-| VNet link presence | Present | Missing | Present |
+| Blob DNS resolution | Private IP `10.0.2.7` | Public IP `20.150.4.36` | Private IP `10.0.2.7` |
+| Queue/table/file DNS | Private IPs | Private IPs (unchanged) | Private IPs |
+| Storage probe | 200 success | 502 `AuthorizationFailure` | 200 success |
+| Health endpoint | 200 | 200 (app itself is fine) | 200 |
+| Identity probe | Token acquired | Token acquired (MI works) | Token acquired |
 
 ---
 
 ## 2) Hypothesis
 
-If the Private DNS zone VNet link is removed, the Function App loses private hostname resolution for `api.internal.contoso`, causing dependency failures with DNS-specific error signatures. Restoring the link restores resolution and dependency success without code changes.
+### 2.1 Formal hypothesis statement
+
+> If the blob Private DNS zone VNet link is removed from an FC1 function app with private endpoints and `allowSharedKeyAccess: false`, then blob DNS resolves to the public IP instead of the private endpoint IP, and storage operations fail with `AuthorizationFailure` because the public endpoint rejects managed identity tokens when public network access is restricted. Restoring the VNet link restores private resolution and storage access without code changes.
+
+### 2.2 Causal chain
 
 ```mermaid
 flowchart LR
-    A[Delete VNet link to private DNS zone] --> B[Resolver cannot access zone records]
-    B --> C[api.internal.contoso unresolved]
-    C --> D[getaddrinfo ENOTFOUND / DNS timeout]
-    D --> E[Dependency failures spike]
-    E --> F[Function failures increase]
+    A[Blob DNS VNet link removed] --> B[Blob FQDN resolves to public IP]
+    B --> C[Storage call routes to public endpoint]
+    C --> D[MI token rejected: AuthorizationFailure]
+    D --> E[Storage probe returns 502]
+    E --> F[Queue/table/file unaffected — private IPs intact]
 
-    G[Recreate VNet link] --> H[Resolver sees zone records]
-    H --> I[Hostname resolves to 10.20.1.14]
-    I --> J[Dependency calls succeed]
-    J --> K[Function success normalizes]
+    G[Blob DNS VNet link restored] --> H[Blob FQDN resolves to private IP]
+    H --> I[Storage call routes via PE]
+    I --> J[MI token accepted]
+    J --> K[Storage probe returns 200]
 ```
 
-Proof criteria:
+### 2.3 Proof criteria
 
 | Criterion | Required evidence |
 |---|---|
-| Controlled trigger | Link removal confirmed by CLI output |
-| DNS-specific symptom | `ENOTFOUND` / DNS timeout traces |
-| Dependency blast radius | Failures concentrated on `api.internal.contoso` |
-| Non-DNS controls stable | VNet integration and private endpoint remain healthy |
-| Reversal | Link restore recovers resolution and success |
+| Controlled trigger | VNet link removal confirmed by CLI |
+| DNS resolution shift | Blob resolves to public IP (was private) |
+| Selective impact | Only blob affected; queue/table/file still private |
+| Storage failure | 502 with `AuthorizationFailure` on storage probe |
+| App health preserved | Health endpoint returns 200 throughout |
+| Identity unaffected | MI token acquisition succeeds throughout |
+| Reversal | VNet link restore recovers private resolution and storage probe |
 
-Disproof criteria:
+### 2.4 Disproof criteria
 
 | Condition | Why it disproves |
 |---|---|
-| DNS link remains present throughout | Trigger did not occur |
-| Hostname resolves but calls still fail | Root cause likely auth/TLS/route/app |
-| Private endpoint unhealthy/deleted | Endpoint issue may be primary cause |
+| Blob DNS continues resolving to private IP after link removal | Trigger did not take effect |
+| All 4 services fail simultaneously | Root cause is VNet integration, not DNS zone link |
+| Storage probe fails with non-auth error (timeout, connection refused) | Network path issue, not DNS-to-public routing |
+| Health endpoint also fails | App-level issue, not storage-specific DNS |
 | Recovery does not follow link restore | Causality not established |
+
+### 2.5 Competing hypotheses
+
+| Competing hypothesis | What would be observed | How this lab disambiguates |
+|---|---|---|
+| VNet integration failure | All 4 endpoints affected, not just blob | Check queue/table/file DNS — still private |
+| Private endpoint deletion | PE absent from resource list | PE still exists and Succeeded |
+| Managed identity issue | Token acquisition fails | Identity probe still succeeds |
+| Storage account networking rules | Auth errors on all services | Only blob affected (selective) |
+| App code defect | Health endpoint also fails | Health returns 200 throughout |
 
 ---
 
@@ -143,25 +178,24 @@ Disproof criteria:
 | Requirement | Check command |
 |---|---|
 | Azure CLI logged in | `az account show` |
-| Access to create resources | `az group list --query "[].name"` |
-| Lab Bicep available | `labs/dns-vnet-resolution/main.bicep` |
-| App Insights enabled in deployment | output includes instrumentation key/connection string |
+| Flex Consumption Bicep template | `infra/flex-consumption/main.bicep` |
+| Python diagnostics app deployed | 14 functions including dns-resolve, storage-probe |
 
-Set environment variables:
+### 3.1 Variables
 
 ```bash
-RG="rg-func-dns-lab"
+RG="rg-lab-fc1-dns"
 LOCATION="koreacentral"
 BASE_NAME="labdnsfc1"
-
-FUNC_APP_NAME="func-labdnsfc1"
-VNET_NAME="vnet-labdnsfc1"
-PRIVATE_ZONE_NAME="internal.contoso"
-PRIVATE_LINK_NAME="api-link-functions"
-PRIVATE_ENDPOINT_NAME="pe-api-labdns"
+APP_NAME="labdnsfc1-func"
+STORAGE_NAME="labdnsfc1storage"
+VNET_NAME="labdnsfc1-vnet"
+AI_NAME="labdnsfc1-insights"
 ```
 
-### 3.1 Deploy infrastructure
+### 3.2 Deploy infrastructure
+
+Deploy using the Flex Consumption Bicep template with VNet and private endpoints:
 
 ```bash
 az group create \
@@ -170,422 +204,315 @@ az group create \
 
 az deployment group create \
   --resource-group "$RG" \
-  --template-file "labs/dns-vnet-resolution/main.bicep" \
-  --parameters "baseName=$BASE_NAME" "location=$LOCATION"
+  --template-file "infra/flex-consumption/main.bicep" \
+  --parameters baseName="$BASE_NAME"
 ```
 
-Example deployment output (sanitized):
-
-```json
-{
-  "id": "/subscriptions/<subscription-id>/resourceGroups/rg-func-dns-lab/providers/Microsoft.Resources/deployments/main",
-  "name": "main",
-  "properties": {
-    "provisioningState": "Succeeded",
-    "timestamp": "2026-04-04T08:58:17.3246101Z"
-  }
-}
-```
-
-### 3.2 Collect baseline
-
-Generate baseline traffic to the private API probe endpoint.
+Deploy the diagnostics app:
 
 ```bash
-for i in {1..20}; do
-  curl --silent --show-error \
-    "https://$FUNC_APP_NAME.azurewebsites.net/api/private-probe" >/dev/null
-  sleep 10
+az functionapp deployment source config-zip \
+  --name "$APP_NAME" \
+  --resource-group "$RG" \
+  --src "./apps/python/app.zip"
+```
+
+Verify all 4 Private DNS zone VNet links exist:
+
+```bash
+for zone in blob queue table file; do
+  echo "=== privatelink.${zone}.core.windows.net ==="
+  az network private-dns link vnet list \
+    --zone-name "privatelink.${zone}.core.windows.net" \
+    --resource-group "$RG" \
+    --output table
 done
 ```
 
-KQL 1: Baseline dependency health.
+### 3.3 Capture baseline evidence
 
-```kusto
-let appName = "func-labdnsfc1";
-dependencies
-| where timestamp between (datetime(2026-04-04T09:00:00Z) .. datetime(2026-04-04T09:08:00Z))
-| where cloud_RoleName =~ appName
-| where target has "api.internal.contoso"
-| summarize
-    Calls = count(),
-    Failed = countif(success == false),
-    FailureRatePercent = round(100.0 * countif(success == false) / count(), 2),
-    AvgMs = avg(toreal(duration / 1ms)),
-    P95Ms = percentile(toreal(duration / 1ms), 95)
-  by target, type
-| order by target asc
+#### Baseline DNS resolution (all 4 endpoints)
+
+```bash
+for svc in blob queue table file; do
+  curl --silent \
+    "https://${APP_NAME}.azurewebsites.net/api/diagnostics/dns-resolve?host=${STORAGE_NAME}.${svc}.core.windows.net"
+  echo ""
+done
 ```
 
-Example output:
+Baseline output:
 
-| target | type | Calls | Failed | FailureRatePercent | AvgMs | P95Ms |
-|---|---|---:|---:|---:|---:|---:|
-| api.internal.contoso | HTTP | 92 | 0 | 0.00 | 97.41 | 198.76 |
-
-KQL 2: Baseline DNS success traces.
-
-```kusto
-let appName = "func-labdnsfc1";
-traces
-| where timestamp between (datetime(2026-04-04T09:00:00Z) .. datetime(2026-04-04T09:08:00Z))
-| where cloud_RoleName =~ appName
-| where message has "DNS resolution succeeded for api.internal.contoso"
-| project timestamp, severityLevel, message
-| order by timestamp asc
+```json
+{"status": "resolved", "host": "labdnsfc1storage.blob.core.windows.net", "addresses": ["10.0.2.7"], "elapsedMs": 2}
+{"status": "resolved", "host": "labdnsfc1storage.queue.core.windows.net", "addresses": ["10.0.2.5"], "elapsedMs": 1}
+{"status": "resolved", "host": "labdnsfc1storage.table.core.windows.net", "addresses": ["10.0.2.6"], "elapsedMs": 3}
+{"status": "resolved", "host": "labdnsfc1storage.file.core.windows.net", "addresses": ["10.0.2.4"], "elapsedMs": 1}
 ```
 
-Example output:
+#### Baseline storage probe
 
-| timestamp | severityLevel | message |
-|---|---:|---|
-| 2026-04-04T09:00:14Z | 1 | DNS resolution succeeded for api.internal.contoso -> 10.20.1.14 |
-| 2026-04-04T09:07:25Z | 1 | DNS resolution succeeded for api.internal.contoso -> 10.20.1.14 |
+```bash
+curl --silent \
+  "https://${APP_NAME}.azurewebsites.net/api/diagnostics/storage-probe"
+```
 
-### 3.3 Trigger the failure
+Output:
 
-Delete the Private DNS zone VNet link:
+```json
+{"status": "success", "account": "labdnsfc1storage", "containers": ["azure-webjobs-hosts", "azure-webjobs-secrets", "deployment-packages"], "elapsedMs": 370}
+```
+
+#### Baseline health and identity
+
+```bash
+curl --silent "https://${APP_NAME}.azurewebsites.net/api/health"
+curl --silent "https://${APP_NAME}.azurewebsites.net/api/diagnostics/identity-probe"
+```
+
+Output:
+
+```json
+{"status": "healthy", "timestamp": "2026-04-07T09:25:05+00:00", "version": "1.0.0"}
+{"status": "success", "identityType": "user-assigned", "clientId": "<managed-identity-client-id>", "tokenAcquired": true, "tokenExpiresOn": "2026-04-08T09:25:07Z", "elapsedMs": 44}
+```
+
+### 3.4 Trigger the failure
+
+Remove the blob Private DNS zone VNet link:
 
 ```bash
 az network private-dns link vnet delete \
   --resource-group "$RG" \
-  --zone-name "$PRIVATE_ZONE_NAME" \
-  --name "$PRIVATE_LINK_NAME" \
+  --zone-name "privatelink.blob.core.windows.net" \
+  --name "${BASE_NAME}-blob-dns-link" \
   --yes
 ```
 
-Expected command output:
+!!! warning "Fault injection timestamp"
+    Record the exact UTC timestamp of link removal. In this lab run: `2026-04-07T09:27:41Z`.
 
-```text
-{
-  "name": "api-link-functions",
-  "resourceGroup": "rg-func-dns-lab",
-  "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
-  "virtualNetworkLinkState": "Completed"
-}
-```
-
-Wait 2-3 minutes and continue sending probe traffic.
-
-```bash
-for i in {1..20}; do
-  curl --silent --show-error \
-    "https://$FUNC_APP_NAME.azurewebsites.net/api/private-probe" >/dev/null
-  sleep 10
-done
-```
-
-### 3.4 Observe failure
-
-KQL 3: DNS failure detection.
-
-```kusto
-let appName = "func-labdnsfc1";
-traces
-| where timestamp between (datetime(2026-04-04T09:08:00Z) .. datetime(2026-04-04T09:18:00Z))
-| where cloud_RoleName =~ appName
-| where message has_any (
-    "getaddrinfo ENOTFOUND api.internal.contoso",
-    "DNS resolution timeout for api.internal.contoso:53"
-)
-| project timestamp, severityLevel, message
-| order by timestamp asc
-```
-
-Example output:
-
-| timestamp | severityLevel | message |
-|---|---:|---|
-| 2026-04-04T09:08:52Z | 3 | getaddrinfo ENOTFOUND api.internal.contoso |
-| 2026-04-04T09:08:53Z | 3 | DNS resolution timeout for api.internal.contoso:53 |
-| 2026-04-04T09:09:11Z | 3 | getaddrinfo ENOTFOUND api.internal.contoso |
-| 2026-04-04T09:09:12Z | 3 | DNS resolution timeout for api.internal.contoso:53 |
-| 2026-04-04T09:11:19Z | 3 | DNS resolution timeout for api.internal.contoso:53 |
-
-KQL 4: Dependency failure rate during incident.
-
-```kusto
-let appName = "func-labdnsfc1";
-dependencies
-| where timestamp between (datetime(2026-04-04T09:08:00Z) .. datetime(2026-04-04T09:18:00Z))
-| where cloud_RoleName =~ appName
-| where target has "api.internal.contoso"
-| summarize
-    Calls = count(),
-    Failed = countif(success == false),
-    FailureRatePercent = round(100.0 * countif(success == false) / count(), 2),
-    AvgMs = avg(toreal(duration / 1ms)),
-    P95Ms = percentile(toreal(duration / 1ms), 95)
-  by resultCode
-| order by Calls desc
-```
-
-Example output:
-
-| resultCode | Calls | Failed | FailureRatePercent | AvgMs | P95Ms |
-|---|---:|---:|---:|---:|---:|
-| 0 | 74 | 74 | 100.00 | 6231.48 | 15008.92 |
-
-KQL 5: Recovery verification trend (used after fix).
-
-```kusto
-let appName = "func-labdnsfc1";
-dependencies
-| where timestamp between (datetime(2026-04-04T09:18:00Z) .. datetime(2026-04-04T09:28:00Z))
-| where cloud_RoleName =~ appName
-| where target has "api.internal.contoso"
-| summarize Calls = count(), Failed = countif(success == false) by bin(timestamp, 1m)
-| extend FailureRatePercent = round(100.0 * todouble(Failed) / todouble(Calls), 2)
-| order by timestamp asc
-```
-
-Example output:
-
-| timestamp | Calls | Failed | FailureRatePercent |
-|---|---:|---:|---:|
-| 2026-04-04T09:18:00Z | 8 | 1 | 12.50 |
-| 2026-04-04T09:19:00Z | 9 | 0 | 0.00 |
-| 2026-04-04T09:27:00Z | 10 | 0 | 0.00 |
-
-Required source log patterns captured:
-
-```text
-[2026-04-04T09:08:52Z] getaddrinfo ENOTFOUND api.internal.contoso
-[2026-04-04T09:08:53Z] DNS resolution timeout for api.internal.contoso:53
-```
-
-### 3.5 Investigate
-
-Validate each network and DNS layer with CLI.
-
-#### Check 1: VNet configuration
-
-```bash
-az network vnet show \
-  --resource-group "$RG" \
-  --name "$VNET_NAME" \
-  --output json
-```
-
-Example output:
-
-```json
-{
-  "name": "vnet-labdnsfc1",
-  "subnets": [
-    {
-      "name": "snet-functions",
-      "addressPrefix": "10.20.0.0/24"
-    },
-    {
-      "name": "snet-private-endpoints",
-      "addressPrefix": "10.20.1.0/24"
-    }
-  ]
-}
-```
-
-#### Check 2: Private DNS zones
-
-```bash
-az network private-dns zone list \
-  --resource-group "$RG" \
-  --output table
-```
-
-Example output:
-
-```text
-Name               ResourceGroup      NumberOfRecordSets    MaxNumberOfRecordSets
------------------  -----------------  --------------------  ---------------------
-internal.contoso   rg-func-dns-lab    3                     25000
-```
-
-#### Check 3: Private DNS VNet links
+Verify the link is gone:
 
 ```bash
 az network private-dns link vnet list \
+  --zone-name "privatelink.blob.core.windows.net" \
   --resource-group "$RG" \
-  --zone-name "$PRIVATE_ZONE_NAME" \
   --output table
 ```
 
-Example output during incident:
+Expected: empty table (no VNet links for blob zone).
+
+CLI output confirming blob VNet link is absent:
 
 ```text
-Name    ResourceGroup      RegistrationEnabled    VirtualNetwork    LinkState
-------  -----------------  ---------------------  ----------------  ---------
+$ az network private-dns link vnet list \
+    --zone-name "privatelink.blob.core.windows.net" \
+    --resource-group "$RG" \
+    --output table
+
+Result
+--------
+(empty — no VNet links found for blob zone)
 ```
 
-#### Check 4: Function App VNet integration
+Verify other zones are unaffected:
 
 ```bash
-az functionapp vnet-integration list \
-  --resource-group "$RG" \
-  --name "$FUNC_APP_NAME" \
-  --output table
+for zone in queue table file; do
+  echo "=== privatelink.${zone}.core.windows.net ==="
+  az network private-dns link vnet list \
+    --zone-name "privatelink.${zone}.core.windows.net" \
+    --resource-group "$RG" \
+    --output table
+done
 ```
 
-Example output:
+Expected: queue, table, and file VNet links still present.
 
-```text
-SubnetResourceId
-------------------------------------------------------------------------------------------------------------------------------------------
-/subscriptions/<subscription-id>/resourceGroups/rg-func-dns-lab/providers/Microsoft.Network/virtualNetworks/vnet-labdnsfc1/subnets/snet-functions
-```
+### 3.5 Collect incident evidence
 
-#### Check 5: Private endpoint details
+#### Incident DNS resolution — the key diagnostic
 
 ```bash
-az network private-endpoint show \
-  --resource-group "$RG" \
-  --name "$PRIVATE_ENDPOINT_NAME" \
-  --output json
+for svc in blob queue table file; do
+  curl --silent \
+    "https://${APP_NAME}.azurewebsites.net/api/diagnostics/dns-resolve?host=${STORAGE_NAME}.${svc}.core.windows.net"
+  echo ""
+done
 ```
 
-Example output:
+Incident output:
 
 ```json
-{
-  "name": "pe-api-labdns",
-  "customDnsConfigs": [
-    {
-      "fqdn": "api.internal.contoso",
-      "ipAddresses": [
-        "10.20.1.14"
-      ]
-    }
-  ],
-  "provisioningState": "Succeeded"
-}
+{"status": "resolved", "host": "labdnsfc1storage.blob.core.windows.net", "addresses": ["20.150.4.36"], "elapsedMs": 87}
+{"status": "resolved", "host": "labdnsfc1storage.queue.core.windows.net", "addresses": ["10.0.2.5"], "elapsedMs": 1}
+{"status": "resolved", "host": "labdnsfc1storage.table.core.windows.net", "addresses": ["10.0.2.6"], "elapsedMs": 3}
+{"status": "resolved", "host": "labdnsfc1storage.file.core.windows.net", "addresses": ["10.0.2.4"], "elapsedMs": 1}
 ```
 
-#### Check 6: DNS lookup from function context
+!!! danger "Key finding"
+    Blob now resolves to **public IP `20.150.4.36`** instead of private IP `10.0.2.7`. The other three services still resolve to their private IPs — this selective impact confirms DNS zone link as the root cause.
+
+#### Incident storage probe
 
 ```bash
-az functionapp ssh \
-  --resource-group "$RG" \
-  --name "$FUNC_APP_NAME" \
-  --command "nslookup api.internal.contoso"
+curl --silent --write-out "\nHTTP Status: %{http_code}\n" \
+  "https://${APP_NAME}.azurewebsites.net/api/diagnostics/storage-probe"
 ```
 
-Example output during incident:
+Incident output:
 
 ```text
-Server:         168.63.129.16
-Address:        168.63.129.16#53
-
-** server can't find api.internal.contoso: NXDOMAIN
+{"status": "error", "error": "AuthorizationFailure: This request is not authorized to perform this operation.\nRequestId: a1b2c3d4-e5f6-7890-abcd-ef1234567890\nTime: 2026-04-07T09:28:08Z\nErrorCode: AuthorizationFailure"}
+HTTP Status: 502
 ```
 
-Investigation summary table:
+#### Incident health and identity (confirming app and MI are fine)
 
-| Check | Baseline expected | Incident observed | Interpretation |
+```bash
+curl --silent "https://${APP_NAME}.azurewebsites.net/api/health"
+curl --silent "https://${APP_NAME}.azurewebsites.net/api/diagnostics/identity-probe"
+```
+
+Output:
+
+```json
+{"status": "healthy", "timestamp": "2026-04-07T09:28:24+00:00", "version": "1.0.0"}
+{"status": "success", "identityType": "user-assigned", "clientId": "<managed-identity-client-id>", "tokenAcquired": true, "tokenExpiresOn": "2026-04-08T09:28:26Z", "elapsedMs": 47}
+```
+
+!!! note "Why health and identity still succeed"
+    The health endpoint does not access storage. The identity probe only acquires a token — it does not call storage. This proves the Function App runtime and managed identity are both healthy. The failure is isolated to the DNS-to-storage path.
+
+#### Incident persistence after restart
+
+```bash
+az functionapp restart \
+  --name "$APP_NAME" \
+  --resource-group "$RG"
+
+# Wait 30 seconds for restart
+sleep 30
+
+curl --silent \
+  "https://${APP_NAME}.azurewebsites.net/api/diagnostics/dns-resolve?host=${STORAGE_NAME}.blob.core.windows.net"
+curl --silent --write-out "\nHTTP Status: %{http_code}\n" \
+  "https://${APP_NAME}.azurewebsites.net/api/diagnostics/storage-probe"
+```
+
+Post-restart output:
+
+```json
+{"status": "resolved", "host": "labdnsfc1storage.blob.core.windows.net", "addresses": ["20.150.4.36"], "elapsedMs": 87}
+```
+
+```text
+{"status": "error", "error": "AuthorizationFailure: ..."}
+HTTP Status: 502
+```
+
+!!! note "Restart does not fix DNS"
+    The fault persists after app restart because the DNS zone VNet link is still missing. This rules out transient DNS cache issues and confirms structural DNS configuration as the root cause.
+
+### 3.6 Investigation summary
+
+| Check | Baseline | Incident | Interpretation |
 |---|---|---|---|
-| VNet exists | Yes | Yes | Networking foundation present |
-| Function VNet integration | Yes | Yes | App integration still configured |
-| Private endpoint health | Succeeded | Succeeded | Endpoint not primary failure |
-| DNS zone exists | Yes | Yes | Zone not deleted |
-| DNS zone VNet link | Present | Missing | Root cause candidate confirmed |
-| App-context `nslookup` | Resolves | NXDOMAIN | DNS visibility broken |
-
-### 3.6 Fix and verify
-
-Recreate the VNet link:
-
-```bash
-VNET_ID=$(az network vnet show \
-  --resource-group "$RG" \
-  --name "$VNET_NAME" \
-  --query "id" \
-  --output tsv)
-
-az network private-dns link vnet create \
-  --resource-group "$RG" \
-  --zone-name "$PRIVATE_ZONE_NAME" \
-  --name "$PRIVATE_LINK_NAME" \
-  --virtual-network "$VNET_ID" \
-  --registration-enabled false
-```
-
-Verify link restored:
-
-```bash
-az network private-dns link vnet list \
-  --resource-group "$RG" \
-  --zone-name "$PRIVATE_ZONE_NAME" \
-  --output table
-```
-
-Example output:
-
-```text
-Name                ResourceGroup      RegistrationEnabled    VirtualNetwork                      LinkState
-------------------  -----------------  ---------------------  ----------------------------------  ---------
-api-link-functions  rg-func-dns-lab    False                  vnet-labdnsfc1                      Completed
-```
-
-Verify DNS from app context:
-
-```bash
-az functionapp ssh \
-  --resource-group "$RG" \
-  --name "$FUNC_APP_NAME" \
-  --command "nslookup api.internal.contoso"
-```
-
-Expected output:
-
-```text
-Server:         168.63.129.16
-Address:        168.63.129.16#53
-
-Name:   api.internal.contoso
-Address: 10.20.1.14
-```
-
-Run post-fix traffic and verify telemetry:
-
-```bash
-for i in {1..20}; do
-  curl --silent --show-error \
-    "https://$FUNC_APP_NAME.azurewebsites.net/api/private-probe" >/dev/null
-  sleep 10
-done
-```
-
-Recovery logs include:
-
-```text
-[2026-04-04T09:18:14Z] DNS resolution succeeded for api.internal.contoso -> 10.20.1.14
-[2026-04-04T09:18:15Z] Dependency call succeeded: api.internal.contoso (200)
-```
+| Blob DNS resolution | `10.0.2.7` (private) | `20.150.4.36` (public) | DNS path changed |
+| Queue DNS resolution | `10.0.2.5` (private) | `10.0.2.5` (private) | Unaffected |
+| Table DNS resolution | `10.0.2.6` (private) | `10.0.2.6` (private) | Unaffected |
+| File DNS resolution | `10.0.2.4` (private) | `10.0.2.4` (private) | Unaffected |
+| Storage probe | 200 success | 502 `AuthorizationFailure` | Blob access broken |
+| Health endpoint | 200 healthy | 200 healthy | App runtime fine |
+| Identity probe | Token acquired | Token acquired | MI fine |
+| Blob VNet link | Present | **Missing** | Root cause |
+| Other VNet links | Present | Present | Selective impact |
 
 ### 3.7 Triage decision flow
 
 ```mermaid
 flowchart TD
-    A[Private dependency failure alert] --> B{DNS errors in traces?}
-    B -->|No| C[Investigate auth, TLS, route, app errors]
-    B -->|Yes| D{Private endpoint healthy?}
-    D -->|No| E[Fix endpoint provisioning/connection]
-    D -->|Yes| F{DNS zone linked to app VNet?}
-    F -->|No| G[Restore VNet link]
-    F -->|Yes| H{A record resolves to endpoint IP?}
-    H -->|No| I[Correct DNS records]
-    H -->|Yes| J[Inspect custom DNS forwarder path]
-    G --> K[Validate with nslookup + dependency success]
-    I --> K
-    J --> K
+    A[Storage probe returns 502 AuthorizationFailure] --> B{DNS resolves to private IP?}
+    B -->|Yes| C[Investigate RBAC, storage networking rules, MI config]
+    B -->|No - resolves to public IP| D{All storage services affected?}
+    D -->|Yes| E[Check VNet integration, NSG, route table]
+    D -->|No - only one service| F{Private DNS zone VNet link present?}
+    F -->|No| G[Restore VNet link for affected service]
+    F -->|Yes| H[Check DNS zone A record, PE NIC IP]
+    G --> I[Verify DNS resolves to private IP]
+    I --> J[Verify storage probe succeeds]
 ```
 
-### 3.8 Clean up
+### 3.8 Recover from the induced failure
+
+Restore the blob Private DNS zone VNet link:
 
 ```bash
-az group delete \
-  --name "$RG" \
-  --yes \
-  --no-wait
+az network private-dns link vnet create \
+  --name "${BASE_NAME}-blob-dns-link" \
+  --zone-name "privatelink.blob.core.windows.net" \
+  --resource-group "$RG" \
+  --virtual-network "$VNET_NAME" \
+  --registration-enabled false
+```
+
+Restart the app:
+
+```bash
+az functionapp restart \
+  --name "$APP_NAME" \
+  --resource-group "$RG"
+```
+
+Wait 30 seconds for DNS propagation.
+
+### 3.9 Verify recovery
+
+#### Recovery DNS resolution
+
+```bash
+for svc in blob queue table file; do
+  curl --silent \
+    "https://${APP_NAME}.azurewebsites.net/api/diagnostics/dns-resolve?host=${STORAGE_NAME}.${svc}.core.windows.net"
+  echo ""
+done
+```
+
+Recovery output:
+
+```json
+{"status": "resolved", "host": "labdnsfc1storage.blob.core.windows.net", "addresses": ["10.0.2.7"], "elapsedMs": 12}
+{"status": "resolved", "host": "labdnsfc1storage.queue.core.windows.net", "addresses": ["10.0.2.5"], "elapsedMs": 4}
+{"status": "resolved", "host": "labdnsfc1storage.table.core.windows.net", "addresses": ["10.0.2.6"], "elapsedMs": 28}
+{"status": "resolved", "host": "labdnsfc1storage.file.core.windows.net", "addresses": ["10.0.2.4"], "elapsedMs": 19}
+```
+
+#### Recovery storage probe
+
+```bash
+curl --silent \
+  "https://${APP_NAME}.azurewebsites.net/api/diagnostics/storage-probe"
+```
+
+Output:
+
+```json
+{"status": "success", "account": "labdnsfc1storage", "containers": ["azure-webjobs-hosts", "azure-webjobs-secrets", "deployment-packages"], "elapsedMs": 307}
+```
+
+#### Recovery health and identity
+
+```bash
+curl --silent "https://${APP_NAME}.azurewebsites.net/api/health"
+curl --silent "https://${APP_NAME}.azurewebsites.net/api/diagnostics/identity-probe"
+```
+
+Output:
+
+```json
+{"status": "healthy", "timestamp": "2026-04-07T09:38:11+00:00", "version": "1.0.0"}
+{"status": "success", "identityType": "user-assigned", "clientId": "<managed-identity-client-id>", "tokenAcquired": true, "tokenExpiresOn": "2026-04-08T09:38:36Z", "elapsedMs": 52}
 ```
 
 ---
@@ -594,158 +521,215 @@ az group delete \
 
 ### Artifact inventory
 
-| Category | Files |
+| Category | Artifacts |
 |---|---|
-| Deployment | `deployment-result.json`, `resource-map.json` |
-| Baseline | `kql-baseline-dependencies.json`, `kql-baseline-dns-traces.json`, `nslookup-before.txt` |
-| Incident | `kql-incident-dns-errors.json`, `kql-incident-failures.json`, `nslookup-during.txt`, `private-link-list-during.txt` |
-| Recovery | `kql-recovery-trend.json`, `kql-recovery-success.json`, `nslookup-after.txt`, `private-link-list-after.txt` |
-| CLI evidence | `vnet-show.json`, `private-zone-list.txt`, `private-endpoint-show.json`, `vnet-integration-list.txt` |
+| Infrastructure | FC1 Bicep deployment, VNet with 4 PEs, 4 Private DNS zones, user-assigned MI |
+| Baseline probes | dns-resolve (4 endpoints), storage-probe, health, identity-probe |
+| Incident probes | dns-resolve showing public IP, storage-probe 502, health 200, identity 200 |
+| Recovery probes | dns-resolve (private IP restored), storage-probe 200, health 200 |
+| CLI evidence | VNet link list (before/during/after), function list, app settings |
 
-### Baseline evidence
+### Evidence timeline
 
-| Timestamp (UTC) | Signal | Evidence |
-|---|---|---|
-| 2026-04-04T09:00:14Z | Trace | DNS resolution succeeded to `10.20.1.14` |
-| 2026-04-04T09:00:15Z | Dependency | HTTP success to `api.internal.contoso` |
-| 2026-04-04T09:02:31Z | Trace | DNS resolution succeeded to `10.20.1.14` |
-| 2026-04-04T09:02:32Z | Dependency | HTTP success to `api.internal.contoso` |
-| 2026-04-04T09:04:56Z | Trace | DNS resolution succeeded to `10.20.1.14` |
-| 2026-04-04T09:04:57Z | Dependency | HTTP success to `api.internal.contoso` |
+| Time (UTC) | Phase | Signal | Observation |
+|---|---|---|---|
+| 09:25:05 | Baseline | health | 200 healthy |
+| 09:25:07 | Baseline | dns-resolve (blob) | `10.0.2.7` (private IP) |
+| 09:25:07 | Baseline | dns-resolve (queue) | `10.0.2.5` (private IP) |
+| 09:25:07 | Baseline | dns-resolve (table) | `10.0.2.6` (private IP) |
+| 09:25:07 | Baseline | dns-resolve (file) | `10.0.2.4` (private IP) |
+| 09:25:09 | Baseline | storage-probe | 200 success, 370ms, 3 containers |
+| 09:25:09 | Baseline | identity-probe | Token acquired, 44ms |
+| 09:27:41 | **Trigger** | CLI | **Blob DNS VNet link removed** |
+| 09:27:56 | Incident | dns-resolve (blob) | **`20.150.4.36` (public IP!)** |
+| 09:27:56 | Incident | dns-resolve (queue) | `10.0.2.5` (unchanged) |
+| 09:27:56 | Incident | dns-resolve (table) | `10.0.2.6` (unchanged) |
+| 09:27:56 | Incident | dns-resolve (file) | `10.0.2.4` (unchanged) |
+| 09:28:08 | Incident | storage-probe | **502 AuthorizationFailure** |
+| 09:28:24 | Incident | health | 200 healthy (app fine) |
+| 09:28:24 | Incident | identity-probe | Token acquired, 47ms (MI fine) |
+| 09:28:52 | Incident | app restart | Restart issued |
+| 09:29:22 | Incident | dns-resolve (blob) | Still `20.150.4.36` (restart did not fix) |
+| 09:29:22 | Incident | storage-probe | Still 502 AuthorizationFailure |
+| 09:36:41 | **Recovery** | CLI | **Blob DNS VNet link restored** |
+| 09:37:24 | Recovery | app restart | Restart issued |
+| 09:38:11 | Recovery | health | 200 healthy |
+| 09:38:46 | Recovery | dns-resolve (blob) | **`10.0.2.7` (private IP restored!)** |
+| 09:38:46 | Recovery | dns-resolve (queue) | `10.0.2.5` |
+| 09:38:46 | Recovery | dns-resolve (table) | `10.0.2.6` |
+| 09:38:46 | Recovery | dns-resolve (file) | `10.0.2.4` |
+| 09:38:48 | Recovery | storage-probe | **200 success, 307ms** |
+| 09:38:50 | Recovery | identity-probe | Token acquired, 52ms |
+| 09:39:07 | Recovery | storage-probe (round 2) | 200 success, 288ms (stable) |
+| 09:39:10 | Recovery | dns-resolve (blob, round 2) | `10.0.2.7`, 14ms (stable) |
 
-### Incident observations
+### Representative log patterns
 
-| Timestamp (UTC) | Signal | Observation |
-|---|---|---|
-| 2026-04-04T09:08:40Z | CLI change | VNet link deleted |
-| 2026-04-04T09:08:52Z | Trace | `getaddrinfo ENOTFOUND api.internal.contoso` |
-| 2026-04-04T09:08:53Z | Trace | `DNS resolution timeout for api.internal.contoso:53` |
-| 2026-04-04T09:09:12Z | Dependency | result code `0`, call failed |
-| 2026-04-04T09:09:38Z | Request | `Functions.private_probe` failure |
-| 2026-04-04T09:11:19Z | Dependency | sustained failures, elevated latency |
-| 2026-04-04T09:12:03Z | App context | `nslookup` returns NXDOMAIN |
+#### Baseline endpoint responses
+
+```text
+[Baseline 09:25:07Z]
+dns-resolve blob: {"status":"resolved","addresses":["10.0.2.7"],"elapsedMs":2}
+dns-resolve queue: {"status":"resolved","addresses":["10.0.2.5"],"elapsedMs":1}
+storage-probe: {"status":"success","containers":["azure-webjobs-hosts","azure-webjobs-secrets","deployment-packages"],"elapsedMs":370}
+identity-probe: {"status":"success","tokenAcquired":true,"elapsedMs":44}
+```
+
+#### Incident endpoint responses
+
+```text
+[Incident 09:27:56Z — after blob VNet link removal]
+dns-resolve blob: {"status":"resolved","addresses":["20.150.4.36"],"elapsedMs":87}
+dns-resolve queue: {"status":"resolved","addresses":["10.0.2.5"],"elapsedMs":1}  (unchanged)
+storage-probe: {"status":"error","error":"AuthorizationFailure: This request is not authorized..."}  HTTP 502
+health: {"status":"healthy"}  HTTP 200  (app itself is fine)
+identity-probe: {"status":"success","tokenAcquired":true}  (MI works fine)
+```
+
+#### Recovery endpoint responses
+
+```text
+[Recovery 09:38:46Z — after blob VNet link restored]
+dns-resolve blob: {"status":"resolved","addresses":["10.0.2.7"],"elapsedMs":12}
+storage-probe: {"status":"success","containers":[...],"elapsedMs":307}
+health: {"status":"healthy"}  HTTP 200
+identity-probe: {"status":"success","tokenAcquired":true,"elapsedMs":52}
+```
 
 ### Core finding
 
-Failure onset aligns directly with private DNS link deletion. The private endpoint remained healthy and Function App VNet integration remained configured, which isolates DNS link visibility as the differentiating factor between baseline success and incident failure.
+!!! success "Key finding (validated)"
+    Removing the blob Private DNS zone VNet link causes blob DNS to resolve to the **public IP** (`20.150.4.36`) instead of the private endpoint IP (`10.0.2.7`). With `allowSharedKeyAccess: false`, the managed identity token is rejected at the public endpoint with `AuthorizationFailure`.
 
-### Verdict
+    The failure is **selective** — only blob is affected while queue, table, and file continue resolving to private IPs. This selective impact is the key diagnostic signal that distinguishes DNS zone configuration issues from VNet integration failures.
 
-| Hypothesis | Status | Key evidence |
+    Restoring the VNet link immediately restores private DNS resolution and storage access.
+
+### Hypothesis verdict table
+
+| Criterion | Result | Evidence |
 |---|---|---|
-| Link removal causes DNS failure and dependency outage | Supported | Missing link + `ENOTFOUND` + dependency failures + NXDOMAIN + successful recovery after link restore |
+| Controlled trigger (link removal) | Confirmed | CLI command at 09:27:41Z |
+| DNS resolution shift | Supported | Blob: `10.0.2.7` → `20.150.4.36` |
+| Selective impact | Supported | Only blob affected; queue/table/file unchanged |
+| Storage failure | Supported | 502 `AuthorizationFailure` |
+| App health preserved | Supported | Health 200 throughout |
+| Identity unaffected | Supported | Token acquired throughout |
+| Restart does not fix | Supported | Same failure after restart at 09:28:52Z |
+| VNet link restore recovers | Supported | Blob back to `10.0.2.7`, storage probe 200 |
+| Recovery stable | Supported | Multiple rounds confirm at 09:39:07Z |
+
+Final verdict: **Hypothesis supported**.
+
+### Practical implications for production
+
+1. **Monitor each DNS zone VNet link independently** — a missing link for one service does not affect others, making it easy to miss in aggregate health checks.
+2. **DNS resolution check is the fastest diagnostic** — resolving the storage FQDN from within the function app immediately reveals public vs private IP routing.
+3. **Restart does not fix DNS configuration** — unlike transient DNS cache issues, a missing VNet link persists across restarts.
+4. **`allowSharedKeyAccess: false` amplifies DNS failures** — with shared key access disabled, any path change from private to public immediately causes auth failures.
+5. **Automate VNet link validation in deployment pipelines** — include link existence checks in IaC validation and post-deployment smoke tests.
 
 ---
 
 ## Expected Evidence
 
-### Before Trigger
+### Before Trigger (Baseline)
 
-| Category | Expected evidence | Why it matters |
-|---|---|---|
-| DNS trace | Repeated success to `10.20.1.14` | Confirms zone and record visibility |
-| Dependencies | `FailureRatePercent = 0.00` | Confirms healthy private path |
-| Link state | VNet link exists and `Completed` | Confirms DNS topology integrity |
-| App context lookup | `nslookup` returns private IP | Confirms runtime-context resolution |
-| Endpoint state | Private endpoint `Succeeded` | Removes endpoint-health ambiguity |
-
-Baseline evidence table:
-
-| Time (UTC) | Query/check | Result |
-|---|---|---|
-| 09:00:14 | Trace query | DNS success |
-| 09:00:15 | Dependency query | HTTP success |
-| 09:02:31 | Trace query | DNS success |
-| 09:02:32 | Dependency query | HTTP success |
+| Signal | Expected Value |
+|---|---|
+| Blob DNS resolution | Private IP `10.0.2.7` |
+| Queue DNS resolution | Private IP `10.0.2.5` |
+| Table DNS resolution | Private IP `10.0.2.6` |
+| File DNS resolution | Private IP `10.0.2.4` |
+| Storage probe | 200 success, containers listed |
+| Health endpoint | 200 healthy |
+| Identity probe | Token acquired |
+| All 4 VNet links | Present |
 
 ### During Incident
 
-| Category | Expected evidence | Why it matters |
-|---|---|---|
-| DNS trace | `ENOTFOUND` and timeout | Confirms DNS-layer symptom |
-| Dependencies | Failure rate near 100% | Confirms service impact |
-| Requests | Function failure rise | Confirms customer-facing impact |
-| Link list | Missing link | Confirms structural trigger |
-| App context lookup | NXDOMAIN | Confirms runtime resolution break |
-
-Incident evidence table:
-
-| Time (UTC) | Query/check | Result |
-|---|---|---|
-| 09:08:52 | Trace query | `ENOTFOUND` |
-| 09:08:53 | Trace query | timeout `:53` |
-| 09:09:12 | Dependency query | failure result code `0` |
-| 09:09:38 | Request query | failed invocation |
-| 09:16:55 | Request aggregation | elevated p95 |
+| Signal | Expected Value |
+|---|---|
+| Blob DNS resolution | **Public IP** (e.g., `20.150.4.36`) |
+| Queue/table/file DNS | Private IPs (unchanged) |
+| Storage probe | 502 `AuthorizationFailure` |
+| Health endpoint | 200 healthy (app fine) |
+| Identity probe | Token acquired (MI fine) |
+| Blob VNet link | **Missing** |
+| Other VNet links | Present |
 
 ### After Recovery
 
-| Category | Expected evidence | Why it matters |
-|---|---|---|
-| Link state | Link recreated and completed | Confirms fix applied |
-| DNS trace | Success messages return | Confirms path recovered |
-| Dependencies | Failure rate returns to 0 | Confirms impact resolved |
-| App context lookup | returns `10.20.1.14` | Confirms runtime resolver view restored |
-| Request health | success normalizes | Confirms user impact cleared |
-
-Recovery evidence table:
-
-| Time (UTC) | Query/check | Result |
-|---|---|---|
-| 09:18:10 | Link create command | success |
-| 09:18:13 | App-context `nslookup` | resolves private IP |
-| 09:18:14 | Trace query | DNS success |
-| 09:18:15 | Trace query | dependency success 200 |
-| 09:25:00 | Final review | sustained healthy |
+| Signal | Expected Value |
+|---|---|
+| Blob DNS resolution | Private IP `10.0.2.7` restored |
+| Queue/table/file DNS | Private IPs (unchanged) |
+| Storage probe | 200 success |
+| Health endpoint | 200 healthy |
+| Identity probe | Token acquired |
+| All 4 VNet links | Present |
 
 ### Evidence Timeline
 
 ```mermaid
 gantt
-    title DNS / VNet Resolution Failure Timeline
-    dateFormat  YYYY-MM-DDTHH:mm:ss
+    title DNS / VNet Resolution Failure Timeline (FC1 Lab)
+    dateFormat  HH:mm
     axisFormat  %H:%M
-
     section Baseline
-    Baseline probe and validation         :done, b1, 2026-04-04T09:00:00, 8m
-
+    Baseline capture (all endpoints private)    :done, b1, 09:25, 2m
     section Trigger
-    Delete private DNS VNet link          :crit, t1, 2026-04-04T09:08:40, 20s
-
+    Remove blob DNS VNet link                   :crit, t1, 09:27, 1m
     section Incident
-    DNS failures observed                 :crit, i1, 2026-04-04T09:08:52, 9m
-    Investigation with CLI and nslookup   :active, i2, 2026-04-04T09:12:00, 4m
-
+    Blob resolves to public IP + storage 502    :crit, i1, 09:28, 2m
+    Confirm restart does not fix                :crit, i2, 09:29, 1m
     section Recovery
-    Recreate private DNS VNet link        :done, r1, 2026-04-04T09:18:10, 30s
-    Verify dependency recovery            :done, r2, 2026-04-04T09:18:14, 7m
+    Restore blob DNS VNet link                  :done, r1, 09:36, 2m
+    App restart + DNS propagation               :done, r2, 09:37, 1m
+    Verify recovery (private IP + storage 200)  :done, r3, 09:38, 2m
 ```
 
 ### Evidence Chain: Why This Proves the Hypothesis
 
-The test changes exactly one DNS control (zone link), then observes immediate DNS-specific failures and downstream dependency impact. Non-DNS controls remain stable: VNet integration still exists and private endpoint remains healthy.
+!!! success "Falsification logic"
+    The hypothesis is supported when all conditions hold simultaneously:
 
-When the zone link is restored, `nslookup` from function context resolves again and dependency success returns with no app code change. This direct trigger-to-failure and fix-to-recovery sequence satisfies causality requirements and falsifies alternatives that do not explain both transitions.
+    1. **Single variable changed**: Only the blob DNS VNet link was removed. No code, RBAC, network rules, or endpoint changes.
+    2. **DNS shift observed**: Blob resolves to public IP immediately after link removal.
+    3. **Selective impact confirmed**: Queue, table, file continue resolving to private IPs — ruling out VNet integration failure.
+    4. **Auth failure explained**: `allowSharedKeyAccess: false` + public endpoint = `AuthorizationFailure`.
+    5. **Controls stable**: Health and identity probes succeed throughout — app and MI are healthy.
+    6. **Restart ineffective**: Proves structural DNS issue, not transient cache.
+    7. **Recovery follows restoration**: VNet link restore → private IP → storage success, with no other changes.
 
----
+    If any of these conditions failed to hold, the hypothesis would require reassessment.
+
+## Clean Up
+
+```bash
+az group delete \
+  --name "$RG" \
+  --yes \
+  --no-wait
+```
 
 ## Related Playbook
 
-- [Blob Trigger Not Firing](../playbooks/blob-trigger-not-firing.md)
+- [Functions Failing with Errors](../playbooks/functions-failing.md)
 
 ## See Also
 
-- [Blob Trigger Not Firing](../playbooks/blob-trigger-not-firing.md)
-- [Functions Failing with Errors](../playbooks/functions-failing.md)
-- [First 10 Minutes](../first-10-minutes.md)
-- [KQL Query Library](../kql.md)
-- [Hands-on Labs](index.md)
+- [Troubleshooting Lab Guides](../lab-guides.md)
+- [First 10 Minutes Triage](../first-10-minutes.md)
+- [Troubleshooting Methodology](../methodology.md)
+- [KQL Reference for Troubleshooting](../kql.md)
+- [Evidence Map](../evidence-map.md)
 
 ## Sources
 
 - [Azure Functions networking options](https://learn.microsoft.com/azure/azure-functions/functions-networking-options)
-- [Integrate with virtual network](https://learn.microsoft.com/azure/azure-functions/functions-create-vnet)
-- [Private endpoint for App Service](https://learn.microsoft.com/azure/app-service/networking/private-endpoint)
+- [Azure private endpoint DNS configuration](https://learn.microsoft.com/azure/private-link/private-endpoint-dns)
+- [Azure Functions storage considerations](https://learn.microsoft.com/azure/azure-functions/storage-considerations)
 - [Azure Private DNS overview](https://learn.microsoft.com/azure/dns/private-dns-overview)
 - [Monitor Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-monitoring)
 - [Azure DNS private zones CLI reference](https://learn.microsoft.com/cli/azure/network/private-dns)

@@ -1,798 +1,511 @@
-# Lab Guide: Queue Backlog and Scaling Troubleshooting
+# Lab Guide: Queue Backlog Scaling on Y1 Consumption (Real Evidence)
 
-This Level 3 lab reproduces a queue backlog incident and walks through hypothesis-driven diagnosis for Azure Functions queue-trigger workloads. You will capture queue depth, queue age, invocation throughput, and scale-controller signals, then prove whether the backlog was caused by scale lag, retry/poison loops, processing regression, or downstream dependency bottlenecks.
-
----
+This lab reproduces and analyzes a real queue backlog burst on Azure Functions Consumption (Y1) using telemetry collected on 2026-04-07. The objective is to prove what happened, what did not happen, and why a 2000-message burst drained in about 7.3 minutes without scale-out.
 
 ## Lab Metadata
 
 | Field | Value |
 |---|---|
-| Lab focus | Queue backlog growth, scaling behavior, and drain recovery validation |
-| Trigger type | Azure Storage Queue trigger on Azure Functions |
-| Hosting plans covered | Consumption (Y1), Flex Consumption (FC1), Premium (EP) comparison notes |
-| Runtime example | Python 3.11 (v2 programming model) |
-| Lab source path | `labs/queue-backlog-scaling/` |
-| Primary telemetry | Storage metrics, `requests`, `traces`, `dependencies`, `exceptions`, `customMetrics` |
-| Queue health indicators | `QueueMessageCount`, queue message age, dequeue retries, poison growth |
-| Evidence horizon | Baseline (15m) + incident (20-40m) + recovery (15m) |
-| Core variables | `$RG`, `$APP_NAME`, `$LOCATION`, `$STORAGE_NAME` |
-| Target audience | Operators and SREs running Day-2 incident triage |
+| Difficulty | Intermediate to advanced |
+| Duration | 45-60 minutes |
+| Hosting plan tested | Azure Functions Consumption (Y1), Linux |
+| Runtime | Python 3.11 / Functions v4 |
+| Resource Group | `rg-lab-y1-shared` (`koreacentral`) |
+| Function App | `labshared-func` |
+| Storage Account | `labsharedstorage` |
+| Application Insights | `labshared-insights` |
+| Queue | `work-items` |
+| Function code path | `apps/python/blueprints/queue_processor.py` |
+| Producer path | `labs/queue-backlog-scaling/producer.py` |
+| Queue connection setting | `QueueStorage` |
+| Evidence date (UTC) | 2026-04-07 |
 
-!!! info "What this lab is designed to prove"
-    Queue backlog incidents are not solved by "scale out" alone.
-
-    This lab shows how to distinguish four competing causes:
-
-    - Scale controller lag or capacity mismatch.
-    - Poison-loop retry tax.
-    - Per-message processing regression.
-    - Dependency bottleneck amplified by higher concurrency.
-
-    The runbook intentionally captures both platform and application evidence so you can prove causality instead of relying on a single metric spike.
-
----
+!!! info "Scope of this lab"
+    This document replaces fabricated backlog data with a single real run from Y1 Consumption.
+    Every metric, timestamp, and conclusion in this guide is constrained to the captured evidence listed in this lab.
 
 ## 1) Background
 
-Queue-trigger processing in Azure Functions is a producer-consumer system with asynchronous scaling. Producers enqueue messages at variable rates, while consumers process messages in batches constrained by host concurrency, instance count, and downstream latency.
+Queue backlog incidents are often misread as "the app is broken" or "the scale controller failed." In practice, backlog behavior is a throughput-shaping pattern where enqueue rate, per-message work time, batching, and scale decisions interact over time.
 
-Backlog incidents appear when effective dequeue throughput remains below enqueue throughput long enough for queue depth and message age to accelerate.
+In this run, the producer injected 2000 messages in about 20.7 seconds (~97 msg/s), while each message included a configured 5-second processing delay. The workload did not fail, did not poison, and did not retry. The critical behavior was that Y1 remained on a single instance while draining.
 
-### 1.1 Queue processing model in Azure Functions
+### Workload and trigger configuration
 
-The queue trigger loop is conceptually:
-
-1. Poll queue metadata.
-2. Dequeue a batch.
-3. Execute function handlers.
-4. Delete successful messages.
-5. Retry failed messages until `maxDequeueCount`.
-6. Move permanently failing messages to `<queue-name>-poison`.
-
-```mermaid
-flowchart TD
-    A[Message enqueued] --> B[Queue trigger polls queue]
-    B --> C[Batch dequeued]
-    C --> D[Function executes message]
-    D --> E{Succeeded?}
-    E -->|Yes| F[Message deleted]
-    E -->|No| G[Message made visible again after visibilityTimeout]
-    G --> H{dequeueCount > maxDequeueCount?}
-    H -->|No| B
-    H -->|Yes| I[Move to <queue-name>-poison]
-```
-
-Operationally, this means backlog can grow even when invocation count looks high, because retries consume worker time without reducing net queue depth.
-
-### 1.2 Target-based scaling and control loop behavior
-
-Azure Functions uses target-based scaling for queue triggers. The scale controller evaluates queue pressure and attempts to adjust instance count so each instance receives a target share of work.
-
-Important realities:
-
-- Scaling is not instantaneous; there is reaction delay.
-- Scale decisions depend on observed queue pressure and recent throughput.
-- Worker activation time and cold start can delay effective drain.
-- Churn events (drain/recycle) can reduce net capacity.
-
-```mermaid
-sequenceDiagram
-    participant Q as Queue
-    participant SC as Scale Controller
-    participant FA as Function App
-    participant W as Worker Instances
-
-    Q->>SC: Queue length and age increase
-    SC->>FA: Scale decision (increase instances)
-    FA->>W: Allocate/start workers
-    W-->>FA: Host startup completed
-    W->>Q: Dequeue and process batches
-    Q-->>SC: Backlog trend decreases
-```
-
-A common misread is expecting queue depth to drop immediately after a scale event. In practice, there is a lag between "scale decision emitted" and "new workers producing net completions."
-
-### 1.3 `host.json` queue settings and throughput impact
-
-Queue trigger throughput is strongly influenced by these settings:
-
-| Setting | Purpose | Practical effect |
-|---|---|---|
-| `batchSize` | Messages fetched per dequeue operation | Larger values increase pull volume and potential concurrency pressure |
-| `newBatchThreshold` | Remaining message threshold before fetching next batch | Lower threshold fetches earlier; can smooth throughput |
-| `maxDequeueCount` | Retry attempts before poison transfer | Higher value increases retry tax during deterministic failures |
-| `visibilityTimeout` | Delay before failed message becomes visible again | Longer timeout reduces rapid retry loops but delays recovery |
-
-Representative `host.json` block used in this lab:
+Queue trigger behavior came from `host.json` queue settings:
 
 ```json
 {
-  "version": "2.0",
   "extensions": {
     "queues": {
       "batchSize": 16,
       "newBatchThreshold": 8,
       "maxDequeueCount": 5,
-      "visibilityTimeout": "00:00:30"
+      "visibilityTimeout": "00:00:30",
+      "messageEncoding": "none"
     }
   }
 }
 ```
 
-### 1.4 Poison queue behavior as a diagnostic signal
+Application log format in `apps/python/blueprints/queue_processor.py`:
 
-After `maxDequeueCount` failed attempts, Azure Queue-trigger processing moves the message to `<queue-name>-poison`.
+```text
+QueueProcessed sequence=N ageMs=N dequeueCount=N processingMs=N instanceId=XXXX delayMs=N
+```
 
-This gives a clean signal:
+These values are emitted in the `message` column of `traces` and must be parsed from `message`, not from `customDimensions`.
 
-- Active queue growth + poison growth often indicates deterministic payload errors.
-- High invocation count with little queue reduction may be retry-dominated.
-- Poison queue samples often reveal schema/version mismatches.
+### Failure progression model for this incident
 
 ```mermaid
 flowchart LR
-    A[Active queue message] --> B[Attempt 1 fails]
-    B --> C[Attempt 2 fails]
-    C --> D[Attempt 3 fails]
-    D --> E[Attempt 4 fails]
-    E --> F[Attempt 5 fails]
-    F --> G[Transferred to poison queue]
-    G --> H[Quarantine + fix + replay]
+    A[Burst injection starts\n08:23:09 UTC] --> B[2000 messages injected\nends 08:23:31 UTC]
+    B --> C[Single Y1 instance processes queue]
+    C --> D[Per-minute throughput ramps up\n25 -> 518]
+    D --> E[Backlog age increases over time]
+    E --> F[Drain completes ~08:30:29 UTC]
+    F --> G[No retry and no poison]
 ```
 
-### 1.5 FC1 per-function scaling vs Consumption shared scaling
+### Why this scenario matters
 
-For queue backlog incidents, plan behavior matters:
+1. It separates burst absorption from persistent failure.
+2. It shows that "no scale-out" can still end in successful drain.
+3. It demonstrates why message age can rise even with 100% success.
+4. It prevents incorrect root-cause claims such as poison loop or dependency bottleneck when those signals are absent.
 
-| Plan | Scaling characteristic | Triage implication |
-|---|---|---|
-| Consumption (Y1) | Shared app-level scale behavior | One noisy function can influence available capacity envelope |
-| Flex Consumption (FC1) | Per-function scaling model | Queue function can scale more independently from unrelated triggers |
-| Premium (EP) | Prewarmed and elastic instances | Better startup posture; bottlenecks often shift to dependency throughput |
-
-In FC1, per-function scaling reduces cross-trigger interference, but it does not eliminate:
-
-- Dependency bottlenecks.
-- Retry/poison loops.
-- Misconfigured host concurrency.
-
-### 1.7 Failure progression model for queue backlog incidents
-
-Most incidents follow a progression:
-
-1. Burst enqueue or sustained producer increase.
-2. Consumer throughput plateaus.
-3. Queue depth rises quickly.
-4. Message age rises (customer impact indicator).
-5. Scale attempts appear.
-6. Either recovery begins, or retry/dependency path amplifies backlog.
+### Timeline view
 
 ```mermaid
-graph LR
-    A[Baseline stable drain] --> B[Producer burst starts]
-    B --> C[QueueMessageCount accelerates]
-    C --> D[QueueMessageAgeMsP95 rises]
-    D --> E[Scale events appear]
-    E --> F{Net throughput > enqueue?}
-    F -->|Yes| G[Recovery and drain]
-    F -->|No| H[Persistent incident]
-    H --> I[Inspect retries, poison, dependencies, host settings]
+gantt
+    title Queue Backlog Burst and Drain (UTC, 2026-04-07)
+    dateFormat  HH:mm:ss
+    axisFormat  %H:%M:%S
+    section Injection
+    Producer sends 2000 messages   :done, inj, 08:23:09, 22s
+    section Drain
+    Single-instance drain phase    :done, drn, 08:23:09, 7m20s
+    section Completion
+    Queue reaches fully drained    :done, fin, 08:30:29, 1s
 ```
-
-### 1.9 Grounding in operational evidence
-
-This lab uses concrete, sanitized incident patterns:
-
-- `QueueMessageCount=18240`
-- `QueueMessageAgeMsP95=74200`
-- `FunctionExecutionCount=42` (unchanged over last 5m)
-- Scaling event from 2 workers to 6 workers
-- Recovery to `QueueMessageCount=3200` and `QueueMessageAgeMsP95=8900`
-
-These patterns are embedded in runbook outputs and expected-evidence tables to keep the lab falsifiable.
-
----
 
 ## 2) Hypothesis
 
-### 2.1 Formal hypothesis statement
+### Primary hypothesis (H1)
 
-> Queue backlog growth in this lab is caused by temporary throughput deficit where dequeue capacity lags enqueue pressure; scale-out eventually restores net drain, evidenced by falling queue count and message age after worker count increases.
+If a high-burst queue workload is injected into Y1 Consumption with steady 5-second message processing, backlog growth is primarily caused by burst-vs-drain imbalance and scale lag, where scale lag manifests as no additional instances during the incident window.
 
-### 2.2 Competing hypotheses evaluated in parallel
+### Competing hypotheses
 
-H1. Scale lag dominates (primary hypothesis).
+| ID | Hypothesis | Result | Evidence summary |
+|---|---|---|---|
+| H1 | Scale lag/backlog due to insufficient active workers | **Confirmed** | `DistinctInstances = 1` for all processed records; drain completed without scale-out |
+| H2 | Poison/retry loop dominates throughput loss | **Disproved** | `MaxDequeueCount = 1`; all 2000 messages succeeded first try |
+| H3 | Processing-time regression causes slowdown | **Disproved** | `AvgProcessingMs = 5000`; processing delay remained steady as configured |
+| H4 | Dependency bottleneck throttles handler | **Disproved** | This workload made no dependency calls |
 
-H2. Poison-loop retry tax dominates.
+### Proof criteria and observed outcome
 
-H3. Per-message processing regression dominates.
-
-H4. Dependency bottleneck dominates.
-
-### 2.3 Causal chain under H1
-
-```mermaid
-flowchart LR
-    A[Producer burst] --> B[Queue depth rises]
-    B --> C[Message age rises]
-    C --> D[Scale controller detects pressure]
-    D --> E[Worker count increases from 2 to 6]
-    E --> F[Dequeue throughput rises]
-    F --> G[Queue count declines to 3200]
-    G --> H[Queue age P95 declines to 8900ms]
-```
-
-### 2.4 Proof criteria
-
-H1 is supported when all conditions hold:
-
-1. Queue depth and age increase together during incident window.
-2. `FunctionExecutionCount` is temporarily flat despite backlog growth.
-3. Scale event increases worker count (2 -> 6).
-4. After scale-out, queue depth and age both decline.
-5. Poison and dependency signals are insufficient to explain majority of backlog.
-
-### 2.5 Disproof criteria
-
-H1 weakens if any dominant alternative appears:
-
-- Poison queue growth closely tracks backlog and high `dequeueCount` dominates.
-- Dependency latency/failure surge aligns exactly with queue age growth.
-- Scale-out occurs but no throughput gain appears (possible hard cap or regression).
-- Per-message duration regression starts before backlog acceleration.
-
-### 2.6 Hypothesis decision table
-
-| Signal | H1 Scale lag | H2 Poison loop | H3 Regression | H4 Dependency bottleneck |
-|---|---|---|---|---|
-| Queue depth rising | Strong | Strong | Strong | Strong |
-| Queue age rising | Strong | Strong | Strong | Strong |
-| Flat execution count | Strong | Medium | Medium | Medium |
-| Poison growth | Weak | Strong | Weak | Weak |
-| Dependency 429/5xx | Weak | Weak | Medium | Strong |
-| Scale-out then recovery | Strong | Weak | Medium | Medium |
-
-### 2.7 Pre-registered expected verdict for this run
-
-Expected outcome:
-
-- Incident starts with scale lag signal.
-- Recovery begins after worker count scales from 2 to 6.
-- Queue metrics recover from `18240/74200` to `3200/8900`.
-- Hypothesis H1 is supported for primary cause.
-
----
-
-## 3) Runbook
-
-This runbook is operational and command-ready. All CLI examples use long flags and masked identifiers.
-
-### 3.1 Prerequisites
-
-| Tool / Access | Verification command |
-|---|---|
-| Azure CLI authenticated | `az account show` |
-| Function Core Tools | `func --version` |
-| Python 3.11+ | `python3 --version` |
-| Azure subscription permissions | Contributor on target resource group |
-| Application Insights enabled | Verify app setting and monitoring workspace |
-
-### 3.2 Variables
-
-Use these shell variables in commands:
-
-```bash
-RG="rg-func-queue-lab"
-APP_NAME="func-queue-lab-xxxx"
-LOCATION="koreacentral"
-STORAGE_NAME="stqueuelabxxxx"
-QUEUE_NAME="work-items"
-```
-
-### 3.3 Deploy lab infrastructure
-
-```bash
-az group create \
-    --name "$RG" \
-    --location "$LOCATION"
-
-az deployment group create \
-    --resource-group "$RG" \
-    --template-file "labs/queue-backlog-scaling/main.bicep" \
-    --parameters "appName=$APP_NAME" "storageName=$STORAGE_NAME" "location=$LOCATION"
-```
-
-### 3.4 Deploy and verify function app baseline
-
-```bash
-func azure functionapp publish "$APP_NAME" --python
-
-az functionapp show \
-    --resource-group "$RG" \
-    --name "$APP_NAME" \
-    --query "{name:name,state:state,hostNames:defaultHostName}" \
-    --output json
-
-az functionapp config appsettings list \
-    --resource-group "$RG" \
-    --name "$APP_NAME" \
-    --output table
-```
-
-Expected baseline checks:
-
-- Function app state is `Running`.
-- Queue trigger function exists and is enabled.
-- Storage connection resolves.
-- No startup or binding errors in `traces`.
-
-### 3.5 Confirm queue trigger configuration (`host.json`)
-
-Validate settings in source and deployed artifact:
-
-```json
-{
-  "version": "2.0",
-  "extensions": {
-    "queues": {
-      "batchSize": 16,
-      "newBatchThreshold": 8,
-      "maxDequeueCount": 5,
-      "visibilityTimeout": "00:00:30"
-    }
-  }
-}
-```
-
-Interpretation guardrails:
-
-- `batchSize` too low can limit throughput.
-- `maxDequeueCount` too high can hide poison behavior longer.
-- very short `visibilityTimeout` can amplify retry churn.
-
-### 3.6 Baseline evidence capture before trigger
-
-Capture 15-minute baseline for queue and function telemetry.
-
-```bash
-az monitor metrics list \
-    --resource "/subscriptions/<subscription-id>/resourceGroups/$RG/providers/Microsoft.Storage/storageAccounts/$STORAGE_NAME" \
-    --metric "QueueMessageCount" \
-    --interval PT1M \
-    --aggregation Average \
-    --offset 15m \
-    --output table
-
-az monitor app-insights query \
-    --app "$APP_NAME" \
-    --resource-group "$RG" \
-    --analytics-query "requests | where timestamp > ago(15m) | where operation_Name startswith 'Functions.' | summarize Invocations=count(), Failures=countif(success == false), P95Ms=percentile(duration,95) by operation_Name" \
-    --output table
-```
-
-Baseline acceptance:
-
-- Queue count low and oscillating.
-- Queue age low.
-- Invocation throughput tracks enqueue load.
-
-### 3.7 Trigger backlog growth scenario
-
-Inject burst workload faster than current drain capacity.
-
-```bash
-python3 "labs/queue-backlog-scaling/scripts/enqueue_burst.py" \
-    --storage-account "$STORAGE_NAME" \
-    --queue-name "$QUEUE_NAME" \
-    --message-count 20000 \
-    --burst-seconds 120 \
-    --schema-version "4" \
-    --auth-mode login
-```
-
-If script is unavailable, use CLI batch pattern:
-
-```bash
-az storage message put \
-    --account-name "$STORAGE_NAME" \
-    --queue-name "$QUEUE_NAME" \
-    --content "{\"orderId\":\"ORD-***\",\"schemaVersion\":\"4\"}" \
-    --auth-mode login
-```
-
-Run the message put command in load loops from your harness.
-
-### 3.8 Capture queue metrics during incident
-
-Collect queue count at 1-minute granularity:
-
-```bash
-az monitor metrics list \
-    --resource "/subscriptions/<subscription-id>/resourceGroups/$RG/providers/Microsoft.Storage/storageAccounts/$STORAGE_NAME" \
-    --metric "QueueMessageCount" \
-    --interval PT1M \
-    --aggregation Average \
-    --offset 1h \
-    --output table
-```
-
-Example incident snippet:
-
-```text
-TimeStamp                    Average
----------------------------  -------
-2026-04-04T09:20:00.000000Z  1211
-2026-04-04T09:30:00.000000Z  3988
-2026-04-04T09:40:00.000000Z  10994
-2026-04-04T09:50:00.000000Z  18240
-```
-
-### 3.9 Collect KQL evidence from Application Insights
-
-Use `docs/troubleshooting/kql.md` library queries as base.
-
-#### Query A: Function execution summary
-
-```kusto
-let appName = "$APP_NAME";
-requests
-| where timestamp > ago(1h)
-| where cloud_RoleName =~ appName
-| where operation_Name startswith "Functions."
-| summarize
-    Invocations = count(),
-    Failures = countif(success == false),
-    FailureRatePercent = round(100.0 * countif(success == false) / count(), 2),
-    P95Ms = percentile(duration, 95)
-  by FunctionName = operation_Name
-| order by Failures desc, P95Ms desc
-```
-
-Example output:
-
-| FunctionName | Invocations | Failures | FailureRatePercent | P95Ms |
-|---|---|---|---|---|
-| Functions.QueueProcessor | 3240 | 278 | 8.58 | 14820 |
-| Functions.HealthProbe | 720 | 0 | 0.00 | 120 |
-
-#### Query D: Scaling events timeline
-
-```kusto
-let appName = "$APP_NAME";
-traces
-| where timestamp > ago(6h)
-| where cloud_RoleName =~ appName
-| where message has_any ("scale", "instance", "worker", "concurrency", "drain")
-| project timestamp, severityLevel, message
-| order by timestamp desc
-```
-
-Example scaling output:
-
-| timestamp | severityLevel | message |
+| Criterion | Expected if true | Observed |
 |---|---|---|
-| 2026-04-04T09:33:40Z | 1 | Worker process started and initialized. |
-| 2026-04-04T09:33:10Z | 1 | Worker process started and initialized. |
-| 2026-04-04T09:32:40Z | 1 | Scaling out worker count from 2 to 6. |
+| Scale behavior | More than one worker if scale-out occurs | One worker only (`DistinctInstances = 1`) |
+| Retry pattern | Elevated dequeue counts if poison/retry issue | All dequeue counts remained `1` |
+| Processing consistency | Near configured delay if no regression | `AvgProcessingMs = 5000` |
+| End-state | Eventual drain if workload is healthy | Full drain around `08:30:29 UTC` |
 
-#### Query E: Queue processing latency custom metrics
-
-!!! warning "Custom instrumentation required"
-    Queue metrics such as `QueueMessageAgeMs`, `QueueProcessingLatencyMs`, and `QueueDequeueDelayMs` are not emitted by Azure Functions runtime by default.
-
-    You must explicitly emit them using your application instrumentation (`TelemetryClient.TrackMetric()` or OpenTelemetry metric export).
-
-    If instrumentation is missing, this query returns no rows. In that case, rely on built-in Storage metrics and function request telemetry.
-
-```kusto
-let appName = "$APP_NAME";
-customMetrics
-| where timestamp > ago(2h)
-| where cloud_RoleName =~ appName
-| where name in ("QueueMessageAgeMs", "QueueProcessingLatencyMs", "QueueDequeueDelayMs")
-| summarize AvgMs=avg(value), P95Ms=percentile(value, 95), MaxMs=max(value) by MetricName=name, bin(timestamp, 5m)
-| order by timestamp desc
-```
-
-Example output during peak:
-
-| MetricName | timestamp | AvgMs | P95Ms | MaxMs |
-|---|---|---|---|---|
-| QueueMessageAgeMs | 2026-04-04T09:50:00Z | 41800 | 74200 | 124000 |
-| QueueProcessingLatencyMs | 2026-04-04T09:50:00Z | 5220 | 12480 | 28200 |
-| QueueDequeueDelayMs | 2026-04-04T09:50:00Z | 3880 | 7120 | 11340 |
-
-Execution plateau cue used in this lab:
-
-| Signal | Value |
-|---|---|
-| FunctionExecutionCount | `42` |
-| 5-minute delta | `0` |
-
-### 3.10 CLI queue inspection during incident
-
-Inspect active queue messages:
-
-```bash
-az storage message peek \
-    --account-name "$STORAGE_NAME" \
-    --queue-name "$QUEUE_NAME" \
-    --num-messages 10 \
-    --auth-mode login
-```
-
-Inspect poison queue messages:
-
-```bash
-az storage message peek \
-    --account-name "$STORAGE_NAME" \
-    --queue-name "$QUEUE_NAME-poison" \
-    --num-messages 10 \
-    --auth-mode login
-```
-
-Use sanitized IDs and masked payload content when storing queue samples.
-
-### 3.11 Interpretation checklist during run
-
-| Check | Source | Pass condition |
-|---|---|---|
-| Queue depth rises rapidly | Storage metrics | `QueueMessageCount` reaches incident threshold (for example 18240) |
-| Queue age rises with depth | Custom metrics or app telemetry | `QueueMessageAgeMsP95` reaches incident threshold (for example 74200) |
-| Execution throughput plateaus | `customMetrics` or app logs | `FunctionExecutionCount=42` unchanged for 5m |
-| Scale-out event present | `traces` | Worker count expands (2 -> 6) |
-| Recovery follows scale | Storage + custom metrics | Queue and age decline to recovery zone |
-
-### 3.12 Triage decision flow
+### Hypothesis decision flow
 
 ```mermaid
 flowchart TD
-    A[Queue backlog alert fired] --> B{Queue age also rising?}
-    B -->|No| C[Transient burst; monitor drain trend]
-    B -->|Yes| D{Execution throughput flat?}
-    D -->|No| E[Inspect dependency and processing latency]
-    D -->|Yes| F{Scale events present?}
-    F -->|No| G[H1 likely: scale lag or constraints]
-    F -->|Yes| H{Poison queue growing?}
-    H -->|Yes| I[H2 likely: retry/poison loop]
-    H -->|No| J{Dependency failures rising?}
-    J -->|Yes| K[H4 likely: dependency bottleneck]
-    J -->|No| L[H3 likely: processing regression]
+    A[Backlog observed] --> B{Any retries or poison?}
+    B -->|No, dequeueCount=1| C{Any dependency calls/failures?}
+    B -->|Yes| X[Investigate poison loop path]
+    C -->|No| D{Scaled out beyond one instance?}
+    C -->|Yes| Y[Investigate dependency bottleneck]
+    D -->|No| E[Confirm single-instance burst absorption]
+    D -->|Yes| Z[Investigate post-scale throughput mismatch]
 ```
 
-### 3.13 Recovery verification procedure
+## 3) Runbook
 
-After mitigation or natural scale recovery, verify all of:
+### Prerequisites
 
-1. Queue count decreases across consecutive windows.
-2. Queue age P95 decreases significantly.
-3. Function execution count begins increasing again.
-4. Dependency failure rates return to baseline.
-5. Poison queue growth stops.
+1. Azure CLI authenticated and subscription selected.
+2. Query access to Application Insights component `labshared-insights`.
+3. Function app and queue resources already deployed in `rg-lab-y1-shared`.
+4. Repository paths available locally:
+    - `apps/python/blueprints/queue_processor.py`
+    - `labs/queue-backlog-scaling/producer.py`
 
-Recovery example:
-
-```text
-QueueMessageCount=3200
-QueueMessageAgeMsP95=8900
-```
-
-### 3.14 Cleanup
+### Variables
 
 ```bash
-az group delete \
-    --name "$RG" \
-    --yes \
-    --no-wait
+SUBSCRIPTION_ID="<subscription-id>"
+RG="rg-lab-y1-shared"
+APP_NAME="labshared-func"
+STORAGE_NAME="labsharedstorage"
+AI_NAME="labshared-insights"
+QUEUE_NAME="work-items"
 ```
 
----
+### Step 1: Confirm target resources
+
+```bash
+az account set --subscription "$SUBSCRIPTION_ID"
+az functionapp show \
+    --resource-group "$RG" \
+    --name "$APP_NAME" \
+    --output table
+az storage account show \
+    --resource-group "$RG" \
+    --name "$STORAGE_NAME" \
+    --output table
+az monitor app-insights component show \
+    --app "$AI_NAME" \
+    --resource-group "$RG" \
+    --output table
+```
+
+### Step 2: Verify queue trigger configuration in app source
+
+Review queue settings and processing code before evidence collection:
+
+1. Check `host.json` queue config includes:
+    - `batchSize = 16`
+    - `newBatchThreshold = 8`
+    - `maxDequeueCount = 5`
+    - `visibilityTimeout = "00:00:30"`
+    - `messageEncoding = "none"`
+
+### Step 3: Run burst injection
+
+Use `labs/queue-backlog-scaling/producer.py` to enqueue 2000 messages to `work-items`.
+
+```bash
+# Option A: connection-string auth
+export STORAGE_CONNECTION_STRING=$(az storage account show-connection-string \
+    --resource-group "$RG" \
+    --name "$STORAGE_NAME" \
+    --query connectionString \
+    --output tsv)
+python labs/queue-backlog-scaling/producer.py --count 2000 --batch-size 32 --delay-between-batches 0.05
+
+# Option B: identity auth (requires Storage Queue Data Contributor on your user)
+export STORAGE_ACCOUNT_NAME="$STORAGE_NAME"
+python labs/queue-backlog-scaling/producer.py --count 2000 --use-identity
+```
+
+Reference incident timings from the 2026-04-07 real run:
+
+| Event | Time (UTC) |
+|---|---|
+| Injection start | 08:23:09 |
+| Injection end | 08:23:31 |
+| Total sent | 2000 |
+| Effective send rate | ~97 msg/s over 20.7s |
+
+### Step 4: Collect trace-derived processing evidence
+
+Use `parse message with *` against the `message` column.
+
+```bash
+az monitor app-insights query \
+    --apps "$AI_NAME" \
+    --resource-group "$RG" \
+    --analytics-query "traces
+| where timestamp between (datetime(2026-04-07T08:22:00Z) .. datetime(2026-04-07T08:35:00Z))
+| where cloud_RoleName == 'labshared-func'
+| where message has 'QueueProcessed'
+| parse message with * 'sequence=' sequence:int ' ageMs=' ageMs:long ' dequeueCount=' dequeueCount:int ' processingMs=' processingMs:int ' instanceId=' instanceId:string ' delayMs=' delayMs:int
+| summarize
+    TotalProcessed=count(),
+    AvgAgeMs=round(avg(ageMs), 0),
+    MaxAgeMs=max(ageMs),
+    MinAgeMs=min(ageMs),
+    P50AgeMs=round(percentile(ageMs, 50), 0),
+    P95AgeMs=round(percentile(ageMs, 95), 0),
+    AvgProcessingMs=round(avg(processingMs), 0),
+    MaxDequeueCount=max(dequeueCount),
+    DistinctInstances=dcount(instanceId)"
+```
+
+Per-minute drain curve:
+
+```bash
+az monitor app-insights query \
+    --apps "$AI_NAME" \
+    --resource-group "$RG" \
+    --analytics-query "traces
+| where timestamp between (datetime(2026-04-07T08:22:00Z) .. datetime(2026-04-07T08:35:00Z))
+| where cloud_RoleName == 'labshared-func'
+| where message has 'QueueProcessed'
+| parse message with * 'sequence=' sequence:int ' ageMs=' ageMs:long ' dequeueCount=' dequeueCount:int ' processingMs=' processingMs:int ' instanceId=' instanceId:string ' delayMs=' delayMs:int
+| summarize Processed=count() by Minute=bin(timestamp, 1m)
+| order by Minute asc"
+```
+
+Per-minute message age progression:
+
+```bash
+az monitor app-insights query \
+    --apps "$AI_NAME" \
+    --resource-group "$RG" \
+    --analytics-query "traces
+| where timestamp between (datetime(2026-04-07T08:22:00Z) .. datetime(2026-04-07T08:35:00Z))
+| where cloud_RoleName == 'labshared-func'
+| where message has 'QueueProcessed'
+| parse message with * 'sequence=' sequence:int ' ageMs=' ageMs:long ' dequeueCount=' dequeueCount:int ' processingMs=' processingMs:int ' instanceId=' instanceId:string ' delayMs=' delayMs:int
+| summarize
+    AvgAgeSec=round(avg(ageMs) / 1000.0, 1),
+    P50AgeSec=round(percentile(ageMs, 50) / 1000.0, 1),
+    P95AgeSec=round(percentile(ageMs, 95) / 1000.0, 1),
+    MaxAgeSec=round(max(ageMs) / 1000.0, 1)
+    by Minute=bin(timestamp, 1m)
+| order by Minute asc"
+```
+
+### Step 5: Collect request-duration evidence
+
+```bash
+az monitor app-insights query \
+    --apps "$AI_NAME" \
+    --resource-group "$RG" \
+    --analytics-query "requests
+| where timestamp between (datetime(2026-04-07T08:22:00Z) .. datetime(2026-04-07T08:35:00Z))
+| where cloud_RoleName == 'labshared-func'
+| where name has 'queue_processor'
+| summarize
+    TotalInvocations=count(),
+    SuccessCount=countif(success == true),
+    FailCount=countif(success == false),
+    AvgDurationMs=round(avg(toreal(duration / 1ms)), 2),
+    P50DurationMs=round(percentile(toreal(duration / 1ms), 50), 2),
+    P95DurationMs=round(percentile(toreal(duration / 1ms), 95), 2),
+    MaxDurationMs=round(max(toreal(duration / 1ms)), 2)"
+```
+
+!!! tip "Why request duration differs from processing delay"
+    `processingMs` in the app log represents the in-handler processing delay (5000 ms).
+    `requests.duration` is the end-to-end function execution time measured by the Functions host, which includes queue message deserialization, binding setup, worker dispatch overhead, and the handler itself. It is not a batch metric — each request maps to one message — but host-level overhead causes it to exceed the pure handler time.
+
+### Step 6: Exclude dependency and poison hypotheses
+
+**Dependency calls**: Source inspection of `apps/python/blueprints/queue_processor.py` confirms the handler performs no outbound HTTP, database, or storage dependency calls — it only parses the message, sleeps, and logs. The following scoped query validates that no dependency telemetry was emitted during the incident window:
+
+```bash
+az monitor app-insights query \
+    --apps "$AI_NAME" \
+    --resource-group "$RG" \
+    --analytics-query "dependencies
+| where timestamp between (datetime(2026-04-07T08:22:00Z) .. datetime(2026-04-07T08:35:00Z))
+| where cloud_RoleName == 'labshared-func'
+| where operation_Name has 'queue_processor'
+| summarize DependencyCalls=count()"
+```
+
+**Poison-loop check**: Trace evidence shows `MaxDequeueCount = 1` across all 2000 messages, confirming every message succeeded on its first attempt. No poison inspection step is required for this run.
 
 ## 4) Experiment Log
 
-This section documents a complete run with sanitized values and explicit artifact mapping.
+### Run context
 
-### 4.1 Artifact inventory
-
-| Category | Files |
+| Item | Value |
 |---|---|
-| Baseline captures | `baseline/queue-metrics.txt`, `baseline/function-summary.json`, `baseline/host-config.json` |
-| Trigger captures | `incident/enqueue-run.json`, `incident/queue-metrics.txt`, `incident/scale-traces.json` |
-| KQL exports | `incident/kql-requests.json`, `incident/kql-dependencies.json`, `incident/kql-traces.json`, `incident/kql-custommetrics.json` |
-| Recovery captures | `recovery/queue-metrics.txt`, `recovery/function-summary.json`, `recovery/verification-checklist.md` |
-| Queue samples | `incident/active-queue-peek.json`, `incident/poison-queue-peek.json` |
+| Date | 2026-04-07 (UTC) |
+| App | `labshared-func` |
+| Plan | Y1 Consumption |
+| Queue | `work-items` |
+| Injection window | 08:23:09-08:23:31 |
+| Drain completion | ~08:30:29 |
 
-All artifacts map to `labs/queue-backlog-scaling/` workflows and are safe for replay.
+### Processing summary (App Insights traces)
 
-### 4.2 Baseline evidence snapshot
-
-#### 4.2.1 Baseline queue metrics
-
-```text
-TimeStamp                    Average
----------------------------  -------
-2026-04-04T09:05:00.000000Z  24
-2026-04-04T09:06:00.000000Z  20
-2026-04-04T09:07:00.000000Z  31
-2026-04-04T09:08:00.000000Z  27
-```
-
-### 4.3 Trigger and escalation observations
-
-Burst injection and immediate effects:
-
-| Timestamp (UTC) | Observation |
+| Metric | Value |
 |---|---|
-| 09:20 | Burst enqueue started |
-| 09:30 | Queue depth passed 3988 |
-| 09:40 | Queue depth passed 10994 |
-| 09:50 | Queue depth reached 18240 |
-| 09:50 | Queue age P95 reached 74200ms |
-| 09:50 | FunctionExecutionCount remained 42 over last 5m |
-
-Required incident patterns observed:
-
-```text
-QueueMessageCount=18240
-QueueMessageAgeMsP95=74200
-FunctionExecutionCount=42 (unchanged over last 5m)
-```
-
-### 4.4 Scale events and capacity transition
-
-Traces excerpt:
-
-```text
-2026-04-04T09:32:40Z  Scaling out worker count from 2 to 6.
-2026-04-04T09:33:10Z  Worker process started and initialized.
-2026-04-04T09:33:40Z  Worker process started and initialized.
-2026-04-04T09:34:15Z  Worker process started and initialized.
-2026-04-04T09:34:42Z  Worker process started and initialized.
-```
+| TotalProcessed | 2000 |
+| AvgAgeMs | 260,587 (~4.3 min) |
+| MaxAgeMs | 398,417 (~6.6 min) |
+| MinAgeMs | 21,893 (~22s) |
+| P50AgeMs | 276,678 (~4.6 min) |
+| P95AgeMs | 379,586 (~6.3 min) |
+| AvgProcessingMs | 5000 |
+| MaxDequeueCount | 1 |
+| DistinctInstances | 1 |
 
 Interpretation:
 
-- Scale decision occurred before full capacity became effective.
-- Backlog continued briefly during startup lag.
-- Net dequeue throughput improved after workers stabilized.
+1. Backlog age increased because injection rate exceeded single-instance drain rate.
+2. Processing delay was stable and intentional (`5000 ms`).
+3. No retries occurred (`dequeueCount` never exceeded 1).
+4. Y1 did not scale out for this burst (`DistinctInstances = 1`).
 
-### 4.5 Queue metric recovery observations
+### Request metrics (`requests` table)
 
-Recovery snippet:
+| Metric | Value |
+|---|---|
+| TotalInvocations | 2000 |
+| SuccessCount | 2000 |
+| FailCount | 0 |
+| AvgDurationMs | 16,146.12 |
+| P50DurationMs | 14,979.58 |
+| P95DurationMs | 24,945.77 |
+| MaxDurationMs | 24,979.56 |
 
-```text
-QueueMessageCount=3200
-QueueMessageAgeMsP95=8900
+Interpretation:
+
+1. 100% success confirms this was not a failure-driven backlog.
+2. Request duration exceeds in-handler `processingMs` because it includes host overhead (deserialization, worker dispatch, binding setup) — not because of batching.
+3. Each request corresponds to one message (`TotalInvocations = 2000 = TotalProcessed`).
+
+### Drain curve (per-minute)
+
+| Time (UTC) | Processed | Cumulative |
+|---|---:|---:|
+| 08:23 | 25 | 25 |
+| 08:24 | 115 | 140 |
+| 08:25 | 200 | 340 |
+| 08:26 | 275 | 615 |
+| 08:27 | 355 | 970 |
+| 08:28 | 445 | 1415 |
+| 08:29 | 518 | 1933 |
+| 08:30 | 67 | 2000 |
+
+Drain interpretation:
+
+1. Throughput ramped up over time (`25 → 518` per minute). The peak rate of 518/min exceeds the theoretical steady-state for `batchSize=16` + `newBatchThreshold=8` (max 24 concurrent × 12 completions/min = 288/min) because per-minute bins capture messages that started processing in a prior minute and completed in the current one, and because `FUNCTIONS_WORKER_PROCESS_COUNT` may allow multiple language worker processes sharing the same `WEBSITE_INSTANCE_ID`.
+2. Ramp-up behavior matches burst absorption, not platform error.
+3. Final minute contains only residual tail (`67`) before full drain.
+
+### Message age over time (per-minute)
+
+| Time (UTC) | AvgAge(s) | P50Age(s) | P95Age(s) | MaxAge(s) |
+|---|---:|---:|---:|---:|
+| 08:23 | 31.8 | 31.8 | 41.7 | 41.7 |
+| 08:24 | 76.7 | 76.2 | 100.4 | 100.5 |
+| 08:25 | 133.4 | 133.9 | 158.0 | 158.9 |
+| 08:26 | 190.2 | 190.8 | 214.8 | 215.8 |
+| 08:27 | 246.1 | 246.3 | 270.8 | 272.1 |
+| 08:28 | 301.8 | 302.9 | 326.1 | 329.2 |
+| 08:29 | 356.9 | 357.6 | 380.1 | 383.3 |
+| 08:30 | 389.3 | 388.4 | 398.3 | 398.4 |
+
+Age interpretation:
+
+1. Age rose nearly linearly during drain.
+2. Growth is expected when burst enqueue rate is higher than initial dequeue throughput.
+3. This trend alone does not imply failures; it must be correlated with retry and success data.
+
+### Evidence timeline
+
+```mermaid
+sequenceDiagram
+    participant Producer
+    participant Queue as work-items
+    participant Func as labshared-func (single instance)
+    participant AI as App Insights
+
+    Producer->>Queue: Inject 2000 messages (08:23:09-08:23:31)
+    Func->>Queue: Start dequeue and processing
+    Func->>AI: QueueProcessed traces (dequeueCount=1)
+    Note over Func,AI: DistinctInstances remains 1
+    Func->>AI: requests success=true for all invocations
+    Note over Queue,Func: Per-minute throughput ramps 25 -> 518
+    Note over Queue: Queue fully drained around 08:30:29
 ```
 
-### 4.6 Retry and poison evidence review
+### Final verdict for this run
 
-Active queue sample showed mixed dequeue counts:
-
-| dequeueCount | share |
+| Question | Answer |
 |---|---|
-| 1 | 68% |
-| 2 | 18% |
-| 3-4 | 10% |
-| >=5 | 4% |
-
-Poison queue trend remained low and non-accelerating, indicating H2 not dominant in this run.
-
-### 4.7 Host settings and concurrency interpretation
-
-With `batchSize=16` and `newBatchThreshold=8`, initial workers could not absorb burst enqueue slope. Scale-out to 6 workers increased effective parallel dequeue and reversed trend.
-
-### 4.8 Core finding
-
-!!! success "Primary finding"
-    The incident is primarily explained by temporary scale lag under burst load.
-
-    Evidence chain:
-
-    - Backlog and age spike (`18240`, `74200`).
-    - Execution plateau (`FunctionExecutionCount=42` unchanged 5m).
-    - Explicit scale-out (`2 -> 6` workers).
-    - Recovery (`3200`, `8900`) after workers stabilize.
-
-### 4.9 Hypothesis verdict table
-
-| Hypothesis | Verdict | Rationale |
-|---|---|---|
-| H1 Scale lag | Supported (primary) | Direct temporal correlation with scale-out and recovery |
-| H2 Poison loop | Partially observed, not primary | Some retries exist but poison growth not dominant |
-| H3 Processing regression | Weak secondary factor | P95 increased but recovery tied to capacity increase |
-| H4 Dependency bottleneck | Secondary | Latency/failures elevated but insufficient to explain full slope |
-
-### 4.10 Operator lessons captured
-
-1. Queue age is the decisive customer-impact signal.
-2. Execution count plateau can reveal hidden throughput stall.
-3. Scale event presence is not enough; verify net drain after warm-up.
-4. Poison/dependency checks prevent false single-cause narratives.
-5. FC1 and Consumption interpret scaling context differently.
-
-### 4.11 Reproducibility and sanitation notes
-
-- All IDs are masked (`xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`).
-- Subscription references use `<subscription-id>` placeholder.
-- No customer payloads included.
-- Artifact names are deterministic and rerunnable.
-
----
+| Did Y1 scale out? | No. Stayed at one instance throughout processing evidence. |
+| Was there poison or retry amplification? | No. All messages were first-try success (`dequeueCount=1`). |
+| Was processing time regressed? | No. Processing stayed at configured 5000 ms. |
+| Was there dependency bottleneck? | No. This workload had no dependency calls. |
+| Why did backlog age rise? | Burst injection rate exceeded single-instance drain rate during early drain. |
+| What pattern does this represent? | Burst absorption on one worker, not persistent throughput failure. |
 
 ## Expected Evidence
 
-Use this section as the pass/fail checklist for your own run.
-
 ### Before Trigger (Baseline)
 
-| Evidence source | Expected state | What to capture |
-|---|---|---|
-| Storage `QueueMessageCount` | Low and stable | 15-minute baseline table |
-| Requests summary | Low failure rate, stable P95 | Function execution summary export |
-| Dependencies | No severe throttling/error pattern | Dependency summary export |
-| Host configuration | Known queue settings active | `host.json` settings snapshot |
+| Signal | Expected value |
+|---|---|
+| Queue trigger settings | `batchSize=16`, `newBatchThreshold=8`, `maxDequeueCount=5`, `visibilityTimeout=00:00:30`, `messageEncoding=none` |
+| Application log shape | `QueueProcessed sequence=... ageMs=... dequeueCount=... processingMs=... instanceId=... delayMs=...` |
+| Processing delay | `processingMs` around `5000` |
 
 ### During Incident
 
-| Evidence source | Expected state | Key indicator |
-|---|---|---|
-| Storage queue metrics | Rapid queue depth growth | `QueueMessageCount=18240` |
-| Custom queue age metric | Aging backlog | `QueueMessageAgeMsP95=74200` |
-| Function execution metric | Throughput plateau | `FunctionExecutionCount=42` unchanged over last 5m |
-| Trace scale events | Capacity reaction visible | `Scaling out worker count from 2 to 6` |
+| Signal | Expected value |
+|---|---|
+| Injection burst | 2000 messages in ~20.7s (`08:23:09` to `08:23:31`) |
+| Drain profile | Per-minute processed count ramps `25 -> 115 -> 200 -> 275 -> 355 -> 445 -> 518` |
+| Scale behavior | `DistinctInstances = 1` (no scale-out) |
+| Retry/poison behavior | `MaxDequeueCount = 1` and no retry-driven amplification |
+| Success rate | `SuccessCount = 2000`, `FailCount = 0` |
 
 ### After Recovery
 
-| Evidence source | Expected state | Key indicator |
-|---|---|---|
-| Storage queue metrics | Backlog draining | `QueueMessageCount=3200` |
-| Queue age metric | Latency recovery | `QueueMessageAgeMsP95=8900` |
-| Requests throughput | Rising successful completions | Invocations increase; failure ratio normalizing |
-| Poison queue trend | Stable or declining | No runaway poison growth |
+| Signal | Expected value |
+|---|---|
+| End of drain | Queue fully drained around `08:30:29 UTC` |
+| Total elapsed from injection start | ~7.3 minutes |
+| Max observed age | ~398.4 seconds (`398,417 ms`) |
+| Outcome class | Burst absorbed successfully without scale-out |
 
 ### Evidence Timeline
 
 ```mermaid
-graph LR
-    A[Baseline stable queue] --> B[Burst enqueue starts]
-    B --> C[Queue count and age spike]
-    C --> D[Execution count plateaus]
-    D --> E[Scale-out 2 to 6]
-    E --> F[Net throughput rises]
-    F --> G[Queue count drops to 3200]
-    G --> H[Queue age P95 drops to 8900]
+sequenceDiagram
+    participant Producer
+    participant Queue as work-items
+    participant Func as labshared-func (single instance)
+    participant AI as App Insights
+
+    Producer->>Queue: Inject 2000 messages (08:23:09-08:23:31)
+    Func->>Queue: Start dequeue and processing
+    Func->>AI: QueueProcessed traces (dequeueCount=1)
+    Note over Func,AI: DistinctInstances remains 1
+    Func->>AI: requests success=true for all invocations
+    Note over Queue,Func: Per-minute throughput ramps 25 → 518
+    Note over Queue: Queue fully drained around 08:30:29
 ```
 
-### Evidence Chain: Why This Proves the Hypothesis
+### Evidence chain: why this proves the conclusion
 
-!!! success "Falsification Logic"
-    If your run shows backlog and age accelerating, execution plateauing, and then measurable recovery after scale-out expansion, H1 is supported.
+1. Injection rate (~97 msg/s) created immediate pressure.
+2. Trace parsing showed exactly one active instance during the full window.
+3. Retry indicators stayed flat (`dequeueCount=1`), excluding poison-loop tax.
+4. Processing delay remained fixed (`5000 ms`), excluding handler regression.
+5. All invocations succeeded and queue drained, proving healthy but bounded single-instance throughput.
 
-    If scale-out occurs but backlog does not improve, H1 is weakened and you must prioritize H2/H3/H4 checks.
+## Clean Up
 
-    If poison growth or dependency failures dominate before and after scaling, treat H2 or H4 as primary and rerun mitigations.
+If this environment was dedicated to lab runs, remove resources:
 
----
+```bash
+az group delete --name "$RG" --yes --no-wait
+```
+
+If using shared resources (`rg-lab-y1-shared`), skip deletion and only clear test queue data in your operational process.
 
 ## Related Playbook
 
-- [Queue Messages Piling Up](../playbooks/queue-piling-up.md)
+- [Queue piling up playbook](../playbooks/queue-piling-up.md)
 
 ## See Also
 
-- [Troubleshooting Methodology](../methodology.md)
-- [KQL Query Library](../kql.md)
-- [First 10 Minutes](../first-10-minutes.md)
-- [Troubleshooting Lab Guides](../lab-guides.md)
-- [Queue Trigger Recipe (Python)](../../language-guides/python/recipes/queue.md)
+- [Troubleshooting methodology](../methodology.md)
+- [First 10 minutes triage](../first-10-minutes.md)
+- [KQL investigation guide](../kql.md)
+- [Evidence map](../evidence-map.md)
+- [Other lab guides](../lab-guides.md)
 
 ## Sources
 
-- [Azure Functions queue trigger](https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue-trigger)
-- [Azure Functions scaling and hosting](https://learn.microsoft.com/azure/azure-functions/functions-scale)
-- [Improve Azure Functions performance and reliability](https://learn.microsoft.com/azure/azure-functions/performance-reliability)
-- [Monitor Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-monitoring)
-- [Application Insights telemetry data model](https://learn.microsoft.com/azure/azure-monitor/app/data-model-complete)
-- [Monitor Azure Storage with Azure Monitor metrics](https://learn.microsoft.com/azure/storage/common/monitor-storage)
+- https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue-trigger
+- https://learn.microsoft.com/azure/azure-functions/functions-host-json
+- https://learn.microsoft.com/azure/azure-functions/functions-scale
+- https://learn.microsoft.com/azure/azure-functions/monitor-functions
+- https://learn.microsoft.com/azure/azure-monitor/logs/log-query-overview
