@@ -14,7 +14,7 @@ Azure Functions has platform-imposed limits that vary by hosting plan. Understan
 | **Max connections per instance** | 600 active, 1200 total | Unbounded | Unbounded | See App Service limits |
 | **Memory per instance** | 1.5 GB (fixed) | 512 / 2048 / 4096 MB | 3.5-14 GB (varies by tier) | 1.75-14 GB (varies by tier) |
 | **Storage per app** | 1 GB (Consumption share) | Deployment package in blob container | 250 GB | 50-1000 GB |
-| **Function apps per plan** | Multiple | **1** | Multiple | Multiple |
+| **Function apps per plan** | 100 | **1** | 100 | Resource-based / unbounded |
 | **VNet integration** | ❌ | ✅ | ✅ | ✅ |
 | **Deployment slots** | 2 (including production) | 0 | 3 (including production) | 1-20 (varies by tier) |
 | **Always On** | ❌ (scales to zero) | Optional always-ready | ✅ (always-ready instances) | ✅ |
@@ -46,7 +46,7 @@ When a function exceeds the timeout, the host terminates the worker process. For
 |---------|-------|
 | Default timeout | 30 minutes |
 | Maximum configurable timeout | Unlimited |
-| Unlimited timeout | Set `"functionTimeout": "-1"` or remove `functionTimeout` |
+| Unlimited timeout | Set `"functionTimeout": "-1"` (removing `functionTimeout` reverts to the 30-minute default) |
 
 ```json
 {

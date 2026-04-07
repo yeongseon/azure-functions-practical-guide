@@ -1,71 +1,385 @@
 # Quick Diagnosis Cards
 
-Use these cards when you need to route an Azure Functions incident quickly without reading the full playbooks first.
+One-page reference cards for rapid Azure Functions incident triage. Each card maps: **Symptom → First Query → Platform Segment → Playbook**.
 
-## Rapid triage map
+Use these when you have 60 seconds to classify the failure before opening the deeper playbooks.
 
-```mermaid
-graph TD
-    A[Rapid symptom check] --> B[Triggers card]
-    A --> C[Performance card]
-    A --> D[Deployment card]
-    A --> E[Auth and config card]
-```
+---
 
-## Card 1: Triggers Not Firing
-
-| If you see | Check first | Then open |
-|---|---|---|
-| HTTP trigger returns 404 | Function app state, function list, route config | [Functions Not Executing](playbooks/functions-not-executing.md) |
-| Queue messages piling up | Connection string, queue name, host.json batch settings | [Queue Piling Up](playbooks/queue-piling-up.md) |
-| Blob trigger not firing | Event Grid vs polling mode, storage event subscription | [Blob Trigger Not Firing](playbooks/blob-trigger-not-firing.md) |
-| Timer trigger skipping schedules | CRON expression, singleton lock, time zone | [Triggers: Timer Issues](playbooks/triggers/timeout-execution-limit.md) |
-
-## Card 2: Performance and Latency
-
-| If you see | Check first | Then open |
-|---|---|---|
-| High latency on first request | Cold start, hosting plan type, pre-warming config | [High Latency](playbooks/high-latency.md) |
-| Function execution timeout | `functionTimeout` in host.json, hosting plan limits | [Triggers: Timeout](playbooks/triggers/timeout-execution-limit.md) |
-| Out of memory or worker crash | Memory usage metrics, large payload handling | [Scaling: OOM Crash](playbooks/scaling/out-of-memory-worker-crash.md) |
-| Durable orchestration stuck | History size, replay events, external event wait | [Scaling: Durable Stuck](playbooks/scaling/durable-orchestration-stuck.md) |
-
-## Card 3: Deployment Failures
-
-| If you see | Check first | Then open |
-|---|---|---|
-| Deployment failed | Activity Log, deployment task output, RBAC | [Deployment Failures](playbooks/deployment-failures.md) |
-| Functions not discovered after deploy | Package structure, function.json, worker indexing | [Functions Not Executing](playbooks/functions-not-executing.md) |
-| Slot swap issues | Slot-specific settings, sticky config, health check | [Deployment Failures](playbooks/deployment-failures.md) |
-| App starts but functions error | Runtime version mismatch, extension bundle version | [Functions Failing](playbooks/functions-failing.md) |
-
-## Card 4: Auth and Configuration
-
-| If you see | Check first | Then open |
-|---|---|---|
-| Managed identity RBAC failure | Role assignment, scope, identity type | [Auth: MI RBAC Failure](playbooks/auth-config/managed-identity-rbac-failure.md) |
-| Connection string errors | App settings, Key Vault reference, slot settings | [Auth: App Settings](playbooks/auth-config/app-settings-misconfiguration.md) |
-| 401/403 on HTTP trigger | Auth level, function keys, EasyAuth config | [Functions Failing](playbooks/functions-failing.md) |
-| Binding connection failures | Identity-based vs connection-string config | [Auth: App Settings](playbooks/auth-config/app-settings-misconfiguration.md) |
-
-## Escalation rule
+## Card 1: Slow First Invocation / Cold Start
 
 ```mermaid
 graph LR
-    A[Card used] --> B[First 10 Minutes checklist]
-    B --> C[Canonical playbook]
-    C --> D[Collect evidence before changing config]
+    A[Slow first invocation] --> B[First Query]
+    B --> C[Platform Segment]
+    C --> D[Playbook]
 ```
+
+| Step | Action |
+|---|---|
+| **Symptom** | First HTTP request or first trigger execution after idle/restart takes seconds longer than steady-state traffic |
+| **First Query** | `traces \| where timestamp > ago(2h) \| where cloud_RoleName =~ "func-myapp-prod" \| where message has_any ("Host started", "Initializing Host", "Host lock lease acquired") \| project timestamp, message \| order by timestamp desc` |
+| **What to Look For** | Repeated host startups, large startup gaps before first invocation, or high first-request duration after scale-out |
+| **Platform Segment** | Startup / Performance |
+| **Playbook** | [High Latency](playbooks/high-latency.md) |
+
+**Quick KQL Check:**
+
+```kusto
+let appName = "func-myapp-prod";
+traces
+| where timestamp > ago(6h)
+| where cloud_RoleName =~ appName
+| where message has_any ("Host started", "Initializing Host", "Host lock lease acquired")
+| summarize StartupEvents=count() by bin(timestamp, 15m)
+| join kind=leftouter (
+    requests
+    | where timestamp > ago(6h)
+    | where cloud_RoleName =~ appName
+    | where operation_Name startswith "Functions."
+    | summarize FirstInvocation=min(timestamp), FirstDurationMs=min(toreal(duration / 1ms)) by bin(timestamp, 15m)
+) on timestamp
+| order by timestamp desc
+```
+
+**Quick CLI Check:**
+
+```bash
+az monitor app-insights query --app "$APP_NAME" --resource-group "$RG" --analytics-query "traces | where timestamp > ago(2h) | where cloud_RoleName =~ '$APP_NAME' | where message has_any ('Host started','Initializing Host','Host lock lease acquired') | project timestamp, message | order by timestamp desc" --output table
+```
+
+---
+
+## Card 2: Trigger Failures by Trigger Type
+
+```mermaid
+graph LR
+    A[Trigger not firing] --> B{Trigger type}
+    B --> C[Source evidence]
+    C --> D[Listener traces]
+```
+
+| Step | Action |
+|---|---|
+| **Symptom** | HTTP, Timer, Queue, Event Hub, Blob, or Cosmos DB trigger stops executing while the app still appears available |
+| **First Query** | `requests \| where timestamp > ago(1h) \| where cloud_RoleName =~ "func-myapp-prod" \| where operation_Name startswith "Functions." \| summarize Invocations=count(), Failures=countif(success == false) by operation_Name \| order by Invocations asc` |
+| **What to Look For** | HTTP: 404/401/5xx patterns. Timer: missing schedule traces or `isPastDue`. Queue: backlog rising while invocations stay flat. Event Hub: checkpoint lag. Blob: missing Event Grid subscription or listener startup. Cosmos DB: lease/checkpoint errors or connection failures. |
+| **Platform Segment** | Trigger Listener / Source Delivery |
+| **Playbook** | [Functions Not Executing](playbooks/functions-not-executing.md) |
+
+**Quick KQL Check:**
+
+```kusto
+let appName = "func-myapp-prod";
+let recentInvocations =
+requests
+| where timestamp > ago(1h)
+| where cloud_RoleName =~ appName
+| where operation_Name startswith "Functions."
+| summarize Invocations=count(), Failures=countif(success == false) by FunctionName=operation_Name;
+let recentTriggerTraces =
+traces
+| where timestamp > ago(1h)
+| where cloud_RoleName =~ appName
+| where message has_any ("listener", "Timer", "Blob", "Queue", "EventHub", "Cosmos", "unable to start", "isPastDue")
+| summarize TraceHits=count() by FunctionName=operation_Name;
+recentInvocations
+| join kind=leftouter recentTriggerTraces on FunctionName
+| order by Invocations asc, Failures desc
+```
+
+**Quick CLI Check:**
+
+```bash
+az functionapp function list --resource-group "$RG" --name "$APP_NAME" --output table
+az monitor app-insights query --app "$APP_NAME" --resource-group "$RG" --analytics-query "traces | where timestamp > ago(1h) | where cloud_RoleName =~ '$APP_NAME' | where message has_any ('listener','unable to start','Timer','Blob','Queue','EventHub','Cosmos','isPastDue') | project timestamp, message | order by timestamp desc" --output table
+```
+
+---
+
+## Card 3: Binding and Extension Errors
+
+```mermaid
+graph LR
+    A[Binding errors] --> B[Indexing traces]
+    B --> C[Config mismatch]
+    C --> D[Auth or extension fix]
+```
+
+| Step | Action |
+|---|---|
+| **Symptom** | Functions fail during host startup or invocation with binding, indexing, serialization, or extension-bundle errors |
+| **First Query** | `traces \| where timestamp > ago(2h) \| where cloud_RoleName =~ "func-myapp-prod" \| where message has_any ("Error indexing method", "binding", "extension", "Unable to resolve app setting", "Storage account connection string") \| project timestamp, message \| order by timestamp desc` |
+| **What to Look For** | `Error indexing method`, missing app setting names, unsupported binding attributes, wrong extension bundle version, or identity-based connection settings that do not match the binding configuration |
+| **Platform Segment** | Runtime / Bindings |
+| **Playbook** | [App Settings Misconfiguration](playbooks/auth-config/app-settings-misconfiguration.md) |
+
+**Quick KQL Check:**
+
+```kusto
+let appName = "func-myapp-prod";
+traces
+| where timestamp > ago(2h)
+| where cloud_RoleName =~ appName
+| where message has_any (
+    "Error indexing method",
+    "binding",
+    "extension",
+    "Unable to resolve app setting",
+    "Storage account connection string",
+    "Microsoft.Azure.WebJobs"
+)
+| project timestamp, severityLevel, message
+| order by timestamp desc
+```
+
+**Quick CLI Check:**
+
+```bash
+az functionapp config appsettings list --resource-group "$RG" --name "$APP_NAME" --output table
+az functionapp config show --resource-group "$RG" --name "$APP_NAME" --output json
+```
+
+---
+
+## Card 4: Timeout / Execution Limit Exceeded
+
+```mermaid
+graph LR
+    A[Timeout symptom] --> B[Duration query]
+    B --> C[Plan limit check]
+    C --> D[Timeout playbook]
+```
+
+| Step | Action |
+|---|---|
+| **Symptom** | Invocations end with timeout errors, 230-second HTTP cutoff behavior, or long-running trigger executions that never complete |
+| **First Query** | `requests \| where timestamp > ago(2h) \| where cloud_RoleName =~ "func-myapp-prod" \| where operation_Name startswith "Functions." \| summarize P95Ms=percentile(duration, 95), MaxMs=max(duration), Failures=countif(success == false) by operation_Name \| order by MaxMs desc` |
+| **What to Look For** | Duration clustering near plan limit, requests ending with timeout-related exceptions, HTTP triggers failing at the front-end timeout boundary, or durable/orchestrated work incorrectly running inside a regular function |
+| **Platform Segment** | Execution / Limits |
+| **Playbook** | [Timeout / Execution Limit Exceeded](playbooks/triggers/timeout-execution-limit.md) |
+
+**Quick KQL Check:**
+
+```kusto
+let appName = "func-myapp-prod";
+requests
+| where timestamp > ago(2h)
+| where cloud_RoleName =~ appName
+| where operation_Name startswith "Functions."
+| summarize
+    Invocations=count(),
+    Failures=countif(success == false),
+    P95Ms=percentile(duration, 95),
+    MaxMs=max(duration)
+  by FunctionName=operation_Name
+| order by MaxMs desc
+```
+
+**Quick CLI Check:**
+
+```bash
+az functionapp config appsettings list --resource-group "$RG" --name "$APP_NAME" --output table
+az monitor app-insights query --app "$APP_NAME" --resource-group "$RG" --analytics-query "exceptions | where timestamp > ago(2h) | where cloud_RoleName =~ '$APP_NAME' | where outerMessage has_any ('timeout','timed out','execution time') | project timestamp, type, outerMessage | order by timestamp desc" --output table
+```
+
+---
+
+## Card 5: Memory or CPU Exhaustion
+
+```mermaid
+graph LR
+    A[Worker slowdown] --> B[Metrics]
+    B --> C[Restart or crash traces]
+    C --> D[Resource-pressure playbook]
+```
+
+| Step | Action |
+|---|---|
+| **Symptom** | Throughput drops, worker restarts, OOM kills appear, or CPU-bound functions cause broad latency across multiple triggers |
+| **First Query** | `traces \| where timestamp > ago(6h) \| where cloud_RoleName =~ "func-myapp-prod" \| where message has_any ("OOM", "OutOfMemory", "worker process started and initialized", "Host is shutting down", "restarting", "health check") \| project timestamp, message \| order by timestamp desc` |
+| **What to Look For** | Restart storms, OOM signatures, high latency across unrelated functions, dependency noise caused by saturation, or queue backlog growth with stable upstream volume |
+| **Platform Segment** | Compute / Worker Health |
+| **Playbook** | [Out of Memory / Worker Crash](playbooks/scaling/out-of-memory-worker-crash.md) |
+
+**Quick KQL Check:**
+
+```kusto
+let appName = "func-myapp-prod";
+traces
+| where timestamp > ago(6h)
+| where cloud_RoleName =~ appName
+| where message has_any (
+    "OOM",
+    "OutOfMemory",
+    "worker process started and initialized",
+    "Host is shutting down",
+    "restarting",
+    "health check"
+)
+| project timestamp, severityLevel, message
+| order by timestamp desc
+```
+
+**Quick CLI Check:**
+
+```bash
+az monitor metrics list --resource "/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RG/providers/Microsoft.Web/sites/$APP_NAME" --metric "CpuPercentage" "MemoryWorkingSet" "Requests" --interval PT1M --aggregation Average Maximum Total --output table
+```
+
+---
+
+## Card 6: Deployment Succeeded but Functions Broke
+
+```mermaid
+graph LR
+    A[Failure after deploy] --> B[Activity Log]
+    B --> C[Startup and indexing traces]
+    C --> D[Deployment playbook]
+```
+
+| Step | Action |
+|---|---|
+| **Symptom** | Release completed, but functions are missing, returning errors, or no longer processing events immediately afterward |
+| **First Query** | `traces \| where timestamp > ago(6h) \| where cloud_RoleName =~ "func-myapp-prod" \| where message has_any ("Host started", "Generating", "No job functions found", "Error indexing method", "Syncing triggers") \| project timestamp, message \| order by timestamp desc` |
+| **What to Look For** | `No job functions found`, broken package structure, runtime mismatch, extension load errors, or trigger sync problems introduced at deployment time |
+| **Platform Segment** | Deployment / Startup |
+| **Playbook** | [Deployment Failures](playbooks/deployment-failures.md) |
+
+**Quick KQL Check:**
+
+```kusto
+let appName = "func-myapp-prod";
+traces
+| where timestamp > ago(6h)
+| where cloud_RoleName =~ appName
+| where message has_any (
+    "Host started",
+    "Generating",
+    "No job functions found",
+    "Error indexing method",
+    "Syncing triggers",
+    "Worker process started and initialized"
+)
+| project timestamp, severityLevel, message
+| order by timestamp desc
+```
+
+**Quick CLI Check:**
+
+```bash
+az monitor activity-log list --resource-group "$RG" --offset 6h --max-events 20 --output table
+az functionapp function list --resource-group "$RG" --name "$APP_NAME" --output table
+az functionapp config appsettings list --resource-group "$RG" --name "$APP_NAME" --output table
+```
+
+---
+
+## Card 7: Scale Out Not Keeping Up
+
+```mermaid
+graph LR
+    A[Backlog grows] --> B[Invocation trend]
+    B --> C[Scale signals]
+    C --> D[Queue or event-hub playbook]
+```
+
+| Step | Action |
+|---|---|
+| **Symptom** | Queue depth, Event Hub lag, or pending work grows faster than completions even though the function app is still executing some work |
+| **First Query** | `requests \| where timestamp > ago(2h) \| where cloud_RoleName =~ "func-myapp-prod" \| where operation_Name startswith "Functions." \| summarize Invocations=count(), Failures=countif(success == false), P95Ms=percentile(duration, 95) by bin(timestamp, 5m), operation_Name \| order by timestamp asc` |
+| **What to Look For** | Flat or weak invocation growth while source volume rises, repeated scale-controller or listener warnings, partition imbalance, checkpoint lag, or one hot partition blocking the rest of the workload |
+| **Platform Segment** | Scaling / Throughput |
+| **Playbook** | [Queue Piling Up](playbooks/queue-piling-up.md) and [Event Hub / Service Bus Lag](playbooks/triggers/event-hub-service-bus-lag.md) |
+
+**Quick KQL Check:**
+
+```kusto
+let appName = "func-myapp-prod";
+requests
+| where timestamp > ago(2h)
+| where cloud_RoleName =~ appName
+| where operation_Name startswith "Functions."
+| summarize Invocations=count(), Failures=countif(success == false), P95Ms=percentile(duration, 95) by bin(timestamp, 5m), FunctionName=operation_Name
+| order by timestamp asc
+```
+
+**Quick CLI Check:**
+
+```bash
+az monitor metrics list --resource "/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RG/providers/Microsoft.Web/sites/$APP_NAME" --metric "FunctionExecutionCount" "FunctionExecutionUnits" "Requests" --interval PT5M --aggregation Total Average --output table
+az monitor app-insights query --app "$APP_NAME" --resource-group "$RG" --analytics-query "traces | where timestamp > ago(2h) | where cloud_RoleName =~ '$APP_NAME' | where message has_any ('scale','partition','checkpoint','listener','backlog') | project timestamp, message | order by timestamp desc" --output table
+```
+
+---
+
+## Universal First 3 Queries
+
+When you do not know where to start, run these three queries first to establish the failure domain.
+
+### Query 1: Function Execution Trend
+
+```kusto
+let appName = "func-myapp-prod";
+requests
+| where timestamp > ago(2h)
+| where cloud_RoleName =~ appName
+| where operation_Name startswith "Functions."
+| summarize total=count(), failed=countif(success == false), p95=percentile(duration, 95) by bin(timestamp, 5m), operation_Name
+| order by timestamp asc
+```
+
+### Query 2: Host and Listener Events
+
+```kusto
+let appName = "func-myapp-prod";
+traces
+| where timestamp > ago(24h)
+| where cloud_RoleName =~ appName
+| where message has_any ("Host started", "Host shutdown", "listener", "unable to start", "Error indexing method", "Syncing triggers", "scale")
+| project timestamp, severityLevel, message
+| order by timestamp desc
+```
+
+### Query 3: Dominant Exceptions and Dependencies
+
+```kusto
+let appName = "func-myapp-prod";
+exceptions
+| where timestamp > ago(6h)
+| where cloud_RoleName =~ appName
+| summarize ExceptionCount=count() by type, outerMessage
+| order by ExceptionCount desc
+```
+
+---
+
+## Decision Matrix
+
+| Observation | Most Likely Card | Confidence |
+|---|---|---|
+| First invocation slow after idle or scale event | Card 1 (Cold Start) | High |
+| HTTP/Timer/Queue/Event Hub/Blob/Cosmos trigger not firing | Card 2 (Trigger Failures) | High |
+| Host startup logs mention indexing, binding, or extension issues | Card 3 (Binding Errors) | High |
+| Durations cluster near timeout boundary | Card 4 (Timeout) | High |
+| Slowdown followed by worker recycle or OOM traces | Card 5 (Memory/CPU Exhaustion) | High |
+| Incident begins right after deployment or trigger sync | Card 6 (Deployment Failures) | High |
+| Backlog or lag grows while invocations rise too slowly | Card 7 (Scale Out Problems) | Medium-High |
 
 ## See Also
 
 - [Decision Tree](decision-tree.md)
+- [Evidence Map](evidence-map.md)
 - [First 10 Minutes](first-10-minutes/index.md)
 - [Playbooks](playbooks/index.md)
-- [Evidence Map](evidence-map.md)
+- [KQL Query Library](kql/index.md)
 
 ## Sources
 
-- [Azure Functions documentation](https://learn.microsoft.com/azure/azure-functions/)
-- [Troubleshoot Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-recover-storage-account)
+- [Azure Functions diagnostics](https://learn.microsoft.com/azure/azure-functions/functions-diagnostics)
 - [Monitor Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-monitoring)
+- [Configure monitoring for Azure Functions](https://learn.microsoft.com/azure/azure-functions/configure-monitoring)
+- [Azure Functions scale and hosting options](https://learn.microsoft.com/azure/azure-functions/functions-scale)
+- [Azure Functions triggers and bindings concepts](https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings)
+- [Azure Functions host.json reference](https://learn.microsoft.com/azure/azure-functions/functions-host-json)
+- [Recover Azure Functions from errors related to an inaccessible storage account](https://learn.microsoft.com/azure/azure-functions/functions-recover-storage-account)
