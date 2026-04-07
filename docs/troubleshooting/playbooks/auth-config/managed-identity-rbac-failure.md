@@ -316,14 +316,14 @@ If timeout and DNS errors dominate while 401/403 are sparse, treat auth findings
 ```mermaid
 timeline
     title Managed identity auth incident timeline
-    01:00 : RBAC assignment removed accidentally
-    01:03 : First 403 in dependencies
-    01:05 : Listener startup warnings appear
-    01:12 : Incident declared SEV-1
-    01:14 : Role assignment restored
-    01:20 : Auth failures decline after propagation
-    01:25 : Invocations recover
-    01:40 : Monitoring confirms steady state
+    01h00 : RBAC assignment removed accidentally
+    01h03 : First 403 in dependencies
+    01h05 : Listener startup warnings appear
+    01h12 : Incident declared SEV-1
+    01h14 : Role assignment restored
+    01h20 : Auth failures decline after propagation
+    01h25 : Invocations recover
+    01h40 : Monitoring confirms steady state
 ```
 
 ### Normal vs abnormal comparison

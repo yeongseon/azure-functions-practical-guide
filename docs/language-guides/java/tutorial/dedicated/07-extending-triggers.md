@@ -16,9 +16,9 @@ Extend beyond HTTP using queue, blob, and timer triggers with annotation-based b
 
 ```mermaid
 flowchart TD
-    A[Queue message] --> B[@QueueTrigger handler]
-    C[Blob upload] --> D[@BlobTrigger handler]
-    E[Schedule] --> F[@TimerTrigger handler]
+    A[Queue message] --> B["@QueueTrigger handler"]
+    C[Blob upload] --> D["@BlobTrigger handler"]
+    E[Schedule] --> F["@TimerTrigger handler"]
     B --> G[Outputs and logs]
     D --> G
     F --> G

@@ -72,7 +72,7 @@ flowchart LR
     S3[FUNCTIONS_EXTENSION_VERSION] --> E[Runtime extension bundle]
     S4[WEBSITE_CONTENTAZUREFILECONNECTIONSTRING] --> C[Content share mount]
     S5[WEBSITE_CONTENTSHARE] --> C
-    S6[@Microsoft.KeyVault(...)] --> R[Reference resolver]
+    S6["@Microsoft.KeyVault(...)"] --> R[Reference resolver]
     R --> H
     H --> T[Trigger listeners]
     I --> T
@@ -299,14 +299,14 @@ If setting rollback alone restores startup and invocation flow without code roll
 ```mermaid
 timeline
     title App settings incident timeline
-    02:30 : Configuration deployment applied
-    02:34 : First Key Vault reference parse error
-    02:36 : Content share mount failures begin
-    02:39 : Host initialization failures increase
-    02:41 : Function discovery drops to zero
-    02:45 : Settings corrected and host restarted
-    02:49 : Functions rediscovered
-    02:55 : Invocation rate returns to baseline
+    02h30 : Configuration deployment applied
+    02h34 : First Key Vault reference parse error
+    02h36 : Content share mount failures begin
+    02h39 : Host initialization failures increase
+    02h41 : Function discovery drops to zero
+    02h45 : Settings corrected and host restarted
+    02h49 : Functions rediscovered
+    02h55 : Invocation rate returns to baseline
 ```
 
 ### Normal vs abnormal evidence matrix

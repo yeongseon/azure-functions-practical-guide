@@ -64,7 +64,7 @@ flowchart TD
     B -->|HTTP 000 timeout| C{Plan family?}
     B -->|502 Server Error| D[Y1 likely; check RBAC or identity]
     B -->|503 Function host is not running| E[EP1 or S1 likely; inspect host startup and storage auth]
-    B -->|503 :( Application Error| F[EP1 likely DNS or network private path issue]
+    B -->|"503 :( Application Error"| F[EP1 likely DNS or network private path issue]
 
     C -->|FC1| G{Health endpoint green?}
     C -->|EP1 or S1| H{Recent restart?}

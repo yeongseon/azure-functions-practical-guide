@@ -132,6 +132,7 @@ graph TB
     EH --> TR
     TM --> TR
     CL --> LB
+```
 
 !!! info "Key architectural difference"
     Azure Functions adds a **Scale Controller** (a separate control-plane component outside the worker pool) and **trigger listeners** on top of the App Service workers. The Scale Controller monitors event sources and adjusts instance count automatically. App Service relies on manual scaling rules or Azure Monitor-based autoscale.

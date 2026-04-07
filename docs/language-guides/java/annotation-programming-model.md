@@ -6,7 +6,7 @@ This deep dive explains how Java functions are declared, discovered, and execute
 
 ```mermaid
 flowchart LR
-    A[Java class and method] --> B[@FunctionName]
+    A[Java class and method] --> B["@FunctionName"]
     B --> C[Trigger and binding annotations]
     C --> D[Functions host metadata index]
     D --> E[Invocation and execution]
