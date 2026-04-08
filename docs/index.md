@@ -2,13 +2,15 @@
 
 Comprehensive, practical documentation for building, deploying, operating, and troubleshooting serverless applications on Azure Functions.
 
+This site is organized as a learning and operations guide so you can move from fundamentals to production troubleshooting with clear, repeatable workflows.
+
 <div class="grid cards" markdown>
 
 -   :material-rocket-launch:{ .lg .middle } **New to Azure Functions?**
 
     ---
 
-    Start with the [Overview](start-here/overview.md), choose a hosting plan in [Hosting Options](start-here/hosting-options.md), then follow a guided track in [Learning Paths](start-here/learning-paths.md).
+    Start with platform fundamentals, choose a hosting plan, and deploy your first function app.
 
     [:octicons-arrow-right-24: Start Here](start-here/index.md)
 
@@ -16,15 +18,15 @@ Comprehensive, practical documentation for building, deploying, operating, and t
 
     ---
 
-    Review [Best Practices](best-practices/index.md) for hosting, scaling, and reliability patterns, then set up [Monitoring](operations/monitoring.md) and [Alerts](operations/alerts.md).
+    Apply battle-tested patterns for hosting selection, scaling, reliability, and deployment safety.
 
-    [:octicons-arrow-right-24: Operations](operations/index.md)
+    [:octicons-arrow-right-24: Best Practices](best-practices/index.md)
 
 -   :material-bug:{ .lg .middle } **Investigating an Incident?**
 
     ---
 
-    Jump to [First 10 Minutes](troubleshooting/first-10-minutes.md) for rapid triage, then use [Playbooks](troubleshooting/playbooks.md) and [KQL queries](troubleshooting/kql.md) for deeper diagnosis.
+    Jump straight to hypothesis-driven playbooks with real KQL queries and evidence patterns.
 
     [:octicons-arrow-right-24: Troubleshooting](troubleshooting/index.md)
 
@@ -32,15 +34,17 @@ Comprehensive, practical documentation for building, deploying, operating, and t
 
 ## Navigate the Guide
 
-| Section | Purpose | Start page |
-|---|---|---|
-| Start Here | Onboarding, plan selection, learning tracks | [Start Here](start-here/index.md) |
-| Platform | Architecture, hosting internals, scaling, networking, reliability, security | [Platform](platform/index.md) |
-| Best Practices | Production patterns and anti-patterns for hosting, triggers, scaling, and deployment | [Best Practices](best-practices/index.md) |
-| Language Guides | Implementation guidance for Python, Node.js, .NET, Java | [Language Guides](language-guides/index.md) |
-| Operations | Deployment, configuration, monitoring, alerting, recovery | [Operations](operations/index.md) |
-| Troubleshooting | Incident-first diagnosis, playbooks, KQL, lab guides | [Troubleshooting](troubleshooting/index.md) |
-| Reference | CLI cheatsheets, host.json, platform limits | [Reference](reference/index.md) |
+| Section | Purpose |
+|---|---|
+| [Start Here](start-here/index.md) | Orientation, learning paths, hosting plan selection, and repository map. |
+| [Platform](platform/index.md) | Understand core Azure Functions architecture, hosting, scaling, networking, and security. |
+| [Best Practices](best-practices/index.md) | Apply production patterns for hosting selection, triggers, scaling, reliability, and deployment. |
+| [Language Guides](language-guides/index.md) | Follow end-to-end implementation tracks for Python, Node.js, Java, and .NET. |
+| [Operations](operations/index.md) | Run production workloads with deployment, monitoring, alerting, and recovery practices. |
+| [Troubleshooting](troubleshooting/index.md) | Diagnose trigger, scaling, dependency, and deployment issues quickly. |
+| [Reference](reference/index.md) | Use quick lookups for CLI, host.json, environment variables, and platform limits. |
+
+For orientation and study order, start with [Start Here](start-here/index.md).
 
 ## Learning flow
 
@@ -56,9 +60,9 @@ flowchart LR
 
 ## Scope and disclaimer
 
-This is an independent community project. It is not affiliated with or endorsed by Microsoft. Azure and Azure Functions are trademarks of Microsoft Corporation.
+This is an independent community project. Not affiliated with or endorsed by Microsoft.
 
-All content is based on publicly available Microsoft Learn documentation. When in doubt, treat [Microsoft Learn](https://learn.microsoft.com/azure/azure-functions/) as the authoritative source.
+Primary product reference: [Azure Functions documentation (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/)
 
 ## See Also
 

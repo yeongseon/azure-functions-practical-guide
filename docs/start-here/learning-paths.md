@@ -1,6 +1,6 @@
 # Learning Paths
 
-This page provides guided learning tracks for Azure Functions Practical Guide users.
+This page provides guided learning tracks for users of this guide.
 
 Each track is built around Microsoft Learn concepts and organized for different time budgets and responsibilities.
 
