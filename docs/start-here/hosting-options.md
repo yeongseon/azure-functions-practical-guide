@@ -2,7 +2,7 @@
 
 Choosing the right hosting plan is the highest-impact early decision for an Azure Functions workload.
 
-This guide compares the four plans used in this hub: **Consumption (Y1)**, **Flex Consumption (FC1)**, **Premium (EP)**, and **Dedicated (App Service Plan)**.
+This page compares the four plans covered in this guide: **Consumption (Y1)**, **Flex Consumption (FC1)**, **Premium (EP)**, and **Dedicated (App Service Plan)**.
 
 All comparisons are based on Microsoft Learn documentation.
 

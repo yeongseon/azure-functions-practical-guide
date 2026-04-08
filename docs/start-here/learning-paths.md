@@ -1,6 +1,6 @@
 # Learning Paths
 
-This page provides guided learning tracks for Azure Functions Hub users.
+This page provides guided learning tracks for Azure Functions Practical Guide users.
 
 Each track is built around Microsoft Learn concepts and organized for different time budgets and responsibilities.
 
@@ -37,7 +37,7 @@ Choose the track that matches your immediate goal:
 ### Outcomes
 
 - You can explain triggers and bindings at a high level.
-- You understand the four hosting plans used in this hub.
+- You understand the four hosting plans used in this guide.
 - You know where platform, language, and operations content lives.
 
 ### Microsoft Learn references

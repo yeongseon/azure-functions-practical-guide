@@ -1,8 +1,8 @@
 # Repository Map
 
-This page maps the Azure Functions Hub structure so you can navigate quickly from onboarding to production operations.
+This page maps the Azure Functions Practical Guide structure so you can navigate quickly from onboarding to production operations.
 
-It also links the external DX toolkit repositories used with this hub.
+It also links the external DX toolkit repositories used with this guide.
 
 ## Top-level navigation model
 
@@ -70,7 +70,7 @@ Current primary language scope:
 - .NET
 - Java
 
-Python currently contains the most complete tutorial and recipe depth in this hub.
+Python currently contains the most complete tutorial and recipe depth in this guide.
 
 Entry points:
 
@@ -93,7 +93,7 @@ Start with:
 
 ## DX toolkit repositories
 
-These repositories are linked resources, not vendored into this hub.
+These repositories are linked resources, not vendored into this guide.
 
 | Repository | Purpose |
 |---|---|

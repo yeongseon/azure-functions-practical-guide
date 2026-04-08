@@ -1,6 +1,6 @@
 # Python Language Guide
 
-Python is the **reference implementation** in this hub and currently contains the most complete end-to-end content set.
+Python is the **reference implementation** in this guide and currently contains the most complete end-to-end content set.
 
 If you are new to Azure Functions, this track is the fastest way to understand hosting plans, deployment workflows, and production operations with concrete examples.
 
@@ -92,7 +92,7 @@ Use it to validate tutorial steps, copy implementation patterns, and test hostin
 This guide aligns to the official Python developer documentation.
 
 !!! note "Runtime and feature truth source"
-    If you find any mismatch between this hub and official service behavior, treat Microsoft Learn as authoritative and open a docs issue in this repository.
+    If you find any mismatch between this guide and official service behavior, treat Microsoft Learn as authoritative and open a docs issue in this repository.
 
 ## Cross-language context
 

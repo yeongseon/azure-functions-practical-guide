@@ -2,7 +2,7 @@
 
 This section covers operational and design best practices specific to Azure Functions. Unlike Platform (which explains how things work) or Operations (which covers day-to-day execution), Best Practices bridges the gap with actionable guidance to avoid common mistakes.
 
-Best Practices in this hub are intentionally execution-focused: hosting plan choice, trigger behavior, scaling guardrails, and operational safety controls that prevent incidents.
+Best Practices in this guide are intentionally execution-focused: hosting plan choice, trigger behavior, scaling guardrails, and operational safety controls that prevent incidents.
 
 ```mermaid
 flowchart LR

@@ -29,7 +29,7 @@ The .NET guide will follow the same 7-step tutorial structure used by the [Pytho
 | Isolated worker | **Recommended** | App code runs in separate worker process with explicit host setup |
 
 
-.NET 8 (LTS) is the hub baseline for new .NET guidance; validate target framework and extension compatibility in Microsoft Learn before production rollouts.
+.NET 8 (LTS) is the guide baseline for new .NET guidance; validate target framework and extension compatibility in Microsoft Learn before production rollouts.
 
 ## In-Process vs Isolated: Practical Differences
 

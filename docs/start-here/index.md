@@ -1,6 +1,6 @@
 # Start Here
 
-Start Here is the fastest path to understand Azure Functions fundamentals and navigate this hub with purpose.
+Start Here is the fastest path to understand Azure Functions fundamentals and navigate this guide with purpose.
 
 Use this section to answer three questions quickly:
 
@@ -21,7 +21,7 @@ flowchart TD
 - [Overview](overview.md) — serverless model, event-driven execution, triggers and bindings, and compute comparisons
 - [Learning Paths](learning-paths.md) — guided tracks from 30-minute quick start to production readiness
 - [Hosting Options](hosting-options.md) — decision matrix for Consumption, Flex Consumption, Premium, and Dedicated
-- [Repository Map](repository-map.md) — complete hub navigation plus DX toolkit links
+- [Repository Map](repository-map.md) — complete guide navigation plus DX toolkit links
 
 !!! tip "Recommended sequence"
     Read [Overview](overview.md) first, then pick a track from [Learning Paths](learning-paths.md), and finally confirm your hosting choice in [Hosting Options](hosting-options.md).

@@ -4,7 +4,7 @@ Azure Functions is a serverless compute service for running event-driven code in
 
 Instead of managing servers, you define functions that are executed by triggers (such as HTTP requests, queue messages, timers, or events), and Azure manages runtime hosting and scale behavior.
 
-This page summarizes the fundamentals from Microsoft Learn and maps them to decisions you will make in this hub.
+This page summarizes the fundamentals from Microsoft Learn and maps them to decisions you will make in this guide.
 
 ```mermaid
 flowchart LR
@@ -50,7 +50,7 @@ Bindings are declarative integration points for reading/writing data with less p
 
 ## Hosting options (what exists)
 
-Azure Functions supports multiple hosting options. In this hub, the core plans are:
+Azure Functions supports multiple hosting options. In this guide, the core plans are:
 
 1. **Consumption (Y1)** — legacy serverless plan
 2. **Flex Consumption (FC1)** — recommended serverless plan for new apps
@@ -112,7 +112,7 @@ For broader compute trade-offs:
 
 ## Language and development model
 
-The hub supports these primary languages:
+The guide supports these primary languages:
 
 - Python
 - Node.js
@@ -129,7 +129,7 @@ Start here:
 - [Java developer guide](https://learn.microsoft.com/azure/azure-functions/functions-reference-java)
 
 !!! tip "Language Guide"
-    For hub-specific implementation flow, see [Language Guides](../language-guides/index.md).
+    For guide-specific implementation flow, see [Language Guides](../language-guides/index.md).
 
 ## First decisions to make
 

@@ -33,7 +33,7 @@ This table aligns with Microsoft Learn references for each language runtime.
 |----------|--------------|---------------------------|-----------------------------------|-----------------|
 | Python | Out-of-process language worker (gRPC) | v2 decorator-based model (`func.FunctionApp`) | Python 3.10, 3.11, 3.12 (plus preview tracks documented in Learn) | Python developer guide |
 | Node.js | Out-of-process language worker (gRPC) | v4 code-first model (`app.http()`, `app.timer()`, `app.storageQueue()`) | Node.js 18, 20, 22 | Node.js developer guide |
-| .NET | In-process **or** isolated worker (recommended: isolated) | Attribute-based triggers and bindings | .NET 8 (LTS) for isolated worker in this hub baseline | .NET class library guide |
+| .NET | In-process **or** isolated worker (recommended: isolated) | Attribute-based triggers and bindings | .NET 8 (LTS) for isolated worker in this guide baseline | .NET class library guide |
 | Java | Out-of-process language worker (JVM) | Annotation-based model (`@FunctionName`, trigger/binding annotations) | Java 8, 11, 17, 21 | Java developer guide |
 
 ## How to use this section
