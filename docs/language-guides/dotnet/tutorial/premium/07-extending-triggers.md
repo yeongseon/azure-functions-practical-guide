@@ -14,8 +14,21 @@ Extend the Premium app beyond HTTP by adding Queue, Blob, and Timer triggers usi
     Premium (EP) keeps warm instances, supports deployment slots, and is suitable for low-latency and long-running functions.
     Supports VNet integration, private endpoints, and deployment slots.
 
+## What You'll Build
+
+- Queue, Blob, and Timer trigger support in a .NET isolated worker app
+- Required trigger extension package references for the isolated model
+- End-to-end trigger validation with queue creation and runtime logs
+
 ## Steps
-### Step 1 - Add queue trigger and queue output
+### Step 1 - Add required trigger extension packages
+```bash
+dotnet add package Microsoft.Azure.Functions.Worker.Extensions.Storage.Queues
+dotnet add package Microsoft.Azure.Functions.Worker.Extensions.Storage.Blobs
+dotnet add package Microsoft.Azure.Functions.Worker.Extensions.Timer
+```
+
+### Step 2 - Add queue trigger and queue output
 ```csharp
 using Microsoft.Azure.Functions.Worker;
 
@@ -33,7 +46,7 @@ public class QueueFunctions
 }
 ```
 
-### Step 2 - Add blob and timer triggers
+### Step 3 - Add blob and timer triggers
 ```csharp
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
@@ -65,17 +78,27 @@ public class TimerFunctions
 }
 ```
 
-### Step 3 - Publish and send test events
+### Step 4 - Publish and send test events
 ```bash
 dotnet publish --configuration Release --output ./publish
-func azure functionapp publish "$APP_NAME" --dotnet-isolated
+func azure functionapp publish "$APP_NAME"
 
-az storage message put   --queue-name "work-items"   --content '{"id":"1001","action":"reindex"}'   --account-name "$STORAGE_NAME"   --auth-mode login
+az storage queue create \
+  --name "work-items" \
+  --account-name "$STORAGE_NAME" \
+  --auth-mode login
+az storage message put \
+  --queue-name "work-items" \
+  --content '{"id":"1001","action":"reindex"}' \
+  --account-name "$STORAGE_NAME" \
+  --auth-mode login
 ```
 
-### Step 4 - Review trigger execution
+### Step 5 - Review trigger execution
 ```bash
-az functionapp log tail   --name "$APP_NAME"   --resource-group "$RG"
+az functionapp log tail \
+  --name "$APP_NAME" \
+  --resource-group "$RG"
 ```
 
 ```mermaid
@@ -93,16 +116,13 @@ grep "ConfigureFunctionsWebApplication" "Program.cs"
 
 Confirm that HTTP functions use `HttpRequestData` and `HttpResponseData`, and that logging is constructor-injected with `ILogger<T>`.
 
-## Expected Output
+## Verification
 ```text
 Executing 'Functions.QueueProcessor' (Reason='New queue message detected on work-items.')
 Executed 'Functions.QueueProcessor' (Succeeded)
 Executing 'Functions.ScheduledCleanup' (Reason='Timer fired at 2026-04-06T10:00:00Z')
 Executed 'Functions.ScheduledCleanup' (Succeeded)
 ```
-## Next Steps
-
-> **Next:** [Platform: Architecture](../../../../platform/architecture.md)
 
 ## See Also
 - [Tutorial Overview & Plan Chooser](../index.md)

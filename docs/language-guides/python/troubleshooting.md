@@ -2,6 +2,17 @@
 
 This reference covers the most common issues encountered when developing and deploying Azure Functions Python v2 apps, organised as **Problem → Cause → Solution**.
 
+```mermaid
+flowchart TD
+    A[Issue observed] --> B{Startup/import failure?}
+    B -->|Yes| C[Check az functionapp log tail]
+    B -->|No| D{Route/config issue?}
+    D -->|Yes| E[Validate host.json and blueprint registration]
+    D -->|No| F{Dependency/runtime issue?}
+    F -->|Yes| G[Validate requirements and remote build]
+    F -->|No| H[Check identity, networking, and DNS]
+```
+
 ## 1. Functions Not Found After Deploy
 
 **Problem:** After deploying to Azure, navigating to the function app shows no functions. The Functions list in the Azure Portal is empty, and hitting endpoints returns 404.
@@ -110,7 +121,7 @@ Verify `requirements.txt` is in the correct location (same directory as `functio
 | Reduce dependencies | Remove unused packages from `requirements.txt` |
 | Lazy imports | Move heavy imports inside function bodies |
 | Premium plan | Use always-ready instances to eliminate cold starts |
-| Keep-warm timer | Add a timer trigger that fires every few minutes |
+| Keep-warm timer | May reduce cold-start frequency for some workloads, but does not reliably prevent cold starts |
 | Increase timeout | Set `functionTimeout` in `host.json` to allow more time |
 
 ```json
@@ -125,7 +136,7 @@ See the [Scaling guide](../../platform/scaling.md) for detailed cold start mitig
 
 ## 5. local.settings.json Not Found
 
-**Problem:** Running `func host start` locally fails with an error about missing `local.settings.json`.
+**Problem:** Running `func host start` locally warns about missing `local.settings.json`, or local bindings/settings do not behave as expected.
 
 **Cause:** The `local.settings.json` file does not exist in the current directory. This file is excluded from source control via `.gitignore`, so it is not present after a fresh clone.
 
@@ -219,11 +230,13 @@ Option C — For HTTP-only functions, set an empty connection string:
    {
      "extensions": {
        "http": {
-         "routePrefix": "api"  // URL will be /api/<route>
+         "routePrefix": "api"
        }
      }
    }
    ```
+
+   With `"routePrefix": "api"`, route URLs are `/api/<route>`.
 
 3. Run `func host start` locally — the terminal lists all discovered functions and their URLs.
 

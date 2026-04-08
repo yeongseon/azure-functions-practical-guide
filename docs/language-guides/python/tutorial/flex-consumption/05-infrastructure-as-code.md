@@ -10,7 +10,21 @@ Use Bicep to provision Flex Consumption infrastructure reproducibly, including F
 | Bicep CLI | Current | Validate and build templates |
 | Existing Azure subscription access | Contributor | Create resources |
 
-## Step 1 - Set Variables
+## What You'll Build
+
+You will validate and deploy the Flex Consumption infrastructure template, then confirm FC1 runtime, networking delegation, and blob-based deployment configuration.
+
+```mermaid
+flowchart LR
+    Bicep[infra/flex-consumption/main.bicep] --> Deploy[Resource group deployment]
+    Deploy --> Plan[FC1 plan]
+    Deploy --> App[Function App]
+    App --> Config[functionAppConfig + identity storage]
+```
+
+## Steps
+
+### Step 1: Set Variables
 
 ```bash
 export BASE_NAME="flexdemo"
@@ -28,7 +42,7 @@ Expected output:
 ```text
 ```
 
-## Step 2 - Review Template Layout
+### Step 2: Review Template Layout
 
 The Flex plan track template is at `infra/flex-consumption/main.bicep` and composes shared modules from `infra/modules/`.
 
@@ -42,7 +56,7 @@ Expected output:
 ```text
 ```
 
-## Step 3 - Preview Deployment Changes
+### Step 3: Preview Deployment Changes
 
 
 ```bash
@@ -65,7 +79,7 @@ Expected output:
 }
 ```
 
-## Step 4 - Deploy Infrastructure
+### Step 4: Deploy Infrastructure
 
 
 ```bash
@@ -85,7 +99,7 @@ Expected output:
 }
 ```
 
-## Step 5 - Validate Flex IaC Requirements
+### Step 5: Validate Flex IaC Requirements
 
 
 ```bash
@@ -122,7 +136,7 @@ Expected output:
 }
 ```
 
-## Step 6 - Confirm Networking Delegation
+### Step 6: Confirm Networking Delegation
 
 Flex subnet delegation must target `Microsoft.App/environments`.
 
@@ -143,9 +157,9 @@ Expected output:
 ]
 ```
 
-## Step 7 - Optional Scripted Deployment Path
+### Step 7: Optional Scripted Deployment Path
 
-`infra/deploy.sh` is prewired for this track and references `infra/flex-consumption/main.bicep` as the infrastructure entry point.
+`infra/deploy.sh` runs from the `infra/` directory and deploys `infra/main.bicep` (via `--template-file main.bicep`) as the infrastructure entry point.
 
 
 ```bash
@@ -163,6 +177,13 @@ Infrastructure deployed!
 Step 4/5: Deploying function app code...
 Deployment completed successfully.
 ```
+
+## Verification
+
+- `az deployment group what-if` and `az deployment group create` complete with `Succeeded` provisioning state.
+- `az appservice plan show` confirms `FC1` / `FlexConsumption`.
+- `az functionapp show --query "properties.functionAppConfig"` confirms blob container deployment + Python runtime.
+- Subnet delegation output includes `Microsoft.App/environments`.
 
 ## Next Steps
 

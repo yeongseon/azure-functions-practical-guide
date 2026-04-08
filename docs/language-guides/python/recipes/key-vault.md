@@ -93,7 +93,7 @@ Set the app setting value using the Key Vault reference syntax:
 az functionapp config appsettings set \
   --name your-func \
   --resource-group your-rg \
-  --settings "EXTERNAL_API_KEY=@Microsoft.KeyVault(SecretUri=https://your-kv.vault.azure.net/secrets/ExternalApiKey/)"
+  --settings "EXTERNAL_API_KEY=@Microsoft.KeyVault(SecretUri=https://your-kv.vault.azure.net/secrets/ExternalApiKey/abc123def456)"
 
 # Using VaultName/SecretName shorthand (always resolves latest version)
 az functionapp config appsettings set \
@@ -142,6 +142,9 @@ az functionapp config appsettings list \
   --resource-group your-rg \
   --query "[?contains(value, '@Microsoft.KeyVault')]"
 ```
+
+!!! note
+    `az functionapp config appsettings list` only confirms that the `@Microsoft.KeyVault(...)` reference string is stored in app settings. It does not prove successful resolution at runtime. Verify resolution via Application Insights logs or the Function App Configuration blade's Key Vault Reference status indicators.
 
 In the Azure Portal, navigate to your Function App → **Configuration**. Each Key Vault reference shows a green checkmark (✓) when resolved successfully, or a red X (✗) if there is an access issue.
 

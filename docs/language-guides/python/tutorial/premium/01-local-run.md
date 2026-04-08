@@ -21,6 +21,20 @@ export STORAGE_NAME="stpremdemo123"
 export LOCATION="eastus2"
 ```
 
+## What You'll Build
+
+- A local Python Functions runtime started from `apps/python/`.
+- A local configuration file at `apps/python/local.settings.json` using Azurite host storage.
+- A quick validation flow for `/api/health` and `/api/info` before Premium deployment.
+
+```mermaid
+flowchart LR
+    A[Python venv + dependencies] --> B[Local settings]
+    B --> C[Azurite host storage]
+    C --> D[func host start]
+    D --> E[health and info endpoint checks]
+```
+
 ## Steps
 
 1. Create and activate a virtual environment, then install dependencies.
@@ -30,16 +44,16 @@ export LOCATION="eastus2"
     python3 -m venv .venv
     source .venv/bin/activate
     python3 -m pip install --upgrade pip
-    python3 -m pip install --requirement app/requirements.txt
+    python3 -m pip install --requirement apps/python/requirements.txt
     ```
 
 2. Copy local settings and set required values.
 
     ```bash
-    cp app/local.settings.json.example app/local.settings.json
+    cp apps/python/local.settings.json.example apps/python/local.settings.json
     ```
 
-    Use this baseline in `app/local.settings.json`:
+    Use this baseline in `apps/python/local.settings.json`:
 
     ```json
     {
@@ -61,7 +75,7 @@ export LOCATION="eastus2"
 4. Start the Functions host from the app directory.
 
     ```bash
-    cd app
+    cd apps/python
     func host start
     ```
 
@@ -74,14 +88,14 @@ export LOCATION="eastus2"
 
 6. Validate Premium-specific operating assumptions before deployment.
 
-    - Premium supports Linux and Windows; this tutorial uses Linux commands.
+    - Python Functions on Premium run on Linux in this tutorial track.
     - Plan SKUs are `EP1`, `EP2`, and `EP3` in tier `ElasticPremium`.
     - Pre-warmed instances reduce cold start, and Premium does not scale to zero (minimum 1 instance always running).
     - Scaling is plan-level, not per-function; max scale is 100 instances.
     - Default execution timeout is 30 minutes; max timeout is unlimited.
     - Memory per instance: EP1 = 3.5 GB, EP2 = 7 GB, EP3 = 14 GB.
 
-## Expected Output
+## Verification
 
 ```text
 Python 3.11.x

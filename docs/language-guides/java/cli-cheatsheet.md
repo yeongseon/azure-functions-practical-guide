@@ -14,16 +14,16 @@ flowchart LR
 ### Core Tools
 
 ```bash
-func init MyProject --java
+# Java project scaffolding uses Maven archetype, not func init --java
+mvn archetype:generate -DarchetypeGroupId=com.microsoft.azure -DarchetypeArtifactId=azure-functions-archetype
 func start
-func azure functionapp publish $APP_NAME
 ```
 
 ### Maven
 
 ```bash
 mvn clean package
-mvn azure-functions:deploy
+mvn azure-functions:deploy -DfunctionAppName=$APP_NAME
 ```
 
 ### Azure CLI

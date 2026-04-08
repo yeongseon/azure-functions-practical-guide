@@ -16,7 +16,7 @@ Set up a Java Azure Functions app on your workstation and validate the first HTT
 
 ## What You'll Build
 
-A Java HTTP-triggered Azure Function using the annotation programming model, built with Maven and validated locally at `/api/hello/{name?}`.
+A Java HTTP-triggered Azure Function scaffolded from the Azure Functions Maven archetype, built with Maven, and validated locally at `/api/hello/{name?}`.
 
 ## Steps
 
@@ -43,13 +43,6 @@ mvn archetype:generate \
     -DjavaVersion=17 \
     -DinteractiveMode=false
 cd my-java-functions
-```
-
-Alternatively, use Azure Functions Core Tools:
-
-```bash
-func init MyJavaFunctions --worker-runtime java
-cd MyJavaFunctions
 ```
 
 ### Step 2 - Confirm Maven project structure
@@ -126,11 +119,6 @@ Hello, local from Java!
 ```
 
 Confirm that Maven starts the Functions host, that `HelloJava` is listed in the local endpoint table, and that `curl --request GET "http://localhost:7071/api/hello/local"` returns `Hello, local from Java!`.
-
-## Next Steps
-
-> **Next:** [02 - First Deploy](02-first-deploy.md)
-
 
 ## See Also
 

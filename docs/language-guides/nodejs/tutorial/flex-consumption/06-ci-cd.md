@@ -13,6 +13,11 @@ Automate build and deployment with GitHub Actions and environment gates.
 !!! info "Plan basics"
     Flex Consumption supports VNet integration, identity-based storage, per-function scaling, and remote build workflows.
 
+## What You'll Build
+
+You will define a GitHub Actions workflow that builds and deploys your Node.js Functions app on each push to `main`.
+You will validate release health with HTTP checks or Application Insights telemetry after the deployment finishes.
+
 ## Steps
 
 ```mermaid
@@ -22,7 +27,6 @@ flowchart LR
     C --> D[Runtime indexes v4 handlers]
     D --> E[Trigger execution]
 ```
-
 
 ### Step 1 - Create workflow
 
@@ -44,7 +48,9 @@ jobs:
       - uses: Azure/functions-action@v1
         with:
           app-name: ${{ secrets.APP_NAME }}
+          sku: flexconsumption
           package: '.'
+          remote-build: true
           publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
 ```
 
@@ -56,23 +62,33 @@ jobs:
 ### Step 3 - Validate release
 
 ```bash
-az functionapp log tail --name $APP_NAME --resource-group $RG
-```
+FUNC_KEY=$(az functionapp function keys list --resource-group $RG --name $APP_NAME --function-name health --query default --output tsv)
+curl --header "x-functions-key: $FUNC_KEY" "https://$APP_NAME.azurewebsites.net/api/health"
 
+az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "AppRequests | where TimeGenerated > ago(5m) | take 5"
+```
 
 ### Plan-specific notes
 
-- Use a pre-created Flex plan with `--plan` and prefer `func azure functionapp publish $APP_NAME --remote-build`.
+- Flex Consumption does not support Kudu/SCM, so `az functionapp log tail` is not available. Use Application Insights or HTTP verification instead.
+- Flex Consumption routes all traffic through the integrated VNet by default, so you do not set `WEBSITE_VNET_ROUTE_ALL` manually.
+- Flex Consumption does not support custom container hosting for Function Apps.
 - Use long-form CLI flags for maintainable runbooks.
-- Keep `FUNCTIONS_WORKER_RUNTIME=node` across all environments.
 
-## Expected Output
+## Verification
 
-```text
-Functions:
-    helloHttp: [GET] http://localhost:7071/api/hello/{name?}
+```json
+[
+  {
+    "TimeGenerated": "2026-04-08T08:20:19.0000000Z",
+    "Name": "GET /api/health",
+    "ResultCode": "200",
+    "DurationMs": 34
+  }
+]
 ```
 
+HTTP 200 from `/api/health` and recent Application Insights request rows confirm the deployed function is serving traffic.
 
 ## See Also
 - [Tutorial Overview & Plan Chooser](../index.md)

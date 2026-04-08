@@ -14,6 +14,10 @@ Automate build and deployment for Consumption with GitHub Actions, deterministic
     Consumption (Y1) scales to zero and charges per execution. It has a default 5-minute timeout and up to 10 minutes maximum per execution.
     No VNet integration on this plan.
 
+## What You'll Build
+
+A GitHub Actions workflow that builds and deploys your .NET isolated app to Linux Consumption using repository secrets for target app identity and publish credentials.
+
 ## Steps
 ### Step 1 - Export publish profile
 ```bash
@@ -24,7 +28,10 @@ az functionapp deployment list-publishing-profiles \
   --output tsv
 ```
 
-Add the XML value to GitHub secret: `AZURE_FUNCTIONAPP_PUBLISH_PROFILE`.
+Add these GitHub repository secrets:
+
+- `AZURE_FUNCTIONAPP_NAME`: target Function App name (for example, `func-dotnet-consumption-demo`)
+- `AZURE_FUNCTIONAPP_PUBLISH_PROFILE`: XML value from the publishing profile command
 
 ### Step 2 - Create GitHub Actions workflow
 ```yaml
@@ -63,7 +70,7 @@ jobs:
 
 ### Step 3 - Validate release
 ```bash
-curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
+curl "https://$APP_NAME.azurewebsites.net/api/health?code=$(az functionapp keys list --resource-group $RG --name $APP_NAME --query 'functionKeys.default' --output tsv)"
 ```
 
 ```mermaid
@@ -82,16 +89,12 @@ grep "ConfigureFunctionsWebApplication" "Program.cs"
 
 Confirm that HTTP functions use `HttpRequestData` and `HttpResponseData`, and that logging is constructor-injected with `ILogger<T>`.
 
-## Expected Output
+## Verification
 ```text
 Run azure/functions-action@v1
 Deployment successful.
 Function app updated with package from ./publish
 ```
-## Next Steps
-
-> **Next:** [07 - Extending Triggers](07-extending-triggers.md)
-
 ## See Also
 - [Tutorial Overview & Plan Chooser](../index.md)
 - [.NET Language Guide](../../index.md)

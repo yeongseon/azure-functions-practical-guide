@@ -15,6 +15,10 @@ export STORAGE_NAME="stdedidev<unique>"
 export LOCATION="koreacentral"
 ```
 
+## What You'll Build
+
+You will provision a Basic (B1) Linux App Service Plan, create a Python Function App on that plan, deploy from `apps/python`, and validate live endpoints.
+
 ## Steps
 
 ### Step 1 - Create resource group and storage account
@@ -43,7 +47,7 @@ az appservice plan create \
   --is-linux
 ```
 
-For production workloads, use `S1` or `P1v2` when you need higher scale limits, VNet integration, private endpoints, or deployment slots.
+For production workloads, use `S1` or `P1v2` when you need higher scale limits, VNet integration, or deployment slots.
 
 ### Step 3 - Create the Function App on the plan
 
@@ -99,10 +103,10 @@ flowchart LR
 !!! info "Requires Standard tier or higher"
     VNet integration is not available on Basic (B1) tier. Upgrade to Standard (S1) or Premium (P1v2) for VNet support.
 
-!!! info "Requires Standard tier or higher"
-    Private endpoints are not available on Basic (B1) tier. Upgrade to Standard (S1) or Premium (P1v2).
+!!! info "Private endpoints on Dedicated"
+    App Service private endpoints are supported on Basic (B1) and higher tiers. When you enable private endpoints, verify private DNS resolution for the app hostname.
 
-## Expected Output
+## Verification
 
 `az appservice plan create ... --sku B1`:
 
@@ -142,7 +146,7 @@ flowchart LR
 }
 ```
 
-## Deployment Verification Results
+### Deployment Verification Results
 
 Endpoint test results from the Korea Central deployment (all returned HTTP 200):
 
@@ -168,6 +172,6 @@ Your first Dedicated deployment is live. Next you will configure app settings, s
 
 ## Sources
 
-- [Create a Function App in an App Service plan (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-how-to-use-azure-function-app-settings)
+- [Work with Azure Functions app settings (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-how-to-use-azure-function-app-settings)
 - [App Service Always On (Microsoft Learn)](https://learn.microsoft.com/azure/app-service/configure-common)
-- [Kudu service overview](https://github.com/projectkudu/kudu/wiki)
+- [Use private endpoints for Azure App Service apps (Microsoft Learn)](https://learn.microsoft.com/azure/app-service/networking/private-endpoint)

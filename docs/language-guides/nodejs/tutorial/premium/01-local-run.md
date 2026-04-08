@@ -13,26 +13,31 @@ Initialize, run, and verify a Node.js v4 app on your machine before cloud deploy
 !!! info "Plan basics"
     Premium provides always-warm instances, VNet integration, deployment slots, and unlimited timeout support.
 
+## What You'll Build
+
+You will create a Node.js v4 HTTP-triggered function named `helloHttp` and run it locally with Azure Functions Core Tools.
+You will validate the local route at `/api/hello/{name?}` and confirm the function returns a JSON payload.
+
 ## Steps
 
 ```mermaid
 flowchart LR
-    A[Code commit] --> B[Build package]
-    B --> C[Deploy to Premium]
-    C --> D[Runtime indexes v4 handlers]
-    D --> E[Trigger execution]
+    A[func init project] --> B[Create v4 handler]
+    B --> C[func start]
+    C --> D[Test with curl]
 ```
-
 
 ### Step 1 - Initialize project
 
 ```bash
-func init node-guide-premium --javascript
+func init node-guide-premium --worker-runtime node --language javascript
 cd node-guide-premium
-func new --template "HTTP trigger" --name httpTrigger
+npm install @azure/functions
 ```
 
-### Step 2 - Add v4 handler
+### Step 2 - Create the v4 handler
+
+Save the following as `src/functions/helloHttp.js`:
 
 ```javascript
 const { app } = require('@azure/functions');
@@ -52,23 +57,28 @@ app.http('helloHttp', {
 
 ```bash
 func start
+```
+
+In a second terminal, test the endpoint:
+
+```bash
 curl --request GET "http://localhost:7071/api/hello"
 ```
 
+### Step 4 - Review Premium-specific notes
 
-### Plan-specific notes
-
+- Premium plans require Azure Files content share settings (`WEBSITE_CONTENTAZUREFILECONNECTIONSTRING` and `WEBSITE_CONTENTSHARE`) for standard content storage behavior.
 - Use an EP plan such as EP1 and configure always-ready capacity for low-latency APIs.
-- Use long-form CLI flags for maintainable runbooks.
-- Keep `FUNCTIONS_WORKER_RUNTIME=node` across all environments.
+- Use long-form CLI flags (for example, `--resource-group`) for maintainable runbooks.
 
-## Expected Output
+## Verification
 
 ```text
 Functions:
     helloHttp: [GET] http://localhost:7071/api/hello/{name?}
 ```
 
+Confirm that the host lists `helloHttp`, then run `curl --request GET "http://localhost:7071/api/hello"` and verify a `200 OK` response with a JSON body such as `{"message":"Hello, world"}`.
 
 ## See Also
 - [Tutorial Overview & Plan Chooser](../index.md)

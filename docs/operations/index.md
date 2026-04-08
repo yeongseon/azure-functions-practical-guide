@@ -11,6 +11,13 @@ Use it to deploy, configure, monitor, alert, and recover production workloads.
 
 ## Scope
 
+```mermaid
+flowchart LR
+    A[Deploy] --> B[Monitor]
+    B --> C[Alert]
+    C --> D[Recover]
+```
+
 - Execute releases safely with rollback paths.
 - Manage runtime settings and secret delivery.
 - Monitor health, latency, failures, and backlog.

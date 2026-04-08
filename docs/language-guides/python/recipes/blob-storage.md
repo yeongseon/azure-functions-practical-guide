@@ -48,6 +48,9 @@ On classic Consumption or Premium plans, the `AzureWebJobsStorage` connection st
 
 Use the Blob output binding to write content to Blob Storage when an HTTP request arrives:
 
+!!! note
+    The `connection` parameter names a setting prefix, not a literal connection string. On Flex Consumption, `AzureWebJobsStorage` resolves through identity-based settings such as `AzureWebJobsStorage__accountName`.
+
 ```python
 import azure.functions as func
 import json
@@ -61,8 +64,6 @@ bp = func.Blueprint()
     path="uploads/{rand-guid}.json",
     connection="AzureWebJobsStorage"
 )
-
-> **Note:** The `connection` parameter names a setting prefix, not a literal connection string. On Flex Consumption, `AzureWebJobsStorage` resolves through identity-based settings such as `AzureWebJobsStorage__accountName`.
 def upload_file(req: func.HttpRequest, outputBlob: func.Out[str]) -> func.HttpResponse:
     """Upload JSON data to Blob Storage via HTTP POST."""
     try:

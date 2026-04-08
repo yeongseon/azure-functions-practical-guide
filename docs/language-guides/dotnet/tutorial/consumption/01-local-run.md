@@ -130,10 +130,6 @@ Functions:
 ```
 
 Confirm that Core Tools lists `Health: [GET,POST] http://localhost:7071/api/health`, then run `curl --request GET "http://localhost:7071/api/health"` and verify a JSON response `{"status":"healthy"}`.
-## Next Steps
-
-> **Next:** [02 - First Deploy](02-first-deploy.md)
-
 ## See Also
 - [Tutorial Overview & Plan Chooser](../index.md)
 - [.NET Language Guide](../../index.md)

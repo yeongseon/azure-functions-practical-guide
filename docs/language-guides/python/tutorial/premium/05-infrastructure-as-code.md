@@ -1,12 +1,26 @@
 # 05 - Infrastructure as Code (Premium)
 
-Deploy Azure Functions Premium infrastructure with Bicep from `infra/premium/main.bicep`, including Elastic Premium plan settings, VNet integration, private endpoint, connection-string-based storage, and Azure Files content share.
+Deploy Azure Functions Premium infrastructure with Bicep from `infra/premium/main.bicep`, including Elastic Premium plan settings, VNet integration, private endpoints, identity-based host storage, and Azure Files content share.
 
 ## Prerequisites
 
 - You completed [04 - Logging and Monitoring](04-logging-monitoring.md).
 - You exported `$RG`, `$APP_NAME`, `$PLAN_NAME`, `$STORAGE_NAME`, `$LOCATION`.
 - Azure CLI is authenticated to your target subscription.
+
+## What You'll Build
+
+- A Premium (`EP1`) Function App infrastructure model defined with Bicep.
+- VNet integration, private endpoints, and private DNS links for core dependencies.
+- Identity-based host storage settings plus Azure Files content-share configuration.
+
+```mermaid
+flowchart LR
+    A[Bicep deployment] --> B[Premium plan and Function App]
+    B --> C[Managed identity host storage]
+    B --> D[Azure Files content share]
+    B --> E[VNet integration and private endpoints]
+```
 
 ## Steps
 
@@ -123,7 +137,7 @@ Deploy Azure Functions Premium infrastructure with Bicep from `infra/premium/mai
     }
     ```
 
-4. Add Function App configuration with connection-string-based storage.
+4. Add Function App configuration with identity-based host storage.
 
     ```bicep
     resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
@@ -156,8 +170,12 @@ Deploy Azure Functions Premium infrastructure with Bicep from `infra/premium/mai
               value: 'DefaultEndpointsProtocol=https;AccountName=${storageName};AccountKey=<resolved-at-deploy>;EndpointSuffix=core.windows.net'
             }
             {
-              name: 'AzureWebJobsStorage'
-              value: 'DefaultEndpointsProtocol=https;AccountName=${storageName};AccountKey=<resolved-at-deploy>;EndpointSuffix=core.windows.net'
+              name: 'AzureWebJobsStorage__accountName'
+              value: storageName
+            }
+            {
+              name: 'AzureWebJobsStorage__credential'
+              value: 'managedidentity'
             }
             {
               name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
@@ -170,7 +188,7 @@ Deploy Azure Functions Premium infrastructure with Bicep from `infra/premium/mai
     ```
 
     !!! note "Connection strings vs identity-based storage"
-        The Premium plan tutorial uses **connection-string-based** storage (`AzureWebJobsStorage` with a full connection string) and **Azure Files** for content share deployment (`WEBSITE_CONTENTSHARE` + `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING`). This is the standard approach for Premium and matches `infra/premium/main.bicep`. For identity-based storage on Premium, see the [Managed Identity recipe](../../recipes/managed-identity.md).
+        The repository Premium template uses **identity-based host storage** (`AzureWebJobsStorage__accountName` + `AzureWebJobsStorage__credential=managedidentity`) and **Azure Files** for content share deployment (`WEBSITE_CONTENTSHARE` + `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING`). This matches `infra/premium/main.bicep`.
 
         Premium uses classic `siteConfig.appSettings` and does not use `functionAppConfig`.
 
@@ -186,14 +204,12 @@ Deploy Azure Functions Premium infrastructure with Bicep from `infra/premium/mai
       --name "premium-main" \
       --template-file "infra/premium/main.bicep" \
       --parameters \
-        planName="$PLAN_NAME" \
-        appName="$APP_NAME" \
-        storageName="$STORAGE_NAME" \
+        baseName="premdemo" \
         location="$LOCATION"
     ```
 
     !!! note "Tutorial snippet vs actual infra/"
-        The Bicep snippets above are simplified for learning. The actual `infra/premium/main.bicep` uses a single `baseName` parameter and shared modules (`infra/modules/`). To deploy the production template instead, run: `az deployment group create --template-file infra/premium/main.bicep --parameters baseName="premdemo"`.
+        The Bicep snippets above are simplified for learning. The actual `infra/premium/main.bicep` uses a `baseName` parameter and shared modules (`infra/modules/`). Use the deployment command in this section to deploy the repository template directly.
 
 6. Verify Premium resources and SKU.
 
@@ -209,7 +225,7 @@ Deploy Azure Functions Premium infrastructure with Bicep from `infra/premium/mai
       --output json
     ```
 
-## Expected Output
+## Verification
 
 ```text
 Name                              ResourceType

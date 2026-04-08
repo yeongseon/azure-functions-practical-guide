@@ -14,6 +14,12 @@ Define the Dedicated environment in Bicep and deploy the same architecture repea
     Dedicated (App Service Plan) runs on pre-provisioned compute with predictable cost. Enable Always On for non-HTTP triggers.
     Supports VNet integration and slots on eligible SKUs.
 
+## What You'll Build
+
+- A Dedicated plan Bicep template with Linux .NET isolated worker configuration
+- Required host storage settings plus `alwaysOn` for non-HTTP triggers
+- Repeatable infrastructure deployment and validation commands
+
 ## Steps
 ### Step 1 - Create a Bicep template for Dedicated
 ```bicep
@@ -21,6 +27,7 @@ param location string = resourceGroup().location
 param appName string
 param storageName string
 param planName string
+param storageConnectionString string
 
 resource storage 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   name: storageName
@@ -38,6 +45,9 @@ resource appPlan 'Microsoft.Web/serverfarms@2023-12-01' = {
     name: 'B1'
   }
   kind: 'functionapp'
+  properties: {
+    reserved: true
+  }
 }
 
 resource app 'Microsoft.Web/sites@2023-12-01' = {
@@ -48,9 +58,11 @@ resource app 'Microsoft.Web/sites@2023-12-01' = {
     serverFarmId: appPlan.id
     siteConfig: {
       linuxFxVersion: 'DOTNET-ISOLATED|8.0'
+      alwaysOn: true
       appSettings: [
         { name: 'FUNCTIONS_WORKER_RUNTIME'; value: 'dotnet-isolated' }
         { name: 'FUNCTIONS_EXTENSION_VERSION'; value: '~4' }
+        { name: 'AzureWebJobsStorage'; value: storageConnectionString }
       ]
     }
   }
@@ -62,7 +74,11 @@ resource app 'Microsoft.Web/sites@2023-12-01' = {
 az deployment group create \
   --resource-group "$RG" \
   --template-file "infra/dedicated/main.bicep" \
-  --parameters appName="$APP_NAME" storageName="$STORAGE_NAME" planName="$PLAN_NAME"
+  --parameters \
+    appName="$APP_NAME" \
+    storageName="$STORAGE_NAME" \
+    planName="$PLAN_NAME" \
+    storageConnectionString="$(az storage account show-connection-string --name "$STORAGE_NAME" --resource-group "$RG" --query "connectionString" --output tsv)"
 ```
 
 ### Step 3 - Validate created resources
@@ -88,16 +104,14 @@ grep "ConfigureFunctionsWebApplication" "Program.cs"
 
 Confirm that HTTP functions use `HttpRequestData` and `HttpResponseData`, and that logging is constructor-injected with `ILogger<T>`.
 
-## Expected Output
+## Verification
 ```json
 {
-  "provisioningState": "Succeeded",
-  "defaultHostName": "func-dotnet-<plan>-demo.azurewebsites.net"
+  "kind": "functionapp,linux",
+  "state": "Running",
+  "defaultHostName": "func-dotnet-dedicated-demo.azurewebsites.net"
 }
 ```
-## Next Steps
-
-> **Next:** [06 - CI/CD](06-ci-cd.md)
 
 ## See Also
 - [Tutorial Overview & Plan Chooser](../index.md)

@@ -1,6 +1,6 @@
 # 06 - CI/CD (Consumption)
 
-Automate build and deployment with GitHub Actions and environment gates.
+Automate build and deployment with GitHub Actions.
 
 ## Prerequisites
 
@@ -12,6 +12,10 @@ Automate build and deployment with GitHub Actions and environment gates.
 
 !!! info "Plan basics"
     Consumption scales to zero automatically, does not support VNet integration, and defaults to a 5-minute timeout with a 10-minute maximum.
+
+## What You'll Build
+
+You will create a GitHub Actions workflow for Consumption deployment and confirm release health from runtime logs.
 
 ## Steps
 
@@ -66,11 +70,13 @@ az functionapp log tail --name $APP_NAME --resource-group $RG
 - Use long-form CLI flags for maintainable runbooks.
 - Keep `FUNCTIONS_WORKER_RUNTIME=node` across all environments.
 
-## Expected Output
+## Verification
 
 ```text
-Functions:
-    helloHttp: [GET] http://localhost:7071/api/hello/{name?}
+2026-04-08T08:20:11  Connected!
+2026-04-08T08:20:19  [Information] Executing 'Functions.helloHttp' (Reason='This function was programmatically called via the host APIs.', Id=6d9f2b66-9f0b-4f8f-9f4a-0f0f8f2a7e20)
+2026-04-08T08:20:19  [Information] Request received for world
+2026-04-08T08:20:19  [Information] Executed 'Functions.helloHttp' (Succeeded, Id=6d9f2b66-9f0b-4f8f-9f4a-0f0f8f2a7e20, Duration=34ms)
 ```
 
 

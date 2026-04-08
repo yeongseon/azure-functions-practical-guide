@@ -11,7 +11,9 @@ Deploy your first Azure Functions app to the Flex Consumption plan (FC1), valida
 | jq | Latest | Parse deployment output |
 | Bash | Any modern version | Run deployment script |
 
-## Architecture
+## What You'll Build
+
+You will provision a Flex Consumption Function App with Bicep, publish Python code, and validate FC1 runtime behavior in Azure.
 
 ```mermaid
 flowchart LR
@@ -21,7 +23,9 @@ flowchart LR
     Backend --> PE[Blob Private Endpoint]
 ```
 
-## Step 1 - Authenticate and Set Subscription
+## Steps
+
+### Step 1: Authenticate and Set Subscription
 
 ```bash
 az login
@@ -42,7 +46,7 @@ Expected output:
 }
 ```
 
-## Step 2 - Set Deployment Variables
+### Step 2: Set Deployment Variables
 
 ```bash
 export BASE_NAME="flexdemo"
@@ -57,7 +61,7 @@ export LOCATION="koreacentral"
 !!! note "No output"
     `export` commands set shell variables silently. No output is expected.
 
-## Step 3 - Provision Infrastructure with Bicep
+### Step 3: Provision Infrastructure with Bicep
 
 This track uses the Flex template at `infra/flex-consumption/main.bicep`.
 It configures identity-based host storage with a user-assigned managed identity (UAMI), so Flex uses blob container deployment and does **not** require `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING`.
@@ -89,7 +93,7 @@ Expected output:
 }
 ```
 
-## Step 4 - Publish Code with Core Tools
+### Step 4: Publish Code with Core Tools
 
 Flex does not expose Kudu/SCM workflows; publish with Core Tools (or One Deploy in CI/CD).
 
@@ -110,7 +114,7 @@ Functions in flexdemo-func:
     info - [httpTrigger]
 ```
 
-## Step 5 - Verify FC1 Runtime and Plan Details
+### Step 5: Verify FC1 Runtime and Plan Details
 
 ```bash
 az functionapp show --name "$APP_NAME" --resource-group "$RG" --output json
@@ -133,7 +137,7 @@ Expected output:
 }
 ```
 
-## Step 6 - Test Production Endpoint
+### Step 6: Test Production Endpoint
 
 ```bash
 curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
@@ -145,7 +149,7 @@ Expected output:
 {"status":"healthy","timestamp":"2026-04-04T05:38:46Z","version":"1.0.0"}
 ```
 
-## Step 7 - Validate Flex-Specific Behaviors
+### Step 7: Validate Flex-Specific Behaviors
 
 - Scale-to-zero is enabled by default on FC1.
 - Maximum scale can reach 1000 instances.
@@ -153,7 +157,7 @@ Expected output:
 - Default timeout is 30 minutes; max can be unlimited.
 - Deployment slots are not supported on Flex.
 
-## Deployment Verification Results
+## Verification
 
 Endpoint test results from the Korea Central deployment (all returned HTTP 200):
 

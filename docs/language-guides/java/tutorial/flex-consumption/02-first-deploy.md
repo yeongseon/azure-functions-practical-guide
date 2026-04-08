@@ -26,6 +26,12 @@ sequenceDiagram
     Azure-->>Dev: HTTP endpoint available
 ```
 
+## What You'll Build
+
+- A Flex Consumption Java Function App on Linux with FC1-backed scaling.
+- A first cloud deployment using `mvn azure-functions:deploy`.
+- A protected HTTP validation call using a function key.
+
 ## Steps
 
 ### Step 1 - Sign in and set target subscription
@@ -40,7 +46,7 @@ az account set --subscription $SUBSCRIPTION_ID
 ```bash
 az group create --name $RG --location $LOCATION
 az storage account create --name $STORAGE_NAME --location $LOCATION --resource-group $RG --sku Standard_LRS
-az functionapp create --name $APP_NAME --resource-group $RG --plan $PLAN_NAME --storage-account $STORAGE_NAME --runtime java --runtime-version 17 --functions-version 4 --os-type linux
+az functionapp create --name $APP_NAME --resource-group $RG --storage-account $STORAGE_NAME --runtime java --runtime-version 17 --functions-version 4 --flexconsumption-location $LOCATION --instance-memory 2048
 ```
 
 ### Step 3 - Deploy with Maven plugin
@@ -61,10 +67,11 @@ az functionapp function list --name $APP_NAME --resource-group $RG --output tabl
 
 ```bash
 APP_URL="https://$APP_NAME.azurewebsites.net"
-curl --request GET "$APP_URL/api/hello/cloud"
+FUNCTION_KEY=$(az functionapp function keys list --name $APP_NAME --resource-group $RG --function-name HelloJava --query default --output tsv)
+curl --request GET "$APP_URL/api/hello/cloud?code=$FUNCTION_KEY"
 ```
 
-## Expected Output
+## Verification
 
 ```text
 State    ResourceGroup    DefaultHostName

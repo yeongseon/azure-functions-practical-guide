@@ -221,7 +221,7 @@ az functionapp function list \
 az monitor app-insights metrics show \
     --app <app-insights-name> \
     --resource-group <resource-group> \
-    --metric requests/failed \
+    --metrics requests/failed \
     --interval PT5M \
     --offset 30m \
     --output table
@@ -231,6 +231,8 @@ az monitor app-insights metrics show \
 Validate deployment state, slot inventory, runtime health, and release identity.
 
 ### Deployment status and slot listing
+`az functionapp deployment source show` returns source-control deployment configuration (for example, GitHub or Local Git integration). For zip deploy/Core Tools deployment verification, use deployment logs and app health checks instead.
+
 ```bash
 az functionapp deployment source show \
     --resource-group <resource-group> \
@@ -323,10 +325,9 @@ az functionapp log tail \
 ```
 
 ```bash
-az monitor app-insights query \
-    --app <app-insights-name> \
-    --resource-group <resource-group> \
-    --analytics-query "requests | where timestamp > ago(30m) | summarize total=count(), failed=countif(success == false)"
+az monitor log-analytics query \
+    --workspace "$WORKSPACE_ID" \
+    --analytics-query "AppRequests | where TimeGenerated > ago(30m) | summarize total=count(), failed=countif(Success == false)"
 ```
 
 ```text

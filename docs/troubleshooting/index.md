@@ -96,13 +96,17 @@ flowchart TD
 
 ## See Also
 
+- [First 10 Minutes](first-10-minutes.md)
+- [Playbooks](playbooks.md)
+- [Methodology](methodology.md)
+- [KQL Query Library](kql.md)
+
+## Sources
+
 - [Azure Functions documentation](https://learn.microsoft.com/azure/azure-functions/)
 - [Azure Functions diagnostics](https://learn.microsoft.com/azure/azure-functions/functions-monitoring)
 - [Application Insights for Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-monitoring#application-insights)
 - [Scale and hosting options](https://learn.microsoft.com/azure/azure-functions/functions-scale)
-
-## Sources
-
 - [Monitor Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-monitoring)
 - [Troubleshoot Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-recover-from-failed-host)
 - [Application Insights for Azure Functions](https://learn.microsoft.com/azure/azure-functions/configure-monitoring)

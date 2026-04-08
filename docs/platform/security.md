@@ -1,7 +1,9 @@
 # Security
 Security in Azure Functions is layered: endpoint authorization, user authentication, workload identity, API gateway policy, secret governance, and network isolation. This page focuses on **design decisions** so teams can choose the right security architecture before implementation.
 
-## Security model overview
+## Main Content
+
+### Security model overview
 ```mermaid
 flowchart TD
     C[Caller] --> A[Endpoint auth\nanonymous/function/admin]
@@ -14,7 +16,7 @@ flowchart TD
 ```
 Most production systems combine multiple controls rather than relying on one.
 
-## Authentication architecture decision tree
+### Authentication architecture decision tree
 ```mermaid
 flowchart TD
     S[Start: secure HTTP endpoint] --> Q1{Is the caller a user?}
@@ -30,7 +32,7 @@ flowchart TD
 !!! note "Design principle"
     Function keys are shared secrets, not user identities. If you need per-user claims, conditional access, or delegated permissions, use Easy Auth or OAuth/JWT.
 
-## HTTP authorization levels
+### HTTP authorization levels
 Azure Functions supports three key-based authorization levels for HTTP triggers.
 | Level | Access model | Typical use |
 |---|---|---|
@@ -43,7 +45,7 @@ Design guidance:
 - Use `function` for low-friction internal integrations.
 - Do not expose `admin` operations on untrusted networks.
 
-## App Service Authentication (Easy Auth) deep-dive
+### App Service Authentication (Easy Auth) deep-dive
 Easy Auth is built-in authentication/authorization from App Service, available to Function Apps.
 
 ### How it works
@@ -115,7 +117,7 @@ When authenticated, identity data is forwarded as `X-MS-CLIENT-PRINCIPAL*` heade
 Use Easy Auth when you want platform-managed auth with mainstream providers.
 Use custom JWT validation (or APIM `validate-jwt`) when you need custom issuer rules, route-specific policies, or advanced multi-tenant logic.
 
-## JWT and OAuth 2.0 patterns
+### JWT and OAuth 2.0 patterns
 ### When to validate JWTs manually
 Manual validation is common when:
 - Issuer is custom or tenant-dependent.
@@ -139,7 +141,7 @@ Prefer managed identity for Azure-to-Azure workloads to avoid client secret spra
 ### JWKS endpoint usage
 JWKS endpoints provide public keys for JWT signature verification. Design for key caching, key rollover, and fail-closed behavior when signatures cannot be validated.
 
-## API Management (APIM) integration
+### API Management (APIM) integration
 Place Functions behind APIM when you need centralized API security and governance.
 ### APIM as a security gateway
 ```mermaid
@@ -160,7 +162,7 @@ flowchart LR
 | APIM subscription key | Consumer/app identification and product access | User identity claims |
 | OAuth bearer token | Identity and claims for authorization | Product subscription governance by itself |
 
-## CORS configuration
+### CORS configuration
 CORS primarily affects browser clients. A backend can return HTTP 200 while browsers still block the response if origin policy fails.
 
 ```bash
@@ -175,7 +177,7 @@ Wildcard origin risks:
 - Increases browser-side data exposure risk.
 - Avoid in production unless endpoint is intentionally public.
 
-## Function key management
+### Function key management
 Function keys are useful for shared-secret access, but they are not full authentication.
 ### Key types and scope
 | Key type | Scope | Typical use | Risk if leaked |
@@ -205,7 +207,7 @@ az functionapp function keys list \
 ### When keys are not enough
 Use Easy Auth, APIM OAuth, or JWT validation when you need per-user identity, claims-based authorization, conditional access, or delegated consent.
 
-## Managed identity for service-to-service access
+### Managed identity for service-to-service access
 Managed identity removes embedded credentials from code and app settings.
 
 Recommended pattern:
@@ -228,20 +230,20 @@ az role assignment create \
 
 Flex Consumption requires identity-based host storage configuration. Plan identity and RBAC early.
 
-## Key and secret handling
+### Key and secret handling
 Preferred order:
 1. Managed identity (no secret)
 2. Key Vault references in app settings
 3. Direct secret values only when unavoidable
 
-## Network security controls
+### Network security controls
 Combine identity with network boundaries:
 - IP access restrictions
 - Private endpoints
 - VNet integration for private outbound
 - Optional route-all egress through firewall or NAT
 
-## Threat model for serverless
+### Threat model for serverless
 Common attack vectors in Functions workloads:
 - Injection through HTTP body/query/header input
 - Over-permissive triggers or exposed admin endpoints
@@ -255,7 +257,7 @@ Defense-in-depth baseline:
 4. Managed identity for downstream resources
 5. Logging/monitoring with token and PII redaction
 
-## Expanded security checklist
+### Expanded security checklist
 ### Identity and authentication
 - [ ] Set explicit HTTP auth level on every endpoint.
 - [ ] Use Easy Auth for user-facing APIs unless custom JWT is required.
@@ -290,10 +292,12 @@ Defense-in-depth baseline:
 !!! tip "Language Guide"
     For Python JWT validation and Easy Auth code examples, see [HTTP Authentication](../language-guides/python/recipes/http-auth.md).
 
-## See also
+## See Also
 - [Reliability](reliability.md)
 - [Networking](networking.md)
 - [Architecture](architecture.md)
+
+## Sources
 - [Microsoft Learn: Security concepts](https://learn.microsoft.com/azure/azure-functions/security-concepts)
 - [Microsoft Learn: App Service authentication and authorization](https://learn.microsoft.com/azure/app-service/overview-authentication-authorization)
 - [Microsoft Learn: Identity-based connections tutorial](https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial)

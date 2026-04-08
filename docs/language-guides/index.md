@@ -4,6 +4,14 @@ The Language Guides section maps Azure Functions platform concepts to language-s
 
 Use this section after reading platform fundamentals so you can apply the same architecture and operations decisions in the language stack your team ships.
 
+```mermaid
+flowchart LR
+    LG[Language Guides] --> P[Python]
+    LG --> N[Node.js]
+    LG --> D[.NET]
+    LG --> J[Java]
+```
+
 !!! tip "Platform-first, then language"
     Start with [Platform](../platform/index.md) for architecture, hosting, scaling, networking, and security decisions.
     Then use the language guides to implement those decisions with the correct worker and programming model.
@@ -23,10 +31,10 @@ This table aligns with Microsoft Learn references for each language runtime.
 
 | Language | Worker model | Primary programming model | Runtime versions (Functions 4.x) | Learn reference |
 |----------|--------------|---------------------------|-----------------------------------|-----------------|
-| Python | Out-of-process language worker (gRPC) | v2 decorator-based model (`func.FunctionApp`) | Python 3.10, 3.11, 3.12 (plus preview tracks documented in Learn) | [Python developer guide](https://learn.microsoft.com/azure/azure-functions/functions-reference-python) |
-| Node.js | Out-of-process language worker (gRPC) | v4 code-first model (`app.http()`, `app.timer()`, `app.storageQueue()`) | Node.js 18, 20, 22 | [Node.js developer guide](https://learn.microsoft.com/azure/azure-functions/functions-reference-node) |
-| .NET | In-process **or** isolated worker (recommended: isolated) | Attribute-based triggers and bindings | .NET 8 (LTS) for isolated worker in this hub baseline | [.NET class library guide](https://learn.microsoft.com/azure/azure-functions/functions-dotnet-class-library) |
-| Java | Out-of-process language worker (JVM) | Annotation-based model (`@FunctionName`, trigger/binding annotations) | Java 8, 11, 17, 21 | [Java developer guide](https://learn.microsoft.com/azure/azure-functions/functions-reference-java) |
+| Python | Out-of-process language worker (gRPC) | v2 decorator-based model (`func.FunctionApp`) | Python 3.10, 3.11, 3.12 (plus preview tracks documented in Learn) | Python developer guide |
+| Node.js | Out-of-process language worker (gRPC) | v4 code-first model (`app.http()`, `app.timer()`, `app.storageQueue()`) | Node.js 18, 20, 22 | Node.js developer guide |
+| .NET | In-process **or** isolated worker (recommended: isolated) | Attribute-based triggers and bindings | .NET 8 (LTS) for isolated worker in this hub baseline | .NET class library guide |
+| Java | Out-of-process language worker (JVM) | Annotation-based model (`@FunctionName`, trigger/binding annotations) | Java 8, 11, 17, 21 | Java developer guide |
 
 ## How to use this section
 
@@ -80,3 +88,10 @@ This table aligns with Microsoft Learn references for each language runtime.
 - [Operations](../operations/index.md)
 - [Troubleshooting](../troubleshooting/index.md)
 - [Start Here](../start-here/index.md)
+
+## Sources
+
+- [Python developer guide](https://learn.microsoft.com/azure/azure-functions/functions-reference-python)
+- [Node.js developer guide](https://learn.microsoft.com/azure/azure-functions/functions-reference-node)
+- [.NET class library guide](https://learn.microsoft.com/azure/azure-functions/functions-dotnet-class-library)
+- [Java developer guide](https://learn.microsoft.com/azure/azure-functions/functions-reference-java)

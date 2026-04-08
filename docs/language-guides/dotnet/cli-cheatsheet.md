@@ -13,7 +13,7 @@ flowchart TD
 
 ### Project setup and local run
 ```bash
-func init MyProject --dotnet-isolated
+func init MyProject --worker-runtime dotnet-isolated
 cd MyProject
 func new --template "HTTP trigger" --name HttpFunction
 dotnet build
@@ -23,7 +23,7 @@ func start
 ### Deployment
 ```bash
 dotnet publish --configuration Release --output ./publish
-func azure functionapp publish "$APP_NAME" --dotnet-isolated
+func azure functionapp publish "$APP_NAME"
 az functionapp create   --name "$APP_NAME"   --resource-group "$RG"   --storage-account "$STORAGE_NAME"   --runtime dotnet-isolated   --runtime-version 8   --functions-version 4   --os-type Linux
 ```
 

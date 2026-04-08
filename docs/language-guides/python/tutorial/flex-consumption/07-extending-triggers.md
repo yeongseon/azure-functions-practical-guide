@@ -11,7 +11,21 @@ Add non-HTTP triggers to your Flex Consumption app with the correct trigger mode
 | Azure Storage Account | Existing | Queue and blob event source |
 | Event Grid integration | Enabled | Blob event delivery for Flex |
 
-## Step 1 - Set Variables
+## What You'll Build
+
+You will extend the Python Flex app with timer, queue, and Event Grid-based blob triggers, then validate end-to-end event processing.
+
+```mermaid
+flowchart LR
+    Queue[Storage Queue: tasks] --> QueueFn[Queue trigger]
+    Blob[Blob uploads container] --> EG[Event Grid subscription]
+    EG --> BlobFn[Blob trigger source=EventGrid]
+    Timer[Cron schedule] --> TimerFn[Timer trigger]
+```
+
+## Steps
+
+### Step 1: Set Variables
 
 ```bash
 export BASE_NAME="flexdemo"
@@ -29,9 +43,9 @@ Expected output:
 ```text
 ```
 
-## Step 2 - Add a Timer Trigger Blueprint
+### Step 2: Add a Timer Trigger Blueprint
 
-Create `app/blueprints/scheduled.py` and register it in `app/function_app.py`.
+Create `apps/python/blueprints/scheduled.py` and register it in `apps/python/function_app.py`.
 
 
 ```python
@@ -52,7 +66,7 @@ Expected output:
 ```text
 ```
 
-## Step 3 - Add Queue Trigger (Per-Function Scaling)
+### Step 3: Add Queue Trigger (Per-Function Scaling)
 
 Queue-triggered functions on Flex scale independently from other functions in the same app.
 
@@ -74,7 +88,7 @@ Expected output:
 ```text
 ```
 
-## Step 4 - Add Blob Trigger with Event Grid Path
+### Step 4: Add Blob Trigger with Event Grid Path
 
 For Flex Consumption, production blob triggers **must** use the Event Grid-based blob trigger. The standard polling blob trigger is not supported on Flex Consumption. Use the `source="EventGrid"` parameter on `@bp.blob_trigger()` to enable Event Grid delivery.
 
@@ -110,7 +124,7 @@ Expected output:
 ```text
 ```
 
-## Step 5 - Create Event Subscription for Blob Events
+### Step 5: Create Event Subscription for Blob Events
 
 The Event Grid-based blob trigger uses a **webhook endpoint** exposed by the Functions runtime. The URL pattern is:
 
@@ -150,11 +164,11 @@ Expected output:
 }
 ```
 
-## Step 6 - Publish and Validate Trigger Registration
+### Step 6: Publish and Validate Trigger Registration
 
 
 ```bash
-cd app
+cd apps/python
 func azure functionapp publish "$APP_NAME" --python
 az functionapp function list --name "$APP_NAME" --resource-group "$RG" --output table
 ```
@@ -171,12 +185,13 @@ process_queue_message        queueTrigger
 process_blob_event           blobTrigger
 ```
 
-## Step 7 - Trigger Tests
+### Step 7: Trigger Tests
 
 Send a queue message:
 
 
 ```bash
+az storage queue create --name "tasks" --account-name "$STORAGE_NAME" --auth-mode login --output json
 az storage message put --queue-name "tasks" --content '{"task":"reindex"}' --account-name "$STORAGE_NAME" --auth-mode login --output json
 ```
 
@@ -184,6 +199,7 @@ Upload a blob to emit Event Grid event:
 
 
 ```bash
+az storage container create --name "uploads" --account-name "$STORAGE_NAME" --auth-mode login --output json
 az storage blob upload --container-name "uploads" --name "sample.txt" --file "/tmp/sample.txt" --account-name "$STORAGE_NAME" --auth-mode login --output json
 ```
 
@@ -205,12 +221,12 @@ Expected output:
 }
 ```
 
-## Flex Trigger Rules Recap
+## Verification
 
-- Blob trigger production path: Event Grid required on Flex.
-- Queue trigger: per-function scaling behavior.
-- Scale characteristics: scale-to-zero up to 1000 instances.
-- Memory options: 512/2048/4096 MB per instance.
+- `az functionapp function list` includes timer, queue, and blob triggers after publish.
+- Queue test succeeds after creating the `tasks` queue.
+- Blob upload succeeds after creating the `uploads` container and emits `BlobCreated` events to the subscription.
+- Blob trigger production path remains Event Grid-based (`source="EventGrid"`) for Flex compliance.
 
 ## Next Steps
 

@@ -8,6 +8,20 @@ Enable observability for a Premium Function App using Application Insights, Log 
 - You exported `$RG`, `$APP_NAME`, `$PLAN_NAME`, `$STORAGE_NAME`, `$LOCATION`.
 - Your Function App is deployed and returning `200` from `/api/health`.
 
+## What You'll Build
+
+- Application Insights and Log Analytics integration for a Premium Function App.
+- Live log streaming and KQL query checks for requests, traces, and exceptions.
+- A repeatable diagnostics workflow using SCM/Kudu endpoints.
+
+```mermaid
+flowchart LR
+    A[Function App Premium] --> B[Application Insights]
+    B --> C[Request and trace telemetry]
+    C --> D[KQL verification queries]
+    A --> E[SCM or Kudu diagnostics]
+```
+
 ## Steps
 
 1. Create a Log Analytics workspace and Application Insights component.
@@ -95,7 +109,7 @@ Enable observability for a Premium Function App using Application Insights, Log 
     - Because at least one instance always runs, baseline telemetry remains active.
     - Scaling events occur at plan level across functions in the same app plan.
 
-## Expected Output
+## Verification
 
 ```text
 Live Log Stream --- Connected

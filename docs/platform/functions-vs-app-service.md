@@ -18,18 +18,18 @@ Both services share scale units, networking primitives, and deployment mechanism
 | **Programming model** | Functions with bindings | Full web frameworks (ASP.NET, Express, Flask, Spring) |
 | **Scale-to-zero** | Yes (Consumption, Flex Consumption) | No (minimum 1 instance) |
 | **Auto-scaling** | Built-in event-driven scaling | Manual or rule-based autoscale |
-| **Max execution time** | Plan-dependent: 5 min (Consumption), 10 min (Consumption max), 30 min (Flex Consumption), unlimited (Premium, Dedicated) | Unlimited |
+| **Max execution time** | Plan-dependent `functionTimeout` (Consumption default 5 min/max 10 min, Flex default 30 min, Premium/Dedicated unbounded) with a 230-second HTTP response limit on all plans | No `functionTimeout`; request duration is governed by app/server behavior and upstream HTTP timeouts, which differ from Functions host timeout semantics |
 | **Trigger types** | HTTP, Timer, Queue, Blob, Cosmos DB, Event Hub, Event Grid, Service Bus, SignalR, Durable | HTTP only (plus WebJobs for background) |
 | **Bindings (input/output)** | Native support for 20+ services | Manual SDK integration |
 | **WebSocket support** | No native WebSocket hosting (use Azure SignalR Service) | Full native support |
 | **Session affinity (ARR)** | Not supported (stateless by design) | Supported (Basic and above) |
-| **Deployment slots** | Yes (Premium, Dedicated) | Yes (Standard and above) |
+| **Deployment slots** | Yes (Consumption supports 2 total slots including production; Premium and Dedicated support slots) | Yes (Standard and above) |
 | **VNet integration** | Yes (Flex Consumption, Premium, Dedicated) | Yes (Standard and above) |
 | **Private endpoints** | Yes (Flex Consumption, Premium, Dedicated) | Yes (Basic and above) |
 | **Custom domains** | Yes | Yes |
 | **Managed identity** | Yes | Yes |
 | **Language support** | C#, JavaScript/TypeScript, Python, Java, PowerShell, Go (custom handler) | C#, Node.js, Python, Java, PHP, Ruby, Go (custom container) |
-| **Container support** | Yes (Flex Consumption, Premium, Dedicated) | Yes (all Linux tiers) |
+| **Container support** | Yes (Premium, Dedicated) | Yes (all Linux tiers) |
 | **Pricing model** | Per-execution (Consumption), on-demand plus optional always-ready baseline (Flex Consumption), or per-instance (Premium, Dedicated) | Per-instance (always) |
 | **Startup class / host** | Function host with triggers | Web server (Kestrel, Express, Gunicorn, Tomcat) |
 

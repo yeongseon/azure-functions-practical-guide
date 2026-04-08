@@ -6,6 +6,14 @@
 
 A timer trigger fires on a schedule defined by an NCRONTAB expression. Unlike HTTP triggers, timer triggers do not have an endpoint URL — they run automatically based on the schedule.
 
+```mermaid
+flowchart LR
+    SCHED[NCRONTAB Schedule] --> RUNTIME[Functions Runtime Scheduler]
+    RUNTIME --> TRIGGER[Timer Trigger Invocation]
+    TRIGGER --> TASK[Background Task Execution]
+    TASK --> LOGS[Application Insights Logs]
+```
+
 ## Timer Trigger v2 Syntax
 
 ```python
@@ -68,7 +76,7 @@ Azure Functions uses a six-field NCRONTAB expression (includes seconds):
 | Every 30 seconds | `*/30 * * * * *` | Twice per minute |
 | First of the month at midnight | `0 0 0 1 * *` | Monthly on the 1st |
 
-> **Important:** All times are in UTC. Azure Functions does not support timezone-aware NCRONTAB expressions. Adjust your schedule accordingly.
+> **Important:** Schedules are interpreted in UTC unless you configure `WEBSITE_TIME_ZONE`. Timezone-aware schedules are supported on Windows plans and Linux Premium/Dedicated plans. Linux Consumption and Linux Flex Consumption do not support `WEBSITE_TIME_ZONE` for timer triggers.
 
 ## Timer State and Past Due
 
@@ -108,7 +116,7 @@ def daily_cleanup(timer: func.TimerRequest) -> None:
 
 ### Keep-Warm Ping
 
-Prevent cold starts on the Consumption plan by pinging your own health endpoint:
+Reduce cold-start likelihood on the Consumption plan by pinging your own health endpoint:
 
 ```python
 import httpx
@@ -116,7 +124,7 @@ import os
 
 @bp.timer_trigger(schedule="0 */4 * * * *", arg_name="timer", run_on_startup=False)
 def keep_warm(timer: func.TimerRequest) -> None:
-    """Ping the health endpoint every 4 minutes to prevent scale-to-zero."""
+    """Ping the health endpoint every 4 minutes to reduce cold-start frequency."""
     base_url = os.environ.get("WEBSITE_HOSTNAME", "localhost:7071")
     scheme = "https" if "azurewebsites" in base_url else "http"
     url = f"{scheme}://{base_url}/api/health"

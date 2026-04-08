@@ -13,9 +13,24 @@ Extend the Flex Consumption app beyond HTTP by adding Queue, Blob, and Timer tri
 !!! info "Plan basics"
     Flex Consumption (FC1) scales to zero with per-function scaling, VNet support, and configurable memory. It is the recommended default for new serverless workloads.
     Supports VNet integration and private endpoints.
+    No Kudu/SCM endpoints and no custom container support on this plan.
+    All traffic routes through the integrated VNet.
+
+## What You'll Build
+
+- Queue, Blob, and Timer trigger support in a .NET isolated worker app
+- Required trigger extension package references for the isolated model
+- Trigger execution verification using Application Insights queries
 
 ## Steps
-### Step 1 - Add queue trigger and queue output
+### Step 1 - Add required trigger extension packages
+```bash
+dotnet add package Microsoft.Azure.Functions.Worker.Extensions.Storage.Queues
+dotnet add package Microsoft.Azure.Functions.Worker.Extensions.Storage.Blobs
+dotnet add package Microsoft.Azure.Functions.Worker.Extensions.Timer
+```
+
+### Step 2 - Add queue trigger and queue output
 ```csharp
 using Microsoft.Azure.Functions.Worker;
 
@@ -33,7 +48,7 @@ public class QueueFunctions
 }
 ```
 
-### Step 2 - Add blob and timer triggers
+### Step 3 - Add blob and timer triggers
 ```csharp
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
@@ -65,18 +80,32 @@ public class TimerFunctions
 }
 ```
 
-### Step 3 - Publish and send test events
+### Step 4 - Publish and send test events
 ```bash
 dotnet publish --configuration Release --output ./publish
-func azure functionapp publish "$APP_NAME" --dotnet-isolated
+func azure functionapp publish "$APP_NAME"
 
-az storage message put   --queue-name "work-items"   --content '{"id":"1001","action":"reindex"}'   --account-name "$STORAGE_NAME"   --auth-mode login
+az storage queue create \
+  --name "work-items" \
+  --account-name "$STORAGE_NAME" \
+  --auth-mode login
+az storage message put \
+  --queue-name "work-items" \
+  --content '{"id":"1001","action":"reindex"}' \
+  --account-name "$STORAGE_NAME" \
+  --auth-mode login
 ```
 
-### Step 4 - Review trigger execution
+### Step 5 - Review trigger execution
 ```bash
-az functionapp log tail   --name "$APP_NAME"   --resource-group "$RG"
+az monitor app-insights query \
+  --app "appi-dotnet-flex-consumption-demo" \
+  --resource-group "$RG" \
+  --analytics-query "traces | where message has_any ('QueueProcessor','ScheduledCleanup') | take 20" \
+  --output table
 ```
+
+`az functionapp log tail` is not a reliable primary signal on Flex Consumption because Kudu/SCM streaming behavior differs from Premium and Dedicated plans.
 
 ```mermaid
 flowchart TD
@@ -93,16 +122,15 @@ grep "ConfigureFunctionsWebApplication" "Program.cs"
 
 Confirm that HTTP functions use `HttpRequestData` and `HttpResponseData`, and that logging is constructor-injected with `ILogger<T>`.
 
-## Expected Output
+## Verification
 ```text
-Executing 'Functions.QueueProcessor' (Reason='New queue message detected on work-items.')
-Executed 'Functions.QueueProcessor' (Succeeded)
-Executing 'Functions.ScheduledCleanup' (Reason='Timer fired at 2026-04-06T10:00:00Z')
-Executed 'Functions.ScheduledCleanup' (Succeeded)
+Timestamp                    Message
+---------------------------  ------------------------------------------
+2026-04-06T10:00:00.000000Z  Executing 'Functions.QueueProcessor'
+2026-04-06T10:00:01.000000Z  Executed 'Functions.QueueProcessor' (Succeeded)
+2026-04-06T10:05:00.000000Z  Executing 'Functions.ScheduledCleanup'
+2026-04-06T10:05:01.000000Z  Executed 'Functions.ScheduledCleanup' (Succeeded)
 ```
-## Next Steps
-
-> **Next:** [Platform: Architecture](../../../../platform/architecture.md)
 
 ## See Also
 - [Tutorial Overview & Plan Chooser](../index.md)

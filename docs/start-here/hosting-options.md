@@ -6,6 +6,17 @@ This guide compares the four plans used in this hub: **Consumption (Y1)**, **Fle
 
 All comparisons are based on Microsoft Learn documentation.
 
+```mermaid
+flowchart TD
+    A[Start] --> B{New serverless app?}
+    B -->|Yes| C[Flex Consumption]
+    B -->|No| D{Need warm capacity controls?}
+    D -->|Yes| E[Premium]
+    D -->|No| F{Already on App Service capacity?}
+    F -->|Yes| G[Dedicated]
+    F -->|No| H[Consumption\nlegacy only]
+```
+
 ## Quick guidance
 
 - Start with **Flex Consumption** for most new serverless apps.
@@ -165,3 +176,11 @@ Use official pricing tools:
 - [Learning Paths](learning-paths.md)
 - [Repository Map](repository-map.md)
 - [Platform Hosting](../platform/hosting.md)
+
+## Sources
+
+- [Azure Functions scale and hosting options](https://learn.microsoft.com/azure/azure-functions/functions-scale)
+- [Consumption plan (legacy)](https://learn.microsoft.com/azure/azure-functions/consumption-plan)
+- [Flex Consumption plan](https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan)
+- [Premium plan](https://learn.microsoft.com/azure/azure-functions/functions-premium-plan)
+- [Dedicated plan](https://learn.microsoft.com/azure/azure-functions/dedicated-plan)

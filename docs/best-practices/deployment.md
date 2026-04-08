@@ -5,7 +5,7 @@ This guide describes safe deployment patterns for Azure Functions by hosting pla
 !!! tip "Operations baseline"
     Start with [Operations: Deployment](../operations/deployment.md) for command-level procedures, then apply the controls here to reduce release risk.
 
-## Deployment method selection by hosting plan
+## Why This Matters
 
 Choose the deployment method that matches plan capabilities. Incorrect method selection is a common cause of failed releases.
 
@@ -21,7 +21,9 @@ Choose the deployment method that matches plan capabilities. Incorrect method se
     - FC1 does **not** support deployment slots and does **not** expose Kudu/SCM.
     - EP and Dedicated support full slot workflows.
 
-## Why run-from-package should be default
+## Recommended Practices
+
+### Why run-from-package should be default
 
 Run-from-package mounts a built artifact as a read-only package. This removes in-place mutation risk and keeps all instances on the same bits.
 
@@ -42,7 +44,7 @@ az functionapp config appsettings set \
 !!! warning "Mutable deployment anti-pattern"
     Deploying without run-from-package can produce inconsistent behavior when trigger listeners restart while files are changing. For event-driven apps, this can surface as duplicate or missed processing windows.
 
-## Slot strategy by plan
+### Slot strategy by plan
 
 Slot usage must match plan limits and trigger behavior.
 
@@ -88,7 +90,7 @@ az functionapp config appsettings set \
     --slot-settings AZURE_FUNCTIONS_ENVIRONMENT=Staging
 ```
 
-## CI/CD pipeline design for Functions
+### CI/CD pipeline design for Functions
 
 Use repository-driven pipelines (GitHub Actions or Azure DevOps) with identity-based auth and immutable artifacts.
 
@@ -117,7 +119,7 @@ Use repository-driven pipelines (GitHub Actions or Azure DevOps) with identity-b
 !!! tip "Identity-based deployment"
     Prefer workload identity federation or managed identity over publish profiles and long-lived secrets. This reduces credential rotation burden and limits secret sprawl.
 
-## Deployment validation and release safety
+### Deployment validation and release safety
 
 Validation must prove runtime readiness, not just deployment success.
 
@@ -144,7 +146,7 @@ Validation must prove runtime readiness, not just deployment success.
 ??? note "Trigger-aware smoke testing"
     HTTP-only smoke tests are insufficient for event-driven apps. Include queue/event validation so listener startup, checkpointing, and retry behavior are exercised before cutover.
 
-## Rollback patterns
+### Rollback patterns
 
 Choose rollback path based on plan capabilities.
 
@@ -195,7 +197,7 @@ flowchart TD
     H -->|No| J[Escalate incident and deep-dive diagnostics]
 ```
 
-## Common deployment mistakes and fixes
+## Common Mistakes / Anti-Patterns
 
 | Mistake | Impact | Fix | Severity |
 |---|---|---|---|
@@ -204,7 +206,7 @@ flowchart TD
 | Skipping staging validation before swap | Production incidents immediately after cutover | Require health + smoke + telemetry gates for slot promotion | High |
 | Publishing to FC1 with wrong deployment assumptions | Failed release due to Kudu/SCM dependency or unsupported storage/deploy path | Use FC1-supported deployment methods (`func publish` or One Deploy) and validate deployment storage configuration early | Medium-High |
 
-## Deployment checklist
+## Validation Checklist
 
 ### Pre-deploy
 

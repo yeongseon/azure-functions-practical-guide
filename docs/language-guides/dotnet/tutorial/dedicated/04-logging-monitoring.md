@@ -14,6 +14,12 @@ Enable baseline observability for the Dedicated deployment with Application Insi
     Dedicated (App Service Plan) runs on pre-provisioned compute with predictable cost. Enable Always On for non-HTTP triggers.
     Supports VNet integration and slots on eligible SKUs.
 
+## What You'll Build
+
+- Application Insights wiring for a .NET isolated worker app
+- Worker-side telemetry registration in `Program.cs`
+- A KQL-based telemetry check after invoking the secured health endpoint
+
 ## Steps
 ### Step 1 - Create Application Insights
 ```bash
@@ -38,9 +44,40 @@ az functionapp config appsettings set \
   --settings "APPLICATIONINSIGHTS_CONNECTION_STRING=$APPINSIGHTS_CONNECTION_STRING"
 ```
 
-### Step 3 - Generate and inspect traces
+### Step 3 - Register Application Insights in Program.cs
+Install the required isolated worker telemetry packages before updating `Program.cs`:
+
 ```bash
-curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
+dotnet add package Microsoft.ApplicationInsights.WorkerService
+dotnet add package Microsoft.Azure.Functions.Worker.ApplicationInsights
+```
+
+```csharp
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+
+var host = new HostBuilder()
+    .ConfigureFunctionsWebApplication()
+    .ConfigureServices(services =>
+    {
+        services.AddApplicationInsightsTelemetryWorkerService();
+        services.ConfigureFunctionsApplicationInsights();
+    })
+    .Build();
+
+host.Run();
+```
+
+### Step 4 - Generate and inspect traces
+```bash
+export FUNCTION_KEY=$(az functionapp function keys list \
+  --name "$APP_NAME" \
+  --resource-group "$RG" \
+  --function-name "Health" \
+  --query "default" \
+  --output tsv)
+curl --request GET "https://$APP_NAME.azurewebsites.net/api/health?code=$FUNCTION_KEY"
 az monitor app-insights query \
   --app "appi-dotnet-dedicated-demo" \
   --resource-group "$RG" \
@@ -48,7 +85,7 @@ az monitor app-insights query \
   --output table
 ```
 
-### Step 4 - Use structured logs in code
+### Step 5 - Use structured logs in code
 ```csharp
 _logger.LogInformation("Order {OrderId} processed in {DurationMs} ms", orderId, durationMs);
 _logger.LogWarning("Queue depth high: {QueueDepth}", queueDepth);
@@ -69,15 +106,12 @@ grep "ConfigureFunctionsWebApplication" "Program.cs"
 
 Confirm that HTTP functions use `HttpRequestData` and `HttpResponseData`, and that logging is constructor-injected with `ILogger<T>`.
 
-## Expected Output
+## Verification
 ```text
 Timestamp                    Name            ResultCode    Success
 ---------------------------  --------------  ----------    -------
 2026-04-06T09:10:10.000000Z GET /api/health 200           True
 ```
-## Next Steps
-
-> **Next:** [05 - Infrastructure as Code](05-infrastructure-as-code.md)
 
 ## See Also
 - [Tutorial Overview & Plan Chooser](../index.md)

@@ -27,6 +27,10 @@ public void Heartbeat([TimerTrigger("0 */5 * * * *")] TimerInfo timer)
 }
 ```
 
+### Time zone caveat (`WEBSITE_TIME_ZONE`)
+- `WEBSITE_TIME_ZONE` is supported on Windows plans and on Linux Premium/Dedicated plans.
+- `WEBSITE_TIME_ZONE` is not supported on Linux Consumption or Flex Consumption plans.
+
 ## See Also
 - [Recipes Index](index.md)
 - [.NET Language Guide](../index.md)

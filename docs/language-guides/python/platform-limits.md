@@ -2,15 +2,22 @@
 
 Azure Functions has platform-imposed limits that vary by hosting plan. Understanding these limits is essential for capacity planning, architecture decisions, and avoiding unexpected failures. This reference documents the most impactful limits for Python function apps.
 
+```mermaid
+flowchart LR
+    A[Hosting plan selection] --> B[Scale-out limits]
+    A --> C[Execution timeout limits]
+    A --> D[Networking and connection limits]
+    A --> E[Memory and storage constraints]
+```
+
 ## Hosting Plan Comparison
 
 | Limit | Consumption (Y1) | Flex Consumption (FC1) | Premium (EP1-EP3) | Dedicated (B1-P3v3) |
 |-------|------------------|------------------------|-------------------|---------------------|
 | **Max execution timeout** | 10 min | Unbounded | Unlimited | Unlimited (`Always On` required) |
 | **Default execution timeout** | 5 min | 30 min | 30 min | 30 min |
-| **Max instances (scale-out)** | 200 | 1,000 | 100 | 10-30 (varies by tier) |
+| **Max instances (scale-out)** | 100 (Linux Python) | 1,000 | 20-100 (Linux, region-dependent) | 10-30 (varies by tier) |
 | **Max request size** | 210 MB | 210 MB | 210 MB | 210 MB |
-| **Max response size** | 100 MB | 100 MB | 100 MB | 100 MB |
 | **Max connections per instance** | 600 active, 1200 total | Unbounded | Unbounded | See App Service limits |
 | **Memory per instance** | 1.5 GB (fixed) | 512 / 2048 / 4096 MB | 3.5-14 GB (varies by tier) | 1.75-14 GB (varies by tier) |
 | **Storage per app** | 1 GB (Consumption share) | Deployment package in blob container | 250 GB | 50-1000 GB |
@@ -58,13 +65,13 @@ When a function exceeds the timeout, the host terminates the worker process. For
 
 ## Instance Limits
 
-### Consumption Plan: 200 Instances
+### Consumption Plan: 100 Instances (Python on Linux)
 
-The Consumption plan can scale to a maximum of 200 instances. Scale is event-driven and there isn't a per-app instance cap command for this plan.
+For Python workloads (Linux), the Consumption plan scales to a maximum of 100 instances. Scale is event-driven and there isn't a per-app instance cap command for this plan.
 
-### Premium Plan: 100 Instances
+### Premium Plan: 20-100 Instances (Linux, region-dependent)
 
-The Premium plan scales to a maximum of 100 instances by default (region and OS can affect practical limits). Configure always-ready and pre-warmed behavior in the Azure portal or with ARM/Bicep templates.
+Premium plan maximum scale-out on Linux is region-dependent, typically in the 20-100 instance range. Configure always-ready and pre-warmed behavior in the Azure portal or with ARM/Bicep templates.
 
 ```bash
 # Premium pre-warmed and always-ready settings are managed in
@@ -96,7 +103,6 @@ Capacity planning should account for subnet sizing and outbound networking capac
 | Limit | Value | Notes |
 |-------|-------|-------|
 | Max request body size | 210 MB | Applies to all hosting plans |
-| Max response body size | 100 MB | Applies to all hosting plans |
 | Max URL length | 8,192 bytes | Standard HTTP limit |
 | Max header size | 32 KB | Total across all headers |
 | Request timeout (external) | 230 seconds | Azure load balancer timeout; function may run longer but client disconnects |
@@ -165,16 +171,11 @@ Each Python worker process typically uses 50–150 MB at idle, plus memory for l
 | 4 workers, small deps | ~400 MB | ~1.1 GB |
 | 4 workers, large deps | ~1.2 GB | ~0.3 GB ⚠️ |
 
-## Storage Account Limits
+## Storage Account Considerations
 
-Azure Functions relies on an Azure Storage account for internal operations. The storage account's limits can impact function app behaviour:
+Azure Functions relies on an Azure Storage account for internal operations. Storage-account-level throughput limits can affect runtime behaviour, but those limits are Azure Storage service limits and can vary by storage redundancy, region, and workload pattern.
 
-| Storage Limit | Value |
-|--------------|-------|
-| Max requests per storage account | 20,000 per second |
-| Max blob throughput | 60 MiB/s per blob |
-| Max queue messages per second | 2,000 per queue (per storage account) |
-| Max table operations per second | 20,000 per storage account |
+For authoritative storage throughput numbers, use the Azure Storage scalability targets documentation rather than treating storage figures as Azure Functions platform limits.
 
 For high-throughput scenarios, consider using a dedicated storage account for `AzureWebJobsStorage` separate from application data storage.
 
@@ -195,3 +196,4 @@ For high-throughput scenarios, consider using a dedicated storage account for `A
 
 ## Sources
 - [Azure Functions Scale and Service Limits (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-scale#service-limits)
+- [Azure Storage Scalability and Performance Targets (Microsoft Learn)](https://learn.microsoft.com/azure/storage/common/scalability-targets-standard-account)

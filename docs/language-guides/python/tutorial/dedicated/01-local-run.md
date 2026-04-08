@@ -10,6 +10,16 @@ This tutorial runs the Function App locally and prepares the exact variables and
 - Azure Functions Core Tools v4
 - Git
 
+## What You'll Build
+
+You will run the Python Function App locally from `apps/python`, load local settings, and validate HTTP endpoints before cloud deployment.
+
+```mermaid
+flowchart LR
+    A[Local source in apps/python] --> B[Functions host on localhost:7071]
+    B --> C[Test calls to /api/health and /api/info]
+```
+
 Set shared variables for the full Dedicated track:
 
 ```bash
@@ -32,17 +42,17 @@ az account set --subscription "<subscription-id>"
 ### Step 1 - Clone the project and install dependencies
 
 ```bash
-git clone https://github.com/your-org/azure-functions-python-guide.git
-cd azure-functions-python-guide
+git clone https://github.com/yeongseon/azure-functions-practical-guide.git
+cd azure-functions-practical-guide
 python -m venv .venv
 source .venv/bin/activate
-pip install --requirement app/requirements.txt
+pip install --requirement apps/python/requirements.txt
 ```
 
 ### Step 2 - Create local settings
 
 ```bash
-cp app/local.settings.json.example app/local.settings.json
+cp apps/python/local.settings.json.example apps/python/local.settings.json
 ```
 
 Use a local storage emulator value for development:
@@ -60,7 +70,7 @@ Use a local storage emulator value for development:
 ### Step 3 - Start the Functions host
 
 ```bash
-func start --script-root app
+cd apps/python && func start
 ```
 
 ### Step 4 - Validate local endpoints
@@ -72,9 +82,9 @@ curl --request GET "http://localhost:7071/api/health"
 curl --request GET "http://localhost:7071/api/info"
 ```
 
-## Expected Output
+## Verification
 
-`func start --script-root app`:
+`cd apps/python && func start`:
 
 ```text
 Azure Functions Core Tools

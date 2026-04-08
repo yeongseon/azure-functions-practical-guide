@@ -1,55 +1,111 @@
 # Managed Identity
 
-Use system-assigned identity for secretless authentication across Azure resources.
+This recipe configures a system-assigned managed identity and uses `DefaultAzureCredential` from Java to call downstream Azure services without secrets.
 
-## Main Pattern
+## Architecture
 
 ```mermaid
 flowchart LR
-    A[Inbound event/request] --> B[Java function method]
-    B --> C[Business logic]
-    C --> D[Output binding or response]
+    FUNC[Function App] --> MSI[System-assigned managed identity]
+    MSI --> ENTRA[Microsoft Entra token endpoint]
+    FUNC --> SDK[Azure SDK with DefaultAzureCredential]
+    SDK --> SERVICE[(Storage / Key Vault / Cosmos DB)]
 ```
 
-### Java implementation example
+## Prerequisites
+
+Enable identity and capture principal ID:
+
+```bash
+az functionapp identity assign --name $APP_NAME --resource-group $RG
+
+PRINCIPAL_ID=$(az functionapp identity show --name $APP_NAME --resource-group $RG --query principalId --output tsv)
+```
+
+Grant RBAC access to a storage account:
+
+```bash
+STORAGE_SCOPE=$(az storage account show --name $STORAGE_NAME --resource-group $RG --query id --output tsv)
+
+az role assignment create \
+  --assignee-object-id $PRINCIPAL_ID \
+  --assignee-principal-type ServicePrincipal \
+  --role "Storage Blob Data Reader" \
+  --scope $STORAGE_SCOPE
+```
+
+Maven dependencies:
+
+```xml
+<dependencies>
+    <dependency>
+        <groupId>com.azure</groupId>
+        <artifactId>azure-identity</artifactId>
+        <version>1.14.2</version>
+    </dependency>
+    <dependency>
+        <groupId>com.azure</groupId>
+        <artifactId>azure-storage-blob</artifactId>
+        <version>12.27.0</version>
+    </dependency>
+</dependencies>
+```
+
+## Java implementation
 
 ```java
-@FunctionName("ManagedIdentity")
-public HttpResponseMessage run(
-    @HttpTrigger(name = "req", methods = {HttpMethod.GET, HttpMethod.POST}, authLevel = AuthorizationLevel.FUNCTION, route = "sample/{id?}")
-    HttpRequestMessage<Optional<String>> request,
-    @BindingName("id") String id,
-    final ExecutionContext context) {
+package com.contoso.functions;
 
-    context.getLogger().info("recipe=managed-identity.md id=" + id);
+import com.azure.identity.DefaultAzureCredentialBuilder;
+import com.azure.storage.blob.BlobContainerClient;
+import com.azure.storage.blob.BlobContainerClientBuilder;
+import com.microsoft.azure.functions.*;
+import com.microsoft.azure.functions.annotation.*;
 
-    return request.createResponseBuilder(HttpStatus.OK)
-        .body("ok")
-        .build();
+import java.util.Optional;
+
+public class ManagedIdentityFunctions {
+
+    @FunctionName("listBlobsWithIdentity")
+    public HttpResponseMessage listBlobsWithIdentity(
+        @HttpTrigger(
+            name = "request",
+            methods = {HttpMethod.GET},
+            authLevel = AuthorizationLevel.FUNCTION,
+            route = "identity/blobs"
+        ) HttpRequestMessage<Optional<String>> request
+    ) {
+        String endpoint = System.getenv("STORAGE_BLOB_ENDPOINT");
+        String container = System.getenv("STORAGE_CONTAINER_NAME");
+
+        BlobContainerClient containerClient = new BlobContainerClientBuilder()
+            .endpoint(endpoint)
+            .containerName(container)
+            .credential(new DefaultAzureCredentialBuilder().build())
+            .buildClient();
+
+        long count = containerClient.listBlobs().stream().count();
+        return request.createResponseBuilder(HttpStatus.OK)
+            .body("Blob count: " + count)
+            .build();
+    }
 }
 ```
 
-### Operational checklist
+## Implementation notes
 
-1. Validate inputs and return explicit status codes.
-2. Keep handlers idempotent for retry-safe operations.
-3. Emit structured logs with correlation identifiers.
-4. Keep secrets out of source code and local settings files.
-
-## Validation
-
-```bash
-mvn clean package
-mvn azure-functions:run
-```
+- `DefaultAzureCredential` uses local developer identity during development and managed identity in Azure.
+- RBAC propagation can take a few minutes after assignment.
+- Scope role assignments narrowly to least privilege.
+- Prefer identity-based connection settings for supported bindings.
 
 ## See Also
 
-- [Recipes Index](index.md)
-- [Annotation Programming Model](../annotation-programming-model.md)
-- [Java Runtime](../java-runtime.md)
+- [Key Vault Integration](key-vault.md)
+- [Cosmos DB Integration](cosmosdb.md)
+- [Blob Storage Integration](blob-storage.md)
 
 ## Sources
 
-- [Azure Functions Java developer guide (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-reference-java)
-- [Azure Functions triggers and bindings (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings)
+- [Use managed identities in Azure Functions (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial)
+- [Azure Identity client library for Java (Microsoft Learn)](https://learn.microsoft.com/java/api/overview/azure/identity-readme)

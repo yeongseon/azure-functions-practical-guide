@@ -13,13 +13,21 @@ flowchart LR
 
 ### Add custom hostname
 ```bash
-az functionapp config hostname add   --webapp-name "$APP_NAME"   --resource-group "$RG"   --hostname "api.example.com"
+az functionapp config hostname add --name "$APP_NAME" --resource-group "$RG" --hostname "api.example.com"
+```
+
+### Create managed certificate
+```bash
+az functionapp config ssl create --name "$APP_NAME" --resource-group "$RG" --hostname "api.example.com"
 ```
 
 ### Bind certificate
 ```bash
-az functionapp config ssl bind   --name "$APP_NAME"   --resource-group "$RG"   --certificate-thumbprint "<thumbprint>"   --ssl-type SNI
+az functionapp config ssl bind --name "$APP_NAME" --resource-group "$RG" --certificate-thumbprint "<thumbprint>" --ssl-type SNI
 ```
+
+### Hosting plan caveat
+- Flex Consumption does not support managed/platform certificates.
 
 ## See Also
 - [Recipes Index](index.md)

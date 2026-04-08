@@ -13,6 +13,10 @@ Capture structured logs, query telemetry, and validate operational visibility.
 !!! info "Plan basics"
     Consumption scales to zero automatically, does not support VNet integration, and defaults to a 5-minute timeout with a 10-minute maximum.
 
+## What You'll Build
+
+You will emit structured logs from Node.js v4 handlers, connect Application Insights, and verify telemetry queries.
+
 ## Steps
 
 ```mermaid
@@ -48,7 +52,7 @@ az functionapp config appsettings set --name $APP_NAME --resource-group $RG --se
 ### Step 3 - Query traces
 
 ```bash
-az monitor app-insights query --app $APP_NAME-ai --analytics-query "traces | take 20"
+az monitor app-insights query --app $APP_NAME-ai --analytics-query "traces | take 20" --output json
 ```
 
 
@@ -58,11 +62,24 @@ az monitor app-insights query --app $APP_NAME-ai --analytics-query "traces | tak
 - Use long-form CLI flags for maintainable runbooks.
 - Keep `FUNCTIONS_WORKER_RUNTIME=node` across all environments.
 
-## Expected Output
+## Verification
 
-```text
-Functions:
-    helloHttp: [GET] http://localhost:7071/api/hello/{name?}
+```json
+{
+  "tables": [
+    {
+      "name": "PrimaryResult",
+      "columns": [
+        { "name": "timestamp", "type": "datetime" },
+        { "name": "message", "type": "string" },
+        { "name": "severityLevel", "type": "int" }
+      ],
+      "rows": [
+        ["2026-04-08T08:10:13.0000000Z", "status endpoint called", 1]
+      ]
+    }
+  ]
+}
 ```
 
 

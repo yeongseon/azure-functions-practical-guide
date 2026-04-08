@@ -7,7 +7,6 @@ This guide covers day-to-day security operations for Azure Functions: key rotati
 !!! tip "Language Guide"
     For Python authentication code examples, see [HTTP Authentication](../language-guides/python/recipes/http-auth.md).
 
-## Introduction
 Treat security as continuous operations, not one-time setup.
 For production function apps, run a recurring process for keys, access, transport, network boundaries, and monitoring.
 
@@ -66,14 +65,14 @@ Example output (sanitized):
 {"functionKeys":{"default":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"},"masterKey":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}
 ```
 
-Regenerate by setting new values:
+Regenerate keys (recommended: let Azure generate secure values automatically):
 
 ```bash
-NEW_FUNCTION_KEY="<new-function-key-value>"
-NEW_HOST_KEY="<new-host-key-value>"
-az functionapp function keys set --name "$APP_NAME" --resource-group "$RG" --function-name "$FUNCTION_NAME" --key-name "default" --key-value "$NEW_FUNCTION_KEY"
-az functionapp keys set --name "$APP_NAME" --resource-group "$RG" --key-type "functionKeys" --key-name "default" --key-value "$NEW_HOST_KEY"
+az functionapp function keys set --name "$APP_NAME" --resource-group "$RG" --function-name "$FUNCTION_NAME" --key-name "default"
+az functionapp keys set --name "$APP_NAME" --resource-group "$RG" --key-type "functionKeys" --key-name "default"
 ```
+Only supply explicit `--key-value` when you have a specific operational need (for example, controlled migration or deterministic rollback).
+
 
 Automate rotation with Azure Automation, Logic Apps, or a scheduled function.
 Recommended runbook:
@@ -224,7 +223,7 @@ AppServiceHTTPLogs
 Create a scheduled query alert for repeated failures:
 
 ```bash
-az monitor scheduled-query create --name "func-auth-failures" --resource-group "$RG" --scopes "$APP_RESOURCE_ID" --condition "count 'AppServiceHTTPLogs | where ScStatus in (401,403)' > 50" --description "High unauthorized/forbidden response volume" --evaluation-frequency "PT5M" --window-size "PT15M" --severity 2
+az monitor scheduled-query create --name "func-auth-failures" --resource-group "$RG" --scopes "$APP_RESOURCE_ID" --condition "count 'AUTH_FAILURE_QUERY' > 50" --condition-query "AUTH_FAILURE_QUERY=AppServiceHTTPLogs | where ScStatus in (401,403)" --description "High unauthorized/forbidden response volume" --evaluation-frequency "PT5M" --window-size "PT15M" --severity 2
 ```
 
 ### Operational security routine
@@ -313,7 +312,8 @@ az functionapp config access-restriction add --name "$APP_NAME" --resource-group
 - Record impacted principals, keys, origins, and IP ranges with masked identifiers.
 - File prevention action items for identity, secret, network, and monitoring controls.
 
-## Security compliance checklist
+## Advanced Topics
+### Security compliance checklist
 Use this minimum operating cadence and tighten based on risk and regulation.
 
 ### Daily

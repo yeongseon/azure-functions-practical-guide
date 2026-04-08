@@ -4,6 +4,14 @@ The Recipes section provides implementation-focused patterns for common Azure Fu
 
 Use these documents when you already understand the platform basics and need practical, reusable building blocks.
 
+```mermaid
+graph TD
+    A[Python Recipes] --> B[HTTP]
+    A --> C[Storage]
+    A --> D[Security]
+    A --> E[Advanced]
+```
+
 !!! tip "Pair recipes with platform guidance"
     For architecture and plan behavior that applies across all languages, see [Platform](../../../platform/index.md).
 
@@ -47,15 +55,15 @@ Use these documents when you already understand the platform basics and need pra
 3. Validate hosting-plan constraints in [Platform: Hosting](../../../platform/hosting.md).
 4. Add monitoring/alerts using [Operations](../../../operations/index.md) guidance.
 
-## Official references
-
-- [Python developer guide](https://learn.microsoft.com/azure/azure-functions/functions-reference-python)
-- [Azure Functions trigger and binding concepts](https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings)
-- [Azure Functions best practices](https://learn.microsoft.com/azure/azure-functions/functions-best-practices)
-
 ## See Also
 
 - [Python Language Guide](../index.md)
 - [Python Tutorial](../tutorial/index.md)
 - [Platform: Triggers and Bindings](../../../platform/triggers-and-bindings.md)
 - [Troubleshooting](../troubleshooting.md)
+
+## Sources
+
+- [Python developer guide](https://learn.microsoft.com/azure/azure-functions/functions-reference-python)
+- [Azure Functions trigger and binding concepts](https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings)
+- [Azure Functions best practices](https://learn.microsoft.com/azure/azure-functions/functions-best-practices)

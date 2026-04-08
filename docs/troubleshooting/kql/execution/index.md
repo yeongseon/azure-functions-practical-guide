@@ -2,20 +2,30 @@
 
 KQL queries for analyzing function execution patterns, failures, and exception trends.
 
+```mermaid
+graph TD
+    A[Execution queries] --> B[Summary by function]
+    A --> C[Failed invocation details]
+    A --> D[Exception trends]
+    B --> E[Pinpoint failing function]
+    C --> E
+    D --> E
+```
+
 ## Function execution summary (success/failure/duration)
 
 ```kusto
 let appName = "func-myapp-prod";
-requests
-| where timestamp > ago(1h)
-| where cloud_RoleName =~ appName
-| where operation_Name startswith "Functions."
+AppRequests
+| where TimeGenerated > ago(1h)
+| where AppRoleName =~ appName
+| where OperationName startswith "Functions."
 | summarize
     Invocations = count(),
     Failures = countif(success == false),
     FailureRatePercent = round(100.0 * countif(success == false) / count(), 2),
-    P95Ms = percentile(duration, 95)
-  by FunctionName = operation_Name
+    P95Ms = round(percentile(duration, 95), 2)
+  by FunctionName = OperationName
 | order by Failures desc, P95Ms desc
 ```
 
@@ -57,28 +67,29 @@ requests
 
 ```kusto
 let appName = "func-myapp-prod";
-requests
-| where timestamp > ago(2h)
-| where cloud_RoleName =~ appName
-| where operation_Name startswith "Functions."
+AppRequests
+| where TimeGenerated > ago(2h)
+| where AppRoleName =~ appName
+| where OperationName startswith "Functions."
 | where success == false
-| project timestamp, operation_Id, FunctionName = operation_Name, resultCode, duration
+| project TimeGenerated, OperationId, FunctionName = OperationName, ResultCode, duration
 | join kind=leftouter (
-    exceptions
-    | where timestamp > ago(2h)
-    | where cloud_RoleName =~ appName
-    | project operation_Id, ExceptionType = type, ExceptionMessage = outerMessage
-) on operation_Id
-| order by timestamp desc
+    AppExceptions
+    | where TimeGenerated > ago(2h)
+    | where AppRoleName =~ appName
+    // Deduplicate exception rows per OperationId.
+    | summarize ExceptionCount=count(), ExceptionType=take_any(type), ExceptionMessage=take_any(outerMessage) by OperationId
+) on OperationId
+| order by TimeGenerated desc
 ```
 
 **Example result:**
 
-| timestamp | operation_Id | FunctionName | resultCode | duration | ExceptionType | ExceptionMessage |
-|---|---|---|---|---|---|---|
-| 2026-04-04T11:33:00Z | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | Functions.ErrorHandler | 500 | 13.092 | Microsoft.Azure.WebJobs.Script.Workers.Rpc.RpcException | Exception while executing function: Functions.ErrorHandler |
-| 2026-04-04T11:32:45Z | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | Functions.ErrorHandler | 500 | 13.092 | Microsoft.Azure.WebJobs.Script.Workers.Rpc.RpcException | Exception while executing function: Functions.ErrorHandler |
-| 2026-04-04T11:32:30Z | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | Functions.ErrorHandler | 500 | 13.092 | Microsoft.Azure.WebJobs.Script.Workers.Rpc.RpcException | Exception while executing function: Functions.ErrorHandler |
+| TimeGenerated | OperationId | FunctionName | ResultCode | duration | ExceptionCount | ExceptionType | ExceptionMessage |
+|---|---|---|---|---|---|---|---|
+| 2026-04-04T11:33:00Z | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | Functions.ErrorHandler | 500 | 13.092 | 2 | Microsoft.Azure.WebJobs.Script.Workers.Rpc.RpcException | Exception while executing function: Functions.ErrorHandler |
+| 2026-04-04T11:32:45Z | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | Functions.ErrorHandler | 500 | 13.092 | 2 | Microsoft.Azure.WebJobs.Script.Workers.Rpc.RpcException | Exception while executing function: Functions.ErrorHandler |
+| 2026-04-04T11:32:30Z | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | Functions.ErrorHandler | 500 | 13.092 | 2 | Microsoft.Azure.WebJobs.Script.Workers.Rpc.RpcException | Exception while executing function: Functions.ErrorHandler |
 
 **How to interpret:**
 
@@ -97,16 +108,16 @@ requests
 
 ```kusto
 let appName = "func-myapp-prod";
-exceptions
-| where timestamp > ago(24h)
-| where cloud_RoleName =~ appName
-| summarize Count=count() by bin(timestamp, 15m), type
-| order by timestamp desc
+AppExceptions
+| where TimeGenerated > ago(24h)
+| where AppRoleName =~ appName
+| summarize Count=count() by bin(TimeGenerated, 15m), type
+| order by TimeGenerated desc
 ```
 
 **Example result:**
 
-| timestamp | type | Count |
+| TimeGenerated | type | Count |
 |---|---|---|
 | 2026-04-04T11:30:00Z | Microsoft.Azure.WebJobs.Script.Workers.Rpc.RpcException | 30 |
 
@@ -129,10 +140,10 @@ exceptions
 
 ```kusto
 let appName = "func-myapp-prod";
-exceptions
-| where timestamp > ago(24h)
-| where cloud_RoleName =~ appName
-| summarize Total=count(), FirstSeen=min(timestamp), LastSeen=max(timestamp) by type, outerMessage
+AppExceptions
+| where TimeGenerated > ago(24h)
+| where AppRoleName =~ appName
+| summarize Total=count(), FirstSeen=min(TimeGenerated), LastSeen=max(TimeGenerated) by type, outerMessage
 | order by Total desc
 ```
 

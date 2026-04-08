@@ -22,6 +22,12 @@ flowchart TD
     D --> E[Function method behavior]
 ```
 
+## What You'll Build
+
+- A portable app settings baseline for local and Azure environments.
+- Plan-appropriate JVM tuning through `JAVA_OPTS`.
+- Runtime guardrails for Premium deployment behavior.
+
 ## Steps
 
 ### Step 1 - Baseline local settings
@@ -40,7 +46,7 @@ flowchart TD
 ### Step 2 - Configure app settings in Azure
 
 ```bash
-az functionapp config appsettings set   --name $APP_NAME   --resource-group $RG   --settings "FUNCTIONS_WORKER_RUNTIME=java" "APP_ENV=prod" "languageWorkers__java__arguments=-Xmx512m"
+az functionapp config appsettings set --name $APP_NAME --resource-group $RG --settings "FUNCTIONS_WORKER_RUNTIME=java" "APP_ENV=prod" "JAVA_OPTS=-Xms256m -Xmx512m"
 ```
 
 ### Step 3 - Set JVM and runtime guardrails
@@ -72,14 +78,14 @@ az functionapp config appsettings set   --name $APP_NAME   --resource-group $RG 
 az functionapp config appsettings list --name $APP_NAME --resource-group $RG --output table
 ```
 
-## Expected Output
+## Verification
 
 ```text
 Name                              Value
 --------------------------------  -------------------------
 FUNCTIONS_WORKER_RUNTIME          java
 APP_ENV                           prod
-languageWorkers__java__arguments  -Xmx512m
+JAVA_OPTS                         -Xms256m -Xmx512m
 ```
 
 ## See Also

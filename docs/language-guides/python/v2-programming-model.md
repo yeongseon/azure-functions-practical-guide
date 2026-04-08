@@ -2,6 +2,14 @@
 
 This document provides a deep dive into the Python v2 programming model for Azure Functions. The v2 model uses Python decorators to define triggers, bindings, and routes — replacing the file-based `function.json` configuration from v1.
 
+```mermaid
+flowchart LR
+    A[Decorators in function_app.py and blueprints] --> B[Python worker indexes functions]
+    B --> C[Function metadata registered with host]
+    C --> D[Azure Functions host builds trigger and route map]
+    D --> E[Invocations dispatched to Python worker]
+```
+
 ## v1 vs. v2: What Changed
 
 The v1 programming model required a specific directory structure with one folder per function, each containing a `function.json` configuration file and a `__init__.py` entry point:
@@ -23,7 +31,7 @@ The v2 model eliminates this structure entirely. Functions are defined inline us
 
 ```
 # v2 structure (CURRENT)
-app/
+apps/python/
   host.json
   requirements.txt
   function_app.py       # App entry point

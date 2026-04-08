@@ -4,6 +4,14 @@ This page provides guided learning tracks for Azure Functions Hub users.
 
 Each track is built around Microsoft Learn concepts and organized for different time budgets and responsibilities.
 
+```mermaid
+flowchart LR
+    Q[Quick Start\n30 min] --> C[Core Path\n2-3 hrs]
+    C --> P[Production Path\n4-6 hrs]
+    C --> T[Troubleshooting Path]
+    P --> T
+```
+
 ## How to use this page
 
 Choose the track that matches your immediate goal:
@@ -76,17 +84,17 @@ Choose the track that matches your immediate goal:
 
 1. Complete the Core Path
 2. Platform deep dives:
-   - [Hosting](../platform/hosting.md)
-   - [Scaling](../platform/scaling.md)
-   - Networking guidance in [Platform Index](../platform/index.md)
-   - Reliability guidance in [Platform Index](../platform/index.md)
-   - Security guidance in [Platform Index](../platform/index.md)
+    - [Hosting](../platform/hosting.md)
+    - [Scaling](../platform/scaling.md)
+    - Networking guidance in [Platform Index](../platform/index.md)
+    - Reliability guidance in [Platform Index](../platform/index.md)
+    - Security guidance in [Platform Index](../platform/index.md)
 3. Operations runbook prep:
-   - [Deployment](../operations/deployment.md)
-   - [Configuration](../operations/configuration.md)
-   - [Monitoring](../operations/monitoring.md)
-   - [Alerts](../operations/alerts.md)
-   - Recovery planning in [Operations Index](../operations/index.md)
+    - [Deployment](../operations/deployment.md)
+    - [Configuration](../operations/configuration.md)
+    - [Monitoring](../operations/monitoring.md)
+    - [Alerts](../operations/alerts.md)
+    - Recovery planning in [Operations Index](../operations/index.md)
 
 ### Production checkpoints
 
@@ -145,3 +153,12 @@ Choose the track that matches your immediate goal:
 - [Overview](overview.md)
 - [Hosting Options](hosting-options.md)
 - [Repository Map](repository-map.md)
+
+## Sources
+
+- [Azure Functions overview](https://learn.microsoft.com/azure/azure-functions/functions-overview)
+- [Triggers and bindings](https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings)
+- [Functions scale and hosting](https://learn.microsoft.com/azure/azure-functions/functions-scale)
+- [Azure Functions developer guides](https://learn.microsoft.com/azure/azure-functions/)
+- [Supported languages](https://learn.microsoft.com/azure/azure-functions/supported-languages)
+- [Performance and reliability guidance](https://learn.microsoft.com/azure/azure-functions/performance-reliability)

@@ -2,6 +2,19 @@
 
 This recipe covers the essential HTTP API patterns for Azure Functions Python v2 — route parameters, query strings, request body parsing, response codes, CORS headers, and a complete CRUD-style example.
 
+## Request Flow
+
+```mermaid
+flowchart LR
+    CLIENT[HTTP Client] --> APIM[Optional API Gateway]
+    APIM --> FUNC[Azure Functions HTTP Trigger]
+    FUNC --> AUTH[Auth and Validation]
+    AUTH --> LOGIC[Business Logic]
+    LOGIC --> STORE[(Storage or DB)]
+    STORE --> RESP[HTTP Response]
+    RESP --> CLIENT
+```
+
 ## Route Parameters
 
 Define route parameters using curly braces in the `route` string. Access them via `req.route_params`:
@@ -160,29 +173,7 @@ def delete_item(req: func.HttpRequest) -> func.HttpResponse:
 
 ## CORS Headers
 
-Azure Functions does not set CORS headers automatically. You must configure CORS in the Azure Portal, `host.json`, or set headers manually in your response.
-
-### Configure CORS in host.json
-
-```json
-{
-  "version": "2.0",
-  "extensions": {
-    "http": {
-      "routePrefix": "api"
-    }
-  },
-  "Host": {
-    "CORS": {
-      "AllowedOrigins": [
-        "https://your-frontend.azurestaticapps.net",
-        "http://localhost:3000"
-      ],
-      "SupportCredentials": true
-    }
-  }
-}
-```
+Azure Functions does not set CORS headers automatically. Configure CORS at the Function App platform layer (Azure Portal or Azure CLI), not in `host.json`.
 
 ### Configure CORS via Azure CLI
 
@@ -191,6 +182,11 @@ az functionapp cors add \
   --name your-func \
   --resource-group your-rg \
   --allowed-origins "https://your-frontend.azurestaticapps.net" "http://localhost:3000"
+
+az functionapp cors credentials \
+  --name your-func \
+  --resource-group your-rg \
+  --enable true
 ```
 
 ### Manual CORS Headers

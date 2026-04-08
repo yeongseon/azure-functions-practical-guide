@@ -18,7 +18,7 @@ flowchart TD
     E -->|Yes| K[Set target throughput and calibrate limits]
 ```
 
-## Scale expectations by plan and trigger
+## Why This Matters
 
 Use these expectations to set realistic SLOs before load testing.
 
@@ -32,7 +32,9 @@ Use these expectations to set realistic SLOs before load testing.
 !!! warning "Do not promise linear scaling"
     Throughput increases can stall when downstream quotas, storage contention, or network limits become bottlenecks.
 
-## Set hard limits before production
+## Recommended Practices
+
+### Set hard limits before production
 
 Two settings are central to scale safety:
 
@@ -65,7 +67,7 @@ az functionapp config appsettings set \
 !!! warning "Plan-specific concurrency controls"
     For **Consumption and Premium** plans, per-function concurrency is controlled through `host.json` settings (`maxConcurrentRequests` for HTTP, `batchSize` for queues, etc.) — not through the `FUNCTIONS_MAX_HTTP_TRIGGER_CONCURRENCY` app setting.
 
-## Concurrency tuning by language runtime
+### Concurrency tuning by language runtime
 
 Scale-out and per-instance concurrency interact differently by language.
 
@@ -83,7 +85,7 @@ Scale-out and per-instance concurrency interact differently by language.
 3. Validate p95 latency and downstream error rates at each step.
 4. Stop increasing when error rate or tail latency worsens.
 
-## Storage-bound scaling bottlenecks
+### Storage-bound scaling bottlenecks
 
 Many scale issues are actually storage coordination issues.
 
@@ -96,7 +98,7 @@ Many scale issues are actually storage coordination issues.
 !!! warning "Invisible dependency risk"
     Even non-storage business logic can fail if host storage is degraded, because trigger coordination and checkpoints depend on it.
 
-## Scale-to-zero tradeoffs
+### Scale-to-zero tradeoffs
 
 Scale-to-zero reduces idle cost but can increase startup latency.
 
@@ -106,7 +108,7 @@ Scale-to-zero reduces idle cost but can increase startup latency.
 | Balanced latency and cost | Flex with small always-ready baseline | Some baseline cost |
 | Lowest startup latency | Premium with warm baseline + pre-warmed capacity | Higher fixed monthly spend |
 
-## Flex Consumption best-practice tuning
+### Flex Consumption best-practice tuning
 
 ### Instance memory selection
 
@@ -126,7 +128,7 @@ Scale-to-zero reduces idle cost but can increase startup latency.
 - Validate with realistic payload and dependency latency.
 - Avoid very high values that create downstream fan-out bursts.
 
-## Premium best-practice tuning
+### Premium best-practice tuning
 
 - Configure minimum instances for baseline low latency.
 - Configure pre-warmed instances to absorb sudden spikes.
@@ -135,7 +137,7 @@ Scale-to-zero reduces idle cost but can increase startup latency.
 !!! tip "Cold start linkage"
     For warm-path tactics and startup profiling, use [Operations: Cold Start](../operations/cold-start.md) alongside this guide.
 
-## Scale testing methodology
+### Scale testing methodology
 
 ### Phase 1: Baseline
 
@@ -175,7 +177,7 @@ flowchart LR
     D --> D1[Validate drain time and duplicate protection]
 ```
 
-## Common scaling mistakes
+## Common Mistakes / Anti-Patterns
 
 | Mistake | Impact | Safer alternative |
 |---|---|---|
@@ -186,6 +188,17 @@ flowchart LR
 | Ignoring language runtime behavior | Inefficient scaling and unstable latency | Tune per runtime (Python/Node/.NET/Java) |
 
 ---
+
+## Validation Checklist
+
+- [ ] Hosting plan choice matches latency and networking requirements (Consumption, Flex Consumption, Premium, or Dedicated).
+- [ ] Scale cap is explicitly configured (`functionAppScaleLimit` or Flex `maximumInstanceCount`) for production apps.
+- [ ] HTTP concurrency is intentionally set and validated for plan/runtime (`FUNCTIONS_MAX_HTTP_TRIGGER_CONCURRENCY` for Flex; `host.json` concurrency for other plans).
+- [ ] Load tests include baseline, burst, failure injection, and recovery phases with pass criteria recorded.
+- [ ] Dependency budgets (database, messaging, API quotas, and connection limits) are defined and verified under peak scale-out.
+- [ ] Queue and event workloads include backlog age, retry, poison/dead-letter, and drain-time monitoring.
+- [ ] Cold-start mitigation strategy is documented (always-ready/pre-warmed where needed) and measured against p95/p99 targets.
+- [ ] Runtime-specific tuning is applied and reviewed (Python worker model, Node.js non-blocking handlers, .NET/Java thread and memory behavior).
 
 ## See Also
 

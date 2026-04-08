@@ -8,6 +8,12 @@ Deploy a Python Function App to an Elastic Premium plan (`EP1`) with VNet integr
 - You are signed in to Azure CLI and have Contributor access.
 - You already exported: `$RG`, `$APP_NAME`, `$PLAN_NAME`, `$STORAGE_NAME`, `$LOCATION` (use `koreacentral` for this guide).
 
+## What You'll Build
+
+- A Linux Python Function App on Elastic Premium (`EP1`) with runtime settings.
+- VNet integration and a site private endpoint for private inbound access.
+- A first deployment pipeline (`func azure functionapp publish`) and endpoint verification.
+
 ## Steps
 
 1. Authenticate and set subscription context.
@@ -72,7 +78,12 @@ Deploy a Python Function App to an Elastic Premium plan (`EP1`) with VNet integr
 
     For Premium, both host-storage models are valid:
     - Connection string: `AzureWebJobsStorage=<connection-string>`
-    - Identity-based: `AzureWebJobsStorage__accountName=<storage-account-name>`
+    - Identity-based: `AzureWebJobsStorage__accountName=<storage-account-name>` plus `AzureWebJobsStorage__credential=managedidentity`
+
+    For identity-based host storage, also enable managed identity and assign these storage-account scoped roles to the Function App identity:
+    - `Storage Blob Data Owner`
+    - `Storage Queue Data Contributor`
+    - `Storage Table Data Contributor`
 
 5. Create a VNet with separate subnets for integration and private endpoints.
 
@@ -124,6 +135,28 @@ Deploy a Python Function App to an Elastic Premium plan (`EP1`) with VNet integr
       --connection-name "conn-$APP_NAME"
     ```
 
+    Private endpoint name resolution requires private DNS configuration. At minimum, create and link `privatelink.azurewebsites.net` to the VNet, then attach the zone to the private endpoint:
+
+    ```bash
+    az network private-dns zone create \
+      --resource-group "$RG" \
+      --name "privatelink.azurewebsites.net"
+
+    az network private-dns link vnet create \
+      --resource-group "$RG" \
+      --zone-name "privatelink.azurewebsites.net" \
+      --name "link-vnet-premium-demo" \
+      --virtual-network "vnet-premium-demo" \
+      --registration-enabled false
+
+    az network private-endpoint dns-zone-group create \
+      --resource-group "$RG" \
+      --endpoint-name "pe-$APP_NAME" \
+      --name "web-dns-zone-group" \
+      --private-dns-zone "privatelink.azurewebsites.net" \
+      --zone-name "web-config"
+    ```
+
 7. Publish function code (Premium supports file share-based deployment and SCM/Kudu).
 
     ```bash
@@ -142,7 +175,7 @@ Deploy a Python Function App to an Elastic Premium plan (`EP1`) with VNet integr
     curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
     ```
 
-## Expected Output
+## Verification
 
 ### Expected output when policy allows shared key access
 

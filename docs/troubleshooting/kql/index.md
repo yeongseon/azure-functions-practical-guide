@@ -66,11 +66,11 @@ graph TD
 - [First 10 Minutes](../first-10-minutes/index.md)
 - [Playbooks](../playbooks/index.md)
 - [Methodology](../methodology/troubleshooting-method.md)
-- [Azure Monitor Logs query overview](https://learn.microsoft.com/azure/azure-monitor/logs/log-query-overview)
-- [Application Insights data model](https://learn.microsoft.com/azure/azure-monitor/app/data-model)
 
 ## Sources
 
+- [Azure Monitor Logs query overview](https://learn.microsoft.com/azure/azure-monitor/logs/log-query-overview)
+- [Application Insights data model](https://learn.microsoft.com/azure/azure-monitor/app/data-model)
 - [Kusto Query Language overview](https://learn.microsoft.com/azure/data-explorer/kusto/query/)
 - [Application Insights telemetry data model](https://learn.microsoft.com/azure/azure-monitor/app/data-model-complete)
 - [Monitor Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-monitoring)

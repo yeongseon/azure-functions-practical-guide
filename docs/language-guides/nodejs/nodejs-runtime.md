@@ -25,15 +25,21 @@ flowchart LR
 | Setting | Purpose | Example |
 |---|---|---|
 | `FUNCTIONS_WORKER_RUNTIME` | Select Node worker | `node` |
-| `WEBSITE_NODE_DEFAULT_VERSION` | Node version on Windows workers | `~20` |
+| `WEBSITE_NODE_DEFAULT_VERSION` | Node version on Windows workers only | `~20` |
+| `siteConfig.linuxFxVersion` | Node runtime stack on Linux workers | `Node|20` |
 | `languageWorkers__node__arguments` | Node process arguments | `--max-old-space-size=4096` |
 | `FUNCTIONS_EXTENSION_VERSION` | Functions runtime line | `~4` |
 
-### Set App Settings
+### Set runtime version and app settings
 
 ```bash
-az functionapp config appsettings set   --name $APP_NAME   --resource-group $RG   --settings     "FUNCTIONS_WORKER_RUNTIME=node"     "FUNCTIONS_EXTENSION_VERSION=~4"     "WEBSITE_NODE_DEFAULT_VERSION=~20"     "languageWorkers__node__arguments=--max-old-space-size=4096"
+az functionapp config appsettings set --name $APP_NAME --resource-group $RG --settings "FUNCTIONS_WORKER_RUNTIME=node" "FUNCTIONS_EXTENSION_VERSION=~4" "WEBSITE_NODE_DEFAULT_VERSION=~20" "languageWorkers__node__arguments=--max-old-space-size=4096"
+az functionapp config appsettings set --name $APP_NAME --resource-group $RG --settings "FUNCTIONS_WORKER_RUNTIME=node" "FUNCTIONS_EXTENSION_VERSION=~4" "languageWorkers__node__arguments=--max-old-space-size=4096"
+az functionapp config set --name $APP_NAME --resource-group $RG --linux-fx-version "Node|20"
 ```
+
+- Windows apps: set `WEBSITE_NODE_DEFAULT_VERSION=~20`.
+- Linux apps: set runtime via `linuxFxVersion` (`Node|20`).
 
 ### Memory and Heap Guidance
 

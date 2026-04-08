@@ -8,7 +8,7 @@ Azure Functions on Consumption and Flex Consumption offers cost-effective server
 - Access to Azure Cost Management + Billing.
 - Access to Application Insights and Log Analytics.
 
-## Why This Matters
+## When to Use
 
 Azure Functions serverless pricing means you pay only for what you use — but ancillary services (storage, Application Insights, networking) can silently exceed function compute costs. Understanding the full cost picture prevents budget surprises.
 
@@ -28,7 +28,9 @@ graph TD
     E --> E2[VNet integration baseline]
 ```
 
-## Consumption Plan Pricing
+## Procedure
+
+### Consumption Plan Pricing
 
 The Consumption plan charges based on two dimensions:
 
@@ -55,16 +57,17 @@ Cost: 0.125 × $0.000016 = $0.000002
 
 At this rate, you would need millions of executions per month to generate meaningful charges.
 
-## Free Grant
+### Free Grant
 
-Every Azure subscription includes a generous free monthly grant for Azure Functions:
+For the legacy Consumption (Y1) plan, each Azure subscription includes this monthly free grant:
 
 | Resource | Free Monthly Amount |
 |---|---|
 | Executions | **1,000,000** (one million) |
 | Resource consumption | **400,000 GB-seconds** |
 
-This free grant resets every month. For many development, staging, and low-traffic production workloads, the free grant covers 100% of the Azure Functions compute cost.
+This free grant resets every month. For many development, staging, and low-traffic production workloads on Y1, it can cover 100% of Azure Functions compute cost.
+Flex Consumption billing differs (consumption-based execution plus optional always-ready baseline cost), so validate current Flex pricing separately.
 
 ### What the Free Grant Covers (Example)
 
@@ -77,9 +80,10 @@ Monthly budget: 400,000 GB-s ÷ 0.025 = 16,000,000 executions on resource alone
 
 Combined with the 1M execution grant, you can run approximately **1,000,000 invocations per month completely free** (the execution count limit is reached before the GB-s limit in this scenario).
 
-## What You Still Pay For
+### What You Still Pay For
 
 The free grant covers Functions **compute** only. You still incur charges for:
+Pricing examples below are illustrative only and vary by region, agreement, and offer type.
 
 | Resource | Typical Monthly Cost | Optimization Strategy |
 |---|---|---|
@@ -91,7 +95,9 @@ The free grant covers Functions **compute** only. You still incur charges for:
 
 Application Insights log ingestion is often the largest cost component for low-traffic function apps. See the sampling section below to control this.
 
-## Cost Comparison by Plan
+### Cost Comparison by Plan
+
+Price examples in this section are approximate as of 2026-04 and can change over time by region and offer.
 
 | Plan | Base Cost | Per-Execution Cost | Best For |
 |---|---|---|---|
@@ -115,7 +121,7 @@ graph LR
 
 **Rule of thumb**: Premium breaks even with Consumption at roughly **50-100 million executions/month** depending on execution duration and memory usage. Below that threshold, Consumption is cheaper.
 
-## When to Upgrade to Premium
+### When to Upgrade to Premium
 
 The Premium plan has a base cost (starting at approximately $175/month for the smallest tier, EP1), so it only makes sense when you need specific capabilities:
 
@@ -132,11 +138,11 @@ The Premium plan has a base cost (starting at approximately $175/month for the s
 !!! tip "Platform Guide"
     For detailed hosting plan comparisons, see [Hosting Plans](../platform/hosting.md). For scaling behavior per plan, see [Scaling](../platform/scaling.md).
 
-## Flex Consumption Billing Note
+### Flex Consumption Billing Note
 
 Flex Consumption combines consumption-based execution billing with optional always-ready baseline billing. If always-ready is set to `0`, idle cost behavior is similar to classic Consumption. If always-ready instances are configured, you incur a baseline cost even with low traffic.
 
-## Controlling Application Insights Costs
+### Controlling Application Insights Costs
 
 Application Insights charges for data ingestion. For function apps that process millions of requests, this can add up quickly. Control costs with sampling in `host.json`:
 
@@ -192,7 +198,7 @@ With `maxTelemetryItemsPerSecond: 5` on a single instance, you can reduce this d
 | Exclude dependency telemetry | 30-50% reduction | Lose dependency tracking |
 | Use Basic pricing tier | 50% cheaper per GB | Fewer features |
 
-## Scale Limits to Control Runaway Costs
+### Scale Limits to Control Runaway Costs
 
 Set a maximum instance count to prevent unexpected cost spikes from traffic surges or DoS attacks.
 
@@ -217,7 +223,7 @@ az resource update \
 
 This caps your function app at 20 concurrent instances. Requests beyond capacity are queued rather than triggering new instances. The trade-off is higher latency under extreme load rather than higher cost.
 
-## Cost Monitoring
+### Cost Monitoring
 
 Set up a budget alert so you are notified before costs exceed expectations:
 
@@ -226,6 +232,9 @@ az consumption budget create \
   --budget-name "functions-monthly" \
   --amount 50 \
   --time-grain Monthly \
+  --category Cost \
+  --start-date "2026-04-01" \
+  --end-date "2027-03-31" \
   --resource-group $RG \
   --notifications "{\"Actual_GreaterThan_80_Percent\":{\"enabled\":true,\"operator\":\"GreaterThan\",\"threshold\":80,\"contactEmails\":[\"<your-email>\"]}}"
 ```
@@ -246,7 +255,16 @@ union requests, traces, exceptions, dependencies
 | order by timestamp desc
 ```
 
-## Common Mistakes / Anti-Patterns
+## Verification
+
+- [ ] Application Insights sampling enabled in `host.json`
+- [ ] Scale limit configured for production function apps
+- [ ] Budget alert set with notification threshold
+- [ ] Correct plan selected based on traffic volume and requirements
+- [ ] Log Analytics retention period reviewed (30 days for non-production)
+- [ ] Storage account lifecycle rules configured for deployment packages
+
+## Rollback / Troubleshooting
 
 | Anti-Pattern | Why It's Costly | Better Approach |
 |---|---|---|
@@ -256,15 +274,6 @@ union requests, traces, exceptions, dependencies
 | Storing large blobs in function memory | High GB-seconds from memory × duration | Stream blobs instead of loading into memory |
 | No budget alerts | Discover cost spike at month-end | Set budget with 80% threshold alert |
 | Always-ready instances on FC1 when not needed | Baseline cost for idle instances | Set always-ready to 0 for dev/staging |
-
-## Validation Checklist
-
-- [ ] Application Insights sampling enabled in `host.json`
-- [ ] Scale limit configured for production function apps
-- [ ] Budget alert set with notification threshold
-- [ ] Correct plan selected based on traffic volume and requirements
-- [ ] Log Analytics retention period reviewed (30 days for non-production)
-- [ ] Storage account lifecycle rules configured for deployment packages
 
 !!! tip "Operations Guide"
     For monitoring dashboards and Application Insights queries, see [Monitoring](monitoring.md). For alert rules and action groups, see [Alerts](alerts.md).

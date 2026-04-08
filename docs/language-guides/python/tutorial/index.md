@@ -40,15 +40,15 @@ flowchart TD
 | **Scale to zero** | ✅ | ✅ | ❌ (min 1 instance) | ❌ |
 | **VNet integration** | ❌ | ✅ | ✅ | ✅ (Standard+) |
 | **Private endpoints** | ❌ | ✅ | ✅ | ✅ (Standard+) |
-| **Deployment slots** | ✅ (2 incl. production) | ❌ | ✅ | ✅ (Standard+) |
-| **Max instances** | 100 (Linux) / 200 (Windows) | 1,000 | 100 (region-dependent) | 10–30 |
+| **Deployment slots** | ✅ (Windows only, 2 incl. production) | ❌ | ✅ | ✅ (Standard+) |
+| **Max instances** | 100 (Linux) / 200 (Windows) | 1,000 | 20–100 (region/OS dependent) | 10–30 |
 | **Default timeout** | 5 min | 30 min | 30 min | 30 min |
 | **Max timeout** | 10 min | Unlimited | Unlimited | Unlimited |
 | **Instance memory** | 1.5 GB fixed | 512 / 2,048 / 4,096 MB | 3.5–14 GB | Plan-dependent |
 | **OS** | Windows / Linux | Linux only | Windows / Linux | Windows / Linux |
-| **Python versions** | 3.10–3.12 | 3.10–3.14 (Preview) | 3.10–3.14 (Preview) | 3.10–3.14 (Preview) |
+| **Python versions** | 3.10–3.12 | 3.10–3.12 | 3.10–3.14 (Preview) | 3.10–3.14 (Preview) |
 | **Storage backend** | File share | Blob container | File share | File share |
-| **Kudu / SCM** | ✅ | ❌ | ✅ | ✅ |
+| **Kudu / SCM** | ✅ (Windows only) | ❌ | ✅ | ✅ |
 | **Pricing model** | Per-execution | Per-execution | Pre-allocated | Pre-allocated |
 
 ## Tutorial Tracks

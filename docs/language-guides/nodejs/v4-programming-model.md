@@ -123,7 +123,7 @@ app.http('ping', {
 ### Local Initialization
 
 ```bash
-func init MyProject --javascript
+func init MyProject --worker-runtime node --language javascript --model v4
 func new --template "HTTP trigger" --name httpTrigger
 func start
 ```

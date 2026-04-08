@@ -13,6 +13,10 @@ Provision resources and publish your first Node.js v4 function app.
 !!! info "Plan basics"
     Consumption scales to zero automatically, does not support VNet integration, and defaults to a 5-minute timeout with a 10-minute maximum.
 
+## What You'll Build
+
+You will provision a Linux Function App on the Consumption plan, publish your Node.js v4 app, and validate trigger discovery.
+
 ## Steps
 
 ```mermaid
@@ -46,7 +50,7 @@ func azure functionapp publish $APP_NAME
 ### Step 4 - Validate deployment
 
 ```bash
-az functionapp function list --name $APP_NAME --resource-group $RG --output table
+az functionapp function list --name $APP_NAME --resource-group $RG --output json
 ```
 
 
@@ -56,11 +60,18 @@ az functionapp function list --name $APP_NAME --resource-group $RG --output tabl
 - Use long-form CLI flags for maintainable runbooks.
 - Keep `FUNCTIONS_WORKER_RUNTIME=node` across all environments.
 
-## Expected Output
+## Verification
 
-```text
-Functions:
-    helloHttp: [GET] http://localhost:7071/api/hello/{name?}
+```json
+[
+  {
+    "name": "helloHttp",
+    "type": "Microsoft.Web/sites/functions",
+    "invokeUrlTemplate": "https://$APP_NAME.azurewebsites.net/api/hello/{name?}",
+    "language": "Javascript",
+    "isDisabled": false
+  }
+]
 ```
 
 

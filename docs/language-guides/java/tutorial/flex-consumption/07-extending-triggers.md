@@ -24,6 +24,12 @@ flowchart TD
     F --> G
 ```
 
+## What You'll Build
+
+- A queue-triggered Java function with queue output binding.
+- A blob-triggered transformation function with blob output binding.
+- A scheduled timer function and trigger resource verification workflow.
+
 ## Steps
 
 ### Step 1 - Add queue trigger and queue output
@@ -81,7 +87,7 @@ az storage queue list --account-name $STORAGE_NAME --output table
 az storage container list --account-name $STORAGE_NAME --output table
 ```
 
-## Expected Output
+## Verification
 
 ```text
 Functions:

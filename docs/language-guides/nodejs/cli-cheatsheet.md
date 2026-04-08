@@ -15,7 +15,7 @@ flowchart TD
 ### Core Tools
 
 ```bash
-func init MyProject --javascript
+func init MyProject --worker-runtime node --language javascript --model v4
 func new --template "HTTP trigger" --name httpTrigger
 func start
 func azure functionapp publish $APP_NAME
@@ -25,9 +25,14 @@ func azure functionapp publish $APP_NAME
 
 ```bash
 az functionapp create --name $APP_NAME --resource-group $RG --storage-account $STORAGE_NAME --consumption-plan-location $LOCATION --runtime node --runtime-version 20 --functions-version 4 --os-type Linux
-az functionapp config appsettings set --name $APP_NAME --resource-group $RG --settings "FUNCTIONS_WORKER_RUNTIME=node" "WEBSITE_NODE_DEFAULT_VERSION=~20"
+az functionapp config appsettings set --name $APP_NAME --resource-group $RG --settings "FUNCTIONS_WORKER_RUNTIME=node"
+az functionapp config set --name $APP_NAME --resource-group $RG --linux-fx-version "Node|20"
+az functionapp config appsettings set --name $APP_NAME --resource-group $RG --settings "WEBSITE_NODE_DEFAULT_VERSION=~20"
 az functionapp log tail --name $APP_NAME --resource-group $RG
 ```
+
+- Linux apps: use `az functionapp config set --linux-fx-version "Node|20"`.
+- Windows apps: use `WEBSITE_NODE_DEFAULT_VERSION`.
 
 ### Deployments
 

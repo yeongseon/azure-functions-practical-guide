@@ -14,10 +14,14 @@ Configure runtime and app settings for Consumption using explicit app settings, 
     Consumption (Y1) scales to zero and charges per execution. It has a default 5-minute timeout and up to 10 minutes maximum per execution.
     No VNet integration on this plan.
 
+## What You'll Build
+
+Production-safe host configuration for a Linux Consumption Function App, including runtime settings, environment designation, and verification through deployed app settings.
+
 ## Steps
 ### Step 1 - Set baseline runtime settings
 ```bash
-az functionapp config appsettings set   --name "$APP_NAME"   --resource-group "$RG"   --settings     "FUNCTIONS_WORKER_RUNTIME=dotnet-isolated"     "FUNCTIONS_EXTENSION_VERSION=~4"     "DOTNET_ENVIRONMENT=Production"     "APP_ENV=production"
+az functionapp config appsettings set   --name "$APP_NAME"   --resource-group "$RG"   --settings     "FUNCTIONS_WORKER_RUNTIME=dotnet-isolated"     "FUNCTIONS_EXTENSION_VERSION=~4"     "AZURE_FUNCTIONS_ENVIRONMENT=Production"     "APP_ENV=production"
 ```
 
 ### Step 2 - Configure worker and feature settings
@@ -57,19 +61,15 @@ grep "ConfigureFunctionsWebApplication" "Program.cs"
 
 Confirm that HTTP functions use `HttpRequestData` and `HttpResponseData`, and that logging is constructor-injected with `ILogger<T>`.
 
-## Expected Output
+## Verification
 ```text
-Name                              SlotSetting
---------------------------------  -----------
-FUNCTIONS_WORKER_RUNTIME          False
-FUNCTIONS_EXTENSION_VERSION       False
-DOTNET_ENVIRONMENT                False
-APP_ENV                           False
+Name                          Value                SlotSetting
+----------------------------  -------------------  -----------
+FUNCTIONS_WORKER_RUNTIME      dotnet-isolated      False
+FUNCTIONS_EXTENSION_VERSION   ~4                   False
+AZURE_FUNCTIONS_ENVIRONMENT   Production           False
+APP_ENV                       production           False
 ```
-## Next Steps
-
-> **Next:** [04 - Logging and Monitoring](04-logging-monitoring.md)
-
 ## See Also
 - [Tutorial Overview & Plan Chooser](../index.md)
 - [.NET Language Guide](../../index.md)

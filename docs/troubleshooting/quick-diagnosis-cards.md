@@ -18,7 +18,7 @@ graph LR
 | Step | Action |
 |---|---|
 | **Symptom** | First HTTP request or first trigger execution after idle/restart takes seconds longer than steady-state traffic |
-| **First Query** | `traces \| where timestamp > ago(2h) \| where cloud_RoleName =~ "func-myapp-prod" \| where message has_any ("Host started", "Initializing Host", "Host lock lease acquired") \| project timestamp, message \| order by timestamp desc` |
+| **First Query** | `AppTraces \| where TimeGenerated > ago(2h) \| where AppRoleName =~ "func-myapp-prod" \| where Message has_any ("Host started", "Initializing Host", "Host lock lease acquired") \| project TimeGenerated, Message \| order by TimeGenerated desc` |
 | **What to Look For** | Repeated host startups, large startup gaps before first invocation, or high first-request duration after scale-out |
 | **Platform Segment** | Startup / Performance |
 | **Playbook** | [High Latency](playbooks/high-latency.md) |
@@ -37,7 +37,7 @@ traces
     | where timestamp > ago(6h)
     | where cloud_RoleName =~ appName
     | where operation_Name startswith "Functions."
-    | summarize FirstInvocation=min(timestamp), FirstDurationMs=min(toreal(duration / 1ms)) by bin(timestamp, 15m)
+    | summarize FirstInvocation=min(timestamp), MinDurationMs=min(toreal(duration / 1ms)) by bin(timestamp, 15m)
 ) on timestamp
 | order by timestamp desc
 ```
@@ -45,7 +45,7 @@ traces
 **Quick CLI Check:**
 
 ```bash
-az monitor app-insights query --app "$APP_NAME" --resource-group "$RG" --analytics-query "traces | where timestamp > ago(2h) | where cloud_RoleName =~ '$APP_NAME' | where message has_any ('Host started','Initializing Host','Host lock lease acquired') | project timestamp, message | order by timestamp desc" --output table
+az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "AppTraces | where TimeGenerated > ago(2h) | where AppRoleName =~ '$APP_NAME' | where Message has_any ('Host started','Initializing Host','Host lock lease acquired') | project TimeGenerated, Message | order by TimeGenerated desc" --output table
 ```
 
 ---
@@ -62,7 +62,7 @@ graph LR
 | Step | Action |
 |---|---|
 | **Symptom** | HTTP, Timer, Queue, Event Hub, Blob, or Cosmos DB trigger stops executing while the app still appears available |
-| **First Query** | `requests \| where timestamp > ago(1h) \| where cloud_RoleName =~ "func-myapp-prod" \| where operation_Name startswith "Functions." \| summarize Invocations=count(), Failures=countif(success == false) by operation_Name \| order by Invocations asc` |
+| **First Query** | `AppRequests \| where TimeGenerated > ago(1h) \| where AppRoleName =~ "func-myapp-prod" \| where OperationName startswith "Functions." \| summarize Invocations=count(), Failures=countif(Success == false) by OperationName \| order by Invocations asc` |
 | **What to Look For** | HTTP: 404/401/5xx patterns. Timer: missing schedule traces or `isPastDue`. Queue: backlog rising while invocations stay flat. Event Hub: checkpoint lag. Blob: missing Event Grid subscription or listener startup. Cosmos DB: lease/checkpoint errors or connection failures. |
 | **Platform Segment** | Trigger Listener / Source Delivery |
 | **Playbook** | [Functions Not Executing](playbooks/functions-not-executing.md) |
@@ -81,6 +81,7 @@ let recentTriggerTraces =
 traces
 | where timestamp > ago(1h)
 | where cloud_RoleName =~ appName
+| where tostring(customDimensions.Category) startswith "Function" or operation_Name startswith "Functions."
 | where message has_any ("listener", "Timer", "Blob", "Queue", "EventHub", "Cosmos", "unable to start", "isPastDue")
 | summarize TraceHits=count() by FunctionName=operation_Name;
 recentInvocations
@@ -88,11 +89,13 @@ recentInvocations
 | order by Invocations asc, Failures desc
 ```
 
+> `traces.operation_Name` can include non-function traces. The function-category filter above reduces false matches in trigger-correlation joins.
+
 **Quick CLI Check:**
 
 ```bash
 az functionapp function list --resource-group "$RG" --name "$APP_NAME" --output table
-az monitor app-insights query --app "$APP_NAME" --resource-group "$RG" --analytics-query "traces | where timestamp > ago(1h) | where cloud_RoleName =~ '$APP_NAME' | where message has_any ('listener','unable to start','Timer','Blob','Queue','EventHub','Cosmos','isPastDue') | project timestamp, message | order by timestamp desc" --output table
+az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "AppTraces | where TimeGenerated > ago(1h) | where AppRoleName =~ '$APP_NAME' | where Message has_any ('listener','unable to start','Timer','Blob','Queue','EventHub','Cosmos','isPastDue') | project TimeGenerated, Message | order by TimeGenerated desc" --output table
 ```
 
 ---
@@ -109,7 +112,7 @@ graph LR
 | Step | Action |
 |---|---|
 | **Symptom** | Functions fail during host startup or invocation with binding, indexing, serialization, or extension-bundle errors |
-| **First Query** | `traces \| where timestamp > ago(2h) \| where cloud_RoleName =~ "func-myapp-prod" \| where message has_any ("Error indexing method", "binding", "extension", "Unable to resolve app setting", "Storage account connection string") \| project timestamp, message \| order by timestamp desc` |
+| **First Query** | `AppTraces \| where TimeGenerated > ago(2h) \| where AppRoleName =~ "func-myapp-prod" \| where Message has_any ("Error indexing method", "binding", "extension", "Unable to resolve app setting", "Storage account connection string") \| project TimeGenerated, Message \| order by TimeGenerated desc` |
 | **What to Look For** | `Error indexing method`, missing app setting names, unsupported binding attributes, wrong extension bundle version, or identity-based connection settings that do not match the binding configuration |
 | **Platform Segment** | Runtime / Bindings |
 | **Playbook** | [App Settings Misconfiguration](playbooks/auth-config/app-settings-misconfiguration.md) |
@@ -154,7 +157,7 @@ graph LR
 | Step | Action |
 |---|---|
 | **Symptom** | Invocations end with timeout errors, 230-second HTTP cutoff behavior, or long-running trigger executions that never complete |
-| **First Query** | `requests \| where timestamp > ago(2h) \| where cloud_RoleName =~ "func-myapp-prod" \| where operation_Name startswith "Functions." \| summarize P95Ms=percentile(duration, 95), MaxMs=max(duration), Failures=countif(success == false) by operation_Name \| order by MaxMs desc` |
+| **First Query** | `AppRequests \| where TimeGenerated > ago(2h) \| where AppRoleName =~ "func-myapp-prod" \| where OperationName startswith "Functions." \| summarize P95Ms=percentile(DurationMs, 95), MaxMs=max(DurationMs), Failures=countif(Success == false) by OperationName \| order by MaxMs desc` |
 | **What to Look For** | Duration clustering near plan limit, requests ending with timeout-related exceptions, HTTP triggers failing at the front-end timeout boundary, or durable/orchestrated work incorrectly running inside a regular function |
 | **Platform Segment** | Execution / Limits |
 | **Playbook** | [Timeout / Execution Limit Exceeded](playbooks/triggers/timeout-execution-limit.md) |
@@ -180,7 +183,7 @@ requests
 
 ```bash
 az functionapp config appsettings list --resource-group "$RG" --name "$APP_NAME" --output table
-az monitor app-insights query --app "$APP_NAME" --resource-group "$RG" --analytics-query "exceptions | where timestamp > ago(2h) | where cloud_RoleName =~ '$APP_NAME' | where outerMessage has_any ('timeout','timed out','execution time') | project timestamp, type, outerMessage | order by timestamp desc" --output table
+az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "AppExceptions | where TimeGenerated > ago(2h) | where AppRoleName =~ '$APP_NAME' | where OuterMessage has_any ('timeout','timed out','execution time') | project TimeGenerated, ExceptionType, OuterMessage | order by TimeGenerated desc" --output table
 ```
 
 ---
@@ -197,7 +200,7 @@ graph LR
 | Step | Action |
 |---|---|
 | **Symptom** | Throughput drops, worker restarts, OOM kills appear, or CPU-bound functions cause broad latency across multiple triggers |
-| **First Query** | `traces \| where timestamp > ago(6h) \| where cloud_RoleName =~ "func-myapp-prod" \| where message has_any ("OOM", "OutOfMemory", "worker process started and initialized", "Host is shutting down", "restarting", "health check") \| project timestamp, message \| order by timestamp desc` |
+| **First Query** | `AppTraces \| where TimeGenerated > ago(6h) \| where AppRoleName =~ "func-myapp-prod" \| where Message has_any ("OOM", "OutOfMemory", "worker process started and initialized", "Host is shutting down", "restarting", "health check") \| project TimeGenerated, Message \| order by TimeGenerated desc` |
 | **What to Look For** | Restart storms, OOM signatures, high latency across unrelated functions, dependency noise caused by saturation, or queue backlog growth with stable upstream volume |
 | **Platform Segment** | Compute / Worker Health |
 | **Playbook** | [Out of Memory / Worker Crash](playbooks/scaling/out-of-memory-worker-crash.md) |
@@ -241,7 +244,7 @@ graph LR
 | Step | Action |
 |---|---|
 | **Symptom** | Release completed, but functions are missing, returning errors, or no longer processing events immediately afterward |
-| **First Query** | `traces \| where timestamp > ago(6h) \| where cloud_RoleName =~ "func-myapp-prod" \| where message has_any ("Host started", "Generating", "No job functions found", "Error indexing method", "Syncing triggers") \| project timestamp, message \| order by timestamp desc` |
+| **First Query** | `AppTraces \| where TimeGenerated > ago(6h) \| where AppRoleName =~ "func-myapp-prod" \| where Message has_any ("Host started", "Generating", "No job functions found", "Error indexing method", "Syncing triggers") \| project TimeGenerated, Message \| order by TimeGenerated desc` |
 | **What to Look For** | `No job functions found`, broken package structure, runtime mismatch, extension load errors, or trigger sync problems introduced at deployment time |
 | **Platform Segment** | Deployment / Startup |
 | **Playbook** | [Deployment Failures](playbooks/deployment-failures.md) |
@@ -287,7 +290,7 @@ graph LR
 | Step | Action |
 |---|---|
 | **Symptom** | Queue depth, Event Hub lag, or pending work grows faster than completions even though the function app is still executing some work |
-| **First Query** | `requests \| where timestamp > ago(2h) \| where cloud_RoleName =~ "func-myapp-prod" \| where operation_Name startswith "Functions." \| summarize Invocations=count(), Failures=countif(success == false), P95Ms=percentile(duration, 95) by bin(timestamp, 5m), operation_Name \| order by timestamp asc` |
+| **First Query** | `AppRequests \| where TimeGenerated > ago(2h) \| where AppRoleName =~ "func-myapp-prod" \| where OperationName startswith "Functions." \| summarize Invocations=count(), Failures=countif(Success == false), P95Ms=percentile(DurationMs, 95) by bin(TimeGenerated, 5m), OperationName \| order by TimeGenerated asc` |
 | **What to Look For** | Flat or weak invocation growth while source volume rises, repeated scale-controller or listener warnings, partition imbalance, checkpoint lag, or one hot partition blocking the rest of the workload |
 | **Platform Segment** | Scaling / Throughput |
 | **Playbook** | [Queue Piling Up](playbooks/queue-piling-up.md) and [Event Hub / Service Bus Lag](playbooks/triggers/event-hub-service-bus-lag.md) |
@@ -308,7 +311,7 @@ requests
 
 ```bash
 az monitor metrics list --resource "/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RG/providers/Microsoft.Web/sites/$APP_NAME" --metric "FunctionExecutionCount" "FunctionExecutionUnits" "Requests" --interval PT5M --aggregation Total Average --output table
-az monitor app-insights query --app "$APP_NAME" --resource-group "$RG" --analytics-query "traces | where timestamp > ago(2h) | where cloud_RoleName =~ '$APP_NAME' | where message has_any ('scale','partition','checkpoint','listener','backlog') | project timestamp, message | order by timestamp desc" --output table
+az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "AppTraces | where TimeGenerated > ago(2h) | where AppRoleName =~ '$APP_NAME' | where Message has_any ('scale','partition','checkpoint','listener','backlog') | project TimeGenerated, Message | order by TimeGenerated desc" --output table
 ```
 
 ---

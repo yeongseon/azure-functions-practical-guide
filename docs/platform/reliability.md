@@ -201,10 +201,10 @@ Timeout boundaries are part of reliability behavior.
 If your business process exceeds timeout bounds, redesign to asynchronous orchestration.
 
 ### Availability zones and high availability
-Zone-aware architecture options are strongest on Premium and Dedicated plans.
-- Premium and Dedicated can be designed for zone-resilient deployments (region permitting).
+Zone-aware architecture options are strongest on Premium, Dedicated, and Flex Consumption plans.
+- Premium, Dedicated, and Flex Consumption can be designed for zone-resilient deployments (region permitting).
 - Zone-resilient design should include zone-redundant dependencies (storage, messaging, data stores).
-- Flex and Consumption designs should emphasize retry/idempotency and multi-region recovery patterns where needed.
+- Consumption designs should emphasize retry/idempotency and multi-region recovery patterns where needed.
 
 ```mermaid
 flowchart LR

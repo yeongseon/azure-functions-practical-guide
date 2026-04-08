@@ -20,7 +20,8 @@ az role assignment create   --assignee-object-id "<object-id>"   --role "Key Vau
 ### Read secret from function
 ```csharp
 var client = new SecretClient(new Uri(keyVaultUrl), new DefaultAzureCredential());
-KeyVaultSecret secret = await client.GetSecretAsync("DbPassword");
+var response = await client.GetSecretAsync("DbPassword");
+var secretValue = response.Value.Value;
 ```
 
 ## See Also

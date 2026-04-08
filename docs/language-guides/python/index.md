@@ -4,6 +4,17 @@ Python is the **reference implementation** in this hub and currently contains th
 
 If you are new to Azure Functions, this track is the fastest way to understand hosting plans, deployment workflows, and production operations with concrete examples.
 
+```mermaid
+flowchart TD
+    A[Tutorial Overview]
+    A --> B[Consumption Track]
+    A --> C[Flex Consumption Track]
+    A --> D[Premium Track]
+    A --> E[Dedicated Track]
+    A --> F[Recipes]
+    A --> G[Runtime and Reference]
+```
+
 !!! tip "Architecture first"
     Before diving into Python-specific details, review [Platform](../../platform/index.md) for language-agnostic guidance on hosting, scaling, networking, reliability, and security.
 
@@ -12,7 +23,7 @@ If you are new to Azure Functions, this track is the fastest way to understand h
 - Full tutorial coverage across **all four hosting plans**.
 - Complete recipe set for common Azure integrations.
 - Dedicated runtime/reference docs for operational concerns.
-- Backed by a populated reference app in [`apps/python/`](https://github.com/yeongseon/azure-functions-practical-guide/tree/main/apps/python).
+- Backed by a populated reference app in `apps/python/`.
 
 ## Start here
 
@@ -78,11 +89,7 @@ Use it to validate tutorial steps, copy implementation patterns, and test hostin
 
 ## Microsoft Learn alignment
 
-This guide aligns to the official Python developer documentation:
-
-- [Azure Functions Python developer guide (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-reference-python)
-- [Azure Functions hosting options](https://learn.microsoft.com/azure/azure-functions/functions-scale)
-- [Flex Consumption plan](https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan)
+This guide aligns to the official Python developer documentation.
 
 !!! note "Runtime and feature truth source"
     If you find any mismatch between this hub and official service behavior, treat Microsoft Learn as authoritative and open a docs issue in this repository.
@@ -104,3 +111,10 @@ Use [Language Guides Overview](../index.md) for a side-by-side worker/programmin
 - [Platform: Hosting](../../platform/hosting.md)
 - [Operations: Deployment](../../operations/deployment.md)
 - [Operations: Monitoring](../../operations/monitoring.md)
+
+## Sources
+
+- [Python reference application (`apps/python/`)](https://github.com/yeongseon/azure-functions-practical-guide/tree/main/apps/python)
+- [Azure Functions Python developer guide (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-reference-python)
+- [Azure Functions hosting options](https://learn.microsoft.com/azure/azure-functions/functions-scale)
+- [Flex Consumption plan](https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan)

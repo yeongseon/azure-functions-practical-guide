@@ -21,19 +21,19 @@ flowchart LR
     C --> D[Test local endpoint]
 ```
 
+## What You'll Build
+
+- A Java Azure Functions project scaffolded with the Azure Functions Maven archetype.
+- A `HelloJava` HTTP trigger implemented in `Function.java`.
+- A local validation flow using `mvn azure-functions:run` and `curl`.
+
 ## Steps
 
 ### Step 1 - Create the Java project
 
 ```bash
-func init MyJavaFunctions --java
-cd MyJavaFunctions
-```
-
-If you prefer Maven archetype scaffolding:
-
-```bash
 mvn archetype:generate -DarchetypeGroupId=com.microsoft.azure -DarchetypeArtifactId=azure-functions-archetype
+cd my-java-functions
 ```
 
 ### Step 2 - Confirm Maven project structure
@@ -44,7 +44,6 @@ project-root/
 │   └── main/
 │       └── java/
 │           └── com/example/
-│               ├── Function.java
 │               └── ...
 ├── host.json
 ├── local.settings.json
@@ -95,7 +94,7 @@ mvn azure-functions:run
 curl --request GET "http://localhost:7071/api/hello/local"
 ```
 
-## Expected Output
+## Verification
 
 ```text
 [INFO] Azure Functions Java Worker started

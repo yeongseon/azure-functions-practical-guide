@@ -11,6 +11,10 @@ Apply environment settings, JVM arguments, and host-level configuration so the s
 | Azure Functions Core Tools | v4 | Start local host and publish artifacts |
 | Azure CLI | 2.61+ | Provision Azure resources and inspect app state |
 
+## What You'll Build
+
+You will standardize Java runtime app settings for Consumption, keep environment-specific values outside the artifact, and verify effective configuration from Azure.
+
 !!! info "Plan basics"
     Consumption (Y1) is fully serverless with scale-to-zero and pay-per-execution billing. It is ideal for bursty workloads that do not require VNet integration.
 
@@ -40,13 +44,13 @@ flowchart TD
 ### Step 2 - Configure app settings in Azure
 
 ```bash
-az functionapp config appsettings set   --name $APP_NAME   --resource-group $RG   --settings "FUNCTIONS_WORKER_RUNTIME=java" "APP_ENV=prod" "languageWorkers__java__arguments=-Xmx512m"
+az functionapp config appsettings set   --name $APP_NAME   --resource-group $RG   --settings "FUNCTIONS_WORKER_RUNTIME=java" "APP_ENV=prod" "JAVA_OPTS=-Xmx512m"
 ```
 
 ### Step 3 - Set JVM and runtime guardrails
 
 ```bash
-az functionapp config appsettings set   --name $APP_NAME   --resource-group $RG   --settings "WEBSITE_RUN_FROM_PACKAGE=1"
+az functionapp config appsettings set   --name $APP_NAME   --resource-group $RG   --settings "FUNCTIONS_EXTENSION_VERSION=~4" "JAVA_OPTS=-Xmx512m -XX:+UseContainerSupport"
 ```
 
 ### Step 4 - Validate `pom.xml` dependency and plugin
@@ -72,14 +76,14 @@ az functionapp config appsettings set   --name $APP_NAME   --resource-group $RG 
 az functionapp config appsettings list --name $APP_NAME --resource-group $RG --output table
 ```
 
-## Expected Output
+## Verification
 
 ```text
 Name                              Value
 --------------------------------  -------------------------
 FUNCTIONS_WORKER_RUNTIME          java
 APP_ENV                           prod
-languageWorkers__java__arguments  -Xmx512m
+JAVA_OPTS                         -Xmx512m
 ```
 
 ## See Also

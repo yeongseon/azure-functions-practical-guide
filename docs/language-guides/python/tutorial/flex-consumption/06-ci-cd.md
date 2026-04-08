@@ -10,7 +10,21 @@ Automate build and deployment for your Flex Consumption Function App with GitHub
 | Azure CLI | 2.60+ | Create app registration and role assignments |
 | Deployed FC1 Function App | Existing | Deployment target |
 
-## Step 1 - Set Variables
+## What You'll Build
+
+You will configure OIDC-based GitHub Actions deployment to a Flex Consumption Function App and validate deployment telemetry without relying on Kudu.
+
+```mermaid
+flowchart LR
+    GH[GitHub Actions] --> OIDC[OIDC login to Azure]
+    OIDC --> Deploy[azure/functions-action]
+    Deploy --> Flex[Function App on FC1]
+    Flex --> Verify[Health endpoint + App Insights]
+```
+
+## Steps
+
+### Step 1: Set Variables
 
 ```bash
 export BASE_NAME="flexdemo"
@@ -29,7 +43,7 @@ Expected output:
 ```text
 ```
 
-## Step 2 - Create Azure AD App and Service Principal
+### Step 2: Create Azure AD App and Service Principal
 
 ```bash
 az ad app create --display-name "github-flex-functions" --output json
@@ -47,7 +61,7 @@ Expected output:
 }
 ```
 
-## Step 3 - Add Federated Credential for GitHub OIDC
+### Step 3: Add Federated Credential for GitHub OIDC
 
 
 ```bash
@@ -65,7 +79,7 @@ Expected output:
 }
 ```
 
-## Step 4 - Grant Deployment Permissions
+### Step 4: Grant Deployment Permissions
 
 
 ```bash
@@ -83,7 +97,7 @@ Expected output:
 }
 ```
 
-## Step 5 - Configure GitHub Variables
+### Step 5: Configure GitHub Variables
 
 Set these repository or environment variables in GitHub Actions:
 
@@ -94,7 +108,7 @@ Set these repository or environment variables in GitHub Actions:
 | `AZURE_SUBSCRIPTION_ID` | `<subscription-id>` |
 | `AZURE_FUNCTIONAPP_NAME` | `flexdemo-func` |
 
-## Step 6 - Add Flex Deployment Workflow
+### Step 6: Add Flex Deployment Workflow
 
 Create `.github/workflows/deploy-flex.yml`:
 
@@ -127,7 +141,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install --requirement app/requirements.txt
+          pip install --requirement apps/python/requirements.txt
 
       - name: Azure login with OIDC
         uses: azure/login@v2
@@ -140,12 +154,13 @@ jobs:
         uses: azure/functions-action@v1
         with:
           app-name: ${{ vars.AZURE_FUNCTIONAPP_NAME }}
-          package: app
+          package: apps/python
+          remote-build: true
 ```
 
-For Flex Consumption, `azure/functions-action@v1` follows a One Deploy-compatible workflow. Do not assume Kudu/SCM endpoints are available.
+For Flex Consumption, `azure/functions-action@v1` should use remote build (or pre-vendored `.python_packages`) to ensure Python dependencies are built in a Linux-compatible environment. Do not assume Kudu/SCM endpoints are available.
 
-## Step 7 - Verify Deployment Health
+### Step 7: Verify Deployment Health
 
 
 ```bash
@@ -159,6 +174,12 @@ Expected output:
 ```json
 {"status":"healthy","timestamp":"2026-01-01T00:00:00Z","version":"1.0.0"}
 ```
+
+## Verification
+
+- The workflow authenticates with OIDC (`azure/login@v2`) and does not use publish profiles.
+- Deployment step uses `package: apps/python` and `remote-build: true`.
+- Post-deploy health check returns HTTP 200 and recent requests appear in Application Insights.
 
 ## Next Steps
 

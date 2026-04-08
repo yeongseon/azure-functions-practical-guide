@@ -2,6 +2,15 @@
 
 This reference covers the Python runtime configuration for Azure Functions — supported versions, worker process settings, async function support, dependency management, and performance tuning.
 
+```mermaid
+flowchart LR
+    A[Azure Functions host] --> B[Python language worker process]
+    B --> C[ThreadPoolExecutor for sync functions]
+    B --> D[Async event loop for async functions]
+    C --> E[Function invocation execution]
+    D --> E
+```
+
 ## Supported Python Versions
 
 Azure Functions v4 runtime supports the following Python versions:
@@ -56,7 +65,7 @@ Controls the number of threads in the Python worker's thread pool. Synchronous f
 
 | Value | Behaviour |
 |-------|-----------|
-| Default (not set) | Number of CPUs on the instance (minimum 1) |
+| Default (not set) | Python 3.9+ uses Python's `ThreadPoolExecutor` default (`min(32, os.cpu_count() + 4)`); Python 3.6-3.8 defaults to `1` |
 | `1` | Single-threaded — functions execute sequentially |
 | `16` | Up to 16 concurrent synchronous functions per worker process |
 
@@ -206,10 +215,10 @@ local.settings.json
 
 ### Dependency Isolation
 
-The `PYTHON_ISOLATE_WORKER_DEPENDENCIES` setting (default `1`) isolates the worker's internal dependencies from your function dependencies. This prevents version conflicts between the Azure Functions worker packages and your application packages.
+The `PYTHON_ISOLATE_WORKER_DEPENDENCIES` setting isolates the worker's internal dependencies from your function dependencies. Python 3.13+ enables dependency isolation by default; for earlier Python versions, set this to `1` when you need worker and app dependencies isolated to avoid version conflicts.
 
 ```bash
-# Default (recommended) — isolation enabled
+# Enable isolation explicitly on earlier Python versions when needed
 az functionapp config appsettings set \
   --name your-func \
   --resource-group your-rg \

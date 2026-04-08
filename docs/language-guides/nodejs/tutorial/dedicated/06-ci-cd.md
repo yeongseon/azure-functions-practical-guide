@@ -13,6 +13,11 @@ Automate build and deployment with GitHub Actions and environment gates.
 !!! info "Plan basics"
     Dedicated runs on App Service plans (B1/S1/P1v3), supports Always On, and behaves like traditional web app hosting.
 
+## What You'll Build
+
+You will define a GitHub Actions workflow that builds and deploys your Node.js Functions app on each push to `main`.
+You will validate release health from runtime logs after the deployment finishes.
+
 ## Steps
 
 ```mermaid
@@ -22,7 +27,6 @@ flowchart LR
     C --> D[Runtime indexes v4 handlers]
     D --> E[Trigger execution]
 ```
-
 
 ### Step 1 - Create workflow
 
@@ -59,20 +63,22 @@ jobs:
 az functionapp log tail --name $APP_NAME --resource-group $RG
 ```
 
-
 ### Plan-specific notes
 
-- Enable Always On for non-trivial workloads to avoid app unload behavior.
+- Dedicated does not require Azure Files content share settings for zip-based deployments (`WEBSITE_RUN_FROM_PACKAGE=1`).
+- Enable Always On for non-HTTP triggers so timer, queue, and blob workloads stay active.
 - Use long-form CLI flags for maintainable runbooks.
-- Keep `FUNCTIONS_WORKER_RUNTIME=node` across all environments.
 
-## Expected Output
+## Verification
 
 ```text
-Functions:
-    helloHttp: [GET] http://localhost:7071/api/hello/{name?}
+2026-04-08T08:20:11  Connected!
+2026-04-08T08:20:19  [Information] Executing 'Functions.helloHttp' (Reason='This function was programmatically called via the host APIs.', Id=6d9f2b66-9f0b-4f8f-9f4a-0f0f8f2a7e20)
+2026-04-08T08:20:19  [Information] Handled hello for world
+2026-04-08T08:20:19  [Information] Executed 'Functions.helloHttp' (Succeeded, Id=6d9f2b66-9f0b-4f8f-9f4a-0f0f8f2a7e20, Duration=34ms)
 ```
 
+The log stream confirms the deployed function starts and handles requests successfully.
 
 ## See Also
 - [Tutorial Overview & Plan Chooser](../index.md)

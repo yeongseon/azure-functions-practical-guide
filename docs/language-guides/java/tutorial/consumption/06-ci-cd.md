@@ -11,6 +11,10 @@ Automate build, test, and deployment using GitHub Actions and Maven so every cha
 | Azure Functions Core Tools | v4 | Start local host and publish artifacts |
 | Azure CLI | 2.61+ | Provision Azure resources and inspect app state |
 
+## What You'll Build
+
+You will configure a GitHub Actions pipeline that builds and deploys a Java Function App with Maven, then verify the release with a function-key-based smoke test and workflow run evidence.
+
 !!! info "Plan basics"
     Consumption (Y1) is fully serverless with scale-to-zero and pay-per-execution billing. It is ideal for bursty workloads that do not require VNet integration.
 
@@ -39,6 +43,9 @@ name: deploy-java-function
 on:
   push:
     branches: [ main ]
+env:
+  AZURE_FUNCTIONAPP_NAME: ${{ secrets.AZURE_FUNCTIONAPP_NAME }}
+  AZURE_RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }}
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -56,22 +63,29 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Deploy
-        run: mvn --batch-mode azure-functions:deploy
+        run: |
+          mvn --batch-mode azure-functions:deploy \
+            -DfunctionAppName=${{ env.AZURE_FUNCTIONAPP_NAME }} \
+            -DresourceGroup=${{ env.AZURE_RESOURCE_GROUP }}
 ```
 
 ### Step 3 - Add post-deployment smoke test
 
 ```bash
-curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
+curl --request GET https://$APP_NAME.azurewebsites.net/api/health?code=$(az functionapp keys list --resource-group $RG --name $APP_NAME --query "functionKeys.default" --output tsv)
 ```
 
-### Step 4 - Track release history
+### Step 4 - Validate the release
 
 ```bash
-az functionapp deployment source show --name $APP_NAME --resource-group $RG
+FUNC_KEY=$(az functionapp keys list --resource-group $RG --name $APP_NAME --query "functionKeys.default" --output tsv)
+curl --header "x-functions-key: $FUNC_KEY" "https://$APP_NAME.azurewebsites.net/api/health"
+az functionapp show --name $APP_NAME --resource-group $RG --query "lastModifiedTimeUtc" --output tsv
 ```
 
-## Expected Output
+Use GitHub Actions run history as the deployment timeline of record (`Actions` tab -> workflow runs -> latest commit SHA), and compare it with `lastModifiedTimeUtc` to confirm release timing.
+
+## Verification
 
 ```text
 [INFO] BUILD SUCCESS

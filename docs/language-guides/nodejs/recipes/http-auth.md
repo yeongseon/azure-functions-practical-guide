@@ -1,35 +1,114 @@
 # HTTP Authentication
 
-Auth levels, token forwarding, and Easy Auth integration patterns for HTTP triggers.
+This recipe uses App Service Authentication (Easy Auth) with Node.js v4 HTTP triggers and Microsoft Entra ID, relying on platform-provided identity headers instead of custom token parsing.
 
-## Main Content
+## Architecture
 
 ```mermaid
 flowchart LR
-    A[Client or Event Source] --> B[Node.js v4 handler]
-    B --> C[Business logic]
-    C --> D[Azure service integration]
+    USER[User or API Client] --> ENTRA[Microsoft Entra ID]
+    ENTRA --> EASYAUTH[App Service Authentication]
+    EASYAUTH --> FUNC[HTTP Trigger authLevel anonymous]
+    FUNC --> API[Application Logic]
 ```
 
-### Node.js v4 Example
+## Prerequisites
+
+Keep extension bundle configuration in `host.json`:
+
+```json
+{
+  "version": "2.0",
+  "extensionBundle": {
+    "id": "Microsoft.Azure.Functions.ExtensionBundle",
+    "version": "[4.*, 5.0.0)"
+  }
+}
+```
+
+Enable system-assigned identity and configure Easy Auth with Microsoft Entra ID:
+
+```bash
+az functionapp identity assign \
+  --name $APP_NAME \
+  --resource-group $RG
+
+az webapp auth update \
+  --name $APP_NAME \
+  --resource-group $RG \
+  --enabled true \
+  --action LoginWithAzureActiveDirectory
+
+az webapp auth microsoft update \
+  --name $APP_NAME \
+  --resource-group $RG \
+  --client-id <entra-app-client-id> \
+  --client-secret-setting-name MICROSOFT_PROVIDER_AUTHENTICATION_SECRET \
+  --tenant-id <tenant-id>
+```
+
+## Working Node.js v4 Code
 
 ```javascript
-const { app } = require('@azure/functions');
+const { app } = require("@azure/functions");
 
-app.http('secureEndpoint', { methods: ['GET'], authLevel: 'function', handler: async (request, context) => { const token = request.headers.get('authorization'); context.log(`Token present: ${Boolean(token)}`); return token ? { body: 'authorized' } : { status: 401, jsonBody: { error: 'missing-token' } }; } });
+function parseClientPrincipal(request) {
+  const encoded = request.headers.get("x-ms-client-principal");
+  if (!encoded) {
+    return null;
+  }
+
+  const decoded = Buffer.from(encoded, "base64").toString("utf8");
+  return JSON.parse(decoded);
+}
+
+app.http("profile", {
+  methods: ["GET"],
+  authLevel: "anonymous",
+  route: "me",
+  handler: async (request, context) => {
+    const principal = parseClientPrincipal(request);
+    if (!principal) {
+      return {
+        status: 401,
+        jsonBody: { error: "Unauthenticated. Easy Auth principal header missing." }
+      };
+    }
+
+    const roles = (principal.claims || [])
+      .filter((claim) => claim.typ === "roles")
+      .map((claim) => claim.val);
+
+    context.log("Authenticated request", {
+      userId: principal.userId,
+      identityProvider: principal.identityProvider
+    });
+
+    return {
+      status: 200,
+      jsonBody: {
+        userId: principal.userId,
+        userDetails: principal.userDetails,
+        identityProvider: principal.identityProvider,
+        roles
+      }
+    };
+  }
+});
 ```
 
-### Implementation Notes
+## Implementation Notes
 
-- Use `context.log()` for invocation-scoped telemetry.
-- Prefer managed identity to avoid secret distribution.
-- Return explicit status codes for deterministic client behavior.
+- Keep `authLevel: "anonymous"` when Easy Auth fronts the function; platform auth happens before your code runs.
+- Read identity from `x-ms-client-principal` and avoid manual parsing of `authorization` headers.
+- Return `401` when the Easy Auth principal header is absent (for local runs or misconfiguration).
+- Add authorization checks in code by evaluating claims/roles from `principal.claims`.
 
 ## See Also
-- [Recipes Index](index.md)
+- [Node.js Recipes Index](index.md)
+- [Managed Identity](managed-identity.md)
 - [Node.js v4 Programming Model](../v4-programming-model.md)
-- [Troubleshooting](../troubleshooting.md)
 
 ## Sources
-- [Azure Functions Node.js developer guide (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-reference-node)
-- [Azure Functions trigger and binding concepts (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings)
+- [Authentication and authorization in Azure App Service and Azure Functions (Microsoft Learn)](https://learn.microsoft.com/azure/app-service/overview-authentication-authorization)
+- [Azure Functions HTTP trigger authorization level (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-bindings-http-webhook-trigger)

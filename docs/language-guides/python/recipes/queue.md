@@ -71,9 +71,9 @@ def enqueue(req: func.HttpRequest, msg: func.Out[str]) -> func.HttpResponse:
 Test it locally:
 
 ```bash
-curl -X POST http://localhost:7071/api/enqueue \
-  -H "Content-Type: application/json" \
-  -d '{"task": "send-email", "to": "user@example.com"}'
+curl --request POST http://localhost:7071/api/enqueue \
+  --header "Content-Type: application/json" \
+  --data '{"task": "send-email", "to": "user@example.com"}'
 
 # Response: {"status": "accepted", "message": "Request enqueued for processing"}
 ```
@@ -85,9 +85,8 @@ To enqueue multiple messages from a single HTTP request, return a list:
 ```python
 @bp.route(route="enqueue-batch", methods=["POST"])
 @bp.queue_output(arg_name="msgs", queue_name="myqueue", connection="AzureWebJobsStorage")
-def enqueue_batch(req: func.HttpRequest, msgs: func.Out[typing.List[str]]) -> func.HttpResponse:
+def enqueue_batch(req: func.HttpRequest, msgs: func.Out[list[str]]) -> func.HttpResponse:
     """Enqueue multiple messages from a single HTTP request."""
-    import typing
 
     try:
         body = req.get_json()
@@ -142,6 +141,8 @@ def process_queue(msg: func.QueueMessage) -> None:
 
 Control the queue trigger's concurrency and polling behaviour in `host.json`:
 
+> **Important:** The following `maxPollingInterval` and `visibilityTimeout` values are **custom overrides** (`00:00:02` and `00:00:30`). Azure Functions defaults are `maxPollingInterval = "00:01:00"` and `visibilityTimeout = "00:00:00"`.
+
 ```json
 {
   "version": "2.0",
@@ -159,8 +160,8 @@ Control the queue trigger's concurrency and polling behaviour in `host.json`:
 
 | Setting | Default | Description |
 |---------|---------|-------------|
-| `maxPollingInterval` | 1 second | Maximum interval between polls when queue is empty |
-| `visibilityTimeout` | 30 seconds | How long a message is invisible after being picked up |
+| `maxPollingInterval` | `00:01:00` | Maximum interval between polls when queue is empty |
+| `visibilityTimeout` | `00:00:00` | How long a message is invisible after being picked up |
 | `batchSize` | 16 | Number of messages retrieved per poll |
 | `maxDequeueCount` | 5 | Times a message is retried before moving to poison queue |
 | `newBatchThreshold` | `batchSize / 2` | When remaining messages drop below this, fetch a new batch |

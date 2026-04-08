@@ -19,6 +19,7 @@ ACTION_GROUP_NAME="ag-functions-prod"
 ACTION_GROUP_SHORT="funcpd"
 FUNC_ID="/subscriptions/<subscription-id>/resourceGroups/rg-functions-prod/providers/Microsoft.Web/sites/func-orders-prod"
 APPINSIGHTS_ID="/subscriptions/<subscription-id>/resourceGroups/rg-observability-prod/providers/microsoft.insights/components/appi-functions-prod"
+WORKSPACE_ID="/subscriptions/<subscription-id>/resourceGroups/rg-observability-prod/providers/Microsoft.OperationalInsights/workspaces/log-functions-prod"
 ACTION_GROUP_ID="/subscriptions/<subscription-id>/resourceGroups/rg-functions-prod/providers/microsoft.insights/actionGroups/ag-functions-prod"
 ```
 ## When to Use
@@ -78,8 +79,8 @@ az monitor action-group update \
 ### Metric alerts
 Metric alerts are ideal for fast detection of high-level service degradation.
 Typical Azure Functions metric alert candidates:
-- Function execution failures.
 - HTTP 5xx response trend.
+- Function execution activity drop (throughput anomaly).
 - High execution duration percentile.
 - Instance count saturation relative to configured limits.
 Example metric alert (placeholder threshold, tune per baseline):
@@ -113,35 +114,35 @@ Common KQL-based alert scenarios:
 - Queue backlog age exceeds acceptable processing delay.
 Example KQL pattern for failed requests count:
 ```kql
-requests
-| where timestamp > ago(5m)
-| where success == false
+AppRequests
+| where TimeGenerated > ago(5m)
+| where toint(ResultCode) >= 500
 | summarize failures=count()
 ```
 Concrete KQL used for failure-ratio alert:
 ```kql
 let lookback = 5m;
-requests
-| where timestamp > ago(lookback)
-| summarize total_requests=count(), failed_requests=countif(success == false) by operation_Name
+AppRequests
+| where TimeGenerated > ago(lookback)
+| summarize total_requests=count(), failed_requests=countif(toint(ResultCode) >= 500) by OperationName
 | extend failure_ratio=toreal(failed_requests) / toreal(total_requests)
 | where total_requests >= 50
 | where failure_ratio > 0.05
-| project operation_Name, total_requests, failed_requests, failure_ratio
+| project OperationName, total_requests, failed_requests, failure_ratio
 ```
 Create log alert with full command:
 ```bash
 az monitor scheduled-query create \
     --resource-group "$RG" \
     --name "func-failure-ratio-critical" \
-    --scopes "$APPINSIGHTS_ID" \
+    --scopes "$WORKSPACE_ID" \
     --description "Failure ratio exceeded 5% for one or more functions" \
     --severity 2 \
-    --enabled true \
+    --disabled false \
     --evaluation-frequency "PT5M" \
     --window-size "PT5M" \
-    --condition "count 'Custom log search' > 0" \
-    --condition-query "let lookback = 5m; requests | where timestamp > ago(lookback) | summarize total_requests=count(), failed_requests=countif(success == false) by operation_Name | extend failure_ratio=toreal(failed_requests) / toreal(total_requests) | where total_requests >= 50 | where failure_ratio > 0.05 | project operation_Name, total_requests, failed_requests, failure_ratio" \
+    --condition "count 'FAILURE_RATIO_QUERY' > 0" \
+    --condition-query "FAILURE_RATIO_QUERY=let lookback = 5m; AppRequests | where TimeGenerated > ago(lookback) | summarize total_requests=count(), failed_requests=countif(toint(ResultCode) >= 500) by OperationName | extend failure_ratio=toreal(failed_requests) / toreal(total_requests) | where total_requests >= 50 | where failure_ratio > 0.05 | project OperationName, total_requests, failed_requests, failure_ratio" \
     --action-groups "$ACTION_GROUP_ID" \
     --auto-mitigate true
 ```
@@ -160,7 +161,7 @@ Use smart detection as supplementary signal, not your only paging mechanism.
 ### Recommended baseline alert set
 Start with this minimum set and tune after two to four weeks of production data:
 1. **Availability / health endpoint failures**.
-2. **Function failure count spike**.
+2. **HTTP 5xx count spike**.
 3. **P95 duration increase**.
 4. **Queue backlog growth**.
 5. **Critical dependency failures** (database, messaging, external API).
@@ -169,11 +170,13 @@ Expanded baseline with specific metrics and starting thresholds:
 | Alert | Signal | Metric or query | Threshold | Eval/window |
 |---|---|---|---|---|
 | `func-http5xx-critical` | Metric | `Http5xx` (Total) | `> 10` | `1m/5m` |
-| `func-failures-critical` | Metric | `FunctionExecutionCount` failure dimension | `> 20` | `1m/5m` |
-| `func-duration-warning` | Metric | `AverageResponseTime` | `> 2000 ms` | `5m/15m` |
+| `func-activity-drop-warning` | Metric | `FunctionExecutionCount` (Total) | `< 10` | `5m/15m` |
+| `func-duration-warning` | Metric | `AverageResponseTime` (average) | `> 2000 ms` | `5m/15m` |
 | `queue-backlog-critical` | Metric | `ApproximateMessageCount` | `> 1000` | `5m/10m` |
-| `func-failure-ratio-critical` | Log query | requests failure ratio KQL | `count > 0` | `5m/5m` |
+| `func-failure-ratio-critical` | Log query | AppRequests failure ratio KQL | `count > 0` | `5m/5m` |
 | `dependency-failure-warning` | Log query | dependencies failure ratio KQL | `count > 0` | `5m/15m` |
+For p95 duration alerting, prefer a scheduled-query alert that uses KQL `percentile(duration, 95)`.
+
 ### Tuning guidance
 - Build thresholds from observed baseline and SLO targets.
 - Use dynamic thresholds where workloads are highly seasonal.

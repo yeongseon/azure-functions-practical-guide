@@ -13,6 +13,14 @@ Deploy your .NET isolated worker app to the Flex Consumption plan with long-form
 !!! info "Plan basics"
     Flex Consumption (FC1) scales to zero with per-function scaling, VNet support, and configurable memory. It is the recommended default for new serverless workloads.
     Supports VNet integration and private endpoints.
+    No Kudu/SCM endpoints and no custom container support on this plan.
+    All traffic routes through the integrated VNet.
+
+## What You'll Build
+
+- A Linux Flex Consumption Function App running .NET 8 isolated worker
+- A first deployment from local build artifacts to Azure
+- A secured `Health` endpoint validation using a function key
 
 ## Steps
 ### Step 1 - Set deployment variables
@@ -20,7 +28,6 @@ Deploy your .NET isolated worker app to the Flex Consumption plan with long-form
 export RG="rg-dotnet-flex-consumption-demo"
 export APP_NAME="func-dotnet-flex-consumption-demo"
 export STORAGE_NAME="stdotnetflexconsumptiondemo"
-export PLAN_NAME="plan-dotnet-flex-consumption-demo"
 export LOCATION="koreacentral"
 ```
 
@@ -33,33 +40,32 @@ az storage account create \
   --location "$LOCATION" \
   --sku Standard_LRS \
   --kind StorageV2
-az functionapp plan create \
-  --name "$PLAN_NAME" \
-  --resource-group "$RG" \
-  --location "$LOCATION" \
-  --sku FC1 \
-  --is-linux true
 az functionapp create \
   --name "$APP_NAME" \
   --resource-group "$RG" \
   --storage-account "$STORAGE_NAME" \
-  --plan "$PLAN_NAME" \
+  --flexconsumption-location "$LOCATION" \
   --functions-version 4 \
   --runtime dotnet-isolated \
-  --runtime-version 8 \
-  --os-type Linux
+  --runtime-version 8.0
 ```
 
 ### Step 3 - Build and publish the app
 ```bash
 dotnet build
 dotnet publish --configuration Release --output ./publish
-func azure functionapp publish "$APP_NAME" --dotnet-isolated
+func azure functionapp publish "$APP_NAME"
 ```
 
 ### Step 4 - Verify the endpoint
 ```bash
-curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
+export FUNCTION_KEY=$(az functionapp function keys list \
+  --name "$APP_NAME" \
+  --resource-group "$RG" \
+  --function-name "Health" \
+  --query "default" \
+  --output tsv)
+curl --request GET "https://$APP_NAME.azurewebsites.net/api/health?code=$FUNCTION_KEY"
 ```
 
 ```mermaid
@@ -77,17 +83,10 @@ grep "ConfigureFunctionsWebApplication" "Program.cs"
 
 Confirm that HTTP functions use `HttpRequestData` and `HttpResponseData`, and that logging is constructor-injected with `ILogger<T>`.
 
-## Expected Output
-```json
-{
-  "state": "Running",
-  "kind": "functionapp,linux",
-  "defaultHostName": "func-dotnet-<plan>-demo.azurewebsites.net"
-}
+## Verification
+```text
+{"status":"healthy"}
 ```
-## Next Steps
-
-> **Next:** [03 - Configuration](03-configuration.md)
 
 ## See Also
 - [Tutorial Overview & Plan Chooser](../index.md)

@@ -1,55 +1,112 @@
 # Queue Storage Integration
 
-Build queue-driven workflows with retry-safe Java processing patterns.
+This recipe demonstrates Java queue trigger and queue output bindings with retry behavior, host settings, and poison queue handling.
 
-## Main Pattern
+## Architecture
 
 ```mermaid
 flowchart LR
-    A[Inbound event/request] --> B[Java function method]
-    B --> C[Business logic]
-    C --> D[Output binding or response]
+    API[HTTP enqueue] --> QUEUE[(work-items queue)]
+    QUEUE --> TRIGGER[@QueueTrigger worker]
+    TRIGGER --> RESULT[@QueueOutput results queue]
+    QUEUE --> POISON[(work-items-poison queue)]
 ```
 
-### Java implementation example
+## Prerequisites
 
-```java
-@FunctionName("QueueStorageIntegration")
-public HttpResponseMessage run(
-    @HttpTrigger(name = "req", methods = {HttpMethod.GET, HttpMethod.POST}, authLevel = AuthorizationLevel.FUNCTION, route = "sample/{id?}")
-    HttpRequestMessage<Optional<String>> request,
-    @BindingName("id") String id,
-    final ExecutionContext context) {
+Create queues:
 
-    context.getLogger().info("recipe=queue.md id=" + id);
+```bash
+az storage queue create --name work-items --account-name $STORAGE_NAME --auth-mode login
+az storage queue create --name work-results --account-name $STORAGE_NAME --auth-mode login
+```
 
-    return request.createResponseBuilder(HttpStatus.OK)
-        .body("ok")
-        .build();
+Queue runtime defaults in `host.json`:
+
+```json
+{
+  "version": "2.0",
+  "extensions": {
+    "queues": {
+      "maxPollingInterval": "00:01:00",
+      "visibilityTimeout": "00:00:00",
+      "maxDequeueCount": 5
+    }
+  }
 }
 ```
 
-### Operational checklist
+## Java implementation
 
-1. Validate inputs and return explicit status codes.
-2. Keep handlers idempotent for retry-safe operations.
-3. Emit structured logs with correlation identifiers.
-4. Keep secrets out of source code and local settings files.
+```java
+package com.contoso.functions;
 
-## Validation
+import com.microsoft.azure.functions.*;
+import com.microsoft.azure.functions.annotation.*;
+
+import java.util.Optional;
+
+public class QueueFunctions {
+
+    @FunctionName("enqueueWork")
+    @QueueOutput(name = "output", queueName = "work-items", connection = "AzureWebJobsStorage")
+    public String enqueueWork(
+        @HttpTrigger(
+            name = "request",
+            methods = {HttpMethod.POST},
+            authLevel = AuthorizationLevel.FUNCTION,
+            route = "queue/work"
+        ) HttpRequestMessage<Optional<String>> request
+    ) {
+        return request.getBody().orElse("{\"job\":\"default\"}");
+    }
+
+    @FunctionName("processWork")
+    @QueueOutput(name = "result", queueName = "work-results", connection = "AzureWebJobsStorage")
+    public String processWork(
+        @QueueTrigger(
+            name = "message",
+            queueName = "work-items",
+            connection = "AzureWebJobsStorage"
+        ) String message,
+        final ExecutionContext context
+    ) {
+        context.getLogger().info("Processing queue message: " + message);
+
+        if (message.contains("force-error")) {
+            throw new RuntimeException("Simulated failure to demonstrate poison queue behavior");
+        }
+
+        return "processed:" + message;
+    }
+}
+```
+
+## Poison queue handling
+
+- Messages that exceed `maxDequeueCount` are moved to `<queue-name>-poison`.
+- Investigate poison messages with:
 
 ```bash
-mvn clean package
-mvn azure-functions:run
+az storage message peek \
+  --queue-name work-items-poison \
+  --account-name $STORAGE_NAME \
+  --auth-mode login
 ```
+
+## Implementation notes
+
+- Keep workers idempotent and safe for retries.
+- Tune `batchSize` and `newBatchThreshold` only after observing throughput.
+- Use dead-letter/poison analysis as part of incident runbooks.
 
 ## See Also
 
-- [Recipes Index](index.md)
-- [Annotation Programming Model](../annotation-programming-model.md)
-- [Java Runtime](../java-runtime.md)
+- [Blob Storage Integration](blob-storage.md)
+- [Timer Trigger](timer.md)
+- [Managed Identity](managed-identity.md)
 
 ## Sources
 
-- [Azure Functions Java developer guide (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-reference-java)
-- [Azure Functions triggers and bindings (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings)
+- [Azure Queue storage bindings for Azure Functions (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue)
+- [Azure Functions host.json reference (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-host-json)

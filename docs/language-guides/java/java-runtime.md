@@ -26,11 +26,11 @@ timeline
 |---------|---------|---------|
 | `FUNCTIONS_WORKER_RUNTIME` | Select Java worker | `java` |
 | `JAVA_HOME` | Java installation path on host | Set automatically |
-| `languageWorkers__java__arguments` | JVM arguments | `-Xmx512m` |
+| `JAVA_OPTS` | JVM arguments | `-Xmx512m` |
 | `WEBSITE_RUN_FROM_PACKAGE` | Immutable package deployment | `1` |
 
 ```bash
-az functionapp config appsettings set   --name $APP_NAME   --resource-group $RG   --settings "FUNCTIONS_WORKER_RUNTIME=java" "languageWorkers__java__arguments=-Xmx512m"
+az functionapp config appsettings set   --name $APP_NAME   --resource-group $RG   --settings "FUNCTIONS_WORKER_RUNTIME=java" "JAVA_OPTS=-Xmx512m"
 ```
 
 ## Maven Build and Deployment
@@ -66,7 +66,6 @@ Common commands:
 ```bash
 mvn clean package
 mvn azure-functions:deploy
-func azure functionapp publish $APP_NAME
 ```
 
 ## Project Layout (Maven)

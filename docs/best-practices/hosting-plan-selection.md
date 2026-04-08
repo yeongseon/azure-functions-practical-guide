@@ -7,7 +7,7 @@ This page intentionally avoids re-explaining plan internals. For detailed platfo
 !!! tip "Use this page with Platform"
     Read [Platform: Hosting](../platform/hosting.md) first for capability facts, then apply this guide for workload-fit decisions and migration safety.
 
-## Decision framework
+## Why This Matters
 
 Evaluate hosting plan choice in this order:
 
@@ -30,7 +30,9 @@ flowchart TD
     D -->|No| J[Premium EP or Dedicated]
 ```
 
-## Workload characteristics that should drive plan choice
+## Recommended Practices
+
+### Workload characteristics that should drive plan choice
 
 | Characteristic | Why it matters | Strong default |
 |---|---|---|
@@ -43,7 +45,7 @@ flowchart TD
 !!! warning "Do not optimize for list price only"
     A cheaper plan can become more expensive when retries, backlog growth, or cold-start-driven latency failures increase operational load.
 
-## Decision matrix
+### Decision matrix
 
 Rows are workload types. Columns represent suitability by plan.
 
@@ -58,7 +60,7 @@ Rows are workload types. Columns represent suitability by plan.
 | CPU/memory-heavy continuous workloads | Not preferred | Conditional | Recommended | Recommended |
 | Multi-app consolidation on shared fixed capacity | Not preferred | Not suitable (one app per plan) | Conditional | Recommended |
 
-## Common selection mistakes and safer alternatives
+## Common Mistakes / Anti-Patterns
 
 ### Mistake 1: Choosing Consumption for long-running jobs
 
@@ -83,7 +85,7 @@ Rows are workload types. Columns represent suitability by plan.
 !!! note "Plan selection should be revisited"
     Reassess hosting plan when trigger mix changes, dependency quotas tighten, or latency SLOs become contractual.
 
-## Migration paths between plans
+### Migration paths between plans
 
 Plan migration is usually operationally straightforward when done with configuration discipline and staged validation.
 
@@ -102,7 +104,7 @@ Plan migration is usually operationally straightforward when done with configura
 4. Run staged load test to compare p95, backlog behavior, and dependency saturation.
 5. Cut over with rollback path and post-cutover telemetry watch window.
 
-## Cost and reliability guardrails while selecting plans
+### Cost and reliability guardrails while selecting plans
 
 Use these constraints to avoid unstable designs:
 
@@ -114,7 +116,7 @@ Use these constraints to avoid unstable designs:
 !!! tip "Operations linkage"
     Pair plan decisions with [Cost Optimization](../operations/cost-optimization.md) so baseline cost and burst-cost controls are implemented from day one.
 
-## Quick recommendation patterns
+### Quick recommendation patterns
 
 | If your first priority is... | Start with... | Re-evaluate when... |
 |---|---|---|
@@ -123,7 +125,7 @@ Use these constraints to avoid unstable designs:
 | Lowest latency consistency | Premium (EP) | Spend must be reduced and latency budget loosens |
 | Existing fixed App Service capacity | Dedicated | Workload becomes bursty and under-utilizes fixed compute |
 
-## Operational handoff checklist after plan selection
+## Validation Checklist
 
 Before finalizing a plan decision, hand off these concrete items to operations:
 

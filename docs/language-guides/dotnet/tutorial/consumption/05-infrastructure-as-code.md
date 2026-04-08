@@ -14,6 +14,10 @@ Define the Consumption environment in Bicep and deploy the same architecture rep
     Consumption (Y1) scales to zero and charges per execution. It has a default 5-minute timeout and up to 10 minutes maximum per execution.
     No VNet integration on this plan.
 
+## What You'll Build
+
+A repeatable Linux Consumption deployment in Bicep that provisions storage, a Linux Consumption plan, and a .NET isolated Function App with required runtime app settings.
+
 ## Steps
 ### Step 1 - Create a Bicep template for Consumption
 ```bicep
@@ -31,13 +35,18 @@ resource storage 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   kind: 'StorageV2'
 }
 
+var storageConnectionString = 'DefaultEndpointsProtocol=https;AccountName=${storage.name};AccountKey=${listKeys(storage.id, storage.apiVersion).keys[0].value};EndpointSuffix=${environment().suffixes.storage}'
+
 resource appPlan 'Microsoft.Web/serverfarms@2023-12-01' = {
   name: planName
   location: location
+  kind: 'linux'
   sku: {
     name: 'Y1'
   }
-  kind: 'functionapp'
+  properties: {
+    reserved: true
+  }
 }
 
 resource app 'Microsoft.Web/sites@2023-12-01' = {
@@ -51,6 +60,7 @@ resource app 'Microsoft.Web/sites@2023-12-01' = {
       appSettings: [
         { name: 'FUNCTIONS_WORKER_RUNTIME'; value: 'dotnet-isolated' }
         { name: 'FUNCTIONS_EXTENSION_VERSION'; value: '~4' }
+        { name: 'AzureWebJobsStorage'; value: storageConnectionString }
       ]
     }
   }
@@ -88,17 +98,14 @@ grep "ConfigureFunctionsWebApplication" "Program.cs"
 
 Confirm that HTTP functions use `HttpRequestData` and `HttpResponseData`, and that logging is constructor-injected with `ILogger<T>`.
 
-## Expected Output
+## Verification
 ```json
 {
-  "provisioningState": "Succeeded",
+  "kind": "functionapp,linux",
+  "state": "Running",
   "defaultHostName": "func-dotnet-<plan>-demo.azurewebsites.net"
 }
 ```
-## Next Steps
-
-> **Next:** [06 - CI/CD](06-ci-cd.md)
-
 ## See Also
 - [Tutorial Overview & Plan Chooser](../index.md)
 - [.NET Language Guide](../../index.md)

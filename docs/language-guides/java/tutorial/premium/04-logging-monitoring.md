@@ -21,6 +21,12 @@ flowchart LR
     C --> D[Dashboards and alerts]
 ```
 
+## What You'll Build
+
+- Structured Java function logs that surface useful operational context.
+- Application Insights connectivity for centralized traces and metrics.
+- A baseline alert rule for proactive failure detection.
+
 ## Steps
 
 ### Step 1 - Emit structured logs in handler methods
@@ -58,7 +64,7 @@ az monitor app-insights query   --app $APP_INSIGHTS_NAME   --analytics-query "tr
 az monitor metrics alert create   --name "func-java-http5xx"   --resource-group $RG   --scopes "$FUNCTION_APP_ID"   --condition "total Http5xx > 5"   --window-size 5m   --evaluation-frequency 1m
 ```
 
-## Expected Output
+## Verification
 
 ```text
 timestamp                   message                               severityLevel

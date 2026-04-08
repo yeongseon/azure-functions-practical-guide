@@ -14,6 +14,12 @@ Automate build and deployment for Dedicated with GitHub Actions, deterministic .
     Dedicated (App Service Plan) runs on pre-provisioned compute with predictable cost. Enable Always On for non-HTTP triggers.
     Supports VNet integration and slots on eligible SKUs.
 
+## What You'll Build
+
+- A GitHub Actions workflow that builds and deploys your Dedicated Function App
+- Required repository secrets for publish-profile deployment
+- Post-deployment endpoint validation using a function key
+
 ## Steps
 ### Step 1 - Export publish profile
 ```bash
@@ -24,7 +30,10 @@ az functionapp deployment list-publishing-profiles \
   --output tsv
 ```
 
-Add the XML value to GitHub secret: `AZURE_FUNCTIONAPP_PUBLISH_PROFILE`.
+Add these GitHub secrets:
+
+- `AZURE_FUNCTIONAPP_NAME`
+- `AZURE_FUNCTIONAPP_PUBLISH_PROFILE`
 
 ### Step 2 - Create GitHub Actions workflow
 ```yaml
@@ -63,7 +72,13 @@ jobs:
 
 ### Step 3 - Validate release
 ```bash
-curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
+export FUNCTION_KEY=$(az functionapp function keys list \
+  --name "$APP_NAME" \
+  --resource-group "$RG" \
+  --function-name "Health" \
+  --query "default" \
+  --output tsv)
+curl --request GET "https://$APP_NAME.azurewebsites.net/api/health?code=$FUNCTION_KEY"
 ```
 
 ```mermaid
@@ -82,15 +97,10 @@ grep "ConfigureFunctionsWebApplication" "Program.cs"
 
 Confirm that HTTP functions use `HttpRequestData` and `HttpResponseData`, and that logging is constructor-injected with `ILogger<T>`.
 
-## Expected Output
+## Verification
 ```text
-Run azure/functions-action@v1
-Deployment successful.
-Function app updated with package from ./publish
+{"status":"healthy"}
 ```
-## Next Steps
-
-> **Next:** [07 - Extending Triggers](07-extending-triggers.md)
 
 ## See Also
 - [Tutorial Overview & Plan Chooser](../index.md)

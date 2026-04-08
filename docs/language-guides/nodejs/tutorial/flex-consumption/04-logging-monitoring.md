@@ -13,6 +13,11 @@ Capture structured logs, query telemetry, and validate operational visibility.
 !!! info "Plan basics"
     Flex Consumption supports VNet integration, identity-based storage, per-function scaling, and remote build workflows.
 
+## What You'll Build
+
+You will emit structured application logs from a Node.js HTTP function and connect the app to Application Insights.
+You will query recent traces to verify that runtime events are captured and searchable.
+
 ## Steps
 
 ```mermaid
@@ -22,7 +27,6 @@ flowchart LR
     C --> D[Runtime indexes v4 handlers]
     D --> E[Trigger execution]
 ```
-
 
 ### Step 1 - Log with context
 
@@ -48,23 +52,36 @@ az functionapp config appsettings set --name $APP_NAME --resource-group $RG --se
 ### Step 3 - Query traces
 
 ```bash
-az monitor app-insights query --app $APP_NAME-ai --analytics-query "traces | take 20"
+az monitor app-insights query --app $APP_NAME-ai --analytics-query "traces | take 20" --output json
 ```
-
 
 ### Plan-specific notes
 
-- Use a pre-created Flex plan with `--plan` and prefer `func azure functionapp publish $APP_NAME --remote-build`.
+- Flex Consumption routes all traffic through the integrated VNet by default, so you do not set `WEBSITE_VNET_ROUTE_ALL` manually.
+- Flex Consumption does not support custom container hosting for Function Apps.
 - Use long-form CLI flags for maintainable runbooks.
-- Keep `FUNCTIONS_WORKER_RUNTIME=node` across all environments.
 
-## Expected Output
+## Verification
 
-```text
-Functions:
-    helloHttp: [GET] http://localhost:7071/api/hello/{name?}
+```json
+{
+  "tables": [
+    {
+      "name": "PrimaryResult",
+      "columns": [
+        { "name": "timestamp", "type": "datetime" },
+        { "name": "message", "type": "string" },
+        { "name": "severityLevel", "type": "int" }
+      ],
+      "rows": [
+        ["2026-04-08T08:10:13.0000000Z", "status endpoint called", 1]
+      ]
+    }
+  ]
+}
 ```
 
+The query result proves telemetry ingestion is active for your Function App.
 
 ## See Also
 - [Tutorial Overview & Plan Chooser](../index.md)

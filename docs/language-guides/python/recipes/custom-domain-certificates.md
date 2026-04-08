@@ -42,8 +42,8 @@ az functionapp show \
 ```
 
 2. Add DNS records at your DNS provider:
-   - TXT record: `asuid.<subdomain>` with the verification ID from step 1
-   - CNAME record for subdomain mapping (or A record where supported by plan and DNS scenario)
+    - TXT record: `asuid.<subdomain>` with the verification ID from step 1
+    - CNAME record for subdomain mapping (or A record where supported by plan and DNS scenario)
 
 3. Add the hostname to the Function App:
 
@@ -97,7 +97,7 @@ az functionapp update \
 
 ```bash
 az functionapp config hostname list \
-  --name $APP_NAME \
+  --webapp-name $APP_NAME \
   --resource-group $RG
 ```
 
@@ -113,7 +113,7 @@ az functionapp show \
 - Validate TLS in browser or with curl:
 
 ```bash
-curl -I https://api.contoso.com
+curl --head https://api.contoso.com
 ```
 
 ## Troubleshooting

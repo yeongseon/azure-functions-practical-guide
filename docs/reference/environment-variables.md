@@ -2,6 +2,16 @@
 
 Azure Functions uses environment variables for runtime configuration, connection strings, and application settings. This reference documents the important variables, where they are configured, and their default values.
 
+```mermaid
+flowchart TD
+    A[Function App Start] --> B{Environment}
+    B -->|Local| C[local.settings.json Values]
+    B -->|Azure| D[App Settings]
+    C --> E[Runtime resolves required vars]
+    D --> E
+    E --> F[Host starts triggers and bindings]
+```
+
 ## Configuration Locations
 
 | Context | Where to Set | File |
@@ -36,7 +46,7 @@ These variables are required or consumed by the Azure Functions runtime:
 |----------|---------|---------|----------|
 | `FUNCTIONS_WORKER_RUNTIME` | Tells the host which language worker to use | — | **Yes** |
 | `FUNCTIONS_EXTENSION_VERSION` | Functions runtime version (`~4` for v4) | — | **Yes** (in Azure) |
-| `AzureWebJobsStorage` | Connection string or identity-based settings for the internal storage account used by the Functions host. On Flex Consumption, use identity-based format (`AzureWebJobsStorage__accountName`) | — | **Yes** (for non-HTTP triggers, Durable Functions, timer triggers) |
+| `AzureWebJobsStorage` | Connection string or identity-based settings for the default host storage account used by the Functions runtime. On Flex Consumption, use identity-based format (`AzureWebJobsStorage__accountName`) | — | **Yes** (all function apps) |
 | `AzureWebJobsFeatureFlags` | Feature flags for the Functions host | — | No (legacy scenarios only) |
 | `AZURE_FUNCTIONS_ENVIRONMENT` | Current environment name (`Development`, `Staging`, `Production`) | `Production` | No |
 | `WEBSITE_SITE_NAME` | Name of the function app (set automatically by Azure) | — | No (auto-set) |
@@ -79,7 +89,7 @@ az functionapp config appsettings set \
 
 ### AzureWebJobsStorage
 
-Connection string (classic Consumption, Premium) or identity-based settings (Flex Consumption) for the Azure Storage account used by the Functions host for internal operations (lease management, timer state, Durable Functions state). For HTTP-only apps running locally, you can use Azurite:
+Connection string (classic Consumption, Premium, Dedicated) or identity-based settings (Flex Consumption) for the default Azure Storage account used by the Functions host for internal operations (host coordination, secrets/keys storage, leases, timer state, Durable Functions state). Every function app needs host storage configured. For HTTP-only apps running locally, you can use Azurite:
 
 ```
 AzureWebJobsStorage=UseDevelopmentStorage=true

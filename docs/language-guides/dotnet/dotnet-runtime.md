@@ -8,7 +8,7 @@ This reference covers runtime versions, worker configuration, target framework c
 
 | Model | Supported .NET versions | Recommended for new apps |
 |------|--------------------------|--------------------------|
-| Isolated worker | .NET 8 (LTS), .NET 9 (STS) | Yes |
+| Isolated worker | .NET 10, .NET 9, .NET 8, .NET Framework 4.8.1 | Yes |
 | In-process | .NET 8 only | No |
 
 ```mermaid
@@ -61,7 +61,7 @@ Use `net8.0` as the default target framework for production workloads:
 ```bash
 dotnet build
 dotnet publish --configuration Release --output ./publish
-func azure functionapp publish "$APP_NAME" --dotnet-isolated
+func azure functionapp publish "$APP_NAME"
 ```
 
 Use runtime-safe creation flags when provisioning:

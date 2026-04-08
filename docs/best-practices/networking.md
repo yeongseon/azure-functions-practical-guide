@@ -5,7 +5,7 @@ Azure Functions networking decisions directly affect runtime safety: trigger rea
 !!! tip "Start with platform networking behavior"
     For baseline capabilities by hosting plan, read [Platform Networking](../platform/networking.md) first. Then apply the operational patterns here.
 
-## Decide inbound and outbound separately
+## Why This Matters
 
 Treat networking as two independent controls:
 
@@ -20,7 +20,9 @@ Many production incidents come from configuring one side only.
 | Outbound | What dependencies can function workers reach? | VNet integration, NSG, UDR, firewall/NAT, DNS forwarding | Trigger works but dependencies timeout or startup fails | Dependency reachability and DNS resolution from runtime subnet |
 | Combined posture | Are ingress and egress policies aligned to the same trust boundary? | Private ingress + private host storage + controlled egress | Mixed trust boundary (private app, public storage, or vice versa) | End-to-end flow test including storage and trigger operations |
 
-## VNet integration: when you need it
+## Recommended Practices
+
+### VNet integration: when you need it
 
 Use VNet integration when function code must call:
 
@@ -56,9 +58,9 @@ Subnet sizing guidance for operations:
 | Flex Consumption (FC1) | Supported | `Microsoft.App/environments` | Use a dedicated integration subnet with burst headroom | Delegation mismatch is a common deployment blocker |
 | Premium (EP) | Supported | `Microsoft.Web/serverFarms` | Keep integration subnet dedicated where possible | Recommended for predictable private networking workloads |
 | Dedicated (App Service Plan) | Supported | `Microsoft.Web/serverFarms` | Plan subnet size for multi-app scale behavior | Shared plan capacity can hide subnet pressure |
-| Consumption (Y1) | Platform capabilities vary by scenario | Verify current regional/platform support before design freeze | Do not assume parity with EP/Dedicated/FC1 patterns | Confirm support path in platform networking documentation |
+| Consumption (Y1) | Not supported for VNet integration or private endpoints | Not applicable | Use public networking patterns only | Do not design private-only inbound or outbound architecture on Y1 |
 
-## Private endpoints for inbound access
+### Private endpoints for inbound access
 
 Private endpoints make Function App ingress private to your network path.
 
@@ -104,7 +106,7 @@ flowchart LR
     S -->|No| B2[Mixed public/private reachability]
 ```
 
-## Subnet delegation rules (including FC1 difference)
+### Subnet delegation rules (including FC1 difference)
 
 Delegation differs by hosting model:
 
@@ -114,7 +116,7 @@ Delegation differs by hosting model:
 !!! note "FC1 delegation mismatch is a frequent deployment blocker"
     Reusing a subnet delegated to `Microsoft.Web/serverFarms` for FC1 integration fails. Plan subnet delegation explicitly per hosting model.
 
-## DNS design for private networking
+### DNS design for private networking
 
 Use a deterministic DNS architecture before enabling private-only paths.
 
@@ -140,7 +142,7 @@ When public and private zones exist for the same logical name:
 - external callers must resolve public records (if public path remains enabled),
 - avoid overlapping resolver rules that produce random resolver choice.
 
-## Outbound restrictions and forced tunneling
+### Outbound restrictions and forced tunneling
 
 Outbound restrictions often involve NSG, UDR, and centralized inspection.
 
@@ -157,7 +159,7 @@ Design pattern:
 3. Validate trigger operation and host storage access after route change.
 4. Monitor egress denies and DNS failures as first-class signals.
 
-## Storage private endpoint is part of function networking
+### Storage private endpoint is part of function networking
 
 If Function App ingress is private but `AzureWebJobsStorage` remains public, security and reliability goals are incomplete.
 
@@ -170,7 +172,7 @@ Minimum safe pattern:
 !!! warning "Runtime dependency mismatch"
     Private Function App plus public host storage creates inconsistent boundary assumptions. During policy tightening, host startup can fail if storage network access is later blocked without DNS and private endpoint readiness.
 
-## Common networking mistakes and prevention
+## Common Mistakes / Anti-Patterns
 
 | Mistake | Symptom | Prevention | Severity |
 |---|---|---|---|
@@ -205,7 +207,7 @@ Minimum safe pattern:
 - Symptom: VNet integration deployment errors.
 - Prevention: use `Microsoft.App/environments` for FC1 subnets.
 
-## Network architecture patterns
+### Network architecture patterns
 
 ### Fully private
 
@@ -243,7 +245,7 @@ flowchart TD
     F3 --> O3[Outbound: VPN/ExpressRoute + forwarders]
 ```
 
-## Networking decision flowchart
+### Networking decision flowchart
 
 ```mermaid
 flowchart TD
@@ -268,7 +270,7 @@ flowchart TD
     PUB --> VAL
 ```
 
-## Validation checklist (CLI)
+## Validation Checklist
 
 Use these commands after each network change. Keep outputs scrubbed before sharing.
 

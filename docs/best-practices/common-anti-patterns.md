@@ -5,7 +5,7 @@ This reference consolidates high-impact anti-patterns that repeatedly cause Azur
 !!! tip "Use with operational runbooks"
     Pair this page with [Troubleshooting Playbooks](../troubleshooting/playbooks.md) to translate each anti-pattern into detection and recovery actions.
 
-## Summary table
+## Why This Matters
 
 | Anti-pattern | Category | Severity | Fix link |
 |---|---|---|---|
@@ -34,6 +34,8 @@ flowchart LR
     E --> F[Incident with cost spike and SLO breach]
 ```
 
+## Recommended Practices
+
 ```mermaid
 flowchart TD
     A[Start: symptom or design concern] --> B{Main symptom category}
@@ -50,6 +52,8 @@ flowchart TD
     F -->|Yes| F1[Check subnet size and DNS zone links]
     F -->|No| F2[Check trigger compatibility and storage contention]
 ```
+
+## Common Mistakes / Anti-Patterns
 
 <a id="ap-plan-by-name"></a>
 ### Anti-pattern: Choosing plan by name, not workload
@@ -336,7 +340,7 @@ flowchart TD
 !!! tip "Best practice"
     Apply [Best Practices: Deployment](./deployment.md) for plan-specific immutable release and rollback design.
 
-## Review cadence
+## Validation Checklist
 
 Use this anti-pattern checklist at three control points:
 

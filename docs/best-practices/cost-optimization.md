@@ -5,7 +5,7 @@ Azure Functions cost control is primarily an execution-model problem: trigger vo
 !!! tip "Operations baseline"
     For day-2 cost operations and metrics workflow, start with [Operations: Cost Optimization](../operations/cost-optimization.md) and apply the safeguards below.
 
-## Understand the cost model by hosting plan
+## Why This Matters
 
 Pick plan economics that match workload shape, not assumptions.
 
@@ -19,7 +19,9 @@ Pick plan economics that match workload shape, not assumptions.
 ??? info "Workload-first rule"
     Do not select Premium by default. First validate trigger volume, latency SLO, networking constraints, and runtime duration. Cost surprises usually come from plan mismatch, not per-invocation pricing math.
 
-## Use the Consumption free grant intentionally
+## Recommended Practices
+
+### Use the Consumption free grant intentionally
 
 For Consumption, each subscription receives monthly free usage:
 
@@ -37,7 +39,7 @@ Design low-volume workloads to stay inside this envelope when possible.
 !!! note "Free grant scope"
     The free grant applies to Functions compute only. Storage, Application Insights, networking egress, and other dependent services are billed separately.
 
-## Application Insights cost traps and controls
+### Application Insights cost traps and controls
 
 Telemetry is frequently the largest cost line item in otherwise cheap serverless workloads.
 
@@ -85,7 +87,7 @@ Telemetry is frequently the largest cost line item in otherwise cheap serverless
 !!! warning "No-sampling production telemetry"
     Unsampled traces across high-scale queue or event triggers can create rapid ingestion spikes that exceed compute cost by a large margin.
 
-## Storage account cost awareness
+### Storage account cost awareness
 
 `AzureWebJobsStorage` can generate transactions even when functions are idle.
 
@@ -104,7 +106,7 @@ Why this occurs:
 ??? tip "Shared storage anti-pattern"
     Multiple high-activity apps sharing a single `AzureWebJobsStorage` account can increase transaction costs and contention. Isolate by workload criticality.
 
-## Use scale limits as explicit cost guardrails
+### Use scale limits as explicit cost guardrails
 
 Set a maximum instance count for event-driven apps to prevent runaway scaling.
 
@@ -126,7 +128,7 @@ For Flex Consumption, set `scaleAndConcurrency.maximumInstanceCount` (or equival
 - Derive maximum safe concurrent instances.
 - Set `functionAppScaleLimit` below the failure threshold.
 
-## Durable Functions cost considerations
+### Durable Functions cost considerations
 
 Durable orchestration reliability depends on storage-backed history; this has direct cost impact.
 
@@ -153,7 +155,7 @@ Durable orchestration reliability depends on storage-backed history; this has di
 !!! note "Durable cost hygiene"
     Treat purge strategy as a production runbook, not a one-time cleanup task.
 
-## Right-size plan selection by workload pattern
+### Right-size plan selection by workload pattern
 
 | Workload pattern | Preferred plan | Why |
 |---|---|---|
@@ -162,7 +164,7 @@ Durable orchestration reliability depends on storage-backed history; this has di
 | Bursty with private networking (VNet) | Flex Consumption | Serverless burst + networking support without Premium baseline |
 | Always-on low-latency with VNet/private dependencies | Premium | Warm baseline minimizes startup latency |
 
-## Cost monitoring and alerting
+### Cost monitoring and alerting
 
 Operational cost control requires continuous monitoring, not monthly review.
 
@@ -193,7 +195,7 @@ flowchart TD
     G --> H[Escalate if forecast still exceeds budget]
 ```
 
-## Common cost mistakes and corrective actions
+## Common Mistakes / Anti-Patterns
 
 ### Premium for low-volume workloads
 
@@ -215,7 +217,7 @@ flowchart TD
 - **Impact**: paying baseline for idle capacity.
 - **Fix**: right-size always-ready/minimum instances from observed traffic percentiles.
 
-## Cost optimization checklist
+## Validation Checklist
 
 ### Plan and architecture
 

@@ -17,6 +17,17 @@ export APPINSIGHTS_NAME="appi-dedi-<unique-suffix>"
 export LOG_ANALYTICS_NAME="log-dedi-<unique-suffix>"
 ```
 
+## What You'll Build
+
+You will connect the Dedicated Function App to workspace-based Application Insights, run request queries, and configure a baseline alert for HTTP failures.
+
+```mermaid
+flowchart LR
+    A[Function App telemetry] --> B[Application Insights]
+    B --> C[Log Analytics queries]
+    B --> D[Metric alert rule]
+```
+
 ## Steps
 
 ### Step 1 - Create Log Analytics workspace
@@ -119,7 +130,7 @@ az monitor metrics alert create \
   --action $ACTION_GROUP_ID
 ```
 
-## Expected Output
+## Verification
 
 `az monitor app-insights component create ...`:
 

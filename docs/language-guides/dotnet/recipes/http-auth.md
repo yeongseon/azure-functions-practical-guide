@@ -25,12 +25,29 @@ public HttpResponseData SecureEndpoint(
 
 ### Enable app-level authentication
 ```bash
-az functionapp auth set   --name "$APP_NAME"   --resource-group "$RG"   --enabled true
+az webapp auth config-version upgrade --name "$APP_NAME" --resource-group "$RG"
+az webapp auth update --name "$APP_NAME" --resource-group "$RG" --enabled true
 ```
 
-### Validate JWT claims in code
+### Validate JWT claims in code (ASP.NET Core integration)
 ```csharp
-var principal = req.FunctionContext.Features.Get<System.Security.Claims.ClaimsPrincipal>();
+var principal = HttpContext.User;
+```
+
+### Validate JWT claims in code (basic isolated worker)
+```csharp
+using System.Text;
+using System.Text.Json;
+
+if (req.Headers.TryGetValues("x-ms-client-principal", out var values))
+{
+    var encoded = string.Join(string.Empty, values);
+    if (!string.IsNullOrEmpty(encoded))
+    {
+        var json = Encoding.UTF8.GetString(Convert.FromBase64String(encoded));
+        var principal = JsonSerializer.Deserialize<ClientPrincipal>(json);
+    }
+}
 ```
 
 ## See Also

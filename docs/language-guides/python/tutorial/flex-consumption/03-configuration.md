@@ -10,7 +10,21 @@ Configure runtime, app settings, and host storage correctly for Flex Consumption
 | jq | Latest | Read JSON output |
 | Existing FC1 app | Deployed | Target for configuration |
 
-## Step 1 - Set Variables
+## What You'll Build
+
+You will configure a deployed Flex Consumption app to use identity-based host storage and validate that runtime settings come from `functionAppConfig`.
+
+```mermaid
+flowchart LR
+    Bicep[Bicep/ARM config] --> App[Function App on FC1]
+    App --> Runtime[functionAppConfig.runtime]
+    App --> Storage[AzureWebJobsStorage__* settings]
+    Storage --> UAMI[User-assigned managed identity]
+```
+
+## Steps
+
+### Step 1: Set Variables
 
 ```bash
 export BASE_NAME="flexdemo"
@@ -28,7 +42,7 @@ Expected output:
 ```text
 ```
 
-## Step 2 - Configure Identity-Based Host Storage
+### Step 2: Configure Identity-Based Host Storage
 
 Flex Consumption host storage must be identity-based. Use `AzureWebJobsStorage__accountName` and related identity keys, not connection strings.
 
@@ -45,7 +59,7 @@ az functionapp config appsettings set \
 ```
 
 !!! tip "Why __clientId is required"
-    When using a **user-assigned managed identity** (UAMI), you must provide `AzureWebJobsStorage__clientId` so the Functions host knows which identity to authenticate with. Without it, the host cannot resolve which UAMI to use and storage operations will fail. See `infra/flex-consumption/main.bicep` lines 250–252 for the Bicep equivalent.
+    When using a **user-assigned managed identity** (UAMI), you must provide `AzureWebJobsStorage__clientId` so the Functions host knows which identity to authenticate with. Without it, the host cannot resolve which UAMI to use and storage operations will fail. The reference template sets this value in `infra/flex-consumption/main.bicep` under `functionAppSettings.properties.AzureWebJobsStorage__clientId`.
 
 Expected output:
 
@@ -70,7 +84,7 @@ Expected output:
 ]
 ```
 
-## Step 3 - Set Additional App Settings
+### Step 3: Set Additional App Settings
 
 On Flex Consumption, the runtime name and version are defined in `functionAppConfig` (not in `FUNCTIONS_WORKER_RUNTIME`). Set only the remaining app-level settings here.
 
@@ -100,7 +114,7 @@ Expected output:
 ]
 ```
 
-## Step 4 - Validate Runtime Configuration Source
+### Step 4: Validate Runtime Configuration Source
 
 On Flex, runtime/version and scale settings are defined in `functionAppConfig` (resource properties), not classic `siteConfig.appSettings` for runtime identity.
 
@@ -130,7 +144,7 @@ Expected output:
 }
 ```
 
-## Step 5 - Confirm Flex Plan Characteristics
+### Step 5: Confirm Flex Plan Characteristics
 
 
 ```bash
@@ -151,13 +165,19 @@ Expected output:
 }
 ```
 
-## Step 6 - Configuration Checklist for Flex
+### Step 6: Configuration Checklist for Flex
 
 - Linux only (`reserved: true`).
 - Host storage uses identity (`AzureWebJobsStorage__accountName`, `__credential`, `__clientId` for UAMI).
 - Deployment package source is blob container (`functionAppConfig.deployment.storage.type = blobContainer`).
 - Blob triggers in production must use Event Grid integration.
 - No deployment slots.
+
+## Verification
+
+- `az functionapp show --query "properties.functionAppConfig.runtime"` returns Python runtime metadata.
+- `az functionapp config appsettings list` includes `AzureWebJobsStorage__accountName`, `AzureWebJobsStorage__credential`, and `AzureWebJobsStorage__clientId`.
+- `az appservice plan show` reports `sku.name` as `FC1` and `sku.tier` as `FlexConsumption`.
 
 ## Next Steps
 

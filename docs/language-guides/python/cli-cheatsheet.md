@@ -2,6 +2,14 @@
 
 Quick reference for the most commonly used commands when developing, deploying, and managing Azure Functions Python apps.
 
+```mermaid
+flowchart LR
+    A[Initialize project] --> B[Develop locally with func host start]
+    B --> C[Test and validate settings]
+    C --> D[Deploy with func azure functionapp publish]
+    D --> E[Monitor with az functionapp log tail and metrics]
+```
+
 ## Azure Functions Core Tools (`func`)
 
 The `func` CLI is used for local development, testing, and deploying function apps.

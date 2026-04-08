@@ -6,6 +6,15 @@ Instead of managing servers, you define functions that are executed by triggers 
 
 This page summarizes the fundamentals from Microsoft Learn and maps them to decisions you will make in this hub.
 
+```mermaid
+flowchart LR
+    E[Event Source] --> T[Trigger]
+    T --> F[Azure Function]
+    B1[Input Binding] --> F
+    F --> B2[Output Binding]
+    F --> A[Function App]
+```
+
 ## Core model: serverless + event-driven
 
 Azure Functions is designed for workloads where execution is initiated by events.
@@ -147,3 +156,17 @@ Those decisions influence architecture, cost profile, cold-start behavior, and o
 - [Hosting Options](hosting-options.md)
 - [Repository Map](repository-map.md)
 - [Platform Overview](../platform/index.md)
+
+## Sources
+
+- [Azure Functions overview](https://learn.microsoft.com/azure/azure-functions/functions-overview)
+- [Triggers and bindings](https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings)
+- [Azure Functions scale and hosting options](https://learn.microsoft.com/azure/azure-functions/functions-scale)
+- [Consumption plan (legacy)](https://learn.microsoft.com/azure/azure-functions/consumption-plan)
+- [Azure Functions scenarios](https://learn.microsoft.com/azure/azure-functions/functions-scenarios)
+- [Integration and automation platform options](https://learn.microsoft.com/azure/azure-functions/functions-compare-logic-apps-ms-flow-webjobs)
+- [Choose an Azure compute service](https://learn.microsoft.com/azure/architecture/guide/technology-choices/compute-comparison)
+- [Python developer guide](https://learn.microsoft.com/azure/azure-functions/functions-reference-python)
+- [Node.js developer guide](https://learn.microsoft.com/azure/azure-functions/functions-reference-node)
+- [.NET developer guide](https://learn.microsoft.com/azure/azure-functions/functions-dotnet-class-library)
+- [Java developer guide](https://learn.microsoft.com/azure/azure-functions/functions-reference-java)

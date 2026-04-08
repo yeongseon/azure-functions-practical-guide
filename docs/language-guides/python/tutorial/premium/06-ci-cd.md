@@ -8,6 +8,21 @@ Build a GitHub Actions pipeline for Azure Functions Premium, then add safe produ
 - You exported `$RG`, `$APP_NAME`, `$PLAN_NAME`, `$STORAGE_NAME`, `$LOCATION`.
 - GitHub repository admin access for Actions variables and environments.
 
+## What You'll Build
+
+- A GitHub Actions workflow that deploys Python Functions from `apps/python` to a staging slot.
+- OIDC-based Azure authentication and slot swap rollout for Premium.
+- A CI check step that installs Python dependencies from `apps/python/requirements.txt`.
+
+```mermaid
+flowchart LR
+    A[Push to main] --> B[OIDC Azure login]
+    B --> C[Install Python dependencies]
+    C --> D[Deploy to staging slot]
+    D --> E[Smoke test]
+    E --> F[Swap staging to production]
+```
+
 ## Steps
 
 1. Configure OIDC service principal for GitHub Actions.
@@ -59,7 +74,15 @@ Build a GitHub Actions pipeline for Azure Functions Premium, then add safe produ
         "AZURE_FUNCTIONS_ENVIRONMENT=Staging"
     ```
 
-4. Create a GitHub Actions workflow for deploy-to-slot then swap.
+4. Define required GitHub Actions repository variables before workflow execution.
+
+    - `AZURE_CLIENT_ID`
+    - `AZURE_TENANT_ID`
+    - `AZURE_SUBSCRIPTION_ID`
+    - `AZURE_FUNCTIONAPP_NAME`
+    - `AZURE_RESOURCE_GROUP`
+
+5. Create a GitHub Actions workflow for deploy-to-slot then swap.
 
     ```yaml
     name: Deploy Premium Function App
@@ -90,7 +113,7 @@ Build a GitHub Actions pipeline for Azure Functions Premium, then add safe produ
             run: |
               python -m pip install --upgrade pip
               pip install --requirement requirements.txt
-            working-directory: app
+            working-directory: apps/python
 
           - name: Azure login
             uses: azure/login@v2
@@ -104,7 +127,7 @@ Build a GitHub Actions pipeline for Azure Functions Premium, then add safe produ
             with:
               app-name: ${{ vars.AZURE_FUNCTIONAPP_NAME }}
               slot-name: staging
-              package: app
+              package: apps/python
 
           - name: Smoke test staging
             run: |
@@ -119,14 +142,14 @@ Build a GitHub Actions pipeline for Azure Functions Premium, then add safe produ
                 --target-slot "production"
     ```
 
-5. Deploy from local terminal to staging slot (manual fallback).
+6. Deploy from local terminal to staging slot (manual fallback).
 
     ```bash
-    cd app
+    cd apps/python
     func azure functionapp publish "$APP_NAME" --python --slot "staging"
     ```
 
-6. Validate staging and swap to production with Azure CLI.
+7. Validate staging and swap to production with Azure CLI.
 
     ```bash
     curl --request GET "https://$APP_NAME-staging.azurewebsites.net/api/health"
@@ -140,7 +163,7 @@ Build a GitHub Actions pipeline for Azure Functions Premium, then add safe produ
     curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
     ```
 
-7. Verify deployment history and SCM endpoints.
+8. Verify deployment history and SCM endpoints.
 
     ```bash
     az functionapp deployment slot list \
@@ -153,7 +176,7 @@ Build a GitHub Actions pipeline for Azure Functions Premium, then add safe produ
     - Production: `https://$APP_NAME.scm.azurewebsites.net`
     - Staging: `https://$APP_NAME-staging.scm.azurewebsites.net`
 
-## Expected Output
+## Verification
 
 ```text
 Name       Status

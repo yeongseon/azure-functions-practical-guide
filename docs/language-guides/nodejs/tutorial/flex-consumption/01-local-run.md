@@ -13,26 +13,31 @@ Initialize, run, and verify a Node.js v4 app on your machine before cloud deploy
 !!! info "Plan basics"
     Flex Consumption supports VNet integration, identity-based storage, per-function scaling, and remote build workflows.
 
+## What You'll Build
+
+You will create a Node.js v4 HTTP-triggered function named `helloHttp` and run it locally with Azure Functions Core Tools.
+You will validate the local route at `/api/hello/{name?}` and confirm the function returns a JSON payload.
+
 ## Steps
 
 ```mermaid
 flowchart LR
-    A[Code commit] --> B[Build package]
-    B --> C[Deploy to Flex Consumption]
-    C --> D[Runtime indexes v4 handlers]
-    D --> E[Trigger execution]
+    A[func init project] --> B[Create v4 handler]
+    B --> C[func start]
+    C --> D[Test with curl]
 ```
-
 
 ### Step 1 - Initialize project
 
 ```bash
-func init node-guide-flex-consumption --javascript
+func init node-guide-flex-consumption --worker-runtime node --language javascript
 cd node-guide-flex-consumption
-func new --template "HTTP trigger" --name httpTrigger
+npm install @azure/functions
 ```
 
-### Step 2 - Add v4 handler
+### Step 2 - Create the v4 handler
+
+Save the following as `src/functions/helloHttp.js`:
 
 ```javascript
 const { app } = require('@azure/functions');
@@ -52,23 +57,28 @@ app.http('helloHttp', {
 
 ```bash
 func start
+```
+
+In a second terminal, test the endpoint:
+
+```bash
 curl --request GET "http://localhost:7071/api/hello"
 ```
 
+### Step 4 - Review Flex Consumption-specific notes
 
-### Plan-specific notes
+- Flex Consumption routes all traffic through the integrated VNet by default, so you do not set `WEBSITE_VNET_ROUTE_ALL` manually.
+- Flex Consumption does not support custom container hosting for Function Apps.
+- Use long-form CLI flags (for example, `--resource-group`) for maintainable runbooks.
 
-- Use a pre-created Flex plan with `--plan` and prefer `func azure functionapp publish $APP_NAME --remote-build`.
-- Use long-form CLI flags for maintainable runbooks.
-- Keep `FUNCTIONS_WORKER_RUNTIME=node` across all environments.
-
-## Expected Output
+## Verification
 
 ```text
 Functions:
     helloHttp: [GET] http://localhost:7071/api/hello/{name?}
 ```
 
+Confirm that the host lists `helloHttp`, then run `curl --request GET "http://localhost:7071/api/hello"` and verify a `200 OK` response with a JSON body such as `{"message":"Hello, world"}`.
 
 ## See Also
 - [Tutorial Overview & Plan Chooser](../index.md)

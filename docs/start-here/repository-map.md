@@ -6,15 +6,28 @@ It also links the external DX toolkit repositories used with this hub.
 
 ## Top-level navigation model
 
-The documentation follows five intent-based areas:
+The documentation follows seven intent-based areas:
 
 1. **Start Here** — onboarding and plan selection
 2. **Platform** — architecture and hosting decisions
-3. **Language Guides** — implementation details by language
-4. **Operations** — day-2 operational runbooks
-5. **Troubleshooting** — incident response and diagnostics
+3. **Best Practices** — production patterns and anti-patterns
+4. **Language Guides** — implementation details by language
+5. **Operations** — day-2 operational runbooks
+6. **Troubleshooting** — incident response and diagnostics
+7. **Reference** — quick lookup for commands, limits, and configuration
 
-This structure mirrors the `mkdocs.yml` navigation and keeps concept, implementation, and operations concerns separate.
+This structure aligns with the top-level sections in `mkdocs.yml`; some topics (such as networking, reliability, and security) are grouped under section index pages instead of appearing as separate top-level tabs.
+
+```mermaid
+flowchart TD
+    R[Repository] --> S1[Start Here]
+    R --> S2[Platform]
+    R --> S3[Best Practices]
+    R --> S4[Language Guides]
+    R --> S5[Operations]
+    R --> S6[Troubleshooting]
+    R --> S7[Reference]
+```
 
 ## Section map
 
@@ -22,9 +35,11 @@ This structure mirrors the `mkdocs.yml` navigation and keeps concept, implementa
 |---|---|---|
 | Start Here | Learn fundamentals, choose track, choose plan | [Start Here](index.md) |
 | Platform | Understand host/worker model, scaling, networking, reliability, security | [Platform Index](../platform/index.md) |
+| Best Practices | Apply production-ready patterns and avoid anti-patterns | [Best Practices Index](../best-practices/index.md) |
 | Language Guides | Build function apps using language-specific programming models | [Language Guides Index](../language-guides/index.md) |
 | Operations | Deploy safely, configure correctly, monitor, alert, recover | [Operations Index](../operations/index.md) |
 | Troubleshooting | Triage and resolve incidents with repeatable methodology | [Troubleshooting Index](../troubleshooting/index.md) |
+| Reference | Quickly look up CLI commands, limits, and host/runtime settings | [Reference Index](../reference/index.md) |
 
 ## Start Here pages
 
@@ -118,3 +133,7 @@ These repositories are linked resources, not vendored into this hub.
 - [Overview](overview.md)
 - [Learning Paths](learning-paths.md)
 - [Hosting Options](hosting-options.md)
+
+## Sources
+
+- [Microsoft Learn: Azure Functions documentation](https://learn.microsoft.com/azure/azure-functions/)

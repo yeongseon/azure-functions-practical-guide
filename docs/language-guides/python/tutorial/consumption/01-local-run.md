@@ -14,6 +14,18 @@ Run the sample Azure Functions Python app on your machine before deploying to th
 !!! info "Consumption plan basics"
     Consumption (Y1) is serverless with scale-to-zero, up to 200 instances, 1.5 GB memory per instance, and a default 5-minute timeout (max 10 minutes).
 
+## What You'll Build
+
+You will run the Python Functions app locally from `apps/python`, load local settings, and verify the health endpoint responds from the local Functions host.
+
+```mermaid
+flowchart LR
+    A[Activate Python venv] --> B[Install deps from apps/python/requirements.txt]
+    B --> C[Copy local settings example]
+    C --> D[Start Functions host in apps/python]
+    D --> E[Test /api/health locally]
+```
+
 ## Steps
 
 ### Step 1 - Create and activate a virtual environment
@@ -22,16 +34,16 @@ Run the sample Azure Functions Python app on your machine before deploying to th
 python -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
-python -m pip install --requirement app/requirements.txt
+python -m pip install --requirement apps/python/requirements.txt
 ```
 
 ### Step 2 - Create local settings
 
 ```bash
-cp app/local.settings.json.example app/local.settings.json
+cp apps/python/local.settings.json.example apps/python/local.settings.json
 ```
 
-Update `app/local.settings.json` with these baseline values:
+Update `apps/python/local.settings.json` with these baseline values:
 
 ```json
 {
@@ -54,7 +66,7 @@ azurite --silent --location /tmp/azurite --debug /tmp/azurite/debug.log
 ### Step 4 - Start the Functions host
 
 ```bash
-func start --script-root app
+cd apps/python && func start
 ```
 
 ### Step 5 - Call an endpoint from another terminal
@@ -63,7 +75,7 @@ func start --script-root app
 curl --request GET "http://localhost:7071/api/health"
 ```
 
-## Expected Output
+## Verification
 
 Host start output:
 

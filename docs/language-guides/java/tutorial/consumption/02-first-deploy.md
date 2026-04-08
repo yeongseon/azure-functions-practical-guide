@@ -11,6 +11,10 @@ Provision Azure resources and deploy your first Java function app to this hostin
 | Azure Functions Core Tools | v4 | Start local host and publish artifacts |
 | Azure CLI | 2.61+ | Provision Azure resources and inspect app state |
 
+## What You'll Build
+
+You will provision a Linux Consumption (Y1) Function App for Java, deploy with the Azure Functions Maven plugin, and validate an HTTP-triggered endpoint secured with a function key.
+
 !!! info "Plan basics"
     Consumption (Y1) is fully serverless with scale-to-zero and pay-per-execution billing. It is ideal for bursty workloads that do not require VNet integration.
 
@@ -50,6 +54,18 @@ mvn clean package
 mvn azure-functions:deploy
 ```
 
+If you prefer not to pass the app name on every deploy, set it once in `pom.xml`:
+
+```xml
+<plugin>
+    <groupId>com.microsoft.azure</groupId>
+    <artifactId>azure-functions-maven-plugin</artifactId>
+    <configuration>
+        <appName>${env.APP_NAME}</appName>
+    </configuration>
+</plugin>
+```
+
 ### Step 4 - Validate deployment metadata
 
 ```bash
@@ -61,10 +77,10 @@ az functionapp function list --name $APP_NAME --resource-group $RG --output tabl
 
 ```bash
 APP_URL="https://$APP_NAME.azurewebsites.net"
-curl --request GET "$APP_URL/api/hello/cloud"
+curl --request GET $APP_URL/api/hello/cloud?code=$(az functionapp keys list --resource-group $RG --name $APP_NAME --query "functionKeys.default" --output tsv)
 ```
 
-## Expected Output
+## Verification
 
 ```text
 State    ResourceGroup    DefaultHostName

@@ -23,11 +23,6 @@ TM_PROFILE="tm-functions-prod"
 FD_PROFILE="afd-functions-prod"
 HEALTH_PATH="/api/health"
 ```
-## Recovery objectives
-Define service objectives before incidents occur:
-- **RTO** (Recovery Time Objective): target time to restore service.
-- **RPO** (Recovery Point Objective): acceptable data loss window.
-RTO and RPO determine architecture, replication, and operational tooling.
 ## When to Use
 Use rollback, failover, or rebuild based on blast radius and dependency health.
 ### Rollback
@@ -47,6 +42,12 @@ Rebuild is used when both deployment state and environment integrity are uncerta
 - Trigger condition: configuration drift, corrupted runtime state, or failed rollback attempts.
 - Typical scope: app plus supporting resources requiring controlled rehydration.
 - Expected speed: longer; prioritize data consistency and security posture.
+
+### Recovery objectives
+Define service objectives before incidents occur:
+- **RTO** (Recovery Time Objective): target time to restore service.
+- **RPO** (Recovery Point Objective): acceptable data loss window.
+RTO and RPO determine architecture, replication, and operational tooling.
 
 ## Procedure
 Use the runbook that matches observed symptoms and dependency status.
@@ -279,7 +280,8 @@ If recovery does not stabilize service, apply these controls.
 - Review deployment history and pin known-good release hash.
 - Escalate to platform support for region-level anomalies.
 
-## Recovery drill checklist
+## Advanced Topics
+### Recovery drill checklist
 - Documented owner and escalation path.
 - Tested rollback command set.
 - Tested region failover procedure.

@@ -2,6 +2,22 @@
 
 The `host.json` file configures the Azure Functions runtime behaviour. It lives in the root of your function app (same directory as `function_app.py`) and applies to all functions in the app. This reference covers the most important settings for Python function apps.
 
+```mermaid
+flowchart TD
+    A[host.json] --> B[Global runtime settings]
+    A --> C[logging]
+    A --> D[extensions]
+    A --> E[concurrency]
+    D --> F[http settings]
+    D --> G[queue settings]
+    B --> H[Function host applies config at startup]
+    C --> H
+    D --> H
+    E --> H
+```
+
+> **Queue settings note:** In this annotated sample, `"maxPollingInterval": "00:00:02"` and `"visibilityTimeout": "00:00:30"` are **custom overrides** for faster dequeue and retry behavior. Azure Functions defaults are `maxPollingInterval = "00:01:00"` and `visibilityTimeout = "00:00:00"`.
+
 ## Complete Annotated Example
 
 ```json
@@ -72,7 +88,7 @@ The `host.json` file configures the Azure Functions runtime behaviour. It lives 
 
 Always set to `"2.0"` for Azure Functions v4 runtime. This is the only supported version for the v2 Python programming model.
 
-### extensionBundle (Required)
+### extensionBundle (Required for non-HTTP extensions)
 
 ```json
 {
@@ -85,7 +101,7 @@ Always set to `"2.0"` for Azure Functions v4 runtime. This is the only supported
 
 The extension bundle provides pre-compiled binding extensions (Cosmos DB, Storage, Event Grid, etc.) without requiring you to install them individually. The version range `[4.*, 5.0.0)` means any 4.x version but not 5.x.
 
-> **Important:** Without the extension bundle, non-HTTP bindings will not work. HTTP triggers work without it since they are part of the core runtime.
+> **Important:** Include `extensionBundle` when your app uses trigger/binding extensions beyond HTTP. HTTP-only apps can run without an extension bundle because HTTP is in the core runtime.
 
 ### functionTimeout
 
@@ -185,9 +201,9 @@ Configure HTTP trigger behaviour:
 | Setting | Default | Description |
 |---------|---------|-------------|
 | `routePrefix` | `"api"` | URL prefix for all HTTP functions. Set to `""` to remove the `/api` prefix |
-| `maxOutstandingRequests` | `200` | Max pending requests at any given time |
-| `maxConcurrentRequests` | `100` | Max HTTP functions executing in parallel per instance |
-| `dynamicThrottlesEnabled` | `false` | Check system performance counters and reject requests when thresholds are exceeded |
+| `maxOutstandingRequests` | Consumption: `200`; Premium/Dedicated: `-1` (unbounded) | Max pending requests at any given time |
+| `maxConcurrentRequests` | Consumption: `100`; Premium/Dedicated: `-1` (unbounded) | Max HTTP functions executing in parallel per instance |
+| `dynamicThrottlesEnabled` | Consumption: `true` | Check system performance counters and reject requests when thresholds are exceeded |
 
 To remove the `/api` prefix (so routes are `https://your-func.azurewebsites.net/health` instead of `https://your-func.azurewebsites.net/api/health`):
 
@@ -205,6 +221,8 @@ To remove the `/api` prefix (so routes are `https://your-func.azurewebsites.net/
 
 Configure Queue trigger behaviour (see [Queue recipe](recipes/queue.md)):
 
+> **Important:** The next snippet intentionally shows **custom override values**. Runtime defaults are `"maxPollingInterval": "00:01:00"` and `"visibilityTimeout": "00:00:00"`.
+
 ```json
 {
   "extensions": {
@@ -221,7 +239,7 @@ Configure Queue trigger behaviour (see [Queue recipe](recipes/queue.md)):
 
 ### concurrency
 
-Enable dynamic concurrency for automatic tuning:
+Enable dynamic concurrency for supported triggers:
 
 ```json
 {
@@ -232,7 +250,7 @@ Enable dynamic concurrency for automatic tuning:
 }
 ```
 
-When enabled, the runtime automatically adjusts concurrency limits per trigger type based on observed performance. `snapshotPersistenceEnabled` persists the learned concurrency settings across restarts.
+When enabled, the runtime automatically adjusts concurrency for supported triggers (Blob, Queue, and Service Bus). `snapshotPersistenceEnabled` persists learned concurrency settings across restarts.
 
 ## Minimal host.json
 
@@ -240,11 +258,7 @@ The minimum viable `host.json` for an HTTP-only Python function app:
 
 ```json
 {
-  "version": "2.0",
-  "extensionBundle": {
-    "id": "Microsoft.Azure.Functions.ExtensionBundle",
-    "version": "[4.*, 5.0.0)"
-  }
+  "version": "2.0"
 }
 ```
 

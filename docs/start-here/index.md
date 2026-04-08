@@ -8,6 +8,14 @@ Use this section to answer three questions quickly:
 2. Which hosting plan fits your workload
 3. Which learning path matches your current role and timeline
 
+```mermaid
+flowchart TD
+    A[Overview] --> B[Learning Paths]
+    B --> C[Hosting Options]
+    C --> D[Repository Map]
+    D --> E[Platform and Language Guides]
+```
+
 ## Pages in this section
 
 - [Overview](overview.md) — serverless model, event-driven execution, triggers and bindings, and compute comparisons

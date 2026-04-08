@@ -14,15 +14,38 @@ Configure runtime and app settings for Dedicated using explicit app settings, ho
     Dedicated (App Service Plan) runs on pre-provisioned compute with predictable cost. Enable Always On for non-HTTP triggers.
     Supports VNet integration and slots on eligible SKUs.
 
+## What You'll Build
+
+- Runtime app settings for .NET isolated worker on Dedicated
+- Host storage configuration with a real storage connection string
+- Host-level settings validation with Azure CLI
+
 ## Steps
 ### Step 1 - Set baseline runtime settings
 ```bash
-az functionapp config appsettings set   --name "$APP_NAME"   --resource-group "$RG"   --settings     "FUNCTIONS_WORKER_RUNTIME=dotnet-isolated"     "FUNCTIONS_EXTENSION_VERSION=~4"     "DOTNET_ENVIRONMENT=Production"     "APP_ENV=production"
+az functionapp config appsettings set \
+  --name "$APP_NAME" \
+  --resource-group "$RG" \
+  --settings \
+    "FUNCTIONS_WORKER_RUNTIME=dotnet-isolated" \
+    "FUNCTIONS_EXTENSION_VERSION=~4" \
+    "DOTNET_ENVIRONMENT=Production" \
+    "APP_ENV=production"
 ```
 
 ### Step 2 - Configure worker and feature settings
 ```bash
-az functionapp config appsettings set   --name "$APP_NAME"   --resource-group "$RG"   --settings     "WEBSITE_RUN_FROM_PACKAGE=1"     "AzureWebJobsStorage=DefaultEndpointsProtocol=https;AccountName=$STORAGE_NAME;AccountKey=<masked-key>;EndpointSuffix=core.windows.net"
+export STORAGE_CONNECTION_STRING=$(az storage account show-connection-string \
+  --name "$STORAGE_NAME" \
+  --resource-group "$RG" \
+  --query "connectionString" \
+  --output tsv)
+az functionapp config appsettings set \
+  --name "$APP_NAME" \
+  --resource-group "$RG" \
+  --settings \
+    "WEBSITE_RUN_FROM_PACKAGE=1" \
+    "AzureWebJobsStorage=$STORAGE_CONNECTION_STRING"
 ```
 
 ### Step 3 - Update host.json for routing and timeout
@@ -40,7 +63,10 @@ az functionapp config appsettings set   --name "$APP_NAME"   --resource-group "$
 
 ### Step 4 - Confirm effective settings
 ```bash
-az functionapp config appsettings list   --name "$APP_NAME"   --resource-group "$RG"   --output table
+az functionapp config appsettings list \
+  --name "$APP_NAME" \
+  --resource-group "$RG" \
+  --output table
 ```
 
 ```mermaid
@@ -57,7 +83,7 @@ grep "ConfigureFunctionsWebApplication" "Program.cs"
 
 Confirm that HTTP functions use `HttpRequestData` and `HttpResponseData`, and that logging is constructor-injected with `ILogger<T>`.
 
-## Expected Output
+## Verification
 ```text
 Name                              SlotSetting
 --------------------------------  -----------
@@ -65,10 +91,8 @@ FUNCTIONS_WORKER_RUNTIME          False
 FUNCTIONS_EXTENSION_VERSION       False
 DOTNET_ENVIRONMENT                False
 APP_ENV                           False
+AzureWebJobsStorage               False
 ```
-## Next Steps
-
-> **Next:** [04 - Logging and Monitoring](04-logging-monitoring.md)
 
 ## See Also
 - [Tutorial Overview & Plan Chooser](../index.md)

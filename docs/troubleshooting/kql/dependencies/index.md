@@ -2,18 +2,28 @@
 
 KQL queries for analyzing outbound dependency failures and queue processing latency.
 
+```mermaid
+flowchart TD
+    A[Dependency signals] --> B[Failure rate by target]
+    A --> C[Status code distribution]
+    A --> D[Queue latency metrics]
+    B --> E[Identify failing dependency]
+    C --> E
+    D --> E
+```
+
 ## Dependency call failures
 
 ```kusto
 let appName = "func-myapp-prod";
-dependencies
-| where timestamp > ago(1h)
-| where cloud_RoleName =~ appName
+AppDependencies
+| where TimeGenerated > ago(1h)
+| where AppRoleName =~ appName
 | summarize
     Calls=count(),
     Failed=countif(success == false),
     FailureRatePercent=round(100.0 * countif(success == false) / count(), 2),
-    P95Ms=percentile(duration, 95)
+    P95Ms=round(percentile(duration, 95), 2)
   by target, type
 | order by Failed desc, P95Ms desc
 ```
@@ -41,11 +51,11 @@ dependencies
 
 ```kusto
 let appName = "func-myapp-prod";
-dependencies
-| where timestamp > ago(2h)
-| where cloud_RoleName =~ appName
+AppDependencies
+| where TimeGenerated > ago(2h)
+| where AppRoleName =~ appName
 | where success == false
-| summarize Count=count() by target, resultCode, type
+| summarize Count=count() by target, ResultCode, type
 | order by Count desc
 ```
 
@@ -67,17 +77,17 @@ dependencies
 
 ```kusto
 let appName = "func-myapp-prod";
-customMetrics
-| where timestamp > ago(2h)
-| where cloud_RoleName =~ appName
+AppMetrics
+| where TimeGenerated > ago(2h)
+| where AppRoleName =~ appName
 | where name in ("QueueMessageAgeMs", "QueueProcessingLatencyMs", "QueueDequeueDelayMs")
-| summarize AvgMs=avg(value), P95Ms=percentile(value, 95), MaxMs=max(value) by MetricName=name, bin(timestamp, 5m)
-| order by timestamp desc
+| summarize AvgMs=avg(value), P95Ms=percentile(value, 95), MaxMs=max(value) by MetricName=name, bin(TimeGenerated, 5m)
+| order by TimeGenerated desc
 ```
 
 **Example result:**
 
-| MetricName | timestamp | AvgMs | P95Ms | MaxMs |
+| MetricName | TimeGenerated | AvgMs | P95Ms | MaxMs |
 |---|---|---|---|---|
 | QueueProcessingLatencyMs | 2026-04-04T09:10:00Z | 420 | 860 | 1,430 |
 | QueueProcessingLatencyMs | 2026-04-04T09:05:00Z | 5,220 | 12,480 | 28,200 |
@@ -103,14 +113,14 @@ customMetrics
 
 ```kusto
 let appName = "func-myapp-prod";
-dependencies
-| where timestamp > ago(1h)
-| where cloud_RoleName =~ appName
+AppDependencies
+| where TimeGenerated > ago(1h)
+| where AppRoleName =~ appName
 | where type == "Azure blob" or type == "Azure queue" or type == "Azure table"
 | summarize
     Calls=count(),
     Failed=countif(success == false),
-    P95Ms=percentile(duration, 95)
+    P95Ms=round(percentile(duration, 95), 2)
   by target, type
 | order by Failed desc
 ```

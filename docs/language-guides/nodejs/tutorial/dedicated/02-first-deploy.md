@@ -13,6 +13,11 @@ Provision resources and publish your first Node.js v4 function app.
 !!! info "Plan basics"
     Dedicated runs on App Service plans (B1/S1/P1v3), supports Always On, and behaves like traditional web app hosting.
 
+## What You'll Build
+
+You will provision a Linux Function App on the Dedicated track, deploy your Node.js v4 project, and verify function indexing in Azure.
+You will confirm the deployed function list from the platform control plane rather than local runtime output.
+
 ## Steps
 
 ```mermaid
@@ -22,7 +27,6 @@ flowchart LR
     C --> D[Runtime indexes v4 handlers]
     D --> E[Trigger execution]
 ```
-
 
 ### Step 1 - Create resource group
 
@@ -49,20 +53,21 @@ func azure functionapp publish $APP_NAME
 az functionapp function list --name $APP_NAME --resource-group $RG --output table
 ```
 
-
 ### Plan-specific notes
 
-- Enable Always On for non-trivial workloads to avoid app unload behavior.
+- Dedicated does not require Azure Files content share settings for zip-based deployments (`WEBSITE_RUN_FROM_PACKAGE=1`).
+- Enable Always On for non-HTTP triggers so timer, queue, and blob workloads stay active.
 - Use long-form CLI flags for maintainable runbooks.
-- Keep `FUNCTIONS_WORKER_RUNTIME=node` across all environments.
 
-## Expected Output
+## Verification
 
 ```text
-Functions:
-    helloHttp: [GET] http://localhost:7071/api/hello/{name?}
+Name       Language
+---------  ----------
+helloHttp  Javascript
 ```
 
+The output confirms that Azure indexed your function definition and is ready to serve requests.
 
 ## See Also
 - [Tutorial Overview & Plan Chooser](../index.md)

@@ -16,6 +16,17 @@ export STORAGE_NAME="stdedidev<unique>"
 export LOCATION="eastus"
 ```
 
+## What You'll Build
+
+You will package the Python Function App from `apps/python`, deploy it with Zip Deploy and remote build settings, and implement an automated GitHub Actions deployment workflow.
+
+```mermaid
+flowchart LR
+    A[GitHub push] --> B[GitHub Actions workflow]
+    B --> C[Build and deploy apps/python]
+    C --> D[Dedicated Function App]
+```
+
 ## Steps
 
 ### Step 1 - Build a deployable zip package
@@ -23,9 +34,9 @@ export LOCATION="eastus"
 ```bash
 python -m venv .venv
 source .venv/bin/activate
-pip install --requirement app/requirements.txt
+pip install --requirement apps/python/requirements.txt
 
-cd app
+cd apps/python
 zip --recurse-paths ../functionapp.zip .
 cd ..
 ```
@@ -33,6 +44,13 @@ cd ..
 ### Step 2 - Deploy with zipdeploy
 
 ```bash
+az functionapp config appsettings set \
+  --name $APP_NAME \
+  --resource-group $RG \
+  --settings \
+    SCM_DO_BUILD_DURING_DEPLOYMENT=true \
+    ENABLE_ORYX_BUILD=true
+
 az functionapp deployment source config-zip \
   --name $APP_NAME \
   --resource-group $RG \
@@ -68,38 +86,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - name: Deploy Azure Functions app
+        uses: Azure/functions-action@v1
         with:
-          python-version: '3.11'
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install --requirement app/requirements.txt
-
-      - name: Archive app
-        run: |
-          cd app
-          zip --recurse-paths ../functionapp.zip .
-
-      - name: Azure login
-        uses: azure/login@v2
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      - name: Zip deploy to Dedicated app
-        run: |
-          az functionapp deployment source config-zip \
-            --name ${{ vars.AZURE_FUNCTIONAPP_NAME }} \
-            --resource-group ${{ vars.AZURE_RESOURCE_GROUP }} \
-            --src functionapp.zip
+          app-name: ${{ vars.AZURE_FUNCTIONAPP_NAME }}
+          package: apps/python
+          publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
+          scm-do-build-during-deployment: true
+          enable-oryx-build: true
+```
 
 ### Step 5 - Deployment slots (S1+ only)
 
 Deployment slots are unavailable on B1. Upgrade to S1 or P1v2, then create and use a staging slot:
-
-```
 
 ```bash
 az appservice plan update \
@@ -128,7 +127,7 @@ az functionapp deployment slot swap \
 !!! info "Requires Standard tier or higher"
     Deployment slots are not available on Basic (B1) tier. Upgrade to Standard (S1) or Premium (P1v2) before using slots.
 
-## Expected Output
+## Verification
 
 `az functionapp deployment source config-zip ...`:
 

@@ -10,7 +10,20 @@ Set up observability for your Flex Consumption app so you can verify deployments
 | Application Insights resource | Existing | Telemetry backend |
 | Deployed FC1 app | Existing | Live target to inspect |
 
-## Step 1 - Set Variables
+## What You'll Build
+
+You will generate real requests and exception telemetry from a Flex Consumption app and validate the data path in Application Insights.
+
+```mermaid
+flowchart LR
+    Client[HTTP requests] --> Func[Flex Function App]
+    Func --> AI[Application Insights]
+    AI --> KQL[KQL queries via Azure CLI]
+```
+
+## Steps
+
+### Step 1: Set Variables
 
 ```bash
 export BASE_NAME="flexdemo"
@@ -28,7 +41,7 @@ Expected output:
 ```text
 ```
 
-## Step 2 - Confirm Application Insights Wiring
+### Step 2: Confirm Application Insights Wiring
 
 
 ```bash
@@ -59,7 +72,7 @@ Expected output:
 ]
 ```
 
-## Step 3 - Generate Traffic
+### Step 3: Generate Traffic
 
 
 ```bash
@@ -77,10 +90,10 @@ Expected output:
 
 
 ```json
-{"error":"simulated failure"}
+{"error":"Handled exception","type":"ValueError","message":"Simulated error for testing"}
 ```
 
-## Step 4 - Query Request and Exception Telemetry
+### Step 4: Query Request and Exception Telemetry
 
 
 ```bash
@@ -109,7 +122,7 @@ Expected output:
 }
 ```
 
-## Step 5 - Check Scale-Sensitive Telemetry
+### Step 5: Check Scale-Sensitive Telemetry
 
 Flex can scale to zero and out to 1000 instances, so monitor cold starts, errors, and dependency latency.
 
@@ -138,11 +151,17 @@ Expected output:
 }
 ```
 
-## Step 6 - Logging Guidance for Flex
+### Step 6: Logging Guidance for Flex
 
 - Keep structured logs in Python (`logging.info(..., extra={...})`) for KQL filtering.
 - Treat deployment verification as: workflow logs + health checks + App Insights (not Kudu).
 - Track trigger-specific behavior separately; queue-triggered functions scale per function.
+
+## Verification
+
+- `GET /api/health` and `GET /api/info` appear in the `requests` table with `resultCode` `200`.
+- `GET /api/exceptions/test-error` appears in traces/requests and returns a handled exception payload.
+- KQL output confirms recent telemetry ingestion within the last 15-30 minutes.
 
 ## Next Steps
 

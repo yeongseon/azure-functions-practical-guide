@@ -2,6 +2,17 @@
 
 This recipe covers authentication and authorization for Azure Functions HTTP triggers — authorization levels, function keys, Easy Auth for identity provider integration, and manual JWT validation in Python.
 
+## Authentication Flow
+
+```mermaid
+flowchart LR
+    CLIENT[Client App] --> TOKEN[Identity Provider Token Issuance]
+    TOKEN --> REQUEST[Bearer Token in HTTP Request]
+    REQUEST --> EASYAUTH[Easy Auth on Function App]
+    EASYAUTH -->|Valid| FUNC[Python Function Code]
+    EASYAUTH -->|Invalid or Missing| DENY[401 or Redirect]
+```
+
 ## Authorization Levels
 
 Every HTTP-triggered function has an authorization level that controls access. The v2 programming model supports three levels:
@@ -71,7 +82,7 @@ curl "https://your-func.azurewebsites.net/api/items?code=YOUR_FUNCTION_KEY"
 ### Request Header
 
 ```bash
-curl -H "x-functions-key: YOUR_FUNCTION_KEY" \
+curl --header "x-functions-key: YOUR_FUNCTION_KEY" \
   https://your-func.azurewebsites.net/api/items
 ```
 
@@ -251,7 +262,7 @@ def protected_data(req: func.HttpRequest) -> func.HttpResponse:
 TOKEN=$(az account get-access-token --resource "api://your-client-id" --query accessToken --output tsv)
 
 # Call the protected endpoint
-curl -H "Authorization: Bearer $TOKEN" \
+curl --header "Authorization: Bearer $TOKEN" \
   https://your-func.azurewebsites.net/api/protected/data
 ```
 

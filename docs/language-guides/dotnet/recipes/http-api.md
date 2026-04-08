@@ -14,12 +14,12 @@ flowchart LR
 ### Route templates and verbs
 ```csharp
 [Function("GetOrder")]
-public HttpResponseData GetOrder(
+public async Task<HttpResponseData> GetOrder(
     [HttpTrigger(AuthorizationLevel.Function, "get", Route = "orders/{id}")] HttpRequestData req,
     string id)
 {
     var response = req.CreateResponse(HttpStatusCode.OK);
-    response.WriteString($"{"id":"{id}"}");
+    await response.WriteAsJsonAsync(new { id });
     return response;
 }
 ```

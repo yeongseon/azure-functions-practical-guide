@@ -14,8 +14,19 @@ Extend the Consumption app beyond HTTP by adding Queue, Blob, and Timer triggers
     Consumption (Y1) scales to zero and charges per execution. It has a default 5-minute timeout and up to 10 minutes maximum per execution.
     No VNet integration on this plan.
 
+## What You'll Build
+
+Additional non-HTTP workloads for Linux Consumption using Queue, Blob, and Timer triggers in the .NET isolated worker model, including package prerequisites and runtime verification.
+
 ## Steps
-### Step 1 - Add queue trigger and queue output
+### Step 1 - Install isolated worker binding extensions
+```bash
+dotnet add package Microsoft.Azure.Functions.Worker.Extensions.Storage.Queues
+dotnet add package Microsoft.Azure.Functions.Worker.Extensions.Storage.Blobs
+dotnet add package Microsoft.Azure.Functions.Worker.Extensions.Timer
+```
+
+### Step 2 - Add queue trigger and queue output
 ```csharp
 using Microsoft.Azure.Functions.Worker;
 
@@ -33,7 +44,7 @@ public class QueueFunctions
 }
 ```
 
-### Step 2 - Add blob and timer triggers
+### Step 3 - Add blob and timer triggers
 ```csharp
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
@@ -65,18 +76,20 @@ public class TimerFunctions
 }
 ```
 
-### Step 3 - Publish and send test events
+### Step 4 - Publish and send test events
 ```bash
 dotnet publish --configuration Release --output ./publish
-func azure functionapp publish "$APP_NAME" --dotnet-isolated
+func azure functionapp publish "$APP_NAME"
 
 az storage message put   --queue-name "work-items"   --content '{"id":"1001","action":"reindex"}'   --account-name "$STORAGE_NAME"   --auth-mode login
 ```
 
-### Step 4 - Review trigger execution
+### Step 5 - Review trigger execution
 ```bash
 az functionapp log tail   --name "$APP_NAME"   --resource-group "$RG"
 ```
+
+On Linux Consumption, `az functionapp log tail` can fail because scm/Kudu endpoints are not available. If streaming fails, query traces in Application Insights instead.
 
 ```mermaid
 flowchart TD
@@ -93,17 +106,13 @@ grep "ConfigureFunctionsWebApplication" "Program.cs"
 
 Confirm that HTTP functions use `HttpRequestData` and `HttpResponseData`, and that logging is constructor-injected with `ILogger<T>`.
 
-## Expected Output
+## Verification
 ```text
 Executing 'Functions.QueueProcessor' (Reason='New queue message detected on work-items.')
 Executed 'Functions.QueueProcessor' (Succeeded)
 Executing 'Functions.ScheduledCleanup' (Reason='Timer fired at 2026-04-06T10:00:00Z')
 Executed 'Functions.ScheduledCleanup' (Succeeded)
 ```
-## Next Steps
-
-> **Next:** [Platform: Architecture](../../../../platform/architecture.md)
-
 ## See Also
 - [Tutorial Overview & Plan Chooser](../index.md)
 - [.NET Language Guide](../../index.md)

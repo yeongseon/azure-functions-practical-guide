@@ -24,6 +24,18 @@ WORKSPACE_ID="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 
 ## Triage steps
 
+```mermaid
+flowchart TD
+    A[Incident starts] --> B[1. Platform and regional status]
+    B --> C[2. Live metrics: requests, failures, latency]
+    C --> D{Health endpoint healthy?}
+    D -->|No| E[4. Host logs in Log Analytics]
+    D -->|Yes| F[5. Recent deployments and config changes]
+    E --> F
+    F --> G[6. Scaling and backlog indicators]
+    G --> H[Route to targeted playbook]
+```
+
 ## 1) Check Azure status and regional incidents
 
 Rule out platform-wide issues first.
@@ -143,7 +155,7 @@ OnDemandFunctionExecutionUnits    PT1M       214
 ```
 
 !!! tip "FC1 Flex Consumption Metrics"
-    Flex Consumption plans use `OnDemandFunctionExecutionCount` and `OnDemandFunctionExecutionUnits` instead of `Requests` and `FunctionExecutionCount`. If the standard metrics return empty results, check these FC1-specific metric names.
+    Flex Consumption plans expose `OnDemandFunctionExecutionCount` and `OnDemandFunctionExecutionUnits` for execution tracking. `Requests` is still valid for HTTP traffic. If execution metrics are empty, use the FC1-specific execution metric names.
 
 ### How to Read This
 
@@ -208,7 +220,7 @@ curl: (28) Operation timed out after 10001 milliseconds with 0 bytes received
 |---|---|---|
 | `200` + healthy payload | Host is up; failure likely function-level or dependency-level | Move to Step 4 for function-specific evidence |
 | `503` | Host is running but critical dependency/function check failing | Inspect startup and dependency errors in Step 4 |
-| `null` state on FC1 | Normal for Flex Consumption — FC1 does not expose traditional state | Check function list and health endpoint instead |
+| `null` state on FC1 | Can occur on Flex Consumption depending on API surface/version; do not use this value alone for health judgment | Verify with health endpoint, function list, and host logs |
 | Timeout/no response | Host not responding (startup failure, networking, or platform path issue) | Prioritize host lifecycle and restart evidence in Step 4/5 |
 
 ### Next Query to Run
@@ -226,35 +238,35 @@ Look for startup, listener, and runtime errors in the incident window.
 
 Azure portal → **Log Analytics workspace** → **Logs**.
 
-Run `traces` and `exceptions` queries in the same time window used in prior steps.
+Run `AppTraces` and `AppExceptions` queries in the same time window used in prior steps.
 
 ### Check with Azure CLI
 
 ```bash
 az monitor log-analytics query \
   --workspace "$WORKSPACE_ID" \
-  --analytics-query "traces | where timestamp > ago(30m) | where cloud_RoleName =~ '$APP_NAME' | order by timestamp desc | take 100" \
+  --analytics-query "AppTraces | where TimeGenerated > ago(30m) | where AppRoleName =~ '$APP_NAME' | order by TimeGenerated desc | take 100" \
   --output table
 
 az monitor log-analytics query \
   --workspace "$WORKSPACE_ID" \
-  --analytics-query "exceptions | where timestamp > ago(30m) | where cloud_RoleName =~ '$APP_NAME' | summarize count() by type, outerMessage" \
+  --analytics-query "AppExceptions | where TimeGenerated > ago(30m) | where AppRoleName =~ '$APP_NAME' | summarize count() by ExceptionType, OuterMessage" \
   --output table
 ```
 
 ### Example Output
 
 ```text
-# traces (startup succeeded)
-timestamp                    message
+# AppTraces (startup succeeded)
+TimeGenerated                Message
 ---------------------------  ----------------------------------------------
 2026-04-04T11:32:26.390000Z  Starting Host (HostId=func-myapp-prod-xxxx, Version=4.1047.100.26071)
 2026-04-04T11:32:26.455000Z  Host started (64ms)
 2026-04-04T11:32:26.455000Z  Job host started
 2026-04-04T11:36:21.414000Z  Host lock lease acquired by instance ID 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
 
-# traces (problematic)
-timestamp                    message
+# AppTraces (problematic)
+TimeGenerated                Message
 ---------------------------  ----------------------------------------------
 2026-04-04T11:32:26.390000Z  Starting Host (HostId=func-myapp-prod-xxxx, Version=4.1047.100.26071)
 2026-04-04T11:32:46.000000Z  Host lock lease acquired by instance ID 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
@@ -352,6 +364,15 @@ Plot both on the same time axis.
 ```bash
 az monitor metrics list \
   --resource "/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RG/providers/Microsoft.Web/sites/$APP_NAME" \
+  --metric "FunctionExecutionCount" "FunctionExecutionUnits" \
+  --interval PT1M \
+  --aggregation Total \
+  --offset 30m \
+  --output table
+
+# Flex Consumption (FC1) execution metrics
+az monitor metrics list \
+  --resource "/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RG/providers/Microsoft.Web/sites/$APP_NAME" \
   --metric "OnDemandFunctionExecutionCount" "OnDemandFunctionExecutionUnits" \
   --interval PT1M \
   --aggregation Total \
@@ -384,7 +405,7 @@ QueueMessageCount  PT1M       860
 QueueMessageCount  PT1M       2140
 ```
 
-> **FC1 metric names:** Flex Consumption uses `OnDemandFunctionExecutionCount` / `OnDemandFunctionExecutionUnits`. Traditional plans use `FunctionExecutionCount` / `FunctionExecutionUnits`.
+> **Execution metric scope:** `OnDemandFunctionExecutionCount` / `OnDemandFunctionExecutionUnits` apply to Flex Consumption (FC1). For Y1, EP, and Dedicated, use `FunctionExecutionCount` / `FunctionExecutionUnits`. `Requests` remains valid for HTTP traffic across plans.
 
 ### How to Read This
 
@@ -423,8 +444,6 @@ Route to [Playbooks](playbooks.md) for trigger-specific mitigations and [Methodo
 - [Playbooks](playbooks.md)
 - [Methodology](methodology.md)
 - [KQL Query Library](kql.md)
-- [Azure Functions monitoring](https://learn.microsoft.com/azure/azure-functions/functions-monitoring)
-- [Azure Service Health overview](https://learn.microsoft.com/azure/service-health/overview)
 
 ## Sources
 

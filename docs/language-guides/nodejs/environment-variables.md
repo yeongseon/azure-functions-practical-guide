@@ -15,7 +15,8 @@ flowchart LR
 |---|---|---|
 | `FUNCTIONS_WORKER_RUNTIME` | Select language worker | `node` |
 | `FUNCTIONS_EXTENSION_VERSION` | Runtime major line | `~4` |
-| `WEBSITE_NODE_DEFAULT_VERSION` | Node version on Windows | `~20` |
+| `WEBSITE_NODE_DEFAULT_VERSION` | Node version on Windows workers only | `~20` |
+| `siteConfig.linuxFxVersion` | Node runtime stack on Linux workers | `Node|20` |
 | `languageWorkers__node__arguments` | Node process flags | `--max-old-space-size=4096` |
 | `AzureWebJobsStorage` | Host storage connection | Connection string or identity settings |
 | `APPLICATIONINSIGHTS_CONNECTION_STRING` | Telemetry ingestion target | `<connection-string>` |
@@ -23,8 +24,13 @@ flowchart LR
 ### Apply settings
 
 ```bash
-az functionapp config appsettings set   --name $APP_NAME   --resource-group $RG   --settings     "FUNCTIONS_WORKER_RUNTIME=node"     "FUNCTIONS_EXTENSION_VERSION=~4"     "WEBSITE_NODE_DEFAULT_VERSION=~20"     "languageWorkers__node__arguments=--max-old-space-size=4096"
+az functionapp config appsettings set --name $APP_NAME --resource-group $RG --settings "FUNCTIONS_WORKER_RUNTIME=node" "FUNCTIONS_EXTENSION_VERSION=~4" "WEBSITE_NODE_DEFAULT_VERSION=~20" "languageWorkers__node__arguments=--max-old-space-size=4096"
+az functionapp config appsettings set --name $APP_NAME --resource-group $RG --settings "FUNCTIONS_WORKER_RUNTIME=node" "FUNCTIONS_EXTENSION_VERSION=~4" "languageWorkers__node__arguments=--max-old-space-size=4096"
+az functionapp config set --name $APP_NAME --resource-group $RG --linux-fx-version "Node|20"
 ```
+
+- Windows apps use `WEBSITE_NODE_DEFAULT_VERSION`.
+- Linux apps use `siteConfig.linuxFxVersion` through `az functionapp config set --linux-fx-version "Node|20"`.
 
 ## Usage Notes
 

@@ -13,10 +13,23 @@ Set shared variables:
 ```bash
 RG="rg-myapp-prod"
 APP_NAME="func-myapp-prod"
+PLAN_NAME="plan-myapp-prod"
 SUBSCRIPTION_ID="<subscription-id>"
 APP_INSIGHTS_NAME="appi-myapp-prod"
 WORKSPACE_ID="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 STORAGE_NAME="stmyappprod"
+```
+
+```mermaid
+flowchart TD
+    A[Backlog or lag rising] --> B[Compare executions vs source backlog]
+    B --> C{Executions scaling with demand?}
+    C -->|No| D[Check listener and scale-controller signals]
+    C -->|Yes| E[Check dependency bottlenecks]
+    D --> F{Plan limit reached?}
+    F -->|Yes| G[Increase plan capacity]
+    F -->|No| H[Review host and trigger configuration]
+    E --> I[Target downstream service constraints]
 ```
 
 ## 1) Check Azure status and regional incidents
@@ -222,16 +235,14 @@ Misconfigured concurrency can bottleneck throughput even with many instances.
 ### Check with Azure CLI
 
 ```bash
+# Inspect general app and runtime site configuration
 az functionapp config show \
   --name "$APP_NAME" \
   --resource-group "$RG" \
-  --query "siteConfig.appSettings" \
-  --output table
+  --output json
 
-# Download host.json from deployment
-az rest --method get \
-  --url "https://$APP_NAME.scm.azurewebsites.net/api/vfs/site/wwwroot/host.json" \
-  --resource "https://management.azure.com"
+# host.json is not exposed by az functionapp config show.
+# Inspect host.json in the deployed package or via Kudu/SCM (site/wwwroot/host.json).
 ```
 
 ### How to Read This

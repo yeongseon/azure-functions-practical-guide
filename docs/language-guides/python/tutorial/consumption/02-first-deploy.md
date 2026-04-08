@@ -11,6 +11,10 @@ Deploy the app to Azure Functions Consumption (Y1) using long-form CLI commands 
 | Python | 3.11+ | Match local development runtime |
 | Azure subscription | Active | Target for deployment |
 
+## What You'll Build
+
+You will provision a Linux Consumption (Y1) Function App, publish the Python code from `apps/python`, and validate the public health endpoint.
+
 ## Steps
 
 ### Step 1 - Set variables and sign in
@@ -78,11 +82,7 @@ Consumption deployments are ZIP-based (run-from-package) and stored on the platf
 curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
 ```
 
-You can also open Kudu/SCM for diagnostics:
-
-```text
-https://$APP_NAME.scm.azurewebsites.net
-```
+Linux Consumption uses Zip Deploy, but Kudu advanced tools are not available on this hosting option.
 
 ```mermaid
 flowchart LR
@@ -100,10 +100,7 @@ flowchart LR
 !!! info "Not available on Consumption"
     Private endpoints require Flex Consumption, Premium, or Dedicated plan.
 
-!!! info "Consumption slot support"
-    Consumption (Y1) supports deployment slots (2 total, including production).
-
-## Expected Output
+## Verification
 
 ### Expected output when policy allows shared key access
 
@@ -136,7 +133,7 @@ Health response:
 {"status":"healthy","timestamp":"2026-04-03T09:20:00Z","version":"1.0.0"}
 ```
 
-### Deployment Verification Results
+### Verification notes
 
 !!! warning "Blocked by enterprise policy"
     In our Korea Central deployment, Y1 Consumption was blocked during provisioning. The subscription's Azure Policy enforced `allowSharedKeyAccess: false` on the storage account, which prevented the platform from creating the required content file share.
@@ -172,4 +169,4 @@ Next, configure settings and behavior specific to Consumption using classic app 
 
 - [Create a function app in Azure using CLI](https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-python)
 - [Azure Functions deployment technologies](https://learn.microsoft.com/azure/azure-functions/functions-deployment-technologies)
-- [Kudu service overview](https://github.com/projectkudu/kudu/wiki)
+- [Deployment slots in Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-deployment-slots)

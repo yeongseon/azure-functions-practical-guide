@@ -13,6 +13,11 @@ Deploy repeatable infrastructure with Bicep and parameterized environments.
 !!! info "Plan basics"
     Premium provides always-warm instances, VNet integration, deployment slots, and unlimited timeout support.
 
+## What You'll Build
+
+You will deploy the complete Premium infrastructure stack from Bicep, including storage, hosting plan, and Linux Function App resources.
+You will then verify the deployment state using Azure Resource Manager deployment metadata.
+
 ## Steps
 
 ```mermaid
@@ -23,49 +28,97 @@ flowchart LR
     D --> E[Trigger execution]
 ```
 
-
 ### Step 1 - Define Bicep template
+
+Below is a simplified Premium template showing key resources. The repository template at `infra/premium/main.bicep` adds VNet integration, private endpoints, private DNS, and full RBAC configuration using a single `baseName` parameter.
 
 ```bicep
 param location string = resourceGroup().location
-param appName string
-param storageName string
-param planName string = 'plan-node-premium'
+param baseName string
+
+var functionAppName = '${baseName}-func'
+var storageAccountName = toLower(replace('${baseName}storage', '-', ''))
+var appServicePlanName = '${baseName}-plan'
+var contentShareName = toLower(replace('${baseName}-content', '-', ''))
 
 resource storage 'Microsoft.Storage/storageAccounts@2023-05-01' = {
-  name: storageName
+  name: storageAccountName
   location: location
   sku: { name: 'Standard_LRS' }
   kind: 'StorageV2'
+}
+
+resource plan 'Microsoft.Web/serverfarms@2024-04-01' = {
+  name: appServicePlanName
+  location: location
+  sku: {
+    name: 'EP1'
+    tier: 'ElasticPremium'
+  }
+  kind: 'elastic'
+  properties: {
+    reserved: true
+  }
+}
+
+resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
+  name: functionAppName
+  location: location
+  kind: 'functionapp,linux'
+  identity: {
+    type: 'SystemAssigned'
+  }
+  properties: {
+    serverFarmId: plan.id
+    httpsOnly: true
+    siteConfig: {
+      linuxFxVersion: 'NODE|20'
+      appSettings: [
+        { name: 'FUNCTIONS_EXTENSION_VERSION'; value: '~4' }
+        { name: 'FUNCTIONS_WORKER_RUNTIME'; value: 'node' }
+        { name: 'AzureWebJobsStorage__accountName'; value: storage.name }
+        { name: 'AzureWebJobsStorage__credential'; value: 'managedidentity' }
+        { name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'; value: '...' }
+        { name: 'WEBSITE_CONTENTSHARE'; value: contentShareName }
+      ]
+    }
+  }
 }
 ```
 
 ### Step 2 - Deploy template
 
 ```bash
-az deployment group create --resource-group $RG --template-file infra/main.bicep --parameters appName=$APP_NAME storageName=$STORAGE_NAME planName=$PLAN_NAME
+az deployment group create --resource-group $RG --template-file infra/premium/main.bicep --parameters baseName=$BASE_NAME
 ```
 
-### Step 3 - Publish code package
+### Step 3 - Verify deployment state
 
 ```bash
-func azure functionapp publish $APP_NAME
+az deployment group show --resource-group $RG --name main --output json
 ```
-
 
 ### Plan-specific notes
 
+- Premium plans require Azure Files content share settings (`WEBSITE_CONTENTAZUREFILECONNECTIONSTRING` and `WEBSITE_CONTENTSHARE`) for standard content storage behavior.
+- The repository template (`infra/premium/main.bicep`) includes full VNet integration with private endpoints and DNS zones, plus RBAC role assignments for identity-based storage.
 - Use an EP plan such as EP1 and configure always-ready capacity for low-latency APIs.
 - Use long-form CLI flags for maintainable runbooks.
-- Keep `FUNCTIONS_WORKER_RUNTIME=node` across all environments.
 
-## Expected Output
+## Verification
 
-```text
-Functions:
-    helloHttp: [GET] http://localhost:7071/api/hello/{name?}
+```json
+{
+  "name": "main",
+  "properties": {
+    "provisioningState": "Succeeded",
+    "mode": "Incremental",
+    "timestamp": "2026-04-08T08:40:03.0000000Z"
+  }
+}
 ```
 
+A `Succeeded` provisioning state confirms the Bicep deployment completed for the selected plan.
 
 ## See Also
 - [Tutorial Overview & Plan Chooser](../index.md)

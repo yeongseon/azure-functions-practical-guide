@@ -2,6 +2,16 @@
 
 Quick reference for the most commonly used commands when developing, deploying, and managing Azure Functions Python apps.
 
+```mermaid
+flowchart LR
+    A[Local dev] --> B[Deploy]
+    B --> C[Configure]
+    C --> D[Monitor]
+    D --> E[Troubleshoot]
+    A --> F[func]
+    B --> G[az functionapp]
+```
+
 ## Azure Functions Core Tools (`func`)
 
 The `func` CLI is used for local development, testing, and deploying function apps.
@@ -296,10 +306,10 @@ az monitor metrics alert create \
   --condition "total Http5xx > 10" \
   --window-size 5m
 
-# Query Application Insights logs
-az monitor app-insights query \
-  --app your-appinsights \
-  --analytics-query "requests | take 10"
+# Query logs from a Log Analytics workspace
+az monitor log-analytics query \
+  --workspace "<log-analytics-workspace-id>" \
+  --analytics-query "AppRequests | take 10"
 
 # List metrics
 az monitor metrics list \

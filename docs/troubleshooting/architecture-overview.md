@@ -210,7 +210,8 @@ sequenceDiagram
 
 - Slow first invocation can come from platform work before your handler begins.
 - A healthy steady-state p95 does not disprove cold start.
-- Premium reduces but does not eliminate initialization cost.
+- Cold-start impact is workload-dependent and should be treated as a range (often sub-second to several seconds), not a fixed single value.
+- Premium reduces but does not eliminate initialization cost; tune always-ready and prewarmed instance capacity for burst scenarios.
 - Queue or Event Hub workloads can show cold-start symptoms as delayed event pickup instead of slow HTTP response.
 
 ### Cold-start failure points
@@ -226,8 +227,8 @@ sequenceDiagram
 ### Cold-start diagnostic commands
 
 ```bash
-az monitor app-insights query --app "<app-insights-name>" --resource-group "<resource-group>" --analytics-query "traces | where timestamp > ago(2h) | where message has_any ('Initializing Host','Host started','Generating 0 job function','Starting JobHost') | project timestamp, cloud_RoleInstance, message | order by timestamp desc" --output table
-az monitor app-insights query --app "<app-insights-name>" --resource-group "<resource-group>" --analytics-query "requests | where timestamp > ago(2h) | summarize p50=percentile(duration,50), p95=percentile(duration,95), maxDuration=max(duration) by bin(timestamp, 5m) | order by timestamp desc" --output table
+az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "AppTraces | where TimeGenerated > ago(2h) | where Message has_any ('Initializing Host','Host started','Generating 0 job function','Starting JobHost') | project TimeGenerated, AppRoleInstance, Message | order by TimeGenerated desc" --output table
+az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "AppRequests | where TimeGenerated > ago(2h) | summarize p50=percentile(DurationMs,50), p95=percentile(DurationMs,95), maxDuration=max(DurationMs) by bin(TimeGenerated, 5m) | order by TimeGenerated desc" --output table
 az functionapp config appsettings list --resource-group "<resource-group>" --name "<app-name>" --output table
 ```
 
@@ -290,7 +291,7 @@ stateDiagram-v2
 
 ```bash
 az functionapp function list --resource-group "<resource-group>" --name "<app-name>" --output table
-az monitor app-insights query --app "<app-insights-name>" --resource-group "<resource-group>" --analytics-query "traces | where timestamp > ago(2h) | where message has_any ('DurableTask','orchestration','replay','activity') | project timestamp, severityLevel, message | order by timestamp desc" --output table
+az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "AppTraces | where TimeGenerated > ago(2h) | where Message has_any ('DurableTask','orchestration','replay','activity') | project TimeGenerated, SeverityLevel, Message | order by TimeGenerated desc" --output table
 az storage queue list --account-name "<storage-name>" --auth-mode login --output table
 az storage table list --account-name "<storage-name>" --auth-mode login --output table
 ```
@@ -345,8 +346,8 @@ az functionapp config appsettings list --resource-group "<resource-group>" --nam
 az functionapp function list --resource-group "<resource-group>" --name "<app-name>" --output table
 az monitor activity-log list --resource-group "<resource-group>" --offset 24h --max-events 100 --output table
 az monitor metrics list --resource "/subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.Web/sites/<app-name>" --metric "Requests,Http5xx,FunctionExecutionCount,FunctionExecutionUnits" --interval PT1M --aggregation "Total,Average,Maximum" --offset 2h --output table
-az monitor app-insights query --app "<app-insights-name>" --resource-group "<resource-group>" --analytics-query "requests | where timestamp > ago(2h) | summarize total=count(), failed=countif(success == false), p95=percentile(duration,95) by bin(timestamp, 5m) | order by timestamp asc" --output table
-az monitor app-insights query --app "<app-insights-name>" --resource-group "<resource-group>" --analytics-query "dependencies | where timestamp > ago(2h) | summarize failed=countif(success == false), p95=percentile(duration,95) by target | order by failed desc" --output table
+az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "AppRequests | where TimeGenerated > ago(2h) | summarize total=count(), failed=countif(Success == false), p95=percentile(DurationMs,95) by bin(TimeGenerated, 5m) | order by TimeGenerated asc" --output table
+az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "AppDependencies | where TimeGenerated > ago(2h) | summarize failed=countif(Success == false), p95=percentile(DurationMs,95) by Target | order by failed desc" --output table
 ```
 
 ## 8) Fast routing examples

@@ -74,10 +74,10 @@ Before testing, map each hypothesis to the minimum evidence set.
 
 | Hypothesis Type | Evidence Needed | Tool | Example Query |
 |---|---|---|---|
-| Request failure is application logic | 5xx trend + top exception type | Log Analytics (`requests`, `exceptions`) | `requests | where timestamp > ago(30m) | where resultCode startswith "5" | summarize count() by operation_Name` |
-| Host startup regression after change | Startup lifecycle logs + deploy timestamp | Log Analytics (`traces`) + Activity Log | `traces | where timestamp > ago(30m) | where message has "Host started" or message has "Starting Host"` |
+| Request failure is application logic | 5xx trend + top exception type | Log Analytics (`AppRequests`, `AppExceptions`) | `AppRequests | where TimeGenerated > ago(30m) | where ResultCode startswith "5" | summarize count() by OperationName` |
+| Host startup regression after change | Startup lifecycle logs + deploy timestamp | Log Analytics (`AppTraces`) + Activity Log | `AppTraces | where TimeGenerated > ago(30m) | where Message has "Host started" or Message has "Starting Host"` |
 | Outbound dependency timeout | Failed dependency calls by target | Application Insights (`dependencies`) | `dependencies | where timestamp > ago(30m) | where success == false | summarize count(), avg(duration) by target, type` |
-| Trigger listener unhealthy | Listener/lock/trigger errors | Log Analytics (`traces`) | `traces | where timestamp > ago(30m) | where message has_any ("listener", "Host lock", "trigger")` |
+| Trigger listener unhealthy | Listener/lock/trigger errors | Log Analytics (`AppTraces`) | `AppTraces | where TimeGenerated > ago(30m) | where Message has_any ("listener", "Host lock", "trigger")` |
 | Scale bottleneck on event trigger | Backlog growth vs execution flatline | Azure Monitor Metrics | `az monitor metrics list --resource "/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RG/providers/Microsoft.Web/sites/$APP_NAME" --metric "FunctionExecutionCount" --interval PT1M --aggregation Total --offset 30m` |
 
 ## 3) Test
@@ -171,11 +171,10 @@ flowchart TD
 - [First 10 Minutes](first-10-minutes.md)
 - [Playbooks](playbooks.md)
 - [KQL Query Library](kql.md)
-- [Azure Monitor overview](https://learn.microsoft.com/azure/azure-monitor/overview)
-- [Azure Functions monitoring](https://learn.microsoft.com/azure/azure-functions/functions-monitoring)
 
 ## Sources
 
 - [Monitor Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-monitoring)
 - [Configure monitoring for Azure Functions](https://learn.microsoft.com/azure/azure-functions/configure-monitoring)
 - [Troubleshoot Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-recover-from-failed-host)
+- [Azure Monitor overview](https://learn.microsoft.com/azure/azure-monitor/overview)

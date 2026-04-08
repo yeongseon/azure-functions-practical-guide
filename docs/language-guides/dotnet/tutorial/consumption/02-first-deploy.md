@@ -14,6 +14,10 @@ Deploy your .NET isolated worker app to the Consumption plan with long-form Azur
     Consumption (Y1) scales to zero and charges per execution. It has a default 5-minute timeout and up to 10 minutes maximum per execution.
     No VNet integration on this plan.
 
+## What You'll Build
+
+A Linux Consumption Function App running the .NET isolated worker, deployed from your local project with Core Tools, then validated through the `Health` HTTP endpoint using a function key.
+
 ## Steps
 ### Step 1 - Set deployment variables
 ```bash
@@ -48,12 +52,12 @@ az functionapp create \
 ```bash
 dotnet build
 dotnet publish --configuration Release --output ./publish
-func azure functionapp publish "$APP_NAME" --dotnet-isolated
+func azure functionapp publish "$APP_NAME"
 ```
 
 ### Step 4 - Verify the endpoint
 ```bash
-curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
+curl "https://$APP_NAME.azurewebsites.net/api/health?code=$(az functionapp keys list --resource-group $RG --name $APP_NAME --query 'functionKeys.default' --output tsv)"
 ```
 
 ```mermaid
@@ -71,18 +75,10 @@ grep "ConfigureFunctionsWebApplication" "Program.cs"
 
 Confirm that HTTP functions use `HttpRequestData` and `HttpResponseData`, and that logging is constructor-injected with `ILogger<T>`.
 
-## Expected Output
+## Verification
 ```json
-{
-  "state": "Running",
-  "kind": "functionapp,linux",
-  "defaultHostName": "func-dotnet-<plan>-demo.azurewebsites.net"
-}
+{"status":"healthy"}
 ```
-## Next Steps
-
-> **Next:** [03 - Configuration](03-configuration.md)
-
 ## See Also
 - [Tutorial Overview & Plan Chooser](../index.md)
 - [.NET Language Guide](../../index.md)

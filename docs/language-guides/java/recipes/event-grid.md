@@ -1,55 +1,78 @@
 # Event Grid Trigger
 
-React to resource events with Event Grid routing and idempotent Java handlers.
+This recipe uses native Event Grid bindings in Java with `@EventGridTrigger` to process cloud events without HTTP trigger shims.
 
-## Main Pattern
+## Architecture
 
 ```mermaid
 flowchart LR
-    A[Inbound event/request] --> B[Java function method]
-    B --> C[Business logic]
-    C --> D[Output binding or response]
+    SOURCE[Storage account events] --> TOPIC[Event Grid topic/system topic]
+    TOPIC --> SUB[Event subscription]
+    SUB --> FUNC[@EventGridTrigger handler]
+    FUNC --> ACTION[Business action]
 ```
 
-### Java implementation example
+## Prerequisites
+
+Create subscription from a Storage account to a Function endpoint:
+
+```bash
+STORAGE_ID=$(az storage account show --name $STORAGE_NAME --resource-group $RG --query id --output tsv)
+
+az eventgrid event-subscription create \
+  --name storage-to-function \
+  --source-resource-id $STORAGE_ID \
+  --endpoint-type azurefunction \
+  --endpoint "/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RG/providers/Microsoft.Web/sites/$APP_NAME/functions/handleEventGrid"
+```
+
+## Java implementation
 
 ```java
-@FunctionName("EventGridTrigger")
-public HttpResponseMessage run(
-    @HttpTrigger(name = "req", methods = {HttpMethod.GET, HttpMethod.POST}, authLevel = AuthorizationLevel.FUNCTION, route = "sample/{id?}")
-    HttpRequestMessage<Optional<String>> request,
-    @BindingName("id") String id,
-    final ExecutionContext context) {
+package com.contoso.functions;
 
-    context.getLogger().info("recipe=event-grid.md id=" + id);
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.microsoft.azure.functions.ExecutionContext;
+import com.microsoft.azure.functions.annotation.EventGridTrigger;
+import com.microsoft.azure.functions.annotation.FunctionName;
 
-    return request.createResponseBuilder(HttpStatus.OK)
-        .body("ok")
-        .build();
+public class EventGridFunctions {
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+
+    @FunctionName("handleEventGrid")
+    public void handleEventGrid(
+        @EventGridTrigger(name = "event") String event,
+        final ExecutionContext context
+    ) throws Exception {
+        JsonNode eventJson = MAPPER.readTree(event);
+        String eventType = eventJson.path("eventType").asText();
+        String subject = eventJson.path("subject").asText();
+        String dataVersion = eventJson.path("dataVersion").asText();
+
+        context.getLogger().info(
+            "Event Grid event received: eventType=" + eventType +
+            ", subject=" + subject +
+            ", dataVersion=" + dataVersion
+        );
+    }
 }
 ```
 
-### Operational checklist
+## Implementation notes
 
-1. Validate inputs and return explicit status codes.
-2. Keep handlers idempotent for retry-safe operations.
-3. Emit structured logs with correlation identifiers.
-4. Keep secrets out of source code and local settings files.
-
-## Validation
-
-```bash
-mvn clean package
-mvn azure-functions:run
-```
+- Use `@EventGridTrigger`, not `@HttpTrigger`, for Event Grid function handlers.
+- Handle both `Microsoft.EventGrid.SubscriptionValidationEvent` and business events.
+- Keep handlers idempotent because duplicate event delivery can occur.
+- Route by `eventType` and `subject` to isolate processing paths.
 
 ## See Also
 
-- [Recipes Index](index.md)
-- [Annotation Programming Model](../annotation-programming-model.md)
-- [Java Runtime](../java-runtime.md)
+- [Queue Storage Integration](queue.md)
+- [Blob Storage Integration](blob-storage.md)
+- [Durable Orchestration](durable-orchestration.md)
 
 ## Sources
 
-- [Azure Functions Java developer guide (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-reference-java)
-- [Azure Functions triggers and bindings (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings)
+- [Event Grid trigger for Azure Functions (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-bindings-event-grid-trigger)
+- [Create event subscriptions with Azure CLI (Microsoft Learn)](https://learn.microsoft.com/azure/event-grid/create-view-manage-event-subscriptions-cli)

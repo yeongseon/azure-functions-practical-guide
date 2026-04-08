@@ -2,39 +2,48 @@
 
 KQL queries for correlating signals across telemetry sources to connect symptoms to root causes.
 
+```mermaid
+flowchart LR
+    A[Collect OperationId] --> B[Query AppRequests]
+    B --> C[Join dependencies]
+    C --> D[Join exceptions and traces]
+    D --> E[Build timeline]
+    E --> F[Validate root-cause hypothesis]
+```
+
 ## Single invocation correlation
 
-Use when you already have an `operation_Id` from a failed request.
+Use when you already have an `OperationId` from a failed request.
 
 ```kusto
 let opId = "<operation-id>";
 union isfuzzy=true
 (
-    requests
-    | where operation_Id == opId
-    | project timestamp, itemType="request", name=operation_Name, success, resultCode, duration, details=tostring(url)
+    AppRequests
+    | where OperationId == opId
+    | project TimeGenerated, itemType="request", name=OperationName, success, ResultCode, duration, details=tostring(url)
 ),
 (
-    dependencies
-    | where operation_Id == opId
-    | project timestamp, itemType="dependency", name=target, success, resultCode, duration, details=tostring(data)
+    AppDependencies
+    | where OperationId == opId
+    | project TimeGenerated, itemType="dependency", name=target, success, ResultCode, duration, details=tostring(data)
 ),
 (
-    exceptions
-    | where operation_Id == opId
-    | project timestamp, itemType="exception", name=type, success=bool(false), resultCode="", duration=timespan(null), details=outerMessage
+    AppExceptions
+    | where OperationId == opId
+    | project TimeGenerated, itemType="exception", name=type, success=bool(false), ResultCode="", duration=real(null), details=outerMessage
 ),
 (
-    traces
-    | where operation_Id == opId
-    | project timestamp, itemType="trace", name="trace", success=bool(true), resultCode="", duration=timespan(null), details=message
+    AppTraces
+    | where OperationId == opId
+    | project TimeGenerated, itemType="trace", name="trace", success=bool(true), ResultCode="", duration=real(null), details=Message
 )
-| order by timestamp asc
+| order by TimeGenerated asc
 ```
 
 **Example result:**
 
-| timestamp | itemType | name | success | resultCode | duration | details |
+| TimeGenerated | itemType | name | success | ResultCode | duration | details |
 |---|---|---|---|---|---|---|
 | 2026-04-04T11:32:30.000Z | request | Functions.ErrorHandler | false | 500 | 12.80 | https://func-myapp-prod.azurewebsites.net/api/exceptions/unhandled |
 | 2026-04-04T11:32:30.000Z | trace | trace | true |  |  | Executing 'Functions.ErrorHandler' (Reason='This function was programmatically called via the host APIs.', Id=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx) |
@@ -53,7 +62,7 @@ union isfuzzy=true
 !!! note "Normal vs abnormal"
     **Normal:** Request and dependencies succeed, no exception event, short timeline.
 
-    **Abnormal:** Request failure follows dependency `403` and exception record in the same `operation_Id`, proving downstream auth or connectivity as root cause.
+    **Abnormal:** Request failure follows dependency `403` and exception record in the same `OperationId`, proving downstream auth or connectivity as root cause.
 
 ## Latency vs error correlation
 
@@ -61,21 +70,21 @@ Correlate rising latency with rising error rates to identify whether latency pre
 
 ```kusto
 let appName = "func-myapp-prod";
-requests
-| where timestamp > ago(2h)
-| where cloud_RoleName =~ appName
-| where operation_Name startswith "Functions."
+AppRequests
+| where TimeGenerated > ago(2h)
+| where AppRoleName =~ appName
+| where OperationName startswith "Functions."
 | summarize
-    P95Ms = percentile(duration, 95),
+    P95Ms = round(percentile(duration, 95), 2),
     ErrorRate = round(100.0 * countif(success == false) / count(), 2),
     Invocations = count()
-  by bin(timestamp, 5m)
-| order by timestamp asc
+  by bin(TimeGenerated, 5m)
+| order by TimeGenerated asc
 ```
 
 **Example result:**
 
-| timestamp | P95Ms | ErrorRate | Invocations |
+| TimeGenerated | P95Ms | ErrorRate | Invocations |
 |---|---|---|---|
 | 2026-04-04T10:00:00Z | 245 | 0.00 | 120 |
 | 2026-04-04T10:05:00Z | 280 | 0.00 | 135 |
@@ -101,20 +110,20 @@ Correlate host restart events with latency spikes to identify whether restarts c
 
 ```kusto
 let appName = "func-myapp-prod";
-let restarts = traces
-| where timestamp > ago(6h)
-| where cloud_RoleName =~ appName
-| where message has "Host started"
-| summarize RestartCount = count() by bin(timestamp, 5m);
-let latency = requests
-| where timestamp > ago(6h)
-| where cloud_RoleName =~ appName
-| where operation_Name startswith "Functions."
-| summarize P95Ms = percentile(duration, 95), Invocations = count() by bin(timestamp, 5m);
+let restarts = AppTraces
+| where TimeGenerated > ago(6h)
+| where AppRoleName =~ appName
+| where Message has "Host started"
+| summarize RestartCount = count() by bin(TimeGenerated, 5m);
+let latency = AppRequests
+| where TimeGenerated > ago(6h)
+| where AppRoleName =~ appName
+| where OperationName startswith "Functions."
+| summarize P95Ms = round(percentile(duration, 95), 2), Invocations = count() by bin(TimeGenerated, 5m);
 restarts
-| join kind=fullouter latency on timestamp
-| project timestamp = coalesce(timestamp, timestamp1), RestartCount = coalesce(RestartCount, 0), P95Ms = coalesce(P95Ms, 0.0), Invocations = coalesce(Invocations, 0)
-| order by timestamp asc
+| join kind=fullouter latency on TimeGenerated
+| project TimeGenerated = coalesce(TimeGenerated, TimeGenerated1), RestartCount = coalesce(RestartCount, 0), P95Ms = coalesce(P95Ms, 0.0), Invocations = coalesce(Invocations, 0)
+| order by TimeGenerated asc
 ```
 
 **How to interpret:**

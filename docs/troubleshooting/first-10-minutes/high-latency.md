@@ -18,6 +18,18 @@ APP_INSIGHTS_NAME="appi-myapp-prod"
 WORKSPACE_ID="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 ```
 
+```mermaid
+flowchart TD
+    A[High latency reported] --> B[Check regional/platform status]
+    B --> C[Latency trend by function]
+    C --> D{Cold start correlation?}
+    D -->|Yes| E[Plan-specific cold-start mitigation]
+    D -->|No| F[Dependency latency analysis]
+    F --> G{Timeout signatures present?}
+    G -->|Yes| H[Apply timeout/architecture mitigation]
+    G -->|No| I[Check recent deployments]
+```
+
 ## 1) Check Azure status and regional incidents
 
 Rule out platform-wide latency degradation.
@@ -115,9 +127,9 @@ traces
 | FC1 with many startups + low latency | Normal Flex Consumption scaling | No action needed |
 
 !!! tip "Plan-specific cold start behavior"
-    - **Consumption (Y1)**: Cold starts after idle (typically 20min). P95 impact 1-10s.
-    - **Flex Consumption (FC1)**: Instance provisioning ~363ms host startup, but end-to-end 30+s possible.
-    - **Premium (EP)**: Pre-warmed instances eliminate most cold starts. If seeing cold starts, check `minimumInstanceCount`.
+    - **Consumption (Y1)**: Cold starts after idle periods are expected, and first-hit latency is commonly in the seconds range.
+    - **Flex Consumption (FC1)**: Cold-start impact is generally reduced versus Y1, but startup-related tail latency can still appear under bursts.
+    - **Premium (EP)**: Always-ready/prewarmed capacity reduces cold-start risk. If cold starts appear, review always-ready and prewarmed instance configuration.
     - **Dedicated**: No cold starts unless app restarts.
 
 ## 4) Check dependency latency
@@ -166,8 +178,8 @@ Azure Functions have hard execution timeouts that vary by plan.
 | Plan | Default Timeout | Maximum Timeout |
 |---|---|---|
 | Consumption (Y1) | 5 minutes | 10 minutes |
-| Flex Consumption (FC1) | 30 minutes | — |
-| Premium (EP) | 30 minutes | 60 minutes (unlimited with `host.json`) |
+| Flex Consumption (FC1) | 30 minutes | Up to 4 hours |
+| Premium (EP) | 30 minutes | Unlimited |
 | Dedicated | 30 minutes | Unlimited |
 
 ### Check with KQL

@@ -13,6 +13,11 @@ Manage environment settings, runtime options, and host behavior per environment.
 !!! info "Plan basics"
     Dedicated runs on App Service plans (B1/S1/P1v3), supports Always On, and behaves like traditional web app hosting.
 
+## What You'll Build
+
+You will apply required app settings for the Node.js worker and runtime extension, then validate effective settings in Azure.
+You will also tune host-level timeout behavior appropriate for the Dedicated plan characteristics.
+
 ## Steps
 
 ```mermaid
@@ -23,11 +28,10 @@ flowchart LR
     D --> E[Trigger execution]
 ```
 
-
 ### Step 1 - Configure app settings
 
 ```bash
-az functionapp config appsettings set   --name $APP_NAME   --resource-group $RG   --settings     "FUNCTIONS_WORKER_RUNTIME=node"     "FUNCTIONS_EXTENSION_VERSION=~4"     "WEBSITE_NODE_DEFAULT_VERSION=~20"     "languageWorkers__node__arguments=--max-old-space-size=4096"
+az functionapp config appsettings set --name $APP_NAME --resource-group $RG --settings "FUNCTIONS_WORKER_RUNTIME=node" "FUNCTIONS_EXTENSION_VERSION=~4" "languageWorkers__node__arguments=--max-old-space-size=4096"
 ```
 
 ### Step 2 - Configure host timeout
@@ -45,20 +49,23 @@ az functionapp config appsettings set   --name $APP_NAME   --resource-group $RG 
 az functionapp config appsettings list --name $APP_NAME --resource-group $RG --output table
 ```
 
-
 ### Plan-specific notes
 
-- Enable Always On for non-trivial workloads to avoid app unload behavior.
+- Dedicated does not require Azure Files content share settings for zip-based deployments (`WEBSITE_RUN_FROM_PACKAGE=1`).
+- Enable Always On for non-HTTP triggers so timer, queue, and blob workloads stay active.
 - Use long-form CLI flags for maintainable runbooks.
-- Keep `FUNCTIONS_WORKER_RUNTIME=node` across all environments.
 
-## Expected Output
+## Verification
 
 ```text
-Functions:
-    helloHttp: [GET] http://localhost:7071/api/hello/{name?}
+Name                               Value
+---------------------------------  --------------------------------
+FUNCTIONS_WORKER_RUNTIME           node
+FUNCTIONS_EXTENSION_VERSION        ~4
+languageWorkers__node__arguments   --max-old-space-size=4096
 ```
 
+The table confirms required Node.js worker settings are applied to the deployed app.
 
 ## See Also
 - [Tutorial Overview & Plan Chooser](../index.md)

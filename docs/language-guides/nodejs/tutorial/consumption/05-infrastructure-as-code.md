@@ -13,6 +13,10 @@ Deploy repeatable infrastructure with Bicep and parameterized environments.
 !!! info "Plan basics"
     Consumption scales to zero automatically, does not support VNet integration, and defaults to a 5-minute timeout with a 10-minute maximum.
 
+## What You'll Build
+
+You will deploy a repeatable Consumption infrastructure stack with Bicep and validate successful resource provisioning.
+
 ## Steps
 
 ```mermaid
@@ -26,11 +30,13 @@ flowchart LR
 
 ### Step 1 - Define Bicep template
 
+Use this minimal example for Consumption (Y1). For the full production template, use `infra/consumption/main.bicep`.
+
 ```bicep
 param location string = resourceGroup().location
 param appName string
 param storageName string
-param planName string = 'plan-node-consumption'
+var planName = '${appName}-plan'
 
 resource storage 'Microsoft.Storage/storageAccounts@2023-05-01' = {
   name: storageName
@@ -38,12 +44,59 @@ resource storage 'Microsoft.Storage/storageAccounts@2023-05-01' = {
   sku: { name: 'Standard_LRS' }
   kind: 'StorageV2'
 }
+
+resource plan 'Microsoft.Web/serverfarms@2024-04-01' = {
+  name: planName
+  location: location
+  sku: {
+    name: 'Y1'
+    tier: 'Dynamic'
+  }
+  properties: {
+    reserved: true
+  }
+}
+
+resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
+  name: appName
+  location: location
+  kind: 'functionapp,linux'
+  properties: {
+    serverFarmId: plan.id
+    httpsOnly: true
+    siteConfig: {
+      linuxFxVersion: 'NODE|20'
+      appSettings: [
+        {
+          name: 'FUNCTIONS_EXTENSION_VERSION'
+          value: '~4'
+        }
+        {
+          name: 'FUNCTIONS_WORKER_RUNTIME'
+          value: 'node'
+        }
+        {
+          name: 'AzureWebJobsStorage'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${storage.name};AccountKey=${listKeys(storage.id, storage.apiVersion).keys[0].value};EndpointSuffix=${environment().suffixes.storage}'
+        }
+        {
+          name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${storage.name};AccountKey=${listKeys(storage.id, storage.apiVersion).keys[0].value};EndpointSuffix=${environment().suffixes.storage}'
+        }
+        {
+          name: 'WEBSITE_CONTENTSHARE'
+          value: toLower('${appName}-content')
+        }
+      ]
+    }
+  }
+}
 ```
 
 ### Step 2 - Deploy template
 
 ```bash
-az deployment group create --resource-group $RG --template-file infra/main.bicep --parameters appName=$APP_NAME storageName=$STORAGE_NAME planName=$PLAN_NAME
+az deployment group create --resource-group $RG --template-file infra/consumption/main.bicep --parameters baseName=$APP_NAME
 ```
 
 ### Step 3 - Publish code package
@@ -59,11 +112,27 @@ func azure functionapp publish $APP_NAME
 - Use long-form CLI flags for maintainable runbooks.
 - Keep `FUNCTIONS_WORKER_RUNTIME=node` across all environments.
 
-## Expected Output
+## Verification
 
-```text
-Functions:
-    helloHttp: [GET] http://localhost:7071/api/hello/{name?}
+```json
+{
+  "id": "/subscriptions/<subscription-id>/resourceGroups/$RG/providers/Microsoft.Resources/deployments/main",
+  "name": "main",
+  "properties": {
+    "provisioningState": "Succeeded",
+    "mode": "Incremental",
+    "outputs": {
+      "functionAppName": {
+        "type": "String",
+        "value": "$APP_NAME-func"
+      },
+      "functionAppUrl": {
+        "type": "String",
+        "value": "https://$APP_NAME-func.azurewebsites.net"
+      }
+    }
+  }
+}
 ```
 
 

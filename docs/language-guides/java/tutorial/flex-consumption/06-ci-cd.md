@@ -22,6 +22,12 @@ flowchart LR
     D --> E[Smoke test]
 ```
 
+## What You'll Build
+
+- A GitHub Actions workflow that builds and deploys Java Functions with Maven.
+- A post-deployment smoke test that validates function-key protected access.
+- A release verification routine using Function App runtime metadata.
+
 ## Steps
 
 ### Step 1 - Store deployment secrets in GitHub
@@ -62,16 +68,18 @@ jobs:
 ### Step 3 - Add post-deployment smoke test
 
 ```bash
-curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
+FUNCTION_KEY=$(az functionapp function keys list --name $APP_NAME --resource-group $RG --function-name Health --query default --output tsv)
+curl --request GET "https://$APP_NAME.azurewebsites.net/api/health?code=$FUNCTION_KEY"
 ```
 
 ### Step 4 - Track release history
 
 ```bash
-az functionapp deployment source show --name $APP_NAME --resource-group $RG
+az functionapp show --name $APP_NAME --resource-group $RG --query "{state:state, host:defaultHostName, kind:kind}" --output table
+az functionapp function list --name $APP_NAME --resource-group $RG --output table
 ```
 
-## Expected Output
+## Verification
 
 ```text
 [INFO] BUILD SUCCESS

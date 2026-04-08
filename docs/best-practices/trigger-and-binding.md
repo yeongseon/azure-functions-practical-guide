@@ -15,7 +15,7 @@ flowchart LR
     B --> D[Downstream service]
 ```
 
-## Trigger selection by use case
+## Why This Matters
 
 | Use case | Preferred trigger | Why | Watch-outs |
 |---|---|---|---|
@@ -29,7 +29,9 @@ flowchart LR
 !!! tip "Trigger-first design"
     Choose trigger based on delivery semantics first, then optimize language/runtime implementation details.
 
-## Plan-trigger compatibility guidance
+## Recommended Practices
+
+### Plan-trigger compatibility guidance
 
 This matrix is operational guidance, not a hard capability list.
 
@@ -45,7 +47,7 @@ This matrix is operational guidance, not a hard capability list.
 !!! warning "Flex blob trigger requirement"
     On Flex Consumption, use Event Grid source for blob-triggered flows. Standard polling blob trigger mode is not supported.
 
-## Binding configuration best practices
+### Binding configuration best practices
 
 ### Prefer identity-based connections when supported
 
@@ -65,7 +67,7 @@ Use managed identity over raw connection strings to reduce secret sprawl and rot
 - Avoid oversized messages that silently stress memory and retry behavior.
 - Keep output bindings idempotent where downstream operations can be repeated.
 
-## HTTP trigger operational defaults
+### HTTP trigger operational defaults
 
 ### Authentication level selection
 
@@ -88,7 +90,7 @@ az functionapp cors add \
   --allowed-origins "https://portal.contoso.example"
 ```
 
-## Queue trigger best practices
+### Queue trigger best practices
 
 Queue-trigger workloads are operationally safe only when retry and poison behavior are explicit.
 
@@ -116,7 +118,7 @@ Queue-trigger workloads are operationally safe only when retry and poison behavi
 !!! warning "Poison queue is mandatory telemetry"
     Never discard poison events silently. Alert on poison queue growth and define replay ownership.
 
-## Blob trigger design: polling vs Event Grid
+### Blob trigger design: polling vs Event Grid
 
 | Scenario | Recommended model |
 |---|---|
@@ -126,22 +128,14 @@ Queue-trigger workloads are operationally safe only when retry and poison behavi
 
 Operationally, Event Grid models provide clearer event-flow visibility and reduce hidden polling assumptions.
 
-## Timer trigger best practices
+### Timer trigger best practices
 
 - Keep CRON expressions explicit and peer-reviewed.
 - Align timezone assumptions with UTC-first operations unless strong business need requires local time.
 - Treat timer handlers as singleton-intent workloads and enforce idempotency for reruns.
 - Ensure scheduled jobs can overlap safely if a previous run exceeds schedule interval.
 
-### Timer checklist
-
-| Check | Why |
-|---|---|
-| CRON expression validated in test environment | Prevents accidental high-frequency execution |
-| Long-running timer job split into chunks | Reduces single-run failure impact |
-| Rerun-safe logic implemented | Handles host restarts and duplicate execution windows |
-
-## Common trigger mistakes and how to avoid them
+## Common Mistakes / Anti-Patterns
 
 | Mistake | Impact | Safer pattern |
 |---|---|---|
@@ -153,6 +147,16 @@ Operationally, Event Grid models provide clearer event-flow visibility and reduc
 
 !!! tip "Reliability alignment"
     Pair this guidance with [Platform: Reliability](../platform/reliability.md) and [Best Practices: Reliability](./reliability.md) for idempotency patterns, retry boundaries, and poison-message workflows.
+
+## Validation Checklist
+
+### Timer checklist
+
+| Check | Why |
+|---|---|
+| CRON expression validated in test environment | Prevents accidental high-frequency execution |
+| Long-running timer job split into chunks | Reduces single-run failure impact |
+| Rerun-safe logic implemented | Handles host restarts and duplicate execution windows |
 
 ---
 

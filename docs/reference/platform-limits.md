@@ -2,13 +2,21 @@
 
 Azure Functions has platform-imposed limits that vary by hosting plan. Understanding these limits is essential for capacity planning, architecture decisions, and avoiding unexpected failures. This reference documents the most impactful limits for Python function apps.
 
+```mermaid
+flowchart LR
+    C[Consumption] --> L[10 min max timeout]
+    F[Flex Consumption] --> M[Up to 1,000 instances]
+    P[Premium] --> N[20-100 max instances]
+    D[Dedicated] --> O[Always On available]
+```
+
 ## Hosting Plan Comparison
 
 | Limit | Consumption (Y1) | Flex Consumption (FC1) | Premium (EP1-EP3) | Dedicated (B1-P3v3) |
 |-------|------------------|------------------------|-------------------|---------------------|
 | **Max execution timeout** | 10 min | Unbounded | Unlimited | Unlimited (`Always On` required) |
 | **Default execution timeout** | 5 min | 30 min | 30 min | 30 min |
-| **Max instances (scale-out)** | 200 | 1,000 | 100 | 10-30 (varies by tier) |
+| **Max instances (scale-out)** | 200 | 1,000 | 20-100 (region/subscription constraints) | 10-30 (varies by tier) |
 | **Max request size** | 210 MB | 210 MB | 210 MB | 210 MB |
 | **Max response size** | 100 MB | 100 MB | 100 MB | 100 MB |
 | **Max connections per instance** | 600 active, 1200 total | Unbounded | Unbounded | See App Service limits |
@@ -38,7 +46,7 @@ Configure in `host.json`:
 }
 ```
 
-When a function exceeds the timeout, the host terminates the worker process. For HTTP triggers, the client receives a 503 Service Unavailable.
+When a function exceeds the timeout, the host terminates the worker process. For HTTP triggers, upstream clients can time out before function completion due to the Azure Load Balancer idle timeout.
 
 ### Premium Plan
 
@@ -62,9 +70,9 @@ When a function exceeds the timeout, the host terminates the worker process. For
 
 The Consumption plan can scale to a maximum of 200 instances. Scale is event-driven and there isn't a per-app instance cap command for this plan.
 
-### Premium Plan: 100 Instances
+### Premium Plan: 20-100 Instances
 
-The Premium plan scales to a maximum of 100 instances by default (region and OS can affect practical limits). Configure always-ready and pre-warmed behavior in the Azure portal or with ARM/Bicep templates.
+The Premium plan scale-out cap is typically in the 20-100 range depending on region, subscription, and capacity constraints. Configure always-ready and pre-warmed behavior in the Azure portal or with ARM/Bicep templates.
 
 ```bash
 # Premium pre-warmed and always-ready settings are managed in
@@ -156,7 +164,9 @@ performanceCounters
 
 ### Python Memory Considerations
 
-Each Python worker process typically uses 50–150 MB at idle, plus memory for loaded packages. With `FUNCTIONS_WORKER_PROCESS_COUNT=4`, idle memory usage is approximately 200–600 MB, leaving limited headroom on the Consumption plan.
+Each Python worker process typically uses 50-150 MB at idle, plus memory for loaded packages. With `FUNCTIONS_WORKER_PROCESS_COUNT=4`, idle memory usage is approximately 200-600 MB, leaving limited headroom on the Consumption plan.
+
+> **Note:** These Python worker memory values are practical estimates from observed runtime behavior, not official Microsoft service limits.
 
 | Configuration | Approximate Idle Memory | Headroom (Consumption) |
 |--------------|------------------------|----------------------|

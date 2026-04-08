@@ -1,55 +1,73 @@
 # Timer Trigger
 
-Run scheduled Java workloads for maintenance, compaction, and report generation.
+This recipe uses Java timer triggers with NCRONTAB schedules, past-due handling, and hosting-plan time-zone behavior.
 
-## Main Pattern
+## Architecture
 
 ```mermaid
 flowchart LR
-    A[Inbound event/request] --> B[Java function method]
-    B --> C[Business logic]
-    C --> D[Output binding or response]
+    SCHEDULE[NCRONTAB schedule] --> TIMER[@TimerTrigger]
+    TIMER --> WORK[Scheduled work]
+    WORK --> LOGS[Execution logs and metrics]
 ```
 
-### Java implementation example
+## Prerequisites
+
+Define a schedule setting:
+
+```bash
+az functionapp config appsettings set \
+  --name $APP_NAME \
+  --resource-group $RG \
+  --settings "NightlySchedule=0 0 2 * * *"
+```
+
+Time-zone caveat:
+
+- `WEBSITE_TIME_ZONE` is supported on Windows plans and Linux Premium/Dedicated.
+- `WEBSITE_TIME_ZONE` is not supported on Linux Consumption or Linux Flex Consumption.
+
+## Java implementation
 
 ```java
-@FunctionName("TimerTrigger")
-public HttpResponseMessage run(
-    @HttpTrigger(name = "req", methods = {HttpMethod.GET, HttpMethod.POST}, authLevel = AuthorizationLevel.FUNCTION, route = "sample/{id?}")
-    HttpRequestMessage<Optional<String>> request,
-    @BindingName("id") String id,
-    final ExecutionContext context) {
+package com.contoso.functions;
 
-    context.getLogger().info("recipe=timer.md id=" + id);
+import com.microsoft.azure.functions.ExecutionContext;
+import com.microsoft.azure.functions.TimerInfo;
+import com.microsoft.azure.functions.annotation.FunctionName;
+import com.microsoft.azure.functions.annotation.TimerTrigger;
 
-    return request.createResponseBuilder(HttpStatus.OK)
-        .body("ok")
-        .build();
+public class TimerFunctions {
+
+    @FunctionName("nightlyCleanup")
+    public void nightlyCleanup(
+        @TimerTrigger(name = "timerInfo", schedule = "%NightlySchedule%") TimerInfo timerInfo,
+        final ExecutionContext context
+    ) {
+        if (timerInfo.isPastDue()) {
+            context.getLogger().warning("Timer execution is running past due.");
+        }
+
+        context.getLogger().info("Timer fired. Running nightly cleanup job.");
+        // Cleanup logic here
+    }
 }
 ```
 
-### Operational checklist
+## Implementation notes
 
-1. Validate inputs and return explicit status codes.
-2. Keep handlers idempotent for retry-safe operations.
-3. Emit structured logs with correlation identifiers.
-4. Keep secrets out of source code and local settings files.
-
-## Validation
-
-```bash
-mvn clean package
-mvn azure-functions:run
-```
+- Use app settings for schedule strings so ops can change cadence without redeploy.
+- Use `isPastDue()` to guard expensive work and detect scheduling delays.
+- Keep timer functions idempotent because missed executions can overlap during recovery.
+- For business time zones on unsupported Linux plans, convert time in code or use UTC schedules.
 
 ## See Also
 
-- [Recipes Index](index.md)
-- [Annotation Programming Model](../annotation-programming-model.md)
-- [Java Runtime](../java-runtime.md)
+- [Queue Storage Integration](queue.md)
+- [Durable Orchestration](durable-orchestration.md)
+- [Operations: Monitoring](../../../operations/monitoring.md)
 
 ## Sources
 
-- [Azure Functions Java developer guide (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-reference-java)
-- [Azure Functions triggers and bindings (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings)
+- [Timer trigger for Azure Functions (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-bindings-timer)
+- [App settings reference for Azure Functions (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-app-settings)

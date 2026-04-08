@@ -11,6 +11,10 @@ Extend beyond HTTP using queue, blob, and timer triggers with annotation-based b
 | Azure Functions Core Tools | v4 | Start local host and publish artifacts |
 | Azure CLI | 2.61+ | Provision Azure resources and inspect app state |
 
+## What You'll Build
+
+You will add queue, blob, and timer triggers to a Java Function App using annotations, then validate storage-backed trigger resources and local runtime registration.
+
 !!! info "Plan basics"
     Consumption (Y1) is fully serverless with scale-to-zero and pay-per-execution billing. It is ideal for bursty workloads that do not require VNet integration.
 
@@ -81,7 +85,7 @@ az storage queue list --account-name $STORAGE_NAME --output table
 az storage container list --account-name $STORAGE_NAME --output table
 ```
 
-## Expected Output
+## Verification
 
 ```text
 Functions:

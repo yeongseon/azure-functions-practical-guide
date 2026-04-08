@@ -15,6 +15,17 @@ export STORAGE_NAME="stdedidev<unique>"
 export LOCATION="eastus"
 ```
 
+## What You'll Build
+
+You will add timer, blob, and queue-triggered functions under `apps/python/blueprints/`, register them in the app entry point, and validate trigger execution after deployment.
+
+```mermaid
+flowchart LR
+    A[Timer trigger] --> D[Dedicated Function App]
+    B[Blob upload] --> D
+    C[Queue message] --> D
+```
+
 ## Steps
 
 ### Step 1 - Keep Always On enabled for background reliability
@@ -30,7 +41,7 @@ Timer triggers are most reliable when Always On is enabled on Dedicated.
 
 ### Step 2 - Add a timer trigger
 
-Create `app/blueprints/scheduled_jobs.py`:
+Create `apps/python/blueprints/scheduled_jobs.py`:
 
 ```python
 import datetime
@@ -45,11 +56,11 @@ def cleanup_timer(timer: func.TimerRequest) -> None:
     logging.info("Cleanup timer executed at %s", datetime.datetime.utcnow().isoformat())
 ```
 
-Register the blueprint in `app/function_app.py`.
+Register the blueprint in `apps/python/function_app.py`.
 
 ### Step 3 - Add a blob trigger (standard polling)
 
-Create `app/blueprints/blob_processor.py`:
+Create `apps/python/blueprints/blob_processor.py`:
 
 ```python
 import logging
@@ -67,7 +78,7 @@ Blob polling works on Dedicated App Service Plan.
 
 ### Step 4 - Add a queue trigger
 
-Create `app/blueprints/queue_processor.py`:
+Create `apps/python/blueprints/queue_processor.py`:
 
 ```python
 import logging
@@ -84,7 +95,7 @@ def queue_worker(msg: func.QueueMessage) -> None:
 ### Step 5 - Deploy and test triggers
 
 ```bash
-func azure functionapp publish $APP_NAME --python
+cd apps/python && func azure functionapp publish $APP_NAME --python
 
 az storage container create \
   --name uploads \
@@ -109,20 +120,20 @@ az storage message put \
 ### Step 6 - Review runtime and scale behavior
 
 - Dedicated is always running and does not scale to zero.
-- Autoscale is manual or rules-based at the App Service Plan level.
-- Typical max scale is 10-30 instances depending on plan tier.
+- Autoscale on Basic (B1) is manual only; autoscale rules are available on Standard and higher tiers.
+- Typical maximum instance limits by Dedicated tier are Basic: 3, Standard: 10, Premium: 30.
 - Timeout default is 30 minutes and max is unlimited.
 - Memory depends on selected plan SKU.
 
 !!! info "Requires Standard tier or higher"
     VNet integration is not available on Basic (B1) tier. Upgrade to Standard (S1) or Premium (P1v2) for VNet support.
 
-!!! info "Requires Standard tier or higher"
-    Private endpoints are not available on Basic (B1) tier. Upgrade to Standard (S1) or Premium (P1v2).
+!!! info "Private endpoints on Dedicated"
+    App Service private endpoints are supported on Basic (B1) and higher tiers. When enabled, validate private DNS resolution for the app hostname.
 
-## Expected Output
+## Verification
 
-`func azure functionapp publish $APP_NAME --python`:
+`cd apps/python && func azure functionapp publish $APP_NAME --python`:
 
 ```text
 Getting site publishing info...

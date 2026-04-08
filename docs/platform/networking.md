@@ -35,7 +35,7 @@ Platform-Subscription AzureCloud   <subscription-id>   <tenant-id>        Enable
 | VNet integration (outbound) | No | Yes | Yes | Yes |
 | Inbound private endpoint | No | Yes | Yes | Yes |
 | NAT Gateway egress pattern | No | Yes | Yes | Yes |
-| Hybrid Connections | No | No | Yes | Yes |
+| Hybrid Connections | No | No | Yes (Windows apps only) | Yes (Windows apps only) |
 
 ### Reference architecture
 ```mermaid
@@ -189,7 +189,7 @@ Example output (sanitized):
 ```
 
 #### 2) Route-all pattern
-To force all egress through VNet controls:
+To force all egress through VNet controls on plans that support this app setting (for example, Premium and Dedicated):
 
 ```bash
 az functionapp config appsettings set \
@@ -197,6 +197,8 @@ az functionapp config appsettings set \
   --resource-group "$RG" \
   --settings "WEBSITE_VNET_ROUTE_ALL=1"
 ```
+
+Flex Consumption already routes outbound traffic through the integrated VNet path, so `WEBSITE_VNET_ROUTE_ALL=1` is not required on Flex.
 
 #### 3) NAT Gateway for stable outbound IP
 Attach NAT Gateway to the integration subnet when downstream allowlists require stable egress identity.
@@ -326,7 +328,8 @@ A practical zero-trust ingress model for Functions is:
 4. Identity-first authorization at every hop.
 
 ### Route-all outbound strategy
-- Enable `WEBSITE_VNET_ROUTE_ALL=1` for controlled egress paths.
+- Enable `WEBSITE_VNET_ROUTE_ALL=1` for controlled egress paths on Premium/Dedicated.
+- Flex Consumption already uses VNet-routed outbound behavior and does not require this setting.
 - Force internet egress through firewall and NAT controls.
 
 ### Multi-environment DNS governance

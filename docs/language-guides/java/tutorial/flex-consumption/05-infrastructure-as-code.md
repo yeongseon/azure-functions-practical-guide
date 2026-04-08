@@ -21,41 +21,122 @@ flowchart TD
     C --> D[Maven deployment]
 ```
 
+## What You'll Build
+
+- A Flex Consumption infrastructure definition aligned with FC1 behavior.
+- Java runtime configuration through `functionAppConfig` and app settings.
+- A repeatable deployment command using the `baseName` parameter.
+
 ## Steps
 
-### Step 1 - Author Bicep parameters for Java app
+### Step 1 - Create a Bicep template for your Java Function App
 
 ```bicep
 param location string = resourceGroup().location
-param appName string
-param planName string
-param storageName string
-param runtimeVersion string = '17'
+param baseName string
+
+var appServicePlanName = '${baseName}-plan'
+var functionAppName = '${baseName}-func'
+var storageAccountName = toLower(replace('${baseName}storage', '-', ''))
 ```
 
 ### Step 2 - Define Function App runtime settings
 
 ```bicep
-resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
-  name: appName
+resource appServicePlan 'Microsoft.Web/serverfarms@2024-04-01' = {
+  name: appServicePlanName
+  location: location
+  sku: {
+    name: 'FC1'
+    tier: 'FlexConsumption'
+  }
+  properties: {
+    reserved: true
+  }
+}
+
+resource storage 'Microsoft.Storage/storageAccounts@2023-05-01' = {
+  name: storageAccountName
+  location: location
+  sku: {
+    name: 'Standard_LRS'
+  }
+  kind: 'StorageV2'
+  properties: {
+    allowSharedKeyAccess: false
+  }
+}
+
+resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
+  name: '${baseName}-identity'
+  location: location
+}
+
+resource deploymentBlobService 'Microsoft.Storage/storageAccounts/blobServices@2023-05-01' = {
+  parent: storage
+  name: 'default'
+}
+
+resource deploymentContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-05-01' = {
+  parent: deploymentBlobService
+  name: 'deployment-packages'
+}
+
+resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
+  name: functionAppName
   location: location
   kind: 'functionapp,linux'
-  properties: {
-    siteConfig: {
-      linuxFxVersion: 'JAVA|${runtimeVersion}'
-      appSettings: [
-        { name: 'FUNCTIONS_WORKER_RUNTIME'; value: 'java' }
-        { name: 'languageWorkers__java__arguments'; value: '-Xmx512m' }
-      ]
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${managedIdentity.id}': {}
     }
+  }
+  properties: {
+    serverFarmId: appServicePlan.id
+    httpsOnly: true
+    functionAppConfig: {
+      runtime: {
+        name: 'java'
+        version: '17'
+      }
+      scaleAndConcurrency: {
+        maximumInstanceCount: 100
+        instanceMemoryMB: 2048
+      }
+      deployment: {
+        storage: {
+          type: 'blobContainer'
+          value: 'https://${storage.name}.blob.${environment().suffixes.storage}/${deploymentContainer.name}'
+          authentication: {
+            type: 'UserAssignedIdentity'
+            userAssignedIdentityResourceId: managedIdentity.id
+          }
+        }
+      }
+    }
+  }
+}
+
+resource functionAppSettings 'Microsoft.Web/sites/config@2024-04-01' = {
+  parent: functionApp
+  name: 'appsettings'
+  properties: {
+    AzureWebJobsStorage__accountName: storage.name
+    AzureWebJobsStorage__credential: 'managedidentity'
+    AzureWebJobsStorage__clientId: managedIdentity.properties.clientId
+    JAVA_OPTS: '-Xms256m -Xmx512m'
   }
 }
 ```
 
+!!! tip "VNet route-all note"
+    To add VNet integration, set `virtualNetworkSubnetId` on the site resource and use `Microsoft.App/environments` delegation for the integration subnet.
+
 ### Step 3 - Deploy infrastructure
 
 ```bash
-az deployment group create   --resource-group $RG   --template-file infra/flex-consumption/main.bicep   --parameters appName=$APP_NAME planName=$PLAN_NAME storageName=$STORAGE_NAME
+az deployment group create --resource-group $RG --template-file infra/flex-consumption/main.bicep --parameters baseName=$BASE_NAME
 ```
 
 ### Step 4 - Deploy application artifact
@@ -65,7 +146,7 @@ mvn clean package
 mvn azure-functions:deploy
 ```
 
-## Expected Output
+## Verification
 
 ```text
 ProvisioningState  Timestamp

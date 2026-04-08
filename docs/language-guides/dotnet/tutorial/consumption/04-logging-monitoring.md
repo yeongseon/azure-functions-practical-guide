@@ -14,6 +14,10 @@ Enable baseline observability for the Consumption deployment with Application In
     Consumption (Y1) scales to zero and charges per execution. It has a default 5-minute timeout and up to 10 minutes maximum per execution.
     No VNet integration on this plan.
 
+## What You'll Build
+
+Application Insights-backed monitoring for a Linux Consumption Function App, including a verified `Health` request and a KQL query that confirms request telemetry.
+
 ## Steps
 ### Step 1 - Create Application Insights
 ```bash
@@ -38,17 +42,43 @@ az functionapp config appsettings set \
   --settings "APPLICATIONINSIGHTS_CONNECTION_STRING=$APPINSIGHTS_CONNECTION_STRING"
 ```
 
-### Step 3 - Generate and inspect traces
+### Step 3 - Register Application Insights in isolated worker
 ```bash
-curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
-az monitor app-insights query \
+dotnet add package Microsoft.ApplicationInsights.WorkerService
+dotnet add package Microsoft.Azure.Functions.Worker.ApplicationInsights
+```
+
+Update `Program.cs` to register Application Insights services:
+```csharp
+var host = new HostBuilder()
+    .ConfigureFunctionsWebApplication()
+    .ConfigureServices(services =>
+    {
+        services.AddApplicationInsightsTelemetryWorkerService();
+        services.ConfigureFunctionsApplicationInsights();
+    })
+    .Build();
+
+host.Run();
+```
+
+### Step 4 - Generate and inspect traces
+```bash
+curl "https://$APP_NAME.azurewebsites.net/api/health?code=$(az functionapp keys list --resource-group $RG --name $APP_NAME --query 'functionKeys.default' --output tsv)"
+
+WORKSPACE_ID=$(az monitor app-insights component show \
   --app "appi-dotnet-consumption-demo" \
   --resource-group "$RG" \
-  --analytics-query "requests | take 5 | project timestamp, name, resultCode, success" \
+  --query "workspaceResourceId" \
+  --output tsv | xargs -I {} az monitor log-analytics workspace show --ids {} --query "customerId" --output tsv)
+
+az monitor log-analytics query \
+  --workspace "$WORKSPACE_ID" \
+  --analytics-query "AppRequests | take 5 | project TimeGenerated, name, ResultCode, success" \
   --output table
 ```
 
-### Step 4 - Use structured logs in code
+### Step 5 - Use structured logs in code
 ```csharp
 _logger.LogInformation("Order {OrderId} processed in {DurationMs} ms", orderId, durationMs);
 _logger.LogWarning("Queue depth high: {QueueDepth}", queueDepth);
@@ -61,7 +91,7 @@ flowchart TD
     C --> D[KQL query]
     D --> E[Operational decision]
 ```
-### Step X - Validate isolated worker conventions
+### Step 6 - Validate isolated worker conventions
 ```bash
 grep "FUNCTIONS_WORKER_RUNTIME" "local.settings.json"
 grep "ConfigureFunctionsWebApplication" "Program.cs"
@@ -69,16 +99,14 @@ grep "ConfigureFunctionsWebApplication" "Program.cs"
 
 Confirm that HTTP functions use `HttpRequestData` and `HttpResponseData`, and that logging is constructor-injected with `ILogger<T>`.
 
-## Expected Output
+## Verification
 ```text
-Timestamp                    Name            ResultCode    Success
+{"status":"healthy"}
+
+TimeGenerated                name            ResultCode    success
 ---------------------------  --------------  ----------    -------
 2026-04-06T09:10:10.000000Z GET /api/health 200           True
 ```
-## Next Steps
-
-> **Next:** [05 - Infrastructure as Code](05-infrastructure-as-code.md)
-
 ## See Also
 - [Tutorial Overview & Plan Chooser](../index.md)
 - [.NET Language Guide](../../index.md)

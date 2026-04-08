@@ -23,9 +23,11 @@ az functionapp log tail --name $APP_NAME --resource-group $RG
 ### Runtime version mismatch
 
 - Validate runtime and Node settings.
+- For Linux apps, validate `siteConfig.linuxFxVersion` in addition to app settings.
 
 ```bash
 az functionapp config appsettings list --name $APP_NAME --resource-group $RG --query "[?name=='WEBSITE_NODE_DEFAULT_VERSION' || name=='FUNCTIONS_EXTENSION_VERSION']"
+az functionapp config show --name $APP_NAME --resource-group $RG --query "linuxFxVersion"
 ```
 
 ### Out-of-memory under load

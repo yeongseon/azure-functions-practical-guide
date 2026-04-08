@@ -11,6 +11,10 @@ Enable production-grade observability with Application Insights, structured logs
 | Azure Functions Core Tools | v4 | Start local host and publish artifacts |
 | Azure CLI | 2.61+ | Provision Azure resources and inspect app state |
 
+## What You'll Build
+
+You will instrument Java handlers with structured logs, route telemetry to Application Insights, and validate query-based monitoring signals for a Consumption-hosted app.
+
 !!! info "Plan basics"
     Consumption (Y1) is fully serverless with scale-to-zero and pay-per-execution billing. It is ideal for bursty workloads that do not require VNet integration.
 
@@ -58,7 +62,7 @@ az monitor app-insights query   --app $APP_INSIGHTS_NAME   --analytics-query "tr
 az monitor metrics alert create   --name "func-java-http5xx"   --resource-group $RG   --scopes "$FUNCTION_APP_ID"   --condition "total Http5xx > 5"   --window-size 5m   --evaluation-frequency 1m
 ```
 
-## Expected Output
+## Verification
 
 ```text
 timestamp                   message                               severityLevel

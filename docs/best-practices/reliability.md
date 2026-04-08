@@ -5,7 +5,7 @@ Reliable Azure Functions systems are built around the runtime execution model: m
 !!! tip "Platform and operations context"
     Keep this guide focused on implementation choices. For platform behavior details and recovery runbooks, see [Platform Reliability](../platform/reliability.md), [Retries and Poison Handling](../operations/retries-and-poison-handling.md), and [Recovery](../operations/recovery.md).
 
-## Why stateless is the default
+## Why This Matters
 
 Function instances are ephemeral. The runtime can:
 
@@ -41,7 +41,9 @@ Use external stores based on state type:
 - **Checkpoint state**: trigger-native checkpointing where provided.
 - **Long-running orchestration progress**: Durable orchestrator history.
 
-## Idempotency is mandatory for every trigger
+## Recommended Practices
+
+### Idempotency is mandatory for every trigger
 
 At-least-once delivery means a message or event can be processed more than once. Build every handler so duplicate invocation is safe.
 
@@ -58,7 +60,7 @@ At-least-once delivery means a message or event can be processed more than once.
 ??? note "Idempotent means effect-safe, not just exception-safe"
     Returning `200` twice is not enough. The business side effect (charge, shipment, status transition) must happen once, or happen multiple times with identical final state.
 
-## Retry-safe processing design
+### Retry-safe processing design
 
 Treat each invocation as potentially repeated.
 
@@ -128,7 +130,7 @@ Design pattern:
 - Process windows by deterministic range (`from`, `to`) instead of "now only" logic.
 - Use singleton/lease patterns for non-partitionable maintenance jobs.
 
-## Storage dependency resilience (AzureWebJobsStorage)
+### Storage dependency resilience (AzureWebJobsStorage)
 
 `AzureWebJobsStorage` is a runtime dependency for core host behavior and many triggers.
 
@@ -155,7 +157,7 @@ Mitigations:
 !!! warning "Do not treat host storage as optional"
     If host storage access fails, reliability degrades before business logic runs. Guardrails must include configuration validation and RBAC checks.
 
-## Durable Functions: when to use orchestrations
+### Durable Functions: when to use orchestrations
 
 Use plain functions when work is short, stateless, and independently retryable.
 Use Durable Functions when you need deterministic workflow state across retries and restarts.
@@ -182,7 +184,7 @@ Keep plain functions when you need:
 | Compensation/saga | Manual compensation logic | Structured orchestrations and compensation flows |
 | Latency sensitivity | Better for low-latency stateless handlers | Additional orchestration overhead |
 
-## Timeout and cancellation handling
+### Timeout and cancellation handling
 
 Plan-specific execution limits must drive handler design.
 
@@ -205,7 +207,7 @@ Example cancellation-aware strategy:
 | Premium (EP) | Suitable for long-running workloads | Extended runtime support by plan/runtime settings | Prefer resilient chunking even when long timeout is available |
 | Dedicated (App Service Plan) | App Service-style execution behavior | Configurable with host/runtime constraints | Guard against runaway executions with explicit budgets |
 
-## Poison and dead-letter handling strategy
+## Common Mistakes / Anti-Patterns
 
 Do not treat poison/dead-letter paths as final discard queues.
 
@@ -229,7 +231,7 @@ Minimum production pattern:
 | Event Hubs/Event Grid style eventing | No universal poison queue in all patterns | Event envelope, partition/offset or event ID, failure category | Store failed events in side channel and build idempotent re-drive pipeline |
 | HTTP | No native poison queue | Request body hash, idempotency key, response status timeline | Client-safe retry contract and operator replay endpoint |
 
-## Message processing lifecycle (retry and poison path)
+### Message processing lifecycle (retry and poison path)
 
 ```mermaid
 flowchart TD
@@ -247,7 +249,7 @@ flowchart TD
     O --> H
 ```
 
-## Reliability checklist
+## Validation Checklist
 
 - [ ] Every trigger handler has explicit idempotency key logic.
 - [ ] Side effects are guarded by dedup store or domain unique constraint.

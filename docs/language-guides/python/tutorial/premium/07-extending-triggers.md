@@ -8,12 +8,26 @@ Add non-HTTP triggers to a Premium Function App, focusing on Blob polling and pr
 - You exported `$RG`, `$APP_NAME`, `$PLAN_NAME`, `$STORAGE_NAME`, `$LOCATION`.
 - Your app settings include `AzureWebJobsStorage` (connection string or identity-based).
 
+## What You'll Build
+
+- Two additional triggers (Timer and Blob) using Python blueprints.
+- Updated blueprint registration in `apps/python/function_app.py`.
+- A trigger validation flow using blob upload and live log checks.
+
+```mermaid
+flowchart LR
+    A[Add timer blueprint] --> B[Add blob blueprint]
+    B --> C[Register in function_app.py]
+    C --> D[Upload test blob]
+    D --> E[Publish and verify logs]
+```
+
 ## Steps
 
 1. Add a Timer trigger blueprint.
 
     ```python
-    # app/blueprints/scheduled.py
+    # apps/python/blueprints/scheduled.py
     import azure.functions as func
     import logging
 
@@ -29,7 +43,7 @@ Add non-HTTP triggers to a Premium Function App, focusing on Blob polling and pr
 2. Add a standard polling Blob trigger (supported on Premium).
 
     ```python
-    # app/blueprints/blob_processor.py
+    # apps/python/blueprints/blob_processor.py
     import azure.functions as func
     import logging
 
@@ -43,7 +57,7 @@ Add non-HTTP triggers to a Premium Function App, focusing on Blob polling and pr
 
     On Premium, polling blob trigger works by default. Event Grid is optional when you need lower-latency eventing.
 
-3. Register new blueprints in `app/function_app.py`.
+3. Register new blueprints in `apps/python/function_app.py`.
 
     ```python
     from blueprints.scheduled import bp as scheduled_bp
@@ -77,10 +91,8 @@ Add non-HTTP triggers to a Premium Function App, focusing on Blob polling and pr
 
 5. Publish updated code to Premium.
 
-    ```
-
     ```bash
-    cd app
+    cd apps/python
     func azure functionapp publish "$APP_NAME" --python
     ```
 
@@ -99,7 +111,7 @@ Add non-HTTP triggers to a Premium Function App, focusing on Blob polling and pr
     - Standard blob polling trigger is supported; Event Grid trigger remains optional.
     - Keep timeout-sensitive jobs aware of Premium defaults (30 minutes default, unlimited max).
 
-## Expected Output
+## Verification
 
 ```text
 Functions in func-premium-demo:

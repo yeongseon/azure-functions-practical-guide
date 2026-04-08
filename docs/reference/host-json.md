@@ -2,6 +2,17 @@
 
 The `host.json` file configures the Azure Functions runtime behaviour. It lives in the root of your function app (same directory as `function_app.py`) and applies to all functions in the app. This reference covers the most important settings for Python function apps.
 
+```mermaid
+flowchart TD
+    H[host.json] --> V[version]
+    H --> L[logging]
+    H --> E[extensions]
+    H --> T[functionTimeout]
+    H --> C[concurrency]
+    E --> HTTP[http]
+    E --> Q[queues]
+```
+
 ## Complete Annotated Example
 
 ```json
@@ -112,7 +123,7 @@ For the Consumption plan, if a function exceeds the timeout, the host terminates
 }
 ```
 
-> **Tip:** Set the timeout to the maximum your plan allows, then handle timeouts gracefully in your code. For long-running operations, consider Durable Functions instead.
+> **Tip:** Use a reasonable upper bound based on your SLOs and downstream limits even on plans that support unbounded timeout. Prefer bounded execution plus retries/orchestration; use Durable Functions for long-running workflows.
 
 ### logging
 
@@ -185,9 +196,9 @@ Configure HTTP trigger behaviour:
 | Setting | Default | Description |
 |---------|---------|-------------|
 | `routePrefix` | `"api"` | URL prefix for all HTTP functions. Set to `""` to remove the `/api` prefix |
-| `maxOutstandingRequests` | `200` | Max pending requests at any given time |
-| `maxConcurrentRequests` | `100` | Max HTTP functions executing in parallel per instance |
-| `dynamicThrottlesEnabled` | `false` | Check system performance counters and reject requests when thresholds are exceeded |
+| `maxOutstandingRequests` | `200` on Consumption; unbounded on Flex/Premium/Dedicated unless set | Max pending requests at any given time |
+| `maxConcurrentRequests` | `100` on Consumption; unbounded on Flex/Premium/Dedicated unless set | Max HTTP functions executing in parallel per instance |
+| `dynamicThrottlesEnabled` | `true` on Consumption; `false` on Flex/Premium/Dedicated | Check system performance counters and reject requests when thresholds are exceeded |
 
 To remove the `/api` prefix (so routes are `https://your-func.azurewebsites.net/health` instead of `https://your-func.azurewebsites.net/api/health`):
 

@@ -10,6 +10,17 @@ Configure your deployed Consumption (Y1) function app using classic `siteConfig.
 | Deployed Function App | Y1 | Target app from tutorial 02 |
 | Storage account | Standard_LRS | Runtime state and triggers |
 
+## What You'll Build
+
+You will configure core app settings for a Linux Consumption Function App, including storage and observability-related values, and validate the app configuration state.
+
+```mermaid
+flowchart LR
+    A[Read current app settings] --> B[Set runtime and custom settings]
+    B --> C[Optional identity-based host storage]
+    C --> D[Validate effective configuration]
+```
+
 ## Steps
 
 ### Step 1 - Set variables
@@ -46,7 +57,7 @@ For Consumption, app settings are handled as classic app settings (backed by `si
 
 ### Step 4 - Optional: identity-based host storage pattern
 
-Instead of a connection string, you can configure identity-based host storage values (both models are valid on Consumption):
+Instead of a connection string, you can configure identity-based host storage values (both models are valid on Consumption). On Linux Consumption, content share settings are still required and continue to use a shared-key-backed `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING` with `WEBSITE_CONTENTSHARE`.
 
 ```bash
 az functionapp config appsettings set \
@@ -61,17 +72,20 @@ az functionapp config appsettings set \
     Before using identity-based host storage, you must:
 
     1. Enable system-assigned managed identity on the Function App: `az functionapp identity assign --name "$APP_NAME" --resource-group "$RG"`
-    2. Grant the identity the **Storage Blob Data Owner** role on the storage account: `az role assignment create --assignee-object-id "<principal-id>" --role "Storage Blob Data Owner" --scope "/subscriptions/<subscription-id>/resourceGroups/$RG/providers/Microsoft.Storage/storageAccounts/$STORAGE_NAME"`
-    3. Set both `AzureWebJobsStorage__accountName` and `AzureWebJobsStorage__credential=managedidentity` app settings.
+    2. Grant required data-plane roles on the storage account scope: `Storage Blob Data Owner`, `Storage Queue Data Contributor`, and `Storage Table Data Contributor`.
+    3. Keep content share settings configured (`WEBSITE_CONTENTAZUREFILECONNECTIONSTRING` and `WEBSITE_CONTENTSHARE`) for Linux Consumption.
+    4. Set both `AzureWebJobsStorage__accountName` and `AzureWebJobsStorage__credential=managedidentity` app settings.
 
 
 ### Step 5 - Confirm runtime limits relevant to configuration
 
 - Consumption defaults to a 5-minute timeout and supports up to 10 minutes.
 - Memory is fixed at 1.5 GB per instance.
+- Scaling is automatic and event-driven on Consumption.
+- Maximum scale-out is up to 100 instances on Linux Consumption (up to 200 on Windows Consumption).
 - No always-ready instances are available; cold start is typically more noticeable than Premium.
 
-## Expected Output
+## Verification
 
 App settings update excerpt:
 

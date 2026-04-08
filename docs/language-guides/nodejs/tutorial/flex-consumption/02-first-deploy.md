@@ -13,6 +13,11 @@ Provision resources and publish your first Node.js v4 function app.
 !!! info "Plan basics"
     Flex Consumption supports VNet integration, identity-based storage, per-function scaling, and remote build workflows.
 
+## What You'll Build
+
+You will provision a Linux Function App on the Flex Consumption track, deploy your Node.js v4 project, and verify function indexing in Azure.
+You will confirm the deployed function list from the platform control plane rather than local runtime output.
+
 ## Steps
 
 ```mermaid
@@ -22,7 +27,6 @@ flowchart LR
     C --> D[Runtime indexes v4 handlers]
     D --> E[Trigger execution]
 ```
-
 
 ### Step 1 - Create resource group
 
@@ -34,7 +38,7 @@ az group create --name $RG --location $LOCATION
 
 ```bash
 az storage account create --name $STORAGE_NAME --resource-group $RG --location $LOCATION --sku Standard_LRS
-az functionapp create --name $APP_NAME --resource-group $RG --storage-account $STORAGE_NAME --plan $PLAN_NAME --runtime node --runtime-version 20 --functions-version 4 --deployment-storage-name $STORAGE_NAME --deployment-storage-container-name app-package --deployment-storage-auth-type SystemAssignedIdentity
+az functionapp create --name $APP_NAME --resource-group $RG --storage-account $STORAGE_NAME --runtime node --runtime-version 20 --functions-version 4 --flexconsumption-location $LOCATION --deployment-storage-name $STORAGE_NAME --deployment-storage-container-name app-package --deployment-storage-auth-type SystemAssignedIdentity
 ```
 
 ### Step 3 - Publish app
@@ -49,20 +53,21 @@ func azure functionapp publish $APP_NAME
 az functionapp function list --name $APP_NAME --resource-group $RG --output table
 ```
 
-
 ### Plan-specific notes
 
-- Use a pre-created Flex plan with `--plan` and prefer `func azure functionapp publish $APP_NAME --remote-build`.
+- Flex Consumption routes all traffic through the integrated VNet by default, so you do not set `WEBSITE_VNET_ROUTE_ALL` manually.
+- Flex Consumption does not support custom container hosting for Function Apps.
 - Use long-form CLI flags for maintainable runbooks.
-- Keep `FUNCTIONS_WORKER_RUNTIME=node` across all environments.
 
-## Expected Output
+## Verification
 
 ```text
-Functions:
-    helloHttp: [GET] http://localhost:7071/api/hello/{name?}
+Name       Language
+---------  ----------
+helloHttp  Javascript
 ```
 
+The output confirms that Azure indexed your function definition and is ready to serve requests.
 
 ## See Also
 - [Tutorial Overview & Plan Chooser](../index.md)

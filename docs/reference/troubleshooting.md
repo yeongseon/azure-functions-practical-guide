@@ -2,6 +2,18 @@
 
 This reference covers the most common issues encountered when developing and deploying Azure Functions Python v2 apps, organised as **Problem → Cause → Solution**.
 
+```mermaid
+flowchart TD
+    A[Incident detected] --> B{Symptom type}
+    B --> C[Startup or deploy issue]
+    B --> D[Runtime or dependency issue]
+    B --> E[Networking or identity issue]
+    C --> F[Check logs and app settings]
+    D --> F
+    E --> F
+    F --> G[Apply mitigation and verify]
+```
+
 ## 1. Functions Not Found After Deploy
 
 **Problem:** After deploying to Azure, navigating to the function app shows no functions. The Functions list in the Azure Portal is empty, and hitting endpoints returns 404.
@@ -109,15 +121,7 @@ Verify `requirements.txt` is in the correct location (same directory as `functio
 |----------|---------|
 | Reduce dependencies | Remove unused packages from `requirements.txt` |
 | Lazy imports | Move heavy imports inside function bodies |
-| Premium plan | Use always-ready instances to eliminate cold starts |
-| Keep-warm timer | Add a timer trigger that fires every few minutes |
-| Increase timeout | Set `functionTimeout` in `host.json` to allow more time |
-
-```json
-{
-  "functionTimeout": "00:10:00"
-}
-```
+| Flex/Premium capacity controls | Use Flex always-ready instances or Premium always-ready/prewarmed instances to reduce cold starts |
 
 See the [Scaling guide](../platform/scaling.md) for detailed cold start mitigation strategies.
 
@@ -219,11 +223,13 @@ Option C — For HTTP-only functions, set an empty connection string:
    {
      "extensions": {
        "http": {
-         "routePrefix": "api"  // URL will be /api/<route>
+         "routePrefix": "api"
        }
      }
    }
    ```
+
+   With this setting, URLs are `/api/<route>`.
 
 3. Run `func host start` locally — the terminal lists all discovered functions and their URLs.
 

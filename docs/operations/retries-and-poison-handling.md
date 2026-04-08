@@ -73,6 +73,8 @@ Concrete Service Bus extension retry example:
 ```
 
 Concrete Event Hubs extension retry example:
+`clientRetryOptions` controls Event Hubs SDK transport retries (service communication behavior), not Azure Functions invocation retry policy. Configure function-level retries separately using `host.json` settings or function retry attributes, depending on trigger and language.
+
 ```json
 {
   "version": "2.0",

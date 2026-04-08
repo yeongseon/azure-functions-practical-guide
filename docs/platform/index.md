@@ -6,6 +6,15 @@ Use this section before implementation to choose the right operating model for y
 
 ## What this section covers
 
+```mermaid
+flowchart TD
+    A[Hosting]
+    A --> B[Scaling]
+    B --> C[Triggers and Bindings]
+    C --> D[Networking]
+    D --> E[Security]
+```
+
 - [Architecture](architecture.md) — host/worker runtime model, deployment unit, and resource relationships.
 - [Hosting](hosting.md) — Consumption, Flex Consumption, Premium, and Dedicated plan behavior.
 - [Triggers and bindings](triggers-and-bindings.md) — eventing patterns and integration contracts.
@@ -32,7 +41,7 @@ Use this section before implementation to choose the right operating model for y
 !!! tip "Language Guide"
     For Python-specific implementation details, see [v2 Programming Model](../language-guides/python/v2-programming-model.md).
 
-## See also
+## See Also
 
 - [Start Here: Hosting Options](../start-here/hosting-options.md)
 - [Operations: Deployment](../operations/deployment.md)

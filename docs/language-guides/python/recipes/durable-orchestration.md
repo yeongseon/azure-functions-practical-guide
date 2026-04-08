@@ -59,10 +59,10 @@ The client function is an HTTP trigger that starts a new orchestration instance:
 
 ```python
 import azure.functions as func
-import azure.functions.durable_client as df
+import azure.durable_functions as df
 import json
 
-bp = func.Blueprint()
+bp = df.Blueprint()
 
 @bp.route(route="orchestrations/{function_name}", methods=["POST"])
 @bp.durable_client_input(client_name="client")
@@ -86,9 +86,9 @@ async def http_start(req: func.HttpRequest, client: df.DurableOrchestrationClien
 When you call this endpoint, the response includes management URLs:
 
 ```bash
-curl -X POST http://localhost:7071/api/orchestrations/order_processing \
-  -H "Content-Type: application/json" \
-  -d '{"order_id": "12345", "items": ["widget-a", "widget-b"]}'
+curl --request POST http://localhost:7071/api/orchestrations/order_processing \
+  --header "Content-Type: application/json" \
+  --data '{"order_id": "12345", "items": ["widget-a", "widget-b"]}'
 ```
 
 Response:

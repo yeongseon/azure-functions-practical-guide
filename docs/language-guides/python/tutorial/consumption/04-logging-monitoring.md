@@ -10,6 +10,17 @@ Set up baseline observability for a Consumption (Y1) Function App with Applicati
 | Deployed Function App | Y1 | Existing app from tutorial 02 |
 | Application Insights | Workspace-based | Telemetry destination |
 
+## What You'll Build
+
+You will connect the Function App to Application Insights, generate sample traffic, and verify request telemetry and live logs for a Linux Consumption deployment.
+
+```mermaid
+flowchart LR
+    A[Function App requests] --> B[Application Insights]
+    B --> C[CLI query for recent requests]
+    A --> D[Live log tail]
+```
+
 ## Steps
 
 ### Step 1 - Set variables
@@ -72,9 +83,9 @@ az webapp log tail \
   --resource-group "$RG"
 ```
 
-Kudu/SCM is available on Consumption and useful for deeper debugging at `https://$APP_NAME.scm.azurewebsites.net`.
+Use log streaming and Application Insights for diagnostics on Linux Consumption.
 
-## Expected Output
+## Verification
 
 Application Insights query output excerpt:
 
@@ -83,7 +94,7 @@ Timestamp                    Name                    ResultCode    Success
 ---------------------------  ----------------------  ------------  --------
 2026-04-03T09:37:10.123456Z GET /api/health         200           True
 2026-04-03T09:37:13.012345Z GET /api/requests/...   200           True
-2026-04-03T09:37:16.456789Z GET /api/exceptions/... 500           False
+2026-04-03T09:37:16.456789Z GET /api/exceptions/... 200           True
 ```
 
 Log tail excerpt:
@@ -91,7 +102,7 @@ Log tail excerpt:
 ```text
 2026-04-03T09:37:10.100Z  Executing 'Functions.health' (Reason='This function was programmatically called...')
 2026-04-03T09:37:10.123Z  Executed 'Functions.health' (Succeeded, Duration=23ms)
-2026-04-03T09:37:16.430Z  Executed 'Functions.test_error' (Failed, Duration=44ms)
+2026-04-03T09:37:16.430Z  Executed 'Functions.test_error' (Succeeded, Duration=44ms)
 ```
 
 ## Next Steps
@@ -112,4 +123,4 @@ Use Infrastructure as Code to make this setup repeatable.
 
 - [Monitor Azure Functions](https://learn.microsoft.com/azure/azure-functions/monitor-functions)
 - [Application Insights query with Azure CLI](https://learn.microsoft.com/cli/azure/monitor/app-insights/query)
-- [Kudu diagnostic console](https://github.com/projectkudu/kudu/wiki)
+- [Stream logs with Azure CLI](https://learn.microsoft.com/cli/azure/webapp/log)

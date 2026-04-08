@@ -2,6 +2,17 @@
 
 Azure Functions uses environment variables for runtime configuration, connection strings, and application settings. This reference documents the important variables, where they are configured, and their default values.
 
+```mermaid
+flowchart TD
+    A[Configuration sources] --> B[local.settings.json for local only]
+    A --> C[Azure App Settings in function app]
+    A --> D[CI/CD pipeline variables and secrets]
+    C --> E[Runtime variables]
+    C --> F[Monitoring variables]
+    C --> G[Python worker variables]
+    C --> H[Application-specific variables]
+```
+
 ## Configuration Locations
 
 | Context | Where to Set | File |
@@ -96,8 +107,15 @@ AzureWebJobsStorage__accountName=$STORAGE_NAME
 | Variable | Purpose | Default | Required |
 |----------|---------|---------|----------|
 | `APPLICATIONINSIGHTS_CONNECTION_STRING` | Connection to Application Insights for telemetry | — | **Recommended** |
-| `TELEMETRY_MODE` | Controls built-in telemetry (`none` to disable) | — | No |
 | `LOG_LEVEL` | Custom variable for application-level log configuration | `INFO` | No (app-defined) |
+
+OpenTelemetry mode is configured in `host.json` using `telemetryMode`, not by a `TELEMETRY_MODE` environment variable:
+
+```json
+{
+  "telemetryMode": "OpenTelemetry"
+}
+```
 
 ### APPLICATIONINSIGHTS_CONNECTION_STRING
 
@@ -116,9 +134,9 @@ az functionapp config appsettings set \
 
 | Variable | Purpose | Default | Required |
 |----------|---------|---------|----------|
-| `PYTHON_THREADPOOL_THREAD_COUNT` | Number of threads in the Python worker's thread pool | Number of CPUs (min 1) | No |
+| `PYTHON_THREADPOOL_THREAD_COUNT` | Number of threads in the Python worker's thread pool | Python 3.9+ uses Python's `ThreadPoolExecutor` default (`min(32, os.cpu_count() + 4)`); Python 3.6-3.8 defaults to `1` | No |
 | `FUNCTIONS_WORKER_PROCESS_COUNT` | Number of Python worker processes | `1` | No |
-| `PYTHON_ISOLATE_WORKER_DEPENDENCIES` | Isolate worker dependencies from function dependencies | `1` | No |
+| `PYTHON_ISOLATE_WORKER_DEPENDENCIES` | Isolate worker dependencies from function dependencies | Python 3.13+ defaults to isolation; earlier versions require explicit `1` when needed | No |
 
 ### PYTHON_THREADPOOL_THREAD_COUNT
 

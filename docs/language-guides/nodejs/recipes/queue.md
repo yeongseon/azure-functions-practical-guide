@@ -1,35 +1,95 @@
 # Queue Processing
 
-Queue trigger processing with retries, poison handling, and idempotent writes.
+This recipe shows real queue-triggered background processing with queue output bindings, host defaults, and poison queue behavior in Node.js v4.
 
-## Main Content
+## Architecture
 
 ```mermaid
 flowchart LR
-    A[Client or Event Source] --> B[Node.js v4 handler]
-    B --> C[Business logic]
-    C --> D[Azure service integration]
+    PRODUCER[HTTP/API Producer] --> INQ[orders Queue]
+    INQ --> WORKER[storageQueue Trigger]
+    WORKER --> RESULT[processed-orders Queue Output]
+    WORKER --> FAIL[orders-poison after retries]
 ```
 
-### Node.js v4 Example
+## Prerequisites
+
+Create queues:
+
+```bash
+az storage queue create \
+  --account-name $STORAGE_NAME \
+  --name orders
+
+az storage queue create \
+  --account-name $STORAGE_NAME \
+  --name processed-orders
+```
+
+Queue listener defaults in `host.json`:
+
+```json
+{
+  "version": "2.0",
+  "extensionBundle": {
+    "id": "Microsoft.Azure.Functions.ExtensionBundle",
+    "version": "[4.*, 5.0.0)"
+  },
+  "extensions": {
+    "queues": {
+      "maxPollingInterval": "00:01:00",
+      "visibilityTimeout": "00:00:00"
+    }
+  }
+}
+```
+
+## Working Node.js v4 Code
 
 ```javascript
-const { app } = require('@azure/functions');
+const { app, output } = require("@azure/functions");
 
-app.storageQueue('queueWorker', { queueName: 'work-items', handler: async (queueItem, context) => { context.log(`Work item ${queueItem.id}`); } });
+const processedOrdersOutput = output.storageQueue({
+  queueName: "processed-orders",
+  connection: "AzureWebJobsStorage"
+});
+
+app.storageQueue("processOrder", {
+  queueName: "orders",
+  connection: "AzureWebJobsStorage",
+  extraOutputs: [processedOrdersOutput],
+  handler: async (queueItem, context) => {
+    if (!queueItem.orderId || !queueItem.customerId) {
+      throw new Error("Invalid message: orderId and customerId are required.");
+    }
+
+    const processed = {
+      orderId: queueItem.orderId,
+      customerId: queueItem.customerId,
+      status: "Processed",
+      processedUtc: new Date().toISOString()
+    };
+
+    context.extraOutputs.set(processedOrdersOutput, processed);
+    context.log("Order processed", { orderId: queueItem.orderId });
+  }
+});
 ```
 
-### Implementation Notes
+When the handler keeps failing for the same message, Azure Functions moves the message to `orders-poison` after the configured `maxDequeueCount`.
 
-- Use `context.log()` for invocation-scoped telemetry.
-- Prefer managed identity to avoid secret distribution.
-- Return explicit status codes for deterministic client behavior.
+## Implementation Notes
+
+- Use queue triggers for at-least-once asynchronous work and design handlers to be idempotent.
+- Keep message contracts small and explicit (`orderId`, `customerId`) to reduce downstream ambiguity.
+- Throw errors for non-recoverable malformed payloads so poison queue triage is clear.
+- Monitor both primary queue depth and `*-poison` queue depth to catch retry storms early.
 
 ## See Also
-- [Recipes Index](index.md)
-- [Node.js v4 Programming Model](../v4-programming-model.md)
-- [Troubleshooting](../troubleshooting.md)
+- [Node.js Recipes Index](index.md)
+- [Blob Storage Patterns](blob-storage.md)
+- [Troubleshooting Guide](../troubleshooting.md)
 
 ## Sources
-- [Azure Functions Node.js developer guide (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-reference-node)
-- [Azure Functions trigger and binding concepts (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings)
+- [Azure Queue Storage bindings for Azure Functions (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue)
+- [Azure Functions error handling and retries (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-bindings-error-pages)

@@ -1,35 +1,83 @@
 # Timer Jobs
 
-Deterministic schedules, idempotency keys, and batch maintenance jobs.
+This recipe uses `app.timer()` with NCRONTAB scheduling, demonstrates the `isPastDue` pattern, and calls out hosting-plan time zone behavior.
 
-## Main Content
+## Architecture
 
 ```mermaid
 flowchart LR
-    A[Client or Event Source] --> B[Node.js v4 handler]
-    B --> C[Business logic]
-    C --> D[Azure service integration]
+    SCHED[NCRONTAB Schedule] --> TIMER[Timer Trigger]
+    TIMER --> CHECK[isPastDue Check]
+    CHECK --> JOB[Maintenance Logic]
+    JOB --> LOG[App Insights Logs]
 ```
 
-### Node.js v4 Example
+## Prerequisites
+
+Use extension bundle v4:
+
+```json
+{
+  "version": "2.0",
+  "extensionBundle": {
+    "id": "Microsoft.Azure.Functions.ExtensionBundle",
+    "version": "[4.*, 5.0.0)"
+  }
+}
+```
+
+Optional time zone configuration:
+
+```bash
+az functionapp config appsettings set \
+  --name $APP_NAME \
+  --resource-group $RG \
+  --settings "WEBSITE_TIME_ZONE=Korea Standard Time"
+```
+
+`WEBSITE_TIME_ZONE` support:
+- Windows plans: supported
+- Linux Premium and Dedicated: supported
+- Linux Consumption and Flex Consumption: not supported
+
+## Working Node.js v4 Code
 
 ```javascript
-const { app } = require('@azure/functions');
+const { app } = require("@azure/functions");
 
-app.timer('nightlyCleanup', { schedule: '0 0 1 * * *', handler: async (_timer, context) => { context.log('cleanup started'); } });
+app.timer("nightlyReconciliation", {
+  schedule: "0 0 2 * * *",
+  runOnStartup: false,
+  useMonitor: true,
+  handler: async (timer, context) => {
+    if (timer.isPastDue) {
+      context.warn("Timer invocation is running later than scheduled.", {
+        scheduleStatus: timer.scheduleStatus
+      });
+    }
+
+    context.log("Starting nightly reconciliation", {
+      last: timer.scheduleStatus?.last,
+      next: timer.scheduleStatus?.next
+    });
+
+    // Execute maintenance workload here.
+  }
+});
 ```
 
-### Implementation Notes
+## Implementation Notes
 
-- Use `context.log()` for invocation-scoped telemetry.
-- Prefer managed identity to avoid secret distribution.
-- Return explicit status codes for deterministic client behavior.
+- Timer expressions are NCRONTAB (`{second} {minute} {hour} {day} {month} {day-of-week}`), not classic 5-field cron.
+- `timer.isPastDue` is the signal for delayed execution due to scale or host restart conditions.
+- Keep jobs idempotent; timers can overlap with retries after transient failures.
+- On Linux Consumption/Flex, use UTC schedules because `WEBSITE_TIME_ZONE` is unsupported.
 
 ## See Also
-- [Recipes Index](index.md)
-- [Node.js v4 Programming Model](../v4-programming-model.md)
-- [Troubleshooting](../troubleshooting.md)
+- [Node.js Recipes Index](index.md)
+- [Queue Processing](queue.md)
+- [Node.js Troubleshooting](../troubleshooting.md)
 
 ## Sources
-- [Azure Functions Node.js developer guide (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-reference-node)
-- [Azure Functions trigger and binding concepts (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings)
+- [Timer trigger for Azure Functions (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-bindings-timer)
+- [Azure Functions app settings reference (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-app-settings)

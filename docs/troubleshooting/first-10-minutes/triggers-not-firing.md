@@ -16,6 +16,20 @@ APP_NAME="func-myapp-prod"
 SUBSCRIPTION_ID="<subscription-id>"
 APP_INSIGHTS_NAME="appi-myapp-prod"
 WORKSPACE_ID="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+STORAGE_NAME="stmyappprod"
+EH_NAMESPACE="evh-myapp-prod"
+```
+
+```mermaid
+flowchart TD
+    A[Trigger not firing] --> B[Check platform/regional incidents]
+    B --> C[Check function enabled state]
+    C --> D{Enabled?}
+    D -->|No| E[Re-enable function/app setting]
+    D -->|Yes| F[Check listener startup traces]
+    F --> G{Listener healthy?}
+    G -->|No| H[Fix auth/config startup issue]
+    G -->|Yes| I[Check source activity and publisher]
 ```
 
 ## 1) Check Azure status and regional incidents

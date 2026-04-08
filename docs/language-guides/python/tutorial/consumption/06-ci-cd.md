@@ -1,6 +1,6 @@
 # 06 - CI/CD (Consumption)
 
-Set up GitHub Actions deployment for Consumption (Y1) using `azure/functions-action@v1`, which deploys through SCM/Kudu Zip Deploy.
+Set up GitHub Actions deployment for Consumption (Y1) using `azure/functions-action@v1` and Linux-compatible Zip Deploy behavior.
 
 ## Prerequisites
 
@@ -9,6 +9,18 @@ Set up GitHub Actions deployment for Consumption (Y1) using `azure/functions-act
 | GitHub repository | Actions enabled | Host CI/CD workflow |
 | Function App | Consumption (Y1) | Deployment target |
 | Azure CLI | 2.61+ | Generate publish profile |
+
+## What You'll Build
+
+You will create a GitHub Actions workflow that installs Python dependencies and deploys the app from `apps/python` to a Linux Consumption Function App.
+
+```mermaid
+flowchart LR
+    A[Push to main] --> B[GitHub Actions workflow]
+    B --> C[Install Python dependencies]
+    C --> D[Azure Functions Action deploy]
+    D --> E[Verify /api/health]
+```
 
 ## Steps
 
@@ -60,13 +72,15 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install --requirement app/requirements.txt
+          python -m pip install --requirement apps/python/requirements.txt
 
-      - name: Deploy with Azure Functions Action (SCM/ZipDeploy)
+      - name: Deploy with Azure Functions Action
         uses: azure/functions-action@v1
         with:
           app-name: func-consumption-demo-001
-          package: app
+          package: apps/python
+          scm-do-build-during-deployment: true
+          enable-oryx-build: true
           publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
 ```
 
@@ -84,9 +98,9 @@ git push --set-upstream origin main
 curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
 ```
 
-Consumption supports Kudu/SCM, so this action path works well for standard zipdeploy workflows.
+Linux Consumption supports Zip Deploy for this workflow, while Kudu advanced tools are not exposed.
 
-## Expected Output
+## Verification
 
 GitHub Actions log excerpt:
 
@@ -120,6 +134,6 @@ Add non-HTTP triggers and verify scaling behavior for Consumption.
 
 ## Sources
 
-- [Azure Functions GitHub Action](https://github.com/Azure/functions-action)
+- [Use GitHub Actions to deploy a function app](https://learn.microsoft.com/azure/azure-functions/functions-how-to-github-actions)
 - [Deploy Azure Functions with Zip Deploy](https://learn.microsoft.com/azure/azure-functions/deployment-zip-push)
-- [GitHub Actions secrets](https://docs.github.com/actions/security-guides/encrypted-secrets)
+- [Manage app-level deployment credentials in Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-how-to-github-actions#download-your-publish-profile)

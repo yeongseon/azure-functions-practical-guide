@@ -11,7 +11,22 @@ Run the Function App locally with Azure Functions Core Tools so you can validate
 | Azure CLI | 2.60+ | Azure authentication and resource commands |
 | Azurite | Latest | Local Azure Storage emulator |
 
-## Step 1 - Set Standard Variables
+## What You'll Build
+
+You will run the Python reference Function App locally with Azurite, validate HTTP routes, and verify Flex Consumption-specific behavior before cloud deployment.
+
+```mermaid
+flowchart LR
+    Dev[Developer Shell] --> Venv[Python venv + dependencies]
+    Dev --> Azurite[Azurite local storage]
+    Venv --> Host[Functions host :7071]
+    Host --> Health[/api/health]
+    Host --> Info[/api/info]
+```
+
+## Steps
+
+### Step 1: Set Standard Variables
 
 Use one variable set throughout this tutorial track.
 
@@ -31,7 +46,7 @@ Expected output:
 ```text
 ```
 
-## Step 2 - Create and Activate a Virtual Environment
+### Step 2: Create and Activate a Virtual Environment
 
 
 ```bash
@@ -39,7 +54,7 @@ python3 --version
 virtualenv .venv
 source .venv/bin/activate
 pip install --upgrade pip
-pip install --requirement app/requirements.txt
+pip install --requirement apps/python/requirements.txt
 ```
 
 Expected output:
@@ -50,14 +65,14 @@ Python 3.11.x
 Successfully installed ...
 ```
 
-## Step 3 - Create Local Settings
+### Step 3: Create Local Settings
 
 
 ```bash
-cp app/local.settings.json.example app/local.settings.json
+cp apps/python/local.settings.json.example apps/python/local.settings.json
 ```
 
-Update `app/local.settings.json` to include local development values:
+Update `apps/python/local.settings.json` to include local development values:
 
 
 ```json
@@ -77,7 +92,7 @@ Expected output:
 ```text
 ```
 
-## Step 4 - Start Azurite
+### Step 4: Start Azurite
 
 Flex Consumption in Azure uses identity-based host storage, but local development still uses Azurite with `UseDevelopmentStorage=true`.
 
@@ -95,13 +110,13 @@ Azurite Queue service is starting at http://127.0.0.1:10001
 Azurite Table service is starting at http://127.0.0.1:10002
 ```
 
-## Step 5 - Start the Functions Host
+### Step 5: Start the Functions Host
 
 In another terminal:
 
 
 ```bash
-cd app
+cd apps/python
 func host start
 ```
 
@@ -119,7 +134,7 @@ Functions:
         info: [GET] http://localhost:7071/api/info
 ```
 
-## Step 6 - Verify Endpoints
+### Step 6: Verify Endpoints
 
 
 ```bash
@@ -136,10 +151,10 @@ Expected output:
 
 
 ```json
-{"name":"azure-functions-python-guide","plan":"Flex Consumption"}
+{"name":"azure-functions-field-guide","version":"1.0.0","python":"3.11.x","environment":"Development","telemetryMode":"basic","functionApp":"local","invocationId":"local"}
 ```
 
-## Step 7 - Validate Flex-Specific Constraints Early
+### Step 7: Validate Flex-Specific Constraints Early
 
 - Flex Consumption is Linux-only.
 - Blob trigger production path is Event Grid based; polling blob trigger is not supported for Flex.
@@ -147,6 +162,12 @@ Expected output:
 - Instance memory options are 512 MB, 2048 MB, or 4096 MB.
 - Function timeout defaults to 30 minutes; max is unlimited.
 - Deployment slots are not supported.
+
+## Verification
+
+- `func host start` lists at least `health` and `info` routes on `http://localhost:7071`.
+- `curl --request GET "http://localhost:7071/api/health"` returns HTTP 200 with a JSON health payload.
+- `curl --request GET "http://localhost:7071/api/info"` returns HTTP 200 with runtime/config metadata from `apps/python/blueprints/info.py`.
 
 ## Next Steps
 

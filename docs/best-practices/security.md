@@ -5,7 +5,7 @@ Security for Azure Functions must align to runtime behavior: triggers execute wi
 !!! tip "Architecture and operations references"
     For design background and operational runbooks, see [Platform Security](../platform/security.md), [Security Operations](../operations/security.md), and [Configuration Operations](../operations/configuration.md).
 
-## Managed identity for everything
+## Why This Matters
 
 Default rule: authenticate from Functions to Azure resources using managed identity, not embedded secrets.
 
@@ -25,7 +25,9 @@ Why this matters operationally:
 !!! warning "Connection strings with secrets should be exception-only"
     If a secret-based connection string is unavoidable, isolate it to the minimum scope and define explicit rotation runbooks with cutover validation.
 
-## App settings vs Key Vault references vs environment values
+## Recommended Practices
+
+### App settings vs Key Vault references vs environment values
 
 Use this decision model:
 
@@ -68,7 +70,7 @@ Common operational failures:
 - vault firewall blocks function outbound path,
 - secret version pinned unintentionally and never updated.
 
-## Function keys are not complete security
+### Function keys are not complete security
 
 Function keys are shared secrets for invocation control, not user identity.
 
@@ -97,7 +99,7 @@ Recommended pattern:
 2. Service-to-service: managed identity or OAuth token.
 3. Keep keys as compatibility fallback, not primary trust boundary.
 
-## Identity-based connections and required RBAC
+### Identity-based connections and required RBAC
 
 For identity-based host and binding access, grant least-privilege roles to Function App identity.
 
@@ -116,7 +118,7 @@ Typical role mappings:
 !!! note "RBAC scope discipline"
     Assign roles at the narrowest scope that works (resource, not subscription). Broad Contributor assignments increase blast radius and hide permission drift.
 
-## RBAC model for Functions operations
+### RBAC model for Functions operations
 
 Separate operational personas:
 
@@ -130,7 +132,7 @@ Practical minimums to review:
 - runtime identity should avoid general Contributor,
 - monitor role assignment drift on app, storage, and Key Vault scopes.
 
-## Network security controls that support identity
+### Network security controls that support identity
 
 Identity is necessary but not sufficient. Add network boundaries for sensitive workloads.
 
@@ -144,14 +146,14 @@ Core controls:
 | Control layer | Primary control | Protects against | Plan support snapshot | Notes for operations |
 |---|---|---|---|---|
 | Edge ingress | Access restrictions (allowlist IP/ranges) | Unapproved internet source access | Y1, FC1, EP, Dedicated | Revalidate allowlists after corporate egress IP changes |
-| Private ingress | Private Endpoint | Public inbound exposure | EP, Dedicated (and plan/region-dependent scenarios) | Pair with private DNS zone governance |
+| Private ingress | Private Endpoint | Public inbound exposure | FC1, EP, Dedicated (and plan/region-dependent scenarios) | Pair with private DNS zone governance |
 | Outbound isolation | VNet integration + route controls | Unintended egress paths to public endpoints | FC1, EP, Dedicated (plan/region dependent) | Test dependency DNS resolution and failover routes |
 | Service boundary | NSG/service tag controls | Lateral movement between subnets/services | With VNet-integrated plans | Keep rules least-privilege and document exceptions |
 | Secret boundary | Key Vault firewall + private access | Secret retrieval from unauthorized networks | All plans via design-specific topology | Validate Function outbound path and managed identity permissions together |
 
 See [Platform Security](../platform/security.md) and [Platform Networking](../platform/networking.md) for design combinations.
 
-## CORS done safely
+### CORS done safely
 
 CORS only protects browser-origin access behavior; it is not authentication.
 
@@ -172,7 +174,7 @@ Best practices:
 !!! warning "Wildcard CORS anti-pattern"
     `*` with sensitive browser APIs can expose data to unintended origins, especially when teams assume CORS equals authentication.
 
-## TLS and HTTPS enforcement
+### TLS and HTTPS enforcement
 
 Minimum baseline:
 
@@ -196,7 +198,7 @@ Minimum baseline:
 | Secret value stored directly in app setting when Key Vault is available | Secret sprawl and harder rotation governance | Replace with Key Vault references and managed identity access | Medium |
 | Rotating secret without runtime validation plan | Authentication outage after cutover | Use staged rotation with post-rotation dependency checks | High |
 
-## Secret rotation and runtime behavior
+## Common Mistakes / Anti-Patterns
 
 Secret rotation must be routine, tested, and observable.
 
@@ -239,7 +241,7 @@ flowchart TD
     H --> I[Close rotation change record]
 ```
 
-## Security boundary and identity flow
+### Security boundary and identity flow
 
 ```mermaid
 flowchart LR
@@ -260,7 +262,7 @@ flowchart LR
     end
 ```
 
-## Practical hardening commands (long flags only)
+### Practical hardening commands (long flags only)
 
 Enable managed identity:
 
@@ -303,7 +305,7 @@ az role assignment create \
     --scope "/subscriptions/<subscription-id>/resourceGroups/$RG/providers/Microsoft.Storage/storageAccounts/$STORAGE_NAME"
 ```
 
-## Security checklist
+## Validation Checklist
 
 - [ ] Managed identity is enabled and used for supported dependencies.
 - [ ] Secret-based connection strings are eliminated or formally exception-tracked.

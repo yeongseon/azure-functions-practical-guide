@@ -10,6 +10,18 @@ Define and deploy a complete Consumption (Y1) environment with Bicep. This plan 
 | Bicep | latest | Author ARM resources as code |
 | Target path | `infra/consumption/main.bicep` | Consumption IaC template location |
 
+## What You'll Build
+
+You will deploy storage, a Linux Consumption plan, and a Python Function App via Bicep, then validate the deployed app metadata with Azure CLI.
+
+```mermaid
+flowchart LR
+    A[Bicep template] --> B[Storage account]
+    A --> C[Linux Consumption plan Y1]
+    A --> D[Function App]
+    D --> E[CLI validation]
+```
+
 ## Steps
 
 ### Step 1 - Set variables
@@ -48,11 +60,14 @@ resource storage 'Microsoft.Storage/storageAccounts@2023-01-01' = {
 resource plan 'Microsoft.Web/serverfarms@2023-12-01' = {
   name: 'asp-${appName}'
   location: location
+  kind: 'linux'
   sku: {
     name: 'Y1'
     tier: 'Dynamic'
   }
-  kind: 'functionapp'
+  properties: {
+    reserved: true
+  }
 }
 
 resource app 'Microsoft.Web/sites@2023-12-01' = {
@@ -77,8 +92,12 @@ resource app 'Microsoft.Web/sites@2023-12-01' = {
           value: 'DefaultEndpointsProtocol=https;AccountName=${storage.name};AccountKey=${listKeys(storage.id, storage.apiVersion).keys[0].value};EndpointSuffix=${environment().suffixes.storage}'
         }
         {
-          name: 'WEBSITE_RUN_FROM_PACKAGE'
-          value: '1'
+          name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${storage.name};AccountKey=${listKeys(storage.id, storage.apiVersion).keys[0].value};EndpointSuffix=${environment().suffixes.storage}'
+        }
+        {
+          name: 'WEBSITE_CONTENTSHARE'
+          value: toLower('cs-${appName}')
         }
       ]
     }
@@ -93,11 +112,10 @@ resource app 'Microsoft.Web/sites@2023-12-01' = {
 az deployment group create \
   --resource-group "$RG" \
   --template-file "infra/consumption/main.bicep" \
-  --parameters baseName="consumpdemo"
+  --parameters appName="$APP_NAME" storageName="$STORAGE_NAME"
+```
 
 ### Step 5 - Validate resulting host plan
-
-```
 
 ```bash
 az functionapp show \
@@ -113,14 +131,9 @@ az functionapp show \
 !!! info "Not available on Consumption"
     Private endpoints require Flex Consumption, Premium, or Dedicated plan.
 
-!!! info "Consumption slot support"
-    Consumption (Y1) supports deployment slots (2 total, including production).
-
-## Expected Output
+## Verification
 
 Deployment output excerpt:
-
-```
 
 ```json
 {
@@ -133,8 +146,6 @@ Deployment output excerpt:
 ```
 
 Function app validation output:
-
-```
 
 ```json
 {

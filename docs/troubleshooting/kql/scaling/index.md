@@ -2,28 +2,37 @@
 
 KQL queries for analyzing cold starts, scaling behavior, and host lifecycle events.
 
+```mermaid
+flowchart LR
+    A[Cold start query] --> B[Scaling events timeline]
+    B --> C[Host startup and shutdown]
+    C --> D[Instance count trend]
+    D --> E[Scaling diagnosis]
+```
+
 ## Cold start analysis
 
 ```kusto
 let appName = "func-myapp-prod";
-traces
-| where timestamp > ago(6h)
-| where cloud_RoleName =~ appName
-| where message has_any ("Host started", "Initializing Host", "Host lock lease acquired")
-| summarize StartupEvents=count() by bin(timestamp, 15m)
+// Measures earliest request latency per time bin (proxy for cold-start impact).
+AppTraces
+| where TimeGenerated > ago(6h)
+| where AppRoleName =~ appName
+| where Message has_any ("Host started", "Initializing Host")
+| summarize StartupEvents=count() by bin(TimeGenerated, 15m)
 | join kind=leftouter (
-    requests
-    | where timestamp > ago(6h)
-    | where cloud_RoleName =~ appName
-    | where operation_Name startswith "Functions."
-    | summarize FirstInvocation=min(timestamp), FirstDurationMs=arg_min(timestamp, toreal(duration / 1ms)) by bin(timestamp, 15m)
-) on timestamp
-| order by timestamp desc
+    AppRequests
+    | where TimeGenerated > ago(6h)
+    | where AppRoleName =~ appName
+    | where OperationName startswith "Functions."
+    | summarize FirstInvocation=min(TimeGenerated), FirstDurationMs=arg_min(TimeGenerated, DurationMs) by bin(TimeGenerated, 15m)
+) on TimeGenerated
+| order by TimeGenerated desc
 ```
 
 **Example result:**
 
-| timestamp | StartupEvents | FirstInvocation | FirstDurationMs |
+| TimeGenerated | StartupEvents | FirstInvocation | FirstDurationMs |
 |---|---|---|---|
 | 2026-04-04T11:30:00Z | 83 | 2026-04-04T11:30:00.003Z | 3.0249 |
 | 2026-04-04T11:15:00Z | 19 | 2026-04-04T11:29:25.000Z | 1600.4633 |
@@ -34,7 +43,6 @@ traces
 |---|---|---|---|
 | StartupEvents per 15m bin | Consistent with plan type (FC1: dozens per bin is normal; Y1/EP: 1-3 per bin) | Sudden spike vs baseline (for example 10x normal) | Startup events with no subsequent successful invocations |
 | FirstDurationMs after startup | < 1000ms | 1000-5000ms | > 5000ms |
-| Startup-to-first-invocation gap | < 5s | 5-20s | > 20s |
 
 !!! tip "FC1 Flex Consumption"
     Flex Consumption plans scale by spinning up many worker instances rapidly. Seeing 50-100+ startup events in a 15-minute bin is normal under load. Focus on whether startup events correlate with successful invocations, not the raw count.
@@ -48,17 +56,17 @@ traces
 
 ```kusto
 let appName = "func-myapp-prod";
-traces
-| where timestamp > ago(6h)
-| where cloud_RoleName =~ appName
-| where message has_any ("scale", "instance", "worker", "concurrency", "drain")
-| project timestamp, severityLevel, message
-| order by timestamp desc
+AppTraces
+| where TimeGenerated > ago(6h)
+| where AppRoleName =~ appName
+| where Message has_any ("scale", "instance", "worker", "concurrency", "drain")
+| project TimeGenerated, SeverityLevel, Message
+| order by TimeGenerated desc
 ```
 
 **Example result:**
 
-| timestamp | severityLevel | message |
+| TimeGenerated | SeverityLevel | Message |
 |---|---|---|
 | 2026-04-04T11:32:20Z | 1 | Worker process started and initialized. |
 | 2026-04-04T11:31:50Z | 1 | Worker process started and initialized. |
@@ -82,22 +90,22 @@ traces
 
 ```kusto
 let appName = "func-myapp-prod";
-traces
-| where timestamp > ago(12h)
-| where cloud_RoleName =~ appName
-| where message has_any ("Host started", "Job host started", "Host shutdown", "Host is shutting down", "Stopping JobHost")
-| project timestamp, severityLevel, message
-| order by timestamp desc
+AppTraces
+| where TimeGenerated > ago(12h)
+| where AppRoleName =~ appName
+| where Message has_any ("Host started", "Job host started", "Host shutdown", "Host is shutting down", "Stopping JobHost")
+| project TimeGenerated, SeverityLevel, Message
+| order by TimeGenerated desc
 ```
 
 **Example result:**
 
-| timestamp | severityLevel | message | Pattern |
-|---|---|---|---|
-| 2026-04-04T11:36:20Z | 1 | Host lock lease acquired by instance ID 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' | Healthy |
-| 2026-04-04T11:32:30Z | 1 | Host started (64ms) | Healthy |
-| 2026-04-04T11:32:30Z | 1 | Job host started | Healthy |
-| 2026-04-04T11:32:30Z | 1 | Starting Host (HostId=func-myapp-prod, Version=4.1047.100.26071, InstanceId=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx) | Healthy |
+| TimeGenerated | SeverityLevel | Message |
+|---|---|---|
+| 2026-04-04T11:36:20Z | 1 | Host started (64ms) |
+| 2026-04-04T11:32:30Z | 1 | Job host started |
+| 2026-04-04T11:32:20Z | 1 | Host is shutting down |
+| 2026-04-04T11:30:00Z | 1 | Host started (82ms) |
 
 **How to interpret:**
 
@@ -117,20 +125,32 @@ traces
 
 ```kusto
 let appName = "func-myapp-prod";
-traces
-| where timestamp > ago(6h)
-| where cloud_RoleName =~ appName
-| where message has "Host started"
-| summarize InstanceCount = dcount(cloud_RoleInstance) by bin(timestamp, 5m)
-| order by timestamp asc
+AppTraces
+| where TimeGenerated > ago(6h)
+| where AppRoleName =~ appName
+| summarize InstanceCount = dcount(AppRoleInstance) by bin(TimeGenerated, 5m)
+| order by TimeGenerated asc
 ```
+
+**Example result:**
+
+| TimeGenerated | InstanceCount |
+|---|---|
+| 2026-04-04T11:00:00Z | 1 |
+| 2026-04-04T11:05:00Z | 3 |
+| 2026-04-04T11:10:00Z | 5 |
+| 2026-04-04T11:15:00Z | 5 |
+| 2026-04-04T11:20:00Z | 2 |
 
 **How to interpret:**
 
 | Indicator | Normal | Warning | Critical |
 |---|---|---|---|
-| Instance count under load | Scales proportionally to demand | Flat despite rising backlog | Zero (all instances crashed) |
-| Instance count after load subsides | Scales in gradually | Remains over-provisioned | Oscillates rapidly |
+| Instance count under load | Increases as traffic grows | Flat despite rising backlog | Drops to zero unexpectedly |
+| Instance count after load subsides | Decreases gradually | Remains over-provisioned for extended periods | Oscillates rapidly up and down |
+
+!!! tip "Reading instance counts"
+    This query counts distinct `AppRoleInstance` values that emitted any trace within each 5-minute bin. An instance that processes at least one request or logs one trace during the bin is counted as active. Bins with zero traces produce no row, which is different from an instance count of zero.
 
 ## See Also
 

@@ -15,6 +15,16 @@ export STORAGE_NAME="stdedidev<unique>"
 export LOCATION="eastus"
 ```
 
+## What You'll Build
+
+You will configure required app settings, apply runtime options such as Always On, and validate Dedicated-specific scaling and timeout behavior.
+
+```mermaid
+flowchart LR
+    A[Function App settings] --> B[Runtime config on Dedicated plan]
+    B --> C[Validated effective configuration]
+```
+
 ## Steps
 
 ### Step 1 - Review current app settings
@@ -67,7 +77,7 @@ az functionapp config appsettings set \
     Before using identity-based host storage, you must:
 
     1. Enable system-assigned managed identity on the Function App (as shown above).
-    2. Grant the identity the **Storage Blob Data Owner** role on the storage account: `az role assignment create --assignee-object-id "<principal-id>" --role "Storage Blob Data Owner" --scope "/subscriptions/<subscription-id>/resourceGroups/$RG/providers/Microsoft.Storage/storageAccounts/$STORAGE_NAME"`
+    2. Grant host storage data-plane roles on the storage account scope. At minimum include **Storage Blob Data Owner**, **Storage Queue Data Contributor**, and **Storage Table Data Contributor** (the host uses blobs, queues, and tables): `az role assignment create --assignee-object-id "<principal-id>" --role "Storage Blob Data Owner" --scope "/subscriptions/<subscription-id>/resourceGroups/$RG/providers/Microsoft.Storage/storageAccounts/$STORAGE_NAME"`
     3. Set both `AzureWebJobsStorage__accountName` and `AzureWebJobsStorage__credential=managedidentity` app settings.
 
 ### Step 3 - Configure runtime behavior
@@ -82,7 +92,7 @@ az functionapp config set \
 
 ### Step 4 - Set function timeout in host.json
 
-Update `app/host.json` with a Dedicated-friendly timeout value:
+Update `apps/python/host.json` with a Dedicated-friendly timeout value:
 
 ```json
 {
@@ -96,8 +106,8 @@ On Dedicated, default timeout is 30 minutes and maximum timeout is unlimited.
 ### Step 5 - Understand plan behavior and scaling
 
 - Dedicated does not scale to zero.
-- Scaling is manual or rule-based autoscale on the App Service Plan.
-- Typical max instances are 10-30 depending on tier.
+- Scaling on Basic (B1) is manual only. Autoscale rules are available on Standard and higher tiers.
+- Typical maximum instance limits by Dedicated tier are Basic: 3, Standard: 10, Premium: 30.
 - Memory and CPU are determined by plan SKU (B1, S1, P1v2, and others).
 - Windows and Linux are both supported.
 
@@ -114,7 +124,7 @@ az functionapp config show \
 !!! info "Dedicated uses classic configuration model"
     For Dedicated (App Service Plan), configure settings through classic App Service app settings (`siteConfig.appSettings`). Do not use `functionAppConfig` in this plan.
 
-## Expected Output
+## Verification
 
 `az functionapp config appsettings set ...`:
 

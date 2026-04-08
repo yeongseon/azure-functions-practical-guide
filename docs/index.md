@@ -8,6 +8,16 @@ Everything in this hub is aligned with Microsoft Learn guidance for Azure Functi
 
 ## What this hub covers
 
+```mermaid
+flowchart LR
+    A[Start Here] --> B[Platform]
+    B --> C[Best Practices]
+    C --> D[Language Guides]
+    D --> E[Operations]
+    E --> F[Troubleshooting]
+    F --> G[Reference]
+```
+
 Azure Functions is a serverless compute service for event-driven applications. You focus on function code, while the platform handles infrastructure, scaling behavior, and runtime hosting.
 
 This hub is organized to match how teams actually work:

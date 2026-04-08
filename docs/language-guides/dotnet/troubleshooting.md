@@ -14,6 +14,7 @@ flowchart TD
 ### Function not discovered after deploy
 - Confirm `FUNCTIONS_WORKER_RUNTIME=dotnet-isolated`.
 - Check startup exceptions in log stream.
+- On Linux Consumption, `az functionapp log tail` can fail because scm/Kudu endpoints are not available; use Application Insights queries instead.
 
 ```bash
 az functionapp log tail --name "$APP_NAME" --resource-group "$RG"
@@ -27,7 +28,7 @@ az functionapp log tail --name "$APP_NAME" --resource-group "$RG"
 dotnet clean
 dotnet build --configuration Release
 dotnet publish --configuration Release --output ./publish
-func azure functionapp publish "$APP_NAME" --dotnet-isolated
+func azure functionapp publish "$APP_NAME"
 ```
 
 ### HTTP 500 from serialization

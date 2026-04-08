@@ -4,6 +4,15 @@ Quick lookup documentation for Azure Functions platform operations and diagnosti
 
 ## Documents
 
+```mermaid
+graph TD
+    A[Reference] --> B[CLI Cheatsheet]
+    A --> C[host.json Reference]
+    A --> D[Environment Variables]
+    A --> E[Platform Limits]
+    A --> F[Troubleshooting]
+```
+
 | Document | Description |
 |----------|-------------|
 | [CLI Cheatsheet](cli-cheatsheet.md) | Common `az functionapp`, `func`, and Azure CLI commands |

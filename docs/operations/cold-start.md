@@ -74,32 +74,25 @@ Flex Consumption supports always-ready instances to reduce cold-start frequency.
 Use this when low-latency response is required without moving to Premium.
 Check always-ready settings:
 ```bash
-az resource show \
+az functionapp scale config show \
     --resource-group <resource-group> \
     --name <function-app-name> \
-    --resource-type Microsoft.Web/sites \
-    --api-version 2023-12-01 \
-    --query "properties.functionAppConfig.scaleAndConcurrency" \
+    --query "alwaysReady" \
     --output json
 ```
 Example output (PII masked):
 ```json
 {
-  "alwaysReady": {
-    "instanceCount": 1,
-    "target": "http"
-  },
-  "maximumInstanceCount": 40
+  "instanceCount": 1,
+  "target": "http"
 }
 ```
-Set always-ready instance count (API shape can vary by version):
+Set always-ready instance count using the dedicated Flex scale CLI:
 ```bash
-az resource update \
+az functionapp scale config always-ready set \
     --resource-group <resource-group> \
     --name <function-app-name> \
-    --resource-type Microsoft.Web/sites \
-    --api-version 2023-12-01 \
-    --set properties.functionAppConfig.scaleAndConcurrency.alwaysReady.instanceCount=2
+    --settings http=2
 ```
 
 #### Premium (EP)
@@ -215,6 +208,8 @@ flowchart TD
 ```
 
 ### 5) Compare expected outcomes
+The following cold-start duration ranges are operational estimates from field experience and are not official Microsoft benchmark values.
+
 | Hosting plan | Optimization level | Typical cold start duration (HTTP) | Expected operational outcome |
 |---|---|---|---|
 | Consumption | None | 2s-15s | Lowest cost, highest startup variability |

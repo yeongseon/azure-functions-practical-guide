@@ -14,19 +14,25 @@ Build and run a .NET isolated worker Function App locally before touching Azure 
     Flex Consumption (FC1) scales to zero with per-function scaling, VNet support, and configurable memory. It is the recommended default for new serverless workloads.
     Supports VNet integration and private endpoints.
 
+## What You'll Build
+
+- A .NET 8 isolated worker Function App scaffolded with Core Tools
+- A `Health` HTTP trigger that uses `HttpRequestData` and `HttpResponseData`
+- A local run workflow that validates isolated worker hosting conventions
+
 ## Steps
 ### Step 1 - Initialize a .NET isolated project
 ```bash
-func init MyProject --dotnet-isolated
+func init MyProject --worker-runtime dotnet-isolated
 cd MyProject
-func new --template "HTTP trigger" --name HttpFunction
+func new --template "HTTP trigger" --name Health --authlevel function
 ```
 
 ### Step 2 - Use a production-aligned project structure
 ```text
 project-root/
 ├── Functions/
-│   ├── HttpFunctions.cs
+│   ├── HealthFunction.cs
 │   ├── TimerFunctions.cs
 │   └── QueueFunctions.cs
 ├── Program.cs
@@ -55,11 +61,11 @@ using System.Net;
 
 namespace MyProject.Functions;
 
-public class HttpFunctions
+public class HealthFunction
 {
-    private readonly ILogger<HttpFunctions> _logger;
+    private readonly ILogger<HealthFunction> _logger;
 
-    public HttpFunctions(ILogger<HttpFunctions> logger)
+    public HealthFunction(ILogger<HealthFunction> logger)
     {
         _logger = logger;
     }
@@ -107,7 +113,7 @@ grep "ConfigureFunctionsWebApplication" "Program.cs"
 
 Confirm that HTTP functions use `HttpRequestData` and `HttpResponseData`, and that logging is constructor-injected with `ILogger<T>`.
 
-## Expected Output
+## Verification
 ```text
 Azure Functions Core Tools
 Core Tools Version:       4.x.x
@@ -116,9 +122,6 @@ Function Runtime Version: 4.x.x.x
 Functions:
     Health: [GET,POST] http://localhost:7071/api/health
 ```
-## Next Steps
-
-> **Next:** [02 - First Deploy](02-first-deploy.md)
 
 ## See Also
 - [Tutorial Overview & Plan Chooser](../index.md)

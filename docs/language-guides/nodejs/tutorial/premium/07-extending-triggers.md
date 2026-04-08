@@ -13,6 +13,11 @@ Add queue, timer, and blob triggers with the Node.js v4 APIs.
 !!! info "Plan basics"
     Premium provides always-warm instances, VNet integration, deployment slots, and unlimited timeout support.
 
+## What You'll Build
+
+You will extend your app with a timer trigger (`nightlySummary`), a queue trigger (`orderProcessor`), and a blob trigger (`blobIngest`).
+You will run the host locally to verify that all triggers are indexed alongside the existing `helloHttp` endpoint.
+
 ## Steps
 
 ```mermaid
@@ -22,7 +27,6 @@ flowchart LR
     C --> D[Runtime indexes v4 handlers]
     D --> E[Trigger execution]
 ```
-
 
 ### Step 1 - Add timer and queue triggers
 
@@ -65,20 +69,23 @@ app.storageBlob('blobIngest', {
 func start
 ```
 
-
 ### Plan-specific notes
 
+- Premium plans require Azure Files content share settings (`WEBSITE_CONTENTAZUREFILECONNECTIONSTRING` and `WEBSITE_CONTENTSHARE`) for standard content storage behavior.
 - Use an EP plan such as EP1 and configure always-ready capacity for low-latency APIs.
 - Use long-form CLI flags for maintainable runbooks.
-- Keep `FUNCTIONS_WORKER_RUNTIME=node` across all environments.
 
-## Expected Output
+## Verification
 
 ```text
 Functions:
     helloHttp: [GET] http://localhost:7071/api/hello/{name?}
+    nightlySummary: timerTrigger
+    orderProcessor: queueTrigger
+    blobIngest: blobTrigger
 ```
 
+The host output confirms all added triggers are indexed and available for local validation.
 
 ## See Also
 - [Tutorial Overview & Plan Chooser](../index.md)

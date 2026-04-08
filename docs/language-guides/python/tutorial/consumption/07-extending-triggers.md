@@ -10,6 +10,18 @@ Extend your Consumption (Y1) app with queue and blob triggers. On this plan, sca
 | Azure Functions Core Tools | v4 | Publish updated functions |
 | Function App | Consumption (Y1) | Existing deployed app |
 
+## What You'll Build
+
+You will extend the existing blueprint-based Python app with queue and blob triggers, publish the update, and validate trigger execution from live logs.
+
+```mermaid
+flowchart LR
+    A[Add queue/blob blueprints] --> B[Register in apps/python/function_app.py]
+    B --> C[Publish to Consumption app]
+    C --> D[Send queue message and upload blob]
+    D --> E[Validate trigger logs]
+```
+
 ## Steps
 
 ### Step 1 - Set variables
@@ -24,22 +36,30 @@ export LOCATION="eastus"
 ### Step 2 - Add a queue trigger
 
 ```python
-import json
 import logging
 import azure.functions as func
 
-app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
+bp = func.Blueprint()
 
-@app.queue_trigger(arg_name="msg", queue_name="work-items", connection="AzureWebJobsStorage")
+@bp.function_name(name="queue_worker")
+@bp.queue_trigger(arg_name="msg", queue_name="work-items", connection="AzureWebJobsStorage")
 def queue_worker(msg: func.QueueMessage) -> None:
     payload = msg.get_body().decode("utf-8")
     logging.info("Queue item processed: %s", payload)
 ```
 
+Save this in `apps/python/blueprints/queue_blob_worker.py`, then register it in `apps/python/function_app.py` with:
+
+```python
+from blueprints.queue_blob_worker import bp as queue_blob_worker_bp
+app.register_blueprint(queue_blob_worker_bp)
+```
+
 ### Step 3 - Add a blob trigger (standard polling)
 
 ```python
-@app.blob_trigger(arg_name="blob", path="uploads/{name}", connection="AzureWebJobsStorage")
+@bp.function_name(name="blob_worker")
+@bp.blob_trigger(arg_name="blob", path="uploads/{name}", connection="AzureWebJobsStorage")
 def blob_worker(blob: func.InputStream) -> None:
     logging.info("Blob processed: %s (%s bytes)", blob.name, blob.length)
 ```
@@ -55,6 +75,11 @@ func azure functionapp publish "$APP_NAME" --python
 ### Step 5 - Send queue message and upload blob
 
 ```bash
+az storage queue create \
+  --name "work-items" \
+  --account-name "$STORAGE_NAME" \
+  --auth-mode login
+
 az storage message put \
   --queue-name "work-items" \
   --content '{"id":"1001","action":"reindex"}' \
@@ -69,7 +94,7 @@ az storage container create \
 az storage blob upload \
   --container-name "uploads" \
   --name "sample.txt" \
-  --file "app/host.json" \
+  --file "apps/python/host.json" \
   --account-name "$STORAGE_NAME" \
   --auth-mode login
 ```
@@ -85,7 +110,7 @@ az webapp log tail \
 Consumption scaling reminder:
 
 - Scale-to-zero when idle.
-- App-level scaling up to 200 instances.
+- App-level scaling up to 100 instances on Linux Consumption.
 - Queue and blob workloads scale together at app scope (not per-function scaling).
 - Default timeout is 5 minutes, maximum 10 minutes.
 
@@ -95,10 +120,7 @@ Consumption scaling reminder:
 !!! info "Not available on Consumption"
     Private endpoints require Flex Consumption, Premium, or Dedicated plan.
 
-!!! info "Consumption slot support"
-    Consumption (Y1) supports deployment slots (2 total, including production).
-
-## Expected Output
+## Verification
 
 Publish output excerpt:
 

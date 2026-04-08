@@ -13,6 +13,10 @@ Add queue, timer, and blob triggers with the Node.js v4 APIs.
 !!! info "Plan basics"
     Consumption scales to zero automatically, does not support VNet integration, and defaults to a 5-minute timeout with a 10-minute maximum.
 
+## What You'll Build
+
+You will add timer, queue, and blob triggers to a Node.js v4 app and verify that the Functions host indexes each binding.
+
 ## Steps
 
 ```mermaid
@@ -72,11 +76,14 @@ func start
 - Use long-form CLI flags for maintainable runbooks.
 - Keep `FUNCTIONS_WORKER_RUNTIME=node` across all environments.
 
-## Expected Output
+## Verification
 
 ```text
 Functions:
     helloHttp: [GET] http://localhost:7071/api/hello/{name?}
+    nightlySummary: timerTrigger
+    orderProcessor: queueTrigger
+    blobIngest: blobTrigger
 ```
 
 

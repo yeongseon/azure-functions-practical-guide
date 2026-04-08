@@ -14,6 +14,12 @@ Deploy your .NET isolated worker app to the Dedicated plan with long-form Azure 
     Dedicated (App Service Plan) runs on pre-provisioned compute with predictable cost. Enable Always On for non-HTTP triggers.
     Supports VNet integration and slots on eligible SKUs.
 
+## What You'll Build
+
+- A Linux Dedicated Function App running .NET 8 isolated worker
+- A first deployment from local build artifacts to Azure
+- A secured `Health` endpoint validation using a function key
+
 ## Steps
 ### Step 1 - Set deployment variables
 ```bash
@@ -54,12 +60,18 @@ az functionapp create \
 ```bash
 dotnet build
 dotnet publish --configuration Release --output ./publish
-func azure functionapp publish "$APP_NAME" --dotnet-isolated
+func azure functionapp publish "$APP_NAME"
 ```
 
 ### Step 4 - Verify the endpoint
 ```bash
-curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
+export FUNCTION_KEY=$(az functionapp function keys list \
+  --name "$APP_NAME" \
+  --resource-group "$RG" \
+  --function-name "Health" \
+  --query "default" \
+  --output tsv)
+curl --request GET "https://$APP_NAME.azurewebsites.net/api/health?code=$FUNCTION_KEY"
 ```
 
 ```mermaid
@@ -77,17 +89,10 @@ grep "ConfigureFunctionsWebApplication" "Program.cs"
 
 Confirm that HTTP functions use `HttpRequestData` and `HttpResponseData`, and that logging is constructor-injected with `ILogger<T>`.
 
-## Expected Output
-```json
-{
-  "state": "Running",
-  "kind": "functionapp,linux",
-  "defaultHostName": "func-dotnet-<plan>-demo.azurewebsites.net"
-}
+## Verification
+```text
+{"status":"healthy"}
 ```
-## Next Steps
-
-> **Next:** [03 - Configuration](03-configuration.md)
 
 ## See Also
 - [Tutorial Overview & Plan Chooser](../index.md)
