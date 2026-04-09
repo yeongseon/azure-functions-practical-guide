@@ -1,6 +1,15 @@
 ---
 hide:
   - toc
+validation:
+  az_cli:
+    last_tested: 2026-04-09
+    cli_version: "2.83.0"
+    core_tools_version: "4.8.0"
+    result: pass
+  bicep:
+    last_tested: null
+    result: not_tested
 ---
 
 # 02 - First Deploy (Premium)
@@ -165,6 +174,9 @@ Deploy a Python Function App to an Elastic Premium plan (`EP1`) with VNet integr
       --functions-version "4" \
       --os-type "Linux"
     ```
+
+!!! tip "Globally unique names required"
+    Both `$APP_NAME` and `$STORAGE_NAME` must be globally unique across all Azure subscriptions. If you get a naming conflict, append a random suffix (e.g., `func-prem-04091234`).
 
     Expected output (abridged):
 
@@ -562,6 +574,9 @@ Deploy a Python Function App to an Elastic Premium plan (`EP1`) with VNet integr
     ```json
     {"status":"healthy","timestamp":"2026-01-01T00:00:00Z","version":"1.0.0"}
     ```
+
+!!! warning "Auto-created Application Insights"
+    `az functionapp create` automatically creates an Application Insights resource and links it via `APPINSIGHTS_INSTRUMENTATIONKEY` and `APPLICATIONINSIGHTS_CONNECTION_STRING`. Tutorial 04 creates a second, explicit Application Insights resource. You may see duplicate resources — this is expected.
 
 ## Verification
 

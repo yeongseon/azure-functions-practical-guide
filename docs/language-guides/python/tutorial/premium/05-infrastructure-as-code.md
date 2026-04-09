@@ -1,6 +1,15 @@
 ---
 hide:
   - toc
+validation:
+  az_cli:
+    last_tested: 2026-04-09
+    cli_version: "2.83.0"
+    core_tools_version: "4.8.0"
+    result: pass
+  bicep:
+    last_tested: null
+    result: not_tested
 ---
 
 # 05 - Infrastructure as Code (Premium)
@@ -603,9 +612,12 @@ pe-func-premium-demo              Microsoft.Network/privateEndpoints
 {
   "sku": "EP1",
   "tier": "ElasticPremium",
-  "maxWorkers": 100
+  "maxWorkers": 20
 }
 ```
+
+!!! note "`maximumElasticWorkerCount` default"
+    Without the `--max-burst` flag, `az functionapp plan create` sets `maximumElasticWorkerCount` to `1`, not `100`. To set a higher value, use the Bicep template or update manually via `az functionapp plan update --max-burst 20`.
 
 ## Next Steps
 

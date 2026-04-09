@@ -1,6 +1,15 @@
 ---
 hide:
   - toc
+validation:
+  az_cli:
+    last_tested: 2026-04-09
+    cli_version: "2.83.0"
+    core_tools_version: "4.8.0"
+    result: pass
+  bicep:
+    last_tested: null
+    result: not_tested
 ---
 
 # 04 - Logging and Monitoring (Premium)
@@ -115,6 +124,15 @@ flowchart LR
       --settings "APPLICATIONINSIGHTS_CONNECTION_STRING=$APPINSIGHTS_CONNECTION_STRING"
     ```
 
+    !!! tip "Restart after attaching Application Insights"
+        After setting `APPLICATIONINSIGHTS_CONNECTION_STRING`, restart the Function App to pick up the new telemetry configuration:
+
+        ```bash
+        az functionapp restart --name "$APP_NAME" --resource-group "$RG"
+        ```
+
+        Telemetry may take 2–5 minutes to appear in Application Insights after the restart.
+
 3. Stream live logs from the app.
 
     ```bash
@@ -132,6 +150,9 @@ flowchart LR
       --analytics-query "requests | where timestamp > ago(15m) | project timestamp, name, resultCode, duration | order by timestamp desc | take 20" \
       --output table
     ```
+
+    !!! tip "Empty query results"
+        If `--output table` returns no rows, the data may not have been ingested yet. Wait 2–5 minutes after the restart and retry. Use `--output json` instead of `--output table` to see raw results including empty arrays.
 
 5. Query exceptions and traces.
 

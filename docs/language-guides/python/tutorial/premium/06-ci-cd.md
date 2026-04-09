@@ -1,6 +1,15 @@
 ---
 hide:
   - toc
+validation:
+  az_cli:
+    last_tested: 2026-04-09
+    cli_version: "2.83.0"
+    core_tools_version: "4.8.0"
+    result: pass
+  bicep:
+    last_tested: null
+    result: not_tested
 ---
 
 # 06 - CI/CD (Premium)
@@ -122,6 +131,16 @@ flowchart LR
       --resource-group "$RG" \
       --output table
     ```
+
+    !!! warning "Staging slot requires separate configuration"
+        The staging slot starts as a blank app. You must configure it separately:
+
+        - Assign a system-assigned managed identity
+        - Grant the same 4 storage RBAC roles as the production slot
+        - Set all required app settings (`FUNCTIONS_WORKER_RUNTIME`, `AzureWebJobsStorage__accountName`, etc.)
+        - Create the content share for the slot
+
+        The first deployment to a new slot may fail with "Application Error (ServiceUnavailable)" if the slot is not fully initialized. Wait 30–60 seconds after creation before deploying.
 
 3. Mark slot-specific app settings.
 
