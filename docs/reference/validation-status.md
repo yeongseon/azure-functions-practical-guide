@@ -4,20 +4,20 @@ This page tracks which tutorials have been validated against real Azure deployme
 
 ## Summary
 
-*Generated: 2026-04-09*
+*Generated: 2026-04-10*
 
 | Metric | Count |
 |---|---:|
 | Total tutorials | 112 |
-| ✅ Validated | 28 |
+| ✅ Validated | 35 |
 | ⚠️ Stale (>90 days) | 0 |
 | ❌ Failed | 0 |
-| ➖ Not tested | 84 |
+| ➖ Not tested | 77 |
 
 ```mermaid
 pie title Tutorial Validation Status
-    "Validated" : 28
-    "Not Tested" : 84
+    "Validated" : 35
+    "Not Tested" : 77
 ```
 
 ## Validation Matrix
@@ -92,13 +92,13 @@ pie title Tutorial Validation Status
 
 | Tutorial | Hosting Plan | az-cli | Bicep | Last Tested | Status |
 |---|---|---|---|---|---|
-| [01 Local Run](../language-guides/nodejs/tutorial/consumption/01-local-run.md) | Consumption (Y1) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
-| [02 First Deploy](../language-guides/nodejs/tutorial/consumption/02-first-deploy.md) | Consumption (Y1) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
-| [03 Configuration](../language-guides/nodejs/tutorial/consumption/03-configuration.md) | Consumption (Y1) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
-| [04 Logging Monitoring](../language-guides/nodejs/tutorial/consumption/04-logging-monitoring.md) | Consumption (Y1) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
-| [05 Infrastructure As Code](../language-guides/nodejs/tutorial/consumption/05-infrastructure-as-code.md) | Consumption (Y1) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
-| [06 Ci Cd](../language-guides/nodejs/tutorial/consumption/06-ci-cd.md) | Consumption (Y1) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
-| [07 Extending Triggers](../language-guides/nodejs/tutorial/consumption/07-extending-triggers.md) | Consumption (Y1) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
+| [01 Local Run](../language-guides/nodejs/tutorial/consumption/01-local-run.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
+| [02 First Deploy](../language-guides/nodejs/tutorial/consumption/02-first-deploy.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
+| [03 Configuration](../language-guides/nodejs/tutorial/consumption/03-configuration.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
+| [04 Logging Monitoring](../language-guides/nodejs/tutorial/consumption/04-logging-monitoring.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
+| [05 Infrastructure As Code](../language-guides/nodejs/tutorial/consumption/05-infrastructure-as-code.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
+| [06 Ci Cd](../language-guides/nodejs/tutorial/consumption/06-ci-cd.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
+| [07 Extending Triggers](../language-guides/nodejs/tutorial/consumption/07-extending-triggers.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [01 Local Run](../language-guides/nodejs/tutorial/flex-consumption/01-local-run.md) | Flex Consumption (FC1) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
 | [02 First Deploy](../language-guides/nodejs/tutorial/flex-consumption/02-first-deploy.md) | Flex Consumption (FC1) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
 | [03 Configuration](../language-guides/nodejs/tutorial/flex-consumption/03-configuration.md) | Flex Consumption (FC1) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |

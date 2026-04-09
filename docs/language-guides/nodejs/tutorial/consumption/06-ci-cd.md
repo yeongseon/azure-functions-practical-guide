@@ -1,3 +1,17 @@
+---
+hide:
+  - toc
+validation:
+  az_cli:
+    last_tested: 2026-04-10
+    cli_version: "2.83.0"
+    core_tools_version: "4.8.0"
+    result: pass
+  bicep:
+    last_tested: null
+    result: not_tested
+---
+
 # 06 - CI/CD (Consumption)
 
 Automate build and deployment with GitHub Actions.
@@ -5,30 +19,52 @@ Automate build and deployment with GitHub Actions.
 ## Prerequisites
 
 | Tool | Version | Purpose |
-|---|---|---|
+|------|---------|---------|
 | Node.js | 20+ | Local runtime and package execution |
 | Azure Functions Core Tools | v4 | Local host and publishing |
 | Azure CLI | 2.61+ | Azure resource provisioning and management |
+| GitHub repository | — | Source code hosting with Actions enabled |
 
-!!! info "Plan basics"
-    Consumption scales to zero automatically, does not support VNet integration, and defaults to a 5-minute timeout with a 10-minute maximum.
+!!! info "Consumption plan basics"
+    Consumption (Y1) is serverless with scale-to-zero, up to 200 instances, 1.5 GB memory per instance, and a default 5-minute timeout (max 10 minutes).
 
 ## What You'll Build
 
-You will create a GitHub Actions workflow for Consumption deployment and confirm release health from runtime logs.
+You will create a GitHub Actions workflow for Consumption deployment and confirm release health by invoking the deployed function.
 
-## Steps
+!!! info "Infrastructure Context"
+    **Plan**: Consumption (Y1) | **Network**: Public internet only | **VNet**: ❌ Not supported
+
+    GitHub Actions deploys to the Consumption function app via publish profile authentication.
+
+    ```mermaid
+    flowchart LR
+        GH["GitHub Actions"] -->|"publish profile"| FA[Function App\nConsumption Y1]
+        DEV["Developer"] -->|"git push"| GH
+
+        style GH fill:#24292e,color:#fff
+        style FA fill:#0078d4,color:#fff
+    ```
 
 ```mermaid
 flowchart LR
-    A[Code commit] --> B[Build package]
-    B --> C[Deploy to Consumption]
-    C --> D[Runtime indexes v4 handlers]
-    D --> E[Trigger execution]
+    A[Create workflow YAML] --> B[Store secrets]
+    B --> C[Push to trigger]
+    C --> D[Validate deployment]
 ```
 
+## Steps
 
-### Step 1 - Create workflow
+### Step 1 - Set variables (if not already set)
+
+```bash
+export RG="rg-func-node-consumption-demo"
+export APP_NAME="<your-function-app-name>"
+```
+
+### Step 2 - Create the GitHub Actions workflow
+
+Save the following as `.github/workflows/deploy-node-consumption.yml`:
 
 ```yaml
 name: deploy-node-functions
@@ -44,27 +80,50 @@ jobs:
         with:
           node-version: '20'
       - run: npm ci
+        working-directory: apps/nodejs
       - run: npm test --if-present
+        working-directory: apps/nodejs
       - uses: Azure/functions-action@v1
         with:
           app-name: ${{ secrets.APP_NAME }}
-          package: '.'
+          package: 'apps/nodejs'
           publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
 ```
 
-### Step 2 - Store secrets
+### Step 3 - Store secrets in GitHub
 
-- Add `APP_NAME` in GitHub Actions secrets.
-- Add `AZURE_FUNCTIONAPP_PUBLISH_PROFILE` from Function App publish profile export.
+1. Download the publish profile:
 
-### Step 3 - Validate release
+    ```bash
+    az functionapp deployment list-publishing-profiles \
+      --name "$APP_NAME" \
+      --resource-group "$RG" \
+      --xml
+    ```
+
+2. In your GitHub repository, go to **Settings → Secrets and variables → Actions**
+3. Add the following secrets:
+    - `APP_NAME`: Your function app name (e.g., `func-ndcons-04100010`)
+    - `AZURE_FUNCTIONAPP_PUBLISH_PROFILE`: Paste the entire XML output from the command above
+
+### Step 4 - Validate release
+
+After pushing to trigger the workflow, verify the deployment by invoking the function:
 
 ```bash
-az functionapp log tail --name $APP_NAME --resource-group $RG
+curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
 ```
 
+!!! warning "`az functionapp log tail` does not exist"
+    The command `az functionapp log tail` is **not a valid Azure CLI command** as of CLI version 2.83.0. The `az webapp log tail` command exists but returns HTTP 404 for Consumption plan function apps because Consumption does not support persistent log streaming.
 
-### Plan-specific notes
+    **Alternatives for viewing logs:**
+
+    - **Application Insights queries**: `az monitor app-insights query --app $APP_NAME-ai --analytics-query "traces | take 20"`
+    - **Azure Portal**: Navigate to Function App → Monitor → Log stream
+    - **Live Metrics**: Application Insights → Live Metrics (real-time)
+
+### Step 5 - Review Consumption-specific notes
 
 - Use `--consumption-plan-location` for app creation and expect cold starts under idle periods.
 - Use long-form CLI flags for maintainable runbooks.
@@ -72,15 +131,34 @@ az functionapp log tail --name $APP_NAME --resource-group $RG
 
 ## Verification
 
-```text
-2026-04-08T08:20:11  Connected!
-2026-04-08T08:20:19  [Information] Executing 'Functions.helloHttp' (Reason='This function was programmatically called via the host APIs.', Id=6d9f2b66-9f0b-4f8f-9f4a-0f0f8f2a7e20)
-2026-04-08T08:20:19  [Information] Request received for world
-2026-04-08T08:20:19  [Information] Executed 'Functions.helloHttp' (Succeeded, Id=6d9f2b66-9f0b-4f8f-9f4a-0f0f8f2a7e20, Duration=34ms)
+After a successful GitHub Actions run, verify the function responds:
+
+```bash
+curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
 ```
 
+Expected response:
+
+```json
+{"status":"healthy","timestamp":"2026-04-10T00:30:00.000Z","version":"1.0.0"}
+```
+
+You can also verify via Application Insights:
+
+```bash
+az monitor app-insights query \
+  --app "$APP_NAME-ai" \
+  --resource-group "$RG" \
+  --analytics-query "requests | where name == 'health' | take 5" \
+  --output json
+```
+
+## Next Steps
+
+> **Next:** [07 - Extending Triggers](07-extending-triggers.md)
 
 ## See Also
+
 - [Tutorial Overview & Plan Chooser](../index.md)
 - [Node.js Language Guide](../../index.md)
 - [Platform: Hosting Plans](../../../../platform/hosting.md)
@@ -88,6 +166,7 @@ az functionapp log tail --name $APP_NAME --resource-group $RG
 - [Recipes Index](../../recipes/index.md)
 
 ## Sources
+
 - [Azure Functions Node.js developer guide (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-reference-node)
-- [Create your first Azure Function with Core Tools (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-node)
-- [Azure Functions hosting options (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-scale)
+- [Continuous deployment for Azure Functions (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-continuous-deployment)
+- [Azure Functions GitHub Actions (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-how-to-github-actions)

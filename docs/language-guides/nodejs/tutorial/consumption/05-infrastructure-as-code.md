@@ -1,3 +1,17 @@
+---
+hide:
+  - toc
+validation:
+  az_cli:
+    last_tested: 2026-04-10
+    cli_version: "2.83.0"
+    core_tools_version: "4.8.0"
+    result: pass
+  bicep:
+    last_tested: null
+    result: not_tested
+---
+
 # 05 - Infrastructure as Code (Consumption)
 
 Deploy repeatable infrastructure with Bicep and parameterized environments.
@@ -5,32 +19,57 @@ Deploy repeatable infrastructure with Bicep and parameterized environments.
 ## Prerequisites
 
 | Tool | Version | Purpose |
-|---|---|---|
+|------|---------|---------|
 | Node.js | 20+ | Local runtime and package execution |
 | Azure Functions Core Tools | v4 | Local host and publishing |
 | Azure CLI | 2.61+ | Azure resource provisioning and management |
 
-!!! info "Plan basics"
-    Consumption scales to zero automatically, does not support VNet integration, and defaults to a 5-minute timeout with a 10-minute maximum.
+!!! info "Consumption plan basics"
+    Consumption (Y1) is serverless with scale-to-zero, up to 200 instances, 1.5 GB memory per instance, and a default 5-minute timeout (max 10 minutes).
 
 ## What You'll Build
 
 You will deploy a repeatable Consumption infrastructure stack with Bicep and validate successful resource provisioning.
 
-## Steps
+!!! info "Infrastructure Context"
+    **Plan**: Consumption (Y1) | **Network**: Public internet only | **VNet**: ❌ Not supported
+
+    Bicep deploys all resources into a single resource group with public internet access only.
+
+    ```mermaid
+    flowchart TD
+        BICEP["Bicep Template\ninfra/consumption/main.bicep"] -->|"az deployment group create"| RG[Resource Group]
+        RG --> PLAN["App Service Plan\nY1 Dynamic"]
+        RG --> ST["Storage Account"]
+        RG --> FA["Function App\nLinux Node.js 20"]
+        RG --> AI["Application Insights"]
+        FA --> PLAN
+        FA --> ST
+        FA --> AI
+
+        style BICEP fill:#f39c12,color:#fff
+        style FA fill:#0078d4,color:#fff
+    ```
 
 ```mermaid
 flowchart LR
-    A[Code commit] --> B[Build package]
-    B --> C[Deploy to Consumption]
-    C --> D[Runtime indexes v4 handlers]
-    D --> E[Trigger execution]
+    A[Review Bicep template] --> B["az deployment group create"]
+    B --> C[Verify provisioning]
+    C --> D[Publish code]
 ```
 
+## Steps
 
-### Step 1 - Define Bicep template
+### Step 1 - Set variables (if not already set)
 
-Use this minimal example for Consumption (Y1). For the full production template, use `infra/consumption/main.bicep`.
+```bash
+export RG="rg-func-node-consumption-demo"
+export LOCATION="koreacentral"
+```
+
+### Step 2 - Review the Bicep template
+
+The production template is at `infra/consumption/main.bicep`. Below is a minimal example showing the key resources for Consumption (Y1):
 
 ```bicep
 param location string = resourceGroup().location
@@ -93,20 +132,42 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
 }
 ```
 
-### Step 2 - Deploy template
+### Step 3 - Deploy the template
 
 ```bash
-az deployment group create --resource-group $RG --template-file infra/consumption/main.bicep --parameters baseName=$APP_NAME
+az deployment group create \
+  --resource-group "$RG" \
+  --template-file infra/consumption/main.bicep \
+  --parameters baseName=ndcons0410
 ```
 
-### Step 3 - Publish code package
+!!! warning "baseName length constraint"
+    The Bicep template appends `storage` to the `baseName` parameter to create the storage account name. Storage account names are limited to **24 characters**. Keep `baseName` to ~17 characters or fewer to avoid exceeding this limit. For example, `ndcons0410` produces `ndcons0410storage` (17 chars) which is valid.
+
+### Step 4 - Verify provisioning
 
 ```bash
-func azure functionapp publish $APP_NAME
+az deployment group show \
+  --resource-group "$RG" \
+  --name main \
+  --query "properties.provisioningState" \
+  --output tsv
 ```
 
+### Step 5 - Publish code to the Bicep-deployed app
 
-### Plan-specific notes
+```bash
+# Get the function app name from Bicep outputs
+BICEP_APP=$(az deployment group show \
+  --resource-group "$RG" \
+  --name main \
+  --query "properties.outputs.functionAppName.value" \
+  --output tsv)
+
+cd apps/nodejs && func azure functionapp publish "$BICEP_APP"
+```
+
+### Step 6 - Review Consumption-specific notes
 
 - Use `--consumption-plan-location` for app creation and expect cold starts under idle periods.
 - Use long-form CLI flags for maintainable runbooks.
@@ -114,9 +175,11 @@ func azure functionapp publish $APP_NAME
 
 ## Verification
 
+Deployment output shows `Succeeded`:
+
 ```json
 {
-  "id": "/subscriptions/<subscription-id>/resourceGroups/$RG/providers/Microsoft.Resources/deployments/main",
+  "id": "/subscriptions/<subscription-id>/resourceGroups/rg-func-node-consumption-demo/providers/Microsoft.Resources/deployments/main",
   "name": "main",
   "properties": {
     "provisioningState": "Succeeded",
@@ -124,19 +187,23 @@ func azure functionapp publish $APP_NAME
     "outputs": {
       "functionAppName": {
         "type": "String",
-        "value": "$APP_NAME-func"
+        "value": "ndcons0410-func"
       },
       "functionAppUrl": {
         "type": "String",
-        "value": "https://$APP_NAME-func.azurewebsites.net"
+        "value": "https://ndcons0410-func.azurewebsites.net"
       }
     }
   }
 }
 ```
 
+## Next Steps
+
+> **Next:** [06 - CI/CD](06-ci-cd.md)
 
 ## See Also
+
 - [Tutorial Overview & Plan Chooser](../index.md)
 - [Node.js Language Guide](../../index.md)
 - [Platform: Hosting Plans](../../../../platform/hosting.md)
@@ -144,6 +211,7 @@ func azure functionapp publish $APP_NAME
 - [Recipes Index](../../recipes/index.md)
 
 ## Sources
+
 - [Azure Functions Node.js developer guide (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-reference-node)
-- [Create your first Azure Function with Core Tools (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-node)
+- [Automate resource deployment with Bicep (Microsoft Learn)](https://learn.microsoft.com/azure/azure-resource-manager/bicep/overview)
 - [Azure Functions hosting options (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-scale)
