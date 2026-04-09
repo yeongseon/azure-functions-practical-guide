@@ -1,3 +1,17 @@
+---
+hide:
+  - toc
+validation:
+  az_cli:
+    last_tested: 2026-04-10
+    cli_version: "2.83.0"
+    core_tools_version: "4.8.0"
+    result: pass
+  bicep:
+    last_tested: 2026-04-10
+    result: pass
+---
+
 # 05 - Infrastructure as Code (Flex Consumption)
 
 Deploy repeatable infrastructure with Bicep and parameterized environments.
@@ -5,32 +19,57 @@ Deploy repeatable infrastructure with Bicep and parameterized environments.
 ## Prerequisites
 
 | Tool | Version | Purpose |
-|---|---|---|
+|------|---------|---------|
 | Node.js | 20+ | Local runtime and package execution |
 | Azure Functions Core Tools | v4 | Local host and publishing |
 | Azure CLI | 2.61+ | Azure resource provisioning and management |
 
-!!! info "Plan basics"
-    Flex Consumption supports VNet integration, identity-based storage, per-function scaling, and remote build workflows.
+!!! info "Flex Consumption plan basics"
+    Flex Consumption (FC1) supports VNet integration, identity-based storage, per-function scaling, and remote build workflows.
 
 ## What You'll Build
 
-You will deploy the complete Flex Consumption infrastructure stack from Bicep, including storage, hosting plan, and Linux Function App resources.
-You will then verify the deployment state using Azure Resource Manager deployment metadata.
+You will deploy the complete Flex Consumption infrastructure stack from Bicep, including storage, hosting plan, managed identity, and Linux Function App resources.
 
-## Steps
+!!! info "Infrastructure Context"
+    **Plan**: Flex Consumption (FC1) | **Network**: VNet integration with private endpoints
+
+    The production Bicep template at `infra/flex-consumption/main.bicep` includes full VNet integration, private endpoints, and DNS zones.
+
+    ```mermaid
+    flowchart TD
+        BICEP["Bicep Template\ninfra/flex-consumption/main.bicep"] -->|"az deployment group create"| RG[Resource Group]
+        RG --> MI["User-Assigned\nManaged Identity"]
+        RG --> PLAN["App Service Plan\nFC1 FlexConsumption"]
+        RG --> ST["Storage Account\n(no shared key)"]
+        RG --> FA["Function App\nLinux Node.js 20"]
+        RG --> VNET["VNet + Subnets\n+ Private Endpoints"]
+        FA --> PLAN
+        FA -->|MI auth| ST
+        FA --> VNET
+
+        style BICEP fill:#f39c12,color:#fff
+        style FA fill:#0078d4,color:#fff
+    ```
 
 ```mermaid
 flowchart LR
-    A[Code commit] --> B[Build package]
-    B --> C[Deploy to Flex Consumption]
-    C --> D[Runtime indexes v4 handlers]
-    D --> E[Trigger execution]
+    A[Review Bicep template] --> B["az deployment group create"]
+    B --> C[Verify provisioning]
 ```
 
-### Step 1 - Define Bicep template
+## Steps
 
-Below is a simplified Flex Consumption template showing key resources. The repository template at `infra/flex-consumption/main.bicep` adds VNet integration, private endpoints, private DNS, and full RBAC configuration using a single `baseName` parameter.
+### Step 1 - Set variables (if not already set)
+
+```bash
+export RG="rg-func-node-flex-demo"
+export LOCATION="koreacentral"
+```
+
+### Step 2 - Review the Bicep template
+
+The production template is at `infra/flex-consumption/main.bicep`. Below is a simplified example showing key Flex Consumption resources:
 
 ```bicep
 param location string = resourceGroup().location
@@ -55,16 +94,6 @@ resource storage 'Microsoft.Storage/storageAccounts@2023-05-01' = {
 resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
   name: managedIdentityName
   location: location
-}
-
-resource deploymentBlobService 'Microsoft.Storage/storageAccounts/blobServices@2023-05-01' = {
-  parent: storage
-  name: 'default'
-}
-
-resource deploymentContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-05-01' = {
-  parent: deploymentBlobService
-  name: deploymentContainerName
 }
 
 resource plan 'Microsoft.Web/serverfarms@2024-04-01' = {
@@ -114,38 +143,42 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
     }
   }
 }
-
-resource functionAppSettings 'Microsoft.Web/sites/config@2024-04-01' = {
-  parent: functionApp
-  name: 'appsettings'
-  properties: {
-    AzureWebJobsStorage__accountName: storage.name
-    AzureWebJobsStorage__credential: 'managedidentity'
-    AzureWebJobsStorage__clientId: managedIdentity.properties.clientId
-  }
-}
 ```
 
-### Step 2 - Deploy template
+!!! note "Flex Consumption vs Consumption Bicep differences"
+    - Uses `FC1` / `FlexConsumption` SKU instead of `Y1` / `Dynamic`
+    - Uses `functionAppConfig` block (not `siteConfig.appSettings`) for runtime, scaling, and deployment
+    - Supports `allowSharedKeyAccess: false` on storage (identity-based auth)
+    - Uses blob container for deployment instead of Azure Files
+
+### Step 3 - Deploy template
 
 ```bash
-az deployment group create --resource-group $RG --template-file infra/flex-consumption/main.bicep --parameters baseName=$BASE_NAME
+az deployment group create \
+  --resource-group "$RG" \
+  --template-file infra/flex-consumption/main.bicep \
+  --parameters baseName=ndflex0410
 ```
 
-### Step 3 - Verify deployment state
+### Step 4 - Verify deployment state
 
 ```bash
-az deployment group show --resource-group $RG --name main --output json
+az deployment group show \
+  --resource-group "$RG" \
+  --name main \
+  --query "properties.provisioningState" \
+  --output tsv
 ```
 
-### Plan-specific notes
+### Step 5 - Review Flex Consumption-specific notes
 
-- Flex Consumption routes all traffic through the integrated VNet by default once `virtualNetworkSubnetId` is configured, so you do not set `WEBSITE_VNET_ROUTE_ALL=1` manually.
-- Flex Consumption does not support custom container hosting for Function Apps.
-- The repository template (`infra/flex-consumption/main.bicep`) includes full VNet integration with private endpoints and DNS zones. The simplified snippet above omits networking for clarity.
+- The repository template includes full VNet integration with private endpoints and DNS zones. The simplified snippet above omits networking for clarity.
+- Flex Consumption routes all traffic through the integrated VNet by default once `virtualNetworkSubnetId` is configured.
 - Use long-form CLI flags for maintainable runbooks.
 
 ## Verification
+
+Deployment output shows `Succeeded`:
 
 ```json
 {
@@ -153,14 +186,17 @@ az deployment group show --resource-group $RG --name main --output json
   "properties": {
     "provisioningState": "Succeeded",
     "mode": "Incremental",
-    "timestamp": "2026-04-08T08:40:03.0000000Z"
+    "timestamp": "2026-04-10T00:30:36.0000000Z"
   }
 }
 ```
 
-A `Succeeded` provisioning state confirms the Bicep deployment completed for the selected plan.
+## Next Steps
+
+> **Next:** [06 - CI/CD](06-ci-cd.md)
 
 ## See Also
+
 - [Tutorial Overview & Plan Chooser](../index.md)
 - [Node.js Language Guide](../../index.md)
 - [Platform: Hosting Plans](../../../../platform/hosting.md)
@@ -168,6 +204,7 @@ A `Succeeded` provisioning state confirms the Bicep deployment completed for the
 - [Recipes Index](../../recipes/index.md)
 
 ## Sources
+
 - [Azure Functions Node.js developer guide (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-reference-node)
-- [Create your first Azure Function with Core Tools (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-node)
-- [Azure Functions hosting options (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-scale)
+- [Automate resource deployment with Bicep (Microsoft Learn)](https://learn.microsoft.com/azure/azure-resource-manager/bicep/overview)
+- [Azure Functions Flex Consumption plan (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan)
