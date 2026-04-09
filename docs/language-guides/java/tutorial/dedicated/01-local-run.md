@@ -1,110 +1,174 @@
+---
+hide:
+  - toc
+validation:
+  az_cli:
+    last_tested: 2026-04-10
+    cli_version: "2.83.0"
+    core_tools_version: "4.8.0"
+    result: pass
+  bicep:
+    last_tested: null
+    result: not_tested
+---
+
 # 01 - Run Locally (Dedicated)
 
-Set up a Java Azure Functions app on your workstation and validate the first HTTP endpoint before touching Azure resources.
+Run the Java reference application on your machine before deploying to the Dedicated (App Service) plan. This track uses Linux shell examples; the same workflow works on Windows with equivalent commands.
 
 ## Prerequisites
 
 | Tool | Version | Purpose |
 |------|---------|---------|
 | JDK | 17+ | Compile and run Java functions locally |
-| Maven | 3.9+ | Build and deploy Java artifacts |
+| Maven | 3.6+ | Build and package Java artifacts |
 | Azure Functions Core Tools | v4 | Start local host and publish artifacts |
 | Azure CLI | 2.61+ | Provision Azure resources and inspect app state |
 
-!!! info "Plan basics"
-    Dedicated (App Service Plan) runs Functions on reserved capacity. Choose it when you already operate App Service workloads and prefer fixed-cost hosting.
-
-```mermaid
-flowchart LR
-    A[Initialize Maven project] --> B[Add Java function class]
-    B --> C[Start Functions host]
-    C --> D[Test local endpoint]
-```
+!!! info "Dedicated plan basics"
+    Dedicated (App Service Plan) runs functions on standard App Service infrastructure with predictable pricing. It supports Always On, manual/auto-scale, deployment slots, and VNet integration. Best for apps that already run on App Service or need long-running processes.
 
 ## What You'll Build
 
-- A Java Azure Functions project scaffolded with the Azure Functions Maven archetype.
-- A `HelloJava` HTTP trigger implemented in `Function.java`.
-- A local validation flow using `mvn azure-functions:run` and `curl`.
+You will clone the Java reference application, build it with Maven, and run all 16 functions locally using Azure Functions Core Tools.
+
+```mermaid
+flowchart LR
+    A[Clone reference app] --> B[Maven build]
+    B --> C[Start Functions host]
+    C --> D[Test local endpoints]
+```
 
 ## Steps
 
-### Step 1 - Create the Java project
+### Step 1 - Clone and explore the reference application
 
 ```bash
-mvn archetype:generate -DarchetypeGroupId=com.microsoft.azure -DarchetypeArtifactId=azure-functions-archetype
-cd my-java-functions
+git clone https://github.com/yeongseon/azure-functions-practical-guide.git
+cd azure-functions-practical-guide/apps/java
 ```
 
-### Step 2 - Confirm Maven project structure
+Project structure:
 
 ```text
-project-root/
-├── src/
-│   └── main/
-│       └── java/
-│           └── com/example/
-│               └── ...
+apps/java/
+├── src/main/java/com/functions/
+│   ├── Health.java
+│   ├── HelloHttp.java
+│   ├── Info.java
+│   ├── IdentityProbe.java
+│   ├── StorageProbe.java
+│   ├── DnsResolve.java
+│   ├── ExternalDependency.java
+│   ├── LogLevels.java
+│   ├── SlowResponse.java
+│   ├── TestError.java
+│   ├── UnhandledError.java
+│   ├── QueueProcessor.java
+│   ├── BlobProcessor.java
+│   ├── ScheduledCleanup.java
+│   ├── TimerLab.java
+│   ├── EventhubLagProcessor.java
+│   └── shared/
+│       ├── AppConfig.java
+│       └── Telemetry.java
 ├── host.json
-├── local.settings.json
+├── local.settings.json.example
 └── pom.xml
 ```
 
-### Step 3 - Add a minimal HTTP trigger
+### Step 2 - Set up local settings
 
-```java
-package com.example;
+```bash
+cp local.settings.json.example local.settings.json
+```
 
-import com.microsoft.azure.functions.*;
-import com.microsoft.azure.functions.annotation.*;
-import java.util.Optional;
+The template includes placeholder values suitable for local development:
 
-public class Function {
-    @FunctionName("HelloJava")
-    public HttpResponseMessage run(
-        @HttpTrigger(
-            name = "req",
-            methods = {HttpMethod.GET, HttpMethod.POST},
-            authLevel = AuthorizationLevel.FUNCTION,
-            route = "hello/{name?}")
-        HttpRequestMessage<Optional<String>> request,
-        @BindingName("name") String name,
-        final ExecutionContext context) {
-
-        String input = request.getBody().orElse(name != null ? name : "world");
-        context.getLogger().info("Processing local Java request for: " + input);
-
-        return request.createResponseBuilder(HttpStatus.OK)
-            .body("Hello, " + input + " from Java!")
-            .build();
-    }
+```json
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "java",
+    "FUNCTIONS_EXTENSION_VERSION": "~4",
+    "QueueStorage": "UseDevelopmentStorage=true",
+    "EventHubConnection__fullyQualifiedNamespace": "placeholder.servicebus.windows.net"
+  }
 }
 ```
+
+### Step 3 - Build with Maven
+
+```bash
+mvn clean package
+```
+
+!!! note "Maven generates staging directory"
+    The `azure-functions-maven-plugin` creates `target/azure-functions/azure-functions-java-guide/` containing compiled JARs and `function.json` files for each function. This staging directory is what gets published to Azure.
 
 ### Step 4 - Start the local runtime
 
 ```bash
-mvn clean package
 mvn azure-functions:run
 ```
 
-### Step 5 - Call the endpoint
+### Step 5 - Test local endpoints
 
 ```bash
-curl --request GET "http://localhost:7071/api/hello/local"
+# Health check
+curl --request GET "http://localhost:7071/api/health"
+
+# Hello with path parameter
+curl --request GET "http://localhost:7071/api/hello/Local"
+
+# App info
+curl --request GET "http://localhost:7071/api/info"
 ```
 
 ## Verification
 
-```text
-[INFO] Azure Functions Java Worker started
-Functions:
-    HelloJava: [GET,POST] http://localhost:7071/api/hello/{name?}
-```
+Console output when the host starts:
 
 ```text
-Hello, local from Java!
+Azure Functions Core Tools
+Core Tools Version: 4.8.0
+
+Functions:
+
+        blobProcessor: blobTrigger
+        dnsResolve: [GET] http://localhost:7071/api/dns/{hostname=google.com}
+        eventhubLagProcessor: eventHubTrigger
+        externalDependency: [GET] http://localhost:7071/api/dependency
+        health: [GET] http://localhost:7071/api/health
+        helloHttp: [GET,POST] http://localhost:7071/api/hello/{name=world}
+        identityProbe: [GET] http://localhost:7071/api/identity
+        info: [GET] http://localhost:7071/api/info
+        logLevels: [GET] http://localhost:7071/api/loglevels
+        queueProcessor: queueTrigger
+        scheduledCleanup: timerTrigger
+        slowResponse: [GET] http://localhost:7071/api/slow
+        storageProbe: [GET] http://localhost:7071/api/storage/probe
+        testError: [GET] http://localhost:7071/api/testerror
+        timerLab: timerTrigger
+        unhandledError: [GET] http://localhost:7071/api/unhandlederror
 ```
+
+Health endpoint response:
+
+```json
+{"status":"healthy","timestamp":"2026-04-09T17:00:00.000Z","version":"1.0.0"}
+```
+
+Hello endpoint response:
+
+```json
+{"message":"Hello, Local"}
+```
+
+## Next Steps
+
+> **Next:** [02 - First Deploy](02-first-deploy.md)
 
 ## See Also
 
