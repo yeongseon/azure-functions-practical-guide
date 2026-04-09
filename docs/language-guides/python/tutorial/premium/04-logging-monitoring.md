@@ -1,3 +1,8 @@
+---
+hide:
+  - toc
+---
+
 # 04 - Logging and Monitoring (Premium)
 
 Enable observability for a Premium Function App using Application Insights, Log Analytics queries, and Kudu/SCM diagnostics.

@@ -1,3 +1,8 @@
+---
+hide:
+  - toc
+---
+
 # 01 - Run Locally (Dedicated)
 
 This tutorial runs the Function App locally and prepares the exact variables and conventions you will use on the Dedicated (App Service Plan) track. Dedicated is always running, billed at a fixed monthly plan price, and works well when you already have App Service capacity or want to co-host Functions with existing web apps.

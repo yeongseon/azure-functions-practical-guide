@@ -1,3 +1,8 @@
+---
+hide:
+  - toc
+---
+
 # 07 - Extending Triggers (Flex Consumption)
 
 Add non-HTTP triggers to your Flex Consumption app with the correct trigger model for FC1 scaling and networking behavior.

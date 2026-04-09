@@ -1,3 +1,8 @@
+---
+hide:
+  - toc
+---
+
 # 06 - CI/CD (Flex Consumption)
 
 Automate build and deployment for your Flex Consumption Function App with GitHub Actions and OIDC authentication.

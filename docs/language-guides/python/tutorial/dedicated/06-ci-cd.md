@@ -1,3 +1,8 @@
+---
+hide:
+  - toc
+---
+
 # 06 - CI/CD (Dedicated)
 
 This tutorial sets up CI/CD for Dedicated with standard zip deployment. Dedicated supports Kudu/SCM and zipdeploy workflows, which makes GitHub Actions integration straightforward.

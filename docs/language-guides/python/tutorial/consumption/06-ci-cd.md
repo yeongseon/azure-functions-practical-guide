@@ -1,3 +1,8 @@
+---
+hide:
+  - toc
+---
+
 # 06 - CI/CD (Consumption)
 
 Set up GitHub Actions deployment for Consumption (Y1) using `azure/functions-action@v1` and Linux-compatible Zip Deploy behavior.

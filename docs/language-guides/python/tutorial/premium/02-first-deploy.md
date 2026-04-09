@@ -1,3 +1,8 @@
+---
+hide:
+  - toc
+---
+
 # 02 - First Deploy (Premium)
 
 Deploy a Python Function App to an Elastic Premium plan (`EP1`) with VNet integration and private endpoint support, then publish code and verify the app is live.
@@ -78,6 +83,27 @@ Deploy a Python Function App to an Elastic Premium plan (`EP1`) with VNet integr
     az account set --subscription "<subscription-id>"
     ```
 
+    Expected output (abridged):
+
+    ```json
+    [
+      {
+        "name": "<account-name>",
+        "tenantId": "<tenant-id>",
+        "id": "<subscription-id>",
+        "isDefault": true
+      }
+    ]
+    ```
+
+    ```json
+    {
+      "id": "<subscription-id>",
+      "name": "<subscription-name>",
+      "state": "Enabled"
+    }
+    ```
+
 2. Create resource group and storage account.
 
     ```bash
@@ -90,7 +116,33 @@ Deploy a Python Function App to an Elastic Premium plan (`EP1`) with VNet integr
       --resource-group "$RG" \
       --location "$LOCATION" \
       --sku "Standard_LRS" \
-      --kind "StorageV2"
+      --kind "StorageV2" \
+      --allow-blob-public-access false
+    ```
+
+    Expected output (abridged):
+
+    ```json
+    {
+      "name": "<resource-group-name>",
+      "location": "koreacentral",
+      "properties": {
+        "provisioningState": "Succeeded"
+      }
+    }
+    ```
+
+    ```json
+    {
+      "name": "<storage-account-name>",
+      "location": "koreacentral",
+      "kind": "StorageV2",
+      "sku": {
+        "name": "Standard_LRS"
+      },
+      "allowBlobPublicAccess": false,
+      "provisioningState": "Succeeded"
+    }
     ```
 
 3. Create the Premium plan and Function App (Linux example).
@@ -114,6 +166,29 @@ Deploy a Python Function App to an Elastic Premium plan (`EP1`) with VNet integr
       --os-type "Linux"
     ```
 
+    Expected output (abridged):
+
+    ```json
+    {
+      "name": "<plan-name>",
+      "location": "koreacentral",
+      "sku": {
+        "name": "EP1",
+        "tier": "ElasticPremium"
+      },
+      "provisioningState": "Succeeded"
+    }
+    ```
+
+    ```json
+    {
+      "name": "<function-app-name>",
+      "state": "Running",
+      "kind": "functionapp,linux",
+      "defaultHostName": "<function-app-name>.azurewebsites.net"
+    }
+    ```
+
 !!! warning "Enterprise policy: Shared key access"
     Some enterprise subscriptions enforce Azure Policy that sets `allowSharedKeyAccess: false` on all storage accounts. Premium (EP1) requires `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING` with a connection string that uses shared key access to create the content file share during provisioning. If your subscription has this policy, the Function App creation will fail with a 403 error. Solutions:
 
@@ -128,19 +203,139 @@ Deploy a Python Function App to an Elastic Premium plan (`EP1`) with VNet integr
       --name "$APP_NAME" \
       --resource-group "$RG" \
       --settings \
-        "FUNCTIONS_WORKER_RUNTIME=python"
+        "FUNCTIONS_WORKER_RUNTIME=python" \
+        "AzureWebJobsStorage__accountName=$STORAGE_NAME" \
+        "AzureWebJobsStorage__credential=managedidentity"
+    ```
+
+    Expected output (abridged):
+
+    ```json
+    [
+      {
+        "name": "FUNCTIONS_WORKER_RUNTIME",
+        "value": "python"
+      },
+      {
+        "name": "AzureWebJobsStorage__accountName",
+        "value": "<storage-account-name>"
+      },
+      {
+        "name": "AzureWebJobsStorage__credential",
+        "value": "managedidentity"
+      }
+    ]
     ```
 
     For Premium, both host-storage models are valid:
     - Connection string: `AzureWebJobsStorage=<connection-string>`
     - Identity-based: `AzureWebJobsStorage__accountName=<storage-account-name>` plus `AzureWebJobsStorage__credential=managedidentity`
 
-    For identity-based host storage, also enable managed identity and assign these storage-account scoped roles to the Function App identity:
-    - `Storage Blob Data Owner`
-    - `Storage Queue Data Contributor`
-    - `Storage Table Data Contributor`
+5. Enable a system-assigned managed identity for the Function App.
 
-5. Create a VNet with separate subnets for integration and private endpoints.
+    ```bash
+    az functionapp identity assign \
+      --name "$APP_NAME" \
+      --resource-group "$RG"
+
+    export MI_PRINCIPAL_ID=$(az functionapp identity show \
+      --name "$APP_NAME" \
+      --resource-group "$RG" \
+      --query "principalId" \
+      --output tsv)
+    ```
+
+    Expected output (abridged):
+
+    ```json
+    {
+      "type": "SystemAssigned",
+      "principalId": "<object-id>",
+      "tenantId": "<tenant-id>"
+    }
+    ```
+
+    ```text
+    <object-id>
+    ```
+
+6. Assign storage RBAC roles to the managed identity.
+
+    ```bash
+    export STORAGE_ID=$(az storage account show \
+      --name "$STORAGE_NAME" \
+      --resource-group "$RG" \
+      --query "id" \
+      --output tsv)
+
+    az role assignment create \
+      --assignee "$MI_PRINCIPAL_ID" \
+      --role "Storage Blob Data Owner" \
+      --scope "$STORAGE_ID"
+
+    az role assignment create \
+      --assignee "$MI_PRINCIPAL_ID" \
+      --role "Storage Account Contributor" \
+      --scope "$STORAGE_ID"
+
+    az role assignment create \
+      --assignee "$MI_PRINCIPAL_ID" \
+      --role "Storage Queue Data Contributor" \
+      --scope "$STORAGE_ID"
+
+    az role assignment create \
+      --assignee "$MI_PRINCIPAL_ID" \
+      --role "Storage File Data Privileged Contributor" \
+      --scope "$STORAGE_ID"
+    ```
+
+    Expected output (abridged):
+
+    ```text
+    /subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.Storage/storageAccounts/<storage-account-name>
+    ```
+
+    ```json
+    {
+      "principalId": "<object-id>",
+      "roleDefinitionName": "Storage Blob Data Owner",
+      "scope": "/subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.Storage/storageAccounts/<storage-account-name>"
+    }
+    ```
+
+    ```json
+    {
+      "principalId": "<object-id>",
+      "roleDefinitionName": "Storage Account Contributor",
+      "scope": "/subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.Storage/storageAccounts/<storage-account-name>"
+    }
+    ```
+
+    ```json
+    {
+      "principalId": "<object-id>",
+      "roleDefinitionName": "Storage Queue Data Contributor",
+      "scope": "/subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.Storage/storageAccounts/<storage-account-name>"
+    }
+    ```
+
+    ```json
+    {
+      "principalId": "<object-id>",
+      "roleDefinitionName": "Storage File Data Privileged Contributor",
+      "scope": "/subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.Storage/storageAccounts/<storage-account-name>"
+    }
+    ```
+
+    !!! tip "Why these four roles are required on Premium"
+        Premium Function Apps need host storage and Azure Files content share access during provisioning and runtime:
+
+        - `Storage Blob Data Owner` for host blobs, leases, and trigger state.
+        - `Storage Account Contributor` for storage account-level management operations used by the platform.
+        - `Storage Queue Data Contributor` for queue-backed host coordination and trigger operations.
+        - `Storage File Data Privileged Contributor` for the Azure Files content share (`WEBSITE_CONTENTAZUREFILECONNECTIONSTRING`) used by Premium.
+
+7. Create a VNet with separate subnets for integration and private endpoints.
 
     ```bash
     az network vnet create \
@@ -168,9 +363,50 @@ Deploy a Python Function App to an Elastic Premium plan (`EP1`) with VNet integr
       --resource-group "$RG" \
       --vnet "vnet-premium-demo" \
       --subnet "snet-integration"
+
+    for SVC in blob queue table file; do
+      az network private-endpoint create \
+        --name "pe-st-$SVC" \
+        --resource-group "$RG" \
+        --location "$LOCATION" \
+        --vnet-name "vnet-premium-demo" \
+        --subnet "snet-private-endpoints" \
+        --private-connection-resource-id "$STORAGE_ID" \
+        --group-ids "$SVC" \
+        --connection-name "conn-st-$SVC"
+    done
     ```
 
-6. Create a private endpoint for inbound private access.
+    Expected output (abridged):
+
+    ```json
+    {
+      "newVNetName": "vnet-premium-demo",
+      "newSubnetName": "snet-integration",
+      "newRouteAllEnabled": false
+    }
+    ```
+
+    ```text
+    {
+      "name": "pe-st-blob",
+      "provisioningState": "Succeeded"
+    }
+    {
+      "name": "pe-st-queue",
+      "provisioningState": "Succeeded"
+    }
+    {
+      "name": "pe-st-table",
+      "provisioningState": "Succeeded"
+    }
+    {
+      "name": "pe-st-file",
+      "provisioningState": "Succeeded"
+    }
+    ```
+
+8. Create a private endpoint for inbound private access.
 
     ```bash
     APP_ID=$(az functionapp show \
@@ -188,6 +424,26 @@ Deploy a Python Function App to an Elastic Premium plan (`EP1`) with VNet integr
       --private-connection-resource-id "$APP_ID" \
       --group-ids "sites" \
       --connection-name "conn-$APP_NAME"
+    ```
+
+    Expected output (abridged):
+
+    ```text
+    /subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.Web/sites/<function-app-name>
+    ```
+
+    ```json
+    {
+      "name": "pe-<function-app-name>",
+      "provisioningState": "Succeeded",
+      "privateLinkServiceConnections": [
+        {
+          "groupIds": [
+            "sites"
+          ]
+        }
+      ]
+    }
     ```
 
     Private endpoint name resolution requires private DNS configuration. At minimum, create and link `privatelink.azurewebsites.net` to the VNet, then attach the zone to the private endpoint:
@@ -210,16 +466,81 @@ Deploy a Python Function App to an Elastic Premium plan (`EP1`) with VNet integr
       --name "web-dns-zone-group" \
       --private-dns-zone "privatelink.azurewebsites.net" \
       --zone-name "web-config"
+
+    for SVC in blob queue table file; do
+      az network private-dns zone create \
+        --resource-group "$RG" \
+        --name "privatelink.$SVC.core.windows.net"
+
+      az network private-dns link vnet create \
+        --resource-group "$RG" \
+        --zone-name "privatelink.$SVC.core.windows.net" \
+        --name "link-$SVC" \
+        --virtual-network "vnet-premium-demo" \
+        --registration-enabled false
+
+      az network private-endpoint dns-zone-group create \
+        --resource-group "$RG" \
+        --endpoint-name "pe-st-$SVC" \
+        --name "$SVC-dns-zone-group" \
+        --private-dns-zone "privatelink.$SVC.core.windows.net" \
+        --zone-name "$SVC"
+    done
     ```
 
-7. Publish function code (Premium supports file share-based deployment and SCM/Kudu).
+    Expected output (abridged):
+
+    ```json
+    {
+      "name": "privatelink.azurewebsites.net",
+      "numberOfRecordSets": 0
+    }
+    ```
+
+    ```json
+    {
+      "name": "web-dns-zone-group",
+      "provisioningState": "Succeeded"
+    }
+    ```
+
+    ```text
+    {
+      "name": "privatelink.blob.core.windows.net",
+      "provisioningState": "Succeeded"
+    }
+    {
+      "name": "privatelink.queue.core.windows.net",
+      "provisioningState": "Succeeded"
+    }
+    {
+      "name": "privatelink.table.core.windows.net",
+      "provisioningState": "Succeeded"
+    }
+    {
+      "name": "privatelink.file.core.windows.net",
+      "provisioningState": "Succeeded"
+    }
+    ```
+
+9. Publish function code (Premium supports file share-based deployment and SCM/Kudu).
 
     ```bash
     cd apps/python
     func azure functionapp publish "$APP_NAME" --python
     ```
 
-8. Verify app status and endpoint.
+    Expected output (abridged):
+
+    ```text
+    Getting site publishing info...
+    Creating archive for current directory...
+    Upload completed successfully.
+    Deployment completed successfully.
+    Syncing triggers...
+    ```
+
+10. Verify app status and endpoint.
 
     ```bash
     az functionapp show \
@@ -228,6 +549,18 @@ Deploy a Python Function App to an Elastic Premium plan (`EP1`) with VNet integr
       --output table
 
     curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
+    ```
+
+    Expected output (abridged):
+
+    ```text
+    Name               State    DefaultHostName
+    -----------------  -------  ----------------------------------------
+    <function-app-name> Running  <function-app-name>.azurewebsites.net
+    ```
+
+    ```json
+    {"status":"healthy","timestamp":"2026-01-01T00:00:00Z","version":"1.0.0"}
     ```
 
 ## Verification

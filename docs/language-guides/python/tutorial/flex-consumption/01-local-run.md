@@ -1,3 +1,8 @@
+---
+hide:
+  - toc
+---
+
 # 01 - Run Locally (Flex Consumption)
 
 Run the Function App locally with Azure Functions Core Tools so you can validate routes, logging, and trigger behavior before your first FC1 deployment.

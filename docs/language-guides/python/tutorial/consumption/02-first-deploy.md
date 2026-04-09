@@ -1,3 +1,8 @@
+---
+hide:
+  - toc
+---
+
 # 02 - First Deploy (Consumption)
 
 Deploy the app to Azure Functions Consumption (Y1) using long-form CLI commands only. This tutorial uses Linux examples and notes Windows support where relevant.

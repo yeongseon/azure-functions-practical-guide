@@ -1,3 +1,8 @@
+---
+hide:
+  - toc
+---
+
 # 03 - Configuration (Consumption)
 
 Configure your deployed Consumption (Y1) function app using classic `siteConfig.appSettings` semantics and CLI app settings commands.

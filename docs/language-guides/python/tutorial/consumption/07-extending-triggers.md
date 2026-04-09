@@ -1,3 +1,8 @@
+---
+hide:
+  - toc
+---
+
 # 07 - Extending Triggers (Consumption)
 
 Extend your Consumption (Y1) app with queue and blob triggers. On this plan, scaling is app-level (not per-function), and the standard blob trigger polling model works well.

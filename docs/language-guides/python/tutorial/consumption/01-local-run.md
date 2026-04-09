@@ -1,3 +1,8 @@
+---
+hide:
+  - toc
+---
+
 # 01 - Run Locally (Consumption)
 
 Run the sample Azure Functions Python app on your machine before deploying to the Consumption (Y1) plan. This track uses Linux shell examples; the same workflow works on Windows with equivalent commands.

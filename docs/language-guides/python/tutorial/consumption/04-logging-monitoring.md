@@ -1,3 +1,8 @@
+---
+hide:
+  - toc
+---
+
 # 04 - Logging and Monitoring (Consumption)
 
 Set up baseline observability for a Consumption (Y1) Function App with Application Insights and CLI log queries.

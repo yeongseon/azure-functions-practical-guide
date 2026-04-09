@@ -1,3 +1,8 @@
+---
+hide:
+  - toc
+---
+
 # 04 - Logging and Monitoring (Flex Consumption)
 
 Set up observability for your Flex Consumption app so you can verify deployments, inspect failures, and monitor scale behavior.

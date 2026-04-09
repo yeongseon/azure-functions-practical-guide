@@ -1,3 +1,8 @@
+---
+hide:
+  - toc
+---
+
 # 05 - Infrastructure as Code (Consumption)
 
 Define and deploy a complete Consumption (Y1) environment with Bicep. This plan is simpler than Flex: no VNet integration requirement, no private endpoints, and no mandatory managed identity (recommended for app access patterns).

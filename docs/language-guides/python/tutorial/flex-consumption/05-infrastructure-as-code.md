@@ -1,3 +1,8 @@
+---
+hide:
+  - toc
+---
+
 # 05 - Infrastructure as Code (Flex Consumption)
 
 Use Bicep to provision Flex Consumption infrastructure reproducibly, including FC1 plan settings, identity-based host storage, and blob-based deployment configuration.
@@ -229,6 +234,238 @@ Step 3/5: Deploying infrastructure (Bicep)...
 Infrastructure deployed!
 Step 4/5: Deploying function app code...
 Deployment completed successfully.
+```
+
+### Option B: Deploy with Azure CLI (No Bicep)
+
+If you prefer not to use Bicep, you can provision all Flex Consumption resources with Azure CLI. This creates the same infrastructure as the Bicep template above.
+
+!!! note "Same result, different tool"
+    Both Option A (Bicep) and Option B (CLI) produce identical infrastructure. Choose whichever fits your workflow.
+
+#### B-1: Resource Group and Storage Account
+
+```bash
+az group create \
+  --name "$RG" \
+  --location "$LOCATION"
+
+az storage account create \
+  --name "$STORAGE_NAME" \
+  --resource-group "$RG" \
+  --location "$LOCATION" \
+  --sku Standard_LRS \
+  --kind StorageV2 \
+  --allow-blob-public-access false \
+  --allow-shared-key-access false \
+  --min-tls-version TLS1_2
+```
+
+#### B-2: User-Assigned Managed Identity
+
+```bash
+export MI_NAME="${BASE_NAME}-identity"
+
+az identity create \
+  --name "$MI_NAME" \
+  --resource-group "$RG" \
+  --location "$LOCATION"
+
+export MI_PRINCIPAL_ID=$(az identity show \
+  --name "$MI_NAME" \
+  --resource-group "$RG" \
+  --query "principalId" \
+  --output tsv)
+
+export MI_CLIENT_ID=$(az identity show \
+  --name "$MI_NAME" \
+  --resource-group "$RG" \
+  --query "clientId" \
+  --output tsv)
+
+export MI_ID=$(az identity show \
+  --name "$MI_NAME" \
+  --resource-group "$RG" \
+  --query "id" \
+  --output tsv)
+```
+
+#### B-3: RBAC Role Assignments
+
+```bash
+export STORAGE_ID=$(az storage account show \
+  --name "$STORAGE_NAME" \
+  --resource-group "$RG" \
+  --query "id" \
+  --output tsv)
+
+az role assignment create \
+  --assignee "$MI_PRINCIPAL_ID" \
+  --role "Storage Blob Data Owner" \
+  --scope "$STORAGE_ID"
+
+az role assignment create \
+  --assignee "$MI_PRINCIPAL_ID" \
+  --role "Storage Account Contributor" \
+  --scope "$STORAGE_ID"
+
+az role assignment create \
+  --assignee "$MI_PRINCIPAL_ID" \
+  --role "Storage Queue Data Contributor" \
+  --scope "$STORAGE_ID"
+```
+
+#### B-4: VNet and Subnets
+
+```bash
+export VNET_NAME="${BASE_NAME}-vnet"
+
+az network vnet create \
+  --name "$VNET_NAME" \
+  --resource-group "$RG" \
+  --location "$LOCATION" \
+  --address-prefixes "10.0.0.0/16" \
+  --subnet-name "subnet-integration" \
+  --subnet-prefixes "10.0.1.0/24"
+
+az network vnet subnet create \
+  --name "subnet-private-endpoints" \
+  --resource-group "$RG" \
+  --vnet-name "$VNET_NAME" \
+  --address-prefixes "10.0.2.0/24"
+
+az network vnet subnet update \
+  --name "subnet-integration" \
+  --resource-group "$RG" \
+  --vnet-name "$VNET_NAME" \
+  --delegations "Microsoft.App/environments"
+```
+
+#### B-5: Storage Private Endpoints (×4)
+
+```bash
+for SVC in blob queue table file; do
+  az network private-endpoint create \
+    --name "${BASE_NAME}-pe-$SVC" \
+    --resource-group "$RG" \
+    --location "$LOCATION" \
+    --vnet-name "$VNET_NAME" \
+    --subnet "subnet-private-endpoints" \
+    --private-connection-resource-id "$STORAGE_ID" \
+    --group-ids "$SVC" \
+    --connection-name "${BASE_NAME}-plsc-$SVC"
+done
+```
+
+#### B-6: Private DNS Zones and VNet Links (×4)
+
+```bash
+for SVC in blob queue table file; do
+  az network private-dns zone create \
+    --resource-group "$RG" \
+    --name "privatelink.$SVC.core.windows.net"
+
+  az network private-dns link vnet create \
+    --resource-group "$RG" \
+    --zone-name "privatelink.$SVC.core.windows.net" \
+    --name "${BASE_NAME}-$SVC-dns-link" \
+    --virtual-network "$VNET_NAME" \
+    --registration-enabled false
+
+  az network private-endpoint dns-zone-group create \
+    --resource-group "$RG" \
+    --endpoint-name "${BASE_NAME}-pe-$SVC" \
+    --name "$SVC-dns-zone-group" \
+    --private-dns-zone "privatelink.$SVC.core.windows.net" \
+    --zone-name "$SVC"
+done
+```
+
+#### B-7: Deployment Blob Container
+
+```bash
+az storage container create \
+  --name "deployment-packages" \
+  --account-name "$STORAGE_NAME" \
+  --auth-mode login
+```
+
+#### B-8: Application Insights
+
+```bash
+az monitor app-insights component create \
+  --app "$APPINSIGHTS_NAME" \
+  --resource-group "$RG" \
+  --location "$LOCATION" \
+  --application-type web
+
+export APPINSIGHTS_CONN=$(az monitor app-insights component show \
+  --app "$APPINSIGHTS_NAME" \
+  --resource-group "$RG" \
+  --query "connectionString" \
+  --output tsv)
+```
+
+#### B-9: Flex Consumption Plan and Function App
+
+```bash
+az functionapp plan create \
+  --name "$PLAN_NAME" \
+  --resource-group "$RG" \
+  --location "$LOCATION" \
+  --sku FC1 \
+  --is-linux
+
+az functionapp create \
+  --name "$APP_NAME" \
+  --resource-group "$RG" \
+  --plan "$PLAN_NAME" \
+  --storage-account "$STORAGE_NAME" \
+  --runtime python \
+  --runtime-version 3.11 \
+  --functions-version 4 \
+  --os-type Linux \
+  --assign-identity "$MI_ID"
+```
+
+#### B-10: App Settings (Identity-Based Storage)
+
+```bash
+az functionapp config appsettings set \
+  --name "$APP_NAME" \
+  --resource-group "$RG" \
+  --settings \
+    "AzureWebJobsStorage__accountName=$STORAGE_NAME" \
+    "AzureWebJobsStorage__credential=managedidentity" \
+    "AzureWebJobsStorage__clientId=$MI_CLIENT_ID" \
+    "APPLICATIONINSIGHTS_CONNECTION_STRING=$APPINSIGHTS_CONN"
+```
+
+#### B-11: VNet Integration
+
+```bash
+az functionapp vnet-integration add \
+  --name "$APP_NAME" \
+  --resource-group "$RG" \
+  --vnet "$VNET_NAME" \
+  --subnet "subnet-integration"
+```
+
+#### B-12: Validate
+
+```bash
+az appservice plan show \
+  --name "$PLAN_NAME" \
+  --resource-group "$RG" \
+  --query "sku" \
+  --output json
+
+az network vnet subnet show \
+  --resource-group "$RG" \
+  --vnet-name "$VNET_NAME" \
+  --name "subnet-integration" \
+  --query "delegations" \
+  --output json
 ```
 
 ## Verification

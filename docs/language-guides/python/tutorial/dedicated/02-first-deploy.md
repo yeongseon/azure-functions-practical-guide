@@ -1,3 +1,8 @@
+---
+hide:
+  - toc
+---
+
 # 02 - First Deploy (Dedicated)
 
 In this tutorial you deploy the Function App to a Dedicated App Service Plan using Basic B1. Dedicated plans are always running (no scale-to-zero), support Linux and Windows, and use fixed monthly pricing regardless of executions.
@@ -150,11 +155,172 @@ flowchart LR
     B --> D[Azure Services\nStorage, Monitor, App Insights]
 ```
 
-!!! info "Requires Standard tier or higher"
-    VNet integration is not available on Basic (B1) tier. Upgrade to Standard (S1) or Premium (P1v2) for VNet support.
+!!! info "VNet support requires Standard+ tier"
+    VNet integration is not available on Basic (B1) tier. See the **Optional: VNet and Private Endpoints** section below for Standard (S1) or Premium (P1v2) setup.
 
-!!! info "Private endpoints on Dedicated"
-    App Service private endpoints are supported on Basic (B1) and higher tiers. When you enable private endpoints, verify private DNS resolution for the app hostname.
+### Optional: VNet and Private Endpoints (Standard+ Tier)
+
+??? example "Optional: VNet and Private Endpoints (Standard+ Tier)"
+    If you deployed with `--sku S1` or higher instead of B1, you can add full network isolation with VNet integration, storage private endpoints, and managed identity.
+
+    #### Step A: Upgrade Plan (skip if already S1+)
+
+    ```bash
+    az appservice plan update \
+      --name $PLAN_NAME \
+      --resource-group $RG \
+      --sku S1
+    ```
+
+    #### Step B: Create VNet and Subnets
+
+    ```bash
+    export VNET_NAME="vnet-dedicated-demo"
+
+    az network vnet create \
+      --name "$VNET_NAME" \
+      --resource-group "$RG" \
+      --location "$LOCATION" \
+      --address-prefixes "10.0.0.0/16" \
+      --subnet-name "snet-integration" \
+      --subnet-prefixes "10.0.1.0/24"
+
+    az network vnet subnet create \
+      --name "snet-private-endpoints" \
+      --resource-group "$RG" \
+      --vnet-name "$VNET_NAME" \
+      --address-prefixes "10.0.2.0/24"
+
+    az network vnet subnet update \
+      --name "snet-integration" \
+      --resource-group "$RG" \
+      --vnet-name "$VNET_NAME" \
+      --delegations "Microsoft.Web/serverFarms"
+    ```
+
+    #### Step C: Enable VNet Integration
+
+    ```bash
+    az functionapp vnet-integration add \
+      --name "$APP_NAME" \
+      --resource-group "$RG" \
+      --vnet "$VNET_NAME" \
+      --subnet "snet-integration"
+    ```
+
+    #### Step D: Enable System-Assigned Managed Identity
+
+    ```bash
+    az functionapp identity assign \
+      --name "$APP_NAME" \
+      --resource-group "$RG"
+
+    export MI_PRINCIPAL_ID=$(az functionapp identity show \
+      --name "$APP_NAME" \
+      --resource-group "$RG" \
+      --query "principalId" \
+      --output tsv)
+    ```
+
+    #### Step E: Assign RBAC Roles
+
+    ```bash
+    export STORAGE_ID=$(az storage account show \
+      --name "$STORAGE_NAME" \
+      --resource-group "$RG" \
+      --query "id" \
+      --output tsv)
+
+    az role assignment create \
+      --assignee "$MI_PRINCIPAL_ID" \
+      --role "Storage Blob Data Owner" \
+      --scope "$STORAGE_ID"
+
+    az role assignment create \
+      --assignee "$MI_PRINCIPAL_ID" \
+      --role "Storage Account Contributor" \
+      --scope "$STORAGE_ID"
+
+    az role assignment create \
+      --assignee "$MI_PRINCIPAL_ID" \
+      --role "Storage Queue Data Contributor" \
+      --scope "$STORAGE_ID"
+    ```
+
+    !!! tip "RBAC roles explained"
+        - **Storage Blob Data Owner**: Read/write blob data (used by the Functions runtime for triggers, bindings, and internal state)
+        - **Storage Account Contributor**: Manage storage account properties
+        - **Storage Queue Data Contributor**: Read/write queue messages (used by durable functions, queue triggers)
+
+    #### Step F: Lock Down Storage
+
+    ```bash
+    az storage account update \
+      --name "$STORAGE_NAME" \
+      --resource-group "$RG" \
+      --allow-blob-public-access false
+    ```
+
+    #### Step G: Create Storage Private Endpoints (×4)
+
+    ```bash
+    for SVC in blob queue table file; do
+      az network private-endpoint create \
+        --name "pe-st-$SVC" \
+        --resource-group "$RG" \
+        --location "$LOCATION" \
+        --vnet-name "$VNET_NAME" \
+        --subnet "snet-private-endpoints" \
+        --private-connection-resource-id "$STORAGE_ID" \
+        --group-ids "$SVC" \
+        --connection-name "conn-st-$SVC"
+    done
+    ```
+
+    #### Step H: Create Private DNS Zones and Link to VNet (×4)
+
+    ```bash
+    for SVC in blob queue table file; do
+      az network private-dns zone create \
+        --resource-group "$RG" \
+        --name "privatelink.$SVC.core.windows.net"
+
+      az network private-dns link vnet create \
+        --resource-group "$RG" \
+        --zone-name "privatelink.$SVC.core.windows.net" \
+        --name "link-$SVC" \
+        --virtual-network "$VNET_NAME" \
+        --registration-enabled false
+
+      az network private-endpoint dns-zone-group create \
+        --resource-group "$RG" \
+        --endpoint-name "pe-st-$SVC" \
+        --name "$SVC-dns-zone-group" \
+        --private-dns-zone "privatelink.$SVC.core.windows.net" \
+        --zone-name "$SVC"
+    done
+    ```
+
+    #### Step I: Configure Identity-Based Storage
+
+    ```bash
+    az functionapp config appsettings set \
+      --name "$APP_NAME" \
+      --resource-group "$RG" \
+      --settings \
+        "AzureWebJobsStorage__accountName=$STORAGE_NAME" \
+        "AzureWebJobsStorage__credential=managedidentity"
+    ```
+
+    #### Step J: Verify VNet Integration
+
+    ```bash
+    az functionapp show \
+      --name "$APP_NAME" \
+      --resource-group "$RG" \
+      --query "virtualNetworkSubnetId" \
+      --output tsv
+    ```
 
 ## Verification
 

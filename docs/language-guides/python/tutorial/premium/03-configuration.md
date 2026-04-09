@@ -1,3 +1,8 @@
+---
+hide:
+  - toc
+---
+
 # 03 - Configuration (Premium)
 
 Configure runtime settings, storage options, and networking-related app configuration for Azure Functions on Elastic Premium.

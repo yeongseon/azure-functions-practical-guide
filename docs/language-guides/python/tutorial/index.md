@@ -1,3 +1,8 @@
+---
+hide:
+  - toc
+---
+
 # Tutorial — Choose Your Hosting Plan
 
 This tutorial section provides **four independent, step-by-step tracks** — one for each Azure Functions hosting plan. Every track covers the same seven topics so you can follow the complete journey from local development to production on whichever plan fits your workload.

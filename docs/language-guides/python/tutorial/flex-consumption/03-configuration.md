@@ -1,3 +1,8 @@
+---
+hide:
+  - toc
+---
+
 # 03 - Configuration (Flex Consumption)
 
 Configure runtime, app settings, and host storage correctly for Flex Consumption so your app deploys cleanly and scales predictably.

@@ -1,3 +1,8 @@
+---
+hide:
+  - toc
+---
+
 # 06 - CI/CD (Premium)
 
 Build a GitHub Actions pipeline for Azure Functions Premium, then add safe production rollout with deployment slots.

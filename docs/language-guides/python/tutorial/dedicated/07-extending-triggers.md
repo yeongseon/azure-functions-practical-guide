@@ -1,3 +1,8 @@
+---
+hide:
+  - toc
+---
+
 # 07 - Extending with Triggers (Dedicated)
 
 This tutorial extends your Dedicated Function App beyond HTTP with timer, blob, and queue triggers. On Dedicated, all standard triggers are supported, timer workloads benefit from Always On, and blob trigger polling works normally.

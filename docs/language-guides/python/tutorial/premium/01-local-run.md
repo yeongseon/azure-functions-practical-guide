@@ -1,3 +1,8 @@
+---
+hide:
+  - toc
+---
+
 # 01 - Run Locally (Premium)
 
 Run the Function App locally with Azure Functions Core Tools using Premium-plan assumptions so local behavior stays close to Elastic Premium production.

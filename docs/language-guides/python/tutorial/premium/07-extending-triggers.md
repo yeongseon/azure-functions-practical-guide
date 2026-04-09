@@ -1,3 +1,8 @@
+---
+hide:
+  - toc
+---
+
 # 07 - Extending Triggers (Premium)
 
 Add non-HTTP triggers to a Premium Function App, focusing on Blob polling and production-safe trigger behavior on always-warm Elastic Premium instances.

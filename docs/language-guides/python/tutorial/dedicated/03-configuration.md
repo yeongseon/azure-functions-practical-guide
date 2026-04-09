@@ -1,3 +1,8 @@
+---
+hide:
+  - toc
+---
+
 # 03 - Configuration (Dedicated)
 
 This tutorial configures runtime settings for a Dedicated Function App using classic App Service configuration patterns. On Dedicated, use `siteConfig.appSettings` style settings and remember the plan is always running and billed 24/7.

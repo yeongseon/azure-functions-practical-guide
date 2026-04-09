@@ -1,3 +1,8 @@
+---
+hide:
+  - toc
+---
+
 # 04 - Logging & Monitoring (Dedicated)
 
 This tutorial enables monitoring for a Dedicated Function App with Application Insights and Log Analytics queries. Dedicated plans are always running, so telemetry volume and baseline cost are predictable and continuous.
