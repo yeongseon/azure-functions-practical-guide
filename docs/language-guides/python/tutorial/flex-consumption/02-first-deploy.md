@@ -440,7 +440,34 @@ Expected output:
 }
 ```
 
-### Step 10: Create Application Insights
+### Step 10: Lock Down Storage Network Access
+
+Now that private endpoints and DNS zones are configured and the deployment container exists, disable public network access on the storage account so that all traffic is forced through private endpoints.
+
+```bash
+az storage account update \
+  --name "$STORAGE_NAME" \
+  --resource-group "$RG" \
+  --default-action Deny
+```
+
+Expected output:
+
+```json
+{
+  "networkRuleSet": {
+    "bypass": "AzureServices",
+    "defaultAction": "Deny",
+    "ipRules": [],
+    "virtualNetworkRules": []
+  }
+}
+```
+
+!!! warning "Order matters"
+    This step must come **after** creating the deployment blob container (Step 9) and private endpoints/DNS zones (Steps 7-8). If you deny public access before these are in place, subsequent data-plane operations from your local machine will fail.
+
+### Step 11: Create Application Insights
 
 ```bash
 az monitor app-insights component create \
@@ -472,25 +499,17 @@ Expected output:
 The export command completes silently when the connection string is captured.
 ```
 
-### Step 11: Create Flex Consumption Plan and Function App
+### Step 12: Create Flex Consumption Function App
 
 ```bash
-az functionapp plan create \
-  --name "$PLAN_NAME" \
-  --resource-group "$RG" \
-  --location "$LOCATION" \
-  --sku FC1 \
-  --is-linux
-
 az functionapp create \
   --name "$APP_NAME" \
   --resource-group "$RG" \
-  --plan "$PLAN_NAME" \
   --storage-account "$STORAGE_NAME" \
+  --flexconsumption-location "$LOCATION" \
   --runtime python \
   --runtime-version 3.11 \
   --functions-version 4 \
-  --os-type Linux \
   --assign-identity "$MI_ID"
 ```
 
@@ -498,32 +517,64 @@ Expected output:
 
 ```json
 {
-  "id": "/subscriptions/<subscription-id>/resourceGroups/rg-flexdemo/providers/Microsoft.Web/serverfarms/flexdemo-plan",
-  "kind": "functionapp",
-  "location": "koreacentral",
-  "name": "flexdemo-plan",
-  "sku": {
-    "name": "FC1",
-    "tier": "FlexConsumption"
-  }
-}
-```
-
-```json
-{
   "defaultHostName": "flexdemo-func.azurewebsites.net",
-  "httpsOnly": true,
+  "httpsOnly": false,
   "id": "/subscriptions/<subscription-id>/resourceGroups/rg-flexdemo/providers/Microsoft.Web/sites/flexdemo-func",
   "identity": {
     "type": "UserAssigned"
   },
   "kind": "functionapp,linux",
   "name": "flexdemo-func",
-  "state": "Running"
+  "properties": {
+    "functionAppConfig": {
+      "runtime": {
+        "name": "python",
+        "version": "3.11"
+      },
+      "scaleAndConcurrency": {
+        "instanceMemoryMB": 2048,
+        "maximumInstanceCount": 100
+      }
+    },
+    "sku": "FlexConsumption",
+    "state": "Running"
+  }
 }
 ```
 
-### Step 12: Configure App Settings (identity-based storage)
+### Step 13: Configure Deployment Storage to Use Managed Identity
+
+By default, Flex Consumption uses a connection string for deployment storage authentication. Since this tutorial disables shared key access on the storage account (`allowSharedKeyAccess: false`), you must switch to identity-based authentication for deployment storage.
+
+```bash
+az functionapp deployment config set \
+  --name "$APP_NAME" \
+  --resource-group "$RG" \
+  --deployment-storage-auth-type UserAssignedIdentity \
+  --deployment-storage-auth-value "$MI_ID"
+```
+
+Expected output:
+
+```json
+{
+  "storage": {
+    "authentication": {
+      "type": "userassignedidentity",
+      "userAssignedIdentityResourceId": "/subscriptions/<subscription-id>/resourcegroups/rg-flexdemo/providers/Microsoft.ManagedIdentity/userAssignedIdentities/flexdemo-identity"
+    },
+    "type": "blobcontainer",
+    "value": "https://flexdemostorage.blob.core.windows.net/app-package-flexdemofunc-<id>"
+  }
+}
+```
+
+!!! warning "Without this step, `func azure functionapp publish` will fail"
+    If deployment storage uses connection string authentication while `allowSharedKeyAccess` is `false`, the publish command will return:
+
+    `InaccessibleStorageException: Failed to access storage account for deployment: Key based authentication is not permitted on this storage account.`
+
+### Step 14: Configure App Settings (identity-based storage)
 
 ```bash
 az functionapp config appsettings set \
@@ -563,7 +614,7 @@ Expected output:
 ]
 ```
 
-### Step 13: Enable VNet Integration
+### Step 15: Enable VNet Integration
 
 ```bash
 az functionapp vnet-integration add \
@@ -577,13 +628,15 @@ Expected output:
 
 ```json
 {
-  "id": "/subscriptions/<subscription-id>/resourceGroups/rg-flexdemo/providers/Microsoft.Web/sites/flexdemo-func/networkConfig/virtualNetwork",
-  "isSwift": true,
+  "id": "/subscriptions/<subscription-id>/resourceGroups/rg-flexdemo/providers/Microsoft.Network/virtualNetworks/flexdemo-vnet",
+  "location": "Korea Central",
+  "name": "flexdemo-vnet",
+  "resourceGroup": "rg-flexdemo",
   "subnetResourceId": "/subscriptions/<subscription-id>/resourceGroups/rg-flexdemo/providers/Microsoft.Network/virtualNetworks/flexdemo-vnet/subnets/subnet-integration"
 }
 ```
 
-### Step 14: Publish Code with Core Tools
+### Step 16: Publish Code with Core Tools
 
 Flex does not expose Kudu/SCM workflows; publish with Core Tools (or One Deploy in CI/CD).
 
@@ -597,37 +650,40 @@ Expected output:
 ```text
 Getting site publishing info...
 Creating archive for current directory...
-Uploading 12.3 MB [########################################]
+Uploading 11.16 MB [########################################]
 Deployment completed successfully.
 Functions in flexdemo-func:
     health - [httpTrigger]
     info - [httpTrigger]
+    log_levels - [httpTrigger]
+    external_dependency - [httpTrigger]
+    test_error - [httpTrigger]
+    ... (additional functions)
 ```
 
-### Step 15: Verify FC1 Runtime and Plan Details
+### Step 17: Verify FC1 Runtime and Plan Details
 
 ```bash
-az functionapp show --name "$APP_NAME" --resource-group "$RG" --output json
-az appservice plan show --name "$PLAN_NAME" --resource-group "$RG" --output json
+az functionapp show --name "$APP_NAME" --resource-group "$RG" \
+  --query "{name:name,state:properties.state,sku:properties.sku,runtime:properties.functionAppConfig.runtime}" \
+  --output json
 ```
 
 Expected output:
 
 ```json
 {
-  "id": "/subscriptions/<subscription-id>/resourceGroups/rg-flexdemo/providers/Microsoft.Web/serverfarms/flexdemo-plan",
-  "kind": "functionapp",
-  "location": "koreacentral",
-  "name": "flexdemo-plan",
-  "reserved": true,
-  "sku": {
-    "name": "FC1",
-    "tier": "FlexConsumption"
-  }
+  "name": "flexdemo-func",
+  "runtime": {
+    "name": "python",
+    "version": "3.11"
+  },
+  "sku": "FlexConsumption",
+  "state": "Running"
 }
 ```
 
-### Step 16: Test Production Endpoint
+### Step 18: Test Production Endpoint
 
 ```bash
 curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
@@ -639,10 +695,10 @@ Expected output:
 {"status":"healthy","timestamp":"2026-04-04T05:38:46Z","version":"1.0.0"}
 ```
 
-### Step 17: Validate Flex-Specific Behaviors
+### Step 19: Validate Flex-Specific Behaviors
 
 - Scale-to-zero is enabled by default on FC1.
-- Maximum scale can reach 1000 instances.
+- Maximum scale can reach 100 instances (default). Configurable up to 1000.
 - Instance memory is selectable (512 MB, 2048 MB, 4096 MB).
 - Default timeout is 30 minutes; max can be unlimited.
 - Deployment slots are not supported on Flex.
@@ -652,7 +708,7 @@ Expected output:
 Endpoint test results from the Korea Central deployment (all returned HTTP 200):
 
 - `GET /api/health` → `{"status": "healthy", "timestamp": "2026-04-04T05:38:46Z", "version": "1.0.0"}`
-- `GET /api/info` → `{"name": "azure-functions-field-guide", "version": "1.0.0", "python": "3.11.14", "environment": "production", "telemetryMode": "basic"}`
+- `GET /api/info` → `{"name": "azure-functions-field-guide", "version": "1.0.0", "python": "3.11.14", "environment": "development", "telemetryMode": "basic"}`
 - `GET /api/requests/log-levels` → `{"message": "Logged at all levels", "levels": ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]}`
 - `GET /api/dependencies/external` → `{"status": "success", "statusCode": 200, "responseTime": "783ms", "url": "https://httpbin.org/get"}`
 - `GET /api/exceptions/test-error` → `{"error": "Handled exception", "type": "ValueError", "message": "Simulated error for testing"}`
