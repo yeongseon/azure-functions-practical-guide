@@ -1,6 +1,15 @@
 ---
 hide:
   - toc
+validation:
+  az_cli:
+    last_tested: 2026-04-09
+    cli_version: "2.83.0"
+    core_tools_version: "4.8.0"
+    result: pass
+  bicep:
+    last_tested: null
+    result: not_tested
 ---
 
 # 05 - Infrastructure as Code (Consumption)
@@ -59,7 +68,7 @@ flowchart LR
 export RG="rg-func-consumption-demo"
 export APP_NAME="func-consumption-demo-001"
 export STORAGE_NAME="stconsumptiondemo001"
-export LOCATION="eastus"
+export LOCATION="koreacentral"
 ```
 
 ### Step 2 - Create the resource group
@@ -133,6 +142,16 @@ resource app 'Microsoft.Web/sites@2023-12-01' = {
     httpsOnly: true
   }
 }
+!!! info "Simplified vs production template"
+    The Bicep template above is a simplified standalone example for learning. The repository's production template at `infra/consumption/main.bicep` uses shared modules, identity-based host storage with RBAC role assignments, Application Insights, and a `baseName` parameter convention. For production deployments, use the full template.
+
+To deploy using the repository's production template instead:
+
+```bash
+az deployment group create \
+  --resource-group "$RG" \
+  --template-file "infra/consumption/main.bicep" \
+  --parameters baseName="func-consumption-demo"
 ```
 
 ### Step 4 - Deploy the Bicep template
@@ -141,8 +160,11 @@ resource app 'Microsoft.Web/sites@2023-12-01' = {
 az deployment group create \
   --resource-group "$RG" \
   --template-file "infra/consumption/main.bicep" \
-  --parameters appName="$APP_NAME" storageName="$STORAGE_NAME"
+  --parameters baseName="func-consumption-demo"
 ```
+
+!!! tip "Parameter names"
+    The simplified template above uses `appName` and `storageName` parameters. The production template at `infra/consumption/main.bicep` uses a single `baseName` parameter that derives all resource names automatically.
 
 ### Step 5 - Validate resulting host plan
 

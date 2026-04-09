@@ -1,6 +1,15 @@
 ---
 hide:
   - toc
+validation:
+  az_cli:
+    last_tested: 2026-04-09
+    cli_version: "2.83.0"
+    core_tools_version: "4.8.0"
+    result: pass
+  bicep:
+    last_tested: null
+    result: not_tested
 ---
 
 # 03 - Configuration (Consumption)
@@ -58,7 +67,7 @@ flowchart LR
 export RG="rg-func-consumption-demo"
 export APP_NAME="func-consumption-demo-001"
 export STORAGE_NAME="stconsumptiondemo001"
-export LOCATION="eastus"
+export LOCATION="koreacentral"
 ```
 
 ### Step 2 - Read current app settings
@@ -116,8 +125,16 @@ az functionapp config appsettings set \
 
 ## Verification
 
-App settings update excerpt:
+Verify the updated settings are applied:
 
+```bash
+az functionapp config appsettings list \
+  --name "$APP_NAME" \
+  --resource-group "$RG" \
+  --output table
+```
+
+App settings update excerpt (values are hidden by the platform for security):
 ```json
 [
   {
@@ -138,15 +155,17 @@ App settings update excerpt:
 ]
 ```
 
-App details excerpt:
+Verify the app is running:
 
-```json
-{
-  "id": "/subscriptions/<subscription-id>/resourceGroups/rg-func-consumption-demo/providers/Microsoft.Web/sites/func-consumption-demo-001",
-  "kind": "functionapp,linux",
-  "state": "Running"
-}
+```bash
+az functionapp show \
+  --name "$APP_NAME" \
+  --resource-group "$RG" \
+  --query "{id:id,kind:kind,state:state}" \
+  --output json
 ```
+
+App details excerpt:
 
 ## Next Steps
 

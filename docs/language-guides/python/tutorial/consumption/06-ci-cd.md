@@ -1,6 +1,15 @@
 ---
 hide:
   - toc
+validation:
+  az_cli:
+    last_tested: 2026-04-09
+    cli_version: "2.83.0"
+    core_tools_version: "4.8.0"
+    result: pass
+  bicep:
+    last_tested: null
+    result: not_tested
 ---
 
 # 06 - CI/CD (Consumption)
@@ -59,7 +68,7 @@ flowchart LR
 export RG="rg-func-consumption-demo"
 export APP_NAME="func-consumption-demo-001"
 export STORAGE_NAME="stconsumptiondemo001"
-export LOCATION="eastus"
+export LOCATION="koreacentral"
 ```
 
 ### Step 2 - Download publish profile
@@ -68,8 +77,7 @@ export LOCATION="eastus"
 az functionapp deployment list-publishing-profiles \
   --name "$APP_NAME" \
   --resource-group "$RG" \
-  --xml \
-  --output tsv
+  --xml
 ```
 
 Copy the XML output into GitHub secret `AZURE_FUNCTIONAPP_PUBLISH_PROFILE`.

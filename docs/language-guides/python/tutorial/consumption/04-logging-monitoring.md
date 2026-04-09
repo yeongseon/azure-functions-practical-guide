@@ -1,6 +1,15 @@
 ---
 hide:
   - toc
+validation:
+  az_cli:
+    last_tested: 2026-04-09
+    cli_version: "2.83.0"
+    core_tools_version: "4.8.0"
+    result: pass
+  bicep:
+    last_tested: null
+    result: not_tested
 ---
 
 # 04 - Logging and Monitoring (Consumption)
@@ -58,10 +67,13 @@ flowchart LR
 export RG="rg-func-consumption-demo"
 export APP_NAME="func-consumption-demo-001"
 export STORAGE_NAME="stconsumptiondemo001"
-export LOCATION="eastus"
+export LOCATION="koreacentral"
 ```
 
 ### Step 2 - Create Application Insights
+
+!!! tip "Auto-created Application Insights"
+    When you create a Function App via `az functionapp create`, an Application Insights resource is often auto-created with the same name as the app. Check your resource group first with `az resource list --resource-group "$RG" --query "[?type=='Microsoft.Insights/components']" --output table`. If one already exists, skip this step and use its name in Step 3.
 
 ```bash
 az monitor app-insights component create \
@@ -104,6 +116,9 @@ az monitor app-insights query \
   --output table
 ```
 
+!!! tip "Telemetry ingestion delay"
+    Application Insights has a 2-5 minute ingestion delay. If Step 5 returns empty results immediately after Step 4, wait a few minutes and retry.
+
 ### Step 6 - Stream host logs from CLI
 
 ```bash
@@ -112,8 +127,10 @@ az webapp log tail \
   --resource-group "$RG"
 ```
 
-Use log streaming and Application Insights for diagnostics on Linux Consumption.
+!!! tip "Cold start and log streaming"
+    On Consumption (Y1), the app may be cold (scaled to zero) when you start log streaming. Send a request to the health endpoint first to wake the app, then start the log tail. Press `Ctrl+C` to stop streaming.
 
+Use log streaming and Application Insights for diagnostics on Linux Consumption.
 ## Verification
 
 Application Insights query output excerpt:

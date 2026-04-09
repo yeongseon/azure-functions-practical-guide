@@ -1,6 +1,15 @@
 ---
 hide:
   - toc
+validation:
+  az_cli:
+    last_tested: 2026-04-09
+    cli_version: "2.83.0"
+    core_tools_version: "4.8.0"
+    result: pass
+  bicep:
+    last_tested: null
+    result: not_tested
 ---
 
 # 07 - Extending Triggers (Consumption)
@@ -59,7 +68,7 @@ flowchart LR
 export RG="rg-func-consumption-demo"
 export APP_NAME="func-consumption-demo-001"
 export STORAGE_NAME="stconsumptiondemo001"
-export LOCATION="eastus"
+export LOCATION="koreacentral"
 ```
 
 ### Step 2 - Add a queue trigger
@@ -98,8 +107,12 @@ Standard polling blob trigger is supported on Consumption. Event Grid-based blob
 ### Step 4 - Publish changes
 
 ```bash
-func azure functionapp publish "$APP_NAME" --python
+cd apps/python
+func azure functionapp publish "$APP_NAME" --build remote --python
 ```
+
+!!! warning "Use `--build remote` on Linux Consumption"
+    The `--build remote` flag is required for Linux Consumption to ensure Python dependencies are installed on the server. Without it, the publish may fail or produce incomplete deployments.
 
 ### Step 5 - Send queue message and upload blob
 
@@ -108,7 +121,6 @@ az storage queue create \
   --name "work-items" \
   --account-name "$STORAGE_NAME" \
   --auth-mode login
-
 az storage message put \
   --queue-name "work-items" \
   --content '{"id":"1001","action":"reindex"}' \

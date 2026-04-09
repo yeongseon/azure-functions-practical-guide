@@ -1,6 +1,15 @@
 ---
 hide:
   - toc
+validation:
+  az_cli:
+    last_tested: 2026-04-09
+    cli_version: "2.83.0"
+    core_tools_version: "4.8.0"
+    result: pass
+  bicep:
+    last_tested: null
+    result: not_tested
 ---
 
 # 02 - First Deploy (Consumption)
@@ -100,8 +109,24 @@ Windows is also supported on Consumption; this track keeps Linux commands for co
 
 ```bash
 cd apps/python
-func azure functionapp publish "$APP_NAME" --python
+func azure functionapp publish "$APP_NAME" --build remote --python
 ```
+
+!!! warning "Use `--build remote` on Linux Consumption"
+    On Linux Consumption, `func azure functionapp publish --python` (without `--build remote`) may fail with "Can't find app" or produce incomplete deployments. The `--build remote` flag instructs the platform to install Python dependencies on the server side, which is required for Linux hosts.
+
+    After a `--build remote` deployment, verify that `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING` and `WEBSITE_CONTENTSHARE` app settings are still present. Remote build may remove these settings, causing the function host to stop. If missing, restore them:
+
+    ```bash
+    STORAGE_CONN=$(az storage account show-connection-string \
+      --name "$STORAGE_NAME" --resource-group "$RG" --output tsv)
+
+    az functionapp config appsettings set \
+      --name "$APP_NAME" --resource-group "$RG" \
+      --settings \
+        "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING=$STORAGE_CONN" \
+        "WEBSITE_CONTENTSHARE=$APP_NAME"
+    ```
 
 Consumption deployments are ZIP-based (run-from-package) and stored on the platform file share/storage path.
 

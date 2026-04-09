@@ -9,15 +9,15 @@ This page tracks which tutorials have been validated against real Azure deployme
 | Metric | Count |
 |---|---:|
 | Total tutorials | 112 |
-| ✅ Validated | 1 |
+| ✅ Validated | 8 |
 | ⚠️ Stale (>90 days) | 0 |
 | ❌ Failed | 0 |
-| ➖ Not tested | 111 |
+| ➖ Not tested | 104 |
 
 ```mermaid
 pie title Tutorial Validation Status
-    "Validated" : 1
-    "Not Tested" : 111
+    "Validated" : 8
+    "Not Tested" : 104
 ```
 
 ## Validation Matrix
@@ -125,13 +125,13 @@ pie title Tutorial Validation Status
 
 | Tutorial | Hosting Plan | az-cli | Bicep | Last Tested | Status |
 |---|---|---|---|---|---|
-| [01 Local Run](../language-guides/python/tutorial/consumption/01-local-run.md) | Consumption (Y1) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
-| [02 First Deploy](../language-guides/python/tutorial/consumption/02-first-deploy.md) | Consumption (Y1) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
-| [03 Configuration](../language-guides/python/tutorial/consumption/03-configuration.md) | Consumption (Y1) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
-| [04 Logging Monitoring](../language-guides/python/tutorial/consumption/04-logging-monitoring.md) | Consumption (Y1) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
-| [05 Infrastructure As Code](../language-guides/python/tutorial/consumption/05-infrastructure-as-code.md) | Consumption (Y1) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
-| [06 Ci Cd](../language-guides/python/tutorial/consumption/06-ci-cd.md) | Consumption (Y1) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
-| [07 Extending Triggers](../language-guides/python/tutorial/consumption/07-extending-triggers.md) | Consumption (Y1) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
+| [01 Local Run](../language-guides/python/tutorial/consumption/01-local-run.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-09 | ✅ Pass |
+| [02 First Deploy](../language-guides/python/tutorial/consumption/02-first-deploy.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-09 | ✅ Pass |
+| [03 Configuration](../language-guides/python/tutorial/consumption/03-configuration.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-09 | ✅ Pass |
+| [04 Logging Monitoring](../language-guides/python/tutorial/consumption/04-logging-monitoring.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-09 | ✅ Pass |
+| [05 Infrastructure As Code](../language-guides/python/tutorial/consumption/05-infrastructure-as-code.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-09 | ✅ Pass |
+| [06 Ci Cd](../language-guides/python/tutorial/consumption/06-ci-cd.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-09 | ✅ Pass |
+| [07 Extending Triggers](../language-guides/python/tutorial/consumption/07-extending-triggers.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-09 | ✅ Pass |
 | [01 Local Run](../language-guides/python/tutorial/flex-consumption/01-local-run.md) | Flex Consumption (FC1) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
 | [02 First Deploy](../language-guides/python/tutorial/flex-consumption/02-first-deploy.md) | Flex Consumption (FC1) | ✅ Pass | ➖ Not Tested | 2026-04-09 | ✅ Pass |
 | [03 Configuration](../language-guides/python/tutorial/flex-consumption/03-configuration.md) | Flex Consumption (FC1) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
