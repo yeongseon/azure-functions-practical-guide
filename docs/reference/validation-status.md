@@ -9,15 +9,15 @@ This page tracks which tutorials have been validated against real Azure deployme
 | Metric | Count |
 |---|---:|
 | Total tutorials | 112 |
-| ✅ Validated | 63 |
+| ✅ Validated | 70 |
 | ⚠️ Stale (>90 days) | 0 |
 | ❌ Failed | 0 |
-| ➖ Not tested | 49 |
+| ➖ Not tested | 42 |
 
 ```mermaid
 pie title Tutorial Validation Status
-    "Validated" : 63
-    "Not Tested" : 49
+    "Validated" : 70
+    "Not Tested" : 42
 ```
 
 ## Validation Matrix
@@ -66,13 +66,13 @@ pie title Tutorial Validation Status
 | [05 Infrastructure As Code](../language-guides/java/tutorial/consumption/05-infrastructure-as-code.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [06 Ci Cd](../language-guides/java/tutorial/consumption/06-ci-cd.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [07 Extending Triggers](../language-guides/java/tutorial/consumption/07-extending-triggers.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
-| [01 Local Run](../language-guides/java/tutorial/flex-consumption/01-local-run.md) | Flex Consumption (FC1) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
-| [02 First Deploy](../language-guides/java/tutorial/flex-consumption/02-first-deploy.md) | Flex Consumption (FC1) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
-| [03 Configuration](../language-guides/java/tutorial/flex-consumption/03-configuration.md) | Flex Consumption (FC1) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
-| [04 Logging Monitoring](../language-guides/java/tutorial/flex-consumption/04-logging-monitoring.md) | Flex Consumption (FC1) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
-| [05 Infrastructure As Code](../language-guides/java/tutorial/flex-consumption/05-infrastructure-as-code.md) | Flex Consumption (FC1) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
-| [06 Ci Cd](../language-guides/java/tutorial/flex-consumption/06-ci-cd.md) | Flex Consumption (FC1) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
-| [07 Extending Triggers](../language-guides/java/tutorial/flex-consumption/07-extending-triggers.md) | Flex Consumption (FC1) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
+| [01 Local Run](../language-guides/java/tutorial/flex-consumption/01-local-run.md) | Flex Consumption (FC1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
+| [02 First Deploy](../language-guides/java/tutorial/flex-consumption/02-first-deploy.md) | Flex Consumption (FC1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
+| [03 Configuration](../language-guides/java/tutorial/flex-consumption/03-configuration.md) | Flex Consumption (FC1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
+| [04 Logging Monitoring](../language-guides/java/tutorial/flex-consumption/04-logging-monitoring.md) | Flex Consumption (FC1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
+| [05 Infrastructure As Code](../language-guides/java/tutorial/flex-consumption/05-infrastructure-as-code.md) | Flex Consumption (FC1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
+| [06 Ci Cd](../language-guides/java/tutorial/flex-consumption/06-ci-cd.md) | Flex Consumption (FC1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
+| [07 Extending Triggers](../language-guides/java/tutorial/flex-consumption/07-extending-triggers.md) | Flex Consumption (FC1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [01 Local Run](../language-guides/java/tutorial/premium/01-local-run.md) | Premium (EP) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
 | [02 First Deploy](../language-guides/java/tutorial/premium/02-first-deploy.md) | Premium (EP) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
 | [03 Configuration](../language-guides/java/tutorial/premium/03-configuration.md) | Premium (EP) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |

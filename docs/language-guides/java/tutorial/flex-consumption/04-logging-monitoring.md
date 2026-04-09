@@ -1,3 +1,17 @@
+---
+hide:
+  - toc
+validation:
+  az_cli:
+    last_tested: 2026-04-10
+    cli_version: "2.83.0"
+    core_tools_version: "4.8.0"
+    result: pass
+  bicep:
+    last_tested: null
+    result: not_tested
+---
+
 # 04 - Logging and Monitoring (Flex Consumption)
 
 Enable production-grade observability with Application Insights, structured logs, and baseline alerting for Java handlers.
@@ -7,12 +21,16 @@ Enable production-grade observability with Application Insights, structured logs
 | Tool | Version | Purpose |
 |------|---------|---------|
 | JDK | 17+ | Compile and run Java functions locally |
-| Maven | 3.9+ | Build and deploy Java artifacts |
+| Maven | 3.6+ | Build and package Java artifacts |
 | Azure Functions Core Tools | v4 | Start local host and publish artifacts |
 | Azure CLI | 2.61+ | Provision Azure resources and inspect app state |
 
-!!! info "Plan basics"
-    Flex Consumption (FC1) keeps serverless economics while adding VNet integration, configurable memory, and per-function scaling. Microsoft recommends it for many new apps.
+!!! info "Flex Consumption plan basics"
+    Flex Consumption (FC1) keeps serverless economics while adding VNet integration, configurable instance memory (512 MB to 4096 MB), and per-function scaling. Microsoft recommends it for many new apps.
+
+## What You'll Build
+
+You will instrument Java handlers with structured logs, route telemetry to Application Insights, and validate query-based monitoring signals for a Flex Consumption-hosted app.
 
 ```mermaid
 flowchart LR
@@ -21,56 +39,143 @@ flowchart LR
     C --> D[Dashboards and alerts]
 ```
 
-## What You'll Build
-
-- Structured Java function logs that surface useful operational context.
-- Application Insights connectivity for centralized traces and metrics.
-- A baseline alert rule for proactive failure detection.
-
 ## Steps
 
 ### Step 1 - Emit structured logs in handler methods
 
-```java
-@FunctionName("Health")
-public HttpResponseMessage health(
-    @HttpTrigger(name = "req", methods = {HttpMethod.GET}, authLevel = AuthorizationLevel.FUNCTION, route = "health")
-    HttpRequestMessage<Optional<String>> request,
-    final ExecutionContext context) {
+The Java reference app uses `ExecutionContext.getLogger()` for structured logging. Here is the `LogLevelsFunction` that emits at multiple severity levels:
 
-    context.getLogger().info("event=health-check status=started");
+```java
+@FunctionName("logLevels")
+public HttpResponseMessage run(
+        @HttpTrigger(
+            name = "req",
+            methods = {HttpMethod.GET},
+            authLevel = AuthorizationLevel.ANONYMOUS,
+            route = "loglevels")
+        HttpRequestMessage<Optional<String>> request,
+        final ExecutionContext context) {
+
+    context.getLogger().info("Info-level message from logLevels");
+    context.getLogger().warning("Warning-level message from logLevels");
+    context.getLogger().severe("Error-level message from logLevels");
 
     return request.createResponseBuilder(HttpStatus.OK)
-        .body("healthy")
-        .build();
+            .header("Content-Type", "application/json")
+            .body("{\"logged\":true}")
+            .build();
 }
 ```
 
-### Step 2 - Confirm Application Insights connection
+### Step 2 - Generate telemetry by calling endpoints
 
 ```bash
-az functionapp config appsettings set   --name $APP_NAME   --resource-group $RG   --settings "APPLICATIONINSIGHTS_CONNECTION_STRING=InstrumentationKey=<instrumentation-key>;IngestionEndpoint=https://<region>.in.applicationinsights.azure.com/"
+# Trigger structured logging
+curl --request GET "https://$APP_NAME.azurewebsites.net/api/loglevels"
+
+# Trigger health check
+curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
+
+# Trigger intentional errors for error telemetry
+curl --request GET "https://$APP_NAME.azurewebsites.net/api/testerror"
 ```
 
-### Step 3 - Query recent traces
+!!! note "Telemetry ingestion delay"
+    Application Insights telemetry takes 2-5 minutes to become available for queries after the first request. Wait before running queries.
+
+### Step 3 - Confirm Application Insights connection
+
+Application Insights is auto-created with the function app. Verify the connection:
 
 ```bash
-az monitor app-insights query   --app $APP_INSIGHTS_NAME   --analytics-query "traces | where timestamp > ago(15m) | project timestamp, message, severityLevel | take 20"
+az functionapp config appsettings list \
+  --name "$APP_NAME" \
+  --resource-group "$RG" \
+  --query "[?name=='APPLICATIONINSIGHTS_CONNECTION_STRING'].value" \
+  --output tsv
 ```
 
-### Step 4 - Add an alert for HTTP 5xx spikes
+### Step 4 - Query recent traces
 
 ```bash
-az monitor metrics alert create   --name "func-java-http5xx"   --resource-group $RG   --scopes "$FUNCTION_APP_ID"   --condition "total Http5xx > 5"   --window-size 5m   --evaluation-frequency 1m
+az monitor app-insights query \
+  --app "$APP_NAME" \
+  --resource-group "$RG" \
+  --analytics-query "traces | where timestamp > ago(30m) | project timestamp, message, severityLevel | order by timestamp desc | take 20"
+```
+
+!!! note "Use `--resource-group` with `--app`"
+    On Flex Consumption, `--app "$APP_NAME"` alone may fail with `PathNotFoundError`. Always include `--resource-group "$RG"` to resolve the App Insights component correctly.
+
+### Step 5 - Query request metrics
+
+```bash
+az monitor app-insights query \
+  --app "$APP_NAME" \
+  --resource-group "$RG" \
+  --analytics-query "requests | where timestamp > ago(30m) | project timestamp, name, resultCode, duration | order by timestamp desc | take 20"
+```
+
+### Step 6 - View live log stream
+
+```bash
+az webapp log tail \
+  --name "$APP_NAME" \
+  --resource-group "$RG"
+```
+
+!!! warning "`az functionapp log tail` does not exist"
+    As of Azure CLI 2.83.0, use `az webapp log tail` (not `az functionapp log tail`) to stream live logs from a function app.
+
+### Step 7 - Add an alert for HTTP 5xx spikes
+
+```bash
+FUNCTION_APP_ID=$(az functionapp show \
+  --name "$APP_NAME" \
+  --resource-group "$RG" \
+  --query "id" \
+  --output tsv)
+
+az monitor metrics alert create \
+  --name "func-java-http5xx" \
+  --resource-group "$RG" \
+  --scopes "$FUNCTION_APP_ID" \
+  --condition "total Http5xx > 5" \
+  --window-size 5m \
+  --evaluation-frequency 1m
 ```
 
 ## Verification
 
+Traces query output (showing user-emitted log messages):
+
 ```text
-timestamp                   message                               severityLevel
---------------------------  ------------------------------------  -------------
-2026-04-06T10:12:00.000Z    event=health-check status=started    1
+timestamp                    message                                    severityLevel
+---------------------------  -----------------------------------------  -------------
+2026-04-09T16:57:01.000Z     Info-level message from logLevels          1
+2026-04-09T16:57:01.000Z     Warning-level message from logLevels       2
+2026-04-09T16:57:01.000Z     Error-level message from logLevels         3
 ```
+
+Requests query output:
+
+```text
+timestamp                    name            resultCode    duration
+---------------------------  --------------  ----------    --------
+2026-04-09T16:57:03.000Z     testError       500           14.59
+2026-04-09T16:57:02.000Z     health          200           4.00
+2026-04-09T16:57:01.000Z     logLevels       200           5.00
+```
+
+LogLevels endpoint response:
+
+```json
+{"logged":true}
+```
+
+## Next Steps
+
+> **Next:** [05 - Infrastructure as Code](05-infrastructure-as-code.md)
 
 ## See Also
 
@@ -84,4 +189,4 @@ timestamp                   message                               severityLevel
 
 - [Azure Functions Java developer guide (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-reference-java)
 - [Azure Functions hosting options (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-scale)
-- [Create a Java function with Azure Functions Core Tools (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-java)
+- [Azure Functions Flex Consumption plan (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan)
