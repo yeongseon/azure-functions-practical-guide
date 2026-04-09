@@ -1,69 +1,113 @@
+---
+hide:
+  - toc
+validation:
+  az_cli:
+    last_tested: 2026-04-10
+    cli_version: "2.83.0"
+    core_tools_version: "4.8.0"
+    result: pass
+  bicep:
+    last_tested: null
+    result: not_tested
+---
+
 # 03 - Configuration (Premium)
 
-Configure runtime and app settings for Premium using explicit app settings, host-level options, and safe environment separation.
+Apply environment settings, runtime configuration, and host-level options so the same artifact can run across environments.
 
 ## Prerequisites
 
 | Tool | Version | Purpose |
 |------|---------|---------|
 | .NET SDK | 8.0 (LTS) | Build and run isolated worker functions |
-| Azure Functions Core Tools | v4 | Local host and deployment commands |
-| Azure CLI | 2.61+ | Provision and configure Azure resources |
+| Azure Functions Core Tools | v4 | Start local host and publish artifacts |
+| Azure CLI | 2.61+ | Provision Azure resources and inspect app state |
 
-!!! info "Plan basics"
-    Premium (EP) keeps warm instances, supports deployment slots, and is suitable for low-latency and long-running functions.
-    Supports VNet integration, private endpoints, and deployment slots.
+!!! info "Premium plan basics"
+    Premium (EP1) keeps at least one warm instance, supports VNet integration, private endpoints, and deployment slots. No cold-start penalty, with up to 100 instances and no execution timeout.
 
 ## What You'll Build
 
-- Runtime app settings for .NET isolated worker on Premium
-- Host storage plus content share settings required by Premium/Dedicated
-- Host-level settings validation with Azure CLI
+You will standardize .NET isolated worker app settings for Premium, keep environment-specific values outside the artifact, and verify effective configuration from Azure.
+
+```mermaid
+flowchart TD
+    A[local.settings.json] --> B[App Settings in Azure]
+    B --> C[Functions host]
+    C --> D[dotnet-isolated worker startup]
+    D --> E[Function method behavior]
+```
 
 ## Steps
-### Step 1 - Set baseline runtime settings
-```bash
-az functionapp config appsettings set \
-  --name "$APP_NAME" \
-  --resource-group "$RG" \
-  --settings \
-    "FUNCTIONS_WORKER_RUNTIME=dotnet-isolated" \
-    "FUNCTIONS_EXTENSION_VERSION=~4" \
-    "DOTNET_ENVIRONMENT=Production" \
-    "APP_ENV=production"
-```
 
-### Step 2 - Configure worker and feature settings
-```bash
-export STORAGE_CONNECTION_STRING=$(az storage account show-connection-string \
-  --name "$STORAGE_NAME" \
-  --resource-group "$RG" \
-  --query "connectionString" \
-  --output tsv)
-az functionapp config appsettings set \
-  --name "$APP_NAME" \
-  --resource-group "$RG" \
-  --settings \
-    "WEBSITE_RUN_FROM_PACKAGE=1" \
-    "AzureWebJobsStorage=$STORAGE_CONNECTION_STRING" \
-    "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING=$STORAGE_CONNECTION_STRING" \
-    "WEBSITE_CONTENTSHARE=${APP_NAME//-/}content"
-```
+### Step 1 - Baseline local settings
 
-### Step 3 - Update host.json for routing and timeout
+The reference app includes a `local.settings.json.example` template:
+
 ```json
 {
-  "version": "2.0",
-  "functionTimeout": "00:10:00",
-  "extensions": {
-    "http": {
-      "routePrefix": "api"
-    }
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
+    "QueueStorage": "UseDevelopmentStorage=true",
+    "EventHubConnection": "Endpoint=sb://placeholder.servicebus.windows.net/;SharedAccessKeyName=placeholder;SharedAccessKey=cGxhY2Vob2xkZXI=;EntityPath=events"
   }
 }
 ```
 
-### Step 4 - Confirm effective settings
+!!! note "Local vs Azure settings"
+    `local.settings.json` is used only for local development. In Azure, app settings are stored as environment variables in the Function App configuration.
+
+### Step 2 - Configure app settings in Azure
+
+```bash
+az functionapp config appsettings set \
+  --name "$APP_NAME" \
+  --resource-group "$RG" \
+  --settings \
+    "APP_ENV=production" \
+    "AZURE_FUNCTIONS_ENVIRONMENT=Production"
+```
+
+### Step 3 - Set runtime guardrails
+
+```bash
+az functionapp config appsettings set \
+  --name "$APP_NAME" \
+  --resource-group "$RG" \
+  --settings \
+    "FUNCTIONS_EXTENSION_VERSION=~4" \
+    "FUNCTIONS_WORKER_RUNTIME=dotnet-isolated"
+```
+
+### Step 4 - Review Program.cs for isolated hosting
+
+Ensure the host builder uses the ASP.NET Core integration model:
+
+```csharp
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+
+var host = new HostBuilder()
+    .ConfigureFunctionsWebApplication()
+    .ConfigureServices(services =>
+    {
+        services.AddApplicationInsightsTelemetryWorkerService();
+        services.ConfigureFunctionsApplicationInsights();
+    })
+    .Build();
+
+host.Run();
+```
+
+!!! note "Isolated worker model"
+    The .NET isolated worker uses `ConfigureFunctionsWebApplication()` with ASP.NET Core integration. HTTP functions use `HttpRequest` and `IActionResult` from ASP.NET Core, and logging is constructor-injected with `ILogger<T>`.
+
+### Step 5 - Verify effective settings
+
 ```bash
 az functionapp config appsettings list \
   --name "$APP_NAME" \
@@ -71,34 +115,56 @@ az functionapp config appsettings list \
   --output table
 ```
 
-```mermaid
-flowchart LR
-    A[App Settings] --> B[Functions Host]
-    B --> C[dotnet-isolated worker]
-    C --> D[Functions execution]
-```
-### Step X - Validate isolated worker conventions
+### Step 6 - Verify runtime behavior with info endpoint
+
 ```bash
-grep "FUNCTIONS_WORKER_RUNTIME" "local.settings.json"
-grep "ConfigureFunctionsWebApplication" "Program.cs"
+curl --request GET "https://$APP_NAME.azurewebsites.net/api/info"
 ```
 
-Confirm that HTTP functions use `HttpRequestData` and `HttpResponseData`, and that logging is constructor-injected with `ILogger<T>`.
+The `/api/info` endpoint reads environment variables at runtime, confirming the deployed configuration:
+
+```json
+{
+  "name": "azure-functions-dotnet-guide",
+  "version": "1.0.0",
+  "dotnet": ".NET 8.0.23",
+  "os": "Linux",
+  "environment": "production",
+  "functionApp": "func-dnetprem-04100301"
+}
+```
+
+!!! note "Premium content share"
+    Premium plans use Azure Files for content storage. The `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING` and `WEBSITE_CONTENTSHARE` settings are automatically configured by `az functionapp create` and should not be removed.
 
 ## Verification
+
+App settings output (showing key fields):
+
 ```text
-Name                              SlotSetting
---------------------------------  -----------
-FUNCTIONS_WORKER_RUNTIME          False
-FUNCTIONS_EXTENSION_VERSION       False
-DOTNET_ENVIRONMENT                False
-APP_ENV                           False
-AzureWebJobsStorage               False
-WEBSITE_CONTENTAZUREFILECONNECTIONSTRING False
-WEBSITE_CONTENTSHARE              False
+Name                                      Value                                                SlotSetting
+----------------------------------------  ---------------------------------------------------  -----------
+FUNCTIONS_WORKER_RUNTIME                  dotnet-isolated                                      False
+FUNCTIONS_EXTENSION_VERSION               ~4                                                   False
+APP_ENV                                   production                                           False
+AZURE_FUNCTIONS_ENVIRONMENT               Production                                           False
+AzureWebJobsStorage                       DefaultEndpointsProtocol=https;AccountName=...       False
+APPLICATIONINSIGHTS_CONNECTION_STRING     InstrumentationKey=<instrumentation-key>;...          False
+WEBSITE_CONTENTAZUREFILECONNECTIONSTRING  DefaultEndpointsProtocol=https;AccountName=...       False
+WEBSITE_CONTENTSHARE                      func-dnetprem-04100301...                            False
+QueueStorage                              DefaultEndpointsProtocol=https;AccountName=...       False
+EventHubConnection                        Endpoint=sb://placeholder.servicebus.windows.net/;...False
 ```
 
+!!! warning "Sensitive values in app settings"
+    Connection strings and keys appear in the output. In production, use Azure Key Vault references instead of storing secrets directly in app settings.
+
+## Next Steps
+
+> **Next:** [04 - Logging and Monitoring](04-logging-monitoring.md)
+
 ## See Also
+
 - [Tutorial Overview & Plan Chooser](../index.md)
 - [.NET Language Guide](../../index.md)
 - [Platform: Hosting Plans](../../../../platform/hosting.md)
@@ -106,6 +172,8 @@ WEBSITE_CONTENTSHARE              False
 - [Recipes Index](../../recipes/index.md)
 
 ## Sources
-- [Azure Functions .NET isolated worker guide](https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide)
-- [Develop Azure Functions locally with Core Tools](https://learn.microsoft.com/azure/azure-functions/functions-develop-local)
-- [Azure Functions hosting options](https://learn.microsoft.com/azure/azure-functions/functions-scale)
+
+- [Azure Functions .NET isolated worker guide (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide)
+- [Azure Functions hosting options (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-scale)
+- [Azure Functions app settings reference (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-app-settings)
+- [Azure Functions Premium plan (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-premium-plan)
