@@ -1,65 +1,97 @@
 # Azure Functions Java Reference App
 
-## Coming Soon — Reference App
+Reference application demonstrating Azure Functions with the Java annotation-based programming model.
 
-This directory is reserved for the Java reference implementation using the annotation-based Azure Functions model.
-Until the implementation is available, use the [Java Language Guide](../../docs/language-guides/java/index.md) for current recommendations.
+## Functions (14 total)
 
-## Status
+### HTTP Triggers
+| Function | Route | Description |
+|---|---|---|
+| `helloHttp` | `GET /api/hello/{name}` | Basic greeting with optional name |
+| `health` | `GET /api/health` | Health check endpoint |
+| `info` | `GET /api/info` | Runtime environment details |
+| `logLevels` | `GET /api/loglevels` | Multi-level logging demo |
+| `slowResponse` | `GET /api/slow?delay=N` | Configurable latency endpoint |
+| `testError` | `GET /api/testerror` | Intentional error for diagnostics |
+| `unhandledError` | `GET /api/unhandlederror` | Unhandled exception simulation |
+| `dnsResolve` | `GET /api/dns/{hostname}` | DNS resolution probe |
+| `identityProbe` | `GET /api/identity` | Managed identity check |
+| `storageProbe` | `GET /api/storage/probe` | Storage connectivity check |
+| `externalDependency` | `GET /api/dependency` | External URL latency check |
 
-Planned implementation. The app will focus on practical trigger coverage, operational readiness, and maintainable project organization.
+### Non-HTTP Triggers
+| Function | Type | Description |
+|---|---|---|
+| `scheduledCleanup` | Timer (`0 0 2 * * *`) | Nightly cleanup job |
+| `timerLab` | Timer (`0 */5 * * * *`) | 5-minute interval lab |
+| `queueProcessor` | Queue (`incoming-orders`) | Queue message processor |
+| `blobProcessor` | Blob (`uploads/{name}`) | Blob upload processor |
+| `eventhubLagProcessor` | EventHub (`telemetry-events`) | Event stream processor |
 
-## Planned Trigger and Binding Coverage
-
-- **HTTP** trigger for API and health endpoints
-- **Queue** trigger for asynchronous work-item processing
-- **Timer** trigger for scheduled tasks and cleanup jobs
-- **Blob** trigger/binding for file-driven processing flows
-
-Reference scenarios will highlight:
-
-- Shared service wiring and reuse across function classes
-- Runtime-safe configuration loading via environment variables
-- Consistent telemetry and error handling conventions
-- Cloud-ready defaults that match repository operations guidance
-
-## Planned Structure
-
-```
-apps/java/
-├── src/main/java/com/functions/
-│   ├── HealthFunction.java
-│   ├── HttpApiFunction.java
-│   ├── QueueConsumerFunction.java
-│   ├── TimerMaintenanceFunction.java
-│   └── BlobProcessorFunction.java
-├── src/main/java/com/functions/shared/
-│   ├── AppConfig.java
-│   ├── Telemetry.java
-│   └── Clients.java
-├── src/test/java/com/functions/
-│   └── FunctionTests.java
-├── host.json
-├── local.settings.json.example
-└── pom.xml
-```
+### Shared Utilities
+| Class | Description |
+|---|---|
+| `AppConfig` | Environment configuration singleton |
+| `Telemetry` | Structured logging helper |
 
 ## Prerequisites
 
 - Java 17 or later
-- Maven 3.9 or later
+- Maven 3.6 or later
 - Azure Functions Core Tools v4
-- Azure CLI and Azurite for end-to-end validation
+- Azure CLI 2.61+
 
-## Quick Start (Planned)
+## Quick Start
 
 ```bash
 cd apps/java
 mvn clean package
-func host start
+mvn azure-functions:run
 ```
 
-## Contributing
+Test endpoints:
 
-This is currently a planned reference app.
-If you contribute, prefer small vertical slices (one trigger path with docs/tests) and link implementation decisions back to `docs/language-guides/java/` to keep guidance and code synchronized.
+```bash
+curl http://localhost:7071/api/health
+curl http://localhost:7071/api/hello/World
+curl http://localhost:7071/api/info
+```
+
+## Deploy to Azure
+
+```bash
+export APP_NAME="your-function-app-name"
+export RG="your-resource-group"
+mvn clean package
+mvn azure-functions:deploy
+```
+
+## Project Structure
+
+```
+apps/java/
+├── src/main/java/com/functions/
+│   ├── BlobProcessorFunction.java
+│   ├── DnsResolveFunction.java
+│   ├── EventHubLagProcessorFunction.java
+│   ├── ExternalDependencyFunction.java
+│   ├── HealthFunction.java
+│   ├── HelloHttpFunction.java
+│   ├── IdentityProbeFunction.java
+│   ├── InfoFunction.java
+│   ├── LogLevelsFunction.java
+│   ├── QueueProcessorFunction.java
+│   ├── ScheduledCleanupFunction.java
+│   ├── SlowResponseFunction.java
+│   ├── StorageProbeFunction.java
+│   ├── TestErrorFunction.java
+│   ├── TimerLabFunction.java
+│   ├── UnhandledErrorFunction.java
+│   └── shared/
+│       ├── AppConfig.java
+│       └── Telemetry.java
+├── src/test/java/com/functions/
+├── host.json
+├── local.settings.json.example
+└── pom.xml
+```

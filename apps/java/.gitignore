@@ -1,0 +1,23 @@
+# Maven
+target/
+*.class
+*.jar
+*.war
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.project
+.classpath
+.settings/
+
+# Azure Functions
+azure-functions/
+local.settings.json
+obj/
+bin/
+
+# OS
+.DS_Store
+Thumbs.db
