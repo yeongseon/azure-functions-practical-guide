@@ -1,85 +1,198 @@
+---
+hide:
+  - toc
+validation:
+  az_cli:
+    last_tested: 2026-04-10
+    cli_version: "2.83.0"
+    core_tools_version: "4.8.0"
+    result: pass
+  bicep:
+    last_tested: null
+    result: not_tested
+---
+
 # 02 - First Deploy (Consumption)
 
-Deploy your .NET isolated worker app to the Consumption plan with long-form Azure CLI commands and validate your first production endpoint.
+Deploy your .NET 8 isolated worker app to the Consumption plan with long-form Azure CLI commands and validate your first production endpoint.
 
 ## Prerequisites
 
 | Tool | Version | Purpose |
 |------|---------|---------|
 | .NET SDK | 8.0 (LTS) | Build and run isolated worker functions |
-| Azure Functions Core Tools | v4 | Local host and deployment commands |
-| Azure CLI | 2.61+ | Provision and configure Azure resources |
+| Azure Functions Core Tools | v4 | Start local host and publish artifacts |
+| Azure CLI | 2.61+ | Provision Azure resources and inspect app state |
 
-!!! info "Plan basics"
-    Consumption (Y1) scales to zero and charges per execution. It has a default 5-minute timeout and up to 10 minutes maximum per execution.
-    No VNet integration on this plan.
+!!! info "Consumption plan basics"
+    Consumption (Y1) scales to zero and charges per execution. Default timeout is 5 minutes (max 10 minutes). No VNet integration on this plan.
 
 ## What You'll Build
 
-A Linux Consumption Function App running the .NET isolated worker, deployed from your local project with Core Tools, then validated through the `Health` HTTP endpoint using a function key.
+A Linux Consumption Function App running the .NET 8 isolated worker, deployed from your local project with Core Tools, then validated through all HTTP endpoints.
 
-## Steps
-### Step 1 - Set deployment variables
-```bash
-export RG="rg-dotnet-consumption-demo"
-export APP_NAME="func-dotnet-consumption-demo"
-export STORAGE_NAME="stdotnetconsumptiondemo"
-export PLAN_NAME="plan-dotnet-consumption-demo"
-export LOCATION="koreacentral"
+```mermaid
+flowchart TD
+    A[dotnet publish] --> B[func azure functionapp publish]
+    B --> C[Consumption Function App]
+    C --> D[16 functions indexed]
+    D --> E[HTTP endpoint validation]
 ```
 
-### Step 2 - Create required Azure resources
+## Steps
+
+### Step 1 - Set deployment variables
+
 ```bash
-az group create --name "$RG" --location "$LOCATION"
+export RG="rg-func-dotnet-con-demo"
+export LOCATION="koreacentral"
+export STORAGE_NAME="stdotnetcon0410"
+export APP_NAME="func-dotnetcon-04100220"
+```
+
+### Step 2 - Create resource group and storage account
+
+```bash
+az group create \
+  --name "$RG" \
+  --location "$LOCATION"
+
 az storage account create \
   --name "$STORAGE_NAME" \
   --resource-group "$RG" \
   --location "$LOCATION" \
-  --sku Standard_LRS \
-  --kind StorageV2
+  --sku Standard_LRS
+```
+
+### Step 3 - Create the Consumption function app
+
+```bash
 az functionapp create \
   --name "$APP_NAME" \
   --resource-group "$RG" \
   --storage-account "$STORAGE_NAME" \
   --consumption-plan-location "$LOCATION" \
-  --functions-version 4 \
   --runtime dotnet-isolated \
   --runtime-version 8 \
+  --functions-version 4 \
   --os-type Linux
 ```
 
-### Step 3 - Build and publish the app
+### Step 4 - Create trigger resources
+
 ```bash
-dotnet build
+az storage queue create \
+  --name "incoming-orders" \
+  --account-name "$STORAGE_NAME"
+
+az storage container create \
+  --name "uploads" \
+  --account-name "$STORAGE_NAME"
+```
+
+### Step 5 - Configure app settings
+
+```bash
+STORAGE_CONN=$(az storage account show-connection-string \
+  --name "$STORAGE_NAME" \
+  --resource-group "$RG" \
+  --query connectionString \
+  --output tsv)
+
+az functionapp config appsettings set \
+  --name "$APP_NAME" \
+  --resource-group "$RG" \
+  --settings \
+    "QueueStorage=$STORAGE_CONN" \
+    "EventHubConnection=Endpoint=sb://placeholder.servicebus.windows.net/;SharedAccessKeyName=placeholder;SharedAccessKey=cGxhY2Vob2xkZXI=;EntityPath=events"
+```
+
+### Step 6 - Build and publish
+
+```bash
+cd apps/dotnet
 dotnet publish --configuration Release --output ./publish
-func azure functionapp publish "$APP_NAME"
+
+cd publish
+func azure functionapp publish "$APP_NAME" --dotnet-isolated
 ```
 
-### Step 4 - Verify the endpoint
+!!! note "Must pass --dotnet-isolated flag"
+    When publishing from the compiled output directory, Core Tools cannot detect the project language. Always pass `--dotnet-isolated` to specify the worker runtime explicitly.
+
+### Step 7 - Verify function list
+
 ```bash
-curl "https://$APP_NAME.azurewebsites.net/api/health?code=$(az functionapp keys list --resource-group $RG --name $APP_NAME --query 'functionKeys.default' --output tsv)"
+az functionapp function list \
+  --name "$APP_NAME" \
+  --resource-group "$RG" \
+  --query "[].{name:name, language:language}" \
+  --output table
 ```
 
-```mermaid
-flowchart TD
-    A[Local source] --> B[dotnet publish]
-    B --> C[func azure functionapp publish]
-    C --> D[Consumption Function App]
-    D --> E[HTTP validation]
+Expected output (16 functions):
+
+```text
+Name                                          Language
+--------------------------------------------  ---------------
+func-dotnetcon-04100220/blobProcessor         dotnet-isolated
+func-dotnetcon-04100220/dnsResolve            dotnet-isolated
+func-dotnetcon-04100220/eventhubLagProcessor  dotnet-isolated
+func-dotnetcon-04100220/externalDependency    dotnet-isolated
+func-dotnetcon-04100220/health                dotnet-isolated
+func-dotnetcon-04100220/helloHttp             dotnet-isolated
+func-dotnetcon-04100220/identityProbe         dotnet-isolated
+func-dotnetcon-04100220/info                  dotnet-isolated
+func-dotnetcon-04100220/logLevels             dotnet-isolated
+func-dotnetcon-04100220/queueProcessor        dotnet-isolated
+func-dotnetcon-04100220/scheduledCleanup      dotnet-isolated
+func-dotnetcon-04100220/slowResponse          dotnet-isolated
+func-dotnetcon-04100220/storageProbe          dotnet-isolated
+func-dotnetcon-04100220/testError             dotnet-isolated
+func-dotnetcon-04100220/timerLab              dotnet-isolated
+func-dotnetcon-04100220/unhandledError        dotnet-isolated
 ```
-### Step X - Validate isolated worker conventions
+
+### Step 8 - Test HTTP endpoints
+
 ```bash
-grep "FUNCTIONS_WORKER_RUNTIME" "local.settings.json"
-grep "ConfigureFunctionsWebApplication" "Program.cs"
+curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
+curl --request GET "https://$APP_NAME.azurewebsites.net/api/hello/Consumption"
+curl --request GET "https://$APP_NAME.azurewebsites.net/api/info"
 ```
-
-Confirm that HTTP functions use `HttpRequestData` and `HttpResponseData`, and that logging is constructor-injected with `ILogger<T>`.
 
 ## Verification
-```json
-{"status":"healthy"}
+
+```text
+Uploading 6.82 MB [-----------------------------------------------------------]
+Upload completed successfully.
+Deployment completed successfully.
+Syncing triggers...
 ```
+
+App state:
+
+```text
+State    DefaultHostName                            Kind
+-------  -----------------------------------------  -----------------
+Running  func-dotnetcon-04100220.azurewebsites.net  functionapp,linux
+```
+
+Health endpoint response:
+
+```json
+{"status":"healthy","timestamp":"2026-04-09T17:46:52.625Z","version":"1.0.0"}
+```
+
+!!! note ".NET upload size"
+    The .NET isolated worker publish output is approximately 6.82 MB, larger than Java (~326 KB) because it includes the ASP.NET Core runtime dependencies.
+
+## Next Steps
+
+> **Next:** [03 - Configuration](03-configuration.md)
+
 ## See Also
+
 - [Tutorial Overview & Plan Chooser](../index.md)
 - [.NET Language Guide](../../index.md)
 - [Platform: Hosting Plans](../../../../platform/hosting.md)
@@ -87,6 +200,7 @@ Confirm that HTTP functions use `HttpRequestData` and `HttpResponseData`, and th
 - [Recipes Index](../../recipes/index.md)
 
 ## Sources
-- [Azure Functions .NET isolated worker guide](https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide)
-- [Develop Azure Functions locally with Core Tools](https://learn.microsoft.com/azure/azure-functions/functions-develop-local)
-- [Azure Functions hosting options](https://learn.microsoft.com/azure/azure-functions/functions-scale)
+
+- [Azure Functions .NET isolated worker guide (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide)
+- [Develop Azure Functions locally with Core Tools (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-develop-local)
+- [Azure Functions hosting options (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-scale)

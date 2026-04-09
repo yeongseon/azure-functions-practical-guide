@@ -1,136 +1,199 @@
+---
+hide:
+  - toc
+validation:
+  az_cli:
+    last_tested: 2026-04-10
+    cli_version: "2.83.0"
+    core_tools_version: "4.8.0"
+    result: pass
+  bicep:
+    last_tested: null
+    result: not_tested
+---
+
 # 01 - Run Locally (Consumption)
 
-Build and run a .NET isolated worker Function App locally before touching Azure resources. This creates predictable deployment behavior later in the track.
+Build and run a .NET 8 isolated worker Function App locally before touching Azure resources.
 
 ## Prerequisites
 
 | Tool | Version | Purpose |
 |------|---------|---------|
 | .NET SDK | 8.0 (LTS) | Build and run isolated worker functions |
-| Azure Functions Core Tools | v4 | Local host and deployment commands |
-| Azure CLI | 2.61+ | Provision and configure Azure resources |
-| Azurite | latest | Local storage emulator for `UseDevelopmentStorage=true` |
+| Azure Functions Core Tools | v4 | Start local host and publish artifacts |
+| Azure CLI | 2.61+ | Provision Azure resources and inspect app state |
 
-!!! info "Plan basics"
-    Consumption (Y1) scales to zero and charges per execution. It has a default 5-minute timeout and up to 10 minutes maximum per execution.
-    No VNet integration on this plan.
+!!! info "Consumption plan basics"
+    Consumption (Y1) scales to zero and charges per execution. Default timeout is 5 minutes (max 10 minutes). No VNet integration on this plan.
 
 ## What You'll Build
 
-A .NET isolated worker HTTP-triggered function named `Health` that runs locally, returns JSON from `/api/health`, and validates the isolated hosting model before deployment.
+A .NET 8 isolated worker Function App with 16 functions that runs locally, returning JSON from `/api/health`, and validates the isolated hosting model before deployment.
+
+```mermaid
+flowchart LR
+    A[dotnet build] --> B[func start]
+    B --> C[HTTP Trigger endpoint]
+    C --> D[HttpRequest via ASP.NET Core]
+    D --> E[IActionResult response]
+```
 
 ## Steps
-### Step 1 - Initialize a .NET isolated project
+
+### Step 1 - Clone and navigate to the reference app
+
 ```bash
-func init MyProject --worker-runtime dotnet-isolated
-cd MyProject
-func new --template "HTTP trigger" --name Health --authlevel function
+cd apps/dotnet
 ```
 
-### Step 2 - Use a production-aligned project structure
+### Step 2 - Review the project structure
+
 ```text
-project-root/
+apps/dotnet/
 ├── Functions/
 │   ├── HealthFunction.cs
-│   ├── TimerFunctions.cs
-│   └── QueueFunctions.cs
+│   ├── HelloHttpFunction.cs
+│   ├── InfoFunction.cs
+│   ├── LogLevelsFunction.cs
+│   ├── SlowResponseFunction.cs
+│   ├── TestErrorFunction.cs
+│   ├── UnhandledErrorFunction.cs
+│   ├── DnsResolveFunction.cs
+│   ├── IdentityProbeFunction.cs
+│   ├── StorageProbeFunction.cs
+│   ├── ExternalDependencyFunction.cs
+│   ├── QueueProcessorFunction.cs
+│   ├── BlobProcessorFunction.cs
+│   ├── ScheduledCleanupFunction.cs
+│   ├── TimerLabFunction.cs
+│   └── EventHubLagProcessorFunction.cs
+├── Shared/
+│   └── AppConfig.cs
 ├── Program.cs
 ├── host.json
-├── local.settings.json
-└── MyProject.csproj
+├── local.settings.json.example
+└── AzureFunctionsGuide.csproj
 ```
 
-### Step 3 - Configure Program.cs for isolated hosting
-```csharp
-using Microsoft.Extensions.Hosting;
+### Step 3 - Configure local settings
 
-var host = new HostBuilder()
-    .ConfigureFunctionsWebApplication()
-    .Build();
-
-host.Run();
+```bash
+cp local.settings.json.example local.settings.json
 ```
 
-### Step 4 - Implement the HTTP function with DI logger
-```csharp
-using Microsoft.Azure.Functions.Worker;
-using Microsoft.Azure.Functions.Worker.Http;
-using Microsoft.Extensions.Logging;
-using System.Net;
+Verify the file contains:
 
-namespace MyProject.Functions;
-
-public class HealthFunction
-{
-    private readonly ILogger<HealthFunction> _logger;
-
-    public HealthFunction(ILogger<HealthFunction> logger)
-    {
-        _logger = logger;
-    }
-
-    [Function("Health")]
-    public HttpResponseData Run(
-        [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = "health")] HttpRequestData req)
-    {
-        _logger.LogInformation("Health check executed.");
-        var response = req.CreateResponse(HttpStatusCode.OK);
-        response.WriteString("{\"status\":\"healthy\"}");
-        return response;
-    }
-}
-```
-
-### Step 5 - Configure local settings and start the host
-
-!!! tip "Azurite for local storage"
-    The `UseDevelopmentStorage=true` setting requires [Azurite](https://learn.microsoft.com/azure/storage/common/storage-use-azurite) running locally. For HTTP-only functions, you can also set `AzureWebJobsStorage` to an empty string `""` to skip the storage requirement during development.
 ```json
 {
   "IsEncrypted": false,
   "Values": {
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
-    "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated"
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
+    "QueueStorage": "UseDevelopmentStorage=true",
+    "EventHubConnection": "Endpoint=sb://placeholder.servicebus.windows.net/;SharedAccessKeyName=placeholder;SharedAccessKey=cGxhY2Vob2xkZXI=;EntityPath=events"
   }
 }
 ```
+
+### Step 4 - Review Program.cs for isolated hosting
+
+```csharp
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+
+var host = new HostBuilder()
+    .ConfigureFunctionsWebApplication()
+    .ConfigureServices(services =>
+    {
+        services.AddApplicationInsightsTelemetryWorkerService();
+        services.ConfigureFunctionsApplicationInsights();
+    })
+    .Build();
+
+host.Run();
+```
+
+!!! note "Isolated worker model"
+    The .NET isolated worker uses `ConfigureFunctionsWebApplication()` with ASP.NET Core integration. HTTP functions use `HttpRequest` and `IActionResult` from ASP.NET Core, and logging is constructor-injected with `ILogger<T>`.
+
+### Step 5 - Build and start the function host
 
 ```bash
 dotnet build
 func start
 ```
 
-In a second terminal, test the endpoint:
+### Step 6 - Test the health endpoint
+
+In a second terminal:
 
 ```bash
 curl --request GET "http://localhost:7071/api/health"
 ```
 
-```mermaid
-flowchart LR
-    A[dotnet build] --> B[func start]
-    B --> C[HTTP Trigger endpoint]
-    C --> D[HttpRequestData]
-    D --> E[HttpResponseData]
+Expected response:
+
+```json
+{"status":"healthy","timestamp":"2026-04-09T17:46:52.625Z","version":"1.0.0"}
 ```
-### Step 6 - Validate isolated worker conventions
 
-Confirm that your `local.settings.json` contains `"FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated"` and that `Program.cs` uses `ConfigureFunctionsWebApplication()`.
+Test additional endpoints:
 
-Verify that HTTP functions use `HttpRequestData` and `HttpResponseData`, and that logging is constructor-injected with `ILogger<T>`.
+```bash
+curl --request GET "http://localhost:7071/api/hello/World"
+curl --request GET "http://localhost:7071/api/info"
+```
 
 ## Verification
+
 ```text
 Azure Functions Core Tools
-Core Tools Version:       4.x.x
+Core Tools Version:       4.8.0
 Function Runtime Version: 4.x.x.x
 
 Functions:
-    Health: [GET,POST] http://localhost:7071/api/health
+
+        blobProcessor: blobTrigger
+
+        dnsResolve: [GET] http://localhost:7071/api/dns/{hostname}
+
+        eventhubLagProcessor: eventHubTrigger
+
+        externalDependency: [GET] http://localhost:7071/api/dependency
+
+        health: [GET] http://localhost:7071/api/health
+
+        helloHttp: [GET] http://localhost:7071/api/hello/{name?}
+
+        identityProbe: [GET] http://localhost:7071/api/identity
+
+        info: [GET] http://localhost:7071/api/info
+
+        logLevels: [GET] http://localhost:7071/api/loglevels
+
+        queueProcessor: queueTrigger
+
+        scheduledCleanup: timerTrigger
+
+        slowResponse: [GET] http://localhost:7071/api/slow
+
+        storageProbe: [GET] http://localhost:7071/api/storage/probe
+
+        testError: [GET] http://localhost:7071/api/testerror
+
+        timerLab: timerTrigger
+
+        unhandledError: [GET] http://localhost:7071/api/unhandlederror
 ```
 
-Confirm that Core Tools lists `Health: [GET,POST] http://localhost:7071/api/health`, then run `curl --request GET "http://localhost:7071/api/health"` and verify a JSON response `{"status":"healthy"}`.
+## Next Steps
+
+> **Next:** [02 - First Deploy](02-first-deploy.md)
+
 ## See Also
+
 - [Tutorial Overview & Plan Chooser](../index.md)
 - [.NET Language Guide](../../index.md)
 - [Platform: Hosting Plans](../../../../platform/hosting.md)
@@ -138,6 +201,7 @@ Confirm that Core Tools lists `Health: [GET,POST] http://localhost:7071/api/heal
 - [Recipes Index](../../recipes/index.md)
 
 ## Sources
-- [Azure Functions .NET isolated worker guide](https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide)
-- [Develop Azure Functions locally with Core Tools](https://learn.microsoft.com/azure/azure-functions/functions-develop-local)
-- [Azure Functions hosting options](https://learn.microsoft.com/azure/azure-functions/functions-scale)
+
+- [Azure Functions .NET isolated worker guide (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide)
+- [Develop Azure Functions locally with Core Tools (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-develop-local)
+- [Azure Functions hosting options (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-scale)

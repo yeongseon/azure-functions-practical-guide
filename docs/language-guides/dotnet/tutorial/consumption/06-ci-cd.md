@@ -1,101 +1,175 @@
+---
+hide:
+  - toc
+validation:
+  az_cli:
+    last_tested: 2026-04-10
+    cli_version: "2.83.0"
+    core_tools_version: "4.8.0"
+    result: pass
+  bicep:
+    last_tested: null
+    result: not_tested
+---
+
 # 06 - CI/CD (Consumption)
 
-Automate build and deployment for Consumption with GitHub Actions, deterministic .NET builds, and publish-profile based release flow.
+Automate build, test, and deployment using GitHub Actions so every change ships through the same pipeline.
 
 ## Prerequisites
 
 | Tool | Version | Purpose |
 |------|---------|---------|
 | .NET SDK | 8.0 (LTS) | Build and run isolated worker functions |
-| Azure Functions Core Tools | v4 | Local host and deployment commands |
-| Azure CLI | 2.61+ | Provision and configure Azure resources |
+| Azure Functions Core Tools | v4 | Start local host and publish artifacts |
+| Azure CLI | 2.61+ | Provision Azure resources and inspect app state |
 
-!!! info "Plan basics"
-    Consumption (Y1) scales to zero and charges per execution. It has a default 5-minute timeout and up to 10 minutes maximum per execution.
-    No VNet integration on this plan.
+!!! info "Consumption plan basics"
+    Consumption (Y1) is serverless with scale-to-zero, up to 200 instances, 1.5 GB memory per instance, and a default 5-minute timeout (max 10 minutes).
 
 ## What You'll Build
 
-A GitHub Actions workflow that builds and deploys your .NET isolated app to Linux Consumption using repository secrets for target app identity and publish credentials.
+You will configure a GitHub Actions pipeline that builds and deploys a .NET isolated worker Function App, then verify the release with a smoke test and workflow run evidence.
+
+```mermaid
+flowchart LR
+    A[Push to main] --> B[GitHub Actions]
+    B --> C[dotnet build + publish]
+    C --> D[azure/functions-action]
+    D --> E[Smoke test]
+```
 
 ## Steps
-### Step 1 - Export publish profile
+
+### Step 1 - Get the publish profile
+
+Download the publish profile for use in GitHub Actions:
+
 ```bash
 az functionapp deployment list-publishing-profiles \
   --name "$APP_NAME" \
   --resource-group "$RG" \
-  --xml \
-  --output tsv
+  --xml
 ```
 
-Add these GitHub repository secrets:
+### Step 2 - Store deployment secrets in GitHub
 
-- `AZURE_FUNCTIONAPP_NAME`: target Function App name (for example, `func-dotnet-consumption-demo`)
-- `AZURE_FUNCTIONAPP_PUBLISH_PROFILE`: XML value from the publishing profile command
+Add repository secrets:
 
-### Step 2 - Create GitHub Actions workflow
+- `AZURE_FUNCTIONAPP_PUBLISH_PROFILE` — paste the XML from Step 1
+- `AZURE_FUNCTIONAPP_NAME` — your function app name (e.g., `func-dotnetcon-04100220`)
+
+### Step 3 - Create workflow file
+
 ```yaml
-name: Deploy .NET Function App (Consumption)
+name: deploy-dotnet-function
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
+    paths:
+      - 'apps/dotnet/**'
+
+env:
+  DOTNET_VERSION: '8.0.x'
+  AZURE_FUNCTIONAPP_NAME: ${{ secrets.AZURE_FUNCTIONAPP_NAME }}
+  DOTNET_PROJECT_DIRECTORY: 'apps/dotnet'
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Set up .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Build
         run: dotnet build --configuration Release
+        working-directory: ${{ env.DOTNET_PROJECT_DIRECTORY }}
 
       - name: Publish
         run: dotnet publish --configuration Release --output ./publish
+        working-directory: ${{ env.DOTNET_PROJECT_DIRECTORY }}
 
-      - name: Deploy
-        uses: azure/functions-action@v1
+      - name: Deploy to Azure Functions
+        uses: Azure/functions-action@v1
         with:
-          app-name: ${{ secrets.AZURE_FUNCTIONAPP_NAME }}
-          package: ./publish
+          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+          package: '${{ env.DOTNET_PROJECT_DIRECTORY }}/publish'
           publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
 ```
 
-### Step 3 - Validate release
-```bash
-curl "https://$APP_NAME.azurewebsites.net/api/health?code=$(az functionapp keys list --resource-group $RG --name $APP_NAME --query 'functionKeys.default' --output tsv)"
+!!! note "Deploy from publish output directory"
+    The `package` path must point to the `dotnet publish` output directory (`./publish`). The .NET isolated worker publishes all required DLLs and runtime dependencies into this folder. The `azure/functions-action` handles the `--dotnet-isolated` flag automatically.
+
+### Step 4 - Add post-deployment smoke test
+
+Add a smoke test step after deployment:
+
+```yaml
+      - name: Smoke test
+        run: |
+          sleep 30
+          HTTP_STATUS=$(curl --silent --output /dev/null --write-out "%{http_code}" \
+            "https://${{ env.AZURE_FUNCTIONAPP_NAME }}.azurewebsites.net/api/health")
+          if [ "$HTTP_STATUS" -ne 200 ]; then
+            echo "Smoke test failed with status $HTTP_STATUS"
+            exit 1
+          fi
+          echo "Smoke test passed with status $HTTP_STATUS"
 ```
 
-```mermaid
-flowchart LR
-    A[git push] --> B[GitHub Actions]
-    B --> C[dotnet build]
-    C --> D[dotnet publish]
-    D --> E["azure/functions-action"]
-    E --> F[Azure Function App]
-```
-### Step X - Validate isolated worker conventions
+### Step 5 - Validate the release
+
 ```bash
-grep "FUNCTIONS_WORKER_RUNTIME" "local.settings.json"
-grep "ConfigureFunctionsWebApplication" "Program.cs"
+# Check function app last modified time
+az functionapp show \
+  --name "$APP_NAME" \
+  --resource-group "$RG" \
+  --query "lastModifiedTimeUtc" \
+  --output tsv
+
+# Test health endpoint
+curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
+
+# Test hello endpoint
+curl --request GET "https://$APP_NAME.azurewebsites.net/api/hello/CICD"
 ```
 
-Confirm that HTTP functions use `HttpRequestData` and `HttpResponseData`, and that logging is constructor-injected with `ILogger<T>`.
+Use GitHub Actions run history as the deployment timeline of record (`Actions` tab → workflow runs → latest commit SHA), and compare it with `lastModifiedTimeUtc` to confirm release timing.
 
 ## Verification
+
+Build and publish output:
+
 ```text
-Run azure/functions-action@v1
-Deployment successful.
-Function app updated with package from ./publish
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  AzureFunctionsGuide -> /apps/dotnet/bin/Release/net8.0/AzureFunctionsGuide.dll
+  AzureFunctionsGuide -> /apps/dotnet/publish/
 ```
+
+Health endpoint response after deployment:
+
+```json
+{"status":"healthy","timestamp":"2026-04-09T17:52:20.103Z","version":"1.0.0"}
+```
+
+Hello endpoint response:
+
+```json
+{"message":"Hello, CICD"}
+```
+
+## Next Steps
+
+> **Next:** [07 - Extending with Triggers](07-extending-triggers.md)
+
 ## See Also
+
 - [Tutorial Overview & Plan Chooser](../index.md)
 - [.NET Language Guide](../../index.md)
 - [Platform: Hosting Plans](../../../../platform/hosting.md)
@@ -103,6 +177,7 @@ Function app updated with package from ./publish
 - [Recipes Index](../../recipes/index.md)
 
 ## Sources
-- [Azure Functions .NET isolated worker guide](https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide)
-- [Develop Azure Functions locally with Core Tools](https://learn.microsoft.com/azure/azure-functions/functions-develop-local)
-- [Azure Functions hosting options](https://learn.microsoft.com/azure/azure-functions/functions-scale)
+
+- [Azure Functions .NET isolated worker guide (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide)
+- [Azure Functions hosting options (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-scale)
+- [Continuous delivery with GitHub Actions (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-how-to-github-actions)
