@@ -22,13 +22,13 @@ EH_NAMESPACE="evh-myapp-prod"
 
 ```mermaid
 flowchart TD
-    A[Trigger not firing] --> B[Check platform/regional incidents]
+    A[Trigger not firing] --> B["Check platform/regional incidents"]
     B --> C[Check function enabled state]
     C --> D{Enabled?}
-    D -->|No| E[Re-enable function/app setting]
+    D -->|No| E["Re-enable function/app setting"]
     D -->|Yes| F[Check listener startup traces]
     F --> G{Listener healthy?}
-    G -->|No| H[Fix auth/config startup issue]
+    G -->|No| H["Fix auth/config startup issue"]
     G -->|Yes| I[Check source activity and publisher]
 ```
 

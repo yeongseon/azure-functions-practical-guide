@@ -7,10 +7,10 @@ This playbook prioritizes fast triage of runtime settings, deployment model fit,
 flowchart TD
     A[Deployment failed or degraded after release] --> B{App starts?}
     B -->|No| C[Check startup traces + activity log]
-    B -->|Yes but errors| D[Check runtime/app settings drift]
+    B -->|Yes but errors| D["Check runtime/app settings drift"]
     C --> E{Recent deploy or config event?}
     E -->|Yes| F[Validate deploy method + artifact]
-    E -->|No| G[Check platform/runtime changes]
+    E -->|No| G["Check platform/runtime changes"]
     D --> H{FUNCTIONS_WORKER_RUNTIME correct?}
     H -->|No| I[Fix runtime setting + restart]
     H -->|Yes| J{linuxFxVersion aligned?}
@@ -18,7 +18,7 @@ flowchart TD
     J -->|Yes| L{Required settings present?}
     L -->|No| M[Restore settings and slot config]
     L -->|Yes| N{Method fits hosting model?}
-    N -->|No| O[Switch method: zip deploy / run-from-package]
+    N -->|No| O["Switch method: zip deploy / run-from-package"]
     N -->|Yes| P[Check package integrity + redeploy]
     F --> P
     G --> J

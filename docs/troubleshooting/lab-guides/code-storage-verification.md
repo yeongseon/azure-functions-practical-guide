@@ -56,7 +56,7 @@ flowchart TD
 
     C --> G[Host startup validates Azure Files path]
     D --> H[Host startup validates deployment.storage blobContainer]
-    E --> I[Host startup validates Azure Files path with VNet/site topology]
+    E --> I["Host startup validates Azure Files path with VNet/site topology"]
     F --> J[Host startup validates package mount and alwaysOn behavior]
 ```
 
@@ -156,7 +156,7 @@ sequenceDiagram
 flowchart LR
     A[Hosting plan selected] --> B[Plan-specific storage contract expected]
     B --> C{Contract valid?}
-    C -->|Yes| D[Code package/content resolves]
+    C -->|Yes| D["Code package/content resolves"]
     D --> E[Host startup completes]
     E --> F[Listeners start and execute]
 
@@ -1327,7 +1327,7 @@ flowchart TD
     A[Functions not executing] --> B{Which hosting plan?}
     B -->|Y1| C[Verify WEBSITE_CONTENTAZUREFILECONNECTIONSTRING and WEBSITE_CONTENTSHARE]
     B -->|FC1| D[Verify functionAppConfig.deployment.storage.type and value]
-    B -->|EP| E[Verify Azure Files content settings and VNet/site path]
+    B -->|EP| E["Verify Azure Files content settings and VNet/site path"]
     B -->|ASP| F[Verify WEBSITE_RUN_FROM_PACKAGE and alwaysOn]
 
     C --> G{Settings valid?}
@@ -2248,7 +2248,7 @@ graph LR
     F --> G[Recover identity and RBAC contracts]
 
     G --> H[Deployment config scenarios: B H K M]
-    H --> I[Deployment/package resolution mismatch signatures]
+    H --> I["Deployment/package resolution mismatch signatures"]
     I --> J[Restore deployment and package configuration]
 
     J --> K[Cross-plan wrong settings scenarios: N S]

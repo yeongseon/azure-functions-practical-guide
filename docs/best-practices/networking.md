@@ -103,7 +103,7 @@ flowchart LR
     PEP --> APP
     APP --> S{Public network access disabled?}
     S -->|Yes| B1[Public path blocked]
-    S -->|No| B2[Mixed public/private reachability]
+    S -->|No| B2["Mixed public/private reachability"]
 ```
 
 ### Subnet delegation rules (including FC1 difference)
@@ -239,10 +239,10 @@ flowchart TD
     A --> F3[Hybrid]
     F1 --> I1[Inbound: Private endpoint only]
     F1 --> O1[Outbound: Private dependencies]
-    F2 --> I2[Inbound: Shared gateway/policies]
+    F2 --> I2["Inbound: Shared gateway/policies"]
     F2 --> O2[Outbound: Hub firewall + centralized DNS]
     F3 --> I3[Inbound: Azure + on-prem caller paths]
-    F3 --> O3[Outbound: VPN/ExpressRoute + forwarders]
+    F3 --> O3["Outbound: VPN/ExpressRoute + forwarders"]
 ```
 
 ### Networking decision flowchart
@@ -255,15 +255,15 @@ flowchart TD
     PE --> D1[Configure private DNS zones and VNet links]
     D1 --> P1{Disable public access required?}
     P1 -->|Yes| DP[Disable public network access]
-    P1 -->|No| MP[Keep mixed public/private with explicit policy]
+    P1 -->|No| MP["Keep mixed public/private with explicit policy"]
     AR --> O{Need private or controlled outbound?}
     DP --> O
     MP --> O
     O -->|Yes| VI[Enable VNet integration]
     O -->|No| PUB[Public outbound acceptable]
     VI --> SUB{Hosting plan}
-    SUB -->|FC1| DEL1[Delegate subnet: Microsoft.App/environments]
-    SUB -->|EP or Dedicated| DEL2[Delegate subnet: Microsoft.Web/serverFarms]
+    SUB -->|FC1| DEL1["Delegate subnet: Microsoft.App/environments"]
+    SUB -->|EP or Dedicated| DEL2["Delegate subnet: Microsoft.Web/serverFarms"]
     DEL1 --> ST[Add storage private endpoint and DNS]
     DEL2 --> ST
     ST --> VAL[Run DNS and connectivity validation checklist]

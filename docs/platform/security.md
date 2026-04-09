@@ -6,7 +6,7 @@ Security in Azure Functions is layered: endpoint authorization, user authenticat
 ### Security model overview
 ```mermaid
 flowchart TD
-    C[Caller] --> A[Endpoint auth\nanonymous/function/admin]
+    C[Caller] --> A["Endpoint auth\nanonymous/function/admin"]
     A --> E[App Service Authentication\noptional user auth]
     E --> F[Function code]
     F --> MI[Managed Identity]

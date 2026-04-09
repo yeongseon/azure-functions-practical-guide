@@ -8,7 +8,7 @@ The v4 model removes per-function `function.json` authoring for normal scenarios
 
 ```mermaid
 flowchart TD
-    A[Host starts] --> B[Load @azure/functions app object]
+    A[Host starts] --> B["Load @azure/functions app object"]
     B --> C[Register app.http app.timer app.storageQueue app.storageBlob]
     C --> D[Index function metadata]
     D --> E[Accept trigger events]

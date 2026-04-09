@@ -16,7 +16,7 @@ You will validate and deploy the Flex Consumption infrastructure template, then 
 
 ```mermaid
 flowchart LR
-    Bicep[infra/flex-consumption/main.bicep] --> Deploy[Resource group deployment]
+    Bicep["infra/flex-consumption/main.bicep"] --> Deploy[Resource group deployment]
     Deploy --> Plan[FC1 plan]
     Deploy --> App[Function App]
     App --> Config[functionAppConfig + identity storage]

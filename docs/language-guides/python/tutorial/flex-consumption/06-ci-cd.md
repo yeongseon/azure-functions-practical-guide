@@ -17,7 +17,7 @@ You will configure OIDC-based GitHub Actions deployment to a Flex Consumption Fu
 ```mermaid
 flowchart LR
     GH[GitHub Actions] --> OIDC[OIDC login to Azure]
-    OIDC --> Deploy[azure/functions-action]
+    OIDC --> Deploy["azure/functions-action"]
     Deploy --> Flex[Function App on FC1]
     Flex --> Verify[Health endpoint + App Insights]
 ```

@@ -16,7 +16,7 @@ You will configure a deployed Flex Consumption app to use identity-based host st
 
 ```mermaid
 flowchart LR
-    Bicep[Bicep/ARM config] --> App[Function App on FC1]
+    Bicep["Bicep/ARM config"] --> App[Function App on FC1]
     App --> Runtime[functionAppConfig.runtime]
     App --> Storage[AzureWebJobsStorage__* settings]
     Storage --> UAMI[User-assigned managed identity]

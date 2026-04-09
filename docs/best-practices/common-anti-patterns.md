@@ -42,12 +42,12 @@ flowchart TD
     B -->|Cost spike| C{Telemetry-driven?}
     C -->|Yes| C1[Check App Insights sampling and storage sharing]
     C -->|No| C2[Check unbounded scale and wrong plan baseline]
-    B -->|Latency/SLO breach| D{Cold-path or long request?}
+    B -->|"Latency/SLO breach"| D{Cold-path or long request?}
     D -->|Cold-path| D1[Check plan fit and cold-start assumptions]
     D -->|Long request| D2[Check long-running synchronous HTTP]
     B -->|Data inconsistency| E{Duplicate or lost messages?}
     E -->|Duplicate| E1[Check non-idempotent processing]
-    E -->|Lost/Delayed| E2[Check poison handling ownership]
+    E -->|"Lost/Delayed"| E2[Check poison handling ownership]
     B -->|Connectivity failure| F{Private networking enabled?}
     F -->|Yes| F1[Check subnet size and DNS zone links]
     F -->|No| F2[Check trigger compatibility and storage contention]

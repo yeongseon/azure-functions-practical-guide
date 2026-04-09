@@ -39,7 +39,7 @@ flowchart TD
     B --> C[Concurrent invocations overlap]
     C --> D[Private Bytes climbs rapidly]
     D --> E[Python worker under memory pressure]
-    E --> F[MemoryError and/or worker exit code 137]
+    E --> F["MemoryError and/or worker exit code 137"]
     F --> G[Host logs worker exited]
     G --> H[Host restarts worker process]
     H --> I[Latency spikes and temporary failures]
@@ -77,7 +77,7 @@ flowchart LR
     C --> D[Private Bytes enters critical band]
     D --> E[MemoryError or OOM kill exit 137]
     E --> F[Worker restart cycle]
-    F --> G[Latency/failure burst]
+    F --> G["Latency/failure burst"]
     G --> H[Streaming + lower concurrency]
     H --> I[Stabilized memory and recovery]
 ```

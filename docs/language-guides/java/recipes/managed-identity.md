@@ -9,7 +9,7 @@ flowchart LR
     FUNC[Function App] --> MSI[System-assigned managed identity]
     MSI --> ENTRA[Microsoft Entra token endpoint]
     FUNC --> SDK[Azure SDK with DefaultAzureCredential]
-    SDK --> SERVICE[(Storage / Key Vault / Cosmos DB)]
+    SDK --> SERVICE["("Storage / Key Vault / Cosmos DB")"]
 ```
 
 ## Prerequisites

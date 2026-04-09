@@ -597,7 +597,7 @@ flowchart TD
     H -->|No| I[Wait and re-test]
     H -->|Yes| J{Host unhealthy storage or listener errors persist?}
     J -->|No| K[Issue resolved]
-    J -->|Yes| L[Correlate with network/DNS/access restrictions]
+    J -->|Yes| L["Correlate with network/DNS/access restrictions"]
 ```
 
 ### 3.8 Clean up

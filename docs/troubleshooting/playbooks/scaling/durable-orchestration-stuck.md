@@ -12,15 +12,15 @@ flowchart TD
     B -->|Yes| C[Check lastUpdatedTime and execution age]
     B -->|No| D[Investigate terminal failures]
     C --> E{History growth high or replay events elevated?}
-    E -->|Yes| F[Replay storm / history bloat path]
+    E -->|Yes| F["Replay storm / history bloat path"]
     E -->|No| G{Waiting for external event?}
     G -->|Yes| H[Validate event source delivery]
     G -->|No| I{Activity failures present?}
     I -->|Yes| J[Retry policy missing or exhausted]
     I -->|No| K{Non-determinism traces present?}
     K -->|Yes| L[Fix orchestrator determinism violations]
-    K -->|No| M[Check host scale/concurrency and dependencies]
-    F --> N[Mitigate: continue-as-new/partition/history reduction]
+    K -->|No| M["Check host scale/concurrency and dependencies"]
+    F --> N["Mitigate: continue-as-new/partition/history reduction"]
     H --> N
     J --> N
     L --> N
@@ -51,7 +51,7 @@ flowchart LR
     D --> E[Persist state]
     E --> F{Progressing?}
     F -->|Yes| G[Continue workflow]
-    F -->|No| H[Stuck in replay/wait/failure loop]
+    F -->|No| H["Stuck in replay/wait/failure loop"]
     H --> I[Instance remains Running]
 ```
 

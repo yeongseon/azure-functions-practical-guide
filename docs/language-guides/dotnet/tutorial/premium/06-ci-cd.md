@@ -86,7 +86,7 @@ flowchart LR
     A[git push] --> B[GitHub Actions]
     B --> C[dotnet build]
     C --> D[dotnet publish]
-    D --> E[azure/functions-action]
+    D --> E["azure/functions-action"]
     E --> F[Azure Function App]
 ```
 ### Step X - Validate isolated worker conventions

@@ -16,7 +16,7 @@ You will extend the existing blueprint-based Python app with queue and blob trig
 
 ```mermaid
 flowchart LR
-    A[Add queue/blob blueprints] --> B[Register in apps/python/function_app.py]
+    A["Add queue/blob blueprints"] --> B["Register in apps/python/function_app.py"]
     B --> C[Publish to Consumption app]
     C --> D[Send queue message and upload blob]
     D --> E[Validate trigger logs]

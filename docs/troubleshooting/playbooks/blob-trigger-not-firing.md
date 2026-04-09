@@ -15,9 +15,9 @@ flowchart TD
     B -->|Yes| C{Event Grid subscription exists?}
     B -->|No| D{Blob listener started?}
     C -->|No| H1[H1: Missing or broken Event Grid subscription]
-    C -->|Yes| E{Storage networking/RBAC healthy?}
+    C -->|Yes| E{"Storage networking/RBAC healthy?"}
     E -->|No| H2[H2: Network or RBAC blocks notifications]
-    E -->|Yes| F{Binding path/connection correct?}
+    E -->|Yes| F{"Binding path/connection correct?"}
     F -->|No| H3[H3: Trigger binding misconfiguration]
     F -->|Yes| H4[H4: Polling vs Event Grid architecture mismatch]
     D -->|No| H3

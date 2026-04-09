@@ -27,7 +27,7 @@ Cold start in Azure Functions is not a single runtime metric. It is a chain of p
 ```mermaid
 flowchart TD
     A[Trigger: first request after idle, restart, scale-out, host move] --> B[Platform worker allocation]
-    B --> C[Site assignment and container/runtime bring-up]
+    B --> C["Site assignment and container/runtime bring-up"]
     C --> D[Functions host initialization]
     D --> E[Language worker initialization]
     E --> F[Trigger listener and route readiness]
@@ -82,7 +82,7 @@ sequenceDiagram
     FE->>Scale: Need available worker
     Scale->>Worker: Allocate/provision worker
     Worker->>Host: Start host process
-    Host-->>Worker: Host started (363ms / 453ms observed)
+    Host-->>Worker: Host started ("363ms / 453ms observed")
     Worker->>Func: Route first invocation
     Func-->>Client: HTTP 200 (30.485s observed in full idle case)
     Note over Client,Worker: Full idle cold path dominated by worker provisioning
@@ -128,7 +128,7 @@ flowchart LR
     D --> E[Function invocation executes]
     E --> F[Client receives response]
     C --> C1[Potential long delay window]
-    D --> D1[Observed 363ms / 453ms host start]
+    D --> D1["Observed 363ms / 453ms host start"]
     F --> F1[Observed ~30.5s full-idle client latency]
 ```
 ### 2.3 Proof criteria
@@ -420,7 +420,7 @@ flowchart TD
     B -->|No| C{Host startup traces healthy and quick?}
     B -->|Yes| D[Investigate sustained regression path]
     C -->|Yes| E{Idle or scale event present in same window?}
-    C -->|No| F[Investigate host/app startup regression]
+    C -->|No| F["Investigate host/app startup regression"]
     E -->|Idle full cold| G[Classify as provisioning-dominant cold start]
     E -->|Scale-out only| H[Classify as elastic warm-up latency]
     E -->|Neither| I[Check dependency latency and retries]
@@ -665,7 +665,7 @@ Use this section as a validation rubric while running the lab.
 graph LR
     A[Baseline Warm Capture] --> B[Idle Window ~13m]
     B --> C[First Hit: 30.485s]
-    C --> D[Host Traces: 363ms / 453ms]
+    C --> D["Host Traces: 363ms / 453ms"]
     D --> E[Scale Event Band: 1719-1842ms]
     E --> F[Warm Recovery: 67-99ms client, 3.63-5.86ms server]
     F --> G[Verdict: Provisioning-dominant cold start]

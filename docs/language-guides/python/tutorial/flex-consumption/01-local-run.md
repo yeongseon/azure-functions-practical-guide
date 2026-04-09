@@ -20,8 +20,8 @@ flowchart LR
     Dev[Developer Shell] --> Venv[Python venv + dependencies]
     Dev --> Azurite[Azurite local storage]
     Venv --> Host[Functions host :7071]
-    Host --> Health[/api/health]
-    Host --> Info[/api/info]
+    Host --> Health["/api/health"]
+    Host --> Info["/api/info"]
 ```
 
 ## Steps

@@ -75,10 +75,10 @@ flowchart LR
     I --> KV[Key Vault]
     KV --> MODE{Permission model}
     MODE -->|RBAC| R1[Key Vault Secrets User or Reader]
-    MODE -->|Access Policy| P1[Get/List secret policy]
+    MODE -->|Access Policy| P1["Get/List secret policy"]
     F --> SDK[DefaultAzureCredential]
     SDK --> AUD[Resource audience or scope]
-    AUD --> TARGET[Storage / Service Bus / Key Vault]
+    AUD --> TARGET["Storage / Service Bus / Key Vault"]
 ```
 
 ## 2. Common Misreadings

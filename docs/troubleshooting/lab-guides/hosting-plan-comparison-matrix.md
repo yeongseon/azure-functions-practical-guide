@@ -72,7 +72,7 @@ flowchart TD
     G -->|Yes| I[Prioritize DNS break on storage path]
     G -->|No| J[Check FC1 network break or RBAC break]
 
-    H -->|No| K[Restart app then re-evaluate identity/DNS fault visibility]
+    H -->|No| K["Restart app then re-evaluate identity/DNS fault visibility"]
     H -->|Yes| L[Validate identity assignment and role scope immediately]
 
     D --> M[Check role assignments and identity enablement]
@@ -157,7 +157,7 @@ Use this to avoid false negatives when a fault can remain hidden until recycle.
 flowchart TD
     A[Start recovery] --> B{Fault family confirmed?}
     B -->|Auth| C[Restore identity or RBAC]
-    B -->|Network| D[Restore DNS link and/or private endpoint]
+    B -->|Network| D["Restore DNS link and/or private endpoint"]
 
     C --> E{Plan is EP1 or S1?}
     E -->|Yes| F[Restart app to flush cached state]

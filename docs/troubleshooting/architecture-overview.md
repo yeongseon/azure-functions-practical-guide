@@ -22,7 +22,7 @@ Azure Functions does not have one runtime shape. The failure domain changes mate
 
 ```mermaid
 flowchart LR
-    A[Client or Event Source] --> B[Azure Functions Front Door / Trigger Source]
+    A[Client or Event Source] --> B["Azure Functions Front Door / Trigger Source"]
     B --> C{Hosting plan}
     C -->|Consumption| D[Shared serverless workers\nScale to zero]
     C -->|Flex Consumption| E[Serverless workers with newer scale model\nPer-function scaling focus]
@@ -61,9 +61,9 @@ Most Azure Functions incidents begin before user code runs. The event must first
 flowchart TD
     A[Event source or caller] --> B{Trigger type}
     B -->|HTTP| C[Functions front end and host routing]
-    B -->|Queue / Service Bus| D[Listener polls or receives messages]
+    B -->|"Queue / Service Bus"| D[Listener polls or receives messages]
     B -->|Event Hubs| E[Partition processor and checkpoint store]
-    B -->|Blob / Event Grid| F[Event delivery or storage scan path]
+    B -->|"Blob / Event Grid"| F[Event delivery or storage scan path]
     B -->|Timer| G[Schedule monitor]
     C --> H[Functions host]
     D --> H
@@ -76,11 +76,11 @@ flowchart TD
     K --> L[Storage, Service Bus, Event Hubs, Cosmos DB, HTTP APIs]
 
     C -. FP-TRIG-01 .-> C1[HTTP auth, route, or host availability issue]
-    D -. FP-TRIG-02 .-> D1[Queue or Service Bus listener auth/backlog issue]
+    D -. FP-TRIG-02 .-> D1["Queue or Service Bus listener auth/backlog issue"]
     E -. FP-TRIG-03 .-> E1[Partition lag or checkpoint delay]
     F -. FP-TRIG-04 .-> F1[Blob delivery path or Event Grid subscription issue]
     H -. FP-TRIG-05 .-> H1[Host cannot initialize listener]
-    K -. FP-TRIG-06 .-> K1[Binding write/read failure after execution]
+    K -. FP-TRIG-06 .-> K1["Binding write/read failure after execution"]
 ```
 
 ### Request flow examples by trigger type
@@ -95,7 +95,7 @@ flowchart LR
     F[Queue message] --> G[Queue trigger listener]
     G --> H[Dequeue and lock]
     H --> I[Function invocation]
-    I --> J[Checkpoint / delete / poison handling]
+    I --> J["Checkpoint / delete / poison handling"]
 
     K[Event Hub event] --> L[Event processor]
     L --> M[Partition ownership]
@@ -256,7 +256,7 @@ flowchart TD
     D -. FP-DUR-02 .-> D1[History or storage access issue]
     E -. FP-DUR-03 .-> E1[Replay storm or non-deterministic code]
     G -. FP-DUR-04 .-> G1[Activity backlog or queue saturation]
-    K -. FP-DUR-05 .-> K1[Checkpoint/state write failure]
+    K -. FP-DUR-05 .-> K1["Checkpoint/state write failure"]
 ```
 
 ### Durable state-machine view

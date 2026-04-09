@@ -45,7 +45,7 @@ graph TD
     B --> B3[Exception trends]
     C --> C1[Cold start analysis]
     C --> C2[Scaling events timeline]
-    C --> C3[Host startup/shutdown events]
+    C --> C3["Host startup/shutdown events"]
     D --> D1[Dependency call failures]
     D --> D2[Queue processing latency]
     E --> E1[Single invocation correlation]

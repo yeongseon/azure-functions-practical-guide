@@ -11,7 +11,7 @@ flowchart LR
     SC --> I[Instance allocation]
     I --> H[Functions host + language worker]
     H --> F[Function execution]
-    F --> B[Input/Output bindings]
+    F --> B["Input/Output bindings"]
     B --> D[Downstream service]
 ```
 

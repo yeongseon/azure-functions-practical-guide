@@ -6,7 +6,7 @@ Azure Functions uses environment variables for runtime configuration, connection
 flowchart TD
     A[Configuration sources] --> B[local.settings.json for local only]
     A --> C[Azure App Settings in function app]
-    A --> D[CI/CD pipeline variables and secrets]
+    A --> D["CI/CD pipeline variables and secrets"]
     C --> E[Runtime variables]
     C --> F[Monitoring variables]
     C --> G[Python worker variables]

@@ -12,14 +12,14 @@ flowchart TD
     B -->|Yes| C[H2 Poison-message loop]
     B -->|No| D{Scale events visible?}
     D -->|No| E[H1 Scale-out not keeping up]
-    D -->|Yes| F{P95/P99 duration regressed?}
+    D -->|Yes| F{"P95/P99 duration regressed?"}
     F -->|Yes| G[H3 Per-message processing regression]
-    F -->|No| H{Dependency latency/failure spike?}
+    F -->|No| H{"Dependency latency/failure spike?"}
     H -->|Yes| I[H4 Downstream dependency bottleneck]
     H -->|No| J[Re-check host config, release timeline, and trigger settings]
     C --> K[Mitigate retries and quarantine poison payload class]
     E --> L[Mitigate capacity and scale constraints]
-    G --> M[Mitigate code/config performance regression]
+    G --> M["Mitigate code/config performance regression"]
     I --> N[Mitigate dependency contention and throttling]
 ```
 This playbook assumes enqueue is healthy and focuses on why consumers cannot drain.

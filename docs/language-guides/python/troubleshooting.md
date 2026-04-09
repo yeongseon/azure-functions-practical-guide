@@ -4,11 +4,11 @@ This reference covers the most common issues encountered when developing and dep
 
 ```mermaid
 flowchart TD
-    A[Issue observed] --> B{Startup/import failure?}
+    A[Issue observed] --> B{"Startup/import failure?"}
     B -->|Yes| C[Check az functionapp log tail]
-    B -->|No| D{Route/config issue?}
+    B -->|No| D{"Route/config issue?"}
     D -->|Yes| E[Validate host.json and blueprint registration]
-    D -->|No| F{Dependency/runtime issue?}
+    D -->|No| F{"Dependency/runtime issue?"}
     F -->|Yes| G[Validate requirements and remote build]
     F -->|No| H[Check identity, networking, and DNS]
 ```

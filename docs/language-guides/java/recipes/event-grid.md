@@ -6,7 +6,7 @@ This recipe uses native Event Grid bindings in Java with `@EventGridTrigger` to 
 
 ```mermaid
 flowchart LR
-    SOURCE[Storage account events] --> TOPIC[Event Grid topic/system topic]
+    SOURCE[Storage account events] --> TOPIC["Event Grid topic/system topic"]
     TOPIC --> SUB[Event subscription]
     SUB --> FUNC[@EventGridTrigger handler]
     FUNC --> ACTION[Business action]

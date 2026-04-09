@@ -6,9 +6,9 @@ Best Practices in this guide are intentionally execution-focused: hosting plan c
 
 ```mermaid
 flowchart LR
-    P[Platform<br/>how it works] --> B[Best Practices<br/>how to choose and configure safely]
-    B --> O[Operations<br/>how to run at day-2]
-    O --> T[Troubleshooting<br/>how to recover quickly]
+    P["Platform<br/>how it works"] --> B["Best Practices<br/>how to choose and configure safely"]
+    B --> O["Operations<br/>how to run at day-2"]
+    O --> T["Troubleshooting<br/>how to recover quickly"]
 ```
 
 ## Why Best Practices matter for Functions

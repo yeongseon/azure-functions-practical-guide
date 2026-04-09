@@ -8,7 +8,7 @@ On Azure Functions, memory ceilings are plan-dependent and hard in practice: Con
 ### Decision Flow
 ```mermaid
 flowchart TD
-    A[Incident detected: failures/timeouts/restarts] --> B{Any OOM exceptions in traces or FunctionAppLogs?}
+    A["Incident detected: failures/timeouts/restarts"] --> B{Any OOM exceptions in traces or FunctionAppLogs?}
     B -->|Yes| C[Correlate by role instance and operation]
     B -->|No| D{Heartbeat gaps or worker restarts?}
     D -->|Yes| E[Suspect crash without surfaced exception]
@@ -16,10 +16,10 @@ flowchart TD
     C --> G{Large payload or media processing path?}
     E --> G
     G -->|Yes| H[Validate memory pressure pattern in AppMetrics]
-    G -->|No| I[Check unbounded collections / leaks / disposal]
+    G -->|No| I["Check unbounded collections / leaks / disposal"]
     H --> J{Plan memory ceiling reached?}
     I --> J
-    J -->|Yes| K[Immediate mitigation: throttle/scale up/stream]
+    J -->|Yes| K["Immediate mitigation: throttle/scale up/stream"]
     J -->|No| L[Validate runtime config and library behavior]
     K --> M[Confirm stabilization and no new crash gaps]
     L --> M
@@ -50,7 +50,7 @@ flowchart LR
     E --> F{Memory below ceiling?}
     F -->|Yes| G[Execution completes]
     F -->|No| H[OOM exception or process crash]
-    H --> I[Retry/restart causes repeated pressure]
+    H --> I["Retry/restart causes repeated pressure"]
 ```
 
 ```mermaid

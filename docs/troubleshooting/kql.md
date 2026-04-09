@@ -18,7 +18,7 @@ flowchart LR
     B --> D[traces: host and listeners]
     B --> E[exceptions: error types]
     B --> F[dependencies: downstream health]
-    B --> G[customMetrics: app/runtime metrics]
+    B --> G["customMetrics: app/runtime metrics"]
 ```
 
 1. Keep time range tight (`ago(30m)`, `ago(1h)`) during triage.

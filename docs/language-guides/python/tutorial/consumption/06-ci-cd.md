@@ -19,7 +19,7 @@ flowchart LR
     A[Push to main] --> B[GitHub Actions workflow]
     B --> C[Install Python dependencies]
     C --> D[Azure Functions Action deploy]
-    D --> E[Verify /api/health]
+    D --> E["Verify /api/health"]
 ```
 
 ## Steps

@@ -39,22 +39,22 @@ Use the following decision tree to determine which service best fits your worklo
 
 ```mermaid
 flowchart TD
-    A[New workload] --> B{Event-driven?<br/>Triggers beyond HTTP?}
-    B -->|Yes| C{Scale-to-zero<br/>required?}
-    B -->|No| D{Long-running<br/>processes?}
-    C -->|Yes| E[Azure Functions<br/>Consumption or Flex]
-    C -->|No| F{Need warm<br/>baseline?}
-    F -->|Yes| G[Azure Functions<br/>Premium]
-    F -->|No| H[Azure Functions<br/>Dedicated]
-    D -->|Yes| I{WebSocket or<br/>session affinity?}
-    D -->|No| J{Simple HTTP API<br/>or complex web app?}
+    A[New workload] --> B{"Event-driven?<br/>Triggers beyond HTTP?"}
+    B -->|Yes| C{"Scale-to-zero<br/>required?"}
+    B -->|No| D{"Long-running<br/>processes?"}
+    C -->|Yes| E["Azure Functions<br/>Consumption or Flex"]
+    C -->|No| F{"Need warm<br/>baseline?"}
+    F -->|Yes| G["Azure Functions<br/>Premium"]
+    F -->|No| H["Azure Functions<br/>Dedicated"]
+    D -->|Yes| I{"WebSocket or<br/>session affinity?"}
+    D -->|No| J{"Simple HTTP API<br/>or complex web app?"}
     I -->|Yes| K[App Service]
-    I -->|No| L{Background<br/>processing model?}
-    L -->|Event triggers| M[Azure Functions<br/>Dedicated]
+    I -->|No| L{"Background<br/>processing model?"}
+    L -->|Event triggers| M["Azure Functions<br/>Dedicated"]
     L -->|WebJobs or scheduled| K
-    J -->|Complex web app<br/>with middleware| K
-    J -->|Simple HTTP API| N{Existing App<br/>Service Plan?}
-    N -->|Yes, with spare capacity| P[Add Functions<br/>to existing plan]
+    J -->|"Complex web app<br/>with middleware"| K
+    J -->|Simple HTTP API| N{"Existing App<br/>Service Plan?"}
+    N -->|Yes, with spare capacity| P["Add Functions<br/>to existing plan"]
     N -->|No| E
 ```
 
@@ -98,7 +98,7 @@ graph TB
         FE --> W3
     end
 
-    SC[Scale Controller<br/>Control Plane]
+    SC["Scale Controller<br/>Control Plane"]
 
     subgraph "Functions Runtime (on Worker)"
         direction TB
@@ -109,7 +109,7 @@ graph TB
 
     subgraph "App Service Runtime (on Worker)"
         direction TB
-        WS[Web Server<br/>Kestrel / Express / Gunicorn]
+        WS["Web Server<br/>Kestrel / Express / Gunicorn"]
         MW[Middleware Pipeline]
         WS --> MW
     end

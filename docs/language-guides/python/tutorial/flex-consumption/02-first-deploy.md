@@ -18,7 +18,7 @@ You will provision a Flex Consumption Function App with Bicep, publish Python co
 ```mermaid
 flowchart LR
     Internet[Internet Client] --> App[Function App\nFlex Consumption FC1\nLinux]
-    App --> VNet[VNet Integration Subnet\nDelegation: Microsoft.App/environments]
+    App --> VNet["VNet Integration Subnet\nDelegation: Microsoft.App/environments"]
     VNet --> Backend[Private Backend\nStorage Account]
     Backend --> PE[Blob Private Endpoint]
 ```

@@ -43,9 +43,9 @@ At a high level, every invocation follows this path:
 
 ```mermaid
 flowchart LR
-    E[Event Source\nHTTP / Timer / Queue / Blob / Event Grid] --> T[Trigger Listener]
+    E["Event Source\nHTTP / Timer / Queue / Blob / Event Grid"] --> T[Trigger Listener]
     T --> H[Azure Functions Host\n.NET runtime process]
-    H --> W[Language Worker\nPython / Node.js / Java / .NET isolated]
+    H --> W["Language Worker\nPython / Node.js / Java / .NET isolated"]
     W --> C[Function Code]
     C --> O[Output Bindings\noptional]
     O --> D[Destination Service]
@@ -124,7 +124,7 @@ Most platform choices are applied at Function App scope, then interpreted at fun
 flowchart TD
     SRC[Event Sources\nHTTP, Queue, Blob, Event Hub, Service Bus] --> FA[Function App]
 
-    subgraph PLAN[Hosting Plan\nConsumption / Flex / Premium / Dedicated]
+    subgraph PLAN["Hosting Plan\nConsumption / Flex / Premium / Dedicated"]
         FA
     end
 
@@ -286,12 +286,12 @@ Best fit: latency-sensitive workloads with region-tolerant data architecture.
 
 ```mermaid
 flowchart LR
-    U[Clients] --> FD[Global Front Door / Traffic Manager]
+    U[Clients] --> FD["Global Front Door / Traffic Manager"]
     FD --> R1[Function App - Region A]
     FD --> R2[Function App - Region B]
     R1 --> D1[Regional Dependencies A]
     R2 --> D2[Regional Dependencies B]
-    D1 <--> DR[(Replication / Event Relay)]
+    D1 <--> DR["("Replication / Event Relay")"]
     D2 <--> DR
 ```
 
@@ -308,13 +308,13 @@ Core components:
 
 ```mermaid
 flowchart TD
-    C[Client Trigger\nHTTP / Queue / Event] --> O[Orchestrator Function]
+    C["Client Trigger\nHTTP / Queue / Event"] --> O[Orchestrator Function]
     O --> S[(Durable State Store)]
     O --> A1[Activity Function A]
     O --> A2[Activity Function B]
     A1 --> S
     A2 --> S
-    O --> T[Timer / External Event Wait]
+    O --> T["Timer / External Event Wait"]
     T --> O
 ```
 

@@ -20,13 +20,13 @@ WORKSPACE_ID="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 
 ```mermaid
 flowchart TD
-    A[High latency reported] --> B[Check regional/platform status]
+    A[High latency reported] --> B["Check regional/platform status"]
     B --> C[Latency trend by function]
     C --> D{Cold start correlation?}
     D -->|Yes| E[Plan-specific cold-start mitigation]
     D -->|No| F[Dependency latency analysis]
     F --> G{Timeout signatures present?}
-    G -->|Yes| H[Apply timeout/architecture mitigation]
+    G -->|Yes| H["Apply timeout/architecture mitigation"]
     G -->|No| I[Check recent deployments]
 ```
 

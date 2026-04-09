@@ -86,7 +86,7 @@ Linux Consumption uses Zip Deploy, but Kudu advanced tools are not available on 
 
 ```mermaid
 flowchart LR
-    A[Internet] --> B[Function App<br/>Consumption Y1]
+    A[Internet] --> B["Function App<br/>Consumption Y1"]
     B --> C[Public outbound]
     C --> D[Azure Storage]
     C --> E[Application Insights]

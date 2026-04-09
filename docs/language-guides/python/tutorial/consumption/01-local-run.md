@@ -20,10 +20,10 @@ You will run the Python Functions app locally from `apps/python`, load local set
 
 ```mermaid
 flowchart LR
-    A[Activate Python venv] --> B[Install deps from apps/python/requirements.txt]
+    A[Activate Python venv] --> B["Install deps from apps/python/requirements.txt"]
     B --> C[Copy local settings example]
-    C --> D[Start Functions host in apps/python]
-    D --> E[Test /api/health locally]
+    C --> D["Start Functions host in apps/python"]
+    D --> E["Test /api/health locally"]
 ```
 
 ## Steps

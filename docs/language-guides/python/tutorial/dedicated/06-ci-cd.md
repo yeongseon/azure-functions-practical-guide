@@ -23,7 +23,7 @@ You will package the Python Function App from `apps/python`, deploy it with Zip 
 ```mermaid
 flowchart LR
     A[GitHub push] --> B[GitHub Actions workflow]
-    B --> C[Build and deploy apps/python]
+    B --> C["Build and deploy apps/python"]
     C --> D[Dedicated Function App]
 ```
 

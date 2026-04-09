@@ -39,7 +39,7 @@ Durable Functions orchestrators are deterministic and replay event history every
 flowchart TD
     A[Large orchestration loop] --> B[History grows each iteration]
     B --> C[Every wake-up replays prior history]
-    C --> D[Replay CPU/time per execution increases]
+    C --> D["Replay CPU/time per execution increases"]
     D --> E[Orchestrator request duration rises]
     E --> F[Executions per time window drop]
     F --> G[Wall-clock completion inflates]
@@ -483,7 +483,7 @@ flowchart TD
     B -->|No| C[Check managed identity + storage RBAC]
     C --> D[Fix missing Table role if absent]
     B -->|Yes| E{Activity duration increasing?}
-    E -->|Yes| F[Investigate activity logic/dependencies]
+    E -->|Yes| F["Investigate activity logic/dependencies"]
     E -->|No| G[Investigate replay growth pattern]
     G --> H{ContinueAsNew configured?}
     H -->|No| I[Apply periodic ContinueAsNew]

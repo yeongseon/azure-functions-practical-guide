@@ -222,7 +222,7 @@ flowchart LR
     C[Client] --> H[HTTP Trigger]
     H --> Q[(Queue Output Binding)]
     Q --> P[Queue Trigger Processor]
-    P --> S[Storage/Database]
+    P --> S["Storage/Database"]
 ```
 This decouples response latency from backend processing.
 ### Configuration at host level
@@ -315,7 +315,7 @@ Durable Functions adds orchestration-centric triggers:
 - **Entity trigger**: provides serialized stateful operations.
 ```mermaid
 flowchart LR
-    C[Client/Starter] --> O[Orchestration Trigger]
+    C["Client/Starter"] --> O[Orchestration Trigger]
     O --> A1[Activity Trigger: Validate]
     O --> A2[Activity Trigger: Enrich]
     O --> E[Entity Trigger: Aggregate State]

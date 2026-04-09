@@ -8,10 +8,10 @@ For platform mechanics, see [Platform: Scaling](../platform/scaling.md). This pa
 flowchart TD
     A[Workload pattern] --> B{Primary trigger type}
     B -->|HTTP| C{Latency SLO strict?}
-    B -->|Queue/Service Bus| D{Backlog tolerance?}
-    B -->|Blob/Event Grid| E{Event burst profile known?}
+    B -->|"Queue/Service Bus"| D{Backlog tolerance?}
+    B -->|"Blob/Event Grid"| E{Event burst profile known?}
     C -->|Yes| F[Premium or Flex + always-ready + HTTP concurrency tuning]
-    C -->|No| G[Consumption/Flex with max scale guardrails]
+    C -->|No| G["Consumption/Flex with max scale guardrails"]
     D -->|Low tolerance| H[Higher concurrency + dependency protection]
     D -->|High tolerance| I[Lower concurrency + cost-focused scaling]
     E -->|No| J[Set conservative scale cap + observe + iterate]

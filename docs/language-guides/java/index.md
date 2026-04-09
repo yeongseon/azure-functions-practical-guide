@@ -15,7 +15,7 @@ flowchart LR
     B --> C[03 Configuration]
     C --> D[04 Logging & Monitoring]
     D --> E[05 Infrastructure as Code]
-    E --> F[06 CI/CD]
+    E --> F["06 CI/CD"]
     F --> G[07 Extending Triggers]
 ```
 

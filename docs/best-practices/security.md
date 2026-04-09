@@ -247,14 +247,14 @@ flowchart TD
 flowchart LR
     Caller[Client or service caller] --> Ingress[Function endpoint\nHTTP trigger]
     Ingress --> Auth{Auth control}
-    Auth -->|User/API token| AppAuth[App Service Auth or APIM JWT]
+    Auth -->|"User/API token"| AppAuth[App Service Auth or APIM JWT]
     Auth -->|Function key fallback| KeyGate[Shared key gate]
     AppAuth --> Code[Function execution]
     KeyGate --> Code
     Code --> MI[Managed Identity token request]
     MI --> KV[Key Vault]
     MI --> ST[Storage account]
-    MI --> SB[Service Bus / Event Hubs]
+    MI --> SB["Service Bus / Event Hubs"]
     subgraph NetworkBoundary[Network boundary]
         KV
         ST

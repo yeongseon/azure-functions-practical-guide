@@ -129,7 +129,7 @@ flowchart LR
     B --> C[Storage call routes to public endpoint]
     C --> D[MI token rejected: AuthorizationFailure]
     D --> E[Storage probe returns 502]
-    E --> F[Queue/table/file unaffected — private IPs intact]
+    E --> F["Queue/table/file unaffected — private IPs intact"]
 
     G[Blob DNS VNet link restored] --> H[Blob FQDN resolves to private IP]
     H --> I[Storage call routes via PE]

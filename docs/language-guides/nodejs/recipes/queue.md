@@ -6,7 +6,7 @@ This recipe shows real queue-triggered background processing with queue output b
 
 ```mermaid
 flowchart LR
-    PRODUCER[HTTP/API Producer] --> INQ[orders Queue]
+    PRODUCER["HTTP/API Producer"] --> INQ[orders Queue]
     INQ --> WORKER[storageQueue Trigger]
     WORKER --> RESULT[processed-orders Queue Output]
     WORKER --> FAIL[orders-poison after retries]

@@ -16,8 +16,8 @@ You will run the Python Function App locally from `apps/python`, load local sett
 
 ```mermaid
 flowchart LR
-    A[Local source in apps/python] --> B[Functions host on localhost:7071]
-    B --> C[Test calls to /api/health and /api/info]
+    A["Local source in apps/python"] --> B[Functions host on localhost:7071]
+    B --> C["Test calls to /api/health and /api/info"]
 ```
 
 Set shared variables for the full Dedicated track:

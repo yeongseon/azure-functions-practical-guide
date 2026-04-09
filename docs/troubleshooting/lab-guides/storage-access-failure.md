@@ -517,7 +517,7 @@ flowchart TD
     G --> I[Restore RBAC or storage auth settings]
     I --> J{Probe success + invocation recovery?}
     J -->|Yes| K[Hypothesis confirmed]
-    J -->|No| L[Escalate to network/platform differential diagnosis]
+    J -->|No| L["Escalate to network/platform differential diagnosis"]
 ```
 
 ### 3.11 Recover from the induced failure

@@ -178,7 +178,7 @@ Design requirements:
 flowchart TD
     A[Queued Message] --> B[Function Invocation]
     B -->|Success| C[Complete Message]
-    B -->|Failure| D[Abandon/Release Lock]
+    B -->|Failure| D["Abandon/Release Lock"]
     D --> E{Retry budget remaining?}
     E -->|Yes| B
     E -->|No| F[Poison Queue or Dead-letter Queue]
@@ -218,7 +218,7 @@ flowchart LR
         subgraph Z3[Zone 3]
             F3[Function Workers]
         end
-        LB[Front Door / Traffic Manager]
+        LB["Front Door / Traffic Manager"]
         SB[(Service Bus Premium ZR)]
         ST[(Storage Account ZRS)]
     end
@@ -284,10 +284,10 @@ Protect downstream dependencies using:
 ```mermaid
 flowchart LR
     In[Trigger Event] --> Fn[Function Handler]
-    Fn -->|Success| Ok[Commit / Ack]
+    Fn -->|Success| Ok["Commit / Ack"]
     Fn -->|Transient error| Rt[Retry Policy]
     Rt --> Fn
-    Fn -->|Exceeded retries| P[Poison / Dead-letter]
+    Fn -->|Exceeded retries| P["Poison / Dead-letter"]
     P --> Ops[Alert + Triage + Replay]
 ```
 

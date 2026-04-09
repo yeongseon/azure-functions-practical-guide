@@ -9,7 +9,7 @@ This playbook separates broker-side pressure from function-side bottlenecks, the
 flowchart TD
     A[Alert: trigger lag increasing] --> B{Broker type?}
     B -->|Event Hub| C[Check partition lag distribution]
-    B -->|Service Bus| D[Check active/dead-letter counts]
+    B -->|Service Bus| D["Check active/dead-letter counts"]
     C --> E{Lag uniform across partitions?}
     E -->|No| F[Hot partition or partition-key skew]
     E -->|Yes| G[Global throughput bottleneck]
@@ -18,7 +18,7 @@ flowchart TD
     H -->|No| J[Slow processing or lock churn]
     G --> K{Dependency latency elevated?}
     K -->|Yes| L[External bottleneck]
-    K -->|No| M[Batch/concurrency misconfiguration]
+    K -->|No| M["Batch/concurrency misconfiguration"]
     J --> N{Max batch or prefetch tuned?}
     N -->|No| O[Adjust extension settings]
     N -->|Yes| P[Investigate code path and serialization]
@@ -254,7 +254,7 @@ If no timeout/cancellation signatures appear, checkpoint blockage likely origina
 flowchart LR
     A[Producer rate increases] --> B[Batch pulled by trigger]
     B --> C[Processing slows from dependency latency]
-    C --> D[Checkpoint/settlement delayed]
+    C --> D["Checkpoint/settlement delayed"]
     D --> E[Lag accumulates]
     E --> F[Retries and lock renewals rise]
     F --> G[Dead-letter and SLA breach risk]
@@ -263,12 +263,12 @@ flowchart LR
 ### Broker-to-Function Bottleneck Map
 ```mermaid
 flowchart TD
-    A[Event Hub / Service Bus broker] --> B[Trigger extension fetch]
+    A["Event Hub / Service Bus broker"] --> B[Trigger extension fetch]
     B --> C[Function execution]
     C --> D[Dependency calls]
-    D --> E[Message settlement/checkpoint]
+    D --> E["Message settlement/checkpoint"]
     E --> F[Offset advances]
-    C --> G{Duration exceeds lock/timeout budget?}
+    C --> G{"Duration exceeds lock/timeout budget?"}
     G -->|Yes| H[Redelivery or timeout]
     H --> I[Lag increases]
     G -->|No| J[Steady drain]

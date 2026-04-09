@@ -6,15 +6,15 @@ Run labs in a non-production environment and treat them like live incidents: det
 ```mermaid
 graph TD
     A[Hands-on Labs] --> B[Performance]
-    A --> C[Storage / Identity]
+    A --> C["Storage / Identity"]
     A --> D[Network]
-    A --> E[Execution / Runtime]
+    A --> E["Execution / Runtime"]
     A --> F[Event Processing]
     B --> B1[Cold Start]
     B --> B2[Queue Backlog Scaling]
     C --> C1[Storage Access Failure]
     C --> C2[Managed Identity Auth]
-    D --> D1[DNS / VNet Resolution]
+    D --> D1["DNS / VNet Resolution"]
     E --> E1[Out of Memory Crash]
     E --> E2[Deployment Not Running]
     E --> E3[Durable Replay Storm]

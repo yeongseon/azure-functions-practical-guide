@@ -22,7 +22,7 @@ Primary signals include:
 - and observed processing rate.
 ```mermaid
 flowchart TD
-    E[Event Pressure\nHTTP rate / Queue depth / Lag] --> SC[Scale Controller]
+    E["Event Pressure\nHTTP rate / Queue depth / Lag"] --> SC[Scale Controller]
     SC --> O{Target instance count}
     O -->|Increase| SO[Scale out]
     O -->|Decrease| SI[Scale in]
@@ -74,7 +74,7 @@ Flex introduces the most significant scaling architecture changes.
 flowchart LR
     H[HTTP Group] --> SCH[Scale Controller]
     Q[Queue Group] --> SCQ[Scale Controller]
-    B[Blob/Event Grid Group] --> SCB[Scale Controller]
+    B["Blob/Event Grid Group"] --> SCB[Scale Controller]
     SCH --> IH[HTTP instances]
     SCQ --> IQ[Queue instances]
     SCB --> IB[Blob instances]

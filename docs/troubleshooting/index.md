@@ -47,7 +47,7 @@ flowchart TD
     B -->|Yes| C{Intermittent or constant?}
     C -->|Constant| D[Check host startup + recent deploy]
     C -->|Intermittent| E{Recent deployment?}
-    E -->|Yes| F[Compare before/after metrics, consider rollback]
+    E -->|Yes| F["Compare before/after metrics, consider rollback"]
     E -->|No| G{Dependency-correlated?}
     G -->|Yes| H[Check dependency health + outbound networking]
     G -->|No| I[Check concurrency + memory + cold start]

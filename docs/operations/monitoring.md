@@ -54,7 +54,7 @@ flowchart LR
     A --> C[Application Insights]
     A --> D[Activity Log]
     B --> E[Metric Alerts]
-    C --> F[KQL / Log Analytics]
+    C --> F["KQL / Log Analytics"]
     C --> G[Workbooks]
     F --> H[Log Alerts]
     E --> I[Action Group]
@@ -229,7 +229,7 @@ Keep request and exception data unsampled for reliable incident triage.
 
 ```mermaid
 flowchart TD
-    A[Alert or Incident] --> B{Availability/latency issue?}
+    A[Alert or Incident] --> B{"Availability/latency issue?"}
     B -- Yes --> C[Check metrics first]
     B -- No --> D[Check logs and traces]
     C --> E{Anomaly detected?}

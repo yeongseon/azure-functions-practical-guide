@@ -20,9 +20,9 @@ Choose configuration layers by scope and change frequency:
 - **`local.settings.json`** only for local developer execution, never as a production source of truth.
 ```mermaid
 flowchart TB
-    A[App Settings<br/>Environment and secrets] --> B[host.json<br/>Host runtime defaults]
-    B --> C[Extension Config<br/>Binding-specific behavior]
-    C --> D[Function-level Config<br/>Per-function overrides]
+    A["App Settings<br/>Environment and secrets"] --> B["host.json<br/>Host runtime defaults"]
+    B --> C["Extension Config<br/>Binding-specific behavior"]
+    C --> D["Function-level Config<br/>Per-function overrides"]
 ```
 ## Procedure
 ### Configuration layers
@@ -196,10 +196,10 @@ az functionapp config appsettings set \
 Use a controlled workflow for every production configuration update.
 ```mermaid
 flowchart LR
-    A[Propose change<br/>Ticket and risk assessment] --> B[Review<br/>Peer and platform owner approval]
-    B --> C[Deploy<br/>Staging then production]
-    C --> D[Verify<br/>Health, logs, and dependency checks]
-    D --> E[Document<br/>Record baseline and evidence]
+    A["Propose change<br/>Ticket and risk assessment"] --> B["Review<br/>Peer and platform owner approval"]
+    B --> C["Deploy<br/>Staging then production"]
+    C --> D["Verify<br/>Health, logs, and dependency checks"]
+    D --> E["Document<br/>Record baseline and evidence"]
 ```
 Recommended sequence:
 1. Propose change with expected impact and rollback trigger.

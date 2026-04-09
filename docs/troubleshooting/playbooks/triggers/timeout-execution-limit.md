@@ -11,7 +11,7 @@ flowchart TD
     B -->|HTTP| C{Duration near 230s?}
     C -->|Yes| D[Suspect upstream load balancer idle timeout]
     C -->|No| E[Check functionTimeout and code duration]
-    B -->|Queue/Event/Timer| F{Duration near host or plan limit?}
+    B -->|"Queue/Event/Timer"| F{Duration near host or plan limit?}
     F -->|Yes| G[Plan or host timeout boundary reached]
     F -->|No| H[Investigate downstream dependency latency]
     G --> I{Retries increasing?}
@@ -266,9 +266,9 @@ flowchart TD
     B -->|HTTP| C[Upstream idle boundary around 230s]
     B -->|Non-HTTP| D[host.json functionTimeout applies]
     D --> E{Hosting plan cap}
-    E -->|Consumption| F[Default 5m / Max 10m]
-    E -->|Premium| G[Default 30m / Max unlimited]
-    E -->|Dedicated| H[Default 30m / Max unlimited]
+    E -->|Consumption| F["Default 5m / Max 10m"]
+    E -->|Premium| G["Default 30m / Max unlimited"]
+    E -->|Dedicated| H["Default 30m / Max unlimited"]
     C --> I[Client sees timeout]
     F --> J[Runtime cancellation]
     G --> J

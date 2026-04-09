@@ -11,21 +11,21 @@ flowchart TD
     S[Incident starts: user-visible impact] --> Q1{Functions executing?}
 
     Q1 -->|No invocations| Q1A{Function enabled and listener healthy?}
-    Q1 -->|Yes but slow/failing| Q2{Is it a latency issue?}
+    Q1 -->|"Yes but slow/failing"| Q2{Is it a latency issue?}
 
     Q1A -->|Function disabled| P1[Playbook: Functions Not Executing]
     Q1A -->|Listener failed to start| Q1B{Auth or connection error?}
     Q1A -->|Host not starting| P2[Playbook: App Settings Misconfiguration]
 
-    Q1B -->|Auth error 401/403| P3[Playbook: Managed Identity / RBAC Failure]
+    Q1B -->|"Auth error 401/403"| P3["Playbook: Managed Identity / RBAC Failure"]
     Q1B -->|Connection error| P4[Playbook: Functions Not Executing]
 
     Q2 -->|Yes, high latency| Q2A{Cold start or dependency?}
-    Q2 -->|No, errors/failures| Q3{What type of failure?}
+    Q2 -->|"No, errors/failures"| Q3{What type of failure?}
 
     Q2A -->|Cold start pattern| P5[Playbook: High Latency]
     Q2A -->|Dependency timeout| P6[Check dependency health]
-    Q2A -->|Execution timeout| P7[Playbook: Timeout / Execution Limit Exceeded]
+    Q2A -->|Execution timeout| P7["Playbook: Timeout / Execution Limit Exceeded"]
 
     Q3 -->|5xx errors| Q3A{After deployment?}
     Q3 -->|Exception storm| P8[Playbook: Functions Failing]
@@ -34,7 +34,7 @@ flowchart TD
     Q3A -->|Yes| P10[Playbook: Deployment Failures]
     Q3A -->|No| Q4{Memory or OOM signals?}
 
-    Q4 -->|Yes| P11[Playbook: Out of Memory / Worker Crash]
+    Q4 -->|Yes| P11["Playbook: Out of Memory / Worker Crash"]
     Q4 -->|No| P12[Use Methodology: build hypotheses from evidence]
 ```
 
@@ -44,20 +44,20 @@ flowchart TD
 flowchart LR
     A[Trigger type] --> B{Which trigger?}
     B -->|HTTP| C{Status code pattern}
-    B -->|Queue/Service Bus| D{Processing pattern}
+    B -->|"Queue/Service Bus"| D{Processing pattern}
     B -->|Blob| E{Event delivery}
     B -->|Timer| F{Schedule pattern}
     B -->|Event Hub| G{Lag pattern}
     B -->|Durable| H{Orchestration state}
 
     C -->|5xx spike| I[Functions Failing]
-    C -->|Timeout 230s| J[Timeout / Execution Limit]
+    C -->|Timeout 230s| J["Timeout / Execution Limit"]
     D -->|Backlog growing| K[Queue Piling Up]
     D -->|Poison messages| L[Functions Failing]
     E -->|Not firing on FC1| M[Blob Trigger Not Firing]
     E -->|Delayed on Y1| N[Blob Trigger Not Firing]
     F -->|Missed executions| O[Check isPastDue and RunOnStartup]
-    G -->|Checkpoint behind| P[Event Hub / Service Bus Lag]
+    G -->|Checkpoint behind| P["Event Hub / Service Bus Lag"]
     H -->|Stuck in Running| Q[Durable Orchestration Stuck]
 ```
 

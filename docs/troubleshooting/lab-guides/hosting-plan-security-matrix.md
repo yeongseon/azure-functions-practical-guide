@@ -1123,8 +1123,8 @@ gantt
     section Fault Injection Window
     RBAC removal                                     :done, f1, 30, 30
     Identity removal                                 :done, f2, 90, 30
-    DNS break (FC1/EP1/S1)                           :done, f3, 150, 30
-    Network break (FC1/EP1/S1)                       :done, f4, 210, 30
+    DNS break ("FC1/EP1/S1")                           :done, f3, 150, 30
+    Network break ("FC1/EP1/S1")                       :done, f4, 210, 30
 
     section Distinct Emergence
     FC1 fast timeout behavior                        :crit, e1, 120, 120

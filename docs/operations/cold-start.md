@@ -188,7 +188,7 @@ flowchart TD
     A[Start: latency issue identified] --> B{Is p95 within SLO?}
     B -->|Yes| C[Keep current setup and monitor weekly]
     B -->|No| D{Startup path optimized?}
-    D -->|No| E[Reduce package/init costs]
+    D -->|No| E["Reduce package/init costs"]
     E --> F[Observe 24-72 hours]
     F --> G{Improved?}
     G -->|Yes| C

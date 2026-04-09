@@ -142,7 +142,7 @@ flowchart TD
     A[Incident detected] --> B{Platform health degraded?}
     B -->|Yes| C[Check Azure Service Health and advisories]
     C --> D[Apply platform mitigation and communicate impact]
-    B -->|No| E{Function app healthy? /api/health}
+    B -->|No| E{"Function app healthy? /api/health"}
     E -->|No| F[Inspect host startup logs and recent config changes]
     F --> G{Recent deployment or setting change?}
     G -->|Yes| H[Rollback or revert smallest change]

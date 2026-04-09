@@ -119,7 +119,7 @@ If a high-burst queue workload is injected into Y1 Consumption with steady 5-sec
 ```mermaid
 flowchart TD
     A[Backlog observed] --> B{Any retries or poison?}
-    B -->|No, dequeueCount=1| C{Any dependency calls/failures?}
+    B -->|No, dequeueCount=1| C{"Any dependency calls/failures?"}
     B -->|Yes| X[Investigate poison loop path]
     C -->|No| D{Scaled out beyond one instance?}
     C -->|Yes| Y[Investigate dependency bottleneck]

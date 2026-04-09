@@ -597,7 +597,7 @@ flowchart TD
     A[Checkpoint lag alert] --> B{Request duration rising?}
     B -->|No| C[Inspect producer anomaly and partition ownership]
     B -->|Yes| D{Checkpoint backlog age rising too?}
-    D -->|No| E[Inspect parsing/log completeness]
+    D -->|No| E["Inspect parsing/log completeness"]
     D -->|Yes| F{Was delay or heavy logic changed?}
     F -->|Yes| G[Rollback delay or optimize handler]
     F -->|No| H[Investigate dependencies and retries]
