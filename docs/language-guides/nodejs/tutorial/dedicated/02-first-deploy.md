@@ -1,73 +1,289 @@
+---
+hide:
+  - toc
+validation:
+  az_cli:
+    last_tested: 2026-04-10
+    cli_version: "2.83.0"
+    core_tools_version: "4.8.0"
+    result: pass
+  bicep:
+    last_tested: null
+    result: not_tested
+---
+
 # 02 - First Deploy (Dedicated)
 
-Provision resources and publish your first Node.js v4 function app.
+Provision resources and publish your first Node.js v4 function app to an App Service (Dedicated) plan.
 
 ## Prerequisites
 
-| Tool | Version | Purpose |
-|---|---|---|
-| Node.js | 20+ | Local runtime and package execution |
-| Azure Functions Core Tools | v4 | Local host and publishing |
-| Azure CLI | 2.61+ | Azure resource provisioning and management |
-
-!!! info "Plan basics"
-    Dedicated runs on App Service plans (B1/S1/P1v3), supports Always On, and behaves like traditional web app hosting.
+- You completed [01 - Run Locally](01-local-run.md).
+- You are signed in to Azure CLI and have Contributor access.
+- You already exported: `$RG`, `$APP_NAME`, `$PLAN_NAME`, `$STORAGE_NAME`, `$LOCATION` (use `koreacentral` for this guide).
 
 ## What You'll Build
 
-You will provision a Linux Function App on the Dedicated track, deploy your Node.js v4 project, and verify function indexing in Azure.
-You will confirm the deployed function list from the platform control plane rather than local runtime output.
+- A Linux Node.js Function App on Dedicated B1 with Always On support.
+- A first deployment pipeline (`func azure functionapp publish`) and endpoint verification.
+- All 20 functions indexed and serving requests on Dedicated infrastructure.
+
+!!! info "Infrastructure Context"
+    **Plan**: Dedicated (B1) | **Network**: Public | **Always On**: ✅
+
+    Dedicated deploys on a traditional App Service Plan. Unlike Premium, there are no pre-warmed instances or elastic scaling — you get a fixed compute allocation. Storage uses connection string authentication by default. No content file share is required (`WEBSITE_RUN_FROM_PACKAGE=1`).
+
+    ```mermaid
+    flowchart TD
+        INET[Internet] -->|HTTPS| FA[Function App\nDedicated B1\nLinux Node.js 20]
+
+        subgraph PLAN["App Service Plan\nB1 Basic"]
+            FA
+            ALWAYS["Always On ✅"]
+        end
+
+        FA --> ST["Storage Account\nBlob + Queue"]
+        FA --> AI[Application Insights]
+        FA -.->|System-Assigned MI| ENTRA[Microsoft Entra ID]
+
+        style FA fill:#ff8c00,color:#fff
+        style PLAN fill:#E3F2FD,stroke:#1976D2
+        style ST fill:#FFF3E0
+        style ALWAYS fill:#FFF3E0,stroke:#FF9800
+    ```
 
 ## Steps
 
-```mermaid
-flowchart LR
-    A[Code commit] --> B[Build package]
-    B --> C[Deploy to Dedicated]
-    C --> D[Runtime indexes v4 handlers]
-    D --> E[Trigger execution]
-```
+1. Set environment variables for the deployment.
 
-### Step 1 - Create resource group
+    ```bash
+    export RG="rg-func-node-ded-demo"
+    export LOCATION="koreacentral"
+    export STORAGE_NAME="stnddedi0410"
+    export PLAN_NAME="plan-ndded-04100022"
+    export APP_NAME="func-ndded-04100022"
+    ```
 
-```bash
-az group create --name $RG --location $LOCATION
-```
+    !!! tip "Globally unique names required"
+        Both `$APP_NAME` and `$STORAGE_NAME` must be globally unique across all Azure subscriptions. If you get a naming conflict, append a random suffix (e.g., `func-ndded-04091234`).
 
-### Step 2 - Create storage and function app
+2. Authenticate and set subscription context.
 
-```bash
-az storage account create --name $STORAGE_NAME --resource-group $RG --location $LOCATION --sku Standard_LRS
-az functionapp create --name $APP_NAME --resource-group $RG --storage-account $STORAGE_NAME --plan $PLAN_NAME --runtime node --runtime-version 20 --functions-version 4
-```
+    ```bash
+    az login
+    az account set --subscription "<subscription-id>"
+    ```
 
-### Step 3 - Publish app
+3. Create resource group.
 
-```bash
-func azure functionapp publish $APP_NAME
-```
+    ```bash
+    az group create \
+      --name "$RG" \
+      --location "$LOCATION"
+    ```
 
-### Step 4 - Validate deployment
+    Expected output (abridged):
 
-```bash
-az functionapp function list --name $APP_NAME --resource-group $RG --output table
-```
+    ```json
+    {
+      "name": "rg-func-node-ded-demo",
+      "location": "koreacentral",
+      "properties": {
+        "provisioningState": "Succeeded"
+      }
+    }
+    ```
 
-### Plan-specific notes
+4. Create storage account.
 
-- Dedicated does not require Azure Files content share settings for zip-based deployments (`WEBSITE_RUN_FROM_PACKAGE=1`).
-- Enable Always On for non-HTTP triggers so timer, queue, and blob workloads stay active.
-- Use long-form CLI flags for maintainable runbooks.
+    ```bash
+    az storage account create \
+      --name "$STORAGE_NAME" \
+      --resource-group "$RG" \
+      --location "$LOCATION" \
+      --sku "Standard_LRS" \
+      --kind "StorageV2" \
+      --allow-blob-public-access false
+    ```
+
+    Expected output (abridged):
+
+    ```json
+    {
+      "name": "stnddedi0410",
+      "location": "koreacentral",
+      "kind": "StorageV2",
+      "provisioningState": "Succeeded"
+    }
+    ```
+
+5. Create the App Service Plan (B1, Linux).
+
+    !!! warning "Dedicated uses `az appservice plan create`"
+        Unlike Premium which uses `az functionapp plan create`, Dedicated plans use `az appservice plan create`. This is because Dedicated plans are standard App Service Plans, not elastic function-specific plans.
+
+    ```bash
+    az appservice plan create \
+      --name "$PLAN_NAME" \
+      --resource-group "$RG" \
+      --location "$LOCATION" \
+      --sku "B1" \
+      --is-linux
+    ```
+
+    Expected output (abridged):
+
+    ```json
+    {
+      "name": "plan-ndded-04100022",
+      "location": "koreacentral",
+      "sku": {
+        "name": "B1",
+        "tier": "Basic"
+      },
+      "kind": "linux",
+      "provisioningState": "Succeeded"
+    }
+    ```
+
+6. Create the Function App on the Dedicated plan.
+
+    ```bash
+    az functionapp create \
+      --name "$APP_NAME" \
+      --resource-group "$RG" \
+      --plan "$PLAN_NAME" \
+      --storage-account "$STORAGE_NAME" \
+      --runtime "node" \
+      --runtime-version "20" \
+      --functions-version "4" \
+      --os-type "Linux"
+    ```
+
+    !!! warning "Node.js 20 EOL approaching"
+        Azure CLI warns: `Use node version 24 as 20 will reach end-of-life on 2026-04-30`. Consider using `--runtime-version 22` or later for new projects.
+
+    Expected output (abridged):
+
+    ```json
+    {
+      "name": "func-ndded-04100022",
+      "state": "Running",
+      "kind": "functionapp,linux",
+      "defaultHostName": "func-ndded-04100022.azurewebsites.net"
+    }
+    ```
+
+    !!! info "Application Insights auto-created"
+        `az functionapp create` automatically creates an Application Insights resource with the **same name** as the function app (e.g., `func-ndded-04100022`), not `$APP_NAME-ai`. The `APPLICATIONINSIGHTS_CONNECTION_STRING` app setting is auto-configured.
+
+    !!! tip "No content file share needed"
+        Unlike Premium and Consumption plans, Dedicated does **not** require `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING` or `WEBSITE_CONTENTSHARE`. Deployments use `WEBSITE_RUN_FROM_PACKAGE=1` (set automatically) which stores the package in blob storage.
+
+7. Set required app settings for triggers.
+
+    ```bash
+    az functionapp config appsettings set \
+      --name "$APP_NAME" \
+      --resource-group "$RG" \
+      --settings \
+        "EventHubConnection__fullyQualifiedNamespace=placeholder.servicebus.windows.net" \
+        "QueueStorage=$(az storage account show-connection-string --name $STORAGE_NAME --resource-group $RG --query connectionString --output tsv)"
+    ```
+
+    !!! note "EventHub placeholder required"
+        If your app includes an Event Hub trigger, the function host may fail to start without a valid `EventHubConnection` setting. Set a placeholder namespace to allow function indexing.
+
+8. Publish the app.
+
+    ```bash
+    cd apps/nodejs
+    func azure functionapp publish "$APP_NAME"
+    ```
+
+    Expected output (abridged):
+
+    ```text
+    Getting site publishing info...
+    Uploading package...
+    Uploading 49.36 MB [##############################################################]
+    Upload completed successfully.
+    Deployment completed successfully.
+    ```
+
+9. Validate deployment.
+
+    ```bash
+    az functionapp function list \
+      --name "$APP_NAME" \
+      --resource-group "$RG" \
+      --output table
+    ```
+
+    !!! tip "Function indexing delay"
+        After the first publish, it may take 30–60 seconds for all functions to appear in the ARM API. If the list is empty, wait and retry.
+
+    Expected output (abridged — showing key functions):
+
+    ```text
+    Name                                          Language
+    --------------------------------------------  ----------
+    func-ndded-04100022/helloHttp                 node
+    func-ndded-04100022/health                    node
+    func-ndded-04100022/info                      node
+    func-ndded-04100022/queueProcessor            node
+    func-ndded-04100022/blobProcessor             node
+    func-ndded-04100022/scheduledCleanup          node
+    ```
+
+    !!! note "Language field"
+        The `Language` column shows `node`, not `Javascript`. This is the actual value returned by the ARM API for Node.js v4 apps.
+
+10. Test the deployed endpoints.
+
+    ```bash
+    curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
+    ```
+
+    Expected output:
+
+    ```json
+    {"status":"healthy","timestamp":"2026-04-09T16:05:04.222Z","version":"1.0.0"}
+    ```
+
+    ```bash
+    curl --request GET "https://$APP_NAME.azurewebsites.net/api/hello/Dedicated"
+    ```
+
+    Expected output:
+
+    ```json
+    {"message":"Hello, Dedicated"}
+    ```
+
+    ```bash
+    curl --request GET "https://$APP_NAME.azurewebsites.net/api/info"
+    ```
+
+    Expected output:
+
+    ```json
+    {
+      "name": "azure-functions-nodejs-guide",
+      "version": "1.0.0",
+      "node": "v20.20.0",
+      "environment": "production",
+      "functionApp": "func-ndded-04100022"
+    }
+    ```
 
 ## Verification
 
-```text
-Name       Language
----------  ----------
-helloHttp  Javascript
-```
+The output confirms that Azure indexed your function definitions and the app serves requests. Verify:
 
-The output confirms that Azure indexed your function definition and is ready to serve requests.
+- `az functionapp function list` shows functions with language `node`
+- `curl` to the health endpoint returns `200 OK` with `{"status":"healthy",...}`
+- `curl` to `/api/hello/Dedicated` returns `{"message":"Hello, Dedicated"}`
 
 ## See Also
 - [Tutorial Overview & Plan Chooser](../index.md)

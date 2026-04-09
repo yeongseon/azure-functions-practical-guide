@@ -9,15 +9,15 @@ This page tracks which tutorials have been validated against real Azure deployme
 | Metric | Count |
 |---|---:|
 | Total tutorials | 112 |
-| ✅ Validated | 49 |
+| ✅ Validated | 56 |
 | ⚠️ Stale (>90 days) | 0 |
 | ❌ Failed | 0 |
-| ➖ Not tested | 63 |
+| ➖ Not tested | 56 |
 
 ```mermaid
 pie title Tutorial Validation Status
-    "Validated" : 49
-    "Not Tested" : 63
+    "Validated" : 56
+    "Not Tested" : 56
 ```
 
 ## Validation Matrix
@@ -113,13 +113,13 @@ pie title Tutorial Validation Status
 | [05 Infrastructure As Code](../language-guides/nodejs/tutorial/premium/05-infrastructure-as-code.md) | Premium (EP) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [06 Ci Cd](../language-guides/nodejs/tutorial/premium/06-ci-cd.md) | Premium (EP) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [07 Extending Triggers](../language-guides/nodejs/tutorial/premium/07-extending-triggers.md) | Premium (EP) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
-| [01 Local Run](../language-guides/nodejs/tutorial/dedicated/01-local-run.md) | Dedicated (App Service) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
-| [02 First Deploy](../language-guides/nodejs/tutorial/dedicated/02-first-deploy.md) | Dedicated (App Service) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
-| [03 Configuration](../language-guides/nodejs/tutorial/dedicated/03-configuration.md) | Dedicated (App Service) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
-| [04 Logging Monitoring](../language-guides/nodejs/tutorial/dedicated/04-logging-monitoring.md) | Dedicated (App Service) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
-| [05 Infrastructure As Code](../language-guides/nodejs/tutorial/dedicated/05-infrastructure-as-code.md) | Dedicated (App Service) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
-| [06 Ci Cd](../language-guides/nodejs/tutorial/dedicated/06-ci-cd.md) | Dedicated (App Service) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
-| [07 Extending Triggers](../language-guides/nodejs/tutorial/dedicated/07-extending-triggers.md) | Dedicated (App Service) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
+| [01 Local Run](../language-guides/nodejs/tutorial/dedicated/01-local-run.md) | Dedicated (App Service) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
+| [02 First Deploy](../language-guides/nodejs/tutorial/dedicated/02-first-deploy.md) | Dedicated (App Service) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
+| [03 Configuration](../language-guides/nodejs/tutorial/dedicated/03-configuration.md) | Dedicated (App Service) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
+| [04 Logging Monitoring](../language-guides/nodejs/tutorial/dedicated/04-logging-monitoring.md) | Dedicated (App Service) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
+| [05 Infrastructure As Code](../language-guides/nodejs/tutorial/dedicated/05-infrastructure-as-code.md) | Dedicated (App Service) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
+| [06 Ci Cd](../language-guides/nodejs/tutorial/dedicated/06-ci-cd.md) | Dedicated (App Service) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
+| [07 Extending Triggers](../language-guides/nodejs/tutorial/dedicated/07-extending-triggers.md) | Dedicated (App Service) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 
 ### Python
 
