@@ -1,0 +1,17 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "FUNCTIONS_EXTENSION_VERSION": "~4",
+    "AZURE_FUNCTIONS_ENVIRONMENT": "development",
+    "TELEMETRY_MODE": "basic",
+    "LOG_LEVEL": "info",
+    "PROCESSING_DELAY_MS": "0",
+    "TIMER_LAB_SCHEDULE": "0 */2 * * * *",
+    "QueueStorage": "UseDevelopmentStorage=true",
+    "EventHubConnection": "",
+    "EventHubLab__ArtificialDelayMs": "0",
+    "EventHubLab__LogCheckpointDelta": "true"
+  }
+}

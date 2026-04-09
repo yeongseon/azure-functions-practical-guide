@@ -1,0 +1,23 @@
+{
+  "name": "azure-functions-nodejs-guide",
+  "version": "1.0.0",
+  "description": "Azure Functions Node.js v4 reference application for the practical guide",
+  "main": "src/functions/*.js",
+  "scripts": {
+    "start": "func start",
+    "test": "echo \"No tests yet\" && exit 0"
+  },
+  "dependencies": {
+    "@azure/functions": "^4.6.0",
+    "@azure/identity": "^4.5.0",
+    "@azure/monitor-opentelemetry": "^1.8.0",
+    "@azure/storage-blob": "^12.26.0",
+    "@azure/storage-queue": "^12.24.0",
+    "@azure/event-hubs": "^6.0.3",
+    "durable-functions": "^3.1.0"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
