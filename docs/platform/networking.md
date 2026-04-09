@@ -40,13 +40,13 @@ Platform-Subscription AzureCloud   <subscription-id>   <tenant-id>        Enable
 ### Reference architecture
 ```mermaid
 flowchart LR
-    C[Client / Caller] --> APIM[Optional Front Door / APIM]
+    C["Client / Caller"] --> APIM["Optional Front Door / APIM"]
     APIM --> FA[Function App]
     FA -->|VNet Integration outbound| VNET[(Virtual Network)]
-    VNET --> PE1[Private Endpoint: SQL/Cosmos/Storage]
-    VNET --> FW[Firewall/NAT]
+    VNET --> PE1["Private Endpoint: SQL/Cosmos/Storage"]
+    VNET --> FW["Firewall/NAT"]
     FW --> EXT[Approved external services]
-    CORP[On-premises network] <--> VPN[VPN/ExpressRoute]
+    CORP[On-premises network] <--> VPN["VPN/ExpressRoute"]
     VPN <--> VNET
 ```
 
@@ -150,7 +150,7 @@ flowchart LR
     FD --> APIM[API Management]
     APIM --> PE[Private Endpoint: Function App]
     PE --> FA[Function App]
-    FA --> ID[Microsoft Entra ID / Managed Identity]
+    FA --> ID["Microsoft Entra ID / Managed Identity"]
 ```
 
 ### Outbound network controls
@@ -373,6 +373,7 @@ Runtime focus areas:
 - [Security](security.md)
 - [Troubleshooting architecture](../troubleshooting/architecture.md)
 - [Troubleshooting playbooks](../troubleshooting/playbooks.md)
+- [Deployment Scenarios](deployment-scenarios.md) — Cross-plan comparison of VNet, PE, identity, and deployment patterns
 
 ## Sources
 - [Microsoft Learn: Networking options in Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-networking-options)

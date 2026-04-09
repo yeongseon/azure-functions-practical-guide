@@ -176,6 +176,7 @@ Use official pricing tools:
 - [Learning Paths](learning-paths.md)
 - [Repository Map](repository-map.md)
 - [Platform Hosting](../platform/hosting.md)
+- [Deployment Scenarios](../platform/deployment-scenarios.md) — Cross-plan comparison of VNet, PE, identity, and deployment patterns
 
 ## Sources
 

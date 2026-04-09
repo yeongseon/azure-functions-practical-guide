@@ -105,6 +105,7 @@ nav:
     - platform/reliability.md
     - platform/security.md
     - platform/functions-vs-app-service.md
+    - platform/deployment-scenarios.md
   - Best Practices:
     - best-practices/index.md
     - best-practices/hosting-plan-selection.md

@@ -270,7 +270,7 @@ If you need both serverless cost behavior and private networking, Flex is usuall
 flowchart TD
     A[Start: Define workload requirements] --> B{Need scale-to-zero?}
     B -->|No| C{Need strict low latency?}
-    B -->|Yes| D{Need VNet/private endpoints?}
+    B -->|Yes| D{"Need VNet/private endpoints?"}
     D -->|No| E[Choose Consumption]
     D -->|Yes| F{Accept one app per plan?}
     F -->|Yes| G[Choose Flex Consumption]
@@ -354,6 +354,7 @@ Use conceptual formulas to compare plan behavior before detailed calculator mode
 - [Scaling](scaling.md)
 - [Networking](networking.md)
 - [Security](security.md)
+- [Deployment Scenarios](deployment-scenarios.md) — Cross-plan comparison of VNet, PE, identity, and deployment patterns
 
 ## Sources
 
