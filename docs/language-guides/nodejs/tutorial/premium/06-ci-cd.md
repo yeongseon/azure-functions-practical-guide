@@ -1,8 +1,25 @@
+---
+hide:
+  - toc
+validation:
+  az_cli:
+    last_tested: 2026-04-10
+    cli_version: "2.83.0"
+    core_tools_version: "4.8.0"
+    result: pass
+  bicep:
+    last_tested: null
+    result: not_tested
+---
+
 # 06 - CI/CD (Premium)
 
 Automate build and deployment with GitHub Actions and environment gates.
 
 ## Prerequisites
+
+- You completed [05 - Infrastructure as Code](05-infrastructure-as-code.md).
+- Your function app is deployed and responding to requests.
 
 | Tool | Version | Purpose |
 |---|---|---|
@@ -18,20 +35,29 @@ Automate build and deployment with GitHub Actions and environment gates.
 You will define a GitHub Actions workflow that builds and deploys your Node.js Functions app on each push to `main`.
 You will validate release health from runtime logs after the deployment finishes.
 
+!!! info "Infrastructure Context"
+    **Plan**: Premium (EP1) | **CI/CD**: GitHub Actions | **Deploy method**: `func azure functionapp publish`
+
+    ```mermaid
+    flowchart LR
+        GH[GitHub\nmain branch] -->|push| GA[GitHub Actions]
+        GA -->|npm ci + test| BUILD[Build]
+        BUILD -->|func publish| FA[Function App\nPremium EP1]
+        FA -->|health check| VERIFY[Verification]
+
+        style GH fill:#E3F2FD
+        style FA fill:#ff8c00,color:#fff
+        style VERIFY fill:#E8F5E9
+    ```
+
 ## Steps
 
-```mermaid
-flowchart LR
-    A[Code commit] --> B[Build package]
-    B --> C[Deploy to Premium]
-    C --> D[Runtime indexes v4 handlers]
-    D --> E[Trigger execution]
-```
+### Step 1 — Create workflow
 
-### Step 1 - Create workflow
+Create `.github/workflows/deploy-node-premium.yml`:
 
 ```yaml
-name: deploy-node-functions
+name: deploy-node-premium
 on:
   push:
     branches: [ main ]
@@ -44,41 +70,90 @@ jobs:
         with:
           node-version: '20'
       - run: npm ci
+        working-directory: apps/nodejs
       - run: npm test --if-present
+        working-directory: apps/nodejs
       - uses: Azure/functions-action@v1
         with:
           app-name: ${{ secrets.APP_NAME }}
-          package: '.'
+          package: 'apps/nodejs'
           publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
 ```
 
-### Step 2 - Store secrets
+### Step 2 — Store secrets
 
-- Add `APP_NAME` in GitHub Actions secrets.
-- Add `AZURE_FUNCTIONAPP_PUBLISH_PROFILE` from Function App publish profile export.
+1. Download the publish profile:
 
-### Step 3 - Validate release
+    ```bash
+    az functionapp deployment list-publishing-profiles \
+      --name "$APP_NAME" \
+      --resource-group "$RG" \
+      --xml
+    ```
+
+2. Add GitHub Actions secrets in your repository settings:
+
+    - `APP_NAME`: Your function app name (e.g., `func-ndprem-04100022`)
+    - `AZURE_FUNCTIONAPP_PUBLISH_PROFILE`: The full XML content from the previous command
+
+### Step 3 — Validate release
+
+After deployment, verify the app is running with the latest code:
 
 ```bash
-az functionapp log tail --name $APP_NAME --resource-group $RG
+curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
+```
+
+Expected output:
+
+```json
+{"status":"healthy","timestamp":"2026-04-09T15:42:13.827Z","version":"1.0.0"}
+```
+
+!!! warning "`az functionapp log tail` does not exist"
+    Some tutorials reference `az functionapp log tail` — this command does not exist in Azure CLI 2.83.0. Use one of these alternatives:
+
+    - **App Insights query**: `az monitor app-insights query --app "$APP_NAME" --resource-group "$RG" --analytics-query "traces | where timestamp > ago(5m) | take 20"`
+    - **Log stream via webapp**: `az webapp log tail --name "$APP_NAME" --resource-group "$RG"` (may return 404 on some plans)
+    - **Azure Portal**: Navigate to Function App → Monitor → Log stream
+
+### Step 4 — Verify via Application Insights
+
+```bash
+az monitor app-insights query \
+  --app "$APP_NAME" \
+  --resource-group "$RG" \
+  --analytics-query "traces | where timestamp > ago(5m) and message contains 'Executing' | project timestamp, message | take 5" \
+  --output json
+```
+
+Expected output (abridged):
+
+```json
+{
+  "tables": [
+    {
+      "rows": [
+        ["2026-04-09T15:42:26Z", "Executing 'Functions.health' (Reason='...')"]
+      ]
+    }
+  ]
+}
 ```
 
 ### Plan-specific notes
 
-- Premium plans require Azure Files content share settings (`WEBSITE_CONTENTAZUREFILECONNECTIONSTRING` and `WEBSITE_CONTENTSHARE`) for standard content storage behavior.
-- Use an EP plan such as EP1 and configure always-ready capacity for low-latency APIs.
+- Premium supports deployment slots — use staging slots for zero-downtime deployments in production.
+- Premium auto-provisions Azure Files content share for deployment — the GitHub Actions workflow can use `func azure functionapp publish` or the `Azure/functions-action`.
 - Use long-form CLI flags for maintainable runbooks.
 
 ## Verification
 
-```text
-2026-04-08T08:20:11  Connected!
-2026-04-08T08:20:19  [Information] Executing 'Functions.helloHttp' (Reason='This function was programmatically called via the host APIs.', Id=6d9f2b66-9f0b-4f8f-9f4a-0f0f8f2a7e20)
-2026-04-08T08:20:19  [Information] Handled hello for world
-2026-04-08T08:20:19  [Information] Executed 'Functions.helloHttp' (Succeeded, Id=6d9f2b66-9f0b-4f8f-9f4a-0f0f8f2a7e20, Duration=34ms)
-```
+Confirm:
 
-The log stream confirms the deployed function starts and handles requests successfully.
+1. The GitHub Actions workflow passes (build + deploy).
+2. `curl` to the health endpoint returns `200 OK` with `{"status":"healthy",...}`.
+3. Application Insights shows recent function execution traces.
 
 ## See Also
 - [Tutorial Overview & Plan Chooser](../index.md)
@@ -89,5 +164,5 @@ The log stream confirms the deployed function starts and handles requests succes
 
 ## Sources
 - [Azure Functions Node.js developer guide (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-reference-node)
-- [Create your first Azure Function with Core Tools (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-node)
+- [Continuous deployment for Azure Functions (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-continuous-deployment)
 - [Azure Functions hosting options (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-scale)

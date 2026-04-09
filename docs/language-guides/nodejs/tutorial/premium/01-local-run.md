@@ -1,8 +1,25 @@
+---
+hide:
+  - toc
+validation:
+  az_cli:
+    last_tested: 2026-04-10
+    cli_version: "2.83.0"
+    core_tools_version: "4.8.0"
+    result: pass
+  bicep:
+    last_tested: null
+    result: not_tested
+---
+
 # 01 - Run Locally (Premium)
 
-Initialize, run, and verify a Node.js v4 app on your machine before cloud deployment.
+Run the sample Azure Functions Node.js v4 app on your machine before deploying to the Premium (EP1) plan. This track uses Linux shell examples; the same workflow works on Windows with equivalent commands.
 
 ## Prerequisites
+
+- You completed the [Language Guide overview](../../index.md) and have Node.js 20+, Core Tools v4, and Azure CLI installed.
+- You are signed in to Azure CLI (`az login`).
 
 | Tool | Version | Purpose |
 |---|---|---|
@@ -11,23 +28,32 @@ Initialize, run, and verify a Node.js v4 app on your machine before cloud deploy
 | Azure CLI | 2.61+ | Azure resource provisioning and management |
 
 !!! info "Plan basics"
-    Premium provides always-warm instances, VNet integration, deployment slots, and unlimited timeout support.
+    Premium (Elastic Premium, EP1) provides always-warm instances, VNet integration, deployment slots, and unlimited timeout support. Unlike Consumption, Premium keeps at least one instance always warm — eliminating cold-start latency for production APIs.
 
 ## What You'll Build
 
 You will create a Node.js v4 HTTP-triggered function named `helloHttp` and run it locally with Azure Functions Core Tools.
 You will validate the local route at `/api/hello/{name?}` and confirm the function returns a JSON payload.
 
+!!! info "Infrastructure Context"
+    **Plan**: Premium (EP1) | **Runtime**: Node.js 20 | **Local dev**: Core Tools v4
+
+    This tutorial runs entirely on your local machine. No Azure resources are created. The project structure you build here will be deployed to a Premium plan in Tutorial 02.
+
+    ```mermaid
+    flowchart LR
+        DEV[Developer Machine] -->|func start| HOST[Core Tools Host\nNode.js 20\nPort 7071]
+        HOST --> HTTP[HTTP Trigger\nhelloHttp]
+        HTTP -->|GET /api/hello| RESP[JSON Response]
+
+        style DEV fill:#E3F2FD
+        style HOST fill:#ff8c00,color:#fff
+        style RESP fill:#E8F5E9
+    ```
+
 ## Steps
 
-```mermaid
-flowchart LR
-    A[func init project] --> B[Create v4 handler]
-    B --> C[func start]
-    C --> D[Test with curl]
-```
-
-### Step 1 - Initialize project
+### Step 1 — Initialize project
 
 ```bash
 func init node-guide-premium --worker-runtime node --language javascript
@@ -35,7 +61,17 @@ cd node-guide-premium
 npm install @azure/functions
 ```
 
-### Step 2 - Create the v4 handler
+Expected output (abridged):
+
+```text
+Writing package.json
+Writing .gitignore
+Writing host.json
+Writing local.settings.json
+Writing /data/GitHub/azure-functions-practical-guide/apps/nodejs/.vscode/extensions.json
+```
+
+### Step 2 — Create the v4 handler
 
 Save the following as `src/functions/helloHttp.js`:
 
@@ -53,10 +89,24 @@ app.http('helloHttp', {
 });
 ```
 
-### Step 3 - Run host and test
+### Step 3 — Run host and test
 
 ```bash
 func start
+```
+
+Expected output:
+
+```text
+Azure Functions Core Tools
+Core Tools Version:       4.8.0
+Function Runtime Version: 4.1036.1.23224
+
+Functions:
+
+        helloHttp: [GET] http://localhost:7071/api/hello/{name?}
+
+For detailed output, run func with --verbose flag.
 ```
 
 In a second terminal, test the endpoint:
@@ -65,10 +115,27 @@ In a second terminal, test the endpoint:
 curl --request GET "http://localhost:7071/api/hello"
 ```
 
-### Step 4 - Review Premium-specific notes
+Expected output:
 
-- Premium plans require Azure Files content share settings (`WEBSITE_CONTENTAZUREFILECONNECTIONSTRING` and `WEBSITE_CONTENTSHARE`) for standard content storage behavior.
+```json
+{"message":"Hello, world"}
+```
+
+```bash
+curl --request GET "http://localhost:7071/api/hello/Azure"
+```
+
+Expected output:
+
+```json
+{"message":"Hello, Azure"}
+```
+
+### Step 4 — Review Premium-specific notes
+
+- Premium plans require Azure Files content share settings (`WEBSITE_CONTENTAZUREFILECONNECTIONSTRING` and `WEBSITE_CONTENTSHARE`) for content storage during provisioning.
 - Use an EP plan such as EP1 and configure always-ready capacity for low-latency APIs.
+- Premium supports unlimited function timeout (`"functionTimeout": "-1"` in host.json).
 - Use long-form CLI flags (for example, `--resource-group`) for maintainable runbooks.
 
 ## Verification
@@ -78,7 +145,7 @@ Functions:
     helloHttp: [GET] http://localhost:7071/api/hello/{name?}
 ```
 
-Confirm that the host lists `helloHttp`, then run `curl --request GET "http://localhost:7071/api/hello"` and verify a `200 OK` response with a JSON body such as `{"message":"Hello, world"}`.
+Confirm that the host lists `helloHttp`, then run `curl --request GET "http://localhost:7071/api/hello"` and verify a `200 OK` response with a JSON body `{"message":"Hello, world"}`.
 
 ## See Also
 - [Tutorial Overview & Plan Chooser](../index.md)
