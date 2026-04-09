@@ -20,10 +20,22 @@ You will deploy storage, a Linux Consumption plan, and a Python Function App via
     Consumption has no VNet integration or private endpoint support. All traffic flows over the public internet. Storage uses connection string authentication.
 
     ```mermaid
-    flowchart LR
-        INET["Internet"] -->|HTTPS| FA["Function App Y1"]
-        FA --> ST["Storage Account\npublic access"]
-        FA --> AI["App Insights"]
+    flowchart TD
+        INET[Internet] -->|HTTPS| FA[Function App\nConsumption Y1\nLinux Python 3.11]
+
+        FA -->|System-Assigned MI| ENTRA[Microsoft Entra ID]
+        FA -->|"AzureWebJobsStorage__accountName\n+ connection string"| ST[Storage Account\npublic access]
+        FA --> AI[Application Insights]
+
+        subgraph STORAGE[Storage Services]
+            ST --- FS[Azure Files\ncontent share]
+        end
+
+        NO_VNET["⚠️ No VNet integration\nNo private endpoints"] -. limitation .- FA
+
+        style FA fill:#0078d4,color:#fff
+        style NO_VNET fill:#FFF3E0,stroke:#FF9800
+        style STORAGE fill:#FFF3E0
     ```
 
 ```mermaid

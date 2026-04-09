@@ -26,10 +26,48 @@ You will define and deploy a Dedicated App Service Plan, storage account, and Li
     Basic B1 has no VNet integration or private endpoints. The app runs on a fixed App Service Plan (always on, no scale-to-zero). VNet support requires upgrading to Standard (S1) or Premium (P1v3) tier.
 
     ```mermaid
-    flowchart LR
-        INET[Internet] -->|HTTPS| FA["Function App\nDedicated B1\nalways on"]
-        FA --> ST[Storage Account\npublic access]
-        FA --> AI[App Insights]
+    flowchart TD
+        INET[Internet] -->|HTTPS| FA[Function App\nDedicated B1-P3v3\nLinux Python 3.11]
+
+        subgraph VNET["VNet 10.0.0.0/16"]
+            subgraph INT_SUB["Integration Subnet 10.0.1.0/24\nDelegation: Microsoft.Web/serverFarms"]
+                FA
+            end
+            subgraph PE_SUB["Private Endpoint Subnet 10.0.2.0/24"]
+                PE_BLOB[PE: blob]
+                PE_QUEUE[PE: queue]
+                PE_TABLE[PE: table]
+                PE_FILE[PE: file]
+            end
+        end
+
+        PE_BLOB --> ST["Storage Account"]
+        PE_QUEUE --> ST
+        PE_TABLE --> ST
+        PE_FILE --> ST
+
+        subgraph DNS[Private DNS Zones]
+            DNS_BLOB[privatelink.blob.core.windows.net]
+            DNS_QUEUE[privatelink.queue.core.windows.net]
+            DNS_TABLE[privatelink.table.core.windows.net]
+            DNS_FILE[privatelink.file.core.windows.net]
+        end
+
+        PE_BLOB -.-> DNS_BLOB
+        PE_QUEUE -.-> DNS_QUEUE
+        PE_TABLE -.-> DNS_TABLE
+        PE_FILE -.-> DNS_FILE
+
+        FA -.->|System-Assigned MI| ENTRA[Microsoft Entra ID]
+        FA --> AI[Application Insights]
+
+        RFP["📦 WEBSITE_RUN_FROM_PACKAGE=1\nNo content share required"] -.- FA
+        ALWAYS_ON["⚙️ Always On: true\nFixed capacity"] -.- FA
+
+        style FA fill:#5c2d91,color:#fff
+        style VNET fill:#E8F5E9,stroke:#4CAF50
+        style ST fill:#FFF3E0
+        style DNS fill:#E3F2FD
     ```
 
 ```mermaid
