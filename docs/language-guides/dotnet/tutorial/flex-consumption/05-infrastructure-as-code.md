@@ -1,54 +1,66 @@
+---
+hide:
+  - toc
+validation:
+  az_cli:
+    last_tested: 2026-04-10
+    cli_version: "2.83.0"
+    core_tools_version: "4.8.0"
+    result: pass
+  bicep:
+    last_tested: null
+    result: not_tested
+---
+
 # 05 - Infrastructure as Code (Flex Consumption)
 
-Define the Flex Consumption environment in Bicep and deploy the same architecture repeatedly across environments.
+Describe your .NET Function App platform using Bicep so provisioning is deterministic and easy to review. Flex Consumption uses `functionAppConfig` instead of traditional `siteConfig` for runtime and scaling settings.
 
 ## Prerequisites
 
 | Tool | Version | Purpose |
 |------|---------|---------|
 | .NET SDK | 8.0 (LTS) | Build and run isolated worker functions |
-| Azure Functions Core Tools | v4 | Local host and deployment commands |
-| Azure CLI | 2.61+ | Provision and configure Azure resources |
+| Azure Functions Core Tools | v4 | Start local host and publish artifacts |
+| Azure CLI | 2.61+ | Provision Azure resources and inspect app state |
 
-!!! info "Plan basics"
-    Flex Consumption (FC1) scales to zero with per-function scaling, VNet support, and configurable memory. It is the recommended default for new serverless workloads.
-    Supports VNet integration and private endpoints.
-    No Kudu/SCM endpoints and no custom container support on this plan.
-    All traffic routes through the integrated VNet.
+!!! info "Flex Consumption plan basics"
+    Flex Consumption (FC1) keeps serverless economics while adding VNet integration, configurable instance memory (512 MB to 4096 MB), and per-function scaling. Microsoft recommends it for many new apps.
 
 ## What You'll Build
 
-- A Flex Consumption Bicep template based on `functionAppConfig`
-- Storage resources used by the deployment package container
-- Repeatable group deployment for Flex-specific Function App infrastructure
+You will define a complete Flex Consumption environment in Bicep (storage account, FC1 plan, blob deployment container, and Linux Function App for .NET 8 isolated worker with managed identity), and deploy from your own template.
+
+```mermaid
+flowchart TD
+    A[Bicep template] --> B[az deployment group create]
+    B --> C[Storage + Plan + Function App]
+    C --> D["Blob-based deployment with MI"]
+    D --> E["Build + publish from output dir"]
+```
 
 ## Steps
+
 ### Step 1 - Create a Bicep template for Flex Consumption
-Below is a simplified Flex Consumption template showing key resources.
 
 ```bicep
 param location string = resourceGroup().location
 param baseName string
 
-var functionAppName = '${baseName}-func'
-var storageAccountName = toLower(replace('${baseName}storage', '-', ''))
-var appServicePlanName = '${baseName}-plan'
-var managedIdentityName = '${baseName}-identity'
-var deploymentContainerName = 'deployment-packages'
+var storageName = toLower(replace('${baseName}storage', '-', ''))
+var planName = '${baseName}-plan'
+var appName = '${baseName}-func'
+var deploymentContainerName = 'app-package'
+```
 
+### Step 2 - Define storage and deployment container
+
+```bicep
 resource storage 'Microsoft.Storage/storageAccounts@2023-05-01' = {
-  name: storageAccountName
+  name: storageName
   location: location
   sku: { name: 'Standard_LRS' }
   kind: 'StorageV2'
-  properties: {
-    allowSharedKeyAccess: false
-  }
-}
-
-resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
-  name: managedIdentityName
-  location: location
 }
 
 resource blobService 'Microsoft.Storage/storageAccounts/blobServices@2023-05-01' = {
@@ -63,9 +75,16 @@ resource deploymentContainer 'Microsoft.Storage/storageAccounts/blobServices/con
     publicAccess: 'None'
   }
 }
+```
 
+!!! warning "Deployment container must exist before function app creation"
+    Flex Consumption requires a pre-existing blob container for deployment packages. The Bicep template creates it as a dependency of the function app resource.
+
+### Step 3 - Define Flex Consumption plan and function app
+
+```bicep
 resource plan 'Microsoft.Web/serverfarms@2024-04-01' = {
-  name: appServicePlanName
+  name: planName
   location: location
   sku: {
     name: 'FC1'
@@ -76,15 +95,12 @@ resource plan 'Microsoft.Web/serverfarms@2024-04-01' = {
   }
 }
 
-resource app 'Microsoft.Web/sites@2024-04-01' = {
-  name: functionAppName
+resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
+  name: appName
   location: location
   kind: 'functionapp,linux'
   identity: {
-    type: 'UserAssigned'
-    userAssignedIdentities: {
-      '${managedIdentity.id}': {}
-    }
+    type: 'SystemAssigned'
   }
   properties: {
     serverFarmId: plan.id
@@ -103,70 +119,84 @@ resource app 'Microsoft.Web/sites@2024-04-01' = {
           type: 'blobContainer'
           value: 'https://${storage.name}.blob.${environment().suffixes.storage}/${deploymentContainerName}'
           authentication: {
-            type: 'UserAssignedIdentity'
-            userAssignedIdentityResourceId: managedIdentity.id
+            type: 'SystemAssignedIdentity'
           }
         }
       }
     }
   }
 }
-
-resource appSettings 'Microsoft.Web/sites/config@2024-04-01' = {
-  parent: app
-  name: 'appsettings'
-  properties: {
-    AzureWebJobsStorage__accountName: storage.name
-    AzureWebJobsStorage__credential: 'managedidentity'
-    AzureWebJobsStorage__clientId: managedIdentity.properties.clientId
-    FUNCTIONS_EXTENSION_VERSION: '~4'
-  }
-}
 ```
 
-The repository template (`infra/flex-consumption/main.bicep`) extends this with full VNet integration, private endpoints, private DNS zones, and RBAC role assignments.
+!!! note "Flex Consumption vs Consumption Bicep differences"
+    - Flex Consumption uses `functionAppConfig` instead of `siteConfig.appSettings` for runtime configuration.
+    - SKU is `FC1` / `FlexConsumption` instead of `Y1` / `Dynamic`.
+    - Deployment uses blob storage with managed identity instead of Azure Files with connection strings.
+    - `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING` and `WEBSITE_CONTENTSHARE` are NOT used.
 
-### Step 2 - Deploy the template
+### Step 4 - Deploy infrastructure
+
 ```bash
 az deployment group create \
   --resource-group "$RG" \
-  --template-file "infra/flex-consumption/main.bicep" \
+  --template-file main.bicep \
   --parameters baseName="$BASE_NAME"
 ```
 
-### Step 3 - Validate created resources
+### Step 5 - Deploy application artifact
+
+After infrastructure is provisioned, build and publish from the output directory:
+
 ```bash
+cd apps/dotnet
+dotnet publish --configuration Release --output ./publish
+
+cd publish
+func azure functionapp publish "$APP_NAME" --dotnet-isolated
+```
+
+!!! danger "Must pass --dotnet-isolated flag"
+    When publishing from the compiled output directory, Core Tools cannot detect the project language. Always pass `--dotnet-isolated` to specify the worker runtime explicitly. Without this flag, the publish may succeed but functions will not be indexed correctly.
+
+### Step 6 - Validate infrastructure deployment
+
+```bash
+az deployment group show \
+  --resource-group "$RG" \
+  --name main \
+  --query "properties.provisioningState" \
+  --output tsv
+
 az functionapp show \
   --name "$APP_NAME" \
   --resource-group "$RG" \
-  --query "{kind:kind,state:state,defaultHostName:defaultHostName}" \
-  --output json
+  --output table
 ```
-
-```mermaid
-flowchart LR
-    A[Bicep template] --> B[Resource Group deployment]
-    B --> C[Storage + Plan + Function App]
-    C --> D[Runtime dotnet-isolated]
-```
-### Step 4 - Validate isolated worker conventions
-```bash
-grep "FUNCTIONS_WORKER_RUNTIME" "local.settings.json"
-grep "ConfigureFunctionsWebApplication" "Program.cs"
-```
-
-Confirm that HTTP functions use `HttpRequestData` and `HttpResponseData`, and that logging is constructor-injected with `ILogger<T>`.
 
 ## Verification
-```json
-{
-  "kind": "functionapp,linux",
-  "state": "Running",
-  "defaultHostName": "func-dotnet-flex-consumption-demo.azurewebsites.net"
-}
+
+Infrastructure deployment output:
+
+```text
+ProvisioningState    Timestamp
+-----------------    --------------------------
+Succeeded            2026-04-10T03:10:00.000Z
 ```
 
+Function app status:
+
+```text
+Name                       State    ResourceGroup              DefaultHostName
+-------------------------  -------  -------------------------  -----------------------------------------------
+func-dnetflex-04100301     Running  rg-func-dotnet-flex-demo   func-dnetflex-04100301.azurewebsites.net
+```
+
+## Next Steps
+
+> **Next:** [06 - CI/CD](06-ci-cd.md)
+
 ## See Also
+
 - [Tutorial Overview & Plan Chooser](../index.md)
 - [.NET Language Guide](../../index.md)
 - [Platform: Hosting Plans](../../../../platform/hosting.md)
@@ -174,6 +204,7 @@ Confirm that HTTP functions use `HttpRequestData` and `HttpResponseData`, and th
 - [Recipes Index](../../recipes/index.md)
 
 ## Sources
-- [Azure Functions .NET isolated worker guide](https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide)
-- [Develop Azure Functions locally with Core Tools](https://learn.microsoft.com/azure/azure-functions/functions-develop-local)
-- [Azure Functions hosting options](https://learn.microsoft.com/azure/azure-functions/functions-scale)
+
+- [Azure Functions .NET isolated worker guide (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide)
+- [Azure Functions Flex Consumption plan (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan)
+- [Automate resource deployment with Bicep (Microsoft Learn)](https://learn.microsoft.com/azure/azure-resource-manager/bicep/overview)

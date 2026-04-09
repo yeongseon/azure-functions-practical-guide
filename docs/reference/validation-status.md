@@ -9,15 +9,15 @@ This page tracks which tutorials have been validated against real Azure deployme
 | Metric | Count |
 |---|---:|
 | Total tutorials | 112 |
-| ✅ Validated | 91 |
+| ✅ Validated | 98 |
 | ⚠️ Stale (>90 days) | 0 |
 | ❌ Failed | 0 |
-| ➖ Not tested | 21 |
+| ➖ Not tested | 14 |
 
 ```mermaid
 pie title Tutorial Validation Status
-    "Validated" : 91
-    "Not Tested" : 21
+    "Validated" : 98
+    "Not Tested" : 14
 ```
 
 ## Validation Matrix
@@ -33,13 +33,13 @@ pie title Tutorial Validation Status
 | [05 Infrastructure As Code](../language-guides/dotnet/tutorial/consumption/05-infrastructure-as-code.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [06 Ci Cd](../language-guides/dotnet/tutorial/consumption/06-ci-cd.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [07 Extending Triggers](../language-guides/dotnet/tutorial/consumption/07-extending-triggers.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
-| [01 Local Run](../language-guides/dotnet/tutorial/flex-consumption/01-local-run.md) | Flex Consumption (FC1) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
-| [02 First Deploy](../language-guides/dotnet/tutorial/flex-consumption/02-first-deploy.md) | Flex Consumption (FC1) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
-| [03 Configuration](../language-guides/dotnet/tutorial/flex-consumption/03-configuration.md) | Flex Consumption (FC1) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
-| [04 Logging Monitoring](../language-guides/dotnet/tutorial/flex-consumption/04-logging-monitoring.md) | Flex Consumption (FC1) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
-| [05 Infrastructure As Code](../language-guides/dotnet/tutorial/flex-consumption/05-infrastructure-as-code.md) | Flex Consumption (FC1) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
-| [06 Ci Cd](../language-guides/dotnet/tutorial/flex-consumption/06-ci-cd.md) | Flex Consumption (FC1) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
-| [07 Extending Triggers](../language-guides/dotnet/tutorial/flex-consumption/07-extending-triggers.md) | Flex Consumption (FC1) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
+| [01 Local Run](../language-guides/dotnet/tutorial/flex-consumption/01-local-run.md) | Flex Consumption (FC1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
+| [02 First Deploy](../language-guides/dotnet/tutorial/flex-consumption/02-first-deploy.md) | Flex Consumption (FC1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
+| [03 Configuration](../language-guides/dotnet/tutorial/flex-consumption/03-configuration.md) | Flex Consumption (FC1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
+| [04 Logging Monitoring](../language-guides/dotnet/tutorial/flex-consumption/04-logging-monitoring.md) | Flex Consumption (FC1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
+| [05 Infrastructure As Code](../language-guides/dotnet/tutorial/flex-consumption/05-infrastructure-as-code.md) | Flex Consumption (FC1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
+| [06 Ci Cd](../language-guides/dotnet/tutorial/flex-consumption/06-ci-cd.md) | Flex Consumption (FC1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
+| [07 Extending Triggers](../language-guides/dotnet/tutorial/flex-consumption/07-extending-triggers.md) | Flex Consumption (FC1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [01 Local Run](../language-guides/dotnet/tutorial/premium/01-local-run.md) | Premium (EP) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
 | [02 First Deploy](../language-guides/dotnet/tutorial/premium/02-first-deploy.md) | Premium (EP) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
 | [03 Configuration](../language-guides/dotnet/tutorial/premium/03-configuration.md) | Premium (EP) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
