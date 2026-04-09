@@ -1,6 +1,15 @@
 ---
 hide:
   - toc
+validation:
+  az_cli:
+    last_tested: 2026-04-09
+    cli_version: "2.83.0"
+    core_tools_version: "4.8.0"
+    result: pass
+  bicep:
+    last_tested: null
+    result: not_tested
 ---
 
 # 03 - Configuration (Dedicated)
@@ -17,7 +26,7 @@ export RG="rg-func-dedicated-dev"
 export APP_NAME="func-dedi-<unique-suffix>"
 export PLAN_NAME="asp-dedi-b1-dev"
 export STORAGE_NAME="stdedidev<unique>"
-export LOCATION="eastus"
+export LOCATION="koreacentral"
 ```
 
 ## What You'll Build
@@ -186,7 +195,7 @@ az functionapp config show \
 ```json
 {
   "id": "/subscriptions/<subscription-id>/resourceGroups/rg-func-dedicated-dev/providers/Microsoft.Web/sites/func-dedi-<unique-suffix>/config/appsettings",
-  "location": "East US",
+  "location": "Korea Central",
   "name": "appsettings",
   "properties": {
     "APP_ENV": "dedicated-dev",

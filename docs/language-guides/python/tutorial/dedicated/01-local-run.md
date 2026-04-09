@@ -1,6 +1,15 @@
 ---
 hide:
   - toc
+validation:
+  az_cli:
+    last_tested: 2026-04-09
+    cli_version: "2.83.0"
+    core_tools_version: "4.8.0"
+    result: pass
+  bicep:
+    last_tested: null
+    result: not_tested
 ---
 
 # 01 - Run Locally (Dedicated)
@@ -43,7 +52,7 @@ export RG="rg-func-dedicated-dev"
 export APP_NAME="func-dedi-<unique-suffix>"
 export PLAN_NAME="asp-dedi-b1-dev"
 export STORAGE_NAME="stdedidev<unique>"
-export LOCATION="eastus"
+export LOCATION="koreacentral"
 ```
 
 Sign in and select your subscription:
@@ -60,9 +69,9 @@ az account set --subscription "<subscription-id>"
 ```bash
 git clone https://github.com/yeongseon/azure-functions-practical-guide.git
 cd azure-functions-practical-guide
-python -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate
-pip install --requirement apps/python/requirements.txt
+python3 -m pip install --requirement apps/python/requirements.txt
 ```
 
 ### Step 2 - Create local settings
@@ -86,7 +95,7 @@ Use a local storage emulator value for development:
 ### Step 3 - Start the Functions host
 
 ```bash
-cd apps/python && func start
+cd apps/python && func host start
 ```
 
 ### Step 4 - Validate local endpoints
@@ -100,7 +109,7 @@ curl --request GET "http://localhost:7071/api/info"
 
 ## Verification
 
-`cd apps/python && func start`:
+`cd apps/python && func host start`:
 
 ```text
 Azure Functions Core Tools

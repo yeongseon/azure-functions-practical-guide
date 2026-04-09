@@ -1,6 +1,15 @@
 ---
 hide:
   - toc
+validation:
+  az_cli:
+    last_tested: 2026-04-09
+    cli_version: "2.83.0"
+    core_tools_version: "4.8.0"
+    result: pass
+  bicep:
+    last_tested: null
+    result: not_tested
 ---
 
 # 06 - CI/CD (Dedicated)
@@ -18,7 +27,7 @@ export RG="rg-func-dedicated-dev"
 export APP_NAME="func-dedi-<unique-suffix>"
 export PLAN_NAME="asp-dedi-b1-dev"
 export STORAGE_NAME="stdedidev<unique>"
-export LOCATION="eastus"
+export LOCATION="koreacentral"
 ```
 
 ## What You'll Build
@@ -111,6 +120,9 @@ az functionapp deployment source config-zip \
   --resource-group $RG \
   --src functionapp.zip
 ```
+
+!!! warning "CLI overrides `SCM_DO_BUILD_DURING_DEPLOYMENT`"
+    The `az functionapp deployment source config-zip` command automatically sets `SCM_DO_BUILD_DURING_DEPLOYMENT=false`, which prevents pip install from running during deployment. For Python apps on Dedicated, prefer `func azure functionapp publish $APP_NAME --python` instead of manual zip deploy — it handles the remote build correctly.
 
 ### Step 3 - Verify deployment and endpoint health
 

@@ -1,6 +1,15 @@
 ---
 hide:
   - toc
+validation:
+  az_cli:
+    last_tested: 2026-04-09
+    cli_version: "2.83.0"
+    core_tools_version: "4.8.0"
+    result: pass
+  bicep:
+    last_tested: null
+    result: not_tested
 ---
 
 # 04 - Logging & Monitoring (Dedicated)
@@ -17,7 +26,7 @@ export RG="rg-func-dedicated-dev"
 export APP_NAME="func-dedi-<unique-suffix>"
 export PLAN_NAME="asp-dedi-b1-dev"
 export STORAGE_NAME="stdedidev<unique>"
-export LOCATION="eastus"
+export LOCATION="koreacentral"
 export APPINSIGHTS_NAME="appi-dedi-<unique-suffix>"
 export LOG_ANALYTICS_NAME="log-dedi-<unique-suffix>"
 ```
@@ -155,8 +164,11 @@ APPINSIGHTS_APP_ID=$(az monitor app-insights component show \
 az monitor app-insights query \
   --app $APPINSIGHTS_APP_ID \
   --analytics-query "requests | take 5" \
-  --output table
+  --output json
 ```
+
+!!! tip "Use `--output json` for App Insights queries"
+    The `--output table` format for `az monitor app-insights query` may return empty results even when data exists. Use `--output json` to reliably retrieve query results.
 
 ### Step 6 - Add an alert rule for failures
 
@@ -199,7 +211,7 @@ az monitor metrics alert create \
 }
 ```
 
-`az monitor app-insights query --analytics-query "requests | take 5" --output table`:
+`az monitor app-insights query --analytics-query "requests | take 5" --output json`:
 
 ```text
 TimeGenerated                 name     resultCode    duration

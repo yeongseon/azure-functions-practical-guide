@@ -1,6 +1,15 @@
 ---
 hide:
   - toc
+validation:
+  az_cli:
+    last_tested: 2026-04-09
+    cli_version: "2.83.0"
+    core_tools_version: "4.8.0"
+    result: pass
+  bicep:
+    last_tested: null
+    result: not_tested
 ---
 
 # 02 - First Deploy (Dedicated)
@@ -136,6 +145,22 @@ func azure functionapp publish $APP_NAME --python
 
 Dedicated deployment here uses remote Oryx build via `func azure functionapp publish --python` with `WEBSITE_RUN_FROM_PACKAGE=1`. Unlike Consumption and Premium content share scenarios, B1 does not require `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING`.
 
+!!! warning "Set placeholder trigger settings before first request"
+    The reference app includes EventHub, Queue, and Timer triggers that need connection settings. If these are missing, the function host may report errors. Set placeholder values immediately after first deploy:
+
+    ```bash
+    az functionapp config appsettings set \
+      --name $APP_NAME \
+      --resource-group $RG \
+      --settings \
+        EventHubConnection="Endpoint=sb://placeholder.servicebus.windows.net/;SharedAccessKeyName=placeholder;SharedAccessKey=placeholder=;EntityPath=placeholder" \
+        QueueStorage="UseDevelopmentStorage=true" \
+        TIMER_LAB_SCHEDULE="0 0 0 1 1 *"
+
+    az functionapp restart --name $APP_NAME --resource-group $RG
+    ```
+
+    After restart, wait 60–90 seconds for the host to become ready on B1 tier.
 ### Step 6 - Verify deployment
 
 ```bash

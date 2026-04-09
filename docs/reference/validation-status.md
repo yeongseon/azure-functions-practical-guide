@@ -9,15 +9,15 @@ This page tracks which tutorials have been validated against real Azure deployme
 | Metric | Count |
 |---|---:|
 | Total tutorials | 112 |
-| ✅ Validated | 21 |
+| ✅ Validated | 28 |
 | ⚠️ Stale (>90 days) | 0 |
 | ❌ Failed | 0 |
-| ➖ Not tested | 91 |
+| ➖ Not tested | 84 |
 
 ```mermaid
 pie title Tutorial Validation Status
-    "Validated" : 21
-    "Not Tested" : 91
+    "Validated" : 28
+    "Not Tested" : 84
 ```
 
 ## Validation Matrix
@@ -146,13 +146,13 @@ pie title Tutorial Validation Status
 | [05 Infrastructure As Code](../language-guides/python/tutorial/premium/05-infrastructure-as-code.md) | Premium (EP) | ✅ Pass | ➖ Not Tested | 2026-04-09 | ✅ Pass |
 | [06 Ci Cd](../language-guides/python/tutorial/premium/06-ci-cd.md) | Premium (EP) | ✅ Pass | ➖ Not Tested | 2026-04-09 | ✅ Pass |
 | [07 Extending Triggers](../language-guides/python/tutorial/premium/07-extending-triggers.md) | Premium (EP) | ✅ Pass | ➖ Not Tested | 2026-04-09 | ✅ Pass |
-| [01 Local Run](../language-guides/python/tutorial/dedicated/01-local-run.md) | Dedicated (App Service) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
-| [02 First Deploy](../language-guides/python/tutorial/dedicated/02-first-deploy.md) | Dedicated (App Service) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
-| [03 Configuration](../language-guides/python/tutorial/dedicated/03-configuration.md) | Dedicated (App Service) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
-| [04 Logging Monitoring](../language-guides/python/tutorial/dedicated/04-logging-monitoring.md) | Dedicated (App Service) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
-| [05 Infrastructure As Code](../language-guides/python/tutorial/dedicated/05-infrastructure-as-code.md) | Dedicated (App Service) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
-| [06 Ci Cd](../language-guides/python/tutorial/dedicated/06-ci-cd.md) | Dedicated (App Service) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
-| [07 Extending Triggers](../language-guides/python/tutorial/dedicated/07-extending-triggers.md) | Dedicated (App Service) | ➖ No Data | ➖ No Data | — | ➖ Not Tested |
+| [01 Local Run](../language-guides/python/tutorial/dedicated/01-local-run.md) | Dedicated (App Service) | ✅ Pass | ➖ Not Tested | 2026-04-09 | ✅ Pass |
+| [02 First Deploy](../language-guides/python/tutorial/dedicated/02-first-deploy.md) | Dedicated (App Service) | ✅ Pass | ➖ Not Tested | 2026-04-09 | ✅ Pass |
+| [03 Configuration](../language-guides/python/tutorial/dedicated/03-configuration.md) | Dedicated (App Service) | ✅ Pass | ➖ Not Tested | 2026-04-09 | ✅ Pass |
+| [04 Logging Monitoring](../language-guides/python/tutorial/dedicated/04-logging-monitoring.md) | Dedicated (App Service) | ✅ Pass | ➖ Not Tested | 2026-04-09 | ✅ Pass |
+| [05 Infrastructure As Code](../language-guides/python/tutorial/dedicated/05-infrastructure-as-code.md) | Dedicated (App Service) | ✅ Pass | ➖ Not Tested | 2026-04-09 | ✅ Pass |
+| [06 Ci Cd](../language-guides/python/tutorial/dedicated/06-ci-cd.md) | Dedicated (App Service) | ✅ Pass | ➖ Not Tested | 2026-04-09 | ✅ Pass |
+| [07 Extending Triggers](../language-guides/python/tutorial/dedicated/07-extending-triggers.md) | Dedicated (App Service) | ✅ Pass | ➖ Not Tested | 2026-04-09 | ✅ Pass |
 
 ## How to Update
 
