@@ -51,6 +51,183 @@ flowchart TD
 | **Kudu / SCM** | ✅ (Windows only) | ❌ | ✅ | ✅ |
 | **Pricing model** | Per-execution | Per-execution | Pre-allocated | Pre-allocated |
 
+## Network Architecture by Plan
+
+Each hosting plan has a different network topology. The diagrams below show the **full infrastructure** that each tutorial track deploys — including VNet, subnets, private endpoints, DNS zones, and identity configuration.
+
+### ☁️ Consumption (Y1) — Public Network
+
+```mermaid
+flowchart TD
+    INET[Internet] -->|HTTPS| FA[Function App\nConsumption Y1\nLinux Python 3.11]
+
+    FA -->|System-Assigned MI| ENTRA[Microsoft Entra ID]
+    FA -->|"AzureWebJobsStorage__accountName\n+ connection string"| ST[Storage Account\npublic access]
+    FA --> AI[Application Insights]
+
+    subgraph STORAGE[Storage Services]
+        ST --- FS[Azure Files\ncontent share]
+    end
+
+    NO_VNET["⚠️ No VNet integration\nNo private endpoints"] -. limitation .- FA
+
+    style FA fill:#0078d4,color:#fff
+    style NO_VNET fill:#FFF3E0,stroke:#FF9800
+    style STORAGE fill:#FFF3E0
+```
+
+### ⚡ Flex Consumption (FC1) — Full Private Network
+
+```mermaid
+flowchart TD
+    INET[Internet] -->|HTTPS| FA[Function App\nFlex Consumption FC1\nLinux Python 3.11]
+
+    subgraph VNET["VNet 10.0.0.0/16"]
+        subgraph INT_SUB["Integration Subnet 10.0.1.0/24\nDelegation: Microsoft.App/environments"]
+            FA
+        end
+        subgraph PE_SUB["Private Endpoint Subnet 10.0.2.0/24"]
+            PE_BLOB[PE: blob]
+            PE_QUEUE[PE: queue]
+            PE_TABLE[PE: table]
+            PE_FILE[PE: file]
+        end
+    end
+
+    PE_BLOB --> ST["Storage Account\nallowPublicAccess: false\nallowSharedKeyAccess: false"]
+    PE_QUEUE --> ST
+    PE_TABLE --> ST
+    PE_FILE --> ST
+
+    subgraph DNS[Private DNS Zones]
+        DNS_BLOB[privatelink.blob.core.windows.net]
+        DNS_QUEUE[privatelink.queue.core.windows.net]
+        DNS_TABLE[privatelink.table.core.windows.net]
+        DNS_FILE[privatelink.file.core.windows.net]
+    end
+
+    PE_BLOB -.-> DNS_BLOB
+    PE_QUEUE -.-> DNS_QUEUE
+    PE_TABLE -.-> DNS_TABLE
+    PE_FILE -.-> DNS_FILE
+
+    FA -.->|User-Assigned MI| UAMI[Managed Identity]
+    UAMI -->|RBAC| ST
+    FA --> AI[Application Insights]
+
+    subgraph DEPLOY[Deployment]
+        BLOB_CTR[Blob Container\ndeployment-packages]
+    end
+    ST --- BLOB_CTR
+
+    style FA fill:#107c10,color:#fff
+    style VNET fill:#E8F5E9,stroke:#4CAF50
+    style ST fill:#FFF3E0
+    style DNS fill:#E3F2FD
+```
+
+### 🚀 Premium (EP) — Private Network with Warm Instances
+
+```mermaid
+flowchart TD
+    INET[Internet] -->|HTTPS| FA[Function App\nPremium EP1\nLinux Python 3.11]
+
+    subgraph VNET["VNet 10.0.0.0/16"]
+        subgraph INT_SUB["Integration Subnet 10.0.1.0/24\nDelegation: Microsoft.Web/serverFarms"]
+            FA
+        end
+        subgraph PE_SUB["Private Endpoint Subnet 10.0.2.0/24"]
+            PE_BLOB[PE: blob]
+            PE_QUEUE[PE: queue]
+            PE_TABLE[PE: table]
+            PE_FILE[PE: file]
+        end
+    end
+
+    PE_BLOB --> ST["Storage Account\nallowPublicAccess: false\nallowSharedKeyAccess: true"]
+    PE_QUEUE --> ST
+    PE_TABLE --> ST
+    PE_FILE --> ST
+
+    subgraph DNS[Private DNS Zones]
+        DNS_BLOB[privatelink.blob.core.windows.net]
+        DNS_QUEUE[privatelink.queue.core.windows.net]
+        DNS_TABLE[privatelink.table.core.windows.net]
+        DNS_FILE[privatelink.file.core.windows.net]
+    end
+
+    PE_BLOB -.-> DNS_BLOB
+    PE_QUEUE -.-> DNS_QUEUE
+    PE_TABLE -.-> DNS_TABLE
+    PE_FILE -.-> DNS_FILE
+
+    FA -.->|System-Assigned MI| ENTRA[Microsoft Entra ID]
+    FA --> AI[Application Insights]
+
+    subgraph STORAGE[Content Backend]
+        SHARE[Azure Files\ncontent share]
+    end
+    ST --- SHARE
+
+    WARM["🔥 Pre-warmed instances\nMin: 1, Max: 20-100"] -.- FA
+
+    style FA fill:#ff8c00,color:#fff
+    style VNET fill:#E8F5E9,stroke:#4CAF50
+    style ST fill:#FFF3E0
+    style DNS fill:#E3F2FD
+    style WARM fill:#FFF3E0,stroke:#FF9800
+```
+
+### 🖥️ Dedicated (App Service Plan) — Fixed Capacity with VNet
+
+```mermaid
+flowchart TD
+    INET[Internet] -->|HTTPS| FA[Function App\nDedicated B1-P3v3\nLinux Python 3.11]
+
+    subgraph VNET["VNet 10.0.0.0/16"]
+        subgraph INT_SUB["Integration Subnet 10.0.1.0/24\nDelegation: Microsoft.Web/serverFarms"]
+            FA
+        end
+        subgraph PE_SUB["Private Endpoint Subnet 10.0.2.0/24"]
+            PE_BLOB[PE: blob]
+            PE_QUEUE[PE: queue]
+            PE_TABLE[PE: table]
+            PE_FILE[PE: file]
+        end
+    end
+
+    PE_BLOB --> ST["Storage Account"]
+    PE_QUEUE --> ST
+    PE_TABLE --> ST
+    PE_FILE --> ST
+
+    subgraph DNS[Private DNS Zones]
+        DNS_BLOB[privatelink.blob.core.windows.net]
+        DNS_QUEUE[privatelink.queue.core.windows.net]
+        DNS_TABLE[privatelink.table.core.windows.net]
+        DNS_FILE[privatelink.file.core.windows.net]
+    end
+
+    PE_BLOB -.-> DNS_BLOB
+    PE_QUEUE -.-> DNS_QUEUE
+    PE_TABLE -.-> DNS_TABLE
+    PE_FILE -.-> DNS_FILE
+
+    FA -.->|System-Assigned MI| ENTRA[Microsoft Entra ID]
+    FA --> AI[Application Insights]
+
+    RFP["📦 WEBSITE_RUN_FROM_PACKAGE=1\nNo content share required"] -.- FA
+    ALWAYS_ON["⚙️ Always On: true\nFixed capacity"] -.- FA
+
+    style FA fill:#5c2d91,color:#fff
+    style VNET fill:#E8F5E9,stroke:#4CAF50
+    style ST fill:#FFF3E0
+    style DNS fill:#E3F2FD
+```
+
+!!! tip "VNet is optional for Dedicated"
+    The Dedicated plan supports VNet integration on Standard (S1) tier and above. The Basic (B1) tier used in the beginner tutorial does **not** include VNet integration. The diagram above shows the full architecture available at Standard+ tiers.
+
 ## Tutorial Tracks
 
 Each track contains the same seven steps. Pick your plan and follow from start to finish.
@@ -68,7 +245,6 @@ Classic serverless — pay only when your functions execute. Best for lightweigh
 | 05 | [Infrastructure as Code](consumption/05-infrastructure-as-code.md) |
 | 06 | [CI/CD](consumption/06-ci-cd.md) |
 | 07 | [Extending with Triggers](consumption/07-extending-triggers.md) |
-
 ### ⚡ [Flex Consumption (FC1)](flex-consumption/01-local-run.md)
 
 Next-generation serverless — scale-to-zero with VNet integration, configurable instance memory, and per-function scaling. Microsoft's recommended default for new projects.
@@ -128,6 +304,7 @@ Traditional App Service hosting with predictable pricing. Best when you already 
 - [Scaling and Plans](../../../platform/scaling.md) — Deep comparison of all hosting plans
 - [Networking](../../../platform/networking.md) — VNet integration and private endpoint concepts
 - [Cost Optimization](../../../start-here/hosting-options.md) — Choosing the right plan for your budget
+- [Deployment Scenarios](../../../platform/deployment-scenarios.md) — Cross-plan comparison of VNet, PE, identity, and deployment patterns
 
 ## Sources
 
