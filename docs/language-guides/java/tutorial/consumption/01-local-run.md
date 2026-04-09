@@ -1,124 +1,173 @@
+---
+hide:
+  - toc
+validation:
+  az_cli:
+    last_tested: 2026-04-10
+    cli_version: "2.83.0"
+    core_tools_version: "4.8.0"
+    result: pass
+  bicep:
+    last_tested: null
+    result: not_tested
+---
+
 # 01 - Run Locally (Consumption)
 
-Set up a Java Azure Functions app on your workstation and validate the first HTTP endpoint before touching Azure resources.
+Run the Java reference application on your machine before deploying to the Consumption (Y1) plan. This track uses Linux shell examples; the same workflow works on Windows with equivalent commands.
 
 ## Prerequisites
 
 | Tool | Version | Purpose |
 |------|---------|---------|
 | JDK | 17+ | Compile and run Java functions locally |
-| Maven | 3.9+ | Build and deploy Java artifacts |
+| Maven | 3.6+ | Build and package Java artifacts |
 | Azure Functions Core Tools | v4 | Start local host and publish artifacts |
 | Azure CLI | 2.61+ | Provision Azure resources and inspect app state |
 
-!!! info "Plan basics"
-    Consumption (Y1) is fully serverless with scale-to-zero and pay-per-execution billing. It is ideal for bursty workloads that do not require VNet integration.
+!!! info "Consumption plan basics"
+    Consumption (Y1) is serverless with scale-to-zero, up to 200 instances, 1.5 GB memory per instance, and a default 5-minute timeout (max 10 minutes).
 
 ## What You'll Build
 
-A Java HTTP-triggered Azure Function scaffolded from the Azure Functions Maven archetype, built with Maven, and validated locally at `/api/hello/{name?}`.
+A Java Azure Functions app built with Maven annotations, validated locally with HTTP endpoints at `/api/health`, `/api/hello/{name}`, and `/api/info`.
 
 ## Steps
 
 ```mermaid
 flowchart LR
-    A[Initialize Maven project] --> B[Add Java function class]
+    A[Clone reference app] --> B[Build with Maven]
     B --> C[Start Functions host]
-    C --> D[Test local endpoint]
+    C --> D[Test local endpoints]
 ```
 
+### Step 1 - Navigate to the Java reference app
 
-### Step 1 - Create the Java project
-
-The recommended approach uses the Maven archetype:
+The repository includes a ready-to-use Java reference application:
 
 ```bash
-mvn archetype:generate \
-    -DarchetypeGroupId=com.microsoft.azure \
-    -DarchetypeArtifactId=azure-functions-archetype \
-    -DgroupId=com.example \
-    -DartifactId=my-java-functions \
-    -Dversion=1.0-SNAPSHOT \
-    -DappName=my-java-functions \
-    -DjavaVersion=17 \
-    -DinteractiveMode=false
-cd my-java-functions
+cd apps/java
 ```
 
-### Step 2 - Confirm Maven project structure
+### Step 2 - Review project structure
 
 ```text
-project-root/
-├── src/
-│   └── main/
-│       └── java/
-│           └── com/example/
-│               ├── Function.java
-│               └── ...
+apps/java/
+├── src/main/java/com/functions/
+│   ├── HealthFunction.java
+│   ├── HelloHttpFunction.java
+│   ├── InfoFunction.java
+│   ├── LogLevelsFunction.java
+│   ├── SlowResponseFunction.java
+│   ├── QueueProcessorFunction.java
+│   ├── BlobProcessorFunction.java
+│   ├── ScheduledCleanupFunction.java
+│   ├── TimerLabFunction.java
+│   └── shared/
+│       ├── AppConfig.java
+│       └── Telemetry.java
 ├── host.json
-├── local.settings.json
+├── local.settings.json.example
 └── pom.xml
 ```
 
-### Step 3 - Add a minimal HTTP trigger
+### Step 3 - Create local settings
 
-```java
-package com.example;
+```bash
+cp local.settings.json.example local.settings.json
+```
 
-import com.microsoft.azure.functions.*;
-import com.microsoft.azure.functions.annotation.*;
-import java.util.Optional;
+The default `local.settings.json` uses the Azurite storage emulator:
 
-public class Function {
-    @FunctionName("HelloJava")
-    public HttpResponseMessage run(
-        @HttpTrigger(
-            name = "req",
-            methods = {HttpMethod.GET, HttpMethod.POST},
-            authLevel = AuthorizationLevel.FUNCTION,
-            route = "hello/{name?}")
-        HttpRequestMessage<Optional<String>> request,
-        @BindingName("name") String name,
-        final ExecutionContext context) {
-
-        String input = request.getBody().orElse(name != null ? name : "world");
-        context.getLogger().info("Processing local Java request for: " + input);
-
-        return request.createResponseBuilder(HttpStatus.OK)
-            .body("Hello, " + input + " from Java!")
-            .build();
-    }
+```json
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "java",
+    "FUNCTIONS_EXTENSION_VERSION": "~4",
+    "QueueStorage": "UseDevelopmentStorage=true",
+    "EventHubConnection__fullyQualifiedNamespace": "placeholder.servicebus.windows.net"
+  }
 }
 ```
 
-### Step 4 - Start the local runtime
+### Step 4 - Build the project
 
 ```bash
 mvn clean package
-mvn azure-functions:run
 ```
 
-### Step 5 - Call the endpoint
+!!! warning "Java must publish from Maven staging directory"
+    Maven's `azure-functions-maven-plugin` generates function.json files in `target/azure-functions/<appName>/`. You must run `func host start` from this staging directory, NOT from the project root. Running from the project root shows `0 functions found`.
 
-In a second terminal, call the endpoint:
+### Step 5 - Start the local runtime
 
 ```bash
+cd target/azure-functions/azure-functions-java-guide
+func host start
+```
+
+### Step 6 - Test local endpoints
+
+In a second terminal:
+
+```bash
+# Health check
+curl --request GET "http://localhost:7071/api/health"
+
+# Hello with name parameter
 curl --request GET "http://localhost:7071/api/hello/local"
+
+# App info
+curl --request GET "http://localhost:7071/api/info"
 ```
 
 ## Verification
 
+Functions host startup output:
+
 ```text
-[INFO] Azure Functions Java Worker started
+Azure Functions Core Tools
+Core Tools Version:       4.8.0
+Functions Runtime Version: 4.1036.1.23224
+
 Functions:
-    HelloJava: [GET,POST] http://localhost:7071/api/hello/{name?}
+
+        health: [GET] http://localhost:7071/api/health
+
+        helloHttp: [GET] http://localhost:7071/api/hello/{name}
+
+        info: [GET] http://localhost:7071/api/info
+
+        logLevels: [GET] http://localhost:7071/api/loglevels
+
+        slowResponse: [GET] http://localhost:7071/api/slow
 ```
 
-```text
-Hello, local from Java!
+Health endpoint response:
+
+```json
+{"status":"healthy","timestamp":"2026-04-10T10:00:00.000Z","version":"1.0.0"}
 ```
 
-Confirm that Maven starts the Functions host, that `HelloJava` is listed in the local endpoint table, and that `curl --request GET "http://localhost:7071/api/hello/local"` returns `Hello, local from Java!`.
+Hello endpoint response:
+
+```json
+{"message":"Hello, local"}
+```
+
+Info endpoint response:
+
+```json
+{"name":"azure-functions-java-guide","version":"1.0.0","java":"17.0.14","os":"Linux","environment":"development","functionApp":"local"}
+```
+
+Confirm that the Functions host starts, HTTP functions are listed in the endpoint table, and `curl` requests return expected JSON responses.
+
+## Next Steps
+
+> **Next:** [02 - First Deploy](02-first-deploy.md)
 
 ## See Also
 

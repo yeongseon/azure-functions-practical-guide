@@ -1,3 +1,17 @@
+---
+hide:
+  - toc
+validation:
+  az_cli:
+    last_tested: 2026-04-10
+    cli_version: "2.83.0"
+    core_tools_version: "4.8.0"
+    result: pass
+  bicep:
+    last_tested: null
+    result: not_tested
+---
+
 # 05 - Infrastructure as Code (Consumption)
 
 Describe your Java Function App platform using Bicep so provisioning is deterministic and easy to review.
@@ -7,22 +21,22 @@ Describe your Java Function App platform using Bicep so provisioning is determin
 | Tool | Version | Purpose |
 |------|---------|---------|
 | JDK | 17+ | Compile and run Java functions locally |
-| Maven | 3.9+ | Build and deploy Java artifacts |
+| Maven | 3.6+ | Build and package Java artifacts |
 | Azure Functions Core Tools | v4 | Start local host and publish artifacts |
 | Azure CLI | 2.61+ | Provision Azure resources and inspect app state |
 
+!!! info "Consumption plan basics"
+    Consumption (Y1) is serverless with scale-to-zero, up to 200 instances, 1.5 GB memory per instance, and a default 5-minute timeout (max 10 minutes).
+
 ## What You'll Build
 
-You will define a complete Consumption environment in Bicep (storage account, Y1 plan, and Linux Function App), apply required host storage settings, and deploy from your own Java-focused template.
-
-!!! info "Plan basics"
-    Consumption (Y1) is fully serverless with scale-to-zero and pay-per-execution billing. It is ideal for bursty workloads that do not require VNet integration.
+You will define a complete Consumption environment in Bicep (storage account, Y1 plan, and Linux Function App for Java 17), apply required host storage settings, and deploy from your own template.
 
 ```mermaid
 flowchart TD
     A[Bicep template] --> B[az deployment group create]
     B --> C[Function App + Plan + Storage]
-    C --> D[Maven deployment]
+    C --> D["Build + publish from staging dir"]
 ```
 
 ## Steps
@@ -86,26 +100,70 @@ resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
 }
 ```
 
+!!! note "Java-specific Bicep settings"
+    - `linuxFxVersion: 'Java|17'` sets the Java runtime version.
+    - `FUNCTIONS_WORKER_RUNTIME: 'java'` tells the host to use the Java worker.
+    - `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING` and `WEBSITE_CONTENTSHARE` are required for Consumption plan.
+
 ### Step 3 - Deploy infrastructure
 
 ```bash
-az deployment group create --resource-group $RG --template-file main.bicep --parameters baseName=$BASE_NAME
+az deployment group create \
+  --resource-group "$RG" \
+  --template-file main.bicep \
+  --parameters baseName="$BASE_NAME"
 ```
 
 ### Step 4 - Deploy application artifact
 
+After infrastructure is provisioned, build and publish from the Maven staging directory:
+
 ```bash
+cd apps/java
 mvn clean package
-mvn azure-functions:deploy
+cd target/azure-functions/azure-functions-java-guide
+func azure functionapp publish "$APP_NAME"
+```
+
+!!! danger "Must publish from Maven staging directory"
+    Do NOT run `func azure functionapp publish` from the project root. The `function.json` files are generated in `target/azure-functions/<appName>/` by Maven. Publishing from the root uploads the package but functions will not be indexed.
+
+### Step 5 - Validate infrastructure deployment
+
+```bash
+az deployment group show \
+  --resource-group "$RG" \
+  --name main \
+  --query "properties.provisioningState" \
+  --output tsv
+
+az functionapp show \
+  --name "$APP_NAME" \
+  --resource-group "$RG" \
+  --output table
 ```
 
 ## Verification
 
+Infrastructure deployment output:
+
 ```text
-ProvisioningState  Timestamp
-----------------  --------------------------
-Succeeded         2026-04-06T10:30:00.000Z
+ProvisioningState    Timestamp
+-----------------    --------------------------
+Succeeded            2026-04-09T16:00:00.000Z
 ```
+
+Function app status:
+
+```text
+Name                    State    ResourceGroup            DefaultHostName
+----------------------  -------  -----------------------  ------------------------------------------
+func-jcon-04100022      Running  rg-func-java-con-demo    func-jcon-04100022.azurewebsites.net
+```
+
+## Next Steps
+
+> **Next:** [06 - CI/CD](06-ci-cd.md)
 
 ## See Also
 
