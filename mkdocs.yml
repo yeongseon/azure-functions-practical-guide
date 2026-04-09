@@ -381,6 +381,7 @@ nav:
       - troubleshooting/playbooks/queue-piling-up.md
       - troubleshooting/playbooks/blob-trigger-not-firing.md
       - troubleshooting/playbooks/deployment-failures.md
+      - troubleshooting/playbooks/flex-consumption-deployment.md
       - Triggers:
         - troubleshooting/playbooks/triggers/timeout-execution-limit.md
         - troubleshooting/playbooks/triggers/event-hub-service-bus-lag.md
@@ -424,5 +425,6 @@ nav:
     - reference/environment-variables.md
     - reference/platform-limits.md
     - reference/troubleshooting.md
+    - reference/validation-status.md
   - Contributing:
     - contributing/cross-guide-baseline.md
