@@ -15,6 +15,17 @@ Run the Function App locally with Azure Functions Core Tools so you can validate
 
 You will run the Python reference Function App locally with Azurite, validate HTTP routes, and verify Flex Consumption-specific behavior before cloud deployment.
 
+!!! info "Infrastructure Context"
+    **Plan**: Flex Consumption (FC1) — **Network**: Full private network (VNet + Private Endpoints)
+
+    This tutorial runs locally — no Azure resources are created.
+
+    ```mermaid
+    flowchart LR
+        DEV[Local Machine] --> HOST[Functions Host :7071]
+        HOST --> AZURITE[Azurite Local Storage]
+    ```
+
 ```mermaid
 flowchart LR
     Dev[Developer Shell] --> Venv[Python venv + dependencies]

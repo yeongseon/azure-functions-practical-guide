@@ -15,6 +15,18 @@ Deploy the app to Azure Functions Consumption (Y1) using long-form CLI commands 
 
 You will provision a Linux Consumption (Y1) Function App, publish the Python code from `apps/python`, and validate the public health endpoint.
 
+!!! info "Infrastructure Context"
+    **Plan**: Consumption (Y1) | **Network**: Public internet only | **VNet**: ❌ Not supported
+
+    Consumption has no VNet integration or private endpoint support. All traffic flows over the public internet. Storage uses connection string authentication.
+
+    ```mermaid
+    flowchart LR
+        INET["Internet"] -->|HTTPS| FA["Function App Y1"]
+        FA --> ST["Storage Account\npublic access"]
+        FA --> AI["App Insights"]
+    ```
+
 ## Steps
 
 ### Step 1 - Set variables and sign in

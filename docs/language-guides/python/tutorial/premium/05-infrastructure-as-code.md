@@ -14,6 +14,19 @@ Deploy Azure Functions Premium infrastructure with Bicep from `infra/premium/mai
 - VNet integration, private endpoints, and private DNS links for core dependencies.
 - Identity-based host storage settings plus Azure Files content-share configuration.
 
+!!! info "Infrastructure Context"
+    **Plan**: Premium (EP1) | **Network**: VNet + Private Endpoints | **Always warm**: ✅
+
+    Premium deploys with VNet integration (delegated subnet), a private endpoint for inbound access, private DNS zone, and pre-warmed instances. Storage uses connection string or identity-based authentication.
+
+    ```mermaid
+    flowchart LR
+        INET[Internet] -->|Private Endpoint| PE[Private Endpoint]
+        PE --> FA[Function App EP1\npre-warmed]
+        FA -->|VNet Integration| SUBNET["Integration Subnet"]
+        FA --> ST["Storage Account\n+ Azure Files"]
+    ```
+
 ```mermaid
 flowchart LR
     A[Bicep deployment] --> B[Premium plan and Function App]

@@ -27,6 +27,17 @@ export LOCATION="eastus2"
 - A local configuration file at `apps/python/local.settings.json` using Azurite host storage.
 - A quick validation flow for `/api/health` and `/api/info` before Premium deployment.
 
+!!! info "Infrastructure Context"
+    **Plan**: Premium (EP1) — **Network**: VNet integration + Private Endpoints
+
+    This tutorial runs locally — no Azure resources are created.
+
+    ```mermaid
+    flowchart LR
+        DEV[Local Machine] --> HOST[Functions Host :7071]
+        HOST --> AZURITE[Azurite Local Storage]
+    ```
+
 ```mermaid
 flowchart LR
     A[Python venv + dependencies] --> B[Local settings]

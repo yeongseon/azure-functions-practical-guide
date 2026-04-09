@@ -14,6 +14,19 @@ Build a GitHub Actions pipeline for Azure Functions Premium, then add safe produ
 - OIDC-based Azure authentication and slot swap rollout for Premium.
 - A CI check step that installs Python dependencies from `apps/python/requirements.txt`.
 
+!!! info "Infrastructure Context"
+    **Plan**: Premium (EP1) | **Network**: VNet + Private Endpoints | **Always warm**: ✅
+
+    Premium deploys with VNet integration (delegated subnet), a private endpoint for inbound access, private DNS zone, and pre-warmed instances. Storage uses connection string or identity-based authentication.
+
+    ```mermaid
+    flowchart LR
+        INET[Internet] -->|Private Endpoint| PE[Private Endpoint]
+        PE --> FA[Function App EP1\npre-warmed]
+        FA -->|VNet Integration| SUBNET["Integration Subnet"]
+        FA --> ST["Storage Account\n+ Azure Files"]
+    ```
+
 ```mermaid
 flowchart LR
     A[Push to main] --> B[OIDC Azure login]

@@ -14,6 +14,18 @@ Extend your Consumption (Y1) app with queue and blob triggers. On this plan, sca
 
 You will extend the existing blueprint-based Python app with queue and blob triggers, publish the update, and validate trigger execution from live logs.
 
+!!! info "Infrastructure Context"
+    **Plan**: Consumption (Y1) | **Network**: Public internet only | **VNet**: ❌ Not supported
+
+    Consumption has no VNet integration or private endpoint support. All traffic flows over the public internet. Storage uses connection string authentication.
+
+    ```mermaid
+    flowchart LR
+        INET["Internet"] -->|HTTPS| FA["Function App Y1"]
+        FA --> ST["Storage Account\npublic access"]
+        FA --> AI["App Insights"]
+    ```
+
 ```mermaid
 flowchart LR
     A["Add queue/blob blueprints"] --> B["Register in apps/python/function_app.py"]

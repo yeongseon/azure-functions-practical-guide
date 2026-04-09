@@ -14,6 +14,19 @@ Add non-HTTP triggers to a Premium Function App, focusing on Blob polling and pr
 - Updated blueprint registration in `apps/python/function_app.py`.
 - A trigger validation flow using blob upload and live log checks.
 
+!!! info "Infrastructure Context"
+    **Plan**: Premium (EP1) | **Network**: VNet + Private Endpoints | **Always warm**: ✅
+
+    Premium deploys with VNet integration (delegated subnet), a private endpoint for inbound access, private DNS zone, and pre-warmed instances. Storage uses connection string or identity-based authentication.
+
+    ```mermaid
+    flowchart LR
+        INET[Internet] -->|Private Endpoint| PE[Private Endpoint]
+        PE --> FA[Function App EP1\npre-warmed]
+        FA -->|VNet Integration| SUBNET["Integration Subnet"]
+        FA --> ST["Storage Account\n+ Azure Files"]
+    ```
+
 ```mermaid
 flowchart LR
     A[Add timer blueprint] --> B[Add blob blueprint]

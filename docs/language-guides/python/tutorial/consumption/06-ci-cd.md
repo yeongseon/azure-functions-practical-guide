@@ -14,6 +14,18 @@ Set up GitHub Actions deployment for Consumption (Y1) using `azure/functions-act
 
 You will create a GitHub Actions workflow that installs Python dependencies and deploys the app from `apps/python` to a Linux Consumption Function App.
 
+!!! info "Infrastructure Context"
+    **Plan**: Consumption (Y1) | **Network**: Public internet only | **VNet**: ❌ Not supported
+
+    Consumption has no VNet integration or private endpoint support. All traffic flows over the public internet. Storage uses connection string authentication.
+
+    ```mermaid
+    flowchart LR
+        INET["Internet"] -->|HTTPS| FA["Function App Y1"]
+        FA --> ST["Storage Account\npublic access"]
+        FA --> AI["App Insights"]
+    ```
+
 ```mermaid
 flowchart LR
     A[Push to main] --> B[GitHub Actions workflow]

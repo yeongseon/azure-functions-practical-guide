@@ -19,6 +19,18 @@ export LOCATION="koreacentral"
 
 You will provision a Basic (B1) Linux App Service Plan, create a Python Function App on that plan, deploy from `apps/python`, and validate live endpoints.
 
+!!! info "Infrastructure Context"
+    **Plan**: Dedicated (B1) | **Network**: Public internet | **VNet**: ❌ (requires Standard+ tier)
+
+    Basic B1 has no VNet integration or private endpoints. The app runs on a fixed App Service Plan (always on, no scale-to-zero). VNet support requires upgrading to Standard (S1) or Premium (P1v3) tier.
+
+    ```mermaid
+    flowchart LR
+        INET[Internet] -->|HTTPS| FA["Function App\nDedicated B1\nalways on"]
+        FA --> ST[Storage Account\npublic access]
+        FA --> AI[App Insights]
+    ```
+
 ## Steps
 
 ### Step 1 - Create resource group and storage account

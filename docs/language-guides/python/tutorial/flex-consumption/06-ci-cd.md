@@ -14,6 +14,19 @@ Automate build and deployment for your Flex Consumption Function App with GitHub
 
 You will configure OIDC-based GitHub Actions deployment to a Flex Consumption Function App and validate deployment telemetry without relying on Kudu.
 
+!!! info "Infrastructure Context"
+    **Plan**: Flex Consumption (FC1) | **Network**: Full private network | **VNet**: ✅
+
+    FC1 deploys with VNet integration, private endpoints for all storage services, private DNS zones, and user-assigned managed identity. Storage uses identity-based authentication (no shared keys).
+
+    ```mermaid
+    flowchart LR
+        INET[Internet] -->|HTTPS| FA[Function App FC1]
+        FA -->|VNet Integration| SUBNET["Integration Subnet"]
+        SUBNET -->|Private Endpoints| ST["Storage Account\nprivate access"]
+        FA -.->|User-Assigned MI| ENTRA[Entra ID]
+    ```
+
 ```mermaid
 flowchart LR
     GH[GitHub Actions] --> OIDC[OIDC login to Azure]

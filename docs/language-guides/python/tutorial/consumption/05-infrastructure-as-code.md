@@ -14,6 +14,18 @@ Define and deploy a complete Consumption (Y1) environment with Bicep. This plan 
 
 You will deploy storage, a Linux Consumption plan, and a Python Function App via Bicep, then validate the deployed app metadata with Azure CLI.
 
+!!! info "Infrastructure Context"
+    **Plan**: Consumption (Y1) | **Network**: Public internet only | **VNet**: ❌ Not supported
+
+    Consumption has no VNet integration or private endpoint support. All traffic flows over the public internet. Storage uses connection string authentication.
+
+    ```mermaid
+    flowchart LR
+        INET["Internet"] -->|HTTPS| FA["Function App Y1"]
+        FA --> ST["Storage Account\npublic access"]
+        FA --> AI["App Insights"]
+    ```
+
 ```mermaid
 flowchart LR
     A[Bicep template] --> B[Storage account]

@@ -14,6 +14,19 @@ Set up observability for your Flex Consumption app so you can verify deployments
 
 You will generate real requests and exception telemetry from a Flex Consumption app and validate the data path in Application Insights.
 
+!!! info "Infrastructure Context"
+    **Plan**: Flex Consumption (FC1) | **Network**: Full private network | **VNet**: ✅
+
+    FC1 deploys with VNet integration, private endpoints for all storage services, private DNS zones, and user-assigned managed identity. Storage uses identity-based authentication (no shared keys).
+
+    ```mermaid
+    flowchart LR
+        INET[Internet] -->|HTTPS| FA[Function App FC1]
+        FA -->|VNet Integration| SUBNET["Integration Subnet"]
+        SUBNET -->|Private Endpoints| ST["Storage Account\nprivate access"]
+        FA -.->|User-Assigned MI| ENTRA[Entra ID]
+    ```
+
 ```mermaid
 flowchart LR
     Client[HTTP requests] --> Func[Flex Function App]

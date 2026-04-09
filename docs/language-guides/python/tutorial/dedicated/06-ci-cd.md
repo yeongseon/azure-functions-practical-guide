@@ -20,6 +20,18 @@ export LOCATION="eastus"
 
 You will package the Python Function App from `apps/python`, deploy it with Zip Deploy and remote build settings, and implement an automated GitHub Actions deployment workflow.
 
+!!! info "Infrastructure Context"
+    **Plan**: Dedicated (B1) | **Network**: Public internet | **VNet**: ❌ (requires Standard+ tier)
+
+    Basic B1 has no VNet integration or private endpoints. The app runs on a fixed App Service Plan (always on, no scale-to-zero). VNet support requires upgrading to Standard (S1) or Premium (P1v3) tier.
+
+    ```mermaid
+    flowchart LR
+        INET[Internet] -->|HTTPS| FA["Function App\nDedicated B1\nalways on"]
+        FA --> ST[Storage Account\npublic access]
+        FA --> AI[App Insights]
+    ```
+
 ```mermaid
 flowchart LR
     A[GitHub push] --> B[GitHub Actions workflow]

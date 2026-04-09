@@ -21,6 +21,18 @@ export LOG_ANALYTICS_NAME="log-dedi-<unique-suffix>"
 
 You will connect the Dedicated Function App to workspace-based Application Insights, run request queries, and configure a baseline alert for HTTP failures.
 
+!!! info "Infrastructure Context"
+    **Plan**: Dedicated (B1) | **Network**: Public internet | **VNet**: ❌ (requires Standard+ tier)
+
+    Basic B1 has no VNet integration or private endpoints. The app runs on a fixed App Service Plan (always on, no scale-to-zero). VNet support requires upgrading to Standard (S1) or Premium (P1v3) tier.
+
+    ```mermaid
+    flowchart LR
+        INET[Internet] -->|HTTPS| FA["Function App\nDedicated B1\nalways on"]
+        FA --> ST[Storage Account\npublic access]
+        FA --> AI[App Insights]
+    ```
+
 ```mermaid
 flowchart LR
     A[Function App telemetry] --> B[Application Insights]

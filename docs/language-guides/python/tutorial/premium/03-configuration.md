@@ -14,6 +14,19 @@ Configure runtime settings, storage options, and networking-related app configur
 - Host storage configured with either connection string or managed identity.
 - Premium content-share settings aligned with Azure Files-based content storage.
 
+!!! info "Infrastructure Context"
+    **Plan**: Premium (EP1) | **Network**: VNet + Private Endpoints | **Always warm**: ✅
+
+    Premium deploys with VNet integration (delegated subnet), a private endpoint for inbound access, private DNS zone, and pre-warmed instances. Storage uses connection string or identity-based authentication.
+
+    ```mermaid
+    flowchart LR
+        INET[Internet] -->|Private Endpoint| PE[Private Endpoint]
+        PE --> FA[Function App EP1\npre-warmed]
+        FA -->|VNet Integration| SUBNET["Integration Subnet"]
+        FA --> ST["Storage Account\n+ Azure Files"]
+    ```
+
 ```mermaid
 flowchart LR
     A[Validate Premium plan] --> B[Apply runtime app settings]

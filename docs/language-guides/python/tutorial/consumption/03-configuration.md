@@ -14,6 +14,18 @@ Configure your deployed Consumption (Y1) function app using classic `siteConfig.
 
 You will configure core app settings for a Linux Consumption Function App, including storage and observability-related values, and validate the app configuration state.
 
+!!! info "Infrastructure Context"
+    **Plan**: Consumption (Y1) | **Network**: Public internet only | **VNet**: ❌ Not supported
+
+    Consumption has no VNet integration or private endpoint support. All traffic flows over the public internet. Storage uses connection string authentication.
+
+    ```mermaid
+    flowchart LR
+        INET["Internet"] -->|HTTPS| FA["Function App Y1"]
+        FA --> ST["Storage Account\npublic access"]
+        FA --> AI["App Insights"]
+    ```
+
 ```mermaid
 flowchart LR
     A[Read current app settings] --> B[Set runtime and custom settings]

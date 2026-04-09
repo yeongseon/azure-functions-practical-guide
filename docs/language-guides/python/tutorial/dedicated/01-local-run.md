@@ -14,6 +14,17 @@ This tutorial runs the Function App locally and prepares the exact variables and
 
 You will run the Python Function App locally from `apps/python`, load local settings, and validate HTTP endpoints before cloud deployment.
 
+!!! info "Infrastructure Context"
+    **Plan**: Dedicated (B1 App Service Plan) — **Network**: Public internet (B1 tier)
+
+    This tutorial runs locally — no Azure resources are created.
+
+    ```mermaid
+    flowchart LR
+        DEV[Local Machine] --> HOST[Functions Host :7071]
+        HOST --> AZURITE[Azurite Local Storage]
+    ```
+
 ```mermaid
 flowchart LR
     A["Local source in apps/python"] --> B[Functions host on localhost:7071]

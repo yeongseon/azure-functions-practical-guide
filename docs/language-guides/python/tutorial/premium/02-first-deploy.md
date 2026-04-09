@@ -14,6 +14,19 @@ Deploy a Python Function App to an Elastic Premium plan (`EP1`) with VNet integr
 - VNet integration and a site private endpoint for private inbound access.
 - A first deployment pipeline (`func azure functionapp publish`) and endpoint verification.
 
+!!! info "Infrastructure Context"
+    **Plan**: Premium (EP1) | **Network**: VNet + Private Endpoints | **Always warm**: ✅
+
+    Premium deploys with VNet integration (delegated subnet), a private endpoint for inbound access, private DNS zone, and pre-warmed instances. Storage uses connection string or identity-based authentication.
+
+    ```mermaid
+    flowchart LR
+        INET[Internet] -->|Private Endpoint| PE[Private Endpoint]
+        PE --> FA[Function App EP1\npre-warmed]
+        FA -->|VNet Integration| SUBNET["Integration Subnet"]
+        FA --> ST["Storage Account\n+ Azure Files"]
+    ```
+
 ## Steps
 
 1. Authenticate and set subscription context.

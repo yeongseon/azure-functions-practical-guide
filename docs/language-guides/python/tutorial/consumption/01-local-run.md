@@ -18,6 +18,17 @@ Run the sample Azure Functions Python app on your machine before deploying to th
 
 You will run the Python Functions app locally from `apps/python`, load local settings, and verify the health endpoint responds from the local Functions host.
 
+!!! info "Infrastructure Context"
+    **Plan**: Consumption (Y1) — **Network**: Public internet only (no VNet support)
+
+    This tutorial runs locally - no Azure resources are created.
+
+    ```mermaid
+    flowchart LR
+        DEV["Local Machine"] --> HOST["Functions Host :7071"]
+        HOST --> AZURITE["Azurite Local Storage"]
+    ```
+
 ```mermaid
 flowchart LR
     A[Activate Python venv] --> B["Install deps from apps/python/requirements.txt"]
