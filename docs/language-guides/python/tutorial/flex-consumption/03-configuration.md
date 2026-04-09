@@ -1,6 +1,15 @@
 ---
 hide:
   - toc
+validation:
+  az_cli:
+    last_tested: 2026-04-09
+    cli_version: "2.83.0"
+    core_tools_version: "4.8.0"
+    result: pass
+  bicep:
+    last_tested: null
+    result: not_tested
 ---
 
 # 03 - Configuration (Flex Consumption)
@@ -91,7 +100,7 @@ export APP_NAME="flexdemo-func"
 export PLAN_NAME="flexdemo-plan"
 export STORAGE_NAME="flexdemostorage"
 export APPINSIGHTS_NAME="flexdemo-insights"
-export LOCATION="eastus2"
+export LOCATION="koreacentral"
 ```
 
 Expected output:
@@ -204,9 +213,17 @@ Expected output:
 
 ### Step 5: Confirm Flex Plan Characteristics
 
+!!! warning "Auto-generated plan name"
+    When using `--flexconsumption-location` to create the Function App (Step 12 in Tutorial 02), Azure auto-generates the App Service Plan name (e.g., `ASP-rgflexdemo-376c`) instead of using `$PLAN_NAME`. Query the actual plan name first:
+
+    ```bash
+    PLAN_NAME_ACTUAL=$(az functionapp show --name "$APP_NAME" --resource-group "$RG" \
+      --query "properties.serverFarmId" --output tsv | awk -F/ '{print $NF}')
+    echo "Actual plan name: $PLAN_NAME_ACTUAL"
+    ```
 
 ```bash
-az appservice plan show --name "$PLAN_NAME" --resource-group "$RG" --query "{sku:sku,reserved:reserved,kind:kind}" --output json
+az appservice plan show --name "$PLAN_NAME_ACTUAL" --resource-group "$RG" --query "{sku:sku,reserved:reserved,kind:kind}" --output json
 ```
 
 Expected output:
@@ -215,7 +232,7 @@ Expected output:
 ```json
 {
   "kind": "functionapp",
-  "reserved": true,
+  "reserved": null,
   "sku": {
     "name": "FC1",
     "tier": "FlexConsumption"

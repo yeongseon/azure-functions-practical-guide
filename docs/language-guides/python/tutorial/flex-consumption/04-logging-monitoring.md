@@ -1,6 +1,15 @@
 ---
 hide:
   - toc
+validation:
+  az_cli:
+    last_tested: 2026-04-09
+    cli_version: "2.83.0"
+    core_tools_version: "4.8.0"
+    result: pass
+  bicep:
+    last_tested: null
+    result: not_tested
 ---
 
 # 04 - Logging and Monitoring (Flex Consumption)
@@ -90,7 +99,7 @@ export APP_NAME="flexdemo-func"
 export PLAN_NAME="flexdemo-plan"
 export STORAGE_NAME="flexdemostorage"
 export APPINSIGHTS_NAME="flexdemo-insights"
-export LOCATION="eastus2"
+export LOCATION="koreacentral"
 ```
 
 Expected output:
@@ -158,6 +167,18 @@ Expected output:
 az monitor app-insights query --app "$APPINSIGHTS_NAME" --analytics-query "requests | where timestamp > ago(30m) | project timestamp, name, resultCode, duration | order by timestamp desc | take 20" --output json
 az monitor app-insights query --app "$APPINSIGHTS_NAME" --analytics-query "exceptions | where timestamp > ago(30m) | project timestamp, type, outerMessage | order by timestamp desc | take 20" --output json
 ```
+
+!!! tip "App Insights query by name vs appId"
+    If `--app "$APPINSIGHTS_NAME"` fails with `PathNotFoundError`, use the appId instead:
+
+    ```bash
+    APPINSIGHTS_ID=$(az monitor app-insights component show \
+      --app "$APPINSIGHTS_NAME" --resource-group "$RG" \
+      --query "appId" --output tsv)
+    az monitor app-insights query --apps "$APPINSIGHTS_ID" --analytics-query "..."
+    ```
+
+    Telemetry ingestion can take 2-5 minutes after requests. Wait and retry if results are empty.
 
 Expected output:
 

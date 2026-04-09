@@ -228,6 +228,10 @@ Expected output:
 The three export commands complete silently when values are captured.
 ```
 
+!!! tip "AAD propagation delay"
+    After creating a managed identity, wait 20-30 seconds before assigning RBAC roles. The identity's principal needs time to propagate to Azure Active Directory. If you see `Cannot find user or service principal in graph database`, wait and retry.
+
+
 ### Step 5: Assign RBAC Roles to Managed Identity
 
 ```bash
@@ -551,6 +555,10 @@ Expected output:
 }
 ```
 
+!!! note "Auto-created Application Insights"
+    `az functionapp create` automatically creates its own Application Insights instance named `flexdemo-func`. This is separate from the `flexdemo-insights` instance created in Step 11. The auto-created instance can be deleted from the portal if you prefer to use only the manually created one.
+
+
 ### Step 13: Configure Deployment Storage to Use Managed Identity
 
 By default, Flex Consumption uses a connection string for deployment storage authentication. Since this tutorial disables shared key access on the storage account (`allowSharedKeyAccess: false`), you must switch to identity-based authentication for deployment storage.
@@ -582,6 +590,16 @@ Expected output:
     If deployment storage uses connection string authentication while `allowSharedKeyAccess` is `false`, the publish command will return:
 
     `InaccessibleStorageException: Failed to access storage account for deployment: Key based authentication is not permitted on this storage account.`
+
+!!! warning "Remove auto-created connection string settings"
+    `az functionapp create` automatically adds `AzureWebJobsStorage` and `DEPLOYMENT_STORAGE_CONNECTION_STRING` connection string settings. Since the storage account has `allowSharedKeyAccess: false`, these settings will cause publish failures (`ServiceUnavailable`). Remove them before proceeding:
+
+    ```bash
+    az functionapp config appsettings delete \
+      --name "$APP_NAME" \
+      --resource-group "$RG" \
+      --setting-names "AzureWebJobsStorage" "DEPLOYMENT_STORAGE_CONNECTION_STRING"
+    ```
 
 ### Step 14: Configure App Settings (identity-based storage)
 
@@ -622,6 +640,23 @@ Expected output:
   }
 ]
 ```
+
+!!! tip "Placeholder settings for reference app triggers"
+    The reference app in `apps/python/` includes EventHub, Queue, and Timer triggers. These require additional app settings to prevent host startup errors. Add them after the core settings:
+
+    ```bash
+    az functionapp config appsettings set \
+      --name "$APP_NAME" \
+      --resource-group "$RG" \
+      --settings \
+        "EventHubConnection__fullyQualifiedNamespace=placeholder.servicebus.windows.net" \
+        "QueueStorage__queueServiceUri=https://${STORAGE_NAME}.queue.core.windows.net" \
+        "QueueStorage__credential=managedidentity" \
+        "QueueStorage__clientId=$MI_CLIENT_ID" \
+        "TIMER_LAB_SCHEDULE=0 0 0 1 1 *"
+    ```
+
+    Without these, the function host will enter `Error` state and HTTP endpoints will return `503 Service Unavailable`.
 
 ### Step 15: Enable VNet Integration
 

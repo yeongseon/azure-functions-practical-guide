@@ -1,6 +1,15 @@
 ---
 hide:
   - toc
+validation:
+  az_cli:
+    last_tested: 2026-04-09
+    cli_version: "2.83.0"
+    core_tools_version: "4.8.0"
+    result: pass
+  bicep:
+    last_tested: null
+    result: not_tested
 ---
 
 # 05 - Infrastructure as Code (Flex Consumption)
@@ -91,7 +100,7 @@ export APP_NAME="flexdemo-func"
 export PLAN_NAME="flexdemo-plan"
 export STORAGE_NAME="flexdemostorage"
 export APPINSIGHTS_NAME="flexdemo-insights"
-export LOCATION="eastus2"
+export LOCATION="koreacentral"
 ```
 
 Expected output:
@@ -159,9 +168,17 @@ Expected output:
 
 ### Step 5: Validate Flex IaC Requirements
 
+!!! warning "Auto-generated plan name"
+    When using `--flexconsumption-location` to create the Function App (Step 12 in Tutorial 02), Azure auto-generates the App Service Plan name (e.g., `ASP-rgflexdemo-376c`) instead of using `$PLAN_NAME`. Query the actual plan name first:
+
+    ```bash
+    PLAN_NAME_ACTUAL=$(az functionapp show --name "$APP_NAME" --resource-group "$RG" \
+      --query "properties.serverFarmId" --output tsv | awk -F/ '{print $NF}')
+    echo "Actual plan name: $PLAN_NAME_ACTUAL"
+    ```
 
 ```bash
-az appservice plan show --name "$PLAN_NAME" --resource-group "$RG" --query "sku" --output json
+az appservice plan show --name "$PLAN_NAME_ACTUAL" --resource-group "$RG" --query "sku" --output json
 az functionapp show --name "$APP_NAME" --resource-group "$RG" --query "properties.functionAppConfig" --output json
 ```
 
@@ -406,25 +423,18 @@ export APPINSIGHTS_CONN=$(az monitor app-insights component show \
   --output tsv)
 ```
 
-#### B-9: Flex Consumption Plan and Function App
+!!! warning "`az functionapp plan create --sku FC1` does not work"
+    Flex Consumption plans cannot be created with `az functionapp plan create`. Instead, use `az functionapp create --flexconsumption-location` which creates both the plan and app together. The plan name is auto-generated.
 
 ```bash
-az functionapp plan create \
-  --name "$PLAN_NAME" \
-  --resource-group "$RG" \
-  --location "$LOCATION" \
-  --sku FC1 \
-  --is-linux
-
 az functionapp create \
   --name "$APP_NAME" \
   --resource-group "$RG" \
-  --plan "$PLAN_NAME" \
   --storage-account "$STORAGE_NAME" \
+  --flexconsumption-location "$LOCATION" \
   --runtime python \
   --runtime-version 3.11 \
   --functions-version 4 \
-  --os-type Linux \
   --assign-identity "$MI_ID"
 ```
 

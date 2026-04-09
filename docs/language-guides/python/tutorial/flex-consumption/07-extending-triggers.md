@@ -1,6 +1,15 @@
 ---
 hide:
   - toc
+validation:
+  az_cli:
+    last_tested: 2026-04-09
+    cli_version: "2.83.0"
+    core_tools_version: "4.8.0"
+    result: pass
+  bicep:
+    last_tested: null
+    result: not_tested
 ---
 
 # 07 - Extending Triggers (Flex Consumption)
@@ -92,7 +101,7 @@ export APP_NAME="flexdemo-func"
 export PLAN_NAME="flexdemo-plan"
 export STORAGE_NAME="flexdemostorage"
 export APPINSIGHTS_NAME="flexdemo-insights"
-export LOCATION="eastus2"
+export LOCATION="koreacentral"
 ```
 
 Expected output:
@@ -245,8 +254,17 @@ process_blob_event           blobTrigger
 
 ### Step 7: Trigger Tests
 
-Send a queue message:
+!!! warning "Storage is network-locked"
+    If the storage account has `defaultAction: Deny` (set in Tutorial 02 Step 10), you cannot run data-plane operations from your local machine. Either temporarily allow public access or run these commands from within the VNet:
 
+    ```bash
+    az storage account update \
+      --name "$STORAGE_NAME" \
+      --resource-group "$RG" \
+      --default-action Allow
+    ```
+
+    Remember to lock it down again after testing.
 
 ```bash
 az storage queue create --name "tasks" --account-name "$STORAGE_NAME" --auth-mode login --output json

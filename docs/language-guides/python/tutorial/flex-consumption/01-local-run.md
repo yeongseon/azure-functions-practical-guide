@@ -1,6 +1,15 @@
 ---
 hide:
   - toc
+validation:
+  az_cli:
+    last_tested: 2026-04-09
+    cli_version: "2.83.0"
+    core_tools_version: "4.8.0"
+    result: pass
+  bicep:
+    last_tested: null
+    result: not_tested
 ---
 
 # 01 - Run Locally (Flex Consumption)
@@ -53,7 +62,7 @@ export APP_NAME="flexdemo-func"
 export PLAN_NAME="flexdemo-plan"
 export STORAGE_NAME="flexdemostorage"
 export APPINSIGHTS_NAME="flexdemo-insights"
-export LOCATION="eastus2"
+export LOCATION="koreacentral"
 ```
 
 Expected output:
