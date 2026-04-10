@@ -85,6 +85,15 @@ az login
 az account set --subscription "<subscription-id>"
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `export RG="rg-func-node-flex-demo"` | Sets the resource group name for the deployment. |
+| `export APP_NAME="..."` | Defines a globally unique name for the Function App using a timestamp. |
+| `export STORAGE_NAME="..."` | Sets a unique name for the storage account. |
+| `export LOCATION="koreacentral"` | Chooses the Azure region for the deployment. |
+| `az login` | Authenticates your CLI session with Azure. |
+| `az account set --subscription` | Targets the specific Azure subscription for resource creation. |
+
 ### Step 2 - Create resource group and storage account
 
 ```bash
@@ -98,6 +107,15 @@ az storage account create \
   --kind StorageV2
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az group create` | Provisions a new Azure resource group container. |
+| `--name "$RG"` | Specifies the resource group name. |
+| `--location "$LOCATION"` | Sets the geographical region for the group. |
+| `az storage account create` | Provisions a new Azure Storage account. |
+| `--sku Standard_LRS` | Selects locally-redundant storage for cost-efficiency. |
+| `--kind StorageV2` | Uses the general-purpose v2 storage account type. |
+
 ### Step 3 - Create the deployment container
 
 ```bash
@@ -106,6 +124,12 @@ az storage container create \
   --account-name "$STORAGE_NAME" \
   --auth-mode login
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az storage container create` | Creates a new blob container within the storage account. |
+| `--name app-package` | Names the container that will store deployment zip files. |
+| `--auth-mode login` | Uses your Entra ID credentials instead of a connection string. |
 
 !!! warning "Container must exist before function app creation"
     Flex Consumption requires a pre-existing blob container for deployment packages. If the container does not exist, `az functionapp create` fails with a `ContainerNotFound` error.
@@ -125,6 +149,17 @@ az functionapp create \
   --deployment-storage-container-name app-package \
   --deployment-storage-auth-type SystemAssignedIdentity
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp create` | Provisions the core Function App resource. |
+| `--runtime node` | Selects the Node.js execution environment. |
+| `--runtime-version 20` | Pins the Node.js version to v20. |
+| `--functions-version 4` | Uses version 4 of the Azure Functions runtime host. |
+| `--flexconsumption-location` | Specifies the region for the Flex Consumption plan. |
+| `--deployment-storage-name` | Links the app to the deployment storage account. |
+| `--deployment-storage-container-name` | Targets the specific container for package storage. |
+| `--deployment-storage-auth-type` | Uses Managed Identity for secure access to deployment blobs. |
 
 !!! note "Flex Consumption vs Consumption CLI differences"
     Flex Consumption uses `--flexconsumption-location` instead of `--consumption-plan-location`. It also requires `--deployment-storage-name`, `--deployment-storage-container-name`, and `--deployment-storage-auth-type` parameters.
@@ -146,6 +181,12 @@ az functionapp config appsettings set \
     "TIMER_LAB_SCHEDULE=0 */5 * * * *"
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az storage account show-connection-string` | Retrieves the full connection string for the storage account. |
+| `az functionapp config appsettings set` | Updates the application settings for the Function App. |
+| `--settings` | Defines the key-value pairs required by the function triggers. |
+
 !!! warning "Placeholder settings prevent host errors"
     The Node.js v4 reference app includes triggers for Queue, EventHub, and Timer. If these connection settings are missing, the Functions host enters an `Error` state and cannot index any functions.
 
@@ -154,6 +195,11 @@ az functionapp config appsettings set \
 ```bash
 cd apps/nodejs && func azure functionapp publish "$APP_NAME"
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `cd apps/nodejs` | Moves the terminal into the source code directory. |
+| `func azure functionapp publish` | Bundles, uploads, and triggers a remote build for the app. |
 
 !!! note "Upload size"
     Node.js function apps include `node_modules` in the deployment package, resulting in ~49 MB uploads.
@@ -173,6 +219,13 @@ curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
 # Test the hello endpoint
 curl --request GET "https://$APP_NAME.azurewebsites.net/api/hello/FlexTest"
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp function list` | Queries ARM to retrieve the list of indexed functions. |
+| `--output table` | Formats the function list as a readable text table. |
+| `curl --request GET` | Sends an HTTP GET request to verify the live endpoints. |
+
 
 ### Step 8 - Review Flex Consumption-specific notes
 

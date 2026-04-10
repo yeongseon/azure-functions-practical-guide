@@ -72,6 +72,14 @@ flowchart TD
     export APP_NAME="func-ndprem-04100022"
     ```
 
+    | Command/Parameter | Purpose |
+    |-------------------|---------|
+    | `export RG="..."` | Sets the resource group name for the deployment. |
+    | `export LOCATION="..."` | Chooses the Azure region for the deployment. |
+    | `export STORAGE_NAME="..."` | Defines a unique name for the storage account. |
+    | `export PLAN_NAME="..."` | Sets the name for the Elastic Premium plan. |
+    | `export APP_NAME="..."` | Defines a globally unique name for the Function App. |
+
     !!! tip "Globally unique names required"
         Both `$APP_NAME` and `$STORAGE_NAME` must be globally unique across all Azure subscriptions. If you get a naming conflict, append a random suffix (e.g., `func-ndprem-04091234`).
 
@@ -82,6 +90,11 @@ flowchart TD
     az account set --subscription "<subscription-id>"
     ```
 
+    | Command/Parameter | Purpose |
+    |-------------------|---------|
+    | `az login` | Authenticates your CLI session with Azure. |
+    | `az account set --subscription` | Targets the specific Azure subscription for resource creation. |
+
 3. Create resource group.
 
     ```bash
@@ -89,6 +102,12 @@ flowchart TD
       --name "$RG" \
       --location "$LOCATION"
     ```
+
+    | Command/Parameter | Purpose |
+    |-------------------|---------|
+    | `az group create` | Provisions a new Azure resource group container. |
+    | `--name "$RG"` | Specifies the resource group name. |
+    | `--location "$LOCATION"` | Sets the geographical region for the group. |
 
     Expected output (abridged):
 
@@ -114,6 +133,13 @@ flowchart TD
       --allow-blob-public-access false
     ```
 
+    | Command/Parameter | Purpose |
+    |-------------------|---------|
+    | `az storage account create` | Provisions a new Azure Storage account. |
+    | `--sku "Standard_LRS"` | Selects locally-redundant storage for cost-efficiency. |
+    | `--kind "StorageV2"` | Uses the general-purpose v2 storage account type. |
+    | `--allow-blob-public-access false` | Disables public access to blobs for better security. |
+
     Expected output (abridged):
 
     ```json
@@ -135,6 +161,12 @@ flowchart TD
       --sku "EP1" \
       --is-linux
     ```
+
+    | Command/Parameter | Purpose |
+    |-------------------|---------|
+    | `az functionapp plan create` | Provisions an Elastic Premium hosting plan. |
+    | `--sku "EP1"` | Selects the entry-level Premium tier. |
+    | `--is-linux` | Configures the plan for Linux-based workers. |
 
     Expected output (abridged):
 
@@ -163,6 +195,15 @@ flowchart TD
       --functions-version "4" \
       --os-type "Linux"
     ```
+
+    | Command/Parameter | Purpose |
+    |-------------------|---------|
+    | `az functionapp create` | Provisions the core Function App resource. |
+    | `--plan "$PLAN_NAME"` | Links the app to the Elastic Premium plan. |
+    | `--runtime "node"` | Selects the Node.js execution environment. |
+    | `--runtime-version "20"` | Pins the Node.js version to v20. |
+    | `--functions-version "4"` | Uses version 4 of the Azure Functions runtime host. |
+    | `--os-type "Linux"` | Deploys the app on a Linux infrastructure. |
 
     !!! warning "Node.js 20 EOL approaching"
         Azure CLI warns: `Use node version 24 as 20 will reach end-of-life on 2026-04-30`. Consider using `--runtime-version 22` or later for new projects.
@@ -195,6 +236,11 @@ flowchart TD
     func azure functionapp publish "$APP_NAME"
     ```
 
+    | Command/Parameter | Purpose |
+    |-------------------|---------|
+    | `cd apps/nodejs` | Moves the terminal into the source code directory. |
+    | `func azure functionapp publish` | Bundles, uploads, and deploys the app source code. |
+
     Expected output (abridged):
 
     ```text
@@ -216,6 +262,11 @@ flowchart TD
           --settings "EventHubConnection__fullyQualifiedNamespace=placeholder.servicebus.windows.net"
         ```
 
+    | Command/Parameter | Purpose |
+    |-------------------|---------|
+    | `az functionapp config appsettings set` | Updates the application settings for the Function App. |
+    | `--settings` | Defines the key-value pairs required by the function triggers. |
+
 8. Validate deployment.
 
     ```bash
@@ -224,6 +275,11 @@ flowchart TD
       --resource-group "$RG" \
       --output table
     ```
+
+    | Command/Parameter | Purpose |
+    |-------------------|---------|
+    | `az functionapp function list` | Queries ARM to retrieve the list of indexed functions. |
+    | `--output table` | Formats the function list as a readable text table. |
 
     !!! tip "Function indexing delay"
         After the first publish, it may take 30–60 seconds for all functions to appear in the ARM API. If the list is empty, wait and retry.
@@ -250,6 +306,10 @@ flowchart TD
     curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
     ```
 
+    | Command/Parameter | Purpose |
+    |-------------------|---------|
+    | `curl --request GET` | Sends an HTTP GET request to verify the health endpoint. |
+
     Expected output:
 
     ```json
@@ -259,6 +319,11 @@ flowchart TD
     ```bash
     curl --request GET "https://$APP_NAME.azurewebsites.net/api/hello/Azure"
     ```
+
+    | Command/Parameter | Purpose |
+    |-------------------|---------|
+    | `curl --request GET` | Sends an HTTP GET request to verify the hello endpoint. |
+
 
     Expected output:
 
