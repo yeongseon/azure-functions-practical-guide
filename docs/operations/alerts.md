@@ -36,6 +36,18 @@ APPINSIGHTS_ID="/subscriptions/<subscription-id>/resourceGroups/rg-observability
 WORKSPACE_ID="/subscriptions/<subscription-id>/resourceGroups/rg-observability-prod/providers/Microsoft.OperationalInsights/workspaces/log-functions-prod"
 ACTION_GROUP_ID="/subscriptions/<subscription-id>/resourceGroups/rg-functions-prod/providers/microsoft.insights/actionGroups/ag-functions-prod"
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `RG` | Resource group name |
+| `APP_NAME` | Function app name |
+| `ACTION_GROUP_NAME` | Full name for the action group |
+| `ACTION_GROUP_SHORT` | Short name for SMS/notification headers |
+| `FUNC_ID` | Azure resource ID for the function app |
+| `APPINSIGHTS_ID` | Azure resource ID for Application Insights |
+| `WORKSPACE_ID` | Azure resource ID for the Log Analytics workspace |
+| `ACTION_GROUP_ID` | Azure resource ID for the action group |
+
 ## When to Use
 Use the alert type that matches the failure signal:
 
@@ -75,6 +87,15 @@ az monitor action-group create \
     --short-name "$ACTION_GROUP_SHORT" \
     --location global
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az monitor action-group create` | Creates a new action group for alert notifications |
+| `--resource-group "$RG"` | Specifies the resource group |
+| `--name "$ACTION_GROUP_NAME"` | Specifies the action group name |
+| `--short-name` | A short name used in email and SMS notifications |
+| `--location global` | Action groups are global resources in Azure |
+
 Example output (PII masked):
 ```json
 {
@@ -90,6 +111,23 @@ az monitor action-group update \
     --resource-group "$RG" \
     --name "$ACTION_GROUP_NAME" \
     --add-action email ops-email oncall@example.com
+```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az monitor action-group update` | Updates an existing action group |
+| `--add-action email` | Adds an email receiver to the group |
+| `ops-email` | Friendly name for the receiver |
+| `oncall@example.com` | Target email address for notifications |
+
+Example output (PII masked):
+```json
+{
+  "enabled": true,
+  "id": "/subscriptions/<subscription-id>/resourceGroups/rg-functions-prod/providers/microsoft.insights/actionGroups/ag-functions-prod",
+  "name": "ag-functions-prod",
+  "resourceGroup": "rg-functions-prod"
+}
 ```
 ### Metric alerts
 Metric alerts are ideal for fast detection of high-level service degradation.
@@ -110,6 +148,28 @@ az monitor metrics alert create \
     --evaluation-frequency 1m \
     --window-size 5m \
     --action "$ACTION_GROUP_ID"
+```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az monitor metrics alert create` | Creates a new alert based on numerical metrics |
+| `--name "func-http5xx-critical"` | Name of the alert rule |
+| `--scopes "$FUNC_ID"` | Target resource ID for the alert |
+| `--condition "total Http5xx > 10"` | Threshold condition for firing (more than 10 HTTP 5xx errors) |
+| `--severity 2` | Sets the alert severity (0: Critical, 1: Error, 2: Warning, etc.) |
+| `--evaluation-frequency 1m` | How often the rule is evaluated |
+| `--window-size 5m` | The look-back period for calculating the metric |
+| `--action "$ACTION_GROUP_ID"` | Action group to notify when the alert fires |
+
+Example output (PII masked):
+```json
+{
+  "enabled": true,
+  "name": "func-http5xx-critical",
+  "severity": 2,
+  "evaluationFrequency": "PT1M",
+  "windowSize": "PT5M"
+}
 ```
 Example output (PII masked):
 ```json
@@ -161,6 +221,16 @@ az monitor scheduled-query create \
     --action-groups "$ACTION_GROUP_ID" \
     --auto-mitigate true
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az monitor scheduled-query create` | Creates a new log query (KQL) based alert |
+| `--scopes "$WORKSPACE_ID"` | Target Log Analytics workspace ID |
+| `--condition "count ... > 0"` | Firing condition based on query results |
+| `--condition-query` | The actual KQL query to execute (checking failure ratio) |
+| `--evaluation-frequency "PT5M"` | Runs the query every 5 minutes |
+| `--auto-mitigate true` | Automatically resolves the alert if conditions are no longer met |
+
 Example output (PII masked):
 ```json
 {
@@ -210,6 +280,13 @@ az monitor metrics alert list \
     --query "[].{name:name,enabled:enabled,severity:severity}" \
     --output table
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az monitor metrics alert list` | Lists all existing metric alerts |
+| `--query` | Extracts specific fields (name, enabled status, severity) |
+| `--output table` | Formats results as a table |
+
 Example output (PII masked):
 ```text
 Name                        Enabled    Severity
@@ -224,6 +301,13 @@ az monitor scheduled-query list \
     --query "[].{name:name,enabled:enabled,severity:severity}" \
     --output table
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az monitor scheduled-query list` | Lists all log query alerts |
+| `--query` | Extracts specific fields for the summary |
+| `--output table` | Formats results as a table |
+
 Example output (PII masked):
 ```text
 Name                            Enabled    Severity
@@ -251,6 +335,12 @@ Validate alert creation, firing, and delivery before production sign-off.
         --output table
     ```
 
+    | Command/Parameter | Purpose |
+    |-------------------|---------|
+    | `az monitor metrics alert list` | Verifies the creation of metric alerts |
+    | `az monitor scheduled-query list` | Verifies the creation of log query alerts |
+    | `--output table` | Formats the verification output |
+
 2. Validate metric alert firing path.
 
     - Temporarily reduce threshold for a non-critical test rule.
@@ -274,6 +364,13 @@ Validate alert creation, firing, and delivery before production sign-off.
         --output table
     ```
 
+    | Command/Parameter | Purpose |
+    |-------------------|---------|
+    | `az monitor activity-log list` | Searches the management plane log for alert rule events |
+    | `--offset 1d` | Looks back at events from the last 24 hours |
+    | `--query` | Filters for operations related to `ALERTRULES` |
+    | `--output table` | Formats results as a table |
+
 ## Rollback / Troubleshooting
 ### False positives
 - Increase threshold or enlarge window size.
@@ -289,6 +386,12 @@ az monitor metrics alert update \
     --enabled false
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az monitor metrics alert update` | Modifies an existing metric alert rule |
+| `--name "func-http5xx-critical"` | Target alert rule to disable |
+| `--enabled false` | Deactivates the rule without deleting it |
+
 ### Missing alerts
 - Confirm telemetry ingestion in Application Insights.
 - Confirm the alert `--scopes` target the correct resource.
@@ -303,6 +406,11 @@ az monitor metrics alert show \
     --output json
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az monitor metrics alert show` | Gets full details for a metric alert |
+| `--output json` | Returns full JSON for detailed inspection |
+
 Inspect one log alert:
 ```bash
 az monitor scheduled-query show \
@@ -310,6 +418,11 @@ az monitor scheduled-query show \
     --name "func-failure-ratio-critical" \
     --output json
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az monitor scheduled-query show` | Gets full details for a log query alert |
+| `--output json` | Returns full JSON for detailed inspection |
 
 ### Recovery after tuning
 Re-enable the rule once thresholds and filters are corrected:
@@ -320,10 +433,15 @@ az monitor metrics alert update \
     --enabled true
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az monitor metrics alert update` | Re-activates a tuned alert rule |
+| `--enabled true` | Enables the alert rule to resume evaluation |
+
 ## See Also
 - [Monitoring](monitoring.md)
 - [Recovery](recovery.md)
-- [Troubleshooting Playbooks](../troubleshooting/playbooks.md)
+- [Troubleshooting Playbooks](../troubleshooting/playbooks/index.md)
 ## Sources
 - [Create and manage action groups](https://learn.microsoft.com/azure/azure-monitor/alerts/action-groups)
 - [Create metric alerts in Azure Monitor](https://learn.microsoft.com/azure/azure-monitor/alerts/alerts-metric)

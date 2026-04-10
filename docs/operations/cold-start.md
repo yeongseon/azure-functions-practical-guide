@@ -84,6 +84,11 @@ az functionapp config appsettings set \
     --settings WEBSITE_RUN_FROM_PACKAGE=1
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp config appsettings set` | Configures the application setting for the function app |
+| `--settings WEBSITE_RUN_FROM_PACKAGE=1` | Enables the app to run directly from the deployment package to speed up startup |
+
 #### Flex Consumption (FC1)
 Flex Consumption supports always-ready instances to reduce cold-start frequency.
 Use this when low-latency response is required without moving to Premium.
@@ -95,6 +100,13 @@ az functionapp scale config show \
     --query "alwaysReady" \
     --output json
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp scale config show` | Displays the current scaling configuration |
+| `--query "alwaysReady"` | Filters for always-ready instance settings |
+| `--output json` | Formats output as JSON |
+
 Example output (PII masked):
 ```json
 {
@@ -109,6 +121,11 @@ az functionapp scale config always-ready set \
     --name <function-app-name> \
     --settings http=2
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp scale config always-ready set` | Configures always-ready instances for specific triggers |
+| `--settings http=2` | Ensures 2 instances are always ready for HTTP traffic |
 
 #### Premium (EP)
 Premium supports always-ready instances and pre-warmed capacity for scale-out events.
@@ -129,6 +146,13 @@ az resource show \
     --query "properties.{preWarmedInstanceCount:preWarmedInstanceCount,minimumElasticInstanceCount:minimumElasticInstanceCount}" \
     --output json
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az resource show` | Gets the resource details for the Premium plan configuration |
+| `--resource-type Microsoft.Web/sites/config` | Targets the site configuration object |
+| `--query` | Extracts pre-warmed and minimum elastic instance counts |
+
 Example output (PII masked):
 ```json
 {
@@ -147,6 +171,12 @@ az resource update \
     --set properties.preWarmedInstanceCount=1
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az resource update` | Modifies the configuration for the function app |
+| `--set properties.minimumElasticInstanceCount=2` | Sets the minimum number of instances that are always running |
+| `--set properties.preWarmedInstanceCount=1` | Sets the number of instances to keep warm for scale-out |
+
 #### Dedicated plan
 Enable Always On so the app remains loaded:
 ```bash
@@ -155,6 +185,12 @@ az functionapp config set \
     --name <function-app-name> \
     --always-on true
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp config set` | Updates the app service configuration |
+| `--always-on true` | Keeps the process active to eliminate cold starts on Dedicated plans |
+
 Check Always On configuration:
 ```bash
 az functionapp config show \
@@ -163,6 +199,13 @@ az functionapp config show \
     --query "alwaysOn" \
     --output tsv
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp config show` | Displays the current configuration for the app |
+| `--query "alwaysOn"` | Filters for the Always On setting value |
+| `--output tsv` | Returns the raw tab-separated value |
+
 Example output:
 ```text
 true
@@ -273,6 +316,15 @@ az monitor metrics list \
     --end-time 2026-01-15T02:00:00Z \
     --output table
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az monitor metrics list` | Retrieves the specified platform metrics |
+| `--metric` | List of metrics including response time and execution units |
+| `--interval PT5M` | Aggregates data in 5-minute time windows |
+| `--aggregation Average` | Calculates the average values for the metrics |
+| `--output table` | Formats results as a table |
+
 Example output (PII masked):
 ```text
 Name                    TimeGrain    Average
@@ -297,6 +349,12 @@ az functionapp config set \
     --name <function-app-name> \
     --always-on false
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp config set` | Updates the app configuration |
+| `--always-on false` | Disables Always On to save resources on non-production Dedicated plans |
+
 - Flex always-ready overprovisioned: reduce warm instances and monitor p95.
 ```bash
 az resource update \
@@ -306,6 +364,13 @@ az resource update \
     --api-version 2023-12-01 \
     --set properties.functionAppConfig.scaleAndConcurrency.alwaysReady.instanceCount=0
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az resource update` | Modifies the raw resource properties |
+| `--resource-type Microsoft.Web/sites` | Targets the main Function App resource |
+| `--set ...alwaysReady.instanceCount=0` | Resets the always-ready instance count to zero |
+
 - Premium warm capacity ineffective: restore previous known-good values.
 ```bash
 az resource update \
@@ -316,6 +381,13 @@ az resource update \
     --set properties.minimumElasticInstanceCount=1 \
     --set properties.preWarmedInstanceCount=0
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az resource update` | Updates the site configuration |
+| `--set properties.minimumElasticInstanceCount=1` | Resets minimum instances to the default value |
+| `--set properties.preWarmedInstanceCount=0` | Disables pre-warmed instances to reduce costs |
+
 Escalate to platform diagnostics if startup remains unstable after rollback and startup-path optimization.
 
 ## See Also

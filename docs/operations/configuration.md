@@ -61,6 +61,14 @@ az functionapp config appsettings set \
     --name <app-name> \
     --settings FUNCTIONS_WORKER_RUNTIME=<worker-runtime>
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp config appsettings set` | Adds or updates application settings for the function app |
+| `--resource-group <resource-group>` | Specifies the resource group |
+| `--name <app-name>` | Specifies the function app name |
+| `--settings` | Space-separated list of key=value pairs to set |
+
 List values (redact secrets before sharing):
 ```bash
 az functionapp config appsettings list \
@@ -69,6 +77,13 @@ az functionapp config appsettings list \
     --query "[].{name:name,value:value}" \
     --output table
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp config appsettings list` | Lists all application settings |
+| `--query` | JMESPath query to filter and format the settings |
+| `--output table` | Formats the output as a table |
+
 Example output:
 ```text
 Name                                         Value
@@ -110,6 +125,12 @@ az functionapp config appsettings list \
     --query "[?starts_with(name, 'AzureFunctionsJobHost__')].{name:name,value:value}" \
     --output table
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp config appsettings list` | Lists application settings |
+| `--query` | Filters for settings prefixed with `AzureFunctionsJobHost__` |
+| `--output table` | Formats the output as a table |
 Example output:
 ```text
 Name                                                                  Value
@@ -147,6 +168,12 @@ az functionapp config appsettings set \
     --name <app-name> \
     --settings "MySecretSetting=@Microsoft.KeyVault(SecretUri=https://<key-vault-name>.vault.azure.net/secrets/<secret-name>/)"
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp config appsettings set` | Configures the application setting |
+| `--settings "MySecretSetting=..."` | Sets the value as a Key Vault reference |
+
 Check Key Vault reference resolution status:
 ```bash
 az rest \
@@ -155,12 +182,14 @@ az rest \
     --query "properties[?contains(name, 'MySecretSetting')].{name:name,status:status,details:details}" \
     --output table
 ```
-Example output:
-```text
-Name             Status       Details
----------------  -----------  -----------------------------------------------
-MySecretSetting  Resolved     Secret version loaded from Key Vault reference
-```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az rest --method get` | Sends a direct GET request to the Azure Resource Manager API |
+| `--url` | Target endpoint for configuration reference status |
+| `--query` | Extracts name, resolution status, and details |
+| `--output table` | Formats results as a table |
+
 ### Managed identity for secret access
 Enable system-assigned identity:
 ```bash
@@ -168,6 +197,13 @@ az functionapp identity assign \
     --resource-group <resource-group> \
     --name <app-name>
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp identity assign` | Enables a system-assigned managed identity for the app |
+| `--resource-group <resource-group>` | Specifies the resource group |
+| `--name <app-name>` | Specifies the function app name |
+
 Grant the identity least-privilege access to Key Vault and dependent services.
 Prefer identity-based connection patterns over connection strings when bindings support it.
 ### Identity-based connection patterns (including Flex Consumption)
@@ -198,6 +234,14 @@ az functionapp config appsettings set \
         MyStorage__queueServiceUri=https://<storage-account-name>.queue.core.windows.net \
         MyStorage__credential=managedidentity
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp config appsettings set` | Configures multiple application settings at once |
+| `AzureWebJobsStorage__accountName` | Sets the storage account name for the host |
+| `AzureWebJobsStorage__credential=managedidentity` | Configures host storage to use managed identity |
+| `MyStorage__*` | Configures identity-based connection for application storage |
+
 ### Slot-specific settings
 When using slots, mark environment-specific values as slot settings.
 ```bash
@@ -207,6 +251,13 @@ az functionapp config appsettings set \
     --slot staging \
     --slot-settings AZURE_FUNCTIONS_ENVIRONMENT=Staging
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp config appsettings set` | Configures settings for a specific deployment slot |
+| `--slot staging` | Specifies the target slot |
+| `--slot-settings` | Defines the settings as sticky to the slot |
+
 ### Configuration change management workflow
 Use a controlled workflow for every production configuration update.
 <!-- diagram-id: configuration-change-management-workflow -->
@@ -236,6 +287,12 @@ az functionapp config appsettings list \
     --query "[?name=='FUNCTIONS_WORKER_RUNTIME' || name=='WEBSITE_RUN_FROM_PACKAGE' || starts_with(name, 'AzureFunctionsJobHost__')].{name:name,value:value}" \
     --output table
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp config appsettings list` | Retrieves current application settings |
+| `--query` | Filters for core worker runtime and host-level override settings |
+
 ```bash
 az functionapp identity show \
     --resource-group <resource-group> \
@@ -243,12 +300,24 @@ az functionapp identity show \
     --query "{type:type,principalId:principalId,tenantId:tenantId}" \
     --output table
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp identity show` | Displays the managed identity details for the app |
+| `--query` | Extracts identity type and identifiers |
+
 ```bash
 az monitor app-insights query \
     --app <application-insights-name> \
     --analytics-query "traces | where timestamp > ago(15m) | where message contains 'Host started' | project timestamp, message | take 5" \
     --output table
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az monitor app-insights query` | Runs a KQL query against Application Insights |
+| `--analytics-query` | Checks the trace log for recent host startup success |
+| `--output table` | Formats results as a table |
 Example output:
 ```text
 Timestamp                    Message
@@ -280,6 +349,12 @@ az functionapp config appsettings delete \
     --name <app-name> \
     --setting-names AzureFunctionsJobHost__extensions__serviceBus__prefetchCount
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp config appsettings delete` | Removes one or more application settings |
+| `--setting-names` | Specifies the keys of the settings to delete |
+
 ```bash
 az functionapp deployment slot swap \
     --resource-group <resource-group> \
@@ -287,6 +362,13 @@ az functionapp deployment slot swap \
     --slot staging \
     --target-slot production
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp deployment slot swap` | Swaps slots to restore a previously stable configuration |
+| `--slot staging` | Specifies the source slot |
+| `--target-slot production` | Specifies the target slot |
+
 ## See Also
 - [Deployment](deployment.md)
 - [Monitoring](monitoring.md)

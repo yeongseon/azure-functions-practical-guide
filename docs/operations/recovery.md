@@ -39,6 +39,18 @@ TM_PROFILE="tm-functions-prod"
 FD_PROFILE="afd-functions-prod"
 HEALTH_PATH="/api/health"
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `RG_PRIMARY` | Resource group for the primary region |
+| `RG_SECONDARY` | Resource group for the secondary region |
+| `APP_PRIMARY` | Function app name in the primary region |
+| `APP_SECONDARY` | Function app name in the secondary region |
+| `STORAGE_ARTIFACTS` | Storage account for build artifacts |
+| `TM_PROFILE` | Traffic Manager profile name |
+| `FD_PROFILE` | Front Door profile name |
+| `HEALTH_PATH` | API path for health checks |
+
 ## When to Use
 Use rollback, failover, or rebuild based on blast radius and dependency health.
 ### Rollback
@@ -108,9 +120,16 @@ az functionapp deployment slot swap \
     --target-slot production
 ```
 
-Example output:
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp deployment slot swap` | Swaps the staging slot with the production slot |
+| `--resource-group "$RG_PRIMARY"` | Specifies the primary resource group |
+| `--name "$APP_PRIMARY"` | Specifies the function app name |
+| `--slot staging` | The source slot for the swap |
+| `--target-slot production` | The destination slot for the swap |
 
-```text
+Example output:
+```json
 {
   "changed": true,
   "name": "func-orders-prod-krc",
@@ -123,7 +142,6 @@ Example output:
   "status": "Succeeded"
 }
 ```
-
 ### Scenario B: deployment regression without slots
 1. Identify immutable artifact version to restore.
 2. Redeploy artifact with `config-zip`.
@@ -140,9 +158,13 @@ az functionapp deployment source config-zip \
     --src "/tmp/orders-api-2026.03.28.zip"
 ```
 
-Example output:
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp deployment source config-zip` | Redeploys a specific zip artifact to the function app |
+| `--src` | Path to the known-good artifact zip file |
 
-```text
+Example output:
+```json
 {
   "active": true,
   "author": "<deployment-identity>",
@@ -154,7 +176,6 @@ Example output:
   "status": 4
 }
 ```
-
 ### Artifact and configuration backup
 Maintain these backups for every release:
 - Immutable build artifact with version metadata.
@@ -222,9 +243,15 @@ az network traffic-manager endpoint update \
     --endpoint-status Disabled
 ```
 
-Example output:
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az network traffic-manager endpoint update` | Updates an endpoint in the Traffic Manager profile |
+| `--profile-name "$TM_PROFILE"` | Target Traffic Manager profile |
+| `--name primary-endpoint` | Name of the endpoint to update |
+| `--endpoint-status Disabled` | Disables the primary endpoint to force failover to secondary |
 
-```text
+Example output:
+```json
 {
   "endpointStatus": "Disabled",
   "name": "primary-endpoint",
@@ -244,6 +271,13 @@ az afd origin update \
     --origin-name "origin-primary" \
     --enabled-state Disabled
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az afd origin update` | Updates an origin within the Front Door profile |
+| `--origin-group-name` | Target origin group |
+| `--origin-name "origin-primary"` | Name of the primary origin to update |
+| `--enabled-state Disabled` | Disables the primary origin to force traffic to others in the group |
 
 ### Scenario D: rebuild from clean infrastructure baseline
 1. Freeze change pipeline and snapshot forensic evidence.
@@ -274,9 +308,13 @@ az rest \
     --url "https://$APP_PRIMARY.azurewebsites.net$HEALTH_PATH"
 ```
 
-Example output:
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az rest --method get` | Sends an authenticated GET request to the health endpoint |
+| `--url` | The full URL of the function app health check |
 
-```text
+Example output:
+```json
 {
   "checks": {
     "application": "Healthy",

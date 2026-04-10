@@ -48,6 +48,17 @@ APP_RESOURCE_ID="/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RG/providers/Mi
 WORKSPACE_ID="/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RG/providers/Microsoft.OperationalInsights/workspaces/$LAW_NAME"
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `RG` | Resource group name |
+| `APP_NAME` | Function app name |
+| `FUNCTION_NAME` | Name of the specific function within the app |
+| `LAW_NAME` | Log Analytics workspace name |
+| `VNET_NAME` | Virtual network name |
+| `SUBNET_NAME` | Subnet name for integration |
+| `APP_RESOURCE_ID` | Fully qualified Azure resource ID for the function app |
+| `WORKSPACE_ID` | Fully qualified Azure resource ID for the workspace |
+
 ## When to Use
 Use this runbook in these cases:
 - New production deployment that needs baseline hardening.
@@ -79,19 +90,35 @@ az functionapp function keys list --name "$APP_NAME" --resource-group "$RG" --fu
 az functionapp keys list --name "$APP_NAME" --resource-group "$RG"
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp function keys list` | Lists all keys for a specific function |
+| `az functionapp keys list` | Lists all host-level keys for the function app |
+| `--name "$APP_NAME"` | Specifies the function app name |
+| `--function-name "$FUNCTION_NAME"` | Target function for key listing |
+
 Example output (sanitized):
-
-```text
-{"default":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}
-{"functionKeys":{"default":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"},"masterKey":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}
-```
-
+...
 Regenerate keys (recommended: let Azure generate secure values automatically):
 
 ```bash
 az functionapp function keys set --name "$APP_NAME" --resource-group "$RG" --function-name "$FUNCTION_NAME" --key-name "default"
 az functionapp keys set --name "$APP_NAME" --resource-group "$RG" --key-type "functionKeys" --key-name "default"
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp function keys set` | Creates or updates a specific function key |
+| `az functionapp keys set` | Creates or updates a host-level key |
+| `--key-name "default"` | Target key name to rotate |
+| `--key-type "functionKeys"` | Specifies rotation of host-level function keys |
+
+Example output (sanitized):
+```text
+{"default":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}
+{"functionKeys":{"default":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"},"masterKey":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}
+```
+
 Only supply explicit `--key-value` when you have a specific operational need (for example, controlled migration or deterministic rollback).
 
 
@@ -111,22 +138,48 @@ Review role assignments regularly and remove broad standing access.
 az role assignment list --scope "$APP_RESOURCE_ID" --include-inherited true
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az role assignment list` | Lists all Azure RBAC role assignments |
+| `--scope "$APP_RESOURCE_ID"` | Targets the specific function app |
+| `--include-inherited true` | Shows roles assigned at higher scopes (subscription, resource group) |
+
 Example output (sanitized):
-
-```text
-[{"principalName":"func-prod-ops-mi","principalType":"ServicePrincipal","roleDefinitionName":"Website Contributor","scope":"/subscriptions/<subscription-id>/resourceGroups/rg-functions-prod/providers/Microsoft.Web/sites/func-prod-api"}]
-```
-
+...
 Audit Owner/Contributor grants:
 
 ```bash
 az role assignment list --scope "$APP_RESOURCE_ID" --include-inherited true --query "[?roleDefinitionName=='Owner' || roleDefinitionName=='Contributor'].{principalName:principalName,principalType:principalType,role:roleDefinitionName,scope:scope}" --output table
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az role assignment list` | Lists role assignments |
+| `--query` | Filters for `Owner` and `Contributor` roles and extracts specific fields |
+| `--output table` | Formats results as a table |
+
 Audit one deployment principal (masked ID):
 
 ```bash
 az role assignment list --assignee "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" --all true --query "[].{role:roleDefinitionName,scope:scope,principalType:principalType}"
+```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az role assignment list` | Lists assignments for a specific identity |
+| `--assignee` | The object ID of the user or service principal to audit |
+| `--all true` | Shows assignments across all scopes for this identity |
+
+Example output (sanitized):
+```json
+[
+  {
+    "principalName": "func-prod-ops-mi",
+    "principalType": "ServicePrincipal",
+    "roleDefinitionName": "Website Contributor",
+    "scope": "/subscriptions/<subscription-id>/resourceGroups/rg-functions-prod/providers/Microsoft.Web/sites/func-prod-api"
+  }
+]
 ```
 
 Least-privilege guidance: prefer GitHub Actions OIDC over client secrets, scope deployment identity to minimum required resources, and re-validate after pipeline ownership changes.
@@ -139,11 +192,22 @@ It is not authentication and must be combined with auth controls.
 az functionapp cors show --name "$APP_NAME" --resource-group "$RG"
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp cors show` | Displays the current Cross-Origin Resource Sharing (CORS) settings |
+| `--name "$APP_NAME"` | Specifies the function app name |
+| `--resource-group "$RG"` | Specifies the resource group |
+
 Add approved origins:
 
 ```bash
 az functionapp cors add --name "$APP_NAME" --resource-group "$RG" --allowed-origins "https://portal.contoso.example" "https://admin.contoso.example"
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp cors add` | Appends a new origin to the CORS allowlist |
+| `--allowed-origins` | Space-separated list of browser origins to allow |
 
 Remove deprecated origins:
 
@@ -151,11 +215,20 @@ Remove deprecated origins:
 az functionapp cors remove --name "$APP_NAME" --resource-group "$RG" --allowed-origins "https://old.contoso.example"
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp cors remove` | Deletes a specific origin from the CORS allowlist |
+
 Enable credentialed requests only when required:
 
 ```bash
 az functionapp cors credentials --name "$APP_NAME" --resource-group "$RG" --enable true
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp cors credentials` | Configures whether requests can include cookies or authorization headers |
+| `--enable true` | Enables support for credentialed CORS requests |
 
 !!! warning "Wildcard risk"
     Avoid `*` in production. With credentialed traffic, wildcard origins can expose session context to unintended browser origins.
@@ -169,12 +242,27 @@ az functionapp update --name "$APP_NAME" --resource-group "$RG" --https-only tru
 az functionapp config set --name "$APP_NAME" --resource-group "$RG" --min-tls-version "1.2"
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp update` | Updates common properties of the function app |
+| `--https-only true` | Redirects all HTTP requests to HTTPS |
+| `az functionapp config set` | Updates the app configuration |
+| `--min-tls-version "1.2"` | Sets the minimum required TLS version for client connections |
+
 Custom domain and certificate operations:
 
 ```bash
 az functionapp config hostname add --name "$APP_NAME" --resource-group "$RG" --hostname "api.contoso.example"
 az functionapp config ssl bind --name "$APP_NAME" --resource-group "$RG" --certificate-thumbprint "<certificate-thumbprint>" --ssl-type "SNI"
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp config hostname add` | Assigns a custom domain name to the function app |
+| `--hostname` | The custom domain name to bind |
+| `az functionapp config ssl bind` | Binds a certificate to a custom hostname |
+| `--certificate-thumbprint` | Specifies the thumbprint of the SSL certificate |
+| `--ssl-type "SNI"` | Sets the SSL type to Server Name Indication (SNI) |
 
 Operational checks: monitor certificate expiry, verify HTTPS redirection, and re-check TLS baseline after IaC or policy changes.
 
@@ -189,11 +277,25 @@ az functionapp config access-restriction add --name "$APP_NAME" --resource-group
 az functionapp config access-restriction add --name "$APP_NAME" --resource-group "$RG" --rule-name "DenyAll" --action "Deny" --ip-address "0.0.0.0/0" --priority 2147483647
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp config access-restriction add` | Adds an IP or VNet access restriction rule |
+| `--rule-name` | Descriptive name for the rule |
+| `--action "Allow"` | Permits access from the specified IP range |
+| `--ip-address "203.0.113.0/24"` | CIDR range for the permitted network |
+| `--priority 100` | Rule evaluation priority (lower is evaluated first) |
+| `--action "Deny"` | Rejects all other inbound traffic |
+
 Restrict SCM endpoint separately:
 
 ```bash
 az functionapp config access-restriction add --name "$APP_NAME" --resource-group "$RG" --rule-name "AllowScmBuildAgents" --action "Allow" --ip-address "198.51.100.0/24" --priority 110 --scm-site true
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp config access-restriction add` | Adds a restriction rule |
+| `--scm-site true` | Targets the SCM (Kudu) site used for deployments |
 
 Combine with virtual network service endpoint rules when needed:
 
@@ -201,11 +303,23 @@ Combine with virtual network service endpoint rules when needed:
 az functionapp config access-restriction add --name "$APP_NAME" --resource-group "$RG" --rule-name "AllowFromIntegrationSubnet" --action "Allow" --vnet-name "$VNET_NAME" --subnet "$SUBNET_NAME" --priority 120
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp config access-restriction add` | Adds a VNet restriction rule |
+| `--vnet-name "$VNET_NAME"` | Name of the virtual network |
+| `--subnet "$SUBNET_NAME"` | Subnet name within the VNet |
+
 Check current access restrictions:
 
 ```bash
 az functionapp config access-restriction show --name "$APP_NAME" --resource-group "$RG"
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp config access-restriction show` | Displays the current IP and VNet restriction rules |
+| `--name "$APP_NAME"` | Specifies the function app name |
+| `--resource-group "$RG"` | Specifies the resource group |
 
 Example output (sanitized):
 
@@ -220,32 +334,30 @@ Enable diagnostics to send platform logs and metrics to Log Analytics for audit 
 az monitor diagnostic-settings create --name "func-security-diagnostics" --resource "$APP_RESOURCE_ID" --workspace "$WORKSPACE_ID" --logs '[{"category":"AppServiceHTTPLogs","enabled":true},{"category":"AppServiceAuditLogs","enabled":true},{"category":"AppServicePlatformLogs","enabled":true}]' --metrics '[{"category":"AllMetrics","enabled":true}]'
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az monitor diagnostic-settings create` | Configures log and metric export for the resource |
+| `--resource "$APP_RESOURCE_ID"` | Target Function App resource ID |
+| `--workspace "$WORKSPACE_ID"` | Destination Log Analytics workspace ID |
+| `--logs` | JSON array of log categories (HTTP, Audit, and Platform logs) |
+| `--metrics` | JSON array of metric categories |
+
 KQL: failed authentication/authorization trend:
-
-```kql
-AppServiceHTTPLogs
-| where TimeGenerated > ago(24h)
-| where ScStatus in (401, 403)
-| summarize Failures=count() by CIp, CsHost, CsUriStem, bin(TimeGenerated, 15m)
-| order by Failures desc
-```
-
-KQL: suspicious key-query usage pattern:
-
-```kql
-AppServiceHTTPLogs
-| where TimeGenerated > ago(7d)
-| where CsUriQuery has "code="
-| summarize Requests=count() by CIp, bin(TimeGenerated, 1h)
-| where Requests > 100
-| order by Requests desc
-```
-
+...
 Create a scheduled query alert for repeated failures:
 
 ```bash
 az monitor scheduled-query create --name "func-auth-failures" --resource-group "$RG" --scopes "$APP_RESOURCE_ID" --condition "count 'AUTH_FAILURE_QUERY' > 50" --condition-query "AUTH_FAILURE_QUERY=AppServiceHTTPLogs | where ScStatus in (401,403)" --description "High unauthorized/forbidden response volume" --evaluation-frequency "PT5M" --window-size "PT15M" --severity 2
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az monitor scheduled-query create` | Creates an alert based on a log query |
+| `--scopes "$APP_RESOURCE_ID"` | Scopes the alert to the specified function app logs |
+| `--condition "count ... > 50"` | Firing threshold for the alert |
+| `--condition-query` | KQL query that counts 401 and 403 HTTP status codes |
+| `--evaluation-frequency "PT5M"` | Runs the query every 5 minutes |
+| `--window-size "PT15M"` | Look-back window for the query evaluation |
 
 ### Operational security routine
 Run this cadence and tighten by risk profile:
@@ -263,20 +375,26 @@ az functionapp show --name "$APP_NAME" --resource-group "$RG" --query "{httpsOnl
 az functionapp config show --name "$APP_NAME" --resource-group "$RG" --query "{minTlsVersion:minTlsVersion,scmMinTlsVersion:scmMinTlsVersion}" --output table
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp show` | Gets common properties of the app |
+| `az functionapp config show` | Displays the current configuration settings |
+| `--query` | Extracts HTTPS enforcement and TLS version values |
+| `--output table` | Formats results as a table |
+
 Expected output (sanitized):
-
-```text
-HttpsOnly    ClientCertEnabled
-True         False
-MinTlsVersion    ScmMinTlsVersion
-1.2              1.2
-```
-
+...
 Validate least-privilege scope:
 
 ```bash
 az role assignment list --scope "$APP_RESOURCE_ID" --include-inherited true --query "[?roleDefinitionName=='Owner' || roleDefinitionName=='Contributor'].{principalName:principalName,role:roleDefinitionName}" --output table
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az role assignment list` | Verifies current role assignments |
+| `--include-inherited true` | Checks for assignments at higher levels (Resource Group/Subscription) |
+| `--output table` | Formats results as a table |
 
 Validate access restriction defaults:
 
@@ -284,11 +402,20 @@ Validate access restriction defaults:
 az functionapp config access-restriction show --name "$APP_NAME" --resource-group "$RG" --query "{mainDefault:ipSecurityRestrictionsDefaultAction,scmDefault:scmIpSecurityRestrictionsDefaultAction}" --output table
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp config access-restriction show` | Verifies the default action for the main and SCM sites |
+
 Validate diagnostics attachment:
 
 ```bash
 az monitor diagnostic-settings list --resource "$APP_RESOURCE_ID" --query "[].{name:name,workspaceId:workspaceId}" --output table
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az monitor diagnostic-settings list` | Confirms that diagnostic settings are correctly applied |
+| `--resource "$APP_RESOURCE_ID"` | Target Function App resource ID |
 
 ## Rollback / Troubleshooting
 Use these actions when a control change breaks production traffic or when indicators suggest compromise.
@@ -305,27 +432,39 @@ Recovery steps:
 az functionapp function keys set --name "$APP_NAME" --resource-group "$RG" --function-name "$FUNCTION_NAME" --key-name "default" --key-value "<previous-key-from-key-vault-version>"
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp function keys set` | Restores a specific function key value |
+| `--key-value` | Reverts the key to a known previous value from vault history |
+
 ### Incident: RBAC change locked out operators
-Symptoms: deployment or operations commands fail with `AuthorizationFailed`.
-Recovery steps:
-1. Use approved break-glass identity with time-bound access.
-2. Restore required role at exact scope.
+...
 3. Remove emergency assignment after remediation validation.
 
 ```bash
 az role assignment create --assignee "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" --role "Website Contributor" --scope "$APP_RESOURCE_ID"
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az role assignment create` | Adds a temporary role assignment for recovery |
+| `--assignee` | User or principal ID to grant access |
+| `--role "Website Contributor"` | Standard operator role for Function App management |
+| `--scope "$APP_RESOURCE_ID"` | Targets the affected app specifically |
+
 ### Incident: access restrictions blocked valid ingress
-Symptoms: HTTP 403 from trusted sources after restriction updates.
-Recovery steps:
-1. Validate source NAT egress ranges from gateway or pipeline.
-2. Add temporary allow rule with explicit expiration ticket.
+...
 3. Reconcile intended CIDR ranges and remove temporary rules.
 
 ```bash
 az functionapp config access-restriction add --name "$APP_NAME" --resource-group "$RG" --rule-name "TemporaryIncidentAllow" --action "Allow" --ip-address "203.0.113.25/32" --priority 105
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp config access-restriction add` | Adds an emergency IP allow rule |
+| `--rule-name "TemporaryIncidentAllow"` | Named to ensure it is audited and removed after the incident |
+| `--priority 105` | High priority to ensure immediate effect |
 
 ### Incident response evidence checklist
 - Preserve Activity Log, platform logs, and app logs for the incident window.

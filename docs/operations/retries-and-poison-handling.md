@@ -227,6 +227,15 @@ az storage message peek \
     --auth-mode login \
     --num-messages 5
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az storage message peek` | Retrieves messages from the queue without removing them |
+| `--account-name $STORAGE_NAME` | Specifies the storage account |
+| `--queue-name orders-poison` | Target poison queue for inspection |
+| `--auth-mode login` | Uses Microsoft Entra ID for authentication |
+| `--num-messages 5` | Number of messages to peek |
+
 Example output (PII masked):
 ```json
 [
@@ -247,6 +256,14 @@ az monitor metrics list \
     --interval PT5M \
     --aggregation Average
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az monitor metrics list` | Retrieves metrics for the storage account |
+| `--metric QueueMessageCount` | Tracks the number of messages in the queues |
+| `--interval PT5M` | Aggregates data in 5-minute intervals |
+| `--aggregation Average` | Calculates the average message count |
+
 Example output (PII masked):
 ```json
 {
@@ -268,6 +285,14 @@ az servicebus queue show \
     --name orders \
     --query "countDetails"
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az servicebus queue show` | Displays details for the specified Service Bus queue |
+| `--namespace-name` | Specifies the Service Bus namespace |
+| `--name orders` | Target queue name |
+| `--query "countDetails"` | Extracts active, dead-letter, and scheduled message counts |
+
 Example output (PII masked):
 ```json
 {
