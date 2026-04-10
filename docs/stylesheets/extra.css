@@ -62,6 +62,26 @@
 .mermaid-zoom-container svg {
   max-width: none;
   max-height: none;
+  shape-rendering: geometricPrecision;
+  text-rendering: optimizeLegibility;
+}
+
+/* Improve SVG readability in zoom overlay */
+.mermaid-zoom-container .mermaid {
+  background: #fff;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+}
+
+/* Ensure text and colors render crisply */
+.mermaid-zoom-container svg text {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.mermaid-zoom-container svg * {
+  vector-effect: non-scaling-stroke;
 }
 
 .mermaid {

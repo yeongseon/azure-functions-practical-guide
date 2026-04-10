@@ -29,7 +29,7 @@
 
   var currentPlaceholder = null;
   var currentHost = null;
-  var scale = 1;
+  var scale = 1.5;
   var panX = 0;
   var panY = 0;
 
@@ -51,7 +51,7 @@
 
     currentPlaceholder = null;
     currentHost = null;
-    scale = 1;
+    scale = 1.5;
     panX = 0;
     panY = 0;
 
@@ -90,6 +90,7 @@
 
     requestAnimationFrame(function () {
       parts.overlay.classList.add("mermaid-zoom-visible");
+      applyTransform();
     });
 
     parts.closeBtn.addEventListener("click", closeOverlay);
