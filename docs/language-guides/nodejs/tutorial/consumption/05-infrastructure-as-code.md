@@ -44,20 +44,20 @@ You will deploy a repeatable Consumption infrastructure stack with Bicep and val
     Bicep deploys all resources into a single resource group with public internet access only.
 
     <!-- diagram-id: what-you-ll-build -->
-    ```mermaid
-    flowchart TD
-        BICEP["Bicep Template\ninfra/consumption/main.bicep"] -->|"az deployment group create"| RG[Resource Group]
-        RG --> PLAN["App Service Plan\nY1 Dynamic"]
-        RG --> ST["Storage Account"]
-        RG --> FA["Function App\nLinux Node.js 20"]
-        RG --> AI["Application Insights"]
-        FA --> PLAN
-        FA --> ST
-        FA --> AI
+```mermaid
+flowchart TD
+    BICEP["Bicep Template\ninfra/consumption/main.bicep"] -->|"az deployment group create"| RG[Resource Group]
+    RG --> PLAN["App Service Plan\nY1 Dynamic"]
+    RG --> ST["Storage Account"]
+    RG --> FA["Function App\nLinux Node.js 20"]
+    RG --> AI["Application Insights"]
+    FA --> PLAN
+    FA --> ST
+    FA --> AI
 
-        style BICEP fill:#f39c12,color:#fff
-        style FA fill:#0078d4,color:#fff
-    ```
+    style BICEP fill:#f39c12,color:#fff
+    style FA fill:#0078d4,color:#fff
+```
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid

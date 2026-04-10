@@ -46,14 +46,14 @@ You will configure a GitHub Actions pipeline that builds and deploys a Java Func
     GitHub Actions deploys to the Flex Consumption function app using a publish profile and the `Azure/functions-action`.
 
     <!-- diagram-id: what-you-ll-build -->
-    ```mermaid
-    flowchart LR
-        GH["GitHub Actions"] -->|"publish profile\n+ staging dir"| FA[Function App\nFlex Consumption FC1]
-        DEV["Developer"] -->|"git push"| GH
+```mermaid
+flowchart LR
+    GH["GitHub Actions"] -->|"publish profile\n+ staging dir"| FA[Function App\nFlex Consumption FC1]
+    DEV["Developer"] -->|"git push"| GH
 
-        style GH fill:#24292e,color:#fff
-        style FA fill:#0078d4,color:#fff
-    ```
+    style GH fill:#24292e,color:#fff
+    style FA fill:#0078d4,color:#fff
+```
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid

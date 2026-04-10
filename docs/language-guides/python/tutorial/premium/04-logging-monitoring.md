@@ -39,55 +39,55 @@ Enable observability for a Premium Function App using Application Insights, Log 
     Premium deploys with VNet integration (delegated subnet), a private endpoint for inbound access, private DNS zone, and pre-warmed instances. Storage uses connection string or identity-based authentication.
 
     <!-- diagram-id: what-you-ll-build -->
-    ```mermaid
-    flowchart TD
-        INET[Internet] -->|HTTPS| FA[Function App\nPremium EP1\nLinux Python 3.11]
+```mermaid
+flowchart TD
+    INET[Internet] -->|HTTPS| FA[Function App\nPremium EP1\nLinux Python 3.11]
 
-        subgraph VNET["VNet 10.0.0.0/16"]
-            subgraph INT_SUB["Integration Subnet 10.0.1.0/24\nDelegation: Microsoft.Web/serverFarms"]
-                FA
-            end
-            subgraph PE_SUB["Private Endpoint Subnet 10.0.2.0/24"]
-                PE_BLOB[PE: blob]
-                PE_QUEUE[PE: queue]
-                PE_TABLE[PE: table]
-                PE_FILE[PE: file]
-            end
+    subgraph VNET["VNet 10.0.0.0/16"]
+        subgraph INT_SUB["Integration Subnet 10.0.1.0/24\nDelegation: Microsoft.Web/serverFarms"]
+            FA
         end
-
-        PE_BLOB --> ST["Storage Account\nallowPublicAccess: false\nallowSharedKeyAccess: true"]
-        PE_QUEUE --> ST
-        PE_TABLE --> ST
-        PE_FILE --> ST
-
-        subgraph DNS[Private DNS Zones]
-            DNS_BLOB[privatelink.blob.core.windows.net]
-            DNS_QUEUE[privatelink.queue.core.windows.net]
-            DNS_TABLE[privatelink.table.core.windows.net]
-            DNS_FILE[privatelink.file.core.windows.net]
+        subgraph PE_SUB["Private Endpoint Subnet 10.0.2.0/24"]
+            PE_BLOB[PE: blob]
+            PE_QUEUE[PE: queue]
+            PE_TABLE[PE: table]
+            PE_FILE[PE: file]
         end
+    end
 
-        PE_BLOB -.-> DNS_BLOB
-        PE_QUEUE -.-> DNS_QUEUE
-        PE_TABLE -.-> DNS_TABLE
-        PE_FILE -.-> DNS_FILE
+    PE_BLOB --> ST["Storage Account\nallowPublicAccess: false\nallowSharedKeyAccess: true"]
+    PE_QUEUE --> ST
+    PE_TABLE --> ST
+    PE_FILE --> ST
 
-        FA -.->|System-Assigned MI| ENTRA[Microsoft Entra ID]
-        FA --> AI[Application Insights]
+    subgraph DNS[Private DNS Zones]
+        DNS_BLOB[privatelink.blob.core.windows.net]
+        DNS_QUEUE[privatelink.queue.core.windows.net]
+        DNS_TABLE[privatelink.table.core.windows.net]
+        DNS_FILE[privatelink.file.core.windows.net]
+    end
 
-        subgraph STORAGE[Content Backend]
-            SHARE[Azure Files\ncontent share]
-        end
-        ST --- SHARE
+    PE_BLOB -.-> DNS_BLOB
+    PE_QUEUE -.-> DNS_QUEUE
+    PE_TABLE -.-> DNS_TABLE
+    PE_FILE -.-> DNS_FILE
 
-        WARM["🔥 Pre-warmed instances\nMin: 1, Max: 20-100"] -.- FA
+    FA -.->|System-Assigned MI| ENTRA[Microsoft Entra ID]
+    FA --> AI[Application Insights]
 
-        style FA fill:#ff8c00,color:#fff
-        style VNET fill:#E8F5E9,stroke:#4CAF50
-        style ST fill:#FFF3E0
-        style DNS fill:#E3F2FD
-        style WARM fill:#FFF3E0,stroke:#FF9800
-    ```
+    subgraph STORAGE[Content Backend]
+        SHARE[Azure Files\ncontent share]
+    end
+    ST --- SHARE
+
+    WARM["🔥 Pre-warmed instances\nMin: 1, Max: 20-100"] -.- FA
+
+    style FA fill:#ff8c00,color:#fff
+    style VNET fill:#E8F5E9,stroke:#4CAF50
+    style ST fill:#FFF3E0
+    style DNS fill:#E3F2FD
+    style WARM fill:#FFF3E0,stroke:#FF9800
+```
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid

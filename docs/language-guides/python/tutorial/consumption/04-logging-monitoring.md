@@ -41,24 +41,24 @@ You will connect the Function App to Application Insights, generate sample traff
     Consumption has no VNet integration or private endpoint support. All traffic flows over the public internet. Storage uses connection string authentication.
 
     <!-- diagram-id: what-you-ll-build -->
-    ```mermaid
-    flowchart TD
-        INET[Internet] -->|HTTPS| FA[Function App\nConsumption Y1\nLinux Python 3.11]
+```mermaid
+flowchart TD
+    INET[Internet] -->|HTTPS| FA[Function App\nConsumption Y1\nLinux Python 3.11]
 
-        FA -->|System-Assigned MI| ENTRA[Microsoft Entra ID]
-        FA -->|"AzureWebJobsStorage__accountName\n+ connection string"| ST[Storage Account\npublic access]
-        FA --> AI[Application Insights]
+    FA -->|System-Assigned MI| ENTRA[Microsoft Entra ID]
+    FA -->|"AzureWebJobsStorage__accountName\n+ connection string"| ST[Storage Account\npublic access]
+    FA --> AI[Application Insights]
 
-        subgraph STORAGE[Storage Services]
-            ST --- FS[Azure Files\ncontent share]
-        end
+    subgraph STORAGE[Storage Services]
+        ST --- FS[Azure Files\ncontent share]
+    end
 
-        NO_VNET["⚠️ No VNet integration\nNo private endpoints"] -. limitation .- FA
+    NO_VNET["⚠️ No VNet integration\nNo private endpoints"] -. limitation .- FA
 
-        style FA fill:#0078d4,color:#fff
-        style NO_VNET fill:#FFF3E0,stroke:#FF9800
-        style STORAGE fill:#FFF3E0
-    ```
+    style FA fill:#0078d4,color:#fff
+    style NO_VNET fill:#FFF3E0,stroke:#FF9800
+    style STORAGE fill:#FFF3E0
+```
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid

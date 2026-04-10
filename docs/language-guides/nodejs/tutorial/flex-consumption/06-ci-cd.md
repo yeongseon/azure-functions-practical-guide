@@ -45,14 +45,14 @@ You will create a GitHub Actions workflow for Flex Consumption deployment and co
     GitHub Actions deploys to the Flex Consumption function app. Flex Consumption supports remote build for optimized deployments.
 
     <!-- diagram-id: what-you-ll-build -->
-    ```mermaid
-    flowchart LR
-        GH["GitHub Actions"] -->|"publish profile\n+ remote build"| FA[Function App\nFlex Consumption FC1]
-        DEV["Developer"] -->|"git push"| GH
+```mermaid
+flowchart LR
+    GH["GitHub Actions"] -->|"publish profile\n+ remote build"| FA[Function App\nFlex Consumption FC1]
+    DEV["Developer"] -->|"git push"| GH
 
-        style GH fill:#24292e,color:#fff
-        style FA fill:#0078d4,color:#fff
-    ```
+    style GH fill:#24292e,color:#fff
+    style FA fill:#0078d4,color:#fff
+```
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid

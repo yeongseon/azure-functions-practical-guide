@@ -45,20 +45,20 @@ You will provision a Linux Function App on the Flex Consumption plan, publish yo
     Flex Consumption uses blob-based deployment storage with managed identity authentication, unlike Consumption which uses Azure Files with connection strings.
 
     <!-- diagram-id: what-you-ll-build -->
-    ```mermaid
-    flowchart TD
-        INET[Internet] -->|HTTPS| FA[Function App\nFlex Consumption FC1\nLinux Node.js 20]
+```mermaid
+flowchart TD
+    INET[Internet] -->|HTTPS| FA[Function App\nFlex Consumption FC1\nLinux Node.js 20]
 
-        FA -->|"SystemAssigned MI"| ST[Storage Account\nBlob deployment]
-        FA --> AI[Application Insights]
+    FA -->|"SystemAssigned MI"| ST[Storage Account\nBlob deployment]
+    FA --> AI[Application Insights]
 
-        subgraph STORAGE[Storage Services]
-            ST --- DEPLOY["Blob Container\napp-package"]
-        end
+    subgraph STORAGE[Storage Services]
+        ST --- DEPLOY["Blob Container\napp-package"]
+    end
 
-        style FA fill:#0078d4,color:#fff
-        style STORAGE fill:#FFF3E0
-    ```
+    style FA fill:#0078d4,color:#fff
+    style STORAGE fill:#FFF3E0
+```
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid

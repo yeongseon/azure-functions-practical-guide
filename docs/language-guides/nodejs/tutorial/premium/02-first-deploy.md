@@ -41,24 +41,24 @@ Deploy a Node.js Function App to an Elastic Premium plan (`EP1`) with always-war
     Premium deploys with pre-warmed instances, Azure Files content share for deployment, and optional VNet integration. Storage uses connection string authentication by default.
 
     <!-- diagram-id: what-you-ll-build -->
-    ```mermaid
-    flowchart TD
-        INET[Internet] -->|HTTPS| FA[Function App\nPremium EP1\nLinux Node.js 20]
+```mermaid
+flowchart TD
+    INET[Internet] -->|HTTPS| FA[Function App\nPremium EP1\nLinux Node.js 20]
 
-        subgraph PLAN["Elastic Premium Plan"]
-            FA
-            WARM["Pre-warmed instances\nMin: 1"]
-        end
+    subgraph PLAN["Elastic Premium Plan"]
+        FA
+        WARM["Pre-warmed instances\nMin: 1"]
+    end
 
-        FA --> ST["Storage Account\nAzure Files content share"]
-        FA --> AI[Application Insights]
-        FA -.->|System-Assigned MI| ENTRA[Microsoft Entra ID]
+    FA --> ST["Storage Account\nAzure Files content share"]
+    FA --> AI[Application Insights]
+    FA -.->|System-Assigned MI| ENTRA[Microsoft Entra ID]
 
-        style FA fill:#ff8c00,color:#fff
-        style PLAN fill:#E8F5E9,stroke:#4CAF50
-        style ST fill:#FFF3E0
-        style WARM fill:#FFF3E0,stroke:#FF9800
-    ```
+    style FA fill:#ff8c00,color:#fff
+    style PLAN fill:#E8F5E9,stroke:#4CAF50
+    style ST fill:#FFF3E0
+    style WARM fill:#FFF3E0,stroke:#FF9800
+```
 
 ## Steps
 

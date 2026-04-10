@@ -44,15 +44,15 @@ You will emit structured logs from Node.js v4 handlers, connect Application Insi
     This tutorial adds Application Insights monitoring to your deployed function app.
 
     <!-- diagram-id: what-you-ll-build -->
-    ```mermaid
-    flowchart TD
-        FA[Function App\nConsumption Y1] -->|telemetry| AI[Application Insights]
-        AI -->|query| KQL["KQL Queries\n• traces\n• requests\n• dependencies"]
-        CLI["Azure CLI"] -->|"az monitor app-insights query"| AI
+```mermaid
+flowchart TD
+    FA[Function App\nConsumption Y1] -->|telemetry| AI[Application Insights]
+    AI -->|query| KQL["KQL Queries\n• traces\n• requests\n• dependencies"]
+    CLI["Azure CLI"] -->|"az monitor app-insights query"| AI
 
-        style FA fill:#0078d4,color:#fff
-        style AI fill:#68217A,color:#fff
-    ```
+    style FA fill:#0078d4,color:#fff
+    style AI fill:#68217A,color:#fff
+```
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid

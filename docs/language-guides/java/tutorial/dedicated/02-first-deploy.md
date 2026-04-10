@@ -46,24 +46,24 @@ You will provision a Linux Dedicated (B1) Function App for Java, deploy with `fu
     Dedicated uses standard App Service plan pricing — you pay for the plan whether or not functions are running. This provides predictable costs and supports long-running processes.
 
     <!-- diagram-id: what-you-ll-build -->
-    ```mermaid
-    flowchart TD
-        INET[Internet] -->|HTTPS| FA[Function App\nDedicated B1\nLinux Java 17]
+```mermaid
+flowchart TD
+    INET[Internet] -->|HTTPS| FA[Function App\nDedicated B1\nLinux Java 17]
 
-        FA -->|connection string| ST[Storage Account]
-        FA --> AI[Application Insights]
+    FA -->|connection string| ST[Storage Account]
+    FA --> AI[Application Insights]
 
-        subgraph STORAGE[Storage Services]
-            ST --- QS[Queue Storage]
-            ST --- BS[Blob Storage]
-        end
+    subgraph STORAGE[Storage Services]
+        ST --- QS[Queue Storage]
+        ST --- BS[Blob Storage]
+    end
 
-        VNET["✅ VNet integration available\n✅ Deployment slots supported"] -. capability .- FA
+    VNET["✅ VNet integration available\n✅ Deployment slots supported"] -. capability .- FA
 
-        style FA fill:#0078d4,color:#fff
-        style VNET fill:#E8F5E9,stroke:#4CAF50
-        style STORAGE fill:#FFF3E0
-    ```
+    style FA fill:#0078d4,color:#fff
+    style VNET fill:#E8F5E9,stroke:#4CAF50
+    style STORAGE fill:#FFF3E0
+```
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid

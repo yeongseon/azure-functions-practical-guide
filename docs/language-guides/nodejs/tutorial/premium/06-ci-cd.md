@@ -46,17 +46,17 @@ You will validate release health from runtime logs after the deployment finishes
     **Plan**: Premium (EP1) | **CI/CD**: GitHub Actions | **Deploy method**: `func azure functionapp publish`
 
     <!-- diagram-id: what-you-ll-build -->
-    ```mermaid
-    flowchart LR
-        GH[GitHub\nmain branch] -->|push| GA[GitHub Actions]
-        GA -->|npm ci + test| BUILD[Build]
-        BUILD -->|func publish| FA[Function App\nPremium EP1]
-        FA -->|health check| VERIFY[Verification]
+```mermaid
+flowchart LR
+    GH[GitHub\nmain branch] -->|push| GA[GitHub Actions]
+    GA -->|npm ci + test| BUILD[Build]
+    BUILD -->|func publish| FA[Function App\nPremium EP1]
+    FA -->|health check| VERIFY[Verification]
 
-        style GH fill:#E3F2FD
-        style FA fill:#ff8c00,color:#fff
-        style VERIFY fill:#E8F5E9
-    ```
+    style GH fill:#E3F2FD
+    style FA fill:#ff8c00,color:#fff
+    style VERIFY fill:#E8F5E9
+```
 
 ## Steps
 

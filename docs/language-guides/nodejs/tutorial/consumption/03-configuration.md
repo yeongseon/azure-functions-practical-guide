@@ -44,15 +44,15 @@ You will configure runtime and host settings for a Linux Consumption Function Ap
     This tutorial modifies app settings on an existing Consumption function app.
 
     <!-- diagram-id: what-you-ll-build -->
-    ```mermaid
-    flowchart TD
-        CLI["Azure CLI"] -->|"appsettings set"| FA[Function App\nConsumption Y1]
-        CLI -->|"config set"| FA
-        FA -->|reads| SETTINGS["App Settings\n• FUNCTIONS_WORKER_RUNTIME\n• FUNCTIONS_EXTENSION_VERSION\n• linuxFxVersion"]
+```mermaid
+flowchart TD
+    CLI["Azure CLI"] -->|"appsettings set"| FA[Function App\nConsumption Y1]
+    CLI -->|"config set"| FA
+    FA -->|reads| SETTINGS["App Settings\n• FUNCTIONS_WORKER_RUNTIME\n• FUNCTIONS_EXTENSION_VERSION\n• linuxFxVersion"]
 
-        style FA fill:#0078d4,color:#fff
-        style SETTINGS fill:#E3F2FD
-    ```
+    style FA fill:#0078d4,color:#fff
+    style SETTINGS fill:#E3F2FD
+```
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid

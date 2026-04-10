@@ -48,16 +48,16 @@ You will query recent traces to verify that runtime events are captured and sear
     Application Insights is auto-created with the **same name** as the function app during `az functionapp create`. The `APPLICATIONINSIGHTS_CONNECTION_STRING` is auto-configured — no manual setup needed.
 
     <!-- diagram-id: what-you-ll-build -->
-    ```mermaid
-    flowchart LR
-        FA[Function App\nPremium EP1] -->|APPLICATIONINSIGHTS_CONNECTION_STRING| AI[Application Insights\nsame name as function app]
-        AI --> LAW[Log Analytics\nWorkspace]
-        USER[Developer] -->|az monitor app-insights query| AI
+```mermaid
+flowchart LR
+    FA[Function App\nPremium EP1] -->|APPLICATIONINSIGHTS_CONNECTION_STRING| AI[Application Insights\nsame name as function app]
+    AI --> LAW[Log Analytics\nWorkspace]
+    USER[Developer] -->|az monitor app-insights query| AI
 
-        style FA fill:#ff8c00,color:#fff
-        style AI fill:#E3F2FD
-        style LAW fill:#FFF3E0
-    ```
+    style FA fill:#ff8c00,color:#fff
+    style AI fill:#E3F2FD
+    style LAW fill:#FFF3E0
+```
 
 ## Steps
 

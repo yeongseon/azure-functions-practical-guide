@@ -45,14 +45,14 @@ You will create a GitHub Actions workflow for Consumption deployment and confirm
     GitHub Actions deploys to the Consumption function app via publish profile authentication.
 
     <!-- diagram-id: what-you-ll-build -->
-    ```mermaid
-    flowchart LR
-        GH["GitHub Actions"] -->|"publish profile"| FA[Function App\nConsumption Y1]
-        DEV["Developer"] -->|"git push"| GH
+```mermaid
+flowchart LR
+    GH["GitHub Actions"] -->|"publish profile"| FA[Function App\nConsumption Y1]
+    DEV["Developer"] -->|"git push"| GH
 
-        style GH fill:#24292e,color:#fff
-        style FA fill:#0078d4,color:#fff
-    ```
+    style GH fill:#24292e,color:#fff
+    style FA fill:#0078d4,color:#fff
+```
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid

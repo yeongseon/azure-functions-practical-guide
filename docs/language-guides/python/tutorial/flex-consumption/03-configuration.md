@@ -41,53 +41,53 @@ You will configure a deployed Flex Consumption app to use identity-based host st
     FC1 deploys with VNet integration, private endpoints for all storage services, private DNS zones, and user-assigned managed identity. Storage uses identity-based authentication (no shared keys).
 
     <!-- diagram-id: what-you-ll-build -->
-    ```mermaid
-    flowchart TD
-        INET[Internet] -->|HTTPS| FA[Function App\nFlex Consumption FC1\nLinux Python 3.11]
+```mermaid
+flowchart TD
+    INET[Internet] -->|HTTPS| FA[Function App\nFlex Consumption FC1\nLinux Python 3.11]
 
-        subgraph VNET["VNet 10.0.0.0/16"]
-            subgraph INT_SUB["Integration Subnet 10.0.1.0/24\nDelegation: Microsoft.App/environments"]
-                FA
-            end
-            subgraph PE_SUB["Private Endpoint Subnet 10.0.2.0/24"]
-                PE_BLOB[PE: blob]
-                PE_QUEUE[PE: queue]
-                PE_TABLE[PE: table]
-                PE_FILE[PE: file]
-            end
+    subgraph VNET["VNet 10.0.0.0/16"]
+        subgraph INT_SUB["Integration Subnet 10.0.1.0/24\nDelegation: Microsoft.App/environments"]
+            FA
         end
-
-        PE_BLOB --> ST["Storage Account\nallowPublicAccess: false\nallowSharedKeyAccess: false"]
-        PE_QUEUE --> ST
-        PE_TABLE --> ST
-        PE_FILE --> ST
-
-        subgraph DNS[Private DNS Zones]
-            DNS_BLOB[privatelink.blob.core.windows.net]
-            DNS_QUEUE[privatelink.queue.core.windows.net]
-            DNS_TABLE[privatelink.table.core.windows.net]
-            DNS_FILE[privatelink.file.core.windows.net]
+        subgraph PE_SUB["Private Endpoint Subnet 10.0.2.0/24"]
+            PE_BLOB[PE: blob]
+            PE_QUEUE[PE: queue]
+            PE_TABLE[PE: table]
+            PE_FILE[PE: file]
         end
+    end
 
-        PE_BLOB -.-> DNS_BLOB
-        PE_QUEUE -.-> DNS_QUEUE
-        PE_TABLE -.-> DNS_TABLE
-        PE_FILE -.-> DNS_FILE
+    PE_BLOB --> ST["Storage Account\nallowPublicAccess: false\nallowSharedKeyAccess: false"]
+    PE_QUEUE --> ST
+    PE_TABLE --> ST
+    PE_FILE --> ST
 
-        FA -.->|User-Assigned MI| UAMI[Managed Identity]
-        UAMI -->|RBAC| ST
-        FA --> AI[Application Insights]
+    subgraph DNS[Private DNS Zones]
+        DNS_BLOB[privatelink.blob.core.windows.net]
+        DNS_QUEUE[privatelink.queue.core.windows.net]
+        DNS_TABLE[privatelink.table.core.windows.net]
+        DNS_FILE[privatelink.file.core.windows.net]
+    end
 
-        subgraph DEPLOY[Deployment]
-            BLOB_CTR[Blob Container\ndeployment-packages]
-        end
-        ST --- BLOB_CTR
+    PE_BLOB -.-> DNS_BLOB
+    PE_QUEUE -.-> DNS_QUEUE
+    PE_TABLE -.-> DNS_TABLE
+    PE_FILE -.-> DNS_FILE
 
-        style FA fill:#107c10,color:#fff
-        style VNET fill:#E8F5E9,stroke:#4CAF50
-        style ST fill:#FFF3E0
-        style DNS fill:#E3F2FD
-    ```
+    FA -.->|User-Assigned MI| UAMI[Managed Identity]
+    UAMI -->|RBAC| ST
+    FA --> AI[Application Insights]
+
+    subgraph DEPLOY[Deployment]
+        BLOB_CTR[Blob Container\ndeployment-packages]
+    end
+    ST --- BLOB_CTR
+
+    style FA fill:#107c10,color:#fff
+    style VNET fill:#E8F5E9,stroke:#4CAF50
+    style ST fill:#FFF3E0
+    style DNS fill:#E3F2FD
+```
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid

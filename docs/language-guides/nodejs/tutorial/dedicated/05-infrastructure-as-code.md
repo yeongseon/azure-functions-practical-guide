@@ -39,22 +39,22 @@ Deploy repeatable infrastructure with Bicep and parameterized environments.
     The Dedicated Bicep template uses `Microsoft.Web/serverfarms` with `kind: 'linux'` (not `kind: 'elastic'` used by Premium). Storage is configured with `allowSharedKeyAccess: false` for identity-based access.
 
     <!-- diagram-id: what-you-ll-build -->
-    ```mermaid
-    flowchart TD
-        BICEP[Bicep Template\ninfra/dedicated/main.bicep] -->|az deployment\ngroup create| ARM[Azure Resource Manager]
+```mermaid
+flowchart TD
+    BICEP[Bicep Template\ninfra/dedicated/main.bicep] -->|az deployment\ngroup create| ARM[Azure Resource Manager]
 
-        ARM --> ST["Storage Account\nidentity-based access"]
-        ARM --> PLAN["App Service Plan\nB1 Linux"]
-        ARM --> FA["Function App\nNode.js 20\nAlways On"]
-        ARM --> AI["Application Insights"]
-        ARM --> VNET["VNet + Private Endpoints\n(optional)"]
+    ARM --> ST["Storage Account\nidentity-based access"]
+    ARM --> PLAN["App Service Plan\nB1 Linux"]
+    ARM --> FA["Function App\nNode.js 20\nAlways On"]
+    ARM --> AI["Application Insights"]
+    ARM --> VNET["VNet + Private Endpoints\n(optional)"]
 
-        FA -.->|RBAC| ST
+    FA -.->|RBAC| ST
 
-        style BICEP fill:#ff8c00,color:#fff
-        style ARM fill:#E3F2FD,stroke:#1976D2
-        style FA fill:#FFF3E0
-    ```
+    style BICEP fill:#ff8c00,color:#fff
+    style ARM fill:#E3F2FD,stroke:#1976D2
+    style FA fill:#FFF3E0
+```
 
 ## Steps
 

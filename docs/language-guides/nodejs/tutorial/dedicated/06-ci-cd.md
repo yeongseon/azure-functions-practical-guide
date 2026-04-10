@@ -39,19 +39,19 @@ Automate build and deployment with GitHub Actions and environment gates.
     GitHub Actions deploys to the Dedicated Function App using a publish profile stored as a repository secret. The workflow runs `npm ci`, optional tests, and then uses `Azure/functions-action` to deploy the package.
 
     <!-- diagram-id: what-you-ll-build -->
-    ```mermaid
-    flowchart LR
-        GH[GitHub\nmain branch] -->|push| GA[GitHub Actions\nubuntu-latest]
-        GA -->|npm ci + test| BUILD[Build Package]
-        BUILD -->|functions-action| FA[Function App\nDedicated B1]
+```mermaid
+flowchart LR
+    GH[GitHub\nmain branch] -->|push| GA[GitHub Actions\nubuntu-latest]
+    GA -->|npm ci + test| BUILD[Build Package]
+    BUILD -->|functions-action| FA[Function App\nDedicated B1]
 
-        FA -->|Telemetry| AI[Application Insights]
-        FA -->|Log stream| LOGS[az webapp log tail]
+    FA -->|Telemetry| AI[Application Insights]
+    FA -->|Log stream| LOGS[az webapp log tail]
 
-        style GH fill:#24292e,color:#fff
-        style GA fill:#2088FF,color:#fff
-        style FA fill:#ff8c00,color:#fff
-    ```
+    style GH fill:#24292e,color:#fff
+    style GA fill:#2088FF,color:#fff
+    style FA fill:#ff8c00,color:#fff
+```
 
 ## Steps
 

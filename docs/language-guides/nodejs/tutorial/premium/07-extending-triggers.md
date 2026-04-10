@@ -48,23 +48,23 @@ You will deploy, send test messages, and verify trigger execution via Applicatio
     Premium supports all Azure Functions triggers with no timeout limits. Queue and blob triggers use the `AzureWebJobsStorage` or a dedicated connection string.
 
     <!-- diagram-id: what-you-ll-build -->
-    ```mermaid
-    flowchart TD
-        FA[Function App\nPremium EP1]
+```mermaid
+flowchart TD
+    FA[Function App\nPremium EP1]
 
-        TIMER[Timer Trigger\nscheduledCleanup\nevery 5 min] --> FA
-        QUEUE[Queue Trigger\nqueueProcessor\nwork-items] --> FA
-        BLOB[Blob Trigger\nblobProcessor\nuploads/] --> FA
-        HTTP[HTTP Triggers\nhelloHttp, health, info] --> FA
+    TIMER[Timer Trigger\nscheduledCleanup\nevery 5 min] --> FA
+    QUEUE[Queue Trigger\nqueueProcessor\nwork-items] --> FA
+    BLOB[Blob Trigger\nblobProcessor\nuploads/] --> FA
+    HTTP[HTTP Triggers\nhelloHttp, health, info] --> FA
 
-        FA --> ST[Storage Account]
-        FA --> AI[Application Insights]
+    FA --> ST[Storage Account]
+    FA --> AI[Application Insights]
 
-        style FA fill:#ff8c00,color:#fff
-        style TIMER fill:#E3F2FD
-        style QUEUE fill:#E8F5E9
-        style BLOB fill:#FFF3E0
-    ```
+    style FA fill:#ff8c00,color:#fff
+    style TIMER fill:#E3F2FD
+    style QUEUE fill:#E8F5E9
+    style BLOB fill:#FFF3E0
+```
 
 ## Steps
 

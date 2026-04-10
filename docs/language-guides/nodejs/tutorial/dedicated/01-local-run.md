@@ -45,22 +45,22 @@ Initialize, run, and verify a Node.js v4 app on your machine before cloud deploy
     Dedicated plans use traditional App Service infrastructure. Locally, the function host behaves identically regardless of target plan.
 
     <!-- diagram-id: what-you-ll-build -->
-    ```mermaid
-    flowchart TD
-        DEV[Developer Machine] -->|func start| HOST[Local Functions Host\nPort 7071]
+```mermaid
+flowchart TD
+    DEV[Developer Machine] -->|func start| HOST[Local Functions Host\nPort 7071]
 
-        subgraph LOCAL["Local Development"]
-            HOST
-            FUNC[helloHttp\nGET /api/hello]
-        end
+    subgraph LOCAL["Local Development"]
+        HOST
+        FUNC[helloHttp\nGET /api/hello]
+    end
 
-        HOST --> FUNC
-        DEV -->|curl| FUNC
+    HOST --> FUNC
+    DEV -->|curl| FUNC
 
-        style HOST fill:#ff8c00,color:#fff
-        style LOCAL fill:#E8F5E9,stroke:#4CAF50
-        style FUNC fill:#FFF3E0
-    ```
+    style HOST fill:#ff8c00,color:#fff
+    style LOCAL fill:#E8F5E9,stroke:#4CAF50
+    style FUNC fill:#FFF3E0
+```
 
 ## Steps
 

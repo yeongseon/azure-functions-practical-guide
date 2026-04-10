@@ -41,11 +41,11 @@ You will run the Python Function App locally from `apps/python`, load local sett
     This tutorial runs locally — no Azure resources are created.
 
     <!-- diagram-id: what-you-ll-build -->
-    ```mermaid
-    flowchart LR
-        DEV[Local Machine] --> HOST[Functions Host :7071]
-        HOST --> AZURITE[Azurite Local Storage]
-    ```
+```mermaid
+flowchart LR
+    DEV[Local Machine] --> HOST[Functions Host :7071]
+    HOST --> AZURITE[Azurite Local Storage]
+```
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid

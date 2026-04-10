@@ -44,18 +44,18 @@ You will add timer, queue, and blob triggers to a Node.js v4 app and verify that
     This tutorial adds non-HTTP triggers that require storage queues and blob containers.
 
     <!-- diagram-id: what-you-ll-build -->
-    ```mermaid
-    flowchart TD
-        TIMER["Timer\n(CRON schedule)"] --> FA[Function App\nFlex Consumption FC1]
-        QUEUE["Storage Queue\nwork-items"] --> FA
-        BLOB["Blob Container\nuploads/{name}"] --> FA
-        FA --> PROCESSED["Blob Container\nprocessed/{name}"]
+```mermaid
+flowchart TD
+    TIMER["Timer\n(CRON schedule)"] --> FA[Function App\nFlex Consumption FC1]
+    QUEUE["Storage Queue\nwork-items"] --> FA
+    BLOB["Blob Container\nuploads/{name}"] --> FA
+    FA --> PROCESSED["Blob Container\nprocessed/{name}"]
 
-        style FA fill:#0078d4,color:#fff
-        style TIMER fill:#E8F5E9
-        style QUEUE fill:#FFF3E0
-        style BLOB fill:#E3F2FD
-    ```
+    style FA fill:#0078d4,color:#fff
+    style TIMER fill:#E8F5E9
+    style QUEUE fill:#FFF3E0
+    style BLOB fill:#E3F2FD
+```
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid

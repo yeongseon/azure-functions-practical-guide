@@ -40,23 +40,23 @@ Capture structured logs, query telemetry, and validate operational visibility.
     Application Insights is auto-created with the same name as the function app. On Dedicated plans, real-time log streaming uses `az webapp log tail` (not `az functionapp log tail`, which does not exist).
 
     <!-- diagram-id: what-you-ll-build -->
-    ```mermaid
-    flowchart LR
-        FA[Function App\nDedicated B1] -->|Telemetry SDK| AI[Application Insights\nfunc-ndded-04100022]
-        FA -->|stdout/stderr| LOGS[Log Stream\naz webapp log tail]
+```mermaid
+flowchart LR
+    FA[Function App\nDedicated B1] -->|Telemetry SDK| AI[Application Insights\nfunc-ndded-04100022]
+    FA -->|stdout/stderr| LOGS[Log Stream\naz webapp log tail]
 
-        subgraph MONITORING["Observability"]
-            AI
-            LOGS
-            KQL[KQL Queries\ntraces / requests]
-        end
+    subgraph MONITORING["Observability"]
+        AI
+        LOGS
+        KQL[KQL Queries\ntraces / requests]
+    end
 
-        AI --> KQL
+    AI --> KQL
 
-        style FA fill:#ff8c00,color:#fff
-        style MONITORING fill:#E3F2FD,stroke:#1976D2
-        style AI fill:#FFF3E0
-    ```
+    style FA fill:#ff8c00,color:#fff
+    style MONITORING fill:#E3F2FD,stroke:#1976D2
+    style AI fill:#FFF3E0
+```
 
 ## Steps
 

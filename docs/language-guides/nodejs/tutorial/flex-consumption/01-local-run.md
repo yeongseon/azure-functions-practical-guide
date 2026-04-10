@@ -47,11 +47,11 @@ You will run the Node.js v4 Functions app locally from `apps/nodejs`, install de
     This tutorial runs locally - no Azure resources are created.
 
     <!-- diagram-id: what-you-ll-build -->
-    ```mermaid
-    flowchart LR
-        DEV["Local Machine"] --> HOST["Functions Host :7071"]
-        HOST --> STORAGE["Local Storage\n(Azurite or connection string)"]
-    ```
+```mermaid
+flowchart LR
+    DEV["Local Machine"] --> HOST["Functions Host :7071"]
+    HOST --> STORAGE["Local Storage\n(Azurite or connection string)"]
+```
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid

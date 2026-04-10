@@ -48,26 +48,26 @@ You will then verify the deployment state using Azure Resource Manager deploymen
     The repository template at `infra/premium/main.bicep` deploys a full production-grade Premium stack with VNet integration, private endpoints for storage (blob, queue, table, file), a site private endpoint, RBAC role assignments, and Azure Files content share.
 
     <!-- diagram-id: what-you-ll-build -->
-    ```mermaid
-    flowchart TD
-        BICEP[infra/premium/main.bicep] -->|az deployment group create| RG[Resource Group]
+```mermaid
+flowchart TD
+    BICEP[infra/premium/main.bicep] -->|az deployment group create| RG[Resource Group]
 
-        subgraph RG_CONTENTS["Deployed Resources"]
-            PLAN[App Service Plan\nEP1 ElasticPremium]
-            FA[Function App\nLinux Node.js 20]
-            ST[Storage Account\nAzure Files]
-            AI[Application Insights]
-            VNET[VNet 10.0.0.0/16]
-            PE[Private Endpoints\nblob, queue, table, file, site]
-            DNS[Private DNS Zones]
-        end
+    subgraph RG_CONTENTS["Deployed Resources"]
+        PLAN[App Service Plan\nEP1 ElasticPremium]
+        FA[Function App\nLinux Node.js 20]
+        ST[Storage Account\nAzure Files]
+        AI[Application Insights]
+        VNET[VNet 10.0.0.0/16]
+        PE[Private Endpoints\nblob, queue, table, file, site]
+        DNS[Private DNS Zones]
+    end
 
-        RG --> RG_CONTENTS
+    RG --> RG_CONTENTS
 
-        style BICEP fill:#E3F2FD
-        style FA fill:#ff8c00,color:#fff
-        style VNET fill:#E8F5E9
-    ```
+    style BICEP fill:#E3F2FD
+    style FA fill:#ff8c00,color:#fff
+    style VNET fill:#E8F5E9
+```
 
 ## Steps
 

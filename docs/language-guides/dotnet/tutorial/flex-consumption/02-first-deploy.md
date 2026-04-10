@@ -45,20 +45,20 @@ You will provision a Linux Flex Consumption Function App for .NET 8 isolated wor
     Flex Consumption uses blob-based deployment storage with managed identity authentication, unlike Consumption which uses Azure Files with connection strings.
 
     <!-- diagram-id: what-you-ll-build -->
-    ```mermaid
-    flowchart TD
-        INET[Internet] -->|HTTPS| FA[Function App\nFlex Consumption FC1\nLinux .NET 8 isolated]
+```mermaid
+flowchart TD
+    INET[Internet] -->|HTTPS| FA[Function App\nFlex Consumption FC1\nLinux .NET 8 isolated]
 
-        FA -->|"SystemAssigned MI"| ST[Storage Account\nBlob deployment]
-        FA --> AI[Application Insights]
+    FA -->|"SystemAssigned MI"| ST[Storage Account\nBlob deployment]
+    FA --> AI[Application Insights]
 
-        subgraph STORAGE[Storage Services]
-            ST --- DEPLOY["Blob Container\napp-package"]
-        end
+    subgraph STORAGE[Storage Services]
+        ST --- DEPLOY["Blob Container\napp-package"]
+    end
 
-        style FA fill:#0078d4,color:#fff
-        style STORAGE fill:#FFF3E0
-    ```
+    style FA fill:#0078d4,color:#fff
+    style STORAGE fill:#FFF3E0
+```
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid

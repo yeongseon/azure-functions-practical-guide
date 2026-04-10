@@ -40,22 +40,22 @@ Manage environment settings, runtime options, and host behavior per environment.
     Dedicated plans support unlimited function timeout (`functionTimeout: -1`), unlike Consumption (5/10 min) and Premium (30/60 min defaults). This makes Dedicated ideal for long-running workloads.
 
     <!-- diagram-id: what-you-ll-build -->
-    ```mermaid
-    flowchart LR
-        CLI[Azure CLI] -->|appsettings set| FA[Function App\nDedicated B1]
+```mermaid
+flowchart LR
+    CLI[Azure CLI] -->|appsettings set| FA[Function App\nDedicated B1]
 
-        subgraph CONFIG["App Settings"]
-            RT["FUNCTIONS_WORKER_RUNTIME=node"]
-            EXT["FUNCTIONS_EXTENSION_VERSION=~4"]
-            MEM["node --max-old-space-size=4096"]
-            TIMEOUT["functionTimeout: -1\n(unlimited)"]
-        end
+    subgraph CONFIG["App Settings"]
+        RT["FUNCTIONS_WORKER_RUNTIME=node"]
+        EXT["FUNCTIONS_EXTENSION_VERSION=~4"]
+        MEM["node --max-old-space-size=4096"]
+        TIMEOUT["functionTimeout: -1\n(unlimited)"]
+    end
 
-        FA --> CONFIG
+    FA --> CONFIG
 
-        style FA fill:#ff8c00,color:#fff
-        style CONFIG fill:#E3F2FD,stroke:#1976D2
-    ```
+    style FA fill:#ff8c00,color:#fff
+    style CONFIG fill:#E3F2FD,stroke:#1976D2
+```
 
 ## Steps
 

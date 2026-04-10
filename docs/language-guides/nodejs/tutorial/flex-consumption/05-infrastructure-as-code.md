@@ -44,21 +44,21 @@ You will deploy the complete Flex Consumption infrastructure stack from Bicep, i
     The production Bicep template at `infra/flex-consumption/main.bicep` includes full VNet integration, private endpoints, and DNS zones.
 
     <!-- diagram-id: what-you-ll-build -->
-    ```mermaid
-    flowchart TD
-        BICEP["Bicep Template\ninfra/flex-consumption/main.bicep"] -->|"az deployment group create"| RG[Resource Group]
-        RG --> MI["User-Assigned\nManaged Identity"]
-        RG --> PLAN["App Service Plan\nFC1 FlexConsumption"]
-        RG --> ST["Storage Account\n(no shared key)"]
-        RG --> FA["Function App\nLinux Node.js 20"]
-        RG --> VNET["VNet + Subnets\n+ Private Endpoints"]
-        FA --> PLAN
-        FA -->|MI auth| ST
-        FA --> VNET
+```mermaid
+flowchart TD
+    BICEP["Bicep Template\ninfra/flex-consumption/main.bicep"] -->|"az deployment group create"| RG[Resource Group]
+    RG --> MI["User-Assigned\nManaged Identity"]
+    RG --> PLAN["App Service Plan\nFC1 FlexConsumption"]
+    RG --> ST["Storage Account\n(no shared key)"]
+    RG --> FA["Function App\nLinux Node.js 20"]
+    RG --> VNET["VNet + Subnets\n+ Private Endpoints"]
+    FA --> PLAN
+    FA -->|MI auth| ST
+    FA --> VNET
 
-        style BICEP fill:#f39c12,color:#fff
-        style FA fill:#0078d4,color:#fff
-    ```
+    style BICEP fill:#f39c12,color:#fff
+    style FA fill:#0078d4,color:#fff
+```
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid

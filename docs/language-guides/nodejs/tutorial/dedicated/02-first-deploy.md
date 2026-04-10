@@ -41,24 +41,24 @@ Provision resources and publish your first Node.js v4 function app to an App Ser
     Dedicated deploys on a traditional App Service Plan. Unlike Premium, there are no pre-warmed instances or elastic scaling — you get a fixed compute allocation. Storage uses connection string authentication by default. No content file share is required (`WEBSITE_RUN_FROM_PACKAGE=1`).
 
     <!-- diagram-id: what-you-ll-build -->
-    ```mermaid
-    flowchart TD
-        INET[Internet] -->|HTTPS| FA[Function App\nDedicated B1\nLinux Node.js 20]
+```mermaid
+flowchart TD
+    INET[Internet] -->|HTTPS| FA[Function App\nDedicated B1\nLinux Node.js 20]
 
-        subgraph PLAN["App Service Plan\nB1 Basic"]
-            FA
-            ALWAYS["Always On ✅"]
-        end
+    subgraph PLAN["App Service Plan\nB1 Basic"]
+        FA
+        ALWAYS["Always On ✅"]
+    end
 
-        FA --> ST["Storage Account\nBlob + Queue"]
-        FA --> AI[Application Insights]
-        FA -.->|System-Assigned MI| ENTRA[Microsoft Entra ID]
+    FA --> ST["Storage Account\nBlob + Queue"]
+    FA --> AI[Application Insights]
+    FA -.->|System-Assigned MI| ENTRA[Microsoft Entra ID]
 
-        style FA fill:#ff8c00,color:#fff
-        style PLAN fill:#E3F2FD,stroke:#1976D2
-        style ST fill:#FFF3E0
-        style ALWAYS fill:#FFF3E0,stroke:#FF9800
-    ```
+    style FA fill:#ff8c00,color:#fff
+    style PLAN fill:#E3F2FD,stroke:#1976D2
+    style ST fill:#FFF3E0
+    style ALWAYS fill:#FFF3E0,stroke:#FF9800
+```
 
 ## Steps
 

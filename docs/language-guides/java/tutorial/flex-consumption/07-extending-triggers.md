@@ -45,18 +45,18 @@ You will add queue, blob, and timer triggers to a Java Function App using annota
     This tutorial adds non-HTTP triggers that require storage queues and blob containers.
 
     <!-- diagram-id: what-you-ll-build -->
-    ```mermaid
-    flowchart TD
-        TIMER["Timer\n(CRON schedule)"] --> FA[Function App\nFlex Consumption FC1]
-        QUEUE["Storage Queue\nincoming-orders"] --> FA
-        BLOB["Blob Container\nuploads/{name}"] --> FA
-        FA --> LOGS["Application Insights\ntrace logs"]
+```mermaid
+flowchart TD
+    TIMER["Timer\n(CRON schedule)"] --> FA[Function App\nFlex Consumption FC1]
+    QUEUE["Storage Queue\nincoming-orders"] --> FA
+    BLOB["Blob Container\nuploads/{name}"] --> FA
+    FA --> LOGS["Application Insights\ntrace logs"]
 
-        style FA fill:#0078d4,color:#fff
-        style TIMER fill:#E8F5E9
-        style QUEUE fill:#FFF3E0
-        style BLOB fill:#E3F2FD
-    ```
+    style FA fill:#0078d4,color:#fff
+    style TIMER fill:#E8F5E9
+    style QUEUE fill:#FFF3E0
+    style BLOB fill:#E3F2FD
+```
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid

@@ -44,14 +44,14 @@ You will configure runtime and host settings for a Flex Consumption Function App
     This tutorial modifies app settings on an existing Flex Consumption function app.
 
     <!-- diagram-id: what-you-ll-build -->
-    ```mermaid
-    flowchart TD
-        CLI["Azure CLI"] -->|"appsettings set"| FA[Function App\nFlex Consumption FC1]
-        FA -->|reads| SETTINGS["App Settings\n• FUNCTIONS_EXTENSION_VERSION\n• languageWorkers__node__arguments"]
+```mermaid
+flowchart TD
+    CLI["Azure CLI"] -->|"appsettings set"| FA[Function App\nFlex Consumption FC1]
+    FA -->|reads| SETTINGS["App Settings\n• FUNCTIONS_EXTENSION_VERSION\n• languageWorkers__node__arguments"]
 
-        style FA fill:#0078d4,color:#fff
-        style SETTINGS fill:#E3F2FD
-    ```
+    style FA fill:#0078d4,color:#fff
+    style SETTINGS fill:#E3F2FD
+```
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid

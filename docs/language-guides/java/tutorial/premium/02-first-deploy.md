@@ -46,25 +46,25 @@ You will provision a Linux Premium (EP1) Function App for Java, deploy with `fun
     Premium uses Azure Files content share for deployment artifacts. The plan keeps at least one instance warm at all times, eliminating cold starts for latency-sensitive workloads.
 
     <!-- diagram-id: what-you-ll-build -->
-    ```mermaid
-    flowchart TD
-        INET[Internet] -->|HTTPS| FA[Function App\nPremium EP1\nLinux Java 17]
+```mermaid
+flowchart TD
+    INET[Internet] -->|HTTPS| FA[Function App\nPremium EP1\nLinux Java 17]
 
-        FA -->|connection string| ST[Storage Account]
-        FA --> AI[Application Insights]
+    FA -->|connection string| ST[Storage Account]
+    FA --> AI[Application Insights]
 
-        subgraph STORAGE[Storage Services]
-            ST --- FS[Azure Files\ncontent share]
-            ST --- QS[Queue Storage]
-            ST --- BS[Blob Storage]
-        end
+    subgraph STORAGE[Storage Services]
+        ST --- FS[Azure Files\ncontent share]
+        ST --- QS[Queue Storage]
+        ST --- BS[Blob Storage]
+    end
 
-        VNET["✅ VNet integration available\n✅ Private endpoints supported"] -. capability .- FA
+    VNET["✅ VNet integration available\n✅ Private endpoints supported"] -. capability .- FA
 
-        style FA fill:#0078d4,color:#fff
-        style VNET fill:#E8F5E9,stroke:#4CAF50
-        style STORAGE fill:#FFF3E0
-    ```
+    style FA fill:#0078d4,color:#fff
+    style VNET fill:#E8F5E9,stroke:#4CAF50
+    style STORAGE fill:#FFF3E0
+```
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid

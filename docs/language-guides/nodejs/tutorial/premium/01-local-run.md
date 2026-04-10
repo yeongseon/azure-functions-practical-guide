@@ -48,16 +48,16 @@ You will validate the local route at `/api/hello/{name?}` and confirm the functi
     This tutorial runs entirely on your local machine. No Azure resources are created. The project structure you build here will be deployed to a Premium plan in Tutorial 02.
 
     <!-- diagram-id: what-you-ll-build -->
-    ```mermaid
-    flowchart LR
-        DEV[Developer Machine] -->|func start| HOST[Core Tools Host\nNode.js 20\nPort 7071]
-        HOST --> HTTP[HTTP Trigger\nhelloHttp]
-        HTTP -->|GET /api/hello| RESP[JSON Response]
+```mermaid
+flowchart LR
+    DEV[Developer Machine] -->|func start| HOST[Core Tools Host\nNode.js 20\nPort 7071]
+    HOST --> HTTP[HTTP Trigger\nhelloHttp]
+    HTTP -->|GET /api/hello| RESP[JSON Response]
 
-        style DEV fill:#E3F2FD
-        style HOST fill:#ff8c00,color:#fff
-        style RESP fill:#E8F5E9
-    ```
+    style DEV fill:#E3F2FD
+    style HOST fill:#ff8c00,color:#fff
+    style RESP fill:#E8F5E9
+```
 
 ## Steps
 

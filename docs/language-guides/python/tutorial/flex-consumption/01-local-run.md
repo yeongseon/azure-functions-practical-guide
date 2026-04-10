@@ -42,11 +42,11 @@ You will run the Python reference Function App locally with Azurite, validate HT
     This tutorial runs locally — no Azure resources are created.
 
     <!-- diagram-id: what-you-ll-build -->
-    ```mermaid
-    flowchart LR
-        DEV[Local Machine] --> HOST[Functions Host :7071]
-        HOST --> AZURITE[Azurite Local Storage]
-    ```
+```mermaid
+flowchart LR
+    DEV[Local Machine] --> HOST[Functions Host :7071]
+    HOST --> AZURITE[Azurite Local Storage]
+```
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid

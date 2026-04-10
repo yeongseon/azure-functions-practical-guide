@@ -40,24 +40,24 @@ Add queue, timer, and blob triggers with the Node.js v4 APIs and deploy to Dedic
     Dedicated plans **require** Always On for non-HTTP triggers. Without it, the app may idle after 20 minutes and miss timer/queue/blob events. The reference app includes 20 functions across all trigger types.
 
     <!-- diagram-id: what-you-ll-build -->
-    ```mermaid
-    flowchart TD
-        TIMER["⏰ Timer Trigger\nscheduledCleanup\ntimerLab"] -->|CRON schedule| FA[Function App\nDedicated B1]
-        QUEUE["📨 Queue Trigger\nqueueProcessor"] -->|Queue message| FA
-        BLOB["📦 Blob Trigger\nblobProcessor"] -->|Blob event| FA
-        HTTP["🌐 HTTP Triggers\nhelloHttp, health\ninfo, logLevels"] -->|HTTPS| FA
-        EH["📡 EventHub Trigger\neventhubLagProcessor"] -->|Event stream| FA
+```mermaid
+flowchart TD
+    TIMER["⏰ Timer Trigger\nscheduledCleanup\ntimerLab"] -->|CRON schedule| FA[Function App\nDedicated B1]
+    QUEUE["📨 Queue Trigger\nqueueProcessor"] -->|Queue message| FA
+    BLOB["📦 Blob Trigger\nblobProcessor"] -->|Blob event| FA
+    HTTP["🌐 HTTP Triggers\nhelloHttp, health\ninfo, logLevels"] -->|HTTPS| FA
+    EH["📡 EventHub Trigger\neventhubLagProcessor"] -->|Event stream| FA
 
-        FA --> ALWAYS["Always On ✅\nKeeps app warm\nfor non-HTTP triggers"]
+    FA --> ALWAYS["Always On ✅\nKeeps app warm\nfor non-HTTP triggers"]
 
-        style FA fill:#ff8c00,color:#fff
-        style ALWAYS fill:#E8F5E9,stroke:#4CAF50
-        style TIMER fill:#E3F2FD
-        style QUEUE fill:#E3F2FD
-        style BLOB fill:#E3F2FD
-        style HTTP fill:#E3F2FD
-        style EH fill:#E3F2FD
-    ```
+    style FA fill:#ff8c00,color:#fff
+    style ALWAYS fill:#E8F5E9,stroke:#4CAF50
+    style TIMER fill:#E3F2FD
+    style QUEUE fill:#E3F2FD
+    style BLOB fill:#E3F2FD
+    style HTTP fill:#E3F2FD
+    style EH fill:#E3F2FD
+```
 
 ## Steps
 

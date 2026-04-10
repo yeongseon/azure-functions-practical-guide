@@ -48,18 +48,18 @@ You will also tune host-level timeout behavior appropriate for the Premium plan 
     Premium uses the classic `siteConfig.appSettings` model — all settings are managed via `az functionapp config appsettings set`. Unlike Flex Consumption, there are no platform-managed settings that block manual updates.
 
     <!-- diagram-id: what-you-ll-build -->
-    ```mermaid
-    flowchart LR
-        CLI[az CLI] -->|appsettings set| FA[Function App\nPremium EP1]
-        FA --> RUNTIME["Runtime Config\n• FUNCTIONS_WORKER_RUNTIME=node\n• FUNCTIONS_EXTENSION_VERSION=~4"]
-        FA --> NODE["Node.js Config\n• --max-old-space-size=4096"]
-        FA --> HOST["host.json\n• functionTimeout=-1"]
+```mermaid
+flowchart LR
+    CLI[az CLI] -->|appsettings set| FA[Function App\nPremium EP1]
+    FA --> RUNTIME["Runtime Config\n• FUNCTIONS_WORKER_RUNTIME=node\n• FUNCTIONS_EXTENSION_VERSION=~4"]
+    FA --> NODE["Node.js Config\n• --max-old-space-size=4096"]
+    FA --> HOST["host.json\n• functionTimeout=-1"]
 
-        style FA fill:#ff8c00,color:#fff
-        style RUNTIME fill:#E3F2FD
-        style NODE fill:#E8F5E9
-        style HOST fill:#FFF3E0
-    ```
+    style FA fill:#ff8c00,color:#fff
+    style RUNTIME fill:#E3F2FD
+    style NODE fill:#E8F5E9
+    style HOST fill:#FFF3E0
+```
 
 ## Steps
 
