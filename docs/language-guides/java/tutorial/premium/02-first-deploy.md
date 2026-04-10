@@ -92,6 +92,16 @@ az login
 az account set --subscription "<subscription-id>"
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `export RG` | Define the resource group name for logical grouping |
+| `export APP_NAME` | Set a unique name for the function app using a timestamp |
+| `export STORAGE_NAME` | Define a short, unique name for the storage account |
+| `export PLAN_NAME` | Set a unique name for the Premium hosting plan |
+| `export LOCATION` | Select the target Azure region (koreacentral) |
+| `az login` | Authenticate the Azure CLI session |
+| `az account set` | Select the target Azure subscription for deployment |
+
 !!! note "Storage account name limits"
     Storage account names must be 3-24 characters, lowercase letters and digits only. The `$STORAGE_NAME` pattern above keeps names short to stay within limits.
 
@@ -108,6 +118,15 @@ az storage account create \
   --kind StorageV2
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az group create` | Provision a resource group to hold all related resources |
+| `--name "$RG"` | Name of the resource group |
+| `--location "$LOCATION"` | Target Azure region for the group |
+| `az storage account create` | Provision an Azure Storage account for function state and logs |
+| `--sku Standard_LRS` | Use Standard Locally Redundant Storage for cost-effectiveness |
+| `--kind StorageV2` | Select the general-purpose v2 storage account type |
+
 ### Step 3 - Create Premium plan
 
 ```bash
@@ -118,6 +137,12 @@ az functionapp plan create \
   --sku EP1 \
   --is-linux
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp plan create` | Provision an Elastic Premium hosting plan |
+| `--sku EP1` | Select the smallest Premium tier (1 vCPU, 3.5 GB memory) |
+| `--is-linux` | Create a Linux-based plan required for Java execution |
 
 !!! note "Premium plan vs Consumption"
     Unlike Consumption, Premium requires an explicit plan resource. The `--sku EP1` flag selects the smallest Premium tier. The `--is-linux` flag creates a Linux plan required for Java.
@@ -135,6 +160,15 @@ az functionapp create \
   --functions-version 4 \
   --os-type Linux
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp create` | Provision a serverless Linux function app on the Premium plan |
+| `--plan "$PLAN_NAME"` | Associate the function app with the pre-created Premium plan |
+| `--runtime java` | Set the serverless execution runtime to Java |
+| `--runtime-version 17` | Specify Java 17 as the target runtime version |
+| `--functions-version 4` | Select the v4 Functions host runtime version |
+| `--os-type Linux` | Target Linux for Java-based serverless execution |
 
 !!! note "Auto-created Application Insights"
     `az functionapp create` automatically provisions an Application Insights resource and links it to the function app. You do not need to create one manually unless you want a custom name or configuration.
@@ -158,6 +192,13 @@ az functionapp config appsettings set \
     "EventHubConnection=Endpoint=sb://placeholder.servicebus.windows.net/;SharedAccessKeyName=placeholder;SharedAccessKey=cGxhY2Vob2xkZXI=;EntityPath=placeholder"
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az storage account show-connection-string` | Retrieve the connection string for the storage account |
+| `az functionapp config appsettings set` | Update function app configuration settings |
+| `--settings "QueueStorage=$STORAGE_CONN"` | Configure the real storage connection for the queue trigger |
+| `--settings "EventHubConnection=..."` | Provide a placeholder for the Event Hub trigger to prevent indexing errors |
+
 !!! warning "Placeholder settings prevent host crashes"
     The Java reference app includes triggers for Queue, EventHub, Blob, and Timer. If connection settings are missing or use an invalid format, the Functions host enters an error state and cannot index any functions.
 
@@ -175,12 +216,23 @@ az storage container create \
   --account-name "$STORAGE_NAME"
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az storage queue create` | Create the storage queue for the queue-triggered function |
+| `az storage container create` | Create the blob container for the blob-triggered function |
+| `--account-name "$STORAGE_NAME"` | Target the storage account created in Step 2 |
+
 ### Step 7 - Build and publish
 
 ```bash
 cd apps/java
 mvn clean package
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `cd apps/java` | Change directory to the Java reference application root |
+| `mvn clean package` | Clean build and package the Maven project into a JAR |
 
 !!! danger "Must publish from Maven staging directory"
     Java function apps **must** be published from the Maven staging directory, NOT from the project root. The `azure-functions-maven-plugin` generates `function.json` files in `target/azure-functions/<appName>/`. Publishing from the project root uploads the package but functions will not be indexed (0 functions found).
@@ -189,6 +241,11 @@ mvn clean package
 cd target/azure-functions/azure-functions-java-guide
 func azure functionapp publish "$APP_NAME"
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `cd target/azure-functions/...` | Change directory to the Maven-generated staging folder |
+| `func azure functionapp publish` | Deploy the Java JAR and configuration to Azure |
 
 Expected output:
 
@@ -220,6 +277,11 @@ curl --request GET "https://$APP_NAME.azurewebsites.net/api/hello/Premium"
 # Test the info endpoint
 curl --request GET "https://$APP_NAME.azurewebsites.net/api/info"
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp show` | Verify that the app is in the `Running` state on `ElasticPremium` SKU |
+| `curl --request GET` | Test the HTTP endpoints for functionality and cold start performance |
 
 ### Step 9 - Review Premium-specific notes
 

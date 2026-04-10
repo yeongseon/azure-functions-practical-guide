@@ -87,6 +87,15 @@ az login
 az account set --subscription "<subscription-id>"
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `export RG` | Define the resource group name for logical grouping |
+| `export APP_NAME` | Set a unique name for the function app using a timestamp |
+| `export STORAGE_NAME` | Define a short, unique name for the storage account |
+| `export LOCATION` | Select the target Azure region (koreacentral) |
+| `az login` | Authenticate the Azure CLI session |
+| `az account set` | Select the target Azure subscription for deployment |
+
 ### Step 2 - Create resource group and storage account
 
 ```bash
@@ -100,6 +109,15 @@ az storage account create \
   --kind StorageV2
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az group create` | Provision a resource group to hold all related resources |
+| `--name "$RG"` | Name of the resource group |
+| `--location "$LOCATION"` | Target Azure region for the group |
+| `az storage account create` | Provision an Azure Storage account for function state and logs |
+| `--sku Standard_LRS` | Use Standard Locally Redundant Storage for cost-effectiveness |
+| `--kind StorageV2` | Select the general-purpose v2 storage account type |
+
 ### Step 3 - Create the deployment container
 
 ```bash
@@ -108,6 +126,12 @@ az storage container create \
   --account-name "$STORAGE_NAME" \
   --auth-mode login
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az storage container create` | Create a blob container for deployment packages |
+| `--name app-package` | Specify the mandatory name for Flex Consumption deployment containers |
+| `--auth-mode login` | Authenticate the request using the current user's identity |
 
 !!! warning "Container must exist before function app creation"
     Flex Consumption requires a pre-existing blob container for deployment packages. If the container does not exist, `az functionapp create` fails with a `ContainerNotFound` error.
@@ -127,6 +151,16 @@ az functionapp create \
   --deployment-storage-container-name app-package \
   --deployment-storage-auth-type SystemAssignedIdentity
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp create` | Provision a serverless Linux function app on Flex Consumption |
+| `--flexconsumption-location` | Select the target region for the Flex Consumption (FC1) plan |
+| `--runtime java` | Set the serverless execution runtime to Java |
+| `--runtime-version 17` | Specify Java 17 as the target runtime version |
+| `--deployment-storage-name` | Define the storage account for deployment artifacts |
+| `--deployment-storage-container-name` | Specify the blob container for deployment packages |
+| `--deployment-storage-auth-type` | Use managed identity for authenticating deployment storage access |
 
 !!! note "Flex Consumption vs Consumption CLI differences"
     Flex Consumption uses `--flexconsumption-location` instead of `--consumption-plan-location`. It also requires `--deployment-storage-name`, `--deployment-storage-container-name`, and `--deployment-storage-auth-type` parameters.
@@ -157,6 +191,13 @@ az role assignment create \
   --scope "$STORAGE_ID"
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp identity show` | Retrieve the principal ID of the function app's managed identity |
+| `az storage account show` | Retrieve the resource ID of the storage account |
+| `az role assignment create` | Grant the function app permission to read/write deployment blobs |
+| `--role "Storage Blob Data Contributor"` | Assign the necessary permissions for blob-based deployments |
+
 !!! warning "Role propagation delay"
     Azure role assignments can take 1-2 minutes to propagate. If publishing fails with a 403 error immediately after assignment, wait and retry.
 
@@ -176,6 +217,13 @@ az functionapp config appsettings set \
     "EventHubConnection=Endpoint=sb://placeholder.servicebus.windows.net/;SharedAccessKeyName=placeholder;SharedAccessKey=cGxhY2Vob2xkZXI=;EntityPath=placeholder"
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az storage account show-connection-string` | Retrieve the connection string for the storage account |
+| `az functionapp config appsettings set` | Update function app configuration settings |
+| `--settings "QueueStorage=$STORAGE_CONN"` | Configure the real storage connection for the queue trigger |
+| `--settings "EventHubConnection=..."` | Provide a placeholder for the Event Hub trigger to prevent indexing errors |
+
 !!! warning "Placeholder settings prevent host crashes"
     The Java reference app includes triggers for Queue, EventHub, Blob, and Timer. Use connection string format for EventHubConnection — the `__fullyQualifiedNamespace` format triggers DefaultAzureCredential which may not be configured for all services.
 
@@ -189,6 +237,11 @@ cd apps/java
 mvn clean package
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `cd apps/java` | Change directory to the Java reference application root |
+| `mvn clean package` | Clean build and package the Maven project into a JAR |
+
 !!! danger "Must publish from Maven staging directory"
     Java function apps **must** be published from the Maven staging directory, NOT from the project root. The `azure-functions-maven-plugin` generates `function.json` files in `target/azure-functions/<appName>/`. Publishing from the project root uploads the package but functions will not be indexed (0 functions found).
 
@@ -196,6 +249,11 @@ mvn clean package
 cd target/azure-functions/azure-functions-java-guide
 func azure functionapp publish "$APP_NAME"
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `cd target/azure-functions/...` | Change directory to the Maven-generated staging folder |
+| `func azure functionapp publish` | Deploy the Java JAR and configuration to Azure |
 
 !!! note "Upload size"
     Java function apps deploy a JAR plus function.json files, resulting in ~326 KB uploads.
@@ -221,6 +279,13 @@ curl --request GET "https://$APP_NAME.azurewebsites.net/api/hello/FlexTest"
 # Test the info endpoint
 curl --request GET "https://$APP_NAME.azurewebsites.net/api/info"
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `sleep 30` | Wait for Azure to index the newly deployed functions |
+| `az functionapp function list` | Verify that all expected functions are indexed |
+| `--output table` | Display the list in a human-readable table format |
+| `curl --request GET` | Test the HTTP endpoints for functionality |
 
 ### Step 9 - Review Flex Consumption-specific notes
 
