@@ -109,6 +109,13 @@ az account set --subscription "<subscription-id>"
 az account show --output json
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az login` | Authenticates your Azure CLI session with your Azure account. |
+| `az account set --subscription "<subscription-id>"` | Sets the active subscription context for subsequent commands. |
+| `--subscription "<subscription-id>"` | Specifies the target subscription ID. |
+| `az account show --output json` | Displays the current subscription details in JSON format to verify the context. |
+
 Expected output:
 
 ```json
@@ -136,6 +143,18 @@ export APPINSIGHTS_NAME="flexdemo-insights"
 export LOCATION="koreacentral"
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `export BASE_NAME="flexdemo"` | Sets the base name for resource naming conventions. |
+| `export RG="rg-flexdemo"` | Defines the resource group name. |
+| `export APP_NAME="flexdemo-func"` | Sets the name for the Azure Function App. |
+| `export PLAN_NAME="flexdemo-plan"` | Defines the Flex Consumption hosting plan name. |
+| `export STORAGE_NAME="flexdemostorage"` | Specifies the storage account name for the function. |
+| `export MI_NAME="flexdemo-identity"` | Sets the name for the user-assigned managed identity. |
+| `export VNET_NAME="flexdemo-vnet"` | Defines the Virtual Network name. |
+| `export APPINSIGHTS_NAME="flexdemo-insights"` | Sets the Application Insights resource name. |
+| `export LOCATION="koreacentral"` | Specifies the Azure region for deployment. |
+
 !!! note "No output"
     `export` commands set shell variables silently. No output is expected.
 
@@ -157,6 +176,18 @@ az storage account create \
   --allow-shared-key-access false \
   --min-tls-version TLS1_2
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az group create` | Creates a new resource group to contain all deployment resources. |
+| `--name "$RG"` | Specifies the resource group name from the variable. |
+| `--location "$LOCATION"` | Sets the Azure region for the resource group. |
+| `az storage account create` | Provisions a new Azure Storage account for the function app. |
+| `--sku Standard_LRS` | Uses Standard Locally Redundant Storage for cost efficiency. |
+| `--kind StorageV2` | Selects General Purpose v2 storage account type. |
+| `--allow-blob-public-access false` | Disables public anonymous access to blobs for security. |
+| `--allow-shared-key-access false` | Disables access via account keys, forcing identity-based access. |
+| `--min-tls-version TLS1_2` | Enforces a minimum TLS version of 1.2 for all requests. |
 
 Expected output:
 
@@ -219,6 +250,16 @@ export MI_ID=$(az identity show \
   --output tsv)
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az identity create` | Provisions a new user-assigned managed identity for the function app. |
+| `--name "$MI_NAME"` | Specifies the identity name. |
+| `az identity show` | Retrieves specific properties of the created identity. |
+| `--query "principalId"` | Extracts the service principal's object ID for RBAC assignments. |
+| `--query "clientId"` | Extracts the application client ID for configuration. |
+| `--query "id"` | Retrieves the full resource ID of the identity. |
+| `--output tsv` | Formats output as tab-separated values for clean variable capture. |
+
 Expected output:
 
 ```json
@@ -265,6 +306,16 @@ az role assignment create \
   --role "Storage Queue Data Contributor" \
   --scope "$STORAGE_ID"
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az storage account show` | Retrieves storage account details to capture the resource ID. |
+| `az role assignment create` | Grants the specified permissions to the managed identity. |
+| `--assignee "$MI_PRINCIPAL_ID"` | Targets the principal ID of the user-assigned identity. |
+| `--role "Storage Blob Data Owner"` | Grants full data access to storage blobs, including host and package data. |
+| `--role "Storage Account Contributor"` | Allows control-plane operations for managing storage settings. |
+| `--role "Storage Queue Data Contributor"` | Grants access to storage queues for function triggers. |
+| `--scope "$STORAGE_ID"` | Limits the role assignment to the specific storage account. |
 
 Expected output:
 
@@ -329,6 +380,17 @@ az network vnet subnet update \
   --delegations "Microsoft.App/environments"
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az network vnet create` | Provisions a new Azure Virtual Network for secure deployment. |
+| `--address-prefixes "10.0.0.0/16"` | Defines the total CIDR range for the virtual network. |
+| `--subnet-name "subnet-integration"` | Creates the initial integration subnet for the function app. |
+| `--subnet-prefixes "10.0.1.0/24"` | Assigns the CIDR range for the integration subnet. |
+| `az network vnet subnet create` | Creates a second subnet for private endpoint hosting. |
+| `--subnet "subnet-private-endpoints"` | Defines the name for the private endpoint subnet. |
+| `az network vnet subnet update` | Modifies the integration subnet properties. |
+| `--delegations "Microsoft.App/environments"` | Delegating the subnet to Azure Functions (Flex Consumption) runtime environment. |
+
 Expected output:
 
 ```json
@@ -379,6 +441,16 @@ for SVC in blob queue table file; do
 done
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `for SVC in blob queue table file; do` | Iterates through each storage service to create separate private endpoints. |
+| `az network private-endpoint create` | Provisions a private endpoint for the specified storage service. |
+| `--name "pe-st-$SVC"` | Sets the private endpoint name for the current service. |
+| `--subnet "subnet-private-endpoints"` | Places the endpoint in the private endpoint subnet. |
+| `--private-connection-resource-id "$STORAGE_ID"` | Links the endpoint to the specific storage account. |
+| `--group-ids "$SVC"` | Specifies the target sub-resource within the storage account. |
+| `--connection-name "conn-st-$SVC"` | Defines the name for the private connection. |
+
 Expected output:
 
 ```text
@@ -424,6 +496,16 @@ for SVC in blob queue table file; do
 done
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az network private-dns zone create` | Provisions a private DNS zone for each storage service endpoint. |
+| `--name "privatelink.$SVC.core.windows.net"` | Sets the private DNS zone name for the storage sub-resource. |
+| `az network private-dns link vnet create` | Connects the private DNS zone to the virtual network. |
+| `--registration-enabled false` | Disables auto-registration of VMs in this DNS zone. |
+| `az network private-endpoint dns-zone-group create` | Links the private endpoint to its corresponding private DNS zone. |
+| `--endpoint-name "pe-st-$SVC"` | Targets the specific private endpoint created in Step 7. |
+| `--private-dns-zone "privatelink.$SVC.core.windows.net"` | Specifies the DNS zone to include in the group. |
+
 Expected output:
 
 ```text
@@ -454,6 +536,13 @@ az storage container create \
   --auth-mode login
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az storage container create` | Provisions a blob container for storing function deployment packages. |
+| `--name "deployment-packages"` | Specifies the container name. |
+| `--account-name "$STORAGE_NAME"` | Targets the specific storage account. |
+| `--auth-mode login` | Uses Entra ID (Azure AD) credentials for authentication instead of account keys. |
+
 Expected output:
 
 ```json
@@ -472,6 +561,11 @@ az storage account update \
   --resource-group "$RG" \
   --default-action Deny
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az storage account update` | Modifies the properties of the existing storage account. |
+| `--default-action Deny` | Blocks all traffic from public networks to the storage account. |
 
 Expected output:
 
@@ -505,6 +599,13 @@ export APPINSIGHTS_CONN=$(az monitor app-insights component show \
   --output tsv)
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az monitor app-insights component create` | Provisions an Application Insights instance for monitoring. |
+| `--application-type web` | Selects the telemetry collection mode. |
+| `az monitor app-insights component show` | Retrieves properties of the created insights component. |
+| `--query "connectionString"` | Extracts the full connection string needed for configuration. |
+
 Expected output:
 
 ```json
@@ -534,6 +635,16 @@ az functionapp create \
   --functions-version 4 \
   --assign-identity "$MI_ID"
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp create` | Provisions a new Azure Function App in the Flex Consumption plan. |
+| `--storage-account "$STORAGE_NAME"` | Links the app to the storage account created in Step 3. |
+| `--flexconsumption-location "$LOCATION"` | Specifies the region where the Flex Consumption plan will be hosted. |
+| `--runtime python` | Sets the application language runtime to Python. |
+| `--runtime-version 3.11` | Selects the specific Python version. |
+| `--functions-version 4` | Selects version 4.x of the Azure Functions runtime. |
+| `--assign-identity "$MI_ID"` | Assigns the user-assigned managed identity to the function app. |
 
 Expected output:
 
@@ -580,6 +691,12 @@ az functionapp deployment config set \
   --deployment-storage-auth-value "$MI_ID"
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp deployment config set` | Configures deployment-related settings for the function app. |
+| `--deployment-storage-auth-type UserAssignedIdentity` | Forces deployment storage to use managed identity instead of connection strings. |
+| `--deployment-storage-auth-value "$MI_ID"` | Links the user-assigned identity for deployment authentication. |
+
 Expected output:
 
 ```json
@@ -610,6 +727,11 @@ Expected output:
       --setting-names "AzureWebJobsStorage" "DEPLOYMENT_STORAGE_CONNECTION_STRING"
     ```
 
+    | Command/Parameter | Purpose |
+    |-------------------|---------|
+    | `az functionapp config appsettings delete` | Removes specified application settings from the function app. |
+    | `--setting-names "AzureWebJobsStorage" "DEPLOYMENT_STORAGE_CONNECTION_STRING"` | Targets the settings that rely on shared key authentication. |
+
 ### Step 14: Configure App Settings (identity-based storage)
 
 ```bash
@@ -622,6 +744,14 @@ az functionapp config appsettings set \
     "AzureWebJobsStorage__clientId=$MI_CLIENT_ID" \
     "APPLICATIONINSIGHTS_CONNECTION_STRING=$APPINSIGHTS_CONN"
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp config appsettings set` | Configures key-value pairs used by the function app environment. |
+| `AzureWebJobsStorage__accountName=$STORAGE_NAME` | Sets the storage account name for host storage. |
+| `AzureWebJobsStorage__credential=managedidentity` | Forces the use of managed identity for host storage access. |
+| `AzureWebJobsStorage__clientId=$MI_CLIENT_ID` | Specifies the client ID of the user-assigned identity to use. |
+| `APPLICATIONINSIGHTS_CONNECTION_STRING=$APPINSIGHTS_CONN` | Links the app to Application Insights for telemetry. |
 
 Expected output:
 
@@ -665,6 +795,14 @@ Expected output:
         "TIMER_LAB_SCHEDULE=0 0 0 1 1 *"
     ```
 
+    | Command/Parameter | Purpose |
+    |-------------------|---------|
+    | `az functionapp config appsettings set` | Configures trigger-specific application settings. |
+    | `"EventHubConnection__fullyQualifiedNamespace=..."` | Provides a placeholder for the EventHub connection setting. |
+    | `"QueueStorage__queueServiceUri=..."` | Sets the URI for the storage queue endpoint. |
+    | `"QueueStorage__credential=managedidentity"` | Forces managed identity for queue storage access. |
+    | `"TIMER_LAB_SCHEDULE=0 0 0 1 1 *"` | Sets a placeholder cron schedule for the timer trigger. |
+
     Without these, the function host will enter `Error` state and HTTP endpoints will return `503 Service Unavailable`.
 
 ### Step 15: Enable VNet Integration
@@ -676,6 +814,12 @@ az functionapp vnet-integration add \
   --vnet "$VNET_NAME" \
   --subnet "subnet-integration"
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp vnet-integration add` | Configures outbound traffic from the function app to the virtual network. |
+| `--vnet "$VNET_NAME"` | Targets the virtual network created in Step 6. |
+| `--subnet "subnet-integration"` | Links the app to the integration subnet. |
 
 Expected output:
 
@@ -697,6 +841,12 @@ Flex does not expose Kudu/SCM workflows; publish with Core Tools (or One Deploy 
 cd apps/python
 func azure functionapp publish "$APP_NAME" --python
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `cd apps/python` | Navigates to the Python function application source directory. |
+| `func azure functionapp publish "$APP_NAME"` | Packages and uploads the local project to the Azure Function App. |
+| `--python` | Specifies the application language for the build process. |
 
 Expected output:
 
@@ -722,6 +872,12 @@ az functionapp show --name "$APP_NAME" --resource-group "$RG" \
   --output json
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp show` | Retrieves current configuration and status of the function app. |
+| `--query "{...}"` | Selects only relevant fields for verification. |
+| `--output json` | Formats the response as a JSON object for readability. |
+
 Expected output:
 
 ```json
@@ -741,6 +897,11 @@ Expected output:
 ```bash
 curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `curl --request GET` | Executes an HTTP GET request to the function app endpoint. |
+| `"https://$APP_NAME.azurewebsites.net/api/health"` | Targets the health check function URL. |
 
 Expected output:
 

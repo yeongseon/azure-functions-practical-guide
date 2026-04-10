@@ -75,6 +75,16 @@ az login
 az account set --subscription "<subscription-id>"
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `export RG="rg-func-consumption-demo"` | Defines the resource group name for the deployment. |
+| `export APP_NAME="func-consumption-demo-001"` | Sets the unique name for the Azure Function App. |
+| `export STORAGE_NAME="stconsumptiondemo001"` | Defines the storage account name for the function app. |
+| `export LOCATION="koreacentral"` | Specifies the Azure region for resource placement. |
+| `az login` | Authenticates the Azure CLI session with your account. |
+| `az account set --subscription "<subscription-id>"` | Sets the target subscription for all subsequent commands. |
+| `--subscription "<subscription-id>"` | Specifies the active subscription ID. |
+
 ### Step 2 - Create resource group and storage account
 
 ```bash
@@ -87,6 +97,15 @@ az storage account create \
   --sku Standard_LRS \
   --kind StorageV2
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az group create` | Provisions a new resource group. |
+| `--name "$RG"` | Sets the resource group name from the variable. |
+| `--location "$LOCATION"` | Places the resource group in the selected region. |
+| `az storage account create` | Creates a new storage account required for the function app. |
+| `--sku Standard_LRS` | Selects Standard Locally Redundant Storage for cost efficiency. |
+| `--kind StorageV2` | Specifies the storage account type as General Purpose v2. |
 
 ### Step 3 - Create the Function App on Consumption (Y1)
 
@@ -104,6 +123,15 @@ az functionapp create \
   --os-type Linux
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp create` | Provisions the function app on the serverless Consumption plan. |
+| `--consumption-plan-location "$LOCATION"` | Automatically creates a Consumption (Y1) plan in the specified region. |
+| `--functions-version 4` | Selects version 4.x of the Azure Functions runtime. |
+| `--runtime python` | Sets the application runtime to Python. |
+| `--runtime-version 3.11` | Specifies the Python version. |
+| `--os-type Linux` | Deploys the function app on a Linux host. |
+
 Windows is also supported on Consumption; this track keeps Linux commands for consistency.
 
 !!! warning "Enterprise policy: Shared key access"
@@ -119,6 +147,13 @@ Windows is also supported on Consumption; this track keeps Linux commands for co
 cd apps/python
 func azure functionapp publish "$APP_NAME" --build remote --python
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `cd apps/python` | Navigates to the Python function application source directory. |
+| `func azure functionapp publish "$APP_NAME"` | Packages and uploads the local project to the Azure Function App. |
+| `--build remote` | Instructs the platform to install dependencies on the server side for Linux. |
+| `--python` | Specifies the application language for the build process. |
 
 !!! warning "Use `--build remote` on Linux Consumption"
     On Linux Consumption, `func azure functionapp publish --python` (without `--build remote`) may fail with "Can't find app" or produce incomplete deployments. The `--build remote` flag instructs the platform to install Python dependencies on the server side, which is required for Linux hosts.
@@ -136,6 +171,12 @@ func azure functionapp publish "$APP_NAME" --build remote --python
         "WEBSITE_CONTENTSHARE=$APP_NAME"
     ```
 
+    | Command/Parameter | Purpose |
+    |-------------------|---------|
+    | `az storage account show-connection-string` | Retrieves the full connection string for the storage account. |
+    | `az functionapp config appsettings set` | Configures key-value pairs in the function app environment. |
+    | `--settings "..."` | Sets the specified application settings. |
+
 Consumption deployments are ZIP-based (run-from-package) and stored on the platform file share/storage path.
 
 ### Step 5 - Verify deployment
@@ -143,6 +184,11 @@ Consumption deployments are ZIP-based (run-from-package) and stored on the platf
 ```bash
 curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `curl --request GET` | Executes an HTTP GET request to the function app endpoint. |
+| `"https://$APP_NAME.azurewebsites.net/api/health"` | Targets the health check function URL. |
 
 Linux Consumption uses Zip Deploy, but Kudu advanced tools are not available on this hosting option.
 

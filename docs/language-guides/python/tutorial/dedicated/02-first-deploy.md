@@ -36,6 +36,14 @@ export STORAGE_NAME="stdedidev<unique>"
 export LOCATION="koreacentral"
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `export RG="rg-func-dedicated-dev"` | Defines the resource group name for the deployment. |
+| `export APP_NAME="func-dedi-<unique-suffix>"` | Sets the unique name for the Azure Function App. |
+| `export PLAN_NAME="asp-dedi-b1-dev"` | Defines the App Service Plan name. |
+| `export STORAGE_NAME="stdedidev<unique>"` | Sets the storage account name. |
+| `export LOCATION="koreacentral"` | Specifies the Azure region for deployment. |
+
 ## What You'll Build
 
 You will provision a Basic (B1) Linux App Service Plan, create a Python Function App on that plan, deploy from `apps/python`, and validate live endpoints.
@@ -108,6 +116,15 @@ az storage account create \
   --kind StorageV2
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az group create` | Provisions a new resource group. |
+| `--name $RG` | Sets the resource group name. |
+| `--location $LOCATION` | Places the resource group in the selected region. |
+| `az storage account create` | Creates a new storage account for the function app. |
+| `--sku Standard_LRS` | Selects Standard Locally Redundant Storage. |
+| `--kind StorageV2` | Specifies the storage account type as General Purpose v2. |
+
 ### Step 2 - Create a Dedicated App Service Plan (B1)
 
 ```bash
@@ -118,6 +135,12 @@ az appservice plan create \
   --sku B1 \
   --is-linux
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az appservice plan create` | Provisions a Dedicated App Service plan. |
+| `--sku B1` | Selects the Basic B1 pricing tier. |
+| `--is-linux` | Configures the plan for Linux hosting. |
 
 For production workloads, use `S1` or `P1v2` when you need higher scale limits, VNet integration, or deployment slots.
 
@@ -135,6 +158,15 @@ az functionapp create \
   --os-type Linux
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp create` | Provisions the function app within the Dedicated plan. |
+| `--plan $PLAN_NAME` | Links the app to the specific App Service plan. |
+| `--runtime python` | Sets the language runtime to Python. |
+| `--runtime-version 3.11` | Specifies the Python version. |
+| `--functions-version 4` | Selects version 4.x of the runtime. |
+| `--os-type Linux` | Deploys the app on a Linux host. |
+
 ### Step 4 - Enable Always On (recommended)
 
 ```bash
@@ -144,12 +176,23 @@ az functionapp config set \
   --always-on true
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp config set` | Modifies configuration settings for the function app. |
+| `--always-on true` | Keeps the function host loaded to prevent cold start delays. |
+
 ### Step 5 - Deploy code
 
 ```bash
 cd apps/python
 func azure functionapp publish $APP_NAME --python
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `cd apps/python` | Navigates to the project directory. |
+| `func azure functionapp publish $APP_NAME` | Deploys the local project to Azure. |
+| `--python` | Sets the application language. |
 
 Dedicated deployment here uses remote Oryx build via `func azure functionapp publish --python` with `WEBSITE_RUN_FROM_PACKAGE=1`. Unlike Consumption and Premium content share scenarios, B1 does not require `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING`.
 
@@ -168,6 +211,12 @@ Dedicated deployment here uses remote Oryx build via `func azure functionapp pub
     az functionapp restart --name $APP_NAME --resource-group $RG
     ```
 
+    | Command/Parameter | Purpose |
+    |-------------------|---------|
+    | `az functionapp config appsettings set` | Configures key-value pairs in the environment. |
+    | `--settings "..."` | Sets trigger-specific placeholder settings. |
+    | `az functionapp restart` | Restarts the function app to apply configuration changes. |
+
     After restart, wait 60–90 seconds for the host to become ready on B1 tier.
 ### Step 6 - Verify deployment
 
@@ -180,6 +229,12 @@ az functionapp show \
 
 curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp show` | Retrieves current status of the app. |
+| `--query "{...}"` | Selects relevant status fields. |
+| `curl --request GET` | Tests the public HTTP health endpoint. |
 
 <!-- diagram-id: step-6-verify-deployment -->
 ```mermaid
@@ -205,6 +260,11 @@ flowchart LR
       --resource-group $RG \
       --sku S1
     ```
+
+    | Command/Parameter | Purpose |
+    |-------------------|---------|
+    | `az appservice plan update` | Modifies plan properties. |
+    | `--sku S1` | Upgrades the tier to Standard S1 to enable networking features. |
 
     #### Step B: Create VNet and Subnets
 
@@ -232,6 +292,12 @@ flowchart LR
       --delegations "Microsoft.Web/serverFarms"
     ```
 
+    | Command/Parameter | Purpose |
+    |-------------------|---------|
+    | `az network vnet create` | Provisions a new virtual network. |
+    | `az network vnet subnet create` | Adds a subnet for private endpoints. |
+    | `az network vnet subnet update` | Configures the integration subnet delegation. |
+
     #### Step C: Enable VNet Integration
 
     ```bash
@@ -241,6 +307,10 @@ flowchart LR
       --vnet "$VNET_NAME" \
       --subnet "snet-integration"
     ```
+
+    | Command/Parameter | Purpose |
+    |-------------------|---------|
+    | `az functionapp vnet-integration add` | Connects the app to the virtual network. |
 
     #### Step D: Enable System-Assigned Managed Identity
 
@@ -255,6 +325,11 @@ flowchart LR
       --query "principalId" \
       --output tsv)
     ```
+
+    | Command/Parameter | Purpose |
+    |-------------------|---------|
+    | `az functionapp identity assign` | Enables managed identity for the app. |
+    | `az functionapp identity show` | Retrieves the app's identity properties. |
 
     #### Step E: Assign RBAC Roles
 
@@ -281,6 +356,11 @@ flowchart LR
       --scope "$STORAGE_ID"
     ```
 
+    | Command/Parameter | Purpose |
+    |-------------------|---------|
+    | `az role assignment create` | Grants specified permissions to the managed identity. |
+    | `--role "..."` | Selects a specific storage data or contributor role. |
+
     !!! tip "RBAC roles explained"
         - **Storage Blob Data Owner**: Read/write blob data (used by the Functions runtime for triggers, bindings, and internal state)
         - **Storage Account Contributor**: Manage storage account properties
@@ -294,6 +374,11 @@ flowchart LR
       --resource-group "$RG" \
       --allow-blob-public-access false
     ```
+
+    | Command/Parameter | Purpose |
+    |-------------------|---------|
+    | `az storage account update` | Modifies storage properties. |
+    | `--allow-blob-public-access false` | Disables public anonymous access. |
 
     #### Step G: Create Storage Private Endpoints (×4)
 
@@ -310,6 +395,10 @@ flowchart LR
         --connection-name "conn-st-$SVC"
     done
     ```
+
+    | Command/Parameter | Purpose |
+    |-------------------|---------|
+    | `az network private-endpoint create` | Provisions private endpoints for each storage sub-resource. |
 
     #### Step H: Create Private DNS Zones and Link to VNet (×4)
 
@@ -335,6 +424,12 @@ flowchart LR
     done
     ```
 
+    | Command/Parameter | Purpose |
+    |-------------------|---------|
+    | `az network private-dns zone create` | Provisions private DNS zones for storage services. |
+    | `az network private-dns link vnet create` | Links DNS zones to the virtual network. |
+    | `az network private-endpoint dns-zone-group create` | Configures automatic IP registration in DNS. |
+
     #### Step I: Configure Identity-Based Storage
 
     ```bash
@@ -346,6 +441,10 @@ flowchart LR
         "AzureWebJobsStorage__credential=managedidentity"
     ```
 
+    | Command/Parameter | Purpose |
+    |-------------------|---------|
+    | `az functionapp config appsettings set` | Configures identity-based storage access. |
+
     #### Step J: Verify VNet Integration
 
     ```bash
@@ -355,6 +454,11 @@ flowchart LR
       --query "virtualNetworkSubnetId" \
       --output tsv
     ```
+
+    | Command/Parameter | Purpose |
+    |-------------------|---------|
+    | `az functionapp show` | Retrieves current VNet integration details. |
+
 
 ## Verification
 
