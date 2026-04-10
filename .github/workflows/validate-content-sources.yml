@@ -32,6 +32,10 @@ jobs:
         run: |
           python scripts/validate_mermaid_format.py
       
+      - name: Validate mermaid syntax
+        run: |
+          python scripts/validate_mermaid_syntax.py
+      
       - name: Validate content sources
         run: |
           python scripts/validate_content_sources.py
