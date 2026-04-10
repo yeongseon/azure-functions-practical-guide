@@ -425,6 +425,7 @@ nav:
     - reference/environment-variables.md
     - reference/platform-limits.md
     - reference/troubleshooting.md
+    - reference/content-validation-status.md
     - reference/validation-status.md
   - Contributing:
     - contributing/cross-guide-baseline.md

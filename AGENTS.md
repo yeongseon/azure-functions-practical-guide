@@ -104,6 +104,36 @@ az functionapp create -g $RG -n $APP_NAME  # ❌ Don't do this
 | `$LOCATION` | Azure region | `koreacentral` |
 | `$SUBSCRIPTION_ID` | Subscription identifier placeholder | `<subscription-id>` |
 
+## Content Source Requirements
+
+### Microsoft Learn First Policy
+
+All content must be traceable to official Microsoft Learn documentation.
+
+- Platform content must have direct Microsoft Learn source URLs.
+- Architecture diagrams must reference official Microsoft documentation.
+- Troubleshooting playbooks may synthesize Microsoft Learn content with clear attribution.
+- Self-generated content must include justification explaining the source basis.
+
+### Source Types
+
+| Type | Description | Allowed? |
+|---|---|---|
+| `mslearn` | Directly from Microsoft Learn | Required for platform content |
+| `mslearn-adapted` | Microsoft Learn content adapted for this guide | Allowed with source URL |
+| `self-generated` | Original content for this guide | Requires justification |
+| `community` | From community sources | Not allowed for core content |
+| `unknown` | Source not documented | Must be validated |
+
+### Diagram Source Documentation
+
+Every Mermaid diagram must have source metadata in frontmatter.
+
+### Content Validation Tracking
+
+- See [Content Validation Status](docs/reference/content-validation-status.md) for current status.
+- See [Tutorial Validation Status](docs/reference/validation-status.md) for tutorial testing.
+
 ### PII Removal (Quality Gate)
 
 **CRITICAL**: All CLI output examples MUST have PII removed.
