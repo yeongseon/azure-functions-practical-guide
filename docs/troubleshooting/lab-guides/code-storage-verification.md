@@ -1,3 +1,23 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/storage-considerations
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference#configure-an-identity-based-connection
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/run-functions-from-deployment-package
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-monitor/app/data-model
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/role-based-access-control/role-assignments-cli
+---
+
 # Lab Guide: Code Storage Verification (All Hosting Plans)
 
 This Level 3 lab guide validates how Azure Functions stores and loads code across all four hosting plans used in this repository: Consumption (Y1), Flex Consumption (FC1), Premium (EP), and Dedicated (ASP). The lab proves the deployment-storage model, required app settings, identity and RBAC dependencies, and the failure signatures you should expect when one plan is misconfigured. It also gives deterministic recovery procedures and evidence standards for production-grade triage.
@@ -46,6 +66,7 @@ Code loading behavior in Azure Functions differs by hosting plan, and this diffe
 | Premium (`EP`) | Azure Files SMB content share | Content share path resolved at startup | `siteConfig.appSettings` + VNet/site networking | Expecting Flex-style deployment config to exist |
 | Dedicated (`ASP`) | App Service filesystem with zip/package run model | Package mount on web app filesystem | `siteConfig.appSettings` + alwaysOn | Assuming content share settings are required |
 
+<!-- diagram-id: 1-1-code-storage-model-per-hosting-plan -->
 ```mermaid
 flowchart TD
     A[Function App Plan Detection] --> B{Hosting Plan}
@@ -108,6 +129,7 @@ Operational impact pattern:
 
 ### 1.5 Failure progression model
 
+<!-- diagram-id: 1-5-failure-progression-model -->
 ```mermaid
 sequenceDiagram
     participant Ops as Operator / Pipeline
@@ -152,6 +174,7 @@ sequenceDiagram
 
 ### 2.2 Causal chain (Mermaid flowchart)
 
+<!-- diagram-id: 2-2-causal-chain-mermaid-flowchart -->
 ```mermaid
 flowchart LR
     A[Hosting plan selected] --> B[Plan-specific storage contract expected]
@@ -1322,6 +1345,7 @@ HTTP result: `404`
 
 ### 3.11 Triage decision logic (Mermaid flowchart)
 
+<!-- diagram-id: 3-11-triage-decision-logic-mermaid-flowchart -->
 ```mermaid
 flowchart TD
     A[Functions not executing] --> B{Which hosting plan?}
@@ -2235,6 +2259,7 @@ Final verdict: **Hypothesis supported**.
 
 ### Evidence Timeline (Mermaid)
 
+<!-- diagram-id: evidence-timeline-mermaid -->
 ```mermaid
 graph LR
     A[Baseline: all plans pass verification matrix] --> B[Content resilience scenarios: A P — platform auto-regeneration]

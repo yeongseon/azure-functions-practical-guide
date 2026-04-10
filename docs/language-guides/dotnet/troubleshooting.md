@@ -1,7 +1,16 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-host-json
+---
+
 # Troubleshooting
 
 Common .NET isolated worker problems with direct diagnosis and remediation steps.
 
+<!-- diagram-id: troubleshooting -->
 ```mermaid
 flowchart TD
     A[Configuration] --> B[Build]

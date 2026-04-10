@@ -1,3 +1,17 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-monitor/logs/log-query-overview
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-monitor/app/data-model
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/data-explorer/kusto/query/
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-monitor/app/data-model-complete
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+---
+
 # KQL Query Library for Azure Functions
 
 Use these KQL queries during incidents to validate hypotheses with telemetry.
@@ -34,6 +48,7 @@ let appName = "func-myapp-prod";
 !!! tip "Operations Guide"
     For monitoring setup and alert configuration, see [Monitoring](../../operations/monitoring.md) and [Alerts](../../operations/alerts.md).
 
+<!-- diagram-id: kql-tables-quick-reference -->
 ```mermaid
 graph TD
     A[KQL Query Library] --> B[Execution Queries]

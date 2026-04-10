@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-blob-trigger
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-event-grid-blob-trigger
 ---
 
 # 07 - Extending Triggers (Premium)
@@ -33,6 +40,7 @@ Add non-HTTP triggers to a Premium Function App, focusing on Blob polling and pr
 
     Premium deploys with VNet integration (delegated subnet), a private endpoint for inbound access, private DNS zone, and pre-warmed instances. Storage uses connection string or identity-based authentication.
 
+    <!-- diagram-id: what-you-ll-build -->
     ```mermaid
     flowchart TD
         INET[Internet] -->|HTTPS| FA[Function App\nPremium EP1\nLinux Python 3.11]
@@ -83,6 +91,7 @@ Add non-HTTP triggers to a Premium Function App, focusing on Blob polling and pr
         style WARM fill:#FFF3E0,stroke:#FF9800
     ```
 
+<!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart LR
     A[Add timer blueprint] --> B[Add blob blueprint]

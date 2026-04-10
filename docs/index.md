@@ -1,3 +1,9 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/
+---
+
 # Azure Functions Practical Guide
 
 Comprehensive, practical documentation for building, deploying, operating, and troubleshooting serverless applications on Azure Functions.
@@ -48,6 +54,7 @@ For orientation and study order, start with [Start Here](start-here/index.md).
 
 ## Learning flow
 
+<!-- diagram-id: learning-flow -->
 ```mermaid
 flowchart LR
     A[Start Here] --> B[Platform]

@@ -1,9 +1,18 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+---
+
 # Tutorial - Choose Your Hosting Plan
 
 This section provides four independent Node.js tutorial tracks. Each track follows the same seven steps from local development to production operations.
 
 ## Which Plan Should I Start With?
 
+<!-- diagram-id: which-plan-should-i-start-with -->
 ```mermaid
 flowchart TD
     S[Need Node.js Azure Functions] --> Q1{Need VNet integration?}

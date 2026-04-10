@@ -1,6 +1,17 @@
 ---
 hide:
   - toc
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/migration/migrate-plan-consumption-to-flex
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-premium-plan
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/pricing
 ---
 
 # Tutorial — Choose Your Hosting Plan
@@ -9,6 +20,7 @@ This tutorial section provides **four independent, step-by-step tracks** — one
 
 ## Which Plan Should I Start With?
 
+<!-- diagram-id: which-plan-should-i-start-with -->
 ```mermaid
 flowchart TD
     Start["I need to run\nPython on Azure Functions"] --> Q1{"Need VNet /\nprivate networking?"}
@@ -62,6 +74,7 @@ Each hosting plan has a different network topology. The diagrams below show the 
 
 ### ☁️ Consumption (Y1) — Public Network
 
+<!-- diagram-id: consumption-y1-public-network -->
 ```mermaid
 flowchart TD
     INET[Internet] -->|HTTPS| FA[Function App\nConsumption Y1\nLinux Python 3.11]
@@ -83,6 +96,7 @@ flowchart TD
 
 ### ⚡ Flex Consumption (FC1) — Full Private Network
 
+<!-- diagram-id: flex-consumption-fc1-full-private-network -->
 ```mermaid
 flowchart TD
     INET[Internet] -->|HTTPS| FA[Function App\nFlex Consumption FC1\nLinux Python 3.11]
@@ -133,6 +147,7 @@ flowchart TD
 
 ### 🚀 Premium (EP) — Private Network with Warm Instances
 
+<!-- diagram-id: premium-ep-private-network-with-warm-instances -->
 ```mermaid
 flowchart TD
     INET[Internet] -->|HTTPS| FA[Function App\nPremium EP1\nLinux Python 3.11]
@@ -185,6 +200,7 @@ flowchart TD
 
 ### 🖥️ Dedicated (App Service Plan) — Fixed Capacity with VNet
 
+<!-- diagram-id: dedicated-app-service-plan-fixed-capacity-with-vnet -->
 ```mermaid
 flowchart TD
     INET[Internet] -->|HTTPS| FA[Function App\nDedicated B1-P3v3\nLinux Python 3.11]

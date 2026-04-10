@@ -1,7 +1,16 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/storage-considerations
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+---
+
 # Dependency Queries
 
 KQL queries for analyzing outbound dependency failures and queue processing latency.
 
+<!-- diagram-id: dependency-queries -->
 ```mermaid
 flowchart TD
     A[Dependency signals] --> B[Failure rate by target]

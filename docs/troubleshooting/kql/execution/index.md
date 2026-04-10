@@ -1,7 +1,16 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/data-explorer/kusto/query/
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+---
+
 # Execution Queries
 
 KQL queries for analyzing function execution patterns, failures, and exception trends.
 
+<!-- diagram-id: execution-queries -->
 ```mermaid
 graph TD
     A[Execution queries] --> B[Summary by function]

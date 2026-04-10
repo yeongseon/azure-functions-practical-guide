@@ -1,3 +1,17 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-premium-plan
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/performance-reliability
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/analyze-telemetry-data
+---
+
 # Cold Start
 This guide explains cold start behavior in Azure Functions and practical mitigation techniques per hosting plan.
 Cold start is startup latency after an app has no warm instance available.
@@ -33,6 +47,7 @@ Cold start usually combines several phases:
 Non-HTTP triggers can also experience startup latency when scale controller activates new workers.
 
 #### Cold start phase timeline
+<!-- diagram-id: cold-start-phase-timeline -->
 ```mermaid
 sequenceDiagram
     autonumber
@@ -183,6 +198,7 @@ For plans without strong always-ready guarantees, use conservative warmup patter
 1. If latency SLO is moderate, optimize startup path first.
 2. If p95 remains unstable, enable plan-native warm capacity.
 3. If strict low-latency is mandatory, use Premium or Dedicated with warm strategy.
+<!-- diagram-id: operational-decision-flow -->
 ```mermaid
 flowchart TD
     A[Start: latency issue identified] --> B{Is p95 within SLO?}

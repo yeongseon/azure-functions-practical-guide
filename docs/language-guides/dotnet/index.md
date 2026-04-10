@@ -1,3 +1,11 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-dotnet-class-library
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide
+---
+
 # .NET Language Guide
 
 This guide introduces Azure Functions for .NET with emphasis on the **isolated worker model**, which is the recommended default for new projects.
@@ -9,6 +17,7 @@ The isolated model gives clearer dependency boundaries, independent .NET version
 
 ## Main Content
 
+<!-- diagram-id: main-content -->
 ```mermaid
 flowchart LR
     A[01 Local Run] --> B[02 First Deploy]

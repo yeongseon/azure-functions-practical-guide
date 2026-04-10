@@ -1,9 +1,22 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-python
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-dotnet-class-library
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
+---
+
 # Language Guides
 
 The Language Guides section maps Azure Functions platform concepts to language-specific implementation models for **Python**, **Node.js**, **.NET**, and **Java**.
 
 Use this section after reading platform fundamentals so you can apply the same architecture and operations decisions in the language stack your team ships.
 
+<!-- diagram-id: language-guides -->
 ```mermaid
 flowchart LR
     LG[Language Guides] --> P[Python]

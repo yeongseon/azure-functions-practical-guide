@@ -1,9 +1,20 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-run-local
+---
+
 # Node.js Runtime
 
 This reference describes Node.js runtime support, worker settings, and dependency practices for Azure Functions apps using the v4 programming model.
 
 ## Main Content
 
+<!-- diagram-id: main-content -->
 ```mermaid
 flowchart LR
     A[Node 18 LTS] --> D[Supported]

@@ -1,7 +1,16 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+---
+
 # Scaling Queries
 
 KQL queries for analyzing cold starts, scaling behavior, and host lifecycle events.
 
+<!-- diagram-id: scaling-queries -->
 ```mermaid
 flowchart LR
     A[Cold start query] --> B[Scaling events timeline]

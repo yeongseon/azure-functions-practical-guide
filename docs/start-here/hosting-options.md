@@ -1,3 +1,17 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/consumption-plan
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-premium-plan
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/dedicated-plan
+---
+
 # Hosting Options
 
 Choosing the right hosting plan is the highest-impact early decision for an Azure Functions workload.
@@ -6,6 +20,7 @@ This page compares the four plans covered in this guide: **Consumption (Y1)**, *
 
 All comparisons are based on Microsoft Learn documentation.
 
+<!-- diagram-id: hosting-options -->
 ```mermaid
 flowchart TD
     A[Start] --> B{New serverless app?}

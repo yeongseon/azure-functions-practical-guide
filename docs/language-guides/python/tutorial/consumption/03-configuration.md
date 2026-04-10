@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-app-settings
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference#connecting-to-host-storage-with-an-identity
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-host-json
 ---
 
 # 03 - Configuration (Consumption)
@@ -33,6 +40,7 @@ You will configure core app settings for a Linux Consumption Function App, inclu
 
     Consumption has no VNet integration or private endpoint support. All traffic flows over the public internet. Storage uses connection string authentication.
 
+    <!-- diagram-id: what-you-ll-build -->
     ```mermaid
     flowchart TD
         INET[Internet] -->|HTTPS| FA[Function App\nConsumption Y1\nLinux Python 3.11]
@@ -52,6 +60,7 @@ You will configure core app settings for a Linux Consumption Function App, inclu
         style STORAGE fill:#FFF3E0
     ```
 
+<!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart LR
     A[Read current app settings] --> B[Set runtime and custom settings]

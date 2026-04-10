@@ -1,3 +1,17 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-overview
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-code-constraints
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-http-api
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-troubleshooting-guide
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+---
+
 # Durable Functions Orchestration Stuck Playbook
 
 ## 1. Summary
@@ -6,6 +20,7 @@ This playbook addresses incidents where Durable Functions orchestration instance
 Stuck orchestrations are often misclassified as platform outages. In many cases, storage/provider health is normal and the issue is orchestration logic or execution shape. Fast triage requires separating "no progress" from "slow progress," then proving whether the bottleneck is replay, deterministic violations, dependency failure, or missing external signal.
 
 ### Decision Flow
+<!-- diagram-id: decision-flow -->
 ```mermaid
 flowchart TD
     A[Incident: orchestration instances not completing] --> B{Instances still Running?}
@@ -43,6 +58,7 @@ flowchart TD
 | External event receipt | Event arrives before timeout | Wait state never fulfilled |
 | Requests/dependencies latency | Stable | Spikes aligned with orchestration stalls |
 
+<!-- diagram-id: signal-snapshot -->
 ```mermaid
 flowchart LR
     A[Orchestrator starts] --> B[Load history from storage]
@@ -55,6 +71,7 @@ flowchart LR
     H --> I[Instance remains Running]
 ```
 
+<!-- diagram-id: signal-snapshot-2 -->
 ```mermaid
 sequenceDiagram
     participant Client as Caller
@@ -350,6 +367,7 @@ Capacity tuning hints:
 | Missing external event contract | Wait-state traces with zero receive confirmations | Medium |
 | Dependency instability masking as orchestration stall | p95/p99 spikes and timeout clusters during stalls | Medium |
 
+<!-- diagram-id: 7-likely-root-cause-patterns -->
 ```mermaid
 flowchart TD
     A[Workflow starts normally] --> B[History grows each iteration]

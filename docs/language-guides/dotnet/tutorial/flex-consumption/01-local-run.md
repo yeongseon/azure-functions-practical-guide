@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-develop-local
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
 ---
 
 # 01 - Run Locally (Flex Consumption)
@@ -31,6 +38,7 @@ Build and run a .NET 8 isolated worker Function App locally before deploying to 
 
 A .NET 8 isolated worker Function App with 16 functions that runs locally, returning JSON from `/api/health`, and validates the isolated hosting model before deployment.
 
+<!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart LR
     A[dotnet build] --> B[func start]

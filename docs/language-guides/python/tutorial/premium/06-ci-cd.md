@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-how-to-github-actions
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-deployment-slots
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-deployment-slots#swap-slots
 ---
 
 # 06 - CI/CD (Premium)
@@ -33,6 +40,7 @@ Build a GitHub Actions pipeline for Azure Functions Premium, then add safe produ
 
     Premium deploys with VNet integration (delegated subnet), a private endpoint for inbound access, private DNS zone, and pre-warmed instances. Storage uses connection string or identity-based authentication.
 
+    <!-- diagram-id: what-you-ll-build -->
     ```mermaid
     flowchart TD
         INET[Internet] -->|HTTPS| FA[Function App\nPremium EP1\nLinux Python 3.11]
@@ -83,6 +91,7 @@ Build a GitHub Actions pipeline for Azure Functions Premium, then add safe produ
         style WARM fill:#FFF3E0,stroke:#FF9800
     ```
 
+<!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart LR
     A[Push to main] --> B[OIDC Azure login]

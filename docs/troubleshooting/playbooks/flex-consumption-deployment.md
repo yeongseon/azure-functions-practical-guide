@@ -1,3 +1,17 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-how-to
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-deployment-technologies
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/storage/common/storage-network-security
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-app-settings
+---
+
 # Flex Consumption Deployment Gotchas
 
 ## 1. Summary
@@ -6,6 +20,7 @@ Flex Consumption (FC1) introduces a fundamentally different provisioning and dep
 
 This playbook covers five specific issues discovered during hands-on deployment validation (2026-04-09, Azure CLI 2.83.0). Each maps to a competing hypothesis and includes evidence collection, validation, and mitigation steps.
 
+<!-- diagram-id: 1-summary -->
 ```mermaid
 flowchart TD
     A["Flex Consumption deployment failed or degraded"] --> B{"Plan creation failed?"}

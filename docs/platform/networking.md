@@ -1,3 +1,15 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/app-service/configure-vnet-integration-enable
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/app-service/networking/private-endpoint
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/app-service/overview-nat-gateway-integration
+---
+
 # Networking
 Azure Functions networking design has two separate concerns:
 - **Inbound**: who can call your function endpoints.
@@ -38,6 +50,7 @@ Platform-Subscription AzureCloud   <subscription-id>   <tenant-id>        Enable
 | Hybrid Connections | No | No | Yes (Windows apps only) | Yes (Windows apps only) |
 
 ### Reference architecture
+<!-- diagram-id: reference-architecture -->
 ```mermaid
 flowchart LR
     C["Client / Caller"] --> APIM["Optional Front Door / APIM"]
@@ -144,6 +157,7 @@ Example output (sanitized):
 ```
 
 #### 3) Zero-trust ingress architecture pattern
+<!-- diagram-id: 3-zero-trust-ingress-architecture-pattern -->
 ```mermaid
 flowchart LR
     U[User] --> FD[Front Door + WAF]
@@ -203,6 +217,7 @@ Flex Consumption already routes outbound traffic through the integrated VNet pat
 #### 3) NAT Gateway for stable outbound IP
 Attach NAT Gateway to the integration subnet when downstream allowlists require stable egress identity.
 
+<!-- diagram-id: 3-nat-gateway-for-stable-outbound-ip -->
 ```mermaid
 flowchart TD
     FA[Function App instances] --> SUBNET[Integration subnet]
@@ -241,6 +256,7 @@ Recommended baseline:
 - Link private DNS zones to every VNet that must resolve private endpoints.
 - Configure conditional forwarding in hybrid DNS environments.
 
+<!-- diagram-id: dns-design-for-private-endpoints -->
 ```mermaid
 flowchart TD
     VM[Client in VNet] --> DNS[Private DNS zone]
@@ -250,6 +266,7 @@ flowchart TD
 
 DNS resolution sequence (private endpoint path):
 
+<!-- diagram-id: dns-design-for-private-endpoints-2 -->
 ```mermaid
 sequenceDiagram
     participant C as Client in VNet

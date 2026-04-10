@@ -1,3 +1,15 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/monitor-functions
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-monitor/app/app-insights-overview
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-monitor/logs/data-platform-logs
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-monitor/visualize/workbooks-overview
+---
+
 # Monitoring
 
 This guide describes how to monitor Azure Functions in production using Azure Monitor and Application Insights.
@@ -48,6 +60,7 @@ Azure Functions emits multiple telemetry streams:
 
 Use all three for complete operational visibility.
 
+<!-- diagram-id: monitoring-architecture -->
 ```mermaid
 flowchart LR
     A[Function App Runtime] --> B[Azure Monitor Metrics]
@@ -227,6 +240,7 @@ Keep request and exception data unsampled for reliable incident triage.
 
 ### Operational monitoring decision flow
 
+<!-- diagram-id: operational-monitoring-decision-flow -->
 ```mermaid
 flowchart TD
     A[Alert or Incident] --> B{"Availability/latency issue?"}

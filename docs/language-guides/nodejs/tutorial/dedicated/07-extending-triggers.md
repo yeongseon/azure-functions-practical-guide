@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-node
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
 ---
 
 # 07 - Extending Triggers (Dedicated)
@@ -32,6 +39,7 @@ Add queue, timer, and blob triggers with the Node.js v4 APIs and deploy to Dedic
 
     Dedicated plans **require** Always On for non-HTTP triggers. Without it, the app may idle after 20 minutes and miss timer/queue/blob events. The reference app includes 20 functions across all trigger types.
 
+    <!-- diagram-id: what-you-ll-build -->
     ```mermaid
     flowchart TD
         TIMER["⏰ Timer Trigger\nscheduledCleanup\ntimerLab"] -->|CRON schedule| FA[Function App\nDedicated B1]

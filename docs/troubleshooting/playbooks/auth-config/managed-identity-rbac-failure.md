@@ -1,3 +1,17 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference#configure-an-identity-based-connection
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/app-service/overview-managed-identity
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/role-based-access-control/role-assignments-cli
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/key-vault/general/rbac-guide
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/dotnet/api/azure.identity.defaultazurecredential
+---
+
 # Managed Identity and RBAC Authentication Failure
 
 ## 1. Summary
@@ -6,6 +20,7 @@ This playbook is for incidents where Azure Functions cannot authenticate to down
 The goal is to restore trigger execution and outbound dependency access quickly, while separating identity-plane problems from application code regressions. Focus on proving or disproving six competing hypotheses in a bounded time window, then apply the smallest safe mitigation.
 
 ### Decision Flow
+<!-- diagram-id: decision-flow -->
 ```mermaid
 flowchart TD
     A[Auth failures or listener startup errors] --> B{Managed identity enabled?}
@@ -49,6 +64,7 @@ flowchart TD
 | Invocation continuity | Invocations correlate with source events | Source active, invocations drop to zero |
 
 ### Failure progression model
+<!-- diagram-id: failure-progression-model -->
 ```mermaid
 sequenceDiagram
     participant H as Functions Host
@@ -66,6 +82,7 @@ sequenceDiagram
 ```
 
 ### Identity authorization map
+<!-- diagram-id: identity-authorization-map -->
 ```mermaid
 flowchart LR
     F[Function App] --> I[(System-assigned MI)]
@@ -321,6 +338,7 @@ kv-func-prod.vault.azure.net         3     97       0
 If timeout and DNS errors dominate while 401/403 are sparse, treat auth findings as secondary and execute network outage workflow first. H6 remains strongest until connectivity normalizes.
 
 ### Host startup correlation
+<!-- diagram-id: host-startup-correlation -->
 ```mermaid
 timeline
     title Managed identity auth incident timeline

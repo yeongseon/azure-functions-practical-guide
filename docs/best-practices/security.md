@@ -1,3 +1,19 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/security-concepts
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference#configure-an-identity-based-connection
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-app-settings
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/app-service/app-service-key-vault-references
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/function-keys-how-to
+---
+
 # Security Best Practices for Azure Functions
 
 Security for Azure Functions must align to runtime behavior: triggers execute with app identity, settings are loaded at startup, retries can repeat sensitive operations, and scale-out multiplies blast radius if permissions are broad. This guide provides practical controls for identity, secret handling, app settings, and network hardening.
@@ -227,6 +243,7 @@ Operational notes:
 ??? tip "How Functions picks up rotated values"
     Key Vault references are resolved by platform integration. In production, plan explicit validation after rotation and include restart/refresh procedures in runbooks so update timing is predictable.
 
+<!-- diagram-id: common-mistakes-anti-patterns -->
 ```mermaid
 flowchart TD
     A[Create new secret version in Key Vault] --> B[Validate Function managed identity access]
@@ -243,6 +260,7 @@ flowchart TD
 
 ### Security boundary and identity flow
 
+<!-- diagram-id: security-boundary-and-identity-flow -->
 ```mermaid
 flowchart LR
     Caller[Client or service caller] --> Ingress[Function endpoint\nHTTP trigger]

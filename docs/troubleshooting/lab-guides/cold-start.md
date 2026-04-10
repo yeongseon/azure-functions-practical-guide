@@ -1,3 +1,19 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/performance-reliability
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/configure-monitoring
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-monitor/app/data-model-complete
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/data-explorer/kusto/query/
+---
+
 # Lab Guide: Cold Start on Azure Functions
 This Level 3 lab reproduces and analyzes Azure Functions cold-start behavior across hosting plans, with emphasis on FC1 Flex Consumption evidence. You will build a falsifiable timeline that separates worker provisioning delay from host startup time and request execution time.
 ---
@@ -24,6 +40,7 @@ This Level 3 lab reproduces and analyzes Azure Functions cold-start behavior acr
 ## 1) Background
 Cold start in Azure Functions is not a single runtime metric. It is a chain of platform and application phases that may overlap, and each phase leaves different telemetry signatures.
 ### 1.1 Cold-start phase model
+<!-- diagram-id: 1-1-cold-start-phase-model -->
 ```mermaid
 flowchart TD
     A[Trigger: first request after idle, restart, scale-out, host move] --> B[Platform worker allocation]
@@ -70,6 +87,7 @@ Interpretation rule for this lab:
 - Treat client-side first hit as symptom, not root cause.
 - Validate whether host startup is the bottleneck or merely one sub-phase.
 ### 1.5 Timeline diagram
+<!-- diagram-id: 1-5-timeline-diagram -->
 ```mermaid
 sequenceDiagram
     participant Client as External Client
@@ -120,6 +138,7 @@ Authoritative links are listed in [Sources](#sources).
 ### 2.1 Formal hypothesis statement
 > In Azure Functions Flex Consumption (FC1), severe first-hit latency after idle is primarily driven by worker provisioning and assignment delay, while host startup itself can remain fast (sub-second); therefore, host startup traces and end-to-end latency can diverge significantly.
 ### 2.2 Causal chain
+<!-- diagram-id: 2-2-causal-chain -->
 ```mermaid
 flowchart LR
     A[Idle period with no active instance] --> B[First request arrives]
@@ -414,6 +433,7 @@ Use this checklist while triaging:
 | Request duration distribution stable warm | Query 1 | Low P95 once warm | Potential sustained regression |
 | Cold-start correlation present | Query 3 | Startup event bins align with higher first duration | Hypothesis weakens |
 ### 3.10 Decision logic during triage
+<!-- diagram-id: 3-10-decision-logic-during-triage -->
 ```mermaid
 flowchart TD
     A[User reports first-hit latency spike] --> B{Warm requests also slow?}
@@ -661,6 +681,7 @@ Use this section as a validation rubric while running the lab.
 | Host lifecycle | No repeated crash-loop signals | No persistent start/shutdown oscillation |
 | Incident classification | Provisioning-dominant cold path | Hypothesis remains supported |
 ### Evidence Timeline
+<!-- diagram-id: evidence-timeline -->
 ```mermaid
 graph LR
     A[Baseline Warm Capture] --> B[Idle Window ~13m]

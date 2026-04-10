@@ -1,7 +1,16 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+---
+
 # Key Vault
 
 Access Key Vault secrets from functions with managed identity and least-privilege role assignments.
 
+<!-- diagram-id: key-vault -->
 ```mermaid
 flowchart LR
     A[Trigger] --> B[Function]

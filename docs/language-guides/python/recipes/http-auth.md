@@ -1,9 +1,18 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/security-concepts
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/app-service/overview-authentication-authorization
+---
+
 # HTTP Authentication
 
 This recipe covers authentication and authorization for Azure Functions HTTP triggers — authorization levels, function keys, Easy Auth for identity provider integration, and manual JWT validation in Python.
 
 ## Authentication Flow
 
+<!-- diagram-id: authentication-flow -->
 ```mermaid
 flowchart LR
     CLIENT[Client App] --> TOKEN[Identity Provider Token Issuance]

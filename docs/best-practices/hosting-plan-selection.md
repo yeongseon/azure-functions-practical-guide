@@ -1,3 +1,13 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/performance-reliability
+---
+
 # Hosting Plan Selection Best Practices
 
 Selecting the wrong hosting plan is one of the highest-impact mistakes in Azure Functions. This guide provides a practical decision framework so plan choice matches execution behavior, trigger profile, and operational safety requirements.
@@ -17,6 +27,7 @@ Evaluate hosting plan choice in this order:
 4. **Event profile**: Are events sporadic, steady, or highly bursty?
 5. **Cost tolerance model**: Is minimizing idle cost or stabilizing latency more important?
 
+<!-- diagram-id: why-this-matters -->
 ```mermaid
 flowchart TD
     A[Start: characterize workload] --> B{Need VNet or private endpoints?}

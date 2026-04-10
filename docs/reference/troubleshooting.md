@@ -1,7 +1,16 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-python
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-develop-local
+---
+
 # Troubleshooting
 
 This reference covers the most common issues encountered when developing and deploying Azure Functions Python v2 apps, organised as **Problem → Cause → Solution**.
 
+<!-- diagram-id: troubleshooting -->
 ```mermaid
 flowchart TD
     A[Incident detected] --> B{Symptom type}

@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-node
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
 ---
 
 # 02 - First Deploy (Dedicated)
@@ -33,6 +40,7 @@ Provision resources and publish your first Node.js v4 function app to an App Ser
 
     Dedicated deploys on a traditional App Service Plan. Unlike Premium, there are no pre-warmed instances or elastic scaling — you get a fixed compute allocation. Storage uses connection string authentication by default. No content file share is required (`WEBSITE_RUN_FROM_PACKAGE=1`).
 
+    <!-- diagram-id: what-you-ll-build -->
     ```mermaid
     flowchart TD
         INET[Internet] -->|HTTPS| FA[Function App\nDedicated B1\nLinux Node.js 20]

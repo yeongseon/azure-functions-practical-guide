@@ -1,8 +1,21 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-monitor/app/data-model-complete
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/data-explorer/kusto/query/
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+---
+
 # High Latency / Slow Responses
 ## 1. Summary
 This playbook handles incidents where Azure Functions shows slow responses, elevated p95/p99 latency, and intermittent timeout behavior.
 Use it when performance degradation is user-visible, even if failure rate is still low.
 ### Troubleshooting decision flow
+<!-- diagram-id: troubleshooting-decision-flow -->
 ```mermaid
 flowchart TD
     A[Latency alert or customer report] --> B{Mostly first request after idle?}

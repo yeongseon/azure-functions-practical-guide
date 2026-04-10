@@ -1,9 +1,20 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-blob-trigger
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-event-grid-blob-trigger
+---
+
 # Trigger and Binding Best Practices
 
 Trigger and binding choices directly determine execution safety in Azure Functions. The goal is not to use the most feature-rich trigger, but to choose the trigger model whose delivery semantics, scaling behavior, and failure handling match your workload.
 
 For trigger mechanics and extension details, see [Platform: Triggers and Bindings](../platform/triggers-and-bindings.md).
 
+<!-- diagram-id: trigger-and-binding-best-practices -->
 ```mermaid
 flowchart LR
     E[Event source] --> T[Trigger listener]

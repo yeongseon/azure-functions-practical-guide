@@ -1,3 +1,17 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/analyze-telemetry-data
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-monitor/logs/log-query-overview
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/service-health/overview
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+---
+
 # Azure Functions Troubleshooting Evidence Map
 
 Use this page when you need to answer: "I need to know X, where do I look first?"
@@ -11,6 +25,7 @@ It maps diagnostic questions to the fastest evidence source, then shows what hea
 
 ## Evidence path overview
 
+<!-- diagram-id: evidence-path-overview -->
 ```mermaid
 flowchart LR
     A[Diagnostic question] --> B{What kind of symptom?}

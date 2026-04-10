@@ -1,3 +1,19 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-create-vnet
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-deployment-technologies
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference?tabs=blob#configure-an-identity-based-connection
+---
+
 # Deployment Scenarios
 
 This page compares the reference deployment patterns used in this guide across the four Azure Functions hosting plans.
@@ -7,6 +23,7 @@ This page compares the reference deployment patterns used in this guide across t
 
 ## Scenario Overview
 
+<!-- diagram-id: scenario-overview -->
 ```mermaid
 flowchart LR
     subgraph PUBLIC["Scenario A: Public Serverless"]
@@ -66,6 +83,7 @@ flowchart LR
 
 The simplest deployment pattern. No VNet, no private endpoints, public storage access.
 
+<!-- diagram-id: scenario-a-public-serverless-consumption-y1 -->
 ```mermaid
 flowchart TD
     INET[Internet] -->|HTTPS| FA[Function App\nConsumption Y1]
@@ -86,6 +104,7 @@ flowchart TD
 
 Full network isolation with identity-based storage access and blob-container deployment.
 
+<!-- diagram-id: scenario-b-private-serverless-flex-consumption-fc1 -->
 ```mermaid
 flowchart TD
     INET[Internet] -->|HTTPS| FA[Function App\nFlex Consumption FC1]
@@ -125,6 +144,7 @@ flowchart TD
 
 VNet-integrated with always-warm instances, private endpoints, and Azure Files content share.
 
+<!-- diagram-id: scenario-c-private-enterprise-premium-ep -->
 ```mermaid
 flowchart TD
     INET[Internet] -->|HTTPS| FA[Function App\nPremium EP1-EP3]
@@ -164,6 +184,7 @@ flowchart TD
 
 Traditional App Service plan with fixed compute, full VNet support, and run-from-package deployment.
 
+<!-- diagram-id: scenario-d-fixed-capacity-dedicated-asp -->
 ```mermaid
 flowchart TD
     INET[Internet] -->|HTTPS| FA[Function App\nDedicated B1-P3v3]

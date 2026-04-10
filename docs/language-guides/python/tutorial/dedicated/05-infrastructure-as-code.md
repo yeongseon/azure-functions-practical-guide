@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-resource-manager/bicep/
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/templates/microsoft.web/serverfarms
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/templates/microsoft.web/sites
 ---
 
 # 05 - Infrastructure as Code (Dedicated)
@@ -39,6 +46,7 @@ You will define and deploy a Dedicated App Service Plan, storage account, and Li
 
     Basic B1 has no VNet integration or private endpoints. The app runs on a fixed App Service Plan (always on, no scale-to-zero). VNet support requires upgrading to Standard (S1) or Premium (P1v3) tier.
 
+    <!-- diagram-id: what-you-ll-build -->
     ```mermaid
     flowchart TD
         INET[Internet] -->|HTTPS| FA[Function App\nDedicated B1-P3v3\nLinux Python 3.11]
@@ -84,6 +92,7 @@ You will define and deploy a Dedicated App Service Plan, storage account, and Li
         style DNS fill:#E3F2FD
     ```
 
+<!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart LR
     A[Bicep template] --> B[App Service Plan B1]

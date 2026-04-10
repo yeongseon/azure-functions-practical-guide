@@ -1,3 +1,11 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/performance-reliability
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-best-practices
+---
+
 # Common Azure Functions Anti-Patterns
 
 This reference consolidates high-impact anti-patterns that repeatedly cause Azure Functions incidents across hosting, triggers, security, deployment, and operations. Use it during design review, pre-production checks, and incident retrospectives.
@@ -25,6 +33,7 @@ This reference consolidates high-impact anti-patterns that repeatedly cause Azur
 | Cold start surprise on Consumption | Hosting/SLO | Medium | [Fix](#ap-cold-start-surprise) |
 | Mutable deployment | Deployment safety | High | [Fix](#ap-mutable-deployment) |
 
+<!-- diagram-id: why-this-matters -->
 ```mermaid
 flowchart LR
     A[Wrong hosting plan selection] --> B[Trigger and networking mismatch]
@@ -36,6 +45,7 @@ flowchart LR
 
 ## Recommended Practices
 
+<!-- diagram-id: recommended-practices -->
 ```mermaid
 flowchart TD
     A[Start: symptom or design concern] --> B{Main symptom category}

@@ -1,3 +1,9 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-timer
+---
+
 # Timer Trigger
 
 > **Note:** This guide focuses primarily on HTTP triggers. The timer trigger is covered here for future extensibility and is commonly used alongside HTTP APIs for scheduled background tasks like data cleanup, report generation, and health pings.
@@ -6,6 +12,7 @@
 
 A timer trigger fires on a schedule defined by an NCRONTAB expression. Unlike HTTP triggers, timer triggers do not have an endpoint URL — they run automatically based on the schedule.
 
+<!-- diagram-id: overview -->
 ```mermaid
 flowchart LR
     SCHED[NCRONTAB Schedule] --> RUNTIME[Functions Runtime Scheduler]

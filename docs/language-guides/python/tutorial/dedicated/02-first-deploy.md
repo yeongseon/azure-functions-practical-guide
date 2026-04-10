@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-how-to-use-azure-function-app-settings
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/app-service/configure-common
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/app-service/networking/private-endpoint
 ---
 
 # 02 - First Deploy (Dedicated)
@@ -38,6 +45,7 @@ You will provision a Basic (B1) Linux App Service Plan, create a Python Function
 
     Basic B1 has no VNet integration or private endpoints. The app runs on a fixed App Service Plan (always on, no scale-to-zero). VNet support requires upgrading to Standard (S1) or Premium (P1v3) tier.
 
+    <!-- diagram-id: what-you-ll-build -->
     ```mermaid
     flowchart TD
         INET[Internet] -->|HTTPS| FA[Function App\nDedicated B1-P3v3\nLinux Python 3.11]
@@ -173,6 +181,7 @@ az functionapp show \
 curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
 ```
 
+<!-- diagram-id: step-6-verify-deployment -->
 ```mermaid
 flowchart LR
     A[Internet] --> B[Function App\nLinux, Python 3.11]

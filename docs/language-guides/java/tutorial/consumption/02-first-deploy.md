@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-java
 ---
 
 # 02 - First Deploy (Consumption)
@@ -38,6 +45,7 @@ You will provision a Linux Consumption (Y1) Function App for Java, deploy with `
 
     Consumption has no VNet integration or private endpoint support. All traffic flows over the public internet. Storage uses connection string authentication.
 
+    <!-- diagram-id: what-you-ll-build -->
     ```mermaid
     flowchart TD
         INET[Internet] -->|HTTPS| FA[Function App\nConsumption Y1\nLinux Java 17]
@@ -56,6 +64,7 @@ You will provision a Linux Consumption (Y1) Function App for Java, deploy with `
         style STORAGE fill:#FFF3E0
     ```
 
+<!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart LR
     A[Set variables + login] --> B[Create RG + storage]

@@ -1,8 +1,23 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-recover-from-failed-host
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-deployment-technologies
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/run-functions-from-deployment-package
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-app-settings
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+---
+
 # Deployment Failures
 ## 1. Summary
 Deployment failures in Azure Functions are often deployment-success-but-runtime-failure incidents.
 Transport success (artifact uploaded) does not guarantee host startup, trigger indexing, or invocation health.
 This playbook prioritizes fast triage of runtime settings, deployment model fit, and package integrity.
+<!-- diagram-id: 1-summary -->
 ```mermaid
 flowchart TD
     A[Deployment failed or degraded after release] --> B{App starts?}

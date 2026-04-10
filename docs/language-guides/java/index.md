@@ -1,3 +1,11 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-java
+---
+
 # Java Language Guide
 
 This guide introduces Azure Functions for Java using the annotation-based programming model.
@@ -9,6 +17,7 @@ Java functions are declared with `@FunctionName` and trigger/binding annotations
 
 ## Main Content
 
+<!-- diagram-id: main-content -->
 ```mermaid
 flowchart LR
     A[01 Local Run] --> B[02 First Deploy]

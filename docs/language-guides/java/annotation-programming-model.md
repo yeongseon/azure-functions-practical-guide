@@ -1,9 +1,18 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+---
+
 # Java Annotation Programming Model
 
 This deep dive explains how Java functions are declared, discovered, and executed in Azure Functions using annotation metadata instead of external `function.json` files.
 
 ## Main Content
 
+<!-- diagram-id: main-content -->
 ```mermaid
 flowchart LR
     A[Java class and method] --> B["@FunctionName"]

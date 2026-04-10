@@ -1,3 +1,17 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-blob-trigger
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/event-grid/concepts
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-monitor/logs/log-query-overview
+---
+
 # Blob Trigger Not Firing
 
 ## 1. Summary
@@ -9,6 +23,7 @@
 | Most critical platform rule | Flex Consumption (`FC1`) requires Event Grid-based blob trigger wiring |
 | Common impact | Ingestion backlog, delayed processing, stale downstream data |
 
+<!-- diagram-id: 1-summary -->
 ```mermaid
 flowchart TD
     A[Blob upload confirmed] --> B{Is app on FC1?}

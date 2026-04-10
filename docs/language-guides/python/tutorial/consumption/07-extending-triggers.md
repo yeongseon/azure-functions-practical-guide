@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue-trigger
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-blob-trigger
 ---
 
 # 07 - Extending Triggers (Consumption)
@@ -33,6 +40,7 @@ You will extend the existing blueprint-based Python app with queue and blob trig
 
     Consumption has no VNet integration or private endpoint support. All traffic flows over the public internet. Storage uses connection string authentication.
 
+    <!-- diagram-id: what-you-ll-build -->
     ```mermaid
     flowchart TD
         INET[Internet] -->|HTTPS| FA[Function App\nConsumption Y1\nLinux Python 3.11]
@@ -52,6 +60,7 @@ You will extend the existing blueprint-based Python app with queue and blob trig
         style STORAGE fill:#FFF3E0
     ```
 
+<!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart LR
     A["Add queue/blob blueprints"] --> B["Register in apps/python/function_app.py"]

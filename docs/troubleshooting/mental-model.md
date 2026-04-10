@@ -1,3 +1,13 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-diagnostics
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-recover-from-failed-host
+---
+
 # Troubleshooting Mental Model
 
 This page provides a classification model for Azure Functions incidents so you can start with the correct evidence source instead of guessing.
@@ -17,6 +27,7 @@ This classification helps you avoid looking at the wrong logs from the start.
 
 ## Classification flowchart
 
+<!-- diagram-id: classification-flowchart -->
 ```mermaid
 flowchart TD
     A[Observed symptom] --> B{Primary failure signal}
@@ -235,6 +246,7 @@ az monitor activity-log list \
 
 ## Using this model during incidents
 
+<!-- diagram-id: using-this-model-during-incidents -->
 ```mermaid
 sequenceDiagram
     participant R as Responder

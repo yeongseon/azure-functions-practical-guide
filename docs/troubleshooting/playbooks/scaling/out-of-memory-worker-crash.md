@@ -1,3 +1,17 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-best-practices
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/analyze-telemetry-data
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-monitor/logs/log-query-overview
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/performance-reliability
+---
+
 # Out of Memory / Worker Crash Playbook
 
 ## 1. Summary
@@ -6,6 +20,7 @@ This playbook is for incidents where Azure Functions executions fail, restart, o
 On Azure Functions, memory ceilings are plan-dependent and hard in practice: Consumption is typically limited to about 1.5 GB per instance, Premium EP1 to about 3.5 GB, EP2 to about 7 GB, and EP3 to about 14 GB. When allocations spike beyond available memory, workers can throw `System.OutOfMemoryException`, trigger process recycling, and leave heartbeat gaps that appear as random cold starts or transient availability loss.
 
 ### Decision Flow
+<!-- diagram-id: decision-flow -->
 ```mermaid
 flowchart TD
     A["Incident detected: failures/timeouts/restarts"] --> B{Any OOM exceptions in traces or FunctionAppLogs?}
@@ -41,6 +56,7 @@ flowchart TD
 | Request success rate | >99% for steady workload | Drops with 5xx and timeout spikes |
 | Queue backlog | Bounded and catches up | Persistent growth during restarts |
 
+<!-- diagram-id: signal-snapshot -->
 ```mermaid
 flowchart LR
     A[Trigger receives event] --> B[Function worker allocates payload]
@@ -53,6 +69,7 @@ flowchart LR
     H --> I["Retry/restart causes repeated pressure"]
 ```
 
+<!-- diagram-id: signal-snapshot-2 -->
 ```mermaid
 sequenceDiagram
     participant Q as Queue/Event Source
@@ -314,6 +331,7 @@ Cross-check result interpretation:
 | Resource lifecycle leak (DB context/object graph) | Long-lived references and rising PrivateBytes | Medium |
 | Media conversion buffer amplification | Crashes clustered around PDF/image handlers | Medium |
 
+<!-- diagram-id: 7-likely-root-cause-patterns -->
 ```mermaid
 flowchart TD
     A[Deploy code change] --> B[Memory trend begins rising]

@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-node
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
 ---
 
 # 03 - Configuration (Dedicated)
@@ -32,6 +39,7 @@ Manage environment settings, runtime options, and host behavior per environment.
 
     Dedicated plans support unlimited function timeout (`functionTimeout: -1`), unlike Consumption (5/10 min) and Premium (30/60 min defaults). This makes Dedicated ideal for long-running workloads.
 
+    <!-- diagram-id: what-you-ll-build -->
     ```mermaid
     flowchart LR
         CLI[Azure CLI] -->|appsettings set| FA[Function App\nDedicated B1]

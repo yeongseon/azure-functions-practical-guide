@@ -1,9 +1,18 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-event-grid-trigger
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/event-grid/create-view-manage-event-subscriptions-cli
+---
+
 # Event Grid Trigger
 
 This recipe uses native Event Grid bindings in Java with `@EventGridTrigger` to process cloud events without HTTP trigger shims.
 
 ## Architecture
 
+<!-- diagram-id: architecture -->
 ```mermaid
 flowchart LR
     SOURCE[Storage account events] --> TOPIC["Event Grid topic/system topic"]

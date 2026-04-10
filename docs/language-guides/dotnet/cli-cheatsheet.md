@@ -1,7 +1,16 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-host-json
+---
+
 # CLI Cheatsheet
 
 Quick command reference for .NET isolated worker development, deployment, and operations.
 
+<!-- diagram-id: cli-cheatsheet -->
 ```mermaid
 flowchart TD
     A[Configuration] --> B[Build]

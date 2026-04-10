@@ -1,9 +1,18 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
+---
+
 # Tutorial — Choose Your Hosting Plan
 
 This Java tutorial section includes four complete plan tracks. Every track uses the same seven-step learning sequence so you can compare behavior and trade-offs with minimal context switching.
 
 ## Which Plan Should I Start With?
 
+<!-- diagram-id: which-plan-should-i-start-with -->
 ```mermaid
 flowchart TD
     Start[I am building an Azure Functions Java app] --> Q1{Need scale to zero?}

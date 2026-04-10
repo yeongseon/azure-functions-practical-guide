@@ -1,3 +1,13 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/configure-monitoring
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-recover-from-failed-host
+---
+
 # Troubleshooting Method
 
 Troubleshooting complex issues in Azure Functions requires more than just a list of steps. It requires a mindset that treats every failure as a mystery to be solved with evidence. The hypothesis-driven method documented here is designed to move you from ambiguous symptoms to concrete, data-backed conclusions. This structured approach is essential for identifying root causes in a serverless platform where trigger, host, and platform events can often look like application-level errors.
@@ -17,6 +27,7 @@ When a function fails in production, it is tempting to jump to the most familiar
 
 The following seven steps form the foundation of every investigation in this repository.
 
+<!-- diagram-id: the-method-step-by-step -->
 ```mermaid
 flowchart LR
     A[1. Observe] --> B[2. Hypothesize]
@@ -145,6 +156,7 @@ Post-incident verification:
 
 ## Troubleshooting decision tree
 
+<!-- diagram-id: troubleshooting-decision-tree -->
 ```mermaid
 flowchart TD
     A[Incident detected] --> B{Platform health degraded?}

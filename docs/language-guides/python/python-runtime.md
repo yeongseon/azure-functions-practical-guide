@@ -1,7 +1,20 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/supported-languages
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-how-to
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-python
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-overview
+---
+
 # Python Runtime
 
 This reference covers the Python runtime configuration for Azure Functions — supported versions, worker process settings, async function support, dependency management, and performance tuning.
 
+<!-- diagram-id: python-runtime -->
 ```mermaid
 flowchart LR
     A[Azure Functions host] --> B[Python language worker process]

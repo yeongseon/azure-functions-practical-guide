@@ -10,6 +10,15 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-premium-plan
 ---
 
 # 07 - Extending with Triggers (Premium)
@@ -31,6 +40,7 @@ Extend beyond HTTP using queue, blob, and timer triggers with the .NET isolated 
 
 You will add queue, blob, and timer triggers to a .NET isolated worker Function App using attribute-based bindings, create the required storage resources, and validate end-to-end trigger firing.
 
+<!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
     A[Queue message] --> B["[QueueTrigger] handler"]

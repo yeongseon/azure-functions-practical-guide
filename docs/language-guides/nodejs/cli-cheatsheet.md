@@ -1,9 +1,18 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-run-local
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/cli/azure/functionapp
+---
+
 # CLI Cheatsheet
 
 Quick command reference for developing and operating Azure Functions Node.js apps.
 
 ## Topic/Command Groups
 
+<!-- diagram-id: topic-command-groups -->
 ```mermaid
 flowchart TD
     A[CLI Cheatsheet] --> B[Core Tools]

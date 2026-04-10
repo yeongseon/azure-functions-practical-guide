@@ -1,9 +1,18 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/app-service/app-service-web-tutorial-custom-domain
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/app-service/configure-ssl-certificate
+---
+
 # Custom Domains and Certificates
 
 Azure Function Apps support custom domains similarly to Azure App Service. On the Consumption and Flex Consumption plans, custom domain mapping supports CNAME records only.
 
 ## Architecture
 
+<!-- diagram-id: architecture -->
 ```mermaid
 flowchart LR
     CLIENT[Client] --> DNS[Public DNS]
@@ -12,6 +21,7 @@ flowchart LR
     CNAME --> FA[Function App]
 ```
 
+<!-- diagram-id: architecture-2 -->
 ```mermaid
 flowchart LR
     C[Client HTTPS Request] --> DOMAIN[Custom Domain]

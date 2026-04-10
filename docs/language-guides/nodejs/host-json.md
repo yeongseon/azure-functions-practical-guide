@@ -1,9 +1,16 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-host-json
+---
+
 # host.json Reference
 
 `host.json` controls runtime behavior across all functions in an app. This page highlights practical settings for Node.js v4 apps.
 
 ## Topic/Command Groups
 
+<!-- diagram-id: topic-command-groups -->
 ```mermaid
 flowchart TD
     A[host.json] --> B[Timeout]

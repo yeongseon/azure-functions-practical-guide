@@ -1,3 +1,13 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-diagnostics
+---
+
 # First 10 Minutes: Triggers Not Firing
 
 When functions are not executing despite active trigger sources, use this checklist to narrow down the cause within the first 10 minutes.
@@ -20,6 +30,7 @@ STORAGE_NAME="stmyappprod"
 EH_NAMESPACE="evh-myapp-prod"
 ```
 
+<!-- diagram-id: prerequisites -->
 ```mermaid
 flowchart TD
     A[Trigger not firing] --> B["Check platform/regional incidents"]

@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-resource-manager/bicep/overview
 ---
 
 # 05 - Infrastructure as Code (Flex Consumption)
@@ -31,6 +38,7 @@ Describe your .NET Function App platform using Bicep so provisioning is determin
 
 You will define a complete Flex Consumption environment in Bicep (storage account, FC1 plan, blob deployment container, and Linux Function App for .NET 8 isolated worker with managed identity), and deploy from your own template.
 
+<!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
     A[Bicep template] --> B[az deployment group create]

@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/configure-monitoring
 ---
 
 # 04 - Logging and Monitoring (Consumption)
@@ -36,6 +43,7 @@ You will emit structured logs from Node.js v4 handlers, connect Application Insi
 
     This tutorial adds Application Insights monitoring to your deployed function app.
 
+    <!-- diagram-id: what-you-ll-build -->
     ```mermaid
     flowchart TD
         FA[Function App\nConsumption Y1] -->|telemetry| AI[Application Insights]
@@ -46,6 +54,7 @@ You will emit structured logs from Node.js v4 handlers, connect Application Insi
         style AI fill:#68217A,color:#fff
     ```
 
+<!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart LR
     A[Log with context.log] --> B[Create App Insights]

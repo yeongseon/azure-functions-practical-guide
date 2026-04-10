@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-java
 ---
 
 # 02 - First Deploy (Premium)
@@ -38,6 +45,7 @@ You will provision a Linux Premium (EP1) Function App for Java, deploy with `fun
 
     Premium uses Azure Files content share for deployment artifacts. The plan keeps at least one instance warm at all times, eliminating cold starts for latency-sensitive workloads.
 
+    <!-- diagram-id: what-you-ll-build -->
     ```mermaid
     flowchart TD
         INET[Internet] -->|HTTPS| FA[Function App\nPremium EP1\nLinux Java 17]
@@ -58,6 +66,7 @@ You will provision a Linux Premium (EP1) Function App for Java, deploy with `fun
         style STORAGE fill:#FFF3E0
     ```
 
+<!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart LR
     A[Set variables + login] --> B[Create RG + storage]

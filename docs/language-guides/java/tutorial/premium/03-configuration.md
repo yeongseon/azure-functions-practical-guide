@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-java
 ---
 
 # 03 - Configuration (Premium)
@@ -32,6 +39,7 @@ Apply environment settings, JVM arguments, and host-level configuration so the s
 
 You will standardize Java runtime app settings for Premium, keep environment-specific values outside the artifact, and verify effective configuration from Azure.
 
+<!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
     A[local.settings.json] --> B[App Settings in Azure]

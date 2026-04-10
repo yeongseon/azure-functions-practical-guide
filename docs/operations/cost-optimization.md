@@ -1,3 +1,17 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/consumption-plan
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-premium-plan
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-monitor/logs/cost-logs
+---
+
 # Cost Optimization
 
 Azure Functions on Consumption and Flex Consumption offers cost-effective serverless pricing models. This guide explains how pricing works, how to take advantage of the free grant, when to choose Flex or Premium, and how to control costs through scale limits, Application Insights sampling, and operational practices.
@@ -12,6 +26,7 @@ Azure Functions on Consumption and Flex Consumption offers cost-effective server
 
 Azure Functions serverless pricing means you pay only for what you use — but ancillary services (storage, Application Insights, networking) can silently exceed function compute costs. Understanding the full cost picture prevents budget surprises.
 
+<!-- diagram-id: when-to-use -->
 ```mermaid
 graph TD
     A[Azure Functions Total Cost] --> B[Compute Cost]
@@ -109,6 +124,7 @@ Price examples in this section are approximate as of 2026-04 and can change over
 
 ### Break-even analysis
 
+<!-- diagram-id: break-even-analysis -->
 ```mermaid
 graph LR
     A[Monthly Executions] --> B{Volume?}

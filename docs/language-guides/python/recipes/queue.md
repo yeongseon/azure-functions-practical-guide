@@ -1,9 +1,16 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue
+---
+
 # Queue Storage
 
 This recipe covers integrating Azure Queue Storage with Azure Functions Python v2 — using output bindings to enqueue messages from HTTP requests, and queue triggers for processing messages asynchronously. The HTTP-to-queue pattern is one of the most common serverless integration patterns for decoupling request handling from background processing.
 
 ## Architecture
 
+<!-- diagram-id: architecture -->
 ```mermaid
 flowchart LR
     Q[Queue Storage Message] --> TRIG[Queue Trigger]

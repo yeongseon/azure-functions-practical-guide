@@ -1,9 +1,20 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/performance-reliability
+---
+
 # Best Practices
 
 This section covers operational and design best practices specific to Azure Functions. Unlike Platform (which explains how things work) or Operations (which covers day-to-day execution), Best Practices bridges the gap with actionable guidance to avoid common mistakes.
 
 Best Practices in this guide are intentionally execution-focused: hosting plan choice, trigger behavior, scaling guardrails, and operational safety controls that prevent incidents.
 
+<!-- diagram-id: best-practices -->
 ```mermaid
 flowchart LR
     P["Platform<br/>how it works"] --> B["Best Practices<br/>how to choose and configure safely"]
@@ -76,6 +87,7 @@ Rationale:
 - Scaling and reliability turn those choices into predictable runtime behavior.
 - Networking/security/deployment/cost then harden and operationalize the design.
 
+<!-- diagram-id: reading-order-recommendation -->
 ```mermaid
 flowchart TD
     H[1. Hosting] --> TB[2. Triggers and Bindings]

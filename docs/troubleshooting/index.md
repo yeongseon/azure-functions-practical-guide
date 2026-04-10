@@ -1,3 +1,19 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring#application-insights
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-recover-from-failed-host
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/configure-monitoring
+---
+
 # Troubleshooting
 
 Use this section when Azure Functions workloads are degraded, failing, or behaving unexpectedly.
@@ -41,6 +57,7 @@ Use this classification first to narrow where to collect evidence.
 
 ## Decision tree
 
+<!-- diagram-id: decision-tree -->
 ```mermaid
 flowchart TD
     A[Issue detected] --> B{Is it a 5xx issue?}

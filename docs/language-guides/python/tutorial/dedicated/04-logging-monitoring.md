@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring#application-insights
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-monitor/alerts/alerts-metric-overview
 ---
 
 # 04 - Logging & Monitoring (Dedicated)
@@ -40,6 +47,7 @@ You will connect the Dedicated Function App to workspace-based Application Insig
 
     Basic B1 has no VNet integration or private endpoints. The app runs on a fixed App Service Plan (always on, no scale-to-zero). VNet support requires upgrading to Standard (S1) or Premium (P1v3) tier.
 
+    <!-- diagram-id: what-you-ll-build -->
     ```mermaid
     flowchart TD
         INET[Internet] -->|HTTPS| FA[Function App\nDedicated B1-P3v3\nLinux Python 3.11]
@@ -85,6 +93,7 @@ You will connect the Dedicated Function App to workspace-based Application Insig
         style DNS fill:#E3F2FD
     ```
 
+<!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart LR
     A[Function App telemetry] --> B[Application Insights]

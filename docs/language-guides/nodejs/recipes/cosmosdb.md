@@ -1,9 +1,18 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-cosmosdb-v2
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference#configure-an-identity-based-connection
+---
+
 # Cosmos DB Integration
 
 This recipe demonstrates real Azure Cosmos DB input/output bindings in Node.js v4 using `extraInputs` and `extraOutputs` with `app.http()`.
 
 ## Architecture
 
+<!-- diagram-id: architecture -->
 ```mermaid
 flowchart LR
     API[HTTP Trigger] --> FUNC[Node.js v4 Function]

@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-event-grid-blob-trigger
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue
 ---
 
 # 07 - Extending Triggers (Flex Consumption)
@@ -34,6 +41,7 @@ You will extend the Python Flex app with timer, queue, and Event Grid-based blob
 
     FC1 deploys with VNet integration, private endpoints for all storage services, private DNS zones, and user-assigned managed identity. Storage uses identity-based authentication (no shared keys).
 
+    <!-- diagram-id: what-you-ll-build -->
     ```mermaid
     flowchart TD
         INET[Internet] -->|HTTPS| FA[Function App\nFlex Consumption FC1\nLinux Python 3.11]
@@ -82,6 +90,7 @@ You will extend the Python Flex app with timer, queue, and Event Grid-based blob
         style DNS fill:#E3F2FD
     ```
 
+<!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart LR
     Queue[Storage Queue: tasks] --> QueueFn[Queue trigger]

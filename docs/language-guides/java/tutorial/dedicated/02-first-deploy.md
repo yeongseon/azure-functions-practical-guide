@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-java
 ---
 
 # 02 - First Deploy (Dedicated)
@@ -38,6 +45,7 @@ You will provision a Linux Dedicated (B1) Function App for Java, deploy with `fu
 
     Dedicated uses standard App Service plan pricing — you pay for the plan whether or not functions are running. This provides predictable costs and supports long-running processes.
 
+    <!-- diagram-id: what-you-ll-build -->
     ```mermaid
     flowchart TD
         INET[Internet] -->|HTTPS| FA[Function App\nDedicated B1\nLinux Java 17]
@@ -57,6 +65,7 @@ You will provision a Linux Dedicated (B1) Function App for Java, deploy with `fu
         style STORAGE fill:#FFF3E0
     ```
 
+<!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart LR
     A[Set variables + login] --> B[Create RG + storage]

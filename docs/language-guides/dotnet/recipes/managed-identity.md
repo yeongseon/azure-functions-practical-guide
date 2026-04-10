@@ -1,7 +1,16 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+---
+
 # Managed Identity
 
 Use system-assigned managed identity for passwordless access to Azure resources from functions.
 
+<!-- diagram-id: managed-identity -->
 ```mermaid
 flowchart LR
     A[Trigger] --> B[Function]

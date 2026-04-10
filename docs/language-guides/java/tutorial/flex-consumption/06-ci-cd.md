@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-continuous-deployment
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
 ---
 
 # 06 - CI/CD (Flex Consumption)
@@ -38,6 +45,7 @@ You will configure a GitHub Actions pipeline that builds and deploys a Java Func
 
     GitHub Actions deploys to the Flex Consumption function app using a publish profile and the `Azure/functions-action`.
 
+    <!-- diagram-id: what-you-ll-build -->
     ```mermaid
     flowchart LR
         GH["GitHub Actions"] -->|"publish profile\n+ staging dir"| FA[Function App\nFlex Consumption FC1]
@@ -47,6 +55,7 @@ You will configure a GitHub Actions pipeline that builds and deploys a Java Func
         style FA fill:#0078d4,color:#fff
     ```
 
+<!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart LR
     A[Push to main] --> B[GitHub Actions]

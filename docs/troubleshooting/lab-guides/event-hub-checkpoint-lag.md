@@ -1,3 +1,17 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-event-hubs
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-host-json
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-best-practices
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/event-hubs/event-hubs-scalability
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-monitor/logs/log-query-overview
+---
+
 # Lab Guide: Event Hub Checkpoint Lag on Azure Functions Premium EP1
 
 This lab guide documents a completed Event Hub checkpoint lag experiment on Azure Functions Premium EP1. Every metric in this document comes from a real telemetry window (`2026-04-07 13:12:00` to `13:36:00` UTC) captured from the production-like lab deployment.
@@ -37,6 +51,7 @@ This lab uses a controlled delay toggle in `eventhub_lag_processor` to create an
 
 ### Failure progression model
 
+<!-- diagram-id: failure-progression-model -->
 ```mermaid
 flowchart TD
     A[Steady Event Hub ingestion at 199 eps] --> B[Function pulls batches from 4 partitions]
@@ -52,6 +67,7 @@ flowchart TD
 
 ### End-to-end telemetry sequence
 
+<!-- diagram-id: end-to-end-telemetry-sequence -->
 ```mermaid
 sequenceDiagram
     participant Prod as Producer
@@ -122,6 +138,7 @@ sequenceDiagram
 
 ### Causal chain
 
+<!-- diagram-id: causal-chain -->
 ```mermaid
 flowchart LR
     A[delayMs=0 baseline] --> B[proc ~5-6ms and backlog ~0.1s]
@@ -592,6 +609,7 @@ az monitor log-analytics query \
 
 ### 3.6 Triage decision flow used during live response
 
+<!-- diagram-id: 3-6-triage-decision-flow-used-during-live-response -->
 ```mermaid
 flowchart TD
     A[Checkpoint lag alert] --> B{Request duration rising?}
@@ -728,6 +746,7 @@ Recovery drain snippets:
 
 ### Evidence Timeline
 
+<!-- diagram-id: evidence-timeline -->
 ```mermaid
 gantt
     title Event Hub Checkpoint Lag Evidence Timeline (UTC)

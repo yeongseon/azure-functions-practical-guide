@@ -1,3 +1,19 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-best-practices
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/architecture/framework/resiliency/disaster-recovery
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/storage/common/storage-redundancy
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-deployment-slots
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/traffic-manager/traffic-manager-monitoring
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/frontdoor/health-probes
+---
+
 # Recovery
 This guide covers operational recovery for Azure Functions: rollback, backup planning, and regional resilience.
 It focuses on practical runbook execution for minimizing downtime and data loss.
@@ -55,6 +71,7 @@ Use the runbook that matches observed symptoms and dependency status.
 ### Recovery decision flow
 Use this decision path to choose rollback, failover, or rebuild.
 
+<!-- diagram-id: recovery-decision-flow -->
 ```mermaid
 flowchart TD
     A[Incident detected] --> B[Assess scope and impact]
@@ -170,6 +187,7 @@ Recommended pattern:
 
 Multi-region failover architecture:
 
+<!-- diagram-id: regional-recovery-planning -->
 ```mermaid
 flowchart LR
     U[Clients] --> E[Edge Routing]

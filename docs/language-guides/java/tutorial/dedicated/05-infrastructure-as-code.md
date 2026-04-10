@@ -10,6 +10,15 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-java
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/templates/microsoft.web/sites
 ---
 
 # 05 - Infrastructure as Code (Dedicated)
@@ -32,6 +41,7 @@ Describe your Java Function App platform using Bicep so provisioning is determin
 
 You will create a Bicep template that provisions a Dedicated B1 Function App with Java 17 runtime, AlwaysOn enabled, and Application Insights — all in a single repeatable deployment. Unlike Premium, Dedicated does not require Azure Files content share settings.
 
+<!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
     A[Bicep template] --> B[az deployment group create]

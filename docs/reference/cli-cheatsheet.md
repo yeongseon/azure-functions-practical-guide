@@ -1,7 +1,18 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-run-local
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/cli/azure/functionapp
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-develop-local
+---
+
 # CLI Cheatsheet
 
 Quick reference for the most commonly used commands when developing, deploying, and managing Azure Functions Python apps.
 
+<!-- diagram-id: cli-cheatsheet -->
 ```mermaid
 flowchart LR
     A[Local dev] --> B[Deploy]

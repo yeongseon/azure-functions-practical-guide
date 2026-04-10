@@ -1,8 +1,17 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-recover-from-failed-host
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+---
+
 # Azure Functions Incident Playbooks
 
 Symptom-oriented troubleshooting guides for Azure Functions incidents.
 Each playbook follows a hypothesis-driven structure: **What you observe → Hypotheses → Checks → Interpretation → Fix**.
 
+<!-- diagram-id: azure-functions-incident-playbooks -->
 ```mermaid
 graph TD
     A[Reported symptom] --> B{Primary symptom area}

@@ -1,9 +1,26 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-overview
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/supported-languages
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/performance-reliability
+---
+
 # Learning Paths
 
 This page provides guided learning tracks for users of this guide.
 
 Each track is built around Microsoft Learn concepts and organized for different time budgets and responsibilities.
 
+<!-- diagram-id: learning-paths -->
 ```mermaid
 flowchart LR
     Q[Quick Start\n30 min] --> C[Core Path\n2-3 hrs]

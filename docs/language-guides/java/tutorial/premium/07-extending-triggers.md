@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-java
 ---
 
 # 07 - Extending with Triggers (Premium)
@@ -32,6 +39,7 @@ Extend beyond HTTP using queue, blob, timer, and Event Hub triggers with annotat
 
 You will verify all 16 functions deployed to the Premium plan, covering HTTP, queue, blob, timer, and Event Hub trigger types. The reference app includes functions for health monitoring, DNS resolution, external dependencies, storage probing, error testing, and more.
 
+<!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
     A[Queue message] --> B["@QueueTrigger handler"]

@@ -1,9 +1,18 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/app-service/app-service-key-vault-references
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/javascript/api/overview/azure/keyvault-secrets-readme
+---
+
 # Key Vault Access
 
 This recipe covers both Key Vault reference app settings and direct SDK access with `DefaultAzureCredential` in Node.js v4 functions.
 
 ## Architecture
 
+<!-- diagram-id: architecture -->
 ```mermaid
 flowchart LR
     FUNC[Function App] --> MSI[Managed Identity]

@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-node
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
 ---
 
 # 02 - First Deploy (Premium)
@@ -33,6 +40,7 @@ Deploy a Node.js Function App to an Elastic Premium plan (`EP1`) with always-war
 
     Premium deploys with pre-warmed instances, Azure Files content share for deployment, and optional VNet integration. Storage uses connection string authentication by default.
 
+    <!-- diagram-id: what-you-ll-build -->
     ```mermaid
     flowchart TD
         INET[Internet] -->|HTTPS| FA[Function App\nPremium EP1\nLinux Node.js 20]

@@ -1,7 +1,20 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-python
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-overview
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-http-webhook
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-python
+---
+
 # Python v2 Programming Model
 
 This document provides a deep dive into the Python v2 programming model for Azure Functions. The v2 model uses Python decorators to define triggers, bindings, and routes — replacing the file-based `function.json` configuration from v1.
 
+<!-- diagram-id: python-v2-programming-model -->
 ```mermaid
 flowchart LR
     A[Decorators in function_app.py and blueprints] --> B[Python worker indexes functions]

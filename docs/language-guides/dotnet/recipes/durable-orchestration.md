@@ -1,7 +1,16 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+---
+
 # Durable Orchestration
 
 Coordinate long-running workflows with Durable Functions in .NET isolated worker.
 
+<!-- diagram-id: durable-orchestration -->
 ```mermaid
 flowchart LR
     A[Trigger] --> B[Function]

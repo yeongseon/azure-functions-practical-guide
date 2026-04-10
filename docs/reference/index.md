@@ -1,9 +1,22 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-host-json
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-core-tools-reference
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+---
+
 # Reference
 
 Quick lookup documentation for Azure Functions platform operations and diagnostics.
 
 ## Documents
 
+<!-- diagram-id: documents -->
 ```mermaid
 graph TD
     A[Reference] --> B[CLI Cheatsheet]

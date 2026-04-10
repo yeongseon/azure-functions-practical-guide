@@ -1,9 +1,18 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/app-service/app-service-web-tutorial-custom-domain
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/app-service/configure-ssl-certificate
+---
+
 # Custom Domain and Certificates
 
 This recipe focuses on platform configuration for custom domains and TLS certificates on Azure Functions. It is primarily an operations workflow, not application code.
 
 ## Architecture
 
+<!-- diagram-id: architecture -->
 ```mermaid
 flowchart LR
     DNS[Public DNS zone] --> HOSTNAME[Function App hostname binding]

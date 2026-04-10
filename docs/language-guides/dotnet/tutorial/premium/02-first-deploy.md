@@ -10,6 +10,15 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-develop-local
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-premium-plan
 ---
 
 # 02 - First Deploy (Premium)
@@ -31,6 +40,7 @@ Deploy your .NET 8 isolated worker app to the Premium (EP1) plan with long-form 
 
 A Linux Premium Function App running the .NET 8 isolated worker on an EP1 plan, deployed from your local project with Core Tools, then validated through all HTTP endpoints.
 
+<!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
     A[az functionapp plan create EP1] --> B[az functionapp create]

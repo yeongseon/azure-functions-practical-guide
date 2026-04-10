@@ -1,9 +1,20 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-python
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+---
+
 # Python Language Guide
 
 Python is the **reference implementation** in this guide and currently contains the most complete end-to-end content set.
 
 If you are new to Azure Functions, this track is the fastest way to understand hosting plans, deployment workflows, and production operations with concrete examples.
 
+<!-- diagram-id: python-language-guide -->
 ```mermaid
 flowchart TD
     A[Tutorial Overview]

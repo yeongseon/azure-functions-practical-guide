@@ -10,6 +10,15 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-develop-local
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/app-service/overview-hosting-plans
 ---
 
 # 02 - First Deploy (Dedicated)
@@ -31,6 +40,7 @@ Deploy your .NET 8 isolated worker app to a Dedicated (App Service Plan) B1 with
 
 A Linux Dedicated Function App running the .NET 8 isolated worker on a B1 App Service Plan, deployed from your local project with Core Tools, then validated through all HTTP endpoints.
 
+<!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
     A["az appservice plan create B1"] --> B[az functionapp create]

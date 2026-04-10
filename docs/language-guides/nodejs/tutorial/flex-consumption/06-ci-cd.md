@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-continuous-deployment
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
 ---
 
 # 06 - CI/CD (Flex Consumption)
@@ -37,6 +44,7 @@ You will create a GitHub Actions workflow for Flex Consumption deployment and co
 
     GitHub Actions deploys to the Flex Consumption function app. Flex Consumption supports remote build for optimized deployments.
 
+    <!-- diagram-id: what-you-ll-build -->
     ```mermaid
     flowchart LR
         GH["GitHub Actions"] -->|"publish profile\n+ remote build"| FA[Function App\nFlex Consumption FC1]
@@ -46,6 +54,7 @@ You will create a GitHub Actions workflow for Flex Consumption deployment and co
         style FA fill:#0078d4,color:#fff
     ```
 
+<!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart LR
     A[Create workflow YAML] --> B[Store secrets]

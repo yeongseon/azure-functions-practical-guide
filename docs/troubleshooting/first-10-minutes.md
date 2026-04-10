@@ -1,3 +1,15 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/service-health/overview
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-diagnostics
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/configure-monitoring
+---
+
 # First 10 Minutes of an Azure Functions Incident
 
 When an incident starts, focus on three outcomes: **confirm platform status, assess app health, and identify recent change signals**.
@@ -24,6 +36,7 @@ WORKSPACE_ID="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 
 ## Triage steps
 
+<!-- diagram-id: triage-steps -->
 ```mermaid
 flowchart TD
     A[Incident starts] --> B[1. Platform and regional status]

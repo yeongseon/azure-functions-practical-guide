@@ -1,9 +1,18 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-blob
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
+---
+
 # Blob Storage Integration
 
 This recipe covers Java blob processing using trigger, input, and output bindings for ingestion and transformed output patterns.
 
 ## Architecture
 
+<!-- diagram-id: architecture -->
 ```mermaid
 flowchart LR
     BLOBIN[(incoming container)] --> TRIGGER[@BlobTrigger]

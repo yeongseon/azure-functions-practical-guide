@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-java
 ---
 
 # 07 - Extending with Triggers (Consumption)
@@ -32,6 +39,7 @@ Extend beyond HTTP using queue, blob, and timer triggers with annotation-based b
 
 You will add queue, blob, and timer triggers to a Java Function App using annotations, create the required storage resources, and validate end-to-end trigger firing.
 
+<!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
     A[Queue message] --> B["@QueueTrigger handler"]

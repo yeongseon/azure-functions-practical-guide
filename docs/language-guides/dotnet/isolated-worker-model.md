@@ -1,3 +1,11 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+---
+
 # .NET Isolated Worker Model
 
 This guide explains the .NET isolated worker model for Azure Functions, including host startup, dependency injection, trigger attributes, bindings, and migration-safe coding patterns.
@@ -8,6 +16,7 @@ This guide explains the .NET isolated worker model for Azure Functions, includin
 
 The isolated worker model runs your function code in a separate process from the Functions host. This gives clearer versioning boundaries, modern .NET hosting patterns, and easier dependency control.
 
+<!-- diagram-id: why-isolated-worker-is-the-default -->
 ```mermaid
 flowchart LR
     A[Functions Host Runtime] --> B[gRPC worker channel]

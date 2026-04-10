@@ -1,7 +1,16 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+---
+
 # HTTP API Patterns
 
 Build robust HTTP APIs with `HttpRequestData` and `HttpResponseData` in .NET isolated worker.
 
+<!-- diagram-id: http-api-patterns -->
 ```mermaid
 flowchart LR
     A[Trigger] --> B[Function]

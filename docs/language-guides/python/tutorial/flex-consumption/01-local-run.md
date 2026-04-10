@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-run-local
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-event-grid-blob-trigger
 ---
 
 # 01 - Run Locally (Flex Consumption)
@@ -34,12 +41,14 @@ You will run the Python reference Function App locally with Azurite, validate HT
 
     This tutorial runs locally — no Azure resources are created.
 
+    <!-- diagram-id: what-you-ll-build -->
     ```mermaid
     flowchart LR
         DEV[Local Machine] --> HOST[Functions Host :7071]
         HOST --> AZURITE[Azurite Local Storage]
     ```
 
+<!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart LR
     Dev[Developer Shell] --> Venv[Python venv + dependencies]

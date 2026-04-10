@@ -1,7 +1,16 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+---
+
 # Queue
 
 Design queue-driven background processing with retries, dead-letter strategy, and idempotency guards.
 
+<!-- diagram-id: queue -->
 ```mermaid
 flowchart LR
     A[Trigger] --> B[Function]

@@ -1,9 +1,16 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-dotnet-class-library
+---
+
 # .NET Recipes
 
 Implementation-focused patterns for .NET isolated worker Azure Functions.
 
 ## Recipe Categories
 
+<!-- diagram-id: recipe-categories -->
 ```mermaid
 flowchart LR
     A[HTTP] --> B[Storage]

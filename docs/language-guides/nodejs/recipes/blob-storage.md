@@ -1,9 +1,18 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-blob
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+---
+
 # Blob Storage Patterns
 
 This recipe covers Blob trigger processing plus blob input/output bindings in Node.js v4 for ingestion and transformed output flows.
 
 ## Architecture
 
+<!-- diagram-id: architecture -->
 ```mermaid
 flowchart LR
     UPLOAD[Blob Upload to incoming container] --> TRIGGER[storageBlob Trigger]

@@ -1,3 +1,17 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-monitor/app/data-model
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-monitor/essentials/activity-log
+---
+
 # Troubleshooting Architecture Map for Azure Functions
 
 This guide is a diagnostic architecture reference for incident response.
@@ -16,6 +30,7 @@ Use it as a fast index from symptom category to architecture layer ownership.
 The request path is where availability and latency symptoms first appear.
 Most `5xx`, timeout, DNS, and auth issues can be mapped to one of these nodes.
 
+<!-- diagram-id: request-path-architecture-where-user-facing-failures-surface -->
 ```mermaid
 flowchart LR
     A[Client] --> B[DNS]
@@ -64,6 +79,7 @@ requests
 Azure Functions execution is split across host and language worker boundaries.
 Symptoms often appear in requests, but root causes are frequently in process lifecycle and resource pressure.
 
+<!-- diagram-id: runtime-and-worker-model-where-execution-failures-originate -->
 ```mermaid
 flowchart TB
     A[Functions Host Process\nTrigger listeners, bindings, scale hooks] --> B[Language Worker Process\nPython, Node.js, Java, .NET isolated]
@@ -101,6 +117,7 @@ flowchart TB
 Many incidents begin at deployment transitions.
 Map failures by stage so rollback and forward-fix decisions are evidence-based.
 
+<!-- diagram-id: deployment-path-where-release-regressions-appear -->
 ```mermaid
 flowchart LR
     A[Code] --> B[Build]
@@ -148,6 +165,7 @@ az functionapp deployment slot list \
 Outbound failures often look like app bugs but originate in network controls.
 Use this path to separate DNS, routing, NSG, and SNAT issues.
 
+<!-- diagram-id: network-and-outbound-path-where-external-connectivity-fails -->
 ```mermaid
 flowchart LR
     A[Function App] --> B[VNet Integration]
@@ -179,6 +197,7 @@ flowchart LR
 This map shows the primary data paths for troubleshooting.
 During incidents, choose evidence source by hypothesis rather than querying everything.
 
+<!-- diagram-id: observability-map-where-evidence-is-collected -->
 ```mermaid
 flowchart LR
     A[Function App] --> B[Application Insights]
@@ -216,6 +235,7 @@ Use this as the first routing table when symptom ownership is unclear.
 
 ## Suggested incident flow through architecture layers
 
+<!-- diagram-id: suggested-incident-flow-through-architecture-layers -->
 ```mermaid
 flowchart TD
     A[Symptom detected] --> B{User-facing 5xx or timeout?}

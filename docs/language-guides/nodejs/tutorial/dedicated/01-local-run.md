@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-node
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
 ---
 
 # 01 - Run Locally (Dedicated)
@@ -37,6 +44,7 @@ Initialize, run, and verify a Node.js v4 app on your machine before cloud deploy
 
     Dedicated plans use traditional App Service infrastructure. Locally, the function host behaves identically regardless of target plan.
 
+    <!-- diagram-id: what-you-ll-build -->
     ```mermaid
     flowchart TD
         DEV[Developer Machine] -->|func start| HOST[Local Functions Host\nPort 7071]

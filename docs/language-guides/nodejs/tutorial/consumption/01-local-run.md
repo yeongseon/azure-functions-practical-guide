@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-run-local
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/consumption-plan
 ---
 
 # 01 - Run Locally (Consumption)
@@ -39,12 +46,14 @@ You will run the Node.js v4 Functions app locally from `apps/nodejs`, install de
 
     This tutorial runs locally - no Azure resources are created.
 
+    <!-- diagram-id: what-you-ll-build -->
     ```mermaid
     flowchart LR
         DEV["Local Machine"] --> HOST["Functions Host :7071"]
         HOST --> STORAGE["Local Storage\n(Azurite or connection string)"]
     ```
 
+<!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart LR
     A["npm install in apps/nodejs"] --> B[Copy local settings example]

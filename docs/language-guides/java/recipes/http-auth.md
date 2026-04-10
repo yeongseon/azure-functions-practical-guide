@@ -1,9 +1,18 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/app-service/overview-authentication-authorization
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-http-webhook-trigger#working-with-client-identities
+---
+
 # HTTP Authentication
 
 This recipe uses App Service Authentication (Easy Auth) with Java HTTP triggers, where authentication is enforced at the platform layer and identity claims are passed in request headers.
 
 ## Architecture
 
+<!-- diagram-id: architecture -->
 ```mermaid
 flowchart LR
     CLIENT[Client with Microsoft Entra sign-in] --> EASYAUTH[Easy Auth on Function App]

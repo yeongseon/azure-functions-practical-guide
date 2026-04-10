@@ -1,7 +1,14 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale#service-limits
+---
+
 # Platform Limits
 
 Azure Functions has platform-imposed limits that vary by hosting plan. Understanding these limits is essential for capacity planning, architecture decisions, and avoiding unexpected failures. This reference documents the most impactful limits for Python function apps.
 
+<!-- diagram-id: platform-limits -->
 ```mermaid
 flowchart LR
     C[Consumption] --> L[10 min max timeout]

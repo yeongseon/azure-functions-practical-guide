@@ -1,9 +1,16 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+---
+
 # Node.js Recipes
 
 The recipes section provides implementation-focused patterns for common integration scenarios in Azure Functions Node.js v4 apps.
 
 ## Recipe Categories
 
+<!-- diagram-id: recipe-categories -->
 ```mermaid
 flowchart TD
     A[Recipes] --> B[HTTP]

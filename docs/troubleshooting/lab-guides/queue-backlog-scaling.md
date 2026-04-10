@@ -1,3 +1,17 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue-trigger
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-host-json
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/monitor-functions
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-monitor/logs/log-query-overview
+---
+
 # Lab Guide: Queue Backlog Scaling on Y1 Consumption (Real Evidence)
 
 This lab reproduces and analyzes a real queue backlog burst on Azure Functions Consumption (Y1) using telemetry collected on 2026-04-07. The objective is to prove what happened, what did not happen, and why a 2000-message burst drained in about 7.3 minutes without scale-out.
@@ -58,6 +72,7 @@ These values are emitted in the `message` column of `traces` and must be parsed 
 
 ### Failure progression model for this incident
 
+<!-- diagram-id: failure-progression-model-for-this-incident -->
 ```mermaid
 flowchart LR
     A[Burst injection starts\n08:23:09 UTC] --> B[2000 messages injected\nends 08:23:31 UTC]
@@ -77,6 +92,7 @@ flowchart LR
 
 ### Timeline view
 
+<!-- diagram-id: timeline-view -->
 ```mermaid
 gantt
     title Queue Backlog Burst and Drain (UTC, 2026-04-07)
@@ -116,6 +132,7 @@ If a high-burst queue workload is injected into Y1 Consumption with steady 5-sec
 
 ### Hypothesis decision flow
 
+<!-- diagram-id: hypothesis-decision-flow -->
 ```mermaid
 flowchart TD
     A[Backlog observed] --> B{Any retries or poison?}
@@ -398,6 +415,7 @@ Age interpretation:
 
 ### Evidence timeline
 
+<!-- diagram-id: evidence-timeline -->
 ```mermaid
 sequenceDiagram
     participant Producer
@@ -456,6 +474,7 @@ sequenceDiagram
 
 ### Evidence Timeline
 
+<!-- diagram-id: evidence-timeline-2 -->
 ```mermaid
 sequenceDiagram
     participant Producer

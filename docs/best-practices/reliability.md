@@ -1,3 +1,23 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-idempotent
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reliable-event-processing
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-error-pages
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue-trigger
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-service-bus-trigger
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/storage-considerations
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale#timeout
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-overview
+---
+
 # Reliability Best Practices for Azure Functions
 
 Reliable Azure Functions systems are built around the runtime execution model: most event-driven triggers (queues, Event Hubs, Service Bus, blob) deliver at-least-once, retries are normal, host instances can restart at any time, and dependencies can throttle. HTTP triggers behave differently — they are synchronous request/response and do not retry automatically. This guide focuses on safe execution patterns that keep behavior correct during duplicates, retries, scale-out, and partial outages.
@@ -70,6 +90,7 @@ Treat each invocation as potentially repeated.
 4. Persist completion marker atomically.
 5. Ack/complete message only after durable success.
 
+<!-- diagram-id: retry-safe-processing-design -->
 ```mermaid
 flowchart TD
     S[Invocation starts] --> K[Compute deterministic operation key]
@@ -233,6 +254,7 @@ Minimum production pattern:
 
 ### Message processing lifecycle (retry and poison path)
 
+<!-- diagram-id: message-processing-lifecycle-retry-and-poison-path -->
 ```mermaid
 flowchart TD
     T[Trigger event arrives] --> H[Function handler starts]

@@ -1,3 +1,11 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-consumption-costs
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/pricing
+---
+
 # Cost Optimization Best Practices
 
 Azure Functions cost control is primarily an execution-model problem: trigger volume, scale behavior, telemetry ingestion, and storage transaction patterns determine spend more than code size. This guide provides practical controls to keep cost predictable without reducing reliability.
@@ -182,6 +190,7 @@ Operational cost control requires continuous monitoring, not monthly review.
 3. Storage transaction surge alert for `AzureWebJobsStorage`.
 4. Queue age growth while instance count pinned at scale limit.
 
+<!-- diagram-id: alert-policy-examples -->
 ```mermaid
 flowchart TD
     A[Budget threshold breached] --> B[Open cost incident]
@@ -244,6 +253,7 @@ flowchart TD
 - Review cost monthly with deployment and traffic changes.
 - Keep rollback option for plan changes and scale settings.
 
+<!-- diagram-id: governance -->
 ```mermaid
 flowchart TD
     A[Start with workload shape] --> B{Private networking required?}

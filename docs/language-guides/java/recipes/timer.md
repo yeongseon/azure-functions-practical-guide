@@ -1,9 +1,18 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-timer
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-app-settings
+---
+
 # Timer Trigger
 
 This recipe uses Java timer triggers with NCRONTAB schedules, past-due handling, and hosting-plan time-zone behavior.
 
 ## Architecture
 
+<!-- diagram-id: architecture -->
 ```mermaid
 flowchart LR
     SCHEDULE[NCRONTAB schedule] --> TIMER[@TimerTrigger]

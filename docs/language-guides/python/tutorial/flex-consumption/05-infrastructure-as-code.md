@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-resource-manager/bicep/overview
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
 ---
 
 # 05 - Infrastructure as Code (Flex Consumption)
@@ -33,6 +40,7 @@ You will validate and deploy the Flex Consumption infrastructure template, then 
 
     FC1 deploys with VNet integration, private endpoints for all storage services, private DNS zones, and user-assigned managed identity. Storage uses identity-based authentication (no shared keys).
 
+    <!-- diagram-id: what-you-ll-build -->
     ```mermaid
     flowchart TD
         INET[Internet] -->|HTTPS| FA[Function App\nFlex Consumption FC1\nLinux Python 3.11]
@@ -81,6 +89,7 @@ You will validate and deploy the Flex Consumption infrastructure template, then 
         style DNS fill:#E3F2FD
     ```
 
+<!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart LR
     Bicep["infra/flex-consumption/main.bicep"] --> Deploy[Resource group deployment]

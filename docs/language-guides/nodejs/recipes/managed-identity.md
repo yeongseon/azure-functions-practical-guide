@@ -1,9 +1,18 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/overview
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial
+---
+
 # Managed Identity
 
 This recipe enables system-assigned managed identity, grants RBAC roles, and uses `DefaultAzureCredential` to access Azure Storage and Cosmos DB without secrets.
 
 ## Architecture
 
+<!-- diagram-id: architecture -->
 ```mermaid
 flowchart LR
     FUNC[Function App] --> MSI[System-assigned Managed Identity]

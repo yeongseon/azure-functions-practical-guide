@@ -1,3 +1,11 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-event-grid
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+---
+
 # Event Grid Trigger
 
 > **Note:** This recipe covers Event Grid integration for future extensibility beyond HTTP triggers. The most common pattern shown here is an HTTP trigger that publishes events to Event Grid, and an Event Grid trigger that consumes them.
@@ -14,6 +22,7 @@ Common use cases with Azure Functions:
 
 ## Architecture
 
+<!-- diagram-id: architecture -->
 ```mermaid
 flowchart LR
     SRC[Event Source] --> EG[Event Grid Topic or System Topic]

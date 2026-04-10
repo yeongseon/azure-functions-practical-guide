@@ -1,7 +1,16 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+---
+
 # Blob Storage
 
 Implement blob trigger and blob output scenarios for ingestion and transformation pipelines.
 
+<!-- diagram-id: blob-storage -->
 ```mermaid
 flowchart LR
     A[Trigger] --> B[Function]

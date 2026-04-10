@@ -1,3 +1,13 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-run-local
+---
+
 # Node.js v4 Programming Model
 
 This deep dive explains the Node.js v4 code-first model for Azure Functions. It covers registration APIs, trigger patterns, request and response handling, and practical composition patterns for production-ready apps.
@@ -6,6 +16,7 @@ This deep dive explains the Node.js v4 code-first model for Azure Functions. It 
 
 The v4 model removes per-function `function.json` authoring for normal scenarios and registers triggers directly in code.
 
+<!-- diagram-id: main-content -->
 ```mermaid
 flowchart TD
     A[Host starts] --> B["Load @azure/functions app object"]

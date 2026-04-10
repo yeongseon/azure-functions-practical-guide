@@ -1,3 +1,17 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/performance-reliability
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/reliability/reliability-functions
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-host-json
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-service-bus
+---
+
 # Reliability
 Reliability in Azure Functions is a design concern, not only an operations concern. Your trigger model, hosting plan, retry policy, and network topology jointly determine failure behavior.
 ## Prerequisites
@@ -62,6 +76,7 @@ Use retries for transient failures only. Non-transient failures should route to 
     ```
 
 #### Retry flow with exponential backoff timing
+<!-- diagram-id: retry-flow-with-exponential-backoff-timing -->
 ```mermaid
 sequenceDiagram
     autonumber
@@ -174,6 +189,7 @@ Design requirements:
 - Capture `deadLetterReason` and `deadLetterErrorDescription` before replay.
 - Typical reasons include lock lost, deserialization failure, or business validation failure.
 
+<!-- diagram-id: queue-specific-poison-behaviors -->
 ```mermaid
 flowchart TD
     A[Queued Message] --> B[Function Invocation]
@@ -206,6 +222,7 @@ Zone-aware architecture options are strongest on Premium, Dedicated, and Flex Co
 - Zone-resilient design should include zone-redundant dependencies (storage, messaging, data stores).
 - Consumption designs should emphasize retry/idempotency and multi-region recovery patterns where needed.
 
+<!-- diagram-id: availability-zones-and-high-availability -->
 ```mermaid
 flowchart LR
     subgraph Region[Azure Region]
@@ -281,6 +298,7 @@ Protect downstream dependencies using:
 - and bulkheading (separate processing lanes for critical/non-critical work).
 
 ### Reliability architecture pattern
+<!-- diagram-id: reliability-architecture-pattern -->
 ```mermaid
 flowchart LR
     In[Trigger Event] --> Fn[Function Handler]

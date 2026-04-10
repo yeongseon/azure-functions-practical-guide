@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
 ---
 
 # 07 - Extending Triggers (Flex Consumption)
@@ -36,6 +43,7 @@ You will add timer, queue, and blob triggers to a Node.js v4 app and verify that
 
     This tutorial adds non-HTTP triggers that require storage queues and blob containers.
 
+    <!-- diagram-id: what-you-ll-build -->
     ```mermaid
     flowchart TD
         TIMER["Timer\n(CRON schedule)"] --> FA[Function App\nFlex Consumption FC1]
@@ -49,6 +57,7 @@ You will add timer, queue, and blob triggers to a Node.js v4 app and verify that
         style BLOB fill:#E3F2FD
     ```
 
+<!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart LR
     A[Add timer trigger] --> B[Add queue trigger]

@@ -1,9 +1,18 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/app-service/overview-authentication-authorization
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-http-webhook-trigger
+---
+
 # HTTP Authentication
 
 This recipe uses App Service Authentication (Easy Auth) with Node.js v4 HTTP triggers and Microsoft Entra ID, relying on platform-provided identity headers instead of custom token parsing.
 
 ## Architecture
 
+<!-- diagram-id: architecture -->
 ```mermaid
 flowchart LR
     USER[User or API Client] --> ENTRA[Microsoft Entra ID]

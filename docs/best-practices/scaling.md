@@ -1,9 +1,22 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/event-driven-scaling
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-concurrency
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+---
+
 # Scaling Best Practices
 
 Scaling in Azure Functions is most effective when treated as an operational contract, not a platform mystery. The practical goal is to set expectations and limits so trigger-driven scale-out improves throughput without overloading dependencies.
 
 For platform mechanics, see [Platform: Scaling](../platform/scaling.md). This page focuses on tuning choices and safety guardrails.
 
+<!-- diagram-id: scaling-best-practices -->
 ```mermaid
 flowchart TD
     A[Workload pattern] --> B{Primary trigger type}
@@ -166,6 +179,7 @@ Scale-to-zero reduces idle cost but can increase startup latency.
 | Failure injection | Introduce dependency throttling, latency, or partial outage | Retry volume, throttling responses, poison/dead-letter growth | System degrades predictably, retries stay bounded, no cascading failure |
 | Recovery | Remove injected fault and continue traffic | Backlog drain time, duplicate side effects, steady-state re-entry time | Backlog drains to normal and service returns to baseline behavior |
 
+<!-- diagram-id: phase-4-recovery -->
 ```mermaid
 flowchart LR
     A[Phase 1 Baseline] --> B[Phase 2 Burst]

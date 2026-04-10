@@ -10,6 +10,15 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-resource-manager/bicep/overview
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-premium-plan
 ---
 
 # 05 - Infrastructure as Code (Premium)
@@ -31,6 +40,7 @@ Describe your .NET Function App platform using Bicep so provisioning is determin
 
 You will define a complete Premium environment in Bicep (storage account, EP1 plan, and Linux Function App for .NET 8 isolated worker), apply required host storage and content share settings, and deploy from your own template.
 
+<!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
     A[Bicep template] --> B[az deployment group create]

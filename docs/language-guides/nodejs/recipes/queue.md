@@ -1,9 +1,18 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-error-pages
+---
+
 # Queue Processing
 
 This recipe shows real queue-triggered background processing with queue output bindings, host defaults, and poison queue behavior in Node.js v4.
 
 ## Architecture
 
+<!-- diagram-id: architecture -->
 ```mermaid
 flowchart LR
     PRODUCER["HTTP/API Producer"] --> INQ[orders Queue]

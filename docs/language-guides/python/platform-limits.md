@@ -1,7 +1,16 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale#service-limits
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/storage/common/scalability-targets-standard-account
+---
+
 # Platform Limits
 
 Azure Functions has platform-imposed limits that vary by hosting plan. Understanding these limits is essential for capacity planning, architecture decisions, and avoiding unexpected failures. This reference documents the most impactful limits for Python function apps.
 
+<!-- diagram-id: platform-limits -->
 ```mermaid
 flowchart LR
     A[Hosting plan selection] --> B[Scale-out limits]

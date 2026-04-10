@@ -10,6 +10,15 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-app-settings
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-premium-plan
 ---
 
 # 03 - Configuration (Premium)
@@ -31,6 +40,7 @@ Apply environment settings, runtime configuration, and host-level options so the
 
 You will standardize .NET isolated worker app settings for Premium, keep environment-specific values outside the artifact, and verify effective configuration from Azure.
 
+<!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
     A[local.settings.json] --> B[App Settings in Azure]

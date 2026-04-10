@@ -1,9 +1,18 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide
+---
+
 # Tutorial — Choose Your Hosting Plan
 
 This section provides four complete .NET tracks that follow the same seven-step progression from local development to production-ready operation.
 
 ## Which Plan Should I Start With?
 
+<!-- diagram-id: which-plan-should-i-start-with -->
 ```mermaid
 flowchart TD
     Start[Need .NET on Azure Functions] --> Q1{Need scale to zero?}

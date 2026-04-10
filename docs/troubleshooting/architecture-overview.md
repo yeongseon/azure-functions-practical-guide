@@ -1,3 +1,31 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-diagnostics
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-cosmosdb-v2-trigger
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs-trigger
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus
+---
+
 # Troubleshooting Architecture Overview
 
 This page answers the first practical question during an Azure Functions incident: **which platform segment is failing?**
@@ -20,6 +48,7 @@ Use this page to route quickly to the right evidence and the right troubleshooti
 
 Azure Functions does not have one runtime shape. The failure domain changes materially by hosting plan.
 
+<!-- diagram-id: 1-hosting-plan-architecture-where-startup-and-scale-behavior-change -->
 ```mermaid
 flowchart LR
     A[Client or Event Source] --> B["Azure Functions Front Door / Trigger Source"]
@@ -57,6 +86,7 @@ flowchart LR
 
 Most Azure Functions incidents begin before user code runs. The event must first reach the trigger listener, be accepted by the host, and then complete any binding reads and writes.
 
+<!-- diagram-id: 2-trigger-and-binding-architecture-where-invocations-begin-or-stall -->
 ```mermaid
 flowchart TD
     A[Event source or caller] --> B{Trigger type}
@@ -85,6 +115,7 @@ flowchart TD
 
 ### Request flow examples by trigger type
 
+<!-- diagram-id: request-flow-examples-by-trigger-type -->
 ```mermaid
 flowchart LR
     A[HTTP client] --> B[Functions endpoint]
@@ -128,6 +159,7 @@ flowchart LR
 
 Azure Functions scaling is a control loop, not instant elasticity. Backlog, target-based heuristics, and instance readiness all matter.
 
+<!-- diagram-id: 3-scale-controller-and-instance-management-where-backlog-and-burst-failures-originate -->
 ```mermaid
 flowchart TD
     A[Incoming load or event backlog] --> B[Scale controller observes trigger metrics]
@@ -147,6 +179,7 @@ flowchart TD
 
 ### Scale-out decision flow
 
+<!-- diagram-id: scale-out-decision-flow -->
 ```mermaid
 flowchart LR
     A[Queue depth, partition lag, HTTP demand, concurrency pressure] --> B{Trigger-specific thresholds crossed?}
@@ -186,6 +219,7 @@ az monitor activity-log list --resource-group "<resource-group>" --offset 2h --m
 
 Cold start is not one step. It is a chain: instance allocation, host specialization, runtime loading, extension startup, application import, and first dependency initialization.
 
+<!-- diagram-id: 4-cold-start-flow-where-first-execution-latency-appears -->
 ```mermaid
 sequenceDiagram
     participant S as Scale Controller
@@ -236,6 +270,7 @@ az functionapp config appsettings list --resource-group "<resource-group>" --nam
 
 Durable Functions is not a single long-running process. It is a state-driven workflow pattern backed by storage. The orchestrator replays history, the runtime persists checkpoints, and activity functions run as separate executions.
 
+<!-- diagram-id: 5-durable-functions-orchestration-architecture-where-replay-and-state-coordination-confuse-diagnosis -->
 ```mermaid
 flowchart TD
     A[Client starts orchestration] --> B[Durable client binding]
@@ -261,6 +296,7 @@ flowchart TD
 
 ### Durable state-machine view
 
+<!-- diagram-id: durable-state-machine-view -->
 ```mermaid
 stateDiagram-v2
     [*] --> Pending
@@ -300,6 +336,7 @@ az storage table list --account-name "<storage-name>" --auth-mode login --output
 
 Azure Functions usually sits in the middle of other services rather than at the edge alone. That means incidents often reflect integration failure, not runtime failure.
 
+<!-- diagram-id: 6-azure-service-integration-path-where-dependencies-amplify-failure -->
 ```mermaid
 flowchart LR
     A[Function invocation] --> B{Integration type}
@@ -328,6 +365,7 @@ flowchart LR
 
 ## 7) Observability Coverage and Fast Evidence Commands
 
+<!-- diagram-id: 7-observability-coverage-and-fast-evidence-commands -->
 ```mermaid
 flowchart TD
     A[Architecture segment] --> B[Best first evidence source]

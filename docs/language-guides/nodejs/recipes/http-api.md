@@ -1,9 +1,18 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-http-webhook-trigger
+---
+
 # HTTP API Patterns
 
 This recipe shows production-ready HTTP trigger patterns in the Node.js v4 programming model: query parsing, request body validation, and explicit response contracts.
 
 ## Architecture
 
+<!-- diagram-id: architecture -->
 ```mermaid
 flowchart LR
     CLIENT[API Client] --> HTTP[HTTP Trigger]

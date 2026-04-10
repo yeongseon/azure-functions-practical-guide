@@ -1,9 +1,18 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/cli/azure/functionapp
+---
+
 # host.json Reference
 
 Quick reference for Java Azure Functions operational workflows.
 
 ## Topic/Command Groups
 
+<!-- diagram-id: topic-command-groups -->
 ```mermaid
 flowchart LR
     A[host.json] --> B[extensions.http]

@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-resource-manager/bicep/overview
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
 ---
 
 # 05 - Infrastructure as Code (Premium)
@@ -40,6 +47,7 @@ You will then verify the deployment state using Azure Resource Manager deploymen
 
     The repository template at `infra/premium/main.bicep` deploys a full production-grade Premium stack with VNet integration, private endpoints for storage (blob, queue, table, file), a site private endpoint, RBAC role assignments, and Azure Files content share.
 
+    <!-- diagram-id: what-you-ll-build -->
     ```mermaid
     flowchart TD
         BICEP[infra/premium/main.bicep] -->|az deployment group create| RG[Resource Group]

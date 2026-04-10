@@ -1,7 +1,16 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-host-json
+---
+
 # host.json Reference
 
 Host-level runtime settings for .NET isolated worker function apps.
 
+<!-- diagram-id: host-json-reference -->
 ```mermaid
 flowchart TD
     A[Configuration] --> B[Build]

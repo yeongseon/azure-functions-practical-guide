@@ -1,3 +1,15 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-diagnostics
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-recover-from-failed-host
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-host-json
+---
+
 # Troubleshooting Decision Tree
 
 Use this page when you need to triage quickly from symptom to likely failure category and then open the right playbook.
@@ -6,6 +18,7 @@ The tree is intentionally symptom-first and optimized for the first 10–15 minu
 
 ## Main triage decision tree
 
+<!-- diagram-id: main-triage-decision-tree -->
 ```mermaid
 flowchart TD
     S[Incident starts: user-visible impact] --> Q1{Functions executing?}
@@ -40,6 +53,7 @@ flowchart TD
 
 ## Trigger-specific decision tree
 
+<!-- diagram-id: trigger-specific-decision-tree -->
 ```mermaid
 flowchart LR
     A[Trigger type] --> B{Which trigger?}

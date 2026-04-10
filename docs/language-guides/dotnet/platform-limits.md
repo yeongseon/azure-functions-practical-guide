@@ -1,7 +1,20 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-host-json
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/consumption-plan
+---
+
 # Platform Limits
 
 Plan-specific limits relevant to .NET isolated worker apps.
 
+<!-- diagram-id: platform-limits -->
 ```mermaid
 flowchart TD
     A[Configuration] --> B[Build]

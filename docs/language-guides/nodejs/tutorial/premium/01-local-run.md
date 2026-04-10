@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-node
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
 ---
 
 # 01 - Run Locally (Premium)
@@ -40,6 +47,7 @@ You will validate the local route at `/api/hello/{name?}` and confirm the functi
 
     This tutorial runs entirely on your local machine. No Azure resources are created. The project structure you build here will be deployed to a Premium plan in Tutorial 02.
 
+    <!-- diagram-id: what-you-ll-build -->
     ```mermaid
     flowchart LR
         DEV[Developer Machine] -->|func start| HOST[Core Tools Host\nNode.js 20\nPort 7071]

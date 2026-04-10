@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-node
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
 ---
 
 # 02 - First Deploy (Consumption)
@@ -37,6 +44,7 @@ You will provision a Linux Function App on the Consumption plan, publish your No
 
     Consumption has no VNet integration or private endpoint support. All traffic flows over the public internet. Storage uses connection string authentication.
 
+    <!-- diagram-id: what-you-ll-build -->
     ```mermaid
     flowchart TD
         INET[Internet] -->|HTTPS| FA[Function App\nConsumption Y1\nLinux Node.js 20]
@@ -55,6 +63,7 @@ You will provision a Linux Function App on the Consumption plan, publish your No
         style STORAGE fill:#FFF3E0
     ```
 
+<!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart LR
     A[Set variables + login] --> B[Create RG + storage]

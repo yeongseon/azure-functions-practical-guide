@@ -1,9 +1,16 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+---
+
 # Platform Limits
 
 Azure Functions limits vary by hosting plan and affect throughput, latency, timeout behavior, and networking options.
 
 ## Topic/Command Groups
 
+<!-- diagram-id: topic-command-groups -->
 ```mermaid
 flowchart LR
     A[Limits] --> B[Timeout]

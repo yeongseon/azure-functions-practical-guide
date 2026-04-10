@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-resource-manager/bicep/overview
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
 ---
 
 # 05 - Infrastructure as Code (Consumption)
@@ -36,6 +43,7 @@ You will deploy a repeatable Consumption infrastructure stack with Bicep and val
 
     Bicep deploys all resources into a single resource group with public internet access only.
 
+    <!-- diagram-id: what-you-ll-build -->
     ```mermaid
     flowchart TD
         BICEP["Bicep Template\ninfra/consumption/main.bicep"] -->|"az deployment group create"| RG[Resource Group]
@@ -51,6 +59,7 @@ You will deploy a repeatable Consumption infrastructure stack with Bicep and val
         style FA fill:#0078d4,color:#fff
     ```
 
+<!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart LR
     A[Review Bicep template] --> B["az deployment group create"]

@@ -1,3 +1,17 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/data-explorer/kusto/query/
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-monitor/app/data-model-complete
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-monitor/logs/log-query-overview
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-monitor/app/data-model
+---
+
 # KQL Query Library for Azure Functions
 
 Use these KQL queries during incidents to validate hypotheses with telemetry.
@@ -11,6 +25,7 @@ Queries target Azure Functions data in Application Insights with these core tabl
 
 ## Usage notes
 
+<!-- diagram-id: usage-notes -->
 ```mermaid
 flowchart LR
     A[Incident question] --> B{Query category}

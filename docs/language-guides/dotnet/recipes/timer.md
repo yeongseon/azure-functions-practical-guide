@@ -1,7 +1,16 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+---
+
 # Timer Trigger
 
 Schedule periodic jobs with cron expressions and safe idempotent processing.
 
+<!-- diagram-id: timer-trigger -->
 ```mermaid
 flowchart LR
     A[Trigger] --> B[Function]

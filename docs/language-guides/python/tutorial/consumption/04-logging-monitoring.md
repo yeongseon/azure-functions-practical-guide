@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/monitor-functions
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/cli/azure/monitor/app-insights/query
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/cli/azure/webapp/log
 ---
 
 # 04 - Logging and Monitoring (Consumption)
@@ -33,6 +40,7 @@ You will connect the Function App to Application Insights, generate sample traff
 
     Consumption has no VNet integration or private endpoint support. All traffic flows over the public internet. Storage uses connection string authentication.
 
+    <!-- diagram-id: what-you-ll-build -->
     ```mermaid
     flowchart TD
         INET[Internet] -->|HTTPS| FA[Function App\nConsumption Y1\nLinux Python 3.11]
@@ -52,6 +60,7 @@ You will connect the Function App to Application Insights, generate sample traff
         style STORAGE fill:#FFF3E0
     ```
 
+<!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart LR
     A[Function App requests] --> B[Application Insights]

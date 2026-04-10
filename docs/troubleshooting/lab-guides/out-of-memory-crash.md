@@ -1,3 +1,17 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-python
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-monitor/app/data-model-complete
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-monitor/logs/log-query-overview
+---
+
 # Lab Guide: Out of Memory Crash Under Blob Processing Load
 
 This lab reproduces a Python Azure Functions out-of-memory incident under sustained blob-trigger load. You will intentionally use a memory-inefficient buffering path, drive concurrency in phases, collect telemetry, and verify that a streaming fix plus concurrency controls removes crash-loop behavior.
@@ -33,6 +47,7 @@ Because this lab uses EP1, thresholds should match EP1 capacity characteristics,
 
 ### Failure progression model
 
+<!-- diagram-id: failure-progression-model -->
 ```mermaid
 flowchart TD
     A[Blob load increases] --> B[Function buffers payload in memory]
@@ -70,6 +85,7 @@ If the Python blob function buffers full payloads in memory while high concurren
 
 ### Causal chain
 
+<!-- diagram-id: causal-chain -->
 ```mermaid
 flowchart LR
     A[In-memory blob buffering] --> B[High per-invocation memory cost]
@@ -529,6 +545,7 @@ Final verdict: **Hypothesis supported**.
 
 ### Evidence Timeline
 
+<!-- diagram-id: evidence-timeline -->
 ```mermaid
 gantt
     title OOM Lab Evidence Timeline (EP1)

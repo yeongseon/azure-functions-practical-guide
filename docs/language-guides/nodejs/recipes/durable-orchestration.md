@@ -1,9 +1,18 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-node-model-upgrade
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-overview
+---
+
 # Durable Orchestration
 
 This recipe implements a complete Durable Functions Node.js v4 workflow with an HTTP starter, orchestrator, and activity function.
 
 ## Architecture
 
+<!-- diagram-id: architecture -->
 ```mermaid
 flowchart LR
     START[HTTP Starter] --> CLIENT[Durable Client]

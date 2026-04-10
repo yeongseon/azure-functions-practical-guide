@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-python
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-deployment-technologies
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-deployment-slots
 ---
 
 # 02 - First Deploy (Consumption)
@@ -34,6 +41,7 @@ You will provision a Linux Consumption (Y1) Function App, publish the Python cod
 
     Consumption has no VNet integration or private endpoint support. All traffic flows over the public internet. Storage uses connection string authentication.
 
+    <!-- diagram-id: what-you-ll-build -->
     ```mermaid
     flowchart TD
         INET[Internet] -->|HTTPS| FA[Function App\nConsumption Y1\nLinux Python 3.11]
@@ -138,6 +146,7 @@ curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
 
 Linux Consumption uses Zip Deploy, but Kudu advanced tools are not available on this hosting option.
 
+<!-- diagram-id: step-5-verify-deployment -->
 ```mermaid
 flowchart LR
     A[Internet] --> B["Function App<br/>Consumption Y1"]

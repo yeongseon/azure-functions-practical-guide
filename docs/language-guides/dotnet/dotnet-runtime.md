@@ -1,3 +1,11 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/supported-languages
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide
+---
+
 # .NET Runtime
 
 This reference covers runtime versions, worker configuration, target framework choices, and package dependencies for Azure Functions .NET apps.
@@ -11,6 +19,7 @@ This reference covers runtime versions, worker configuration, target framework c
 | Isolated worker | .NET 10, .NET 9, .NET 8, .NET Framework 4.8.1 | Yes |
 | In-process | .NET 8 only | No |
 
+<!-- diagram-id: supported-runtimes-and-models -->
 ```mermaid
 flowchart LR
     A[.NET 8 LTS] --> B[Isolated worker]

@@ -1,9 +1,18 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-http-webhook
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-python
+---
+
 # HTTP API Patterns
 
 This recipe covers the essential HTTP API patterns for Azure Functions Python v2 — route parameters, query strings, request body parsing, response codes, CORS headers, and a complete CRUD-style example.
 
 ## Request Flow
 
+<!-- diagram-id: request-flow -->
 ```mermaid
 flowchart LR
     CLIENT[HTTP Client] --> APIM[Optional API Gateway]

@@ -1,3 +1,17 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-monitor/alerts/action-groups
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-monitor/alerts/alerts-metric
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-monitor/alerts/alerts-log
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-monitor/alerts/alerts-create-log-alert-rule
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-monitor/alerts/proactive-diagnostics
+---
+
 # Alerts
 This guide explains how to build actionable alerting for Azure Functions.
 It covers metric alerts, log query alerts, smart detection, and action groups.
@@ -42,6 +56,7 @@ Use alert rules that are:
 - **Correlated**: combine function metrics and dependency signals.
 - **Owner-mapped**: every alert routes to a responsible team.
 ### Alert processing flow
+<!-- diagram-id: alert-processing-flow -->
 ```mermaid
 flowchart LR
     A[Metric or log signal] --> B[Alert rule evaluation]

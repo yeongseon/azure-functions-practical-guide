@@ -1,9 +1,16 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+---
+
 # Recipes
 
 This collection provides production-focused Java patterns you can lift directly into your Azure Functions projects.
 
 ## Recipe Map
 
+<!-- diagram-id: recipe-map -->
 ```mermaid
 flowchart TD
     A[HTTP Layer] --> B[Storage and Data]

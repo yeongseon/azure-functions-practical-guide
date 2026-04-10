@@ -1,7 +1,16 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+---
+
 # Cosmos DB
 
 Use Cosmos DB bindings and SDK patterns from isolated worker functions.
 
+<!-- diagram-id: cosmos-db -->
 ```mermaid
 flowchart LR
     A[Trigger] --> B[Function]

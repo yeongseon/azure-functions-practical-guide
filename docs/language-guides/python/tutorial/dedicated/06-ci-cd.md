@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/deployment-zip-push
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-how-to-github-actions
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-deployment-slots
 ---
 
 # 06 - CI/CD (Dedicated)
@@ -39,6 +46,7 @@ You will package the Python Function App from `apps/python`, deploy it with Zip 
 
     Basic B1 has no VNet integration or private endpoints. The app runs on a fixed App Service Plan (always on, no scale-to-zero). VNet support requires upgrading to Standard (S1) or Premium (P1v3) tier.
 
+    <!-- diagram-id: what-you-ll-build -->
     ```mermaid
     flowchart TD
         INET[Internet] -->|HTTPS| FA[Function App\nDedicated B1-P3v3\nLinux Python 3.11]
@@ -84,6 +92,7 @@ You will package the Python Function App from `apps/python`, deploy it with Zip 
         style DNS fill:#E3F2FD
     ```
 
+<!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart LR
     A[GitHub push] --> B[GitHub Actions workflow]

@@ -1,3 +1,17 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/reliability/reliability-functions
+---
+
 # Platform
 
 The Platform section helps you make design-time decisions for Azure Functions: runtime architecture, hosting plan, scaling model, network boundaries, reliability controls, and security posture.
@@ -6,6 +20,7 @@ Use this section before implementation to choose the right operating model for y
 
 ## What this section covers
 
+<!-- diagram-id: what-this-section-covers -->
 ```mermaid
 flowchart TD
     A[Hosting]

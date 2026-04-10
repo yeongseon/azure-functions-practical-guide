@@ -1,3 +1,17 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-timer
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-host-json
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/monitor-functions
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-monitor/logs/log-query-overview
+---
+
 # Lab Guide: Timer Trigger Missed Schedules
 
 This lab reproduces missed Timer Trigger executions in a real Y1 Consumption deployment by intentionally stopping the app during active schedule windows. You will validate timer behavior with real evidence from 2026-04-07, including baseline fires, missed windows, and post-restart `isPastDue` recovery.
@@ -23,6 +37,7 @@ This lab validates that behavior with production evidence from `labshared-func` 
 
 ### Failure progression model
 
+<!-- diagram-id: failure-progression-model -->
 ```mermaid
 flowchart TD
     A[Timer trigger configured at 2-minute interval] --> B[Regular schedule fires]
@@ -282,6 +297,7 @@ The stop command was issued at 07:23:43 but the 07:24:00 timer still fired (the 
 
 ### Evidence Timeline
 
+<!-- diagram-id: evidence-timeline -->
 ```mermaid
 gantt
     title Timer Missed Schedules Evidence Timeline

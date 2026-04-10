@@ -1,3 +1,15 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/configure-monitoring
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-recover-from-failed-host
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-monitor/overview
+---
+
 # Systematic Troubleshooting Methodology
 
 Use this methodology for incidents that are not solved by a single quick check.
@@ -137,6 +149,7 @@ Post-incident verification:
 
 ## Troubleshooting decision tree
 
+<!-- diagram-id: troubleshooting-decision-tree -->
 ```mermaid
 flowchart TD
     A[Incident detected] --> B{Platform health degraded?}

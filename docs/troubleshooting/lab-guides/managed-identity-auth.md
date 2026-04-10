@@ -1,3 +1,19 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference#configure-an-identity-based-connection
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/role-based-access-control/role-assignments-cli
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/storage/blobs/authorize-access-azure-active-directory
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-monitor/essentials/activity-log
+---
+
 # Lab Guide: Managed Identity Authentication Failure
 
 This Level 3 lab guide reproduces a managed identity authorization failure in Azure Functions and demonstrates a complete, evidence-driven chain from RBAC drift to host storage unhealthy state, listener startup failure, and trigger interruption. The scenario uses Python v2 on Flex Consumption (`FC1`) with a system-assigned identity that reads and writes blob containers.
@@ -41,6 +57,7 @@ When `Storage Blob Data Contributor` is removed from the storage scope, token ac
 
 ### 1.1 Managed identity authentication flow
 
+<!-- diagram-id: 1-1-managed-identity-authentication-flow -->
 ```mermaid
 sequenceDiagram
     autonumber
@@ -69,6 +86,7 @@ sequenceDiagram
 
 ### 1.3 RBAC propagation timeline
 
+<!-- diagram-id: 1-3-rbac-propagation-timeline -->
 ```mermaid
 gantt
     title RBAC Change to Effective Authorization Timeline
@@ -113,6 +131,7 @@ gantt
 
 ### 2.2 Causal chain
 
+<!-- diagram-id: 2-2-causal-chain -->
 ```mermaid
 flowchart LR
     A[Role assignment removed] --> B[Blob data-plane authorization denied]
@@ -585,6 +604,7 @@ Confirm recovery signatures in traces:
 
 ### 3.7 Triage decision flow
 
+<!-- diagram-id: 3-7-triage-decision-flow -->
 ```mermaid
 flowchart TD
     A[Symptom: blob operations failing or timer not running] --> B{403 AuthorizationPermissionMismatch present?}
@@ -694,6 +714,7 @@ The observed incident chain supports a strict authorization-failure model: the i
 
 ### Evidence Timeline
 
+<!-- diagram-id: evidence-timeline -->
 ```mermaid
 gantt
     title Managed Identity Auth Failure Evidence Timeline

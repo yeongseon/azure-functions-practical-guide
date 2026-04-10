@@ -1,3 +1,13 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/supported-languages
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-best-practices
+---
+
 # Cross-Guide Shared Structure Baseline
 
 This document defines the canonical file tree, heading skeletons, navigation conventions, and quality gates that every language guide in this repository must follow. The Python guide (`docs/language-guides/python/`) is the reference implementation — all other languages replicate its structure with language-specific content.
@@ -6,6 +16,7 @@ This document defines the canonical file tree, heading skeletons, navigation con
 
 Multiple language guides (Python, Node.js, Java, .NET) share the same tutorial structure, recipe categories, and reference pages. A single baseline prevents structural drift and ensures readers can switch between languages without re-learning the navigation.
 
+<!-- diagram-id: why-this-baseline-exists -->
 ```mermaid
 flowchart TD
     Baseline["Cross-Guide Baseline<br/>(this document)"]

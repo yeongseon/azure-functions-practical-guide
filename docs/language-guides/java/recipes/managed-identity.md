@@ -1,9 +1,18 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/java/api/overview/azure/identity-readme
+---
+
 # Managed Identity
 
 This recipe configures a system-assigned managed identity and uses `DefaultAzureCredential` from Java to call downstream Azure services without secrets.
 
 ## Architecture
 
+<!-- diagram-id: architecture -->
 ```mermaid
 flowchart LR
     FUNC[Function App] --> MSI[System-assigned managed identity]

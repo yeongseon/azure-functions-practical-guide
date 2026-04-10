@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-java
 ---
 
 # 05 - Infrastructure as Code (Consumption)
@@ -32,6 +39,7 @@ Describe your Java Function App platform using Bicep so provisioning is determin
 
 You will define a complete Consumption environment in Bicep (storage account, Y1 plan, and Linux Function App for Java 17), apply required host storage settings, and deploy from your own template.
 
+<!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
     A[Bicep template] --> B[az deployment group create]

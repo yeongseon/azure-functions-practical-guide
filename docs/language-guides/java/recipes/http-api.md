@@ -1,9 +1,18 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-http-webhook-trigger
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
+---
+
 # HTTP API Patterns
 
 This recipe shows production-ready Java HTTP trigger patterns: route parameters, query parsing, JSON body parsing, and response shaping across multiple HTTP methods.
 
 ## Architecture
 
+<!-- diagram-id: architecture -->
 ```mermaid
 flowchart LR
     CLIENT[Client] --> API[HTTP Trigger Function]

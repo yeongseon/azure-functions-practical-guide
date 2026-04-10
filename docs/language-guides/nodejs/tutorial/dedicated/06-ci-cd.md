@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-node
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
 ---
 
 # 06 - CI/CD (Dedicated)
@@ -31,6 +38,7 @@ Automate build and deployment with GitHub Actions and environment gates.
 
     GitHub Actions deploys to the Dedicated Function App using a publish profile stored as a repository secret. The workflow runs `npm ci`, optional tests, and then uses `Azure/functions-action` to deploy the package.
 
+    <!-- diagram-id: what-you-ll-build -->
     ```mermaid
     flowchart LR
         GH[GitHub\nmain branch] -->|push| GA[GitHub Actions\nubuntu-latest]

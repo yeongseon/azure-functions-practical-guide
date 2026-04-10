@@ -1,3 +1,23 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/security-concepts
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/function-keys-how-to
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/role-based-access-control/overview
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/app-service/app-service-web-tutorial-rest-api#app-service-cors-versus-your-cors
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/app-service/configure-ssl-bindings
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/app-service/app-service-ip-restrictions
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-monitor/essentials/platform-logs-overview
+---
+
 # Security Operations
 This guide covers day-to-day security operations for Azure Functions: key rotation, RBAC audits, CORS controls, TLS/HTTPS enforcement, IP restrictions, and security monitoring.
 
@@ -39,6 +59,7 @@ Use this runbook in these cases:
 ## Procedure
 Operate controls in a fixed loop so key material, identities, and network boundaries are continuously validated.
 
+<!-- diagram-id: procedure -->
 ```mermaid
 flowchart LR
     A[Key Rotation] --> B[Identity Audit]

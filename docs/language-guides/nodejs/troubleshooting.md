@@ -1,9 +1,18 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-diagnostics
+---
+
 # Troubleshooting
 
 This runbook-style reference captures common Node.js v4 issues with practical checks and resolutions.
 
 ## Topic/Command Groups
 
+<!-- diagram-id: topic-command-groups -->
 ```mermaid
 flowchart TD
     A[Issue] --> B[Evidence]

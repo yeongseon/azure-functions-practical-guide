@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-java
 ---
 
 # 01 - Run Locally (Dedicated)
@@ -32,6 +39,7 @@ Run the Java reference application on your machine before deploying to the Dedic
 
 You will clone the Java reference application, build it with Maven, and run all 16 functions locally using Azure Functions Core Tools.
 
+<!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart LR
     A[Clone reference app] --> B[Maven build]

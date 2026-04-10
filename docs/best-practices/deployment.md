@@ -1,3 +1,11 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-deployment-technologies
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/run-functions-from-deployment-package
+---
+
 # Deployment Best Practices
 
 This guide describes safe deployment patterns for Azure Functions by hosting plan, trigger model, and rollback requirements. It focuses on immutable artifacts, release validation, and operational guardrails that prevent runtime regressions.
@@ -162,6 +170,7 @@ Choose rollback path based on plan capabilities.
 2. Redeploy last-known-good package.
 3. Reapply last-known-good configuration snapshot.
 
+<!-- diagram-id: recommended-rollback-order -->
 ```mermaid
 flowchart LR
     A[Deploy artifact to staging slot or isolated preprod app] --> B[Run health and trigger-aware smoke tests]
@@ -182,6 +191,7 @@ flowchart LR
     M --> O
 ```
 
+<!-- diagram-id: recommended-rollback-order-2 -->
 ```mermaid
 flowchart TD
     A[Production issue after deployment] --> B{Is slot swap-back available and low risk?}
@@ -244,6 +254,7 @@ flowchart TD
 | Post-deploy | Budget and scale guardrails verified | Cost dashboard and autoscale policy review | No unexpected cost/scale regression |
 | Post-deploy | Release metadata captured for correlation | Change record and deployment annotations | Incident triage can map telemetry to release |
 
+<!-- diagram-id: post-deploy -->
 ```mermaid
 flowchart TD
     A[Commit and Build] --> B{Hosting plan}

@@ -1,3 +1,17 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-app-settings
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-host-json
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/app-service/app-service-key-vault-references
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference#configure-an-identity-based-connection
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-how-to-use-azure-function-app-settings
+---
+
 # Configuration
 This guide covers operational runtime configuration for Azure Functions.
 It focuses on app settings, `host.json`, secret management, and safe rollout patterns.
@@ -18,6 +32,7 @@ Choose configuration layers by scope and change frequency:
 - **Extension-specific configuration** when tuning one binding type (for example Service Bus or Event Hubs) without changing business logic.
 - **Function-level attributes or decorators** when behavior differs by function (for example retry policy per trigger).
 - **`local.settings.json`** only for local developer execution, never as a production source of truth.
+<!-- diagram-id: when-to-use -->
 ```mermaid
 flowchart TB
     A["App Settings<br/>Environment and secrets"] --> B["host.json<br/>Host runtime defaults"]
@@ -194,6 +209,7 @@ az functionapp config appsettings set \
 ```
 ### Configuration change management workflow
 Use a controlled workflow for every production configuration update.
+<!-- diagram-id: configuration-change-management-workflow -->
 ```mermaid
 flowchart LR
     A["Propose change<br/>Ticket and risk assessment"] --> B["Review<br/>Peer and platform owner approval"]

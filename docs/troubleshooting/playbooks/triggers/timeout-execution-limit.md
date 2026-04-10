@@ -1,3 +1,17 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-host-json
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/performance-reliability
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-http-webhook-trigger
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/analyze-telemetry-data
+---
+
 # Timeout / Execution Time Limit Exceeded
 ## 1. Summary
 Timeout incidents occur when function execution exceeds platform, host, or upstream gateway limits, leading to abrupt termination, retries, partial side effects, and backlog growth. In Azure Functions, the effective limit is the minimum across hosting plan limits, `host.json` `functionTimeout`, trigger protocol behavior, and any front-door/load-balancer idle timeout in front of HTTP triggers.
@@ -5,6 +19,7 @@ Timeout incidents occur when function execution exceeds platform, host, or upstr
 This playbook isolates whether the timeout is caused by hard platform enforcement, host-level configuration, workload regression, orchestration misuse, dependency slowness, or HTTP request path constraints. It also distinguishes graceful cancellation from hard process termination so responders can choose fast mitigation without introducing duplicate processing or data corruption.
 
 ### Decision Flow
+<!-- diagram-id: decision-flow -->
 ```mermaid
 flowchart TD
     A[Alert: timeout or execution limit exceeded] --> B{Trigger type?}
@@ -249,6 +264,7 @@ timestamp                     severityLevel  message                            
 If shutdown markers are not present near failed invocations, interruption is more likely from deterministic timeout boundaries rather than scale-in lifecycle events.
 
 ### Failure Progression Timeline
+<!-- diagram-id: failure-progression-timeline -->
 ```mermaid
 flowchart LR
     A[Dependency latency increase] --> B[Function duration rises]
@@ -260,6 +276,7 @@ flowchart LR
 ```
 
 ### Timeout Boundary Map
+<!-- diagram-id: timeout-boundary-map -->
 ```mermaid
 flowchart TD
     A[Invocation starts] --> B{Trigger type}

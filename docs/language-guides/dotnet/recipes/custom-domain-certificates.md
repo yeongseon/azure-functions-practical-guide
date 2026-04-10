@@ -1,7 +1,16 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+---
+
 # Custom Domain and Certificates
 
 Configure HTTPS custom domains, managed certificates, and secure endpoint policies.
 
+<!-- diagram-id: custom-domain-and-certificates -->
 ```mermaid
 flowchart LR
     A[Trigger] --> B[Function]

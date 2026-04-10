@@ -1,3 +1,19 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-orchestrations
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-best-practice-reference
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-eternal-orchestrations
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-python
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/storage-considerations
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-monitor/logs/log-query-overview
+---
+
 # Lab Guide: Durable Functions Replay Storm on Azure Functions Premium EP1
 
 This lab guide documents a completed Azure Functions Premium EP1 experiment that captured a real Durable Functions replay storm. The objective is to prove, with reproducible evidence, that orchestration replay overhead can dominate end-to-end completion time even when activity execution remains stable.
@@ -35,6 +51,7 @@ Durable Functions orchestrators are deterministic and replay event history every
 
 ### Replay growth model used in this lab
 
+<!-- diagram-id: replay-growth-model-used-in-this-lab -->
 ```mermaid
 flowchart TD
     A[Large orchestration loop] --> B[History grows each iteration]
@@ -50,6 +67,7 @@ flowchart TD
 
 ### Test topology and evidence channels
 
+<!-- diagram-id: test-topology-and-evidence-channels -->
 ```mermaid
 sequenceDiagram
     participant Operator as Lab Operator
@@ -118,6 +136,7 @@ Replay incidents and storage authorization failures can both present as "Durable
 
 ### Time-compression view of the run
 
+<!-- diagram-id: time-compression-view-of-the-run -->
 ```mermaid
 gantt
     title Durable Replay Storm Experiment Timeline (UTC)
@@ -147,6 +166,7 @@ gantt
 
 ### Causal chain
 
+<!-- diagram-id: causal-chain -->
 ```mermaid
 flowchart LR
     A[No ContinueAsNew] --> B[History size increases continuously]
@@ -477,6 +497,7 @@ az monitor log-analytics query \
 
 ### 3.9 Decision flow during live troubleshooting
 
+<!-- diagram-id: 3-9-decision-flow-during-live-troubleshooting -->
 ```mermaid
 flowchart TD
     A[Durable orchestration slowdown detected] --> B{Host indexing healthy?}
@@ -697,6 +718,7 @@ Final verdict: **Hypothesis supported**.
 
 ### Evidence Timeline
 
+<!-- diagram-id: evidence-timeline -->
 ```mermaid
 gantt
     title Durable Replay Storm Evidence Timeline (EP1)

@@ -1,9 +1,20 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-python
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-best-practices
+---
+
 # Python Recipes
 
 The Recipes section provides implementation-focused patterns for common Azure Functions integrations in Python.
 
 Use these documents when you already understand the platform basics and need practical, reusable building blocks.
 
+<!-- diagram-id: python-recipes -->
 ```mermaid
 graph TD
     A[Python Recipes] --> B[HTTP]

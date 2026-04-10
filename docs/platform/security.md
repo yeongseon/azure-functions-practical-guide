@@ -1,9 +1,22 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/security-concepts
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/app-service/overview-authentication-authorization
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/api-management/api-management-howto-protect-backend-with-aad
+---
+
 # Security
 Security in Azure Functions is layered: endpoint authorization, user authentication, workload identity, API gateway policy, secret governance, and network isolation. This page focuses on **design decisions** so teams can choose the right security architecture before implementation.
 
 ## Main Content
 
 ### Security model overview
+<!-- diagram-id: security-model-overview -->
 ```mermaid
 flowchart TD
     C[Caller] --> A["Endpoint auth\nanonymous/function/admin"]
@@ -17,6 +30,7 @@ flowchart TD
 Most production systems combine multiple controls rather than relying on one.
 
 ### Authentication architecture decision tree
+<!-- diagram-id: authentication-architecture-decision-tree -->
 ```mermaid
 flowchart TD
     S[Start: secure HTTP endpoint] --> Q1{Is the caller a user?}
@@ -144,6 +158,7 @@ JWKS endpoints provide public keys for JWT signature verification. Design for ke
 ### API Management (APIM) integration
 Place Functions behind APIM when you need centralized API security and governance.
 ### APIM as a security gateway
+<!-- diagram-id: apim-as-a-security-gateway -->
 ```mermaid
 flowchart LR
     Client[Client or partner] --> APIM[Azure API Management]

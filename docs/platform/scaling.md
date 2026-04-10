@@ -1,3 +1,19 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/event-driven-scaling
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-premium-plan
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-concurrency
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-perf-and-scale
+---
+
 # Scaling Behavior
 Azure Functions scaling is plan-dependent and trigger-dependent. You do not configure a single universal autoscaler; instead, the platform applies trigger-specific heuristics within plan limits.
 ## Prerequisites
@@ -20,6 +36,7 @@ Primary signals include:
 - queue/topic/event backlog,
 - partition lag (streaming sources),
 - and observed processing rate.
+<!-- diagram-id: scale-controller-fundamentals -->
 ```mermaid
 flowchart TD
     E["Event Pressure\nHTTP rate / Queue depth / Lag"] --> SC[Scale Controller]
@@ -70,6 +87,7 @@ Flex introduces the most significant scaling architecture changes.
 - No Kudu/SCM endpoint.
 - Identity-based storage required for host storage.
 - Blob trigger requires Event Grid source on Flex.
+<!-- diagram-id: flex-specific-operational-constraints-affecting-scale -->
 ```mermaid
 flowchart LR
     H[HTTP Group] --> SCH[Scale Controller]
@@ -153,6 +171,7 @@ Check before raising scale ceilings:
 ### Autoscale decision flow
 Use this model to reason about why scale-out did or did not happen in a short time window.
 
+<!-- diagram-id: autoscale-decision-flow -->
 ```mermaid
 flowchart TD
     A[Trigger receives events] --> B{Backlog or pressure above target?}
@@ -172,6 +191,7 @@ Interpretation: if pressure remains high without scale-out, inspect ceilings and
 ### Cold start versus warm path comparison
 The path difference explains why warm floors or always-ready instances can materially improve p95 and p99 latencies.
 
+<!-- diagram-id: cold-start-versus-warm-path-comparison -->
 ```mermaid
 sequenceDiagram
     autonumber

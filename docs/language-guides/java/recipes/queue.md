@@ -1,9 +1,18 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-host-json
+---
+
 # Queue Storage Integration
 
 This recipe demonstrates Java queue trigger and queue output bindings with retry behavior, host settings, and poison queue handling.
 
 ## Architecture
 
+<!-- diagram-id: architecture -->
 ```mermaid
 flowchart LR
     API[HTTP enqueue] --> QUEUE[(work-items queue)]

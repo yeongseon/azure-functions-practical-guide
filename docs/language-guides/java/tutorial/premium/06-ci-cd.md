@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-java
 ---
 
 # 06 - CI/CD (Premium)
@@ -32,6 +39,7 @@ Automate build, test, and deployment using GitHub Actions and Maven so every cha
 
 You will create a GitHub Actions workflow that builds the Java project with Maven, publishes to the Premium function app from the staging directory, and runs a post-deployment smoke test.
 
+<!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart LR
     A[Push to main] --> B[GitHub Actions]

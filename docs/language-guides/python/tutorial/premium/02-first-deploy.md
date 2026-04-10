@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-premium-plan
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/app-service/configure-vnet-integration-enable
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/app-service/networking/private-endpoint
 ---
 
 # 02 - First Deploy (Premium)
@@ -33,6 +40,7 @@ Deploy a Python Function App to an Elastic Premium plan (`EP1`) with VNet integr
 
     Premium deploys with VNet integration (delegated subnet), a private endpoint for inbound access, private DNS zone, and pre-warmed instances. Storage uses connection string or identity-based authentication.
 
+    <!-- diagram-id: what-you-ll-build -->
     ```mermaid
     flowchart TD
         INET[Internet] -->|HTTPS| FA[Function App\nPremium EP1\nLinux Python 3.11]
@@ -626,6 +634,7 @@ Functions in func-premium-demo:
     - Use Flex Consumption (FC1) which supports identity-based blob storage
     - Use Dedicated (B1) which uses `WEBSITE_RUN_FROM_PACKAGE` without a content file share
 
+<!-- diagram-id: deployment-verification-results -->
 ```mermaid
 flowchart LR
     A[Internet] --> B[Private Endpoint]

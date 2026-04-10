@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-how-to-github-actions
 ---
 
 # 06 - CI/CD (Flex Consumption)
@@ -31,6 +38,7 @@ Automate build, test, and deployment using GitHub Actions so every change ships 
 
 You will configure a GitHub Actions pipeline that builds and deploys a .NET isolated worker Function App to Flex Consumption, then verify the release with a smoke test and workflow run evidence.
 
+<!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart LR
     A[Push to main] --> B[GitHub Actions]

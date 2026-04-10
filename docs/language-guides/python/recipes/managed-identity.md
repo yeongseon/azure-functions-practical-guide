@@ -1,9 +1,16 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial
+---
+
 # Managed Identity
 
 Managed Identity lets your Azure Functions app authenticate to other Azure services without storing credentials in code or configuration. This recipe covers enabling Managed Identity, assigning roles, and using `DefaultAzureCredential` for a seamless local-to-cloud development experience.
 
 ## Architecture
 
+<!-- diagram-id: architecture -->
 ```mermaid
 flowchart LR
     FA[Function App] -.-> MI[Managed Identity]

@@ -1,3 +1,17 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/storage/common/storage-private-endpoints
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/configure-networking-how-to
+---
+
 # Lab Guide: Hosting Plan Security Matrix — Private Endpoint + Managed Identity Fault Injection
 
 This Level 4 lab guide reproduces the same four security and access faults across four Azure Functions hosting plans and documents how each plan fails differently. The goal is to build evidence-driven, plan-specific troubleshooting muscle so operators can stop using one-size-fits-all runbooks for fundamentally different runtime architectures.
@@ -47,6 +61,7 @@ In real incidents, teams often transfer a successful Premium or Dedicated triage
 
 ### 1.2 Cross-plan architecture map
 
+<!-- diagram-id: 1-2-cross-plan-architecture-map -->
 ```mermaid
 flowchart TB
     subgraph FC1[FC1 Flex Consumption]
@@ -173,6 +188,7 @@ The rest of the guide is organized to produce those answers with repeatable evid
 
 ### 2.2 Causal chain
 
+<!-- diagram-id: 2-2-causal-chain -->
 ```mermaid
 flowchart LR
     A[Apply same fault class to FC1 EP1 Y1 S1] --> B[Plan-specific infrastructure path activated]
@@ -1111,6 +1127,7 @@ Dedicated behavior contrast:
 
 ### Evidence Timeline
 
+<!-- diagram-id: evidence-timeline -->
 ```mermaid
 gantt
     title Hosting Plan Security Matrix Fault Timeline

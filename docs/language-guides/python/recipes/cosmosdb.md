@@ -1,9 +1,18 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-cosmosdb-v2
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial
+---
+
 # Cosmos DB Integration
 
 This recipe covers integrating Azure Cosmos DB with Azure Functions Python v2 using output bindings, input bindings, and the SDK approach. The examples use HTTP triggers combined with Cosmos DB bindings, a common pattern for serverless APIs.
 
 ## Architecture
 
+<!-- diagram-id: architecture -->
 ```mermaid
 flowchart LR
     SRC[HTTP Trigger or Cosmos DB Binding] --> FA[Function App]

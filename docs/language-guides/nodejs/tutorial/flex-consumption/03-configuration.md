@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-app-settings
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
 ---
 
 # 03 - Configuration (Flex Consumption)
@@ -36,6 +43,7 @@ You will configure runtime and host settings for a Flex Consumption Function App
 
     This tutorial modifies app settings on an existing Flex Consumption function app.
 
+    <!-- diagram-id: what-you-ll-build -->
     ```mermaid
     flowchart TD
         CLI["Azure CLI"] -->|"appsettings set"| FA[Function App\nFlex Consumption FC1]
@@ -45,6 +53,7 @@ You will configure runtime and host settings for a Flex Consumption Function App
         style SETTINGS fill:#E3F2FD
     ```
 
+<!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart LR
     A[Set app settings] --> B[Configure host timeout]

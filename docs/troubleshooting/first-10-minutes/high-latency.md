@@ -1,3 +1,13 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-host-json
+---
+
 # First 10 Minutes: High Latency
 
 When function execution latency is elevated or users report slow responses, use this checklist to narrow down the cause within the first 10 minutes.
@@ -18,6 +28,7 @@ APP_INSIGHTS_NAME="appi-myapp-prod"
 WORKSPACE_ID="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 ```
 
+<!-- diagram-id: prerequisites -->
 ```mermaid
 flowchart TD
     A[High latency reported] --> B["Check regional/platform status"]

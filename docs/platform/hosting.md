@@ -1,3 +1,17 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-premium-plan
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/app-service/overview-hosting-plans
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+---
+
 # Hosting Plans
 
 Choosing a hosting plan is the most important Azure Functions platform decision. It controls scale behavior, cold start profile, networking options, limits, and baseline cost.
@@ -32,6 +46,7 @@ Azure Functions supports four main hosting models:
 !!! tip "Decision rule"
     Start with Flex Consumption for most new serverless workloads, then choose Premium when you need permanently warm behavior and advanced App Service premium features.
 
+<!-- diagram-id: hosting-plans-at-a-glance -->
 ```mermaid
 flowchart LR
     A[Workload Requirement] --> B{Scale to zero required?}
@@ -266,6 +281,7 @@ If you need both serverless cost behavior and private networking, Flex is usuall
 
 #### Workflow flowchart
 
+<!-- diagram-id: workflow-flowchart -->
 ```mermaid
 flowchart TD
     A[Start: Define workload requirements] --> B{Need scale-to-zero?}

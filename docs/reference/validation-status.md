@@ -1,3 +1,11 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+---
+
 # Tutorial Validation Status
 
 This page tracks which tutorials have been validated against real Azure deployments. Each tutorial can be tested via **az-cli** (manual CLI commands) or **Bicep** (infrastructure as code). Tutorials not tested within 90 days are marked as stale.
@@ -14,6 +22,7 @@ This page tracks which tutorials have been validated against real Azure deployme
 | ❌ Failed | 0 |
 | ➖ Not tested | 0 |
 
+<!-- diagram-id: summary -->
 ```mermaid
 pie title Tutorial Validation Status
     "Validated" : 112

@@ -1,9 +1,16 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-app-settings
+---
+
 # Environment Variables
 
 This reference lists key environment and app settings for Azure Functions Node.js v4 applications.
 
 ## Topic/Command Groups
 
+<!-- diagram-id: topic-command-groups -->
 ```mermaid
 flowchart LR
     A[Settings] --> B[Runtime]

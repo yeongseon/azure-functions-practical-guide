@@ -1,9 +1,24 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/analyze-telemetry-data
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/data-explorer/kusto/query/
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-monitor/app/data-model-complete
+---
+
 # Functions Not Executing
 ## 1. Summary
 Use this playbook when trigger sources are active but one or more Azure Functions are not executing.
 Most incidents fall into one of six hypotheses: disabled function, listener startup failure, host restart loop, trigger misbinding, source-side delivery gap, or deployment/runtime regression.
 Primary objective: restore safe execution quickly while collecting enough evidence to prevent recurrence.
 ### Decision Flow
+<!-- diagram-id: decision-flow -->
 ```mermaid
 flowchart TD
     A["Functions not executing"] --> B{"Enabled state healthy?"}

@@ -1,3 +1,11 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-overview
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-python
+---
+
 # Durable Functions
 
 > **Note:** This recipe covers Durable Functions patterns with Azure Functions Python v2. HTTP triggers are used as the entry point to start orchestrations, making this a natural extension of HTTP-based function apps.
@@ -14,6 +22,7 @@ Durable Functions use three function types:
 | **Orchestrator** | Defines the workflow logic, coordinates activities | Chain activity calls, fan-out/fan-in, wait for events |
 | **Activity** | Performs the actual work (a single unit of work) | Send an email, process a file, call an API |
 
+<!-- diagram-id: overview -->
 ```mermaid
 flowchart LR
     HTTP["HTTP Request"] --> CL["Client Function\n(HTTP Trigger)\nStarts orchestration"]
@@ -192,6 +201,7 @@ def send_notification(notification: dict) -> dict:
 
 ## Fan-Out / Fan-In Pattern
 
+<!-- diagram-id: fan-out-fan-in-pattern -->
 ```mermaid
 sequenceDiagram
     participant O as Orchestrator

@@ -1,7 +1,16 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+---
+
 # Event Grid
 
 Subscribe to Event Grid events and route them into isolated worker handlers.
 
+<!-- diagram-id: event-grid -->
 ```mermaid
 flowchart LR
     A[Trigger] --> B[Function]

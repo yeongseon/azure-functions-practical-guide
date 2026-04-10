@@ -1,3 +1,17 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-overview
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/app-service/overview
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/architecture/guide/technology-choices/compute-decision-tree
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-compare-logic-apps-ms-flow-webjobs
+---
+
 # Azure Functions vs Azure App Service
 
 Azure Functions and Azure App Service are both built on the same underlying App Service platform infrastructure. This guide compares the two services, provides a decision framework for choosing between them, and covers migration and coexistence patterns.
@@ -37,6 +51,7 @@ Both services share scale units, networking primitives, and deployment mechanism
 
 Use the following decision tree to determine which service best fits your workload.
 
+<!-- diagram-id: decision-framework -->
 ```mermaid
 flowchart TD
     A[New workload] --> B{"Event-driven?<br/>Triggers beyond HTTP?"}
@@ -78,6 +93,7 @@ flowchart TD
 
 Both services run on the same App Service stamp infrastructure, but use different runtime hosts and scaling controllers.
 
+<!-- diagram-id: architecture-comparison -->
 ```mermaid
 graph TB
     subgraph "App Service Stamp (Shared Infrastructure)"

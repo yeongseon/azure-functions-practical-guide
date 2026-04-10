@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-continuous-deployment
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-how-to-github-actions
 ---
 
 # 06 - CI/CD (Consumption)
@@ -37,6 +44,7 @@ You will create a GitHub Actions workflow for Consumption deployment and confirm
 
     GitHub Actions deploys to the Consumption function app via publish profile authentication.
 
+    <!-- diagram-id: what-you-ll-build -->
     ```mermaid
     flowchart LR
         GH["GitHub Actions"] -->|"publish profile"| FA[Function App\nConsumption Y1]
@@ -46,6 +54,7 @@ You will create a GitHub Actions workflow for Consumption deployment and confirm
         style FA fill:#0078d4,color:#fff
     ```
 
+<!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart LR
     A[Create workflow YAML] --> B[Store secrets]

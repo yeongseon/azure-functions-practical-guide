@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-app-settings
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
 ---
 
 # 03 - Configuration (Consumption)
@@ -36,6 +43,7 @@ You will configure runtime and host settings for a Linux Consumption Function Ap
 
     This tutorial modifies app settings on an existing Consumption function app.
 
+    <!-- diagram-id: what-you-ll-build -->
     ```mermaid
     flowchart TD
         CLI["Azure CLI"] -->|"appsettings set"| FA[Function App\nConsumption Y1]
@@ -46,6 +54,7 @@ You will configure runtime and host settings for a Linux Consumption Function Ap
         style SETTINGS fill:#E3F2FD
     ```
 
+<!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart LR
     A[Set app settings] --> B[Set linuxFxVersion]

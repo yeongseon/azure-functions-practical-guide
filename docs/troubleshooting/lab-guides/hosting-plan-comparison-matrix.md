@@ -1,3 +1,15 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/storage/common/storage-private-endpoints
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+---
+
 # Hosting Plan Security Comparison Matrix
 
 Quick-reference comparison of Azure Functions hosting plan behavior under identity and networking fault conditions. Data collected from real Azure deployments across all four hosting plans.
@@ -58,6 +70,7 @@ Ranked from hardest to easiest:
 
 ### 5) Diagnostic Decision Tree
 
+<!-- diagram-id: 5-diagnostic-decision-tree -->
 ```mermaid
 flowchart TD
     A[Start: Function endpoint failing] --> B{HTTP pattern?}
@@ -153,6 +166,7 @@ Use this to avoid false negatives when a fault can remain hidden until recycle.
 
 ### 11) Recovery Decision Tree
 
+<!-- diagram-id: 11-recovery-decision-tree -->
 ```mermaid
 flowchart TD
     A[Start recovery] --> B{Fault family confirmed?}

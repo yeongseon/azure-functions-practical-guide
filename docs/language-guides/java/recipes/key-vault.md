@@ -1,9 +1,18 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/app-service/app-service-key-vault-references
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/key-vault/secrets/quick-create-java
+---
+
 # Key Vault Integration
 
 This recipe combines Key Vault references in app settings with direct SDK access from Java functions when runtime secret reads are required.
 
 ## Architecture
 
+<!-- diagram-id: architecture -->
 ```mermaid
 flowchart LR
     FUNC[Function App] --> APPSETTINGS[App Settings Key Vault reference]

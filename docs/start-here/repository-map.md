@@ -1,3 +1,9 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/
+---
+
 # Repository Map
 
 This page maps the Azure Functions Practical Guide structure so you can navigate quickly from onboarding to production operations.
@@ -18,6 +24,7 @@ The documentation follows seven intent-based areas:
 
 This structure aligns with the top-level sections in `mkdocs.yml`; some topics (such as networking, reliability, and security) are grouped under section index pages instead of appearing as separate top-level tabs.
 
+<!-- diagram-id: top-level-navigation-model -->
 ```mermaid
 flowchart TD
     R[Repository] --> S1[Start Here]

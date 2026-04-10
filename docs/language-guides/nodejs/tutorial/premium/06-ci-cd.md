@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-continuous-deployment
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
 ---
 
 # 06 - CI/CD (Premium)
@@ -38,6 +45,7 @@ You will validate release health from runtime logs after the deployment finishes
 !!! info "Infrastructure Context"
     **Plan**: Premium (EP1) | **CI/CD**: GitHub Actions | **Deploy method**: `func azure functionapp publish`
 
+    <!-- diagram-id: what-you-ll-build -->
     ```mermaid
     flowchart LR
         GH[GitHub\nmain branch] -->|push| GA[GitHub Actions]

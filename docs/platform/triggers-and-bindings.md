@@ -1,3 +1,19 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-blob-trigger
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-event-grid-blob-trigger
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-host-json
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference#configure-an-identity-based-connection
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/event-driven-scaling
+---
+
 # Triggers and Bindings
 Triggers and bindings are the core integration abstraction in Azure Functions. A trigger starts execution. Bindings connect your function to external data/services with declarative contracts.
 
@@ -31,6 +47,7 @@ Every function has:
 - exactly **one trigger**,
 - zero or more **input bindings**,
 - zero or more **output bindings**.
+<!-- diagram-id: core-model -->
 ```mermaid
 flowchart LR
     S[Event Source] --> T[Trigger\nexactly 1]
@@ -70,6 +87,7 @@ The source posts work and runtime handles completion semantics.
     Standard polling blob trigger mode is not supported on Flex Consumption. Use the Event Grid-based blob trigger source.
 ### Event Grid vs polling blob trigger model
 Use this comparison when selecting hosting plans for blob-driven workflows.
+<!-- diagram-id: event-grid-vs-polling-blob-trigger-model -->
 ```mermaid
 flowchart TB
     subgraph FC[Flex Consumption]
@@ -146,6 +164,7 @@ Decision guidance:
 - Avoid mixing identity and key-based access for the same service unless you are in controlled migration.
 ### Input/output binding data flow (multi-service)
 One trigger can coordinate multiple bindings in one function boundary.
+<!-- diagram-id: input-output-binding-data-flow-multi-service -->
 ```mermaid
 flowchart LR
     EH[Event Hub Trigger] --> FN[Function]
@@ -217,6 +236,7 @@ Design notes:
     ```
 ### Queue-trigger + output pattern (architectural)
 A common pattern is HTTP ingest + queue output + queue-trigger processor.
+<!-- diagram-id: queue-trigger-output-pattern-architectural -->
 ```mermaid
 flowchart LR
     C[Client] --> H[HTTP Trigger]
@@ -313,6 +333,7 @@ Durable Functions adds orchestration-centric triggers:
 - **Orchestration trigger**: coordinates deterministic workflows.
 - **Activity trigger**: executes side-effecting units of work.
 - **Entity trigger**: provides serialized stateful operations.
+<!-- diagram-id: durable-functions-triggers -->
 ```mermaid
 flowchart LR
     C["Client/Starter"] --> O[Orchestration Trigger]

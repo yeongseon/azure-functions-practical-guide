@@ -1,3 +1,21 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-diagnostics
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/configure-monitoring
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-host-json
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-recover-storage-account
+---
+
 # Quick Diagnosis Cards
 
 One-page reference cards for rapid Azure Functions incident triage. Each card maps: **Symptom → First Query → Platform Segment → Playbook**.
@@ -8,6 +26,7 @@ Use these when you have 60 seconds to classify the failure before opening the de
 
 ## Card 1: Slow First Invocation / Cold Start
 
+<!-- diagram-id: card-1-slow-first-invocation-cold-start -->
 ```mermaid
 graph LR
     A[Slow first invocation] --> B[First Query]
@@ -52,6 +71,7 @@ az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "Ap
 
 ## Card 2: Trigger Failures by Trigger Type
 
+<!-- diagram-id: card-2-trigger-failures-by-trigger-type -->
 ```mermaid
 graph LR
     A[Trigger not firing] --> B{Trigger type}
@@ -102,6 +122,7 @@ az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "Ap
 
 ## Card 3: Binding and Extension Errors
 
+<!-- diagram-id: card-3-binding-and-extension-errors -->
 ```mermaid
 graph LR
     A[Binding errors] --> B[Indexing traces]
@@ -147,6 +168,7 @@ az functionapp config show --resource-group "$RG" --name "$APP_NAME" --output js
 
 ## Card 4: Timeout / Execution Limit Exceeded
 
+<!-- diagram-id: card-4-timeout-execution-limit-exceeded -->
 ```mermaid
 graph LR
     A[Timeout symptom] --> B[Duration query]
@@ -190,6 +212,7 @@ az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "Ap
 
 ## Card 5: Memory or CPU Exhaustion
 
+<!-- diagram-id: card-5-memory-or-cpu-exhaustion -->
 ```mermaid
 graph LR
     A[Worker slowdown] --> B[Metrics]
@@ -234,6 +257,7 @@ az monitor metrics list --resource "/subscriptions/$SUBSCRIPTION_ID/resourceGrou
 
 ## Card 6: Deployment Succeeded but Functions Broke
 
+<!-- diagram-id: card-6-deployment-succeeded-but-functions-broke -->
 ```mermaid
 graph LR
     A[Failure after deploy] --> B[Activity Log]
@@ -280,6 +304,7 @@ az functionapp config appsettings list --resource-group "$RG" --name "$APP_NAME"
 
 ## Card 7: Scale Out Not Keeping Up
 
+<!-- diagram-id: card-7-scale-out-not-keeping-up -->
 ```mermaid
 graph LR
     A[Backlog grows] --> B[Invocation trend]

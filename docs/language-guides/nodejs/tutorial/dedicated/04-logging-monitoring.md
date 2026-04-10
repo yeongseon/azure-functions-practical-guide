@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-node
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
 ---
 
 # 04 - Logging and Monitoring (Dedicated)
@@ -32,6 +39,7 @@ Capture structured logs, query telemetry, and validate operational visibility.
 
     Application Insights is auto-created with the same name as the function app. On Dedicated plans, real-time log streaming uses `az webapp log tail` (not `az functionapp log tail`, which does not exist).
 
+    <!-- diagram-id: what-you-ll-build -->
     ```mermaid
     flowchart LR
         FA[Function App\nDedicated B1] -->|Telemetry SDK| AI[Application Insights\nfunc-ndded-04100022]

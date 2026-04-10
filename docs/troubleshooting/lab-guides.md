@@ -1,8 +1,19 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/configure-monitoring
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-recover-from-failed-host
+---
+
 # Hands-on Labs
 
 These labs let you practice incident response on reproducible Azure Functions failure scenarios.
 Run labs in a non-production environment and treat them like live incidents: detect, triage, diagnose, fix, and verify.
 
+<!-- diagram-id: hands-on-labs -->
 ```mermaid
 graph TD
     A[Hands-on Labs] --> B[Performance]

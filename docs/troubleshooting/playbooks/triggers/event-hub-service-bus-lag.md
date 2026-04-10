@@ -1,3 +1,17 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-event-hubs
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-service-bus
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/analyze-telemetry-data
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/event-hubs/event-hubs-features
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/service-bus-messaging/service-bus-messaging-exceptions
+---
+
 # Event Hub / Service Bus Trigger Lag
 ## 1. Summary
 Trigger lag incidents happen when ingestion rate outpaces effective processing throughput, causing Event Hub partition backlog or Service Bus queue/subscription depth to grow over time. Lag is not only a scale problem; it is often a checkpoint progression problem where functions pull messages but fail to complete fast enough, fail to settle messages, or repeatedly reprocess poison payloads.
@@ -5,6 +19,7 @@ Trigger lag incidents happen when ingestion rate outpaces effective processing t
 This playbook separates broker-side pressure from function-side bottlenecks, then validates whether lag originates from partition imbalance, lock renewal issues, dependency latency, host extension misconfiguration, or poison-message loops. It emphasizes evidence-driven triage so responders avoid over-scaling compute when the bottleneck is downstream I/O or message-level faults.
 
 ### Decision Flow
+<!-- diagram-id: decision-flow -->
 ```mermaid
 flowchart TD
     A[Alert: trigger lag increasing] --> B{Broker type?}
@@ -250,6 +265,7 @@ ApplyPaymentsServiceBus    28            2026-04-05T03:41:55Z
 If no timeout/cancellation signatures appear, checkpoint blockage likely originates from message-level failures or lock handling rather than runtime timeout boundary.
 
 ### Failure Progression Timeline
+<!-- diagram-id: failure-progression-timeline -->
 ```mermaid
 flowchart LR
     A[Producer rate increases] --> B[Batch pulled by trigger]
@@ -261,6 +277,7 @@ flowchart LR
 ```
 
 ### Broker-to-Function Bottleneck Map
+<!-- diagram-id: broker-to-function-bottleneck-map -->
 ```mermaid
 flowchart TD
     A["Event Hub / Service Bus broker"] --> B[Trigger extension fetch]

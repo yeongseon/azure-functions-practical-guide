@@ -10,6 +10,15 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-java
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/templates/microsoft.web/sites
 ---
 
 # 05 - Infrastructure as Code (Premium)
@@ -32,6 +41,7 @@ Describe your Java Function App platform using Bicep so provisioning is determin
 
 You will create a Bicep template that provisions a Premium EP1 Function App with Java 17 runtime, Azure Files content share, and Application Insights — all in a single repeatable deployment.
 
+<!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
     A[Bicep template] --> B[az deployment group create]

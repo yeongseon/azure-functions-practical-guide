@@ -1,3 +1,15 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-error-pages
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue-trigger
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-service-bus-trigger
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-event-hubs-trigger
+---
+
 # Retries and Poison Handling
 This guide explains retry execution and poison/dead-letter handling for Azure Functions event-driven workloads.
 Use these patterns to protect reliability under transient failures and malformed messages.
@@ -105,6 +117,7 @@ Operational pattern:
 
 This prevents infinite reprocessing loops and preserves failed payloads for investigation.
 
+<!-- diagram-id: poison-queue-behavior-storage-queue -->
 ```mermaid
 flowchart LR
     A[Message received] --> B[Process message]
@@ -189,6 +202,7 @@ Use alerts when poison/dead-letter counts grow continuously.
 4. Replay safely from poison/dead-letter store.
 5. Verify no duplicate side effects.
 
+<!-- diagram-id: operational-triage-workflow -->
 ```mermaid
 flowchart TD
     A[Poison message detected] --> B[Inspect payload and metadata]

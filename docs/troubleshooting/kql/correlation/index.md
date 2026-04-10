@@ -1,7 +1,16 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-monitor/app/correlation
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+---
+
 # Correlation Queries
 
 KQL queries for correlating signals across telemetry sources to connect symptoms to root causes.
 
+<!-- diagram-id: correlation-queries -->
 ```mermaid
 flowchart LR
     A[Collect OperationId] --> B[Query AppRequests]

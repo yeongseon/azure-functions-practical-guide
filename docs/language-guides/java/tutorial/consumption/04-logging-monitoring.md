@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-java
 ---
 
 # 04 - Logging and Monitoring (Consumption)
@@ -32,6 +39,7 @@ Enable production-grade observability with Application Insights, structured logs
 
 You will instrument Java handlers with structured logs, route telemetry to Application Insights, and validate query-based monitoring signals for a Consumption-hosted app.
 
+<!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart LR
     A[ExecutionContext logger] --> B[FunctionAppLogs]

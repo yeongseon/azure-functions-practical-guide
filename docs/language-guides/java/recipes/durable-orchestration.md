@@ -1,9 +1,18 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-overview
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-bindings
+---
+
 # Durable Orchestration
 
 This recipe shows Java Durable Functions with an HTTP starter, orchestrator, and activity function using the Durable Task Java SDK.
 
 ## Architecture
 
+<!-- diagram-id: architecture -->
 ```mermaid
 flowchart LR
     CLIENT[Client] --> STARTER[HTTP starter]

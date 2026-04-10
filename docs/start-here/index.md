@@ -1,3 +1,11 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+---
+
 # Start Here
 
 Start Here is the fastest path to understand Azure Functions fundamentals and navigate this guide with purpose.
@@ -8,6 +16,7 @@ Use this section to answer three questions quickly:
 2. Which hosting plan fits your workload
 3. Which learning path matches your current role and timeline
 
+<!-- diagram-id: start-here -->
 ```mermaid
 flowchart TD
     A[Overview] --> B[Learning Paths]

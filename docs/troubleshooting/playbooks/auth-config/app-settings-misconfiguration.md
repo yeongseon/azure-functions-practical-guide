@@ -1,3 +1,17 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-app-settings
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-best-practices
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/app-service/app-service-key-vault-references
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/analyze-telemetry-data
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-versions
+---
+
 # App Settings Misconfiguration
 
 ## 1. Summary
@@ -6,6 +20,7 @@ This playbook addresses Azure Functions incidents caused by missing, malformed, 
 The objective is to restore host startup, function discovery, and trigger execution with minimal blast radius. Start with baseline required settings, validate plan-specific requirements, correlate startup and discovery errors, then apply narrowly scoped configuration fixes.
 
 ### Decision Flow
+<!-- diagram-id: decision-flow -->
 ```mermaid
 flowchart TD
     A[Functions unavailable or triggers not firing] --> B{Host starts cleanly?}
@@ -49,6 +64,7 @@ flowchart TD
 | Requests and invocations | Invocation trend follows event load | Flat or sharply reduced invocation trend |
 
 ### Startup failure progression
+<!-- diagram-id: startup-failure-progression -->
 ```mermaid
 sequenceDiagram
     participant D as Deployment Pipeline
@@ -65,6 +81,7 @@ sequenceDiagram
 ```
 
 ### Settings dependency map
+<!-- diagram-id: settings-dependency-map -->
 ```mermaid
 flowchart LR
     S1[AzureWebJobsStorage] --> H[Host runtime state]
@@ -308,6 +325,7 @@ Functions.health             720          0         0
 If setting rollback alone restores startup and invocation flow without code rollback, H6 is weak and configuration is primary. If failures persist after known-good settings restore, escalate to code/dependency investigation.
 
 ### Function discovery timeline
+<!-- diagram-id: function-discovery-timeline -->
 ```mermaid
 timeline
     title App settings incident timeline

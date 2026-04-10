@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-java
 ---
 
 # 04 - Logging and Monitoring (Dedicated)
@@ -32,6 +39,7 @@ Enable production-grade observability with Application Insights, structured logs
 
 You will verify Application Insights connectivity, query structured logs from the deployed function app, configure streaming logs, and set up a baseline alert rule for failure detection.
 
+<!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart LR
     A[ExecutionContext logger] --> B[FunctionAppLogs]

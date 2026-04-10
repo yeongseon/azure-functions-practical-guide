@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
 ---
 
 # 04 - Logging and Monitoring (Consumption)
@@ -31,6 +38,7 @@ Enable production-grade observability with Application Insights, structured logs
 
 You will instrument .NET isolated worker handlers with structured logs via `ILogger<T>`, route telemetry to Application Insights, and validate query-based monitoring signals for a Consumption-hosted app.
 
+<!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart LR
     A["ILogger<T> in handler"] --> B[FunctionAppLogs]

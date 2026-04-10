@@ -1,9 +1,18 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-timer
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-app-settings
+---
+
 # Timer Jobs
 
 This recipe uses `app.timer()` with NCRONTAB scheduling, demonstrates the `isPastDue` pattern, and calls out hosting-plan time zone behavior.
 
 ## Architecture
 
+<!-- diagram-id: architecture -->
 ```mermaid
 flowchart LR
     SCHED[NCRONTAB Schedule] --> TIMER[Timer Trigger]

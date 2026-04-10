@@ -1,3 +1,15 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/run-functions-from-deployment-package
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-how-to-github-actions
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-deployment-slots
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-run-local
+---
+
 # Deployment
 This guide covers operational deployment execution for Azure Functions.
 It focuses on release methods, slot strategy, and rollback safety.
@@ -71,6 +83,7 @@ Choose deployment method by governance level, release frequency, and plan capabi
 ## Procedure
 
 ### Deployment workflow
+<!-- diagram-id: deployment-workflow -->
 ```mermaid
 flowchart LR
     A[Build] --> B[Artifact]

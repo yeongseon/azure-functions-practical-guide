@@ -1,9 +1,18 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/supported-languages
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
+---
+
 # Java Runtime
 
 This reference captures supported Java versions, JVM/runtime settings, Maven dependencies, and practical tuning choices for Azure Functions Java applications.
 
 ## Supported Java Versions
 
+<!-- diagram-id: supported-java-versions -->
 ```mermaid
 timeline
     title Java runtime options for Azure Functions v4
@@ -35,6 +44,7 @@ az functionapp config appsettings set   --name $APP_NAME   --resource-group $RG 
 
 ## Maven Build and Deployment
 
+<!-- diagram-id: maven-build-and-deployment -->
 ```mermaid
 flowchart LR
     A[pom.xml] --> B[mvn clean package]

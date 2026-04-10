@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-node
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
 ---
 
 # 03 - Configuration (Premium)
@@ -40,6 +47,7 @@ You will also tune host-level timeout behavior appropriate for the Premium plan 
 
     Premium uses the classic `siteConfig.appSettings` model — all settings are managed via `az functionapp config appsettings set`. Unlike Flex Consumption, there are no platform-managed settings that block manual updates.
 
+    <!-- diagram-id: what-you-ll-build -->
     ```mermaid
     flowchart LR
         CLI[az CLI] -->|appsettings set| FA[Function App\nPremium EP1]

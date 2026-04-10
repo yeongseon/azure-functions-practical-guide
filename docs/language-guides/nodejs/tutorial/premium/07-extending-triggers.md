@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
 ---
 
 # 07 - Extending Triggers (Premium)
@@ -40,6 +47,7 @@ You will deploy, send test messages, and verify trigger execution via Applicatio
 
     Premium supports all Azure Functions triggers with no timeout limits. Queue and blob triggers use the `AzureWebJobsStorage` or a dedicated connection string.
 
+    <!-- diagram-id: what-you-ll-build -->
     ```mermaid
     flowchart TD
         FA[Function App\nPremium EP1]

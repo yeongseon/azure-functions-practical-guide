@@ -1,7 +1,16 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+---
+
 # HTTP Authentication
 
 Apply API auth patterns for .NET isolated worker with function keys, Easy Auth, and token validation.
 
+<!-- diagram-id: http-authentication -->
 ```mermaid
 flowchart LR
     A[Trigger] --> B[Function]

@@ -1,3 +1,13 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-host-json
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+---
+
 # First 10 Minutes: Scaling Issues
 
 When queue backlogs grow, executions remain flat despite demand, or cold start spikes degrade throughput, use this checklist to narrow down the cause within the first 10 minutes.
@@ -20,6 +30,7 @@ WORKSPACE_ID="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 STORAGE_NAME="stmyappprod"
 ```
 
+<!-- diagram-id: prerequisites -->
 ```mermaid
 flowchart TD
     A[Backlog or lag rising] --> B[Compare executions vs source backlog]

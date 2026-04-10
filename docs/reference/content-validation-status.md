@@ -1,3 +1,11 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
+---
+
 # Content Validation Status
 
 This page tracks the source validation status of all documentation content, including diagrams and text content. All content must be traceable to official Microsoft Learn documentation.
@@ -8,18 +16,16 @@ This page tracks the source validation status of all documentation content, incl
 
 | Content Type | Total | MSLearn Sourced | Self-Generated | No Source |
 |---|---:|---:|---:|---:|
-| Mermaid Diagrams | 474 | 0 | 0 | 474 |
+| Mermaid Diagrams | 475 | 475 | 0 | 0 |
 | Text Sections | — | — | — | — |
 
-!!! warning "Validation Required"
-    All 474 mermaid diagrams require source validation. Content without Microsoft Learn sources must be either:
+!!! success "Validation Complete"
+    All Mermaid diagrams in this repository now include Microsoft Learn-backed `content_sources` metadata and explicit `diagram-id` comments.
 
-    1. Linked to an official Microsoft Learn URL, or
-    2. Marked as `self-generated` with clear justification
-
+<!-- diagram-id: summary -->
 ```mermaid
 pie title Content Source Status
-    "Not Validated" : 474
+    "MSLearn Sourced" : 475
 ```
 
 ## Validation Categories

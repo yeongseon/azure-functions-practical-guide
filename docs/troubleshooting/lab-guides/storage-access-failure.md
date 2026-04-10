@@ -1,3 +1,19 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/storage-considerations
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-monitor/app/data-model
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/role-based-access-control/role-assignments-cli
+---
+
 # Lab Guide: Storage Access Failure (AzureWebJobsStorage)
 
 This Level 3 lab guide reproduces a storage authorization failure in Azure Functions and shows how to prove a full failure cascade from `AzureWebJobsStorage` access loss to listener startup failure, host unhealthy state, and zero trigger execution. The experiment uses the lab assets in `labs/storage-access-failure/` and captures evidence with KQL, CLI, and runtime logs.
@@ -53,6 +69,7 @@ In this lab, storage access is intentionally broken so that host startup and lis
 
 Even when application code does not directly read blobs or queues, the host still needs storage for runtime operations.
 
+<!-- diagram-id: 1-1-storage-dependency-model-for-azure-functions -->
 ```mermaid
 flowchart TD
     A[Function host process starts] --> B[Resolve AzureWebJobsStorage configuration]
@@ -106,6 +123,7 @@ That makes configuration and RBAC consistency critical:
 
 ### 1.5 Failure progression model
 
+<!-- diagram-id: 1-5-failure-progression-model -->
 ```mermaid
 sequenceDiagram
     participant Host as Functions Host
@@ -142,6 +160,7 @@ sequenceDiagram
 
 ### 2.2 Causal chain
 
+<!-- diagram-id: 2-2-causal-chain -->
 ```mermaid
 flowchart LR
     A[Role assignment removed or invalid storage auth] --> B[Storage probe returns 403 AuthorizationPermissionMismatch]
@@ -505,6 +524,7 @@ Process reporting unhealthy: Unhealthy. Health check entries are {
 
 ### 3.10 Triage decision logic
 
+<!-- diagram-id: 3-10-triage-decision-logic -->
 ```mermaid
 flowchart TD
     A[No scheduled executions observed] --> B{AuthorizationPermissionMismatch present?}
@@ -783,6 +803,7 @@ This section defines the expected observation pattern before, during, and after 
 
 ### Evidence Timeline
 
+<!-- diagram-id: evidence-timeline -->
 ```mermaid
 graph LR
     A[Baseline healthy state] --> B[Role removal trigger]

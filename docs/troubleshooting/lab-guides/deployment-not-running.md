@@ -1,3 +1,17 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-deployment-technologies
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-python
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/configure-monitoring
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/monitor-functions
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-monitor/logs/log-query-overview
+---
+
 # Lab Guide: Deployment Succeeded but Function Not Running
 
 This lab reproduces a deceptive production scenario: deployment transport succeeds, but Azure Functions cannot discover triggers, so no functions execute. You will validate failure evidence using Application Insights tables only (`traces`, `requests`, `dependencies`, `exceptions`), then recover by correcting runtime and package structure.
@@ -27,6 +41,7 @@ This lab keeps deployment method constant and changes only runtime or package st
 
 ### Failure progression model
 
+<!-- diagram-id: failure-progression-model -->
 ```mermaid
 flowchart TD
     A[ZIP deployment succeeded] --> B[Host restart]
@@ -54,6 +69,7 @@ flowchart TD
 
 ### Incident timeline model
 
+<!-- diagram-id: incident-timeline-model -->
 ```mermaid
 gantt
     title Deployment Success but Runtime Failure Timeline
@@ -90,6 +106,7 @@ If deployment succeeds but runtime configuration or Python package structure is 
 
 ### Causal chain
 
+<!-- diagram-id: causal-chain -->
 ```mermaid
 flowchart LR
     A[config-zip success] --> B[Host startup]
@@ -354,6 +371,7 @@ timestamp                    total  failures  p95Ms   failRatePercent
 
 ### Step 7: Triage decision tree
 
+<!-- diagram-id: step-7-triage-decision-tree -->
 ```mermaid
 flowchart TD
     A[Deployment succeeded] --> B{Functions discovered in traces?}
@@ -484,6 +502,7 @@ Deployment transport remained healthy throughout the run, but runtime mismatch p
 
 ### Evidence timeline
 
+<!-- diagram-id: evidence-timeline -->
 ```mermaid
 gantt
     title Evidence Timeline (UTC)

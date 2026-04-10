@@ -1,3 +1,19 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-overview
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-overview
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-custom-handlers
+---
+
 # Azure Functions Architecture
 Azure Functions is an event-driven runtime built around a host/worker architecture. This model lets multiple languages share one platform for triggers, bindings, scaling, and operations.
 
@@ -41,6 +57,7 @@ Understanding these layers helps you choose the right hosting plan and avoid des
 At a high level, every invocation follows this path:
 `Event source -> Trigger listener -> Functions host -> Language worker -> Function code -> Output binding`
 
+<!-- diagram-id: runtime-execution-path -->
 ```mermaid
 flowchart LR
     E["Event Source\nHTTP / Timer / Queue / Blob / Event Grid"] --> T[Trigger Listener]
@@ -78,6 +95,7 @@ Language workers execute your function code and return outputs to the host. Work
 ### Detailed host/worker communication sequence
 Use this sequence when investigating cold start, timeout, or extension load behavior.
 
+<!-- diagram-id: detailed-host-worker-communication-sequence -->
 ```mermaid
 sequenceDiagram
     autonumber
@@ -120,6 +138,7 @@ The **Function App** is the primary deployment and configuration boundary. It co
 Most platform choices are applied at Function App scope, then interpreted at function scope by triggers/bindings.
 
 ### Core resource relationships
+<!-- diagram-id: core-resource-relationships -->
 ```mermaid
 flowchart TD
     SRC[Event Sources\nHTTP, Queue, Blob, Event Hub, Service Bus] --> FA[Function App]
@@ -163,6 +182,7 @@ Azure Functions behavior is controlled through layered configuration:
 4. Function-level trigger/binding metadata.
 
 #### Configuration layers diagram
+<!-- diagram-id: configuration-layers-diagram -->
 ```mermaid
 flowchart TB
     P[Layer 1: Hosting Plan\nScale model, network capability, cold-start profile] --> A[Layer 2: Function App Settings\nApp settings, identity, connection references]
@@ -284,6 +304,7 @@ Best fit: strict recovery goals with predictable write paths.
 - Eventing/data tiers must support replication or partition tolerance.
 Best fit: latency-sensitive workloads with region-tolerant data architecture.
 
+<!-- diagram-id: pattern-b-active-active-with-regional-affinity -->
 ```mermaid
 flowchart LR
     U[Clients] --> FD["Global Front Door / Traffic Manager"]
@@ -306,6 +327,7 @@ Core components:
 - **Durable storage provider** persists orchestration history and checkpoints.
 - **Client trigger** starts, queries, or terminates orchestration instances.
 
+<!-- diagram-id: durable-functions-orchestration-architecture -->
 ```mermaid
 flowchart TD
     C["Client Trigger\nHTTP / Queue / Event"] --> O[Orchestrator Function]

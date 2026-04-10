@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
 ---
 
 # 04 - Logging and Monitoring (Premium)
@@ -40,6 +47,7 @@ You will query recent traces to verify that runtime events are captured and sear
 
     Application Insights is auto-created with the **same name** as the function app during `az functionapp create`. The `APPLICATIONINSIGHTS_CONNECTION_STRING` is auto-configured — no manual setup needed.
 
+    <!-- diagram-id: what-you-ll-build -->
     ```mermaid
     flowchart LR
         FA[Function App\nPremium EP1] -->|APPLICATIONINSIGHTS_CONNECTION_STRING| AI[Application Insights\nsame name as function app]

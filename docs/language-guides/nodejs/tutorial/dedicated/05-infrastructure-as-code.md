@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-node
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
 ---
 
 # 05 - Infrastructure as Code (Dedicated)
@@ -31,6 +38,7 @@ Deploy repeatable infrastructure with Bicep and parameterized environments.
 
     The Dedicated Bicep template uses `Microsoft.Web/serverfarms` with `kind: 'linux'` (not `kind: 'elastic'` used by Premium). Storage is configured with `allowSharedKeyAccess: false` for identity-based access.
 
+    <!-- diagram-id: what-you-ll-build -->
     ```mermaid
     flowchart TD
         BICEP[Bicep Template\ninfra/dedicated/main.bicep] -->|az deployment\ngroup create| ARM[Azure Resource Manager]

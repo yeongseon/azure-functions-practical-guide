@@ -1,3 +1,19 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/private-link/private-endpoint-dns
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/storage-considerations
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/dns/private-dns-overview
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/cli/azure/network/private-dns
+---
+
 # Lab Guide: DNS and VNet Resolution Failure
 
 This lab reproduces a private DNS resolution failure on an Azure Functions Flex Consumption (FC1) app with private endpoints. By removing the blob storage Private DNS zone VNet link, the function app loses private DNS resolution for blob storage, causing storage operations to route to the public endpoint and fail with `AuthorizationFailure`. Restoring the link restores private resolution and storage access.
@@ -40,6 +56,7 @@ Azure Functions on Flex Consumption with VNet integration and private endpoints 
 
 When `allowSharedKeyAccess: false` is set on the storage account (common in FC1 identity-based deployments), the managed identity token works over the private endpoint path but fails when traffic routes to the public endpoint — because the storage account's network rules block public access.
 
+<!-- diagram-id: 1-1-private-endpoint-dns-architecture -->
 ```mermaid
 flowchart TD
     A[Function host starts] --> B[Resolve storage FQDN]
@@ -78,6 +95,7 @@ Flex Consumption scales quickly and can instantiate new workers frequently. Each
 
 ### 1.4 Failure progression model
 
+<!-- diagram-id: 1-4-failure-progression-model -->
 ```mermaid
 sequenceDiagram
     participant App as Function App (FC1)
@@ -123,6 +141,7 @@ sequenceDiagram
 
 ### 2.2 Causal chain
 
+<!-- diagram-id: 2-2-causal-chain -->
 ```mermaid
 flowchart LR
     A[Blob DNS VNet link removed] --> B[Blob FQDN resolves to public IP]
@@ -431,6 +450,7 @@ HTTP Status: 502
 
 ### 3.7 Triage decision flow
 
+<!-- diagram-id: 3-7-triage-decision-flow -->
 ```mermaid
 flowchart TD
     A[Storage probe returns 502 AuthorizationFailure] --> B{DNS resolves to private IP?}
@@ -671,6 +691,7 @@ Final verdict: **Hypothesis supported**.
 
 ### Evidence Timeline
 
+<!-- diagram-id: evidence-timeline -->
 ```mermaid
 gantt
     title DNS / VNet Resolution Failure Timeline (FC1 Lab)

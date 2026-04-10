@@ -1,9 +1,18 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-cosmosdb-v2
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference#configure-an-identity-based-connection
+---
+
 # Cosmos DB Integration
 
 This recipe shows Java bindings for Azure Cosmos DB trigger, input, and output patterns, plus identity-based configuration for production.
 
 ## Architecture
 
+<!-- diagram-id: architecture -->
 ```mermaid
 flowchart LR
     API[HTTP Trigger] --> OUT[@CosmosDBOutput]

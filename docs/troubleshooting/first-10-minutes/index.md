@@ -1,9 +1,18 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/service-health/overview
+---
+
 # Checklists
 
 Fast triage guides for the first 10 minutes of an Azure Functions investigation.
 
 These checklists help you quickly narrow down the problem category and identify which playbook to follow for deeper analysis.
 
+<!-- diagram-id: checklists -->
 ```mermaid
 graph TD
     A[Initial incident signal] --> B{Choose first-response checklist}

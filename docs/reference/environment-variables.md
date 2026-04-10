@@ -1,7 +1,14 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-python
+---
+
 # Environment Variables
 
 Azure Functions uses environment variables for runtime configuration, connection strings, and application settings. This reference documents the important variables, where they are configured, and their default values.
 
+<!-- diagram-id: environment-variables -->
 ```mermaid
 flowchart TD
     A[Function App Start] --> B{Environment}

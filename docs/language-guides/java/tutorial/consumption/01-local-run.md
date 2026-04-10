@@ -10,6 +10,13 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-java
 ---
 
 # 01 - Run Locally (Consumption)
@@ -34,6 +41,7 @@ A Java Azure Functions app built with Maven annotations, validated locally with 
 
 ## Steps
 
+<!-- diagram-id: steps -->
 ```mermaid
 flowchart LR
     A[Clone reference app] --> B[Build with Maven]

@@ -10,6 +10,11 @@ validation:
   bicep:
     last_tested: null
     result: not_tested
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/monitor-functions
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-monitor/app/azure-cli
 ---
 
 # 04 - Logging and Monitoring (Premium)
@@ -33,6 +38,7 @@ Enable observability for a Premium Function App using Application Insights, Log 
 
     Premium deploys with VNet integration (delegated subnet), a private endpoint for inbound access, private DNS zone, and pre-warmed instances. Storage uses connection string or identity-based authentication.
 
+    <!-- diagram-id: what-you-ll-build -->
     ```mermaid
     flowchart TD
         INET[Internet] -->|HTTPS| FA[Function App\nPremium EP1\nLinux Python 3.11]
@@ -83,6 +89,7 @@ Enable observability for a Premium Function App using Application Insights, Log 
         style WARM fill:#FFF3E0,stroke:#FF9800
     ```
 
+<!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart LR
     A[Function App Premium] --> B[Application Insights]

@@ -1,7 +1,18 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-diagnostics
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-monitor/essentials/data-platform-metrics
+---
+
 # Detector Map
 
 Quick reference for Azure Functions Diagnostics detectors and monitoring tools relevant to serverless troubleshooting.
 
+<!-- diagram-id: detector-map -->
 ```mermaid
 graph TD
     A[Troubleshooting scenario] --> B{Scenario type}

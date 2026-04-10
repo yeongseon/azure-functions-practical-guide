@@ -1,3 +1,29 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-overview
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/consumption-plan
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scenarios
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-compare-logic-apps-ms-flow-webjobs
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/architecture/guide/technology-choices/compute-comparison
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-python
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-dotnet-class-library
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
+---
+
 # Overview: What is Azure Functions
 
 Azure Functions is a serverless compute service for running event-driven code in Azure.
@@ -6,6 +32,7 @@ Instead of managing servers, you define functions that are executed by triggers 
 
 This page summarizes the fundamentals from Microsoft Learn and maps them to decisions you will make in this guide.
 
+<!-- diagram-id: overview-what-is-azure-functions -->
 ```mermaid
 flowchart LR
     E[Event Source] --> T[Trigger]

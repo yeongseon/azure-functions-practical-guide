@@ -1,9 +1,18 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-event-grid-trigger
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/event-grid/create-view-manage-event-subscriptions-cli
+---
+
 # Event Grid Events
 
 This recipe uses `app.eventGrid()` (not HTTP trigger emulation) to handle native Event Grid events and branch by event type.
 
 ## Architecture
 
+<!-- diagram-id: architecture -->
 ```mermaid
 flowchart LR
     SOURCE[Storage Account Event Source] --> TOPIC[Event Grid System Topic]

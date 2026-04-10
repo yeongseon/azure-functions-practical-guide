@@ -1,3 +1,17 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/analyze-telemetry-data
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-host-json
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/role-based-access-control/overview
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/data-explorer/kusto/query/
+---
+
 # Functions Failing with Errors
 
 ## 1. Summary
@@ -8,6 +22,7 @@ Function invocations fail repeatedly with `5xx`, listener startup errors, retry 
 
 ### Troubleshooting decision flow
 
+<!-- diagram-id: troubleshooting-decision-flow -->
 ```mermaid
 flowchart TD
     A[Incident: Functions failing with errors] --> B{Failures start after deploy or config change?}

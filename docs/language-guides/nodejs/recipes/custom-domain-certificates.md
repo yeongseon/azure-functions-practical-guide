@@ -1,9 +1,18 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/app-service/app-service-web-tutorial-custom-domain
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/app-service/configure-ssl-bindings
+---
+
 # Custom Domains and Certificates
 
 This recipe shows production custom domain + TLS certificate binding for HTTP-triggered Node.js v4 APIs.
 
 ## Architecture
 
+<!-- diagram-id: architecture -->
 ```mermaid
 flowchart LR
     DNS[Public DNS CNAME or A Record] --> DOMAIN[Custom Domain]

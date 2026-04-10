@@ -1,3 +1,13 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-recover-from-failed-host
+---
+
 # Operations
 
 Operations documentation is the day-2 execution layer for Azure Functions.
@@ -11,6 +21,7 @@ Use it to deploy, configure, monitor, alert, and recover production workloads.
 
 ## Scope
 
+<!-- diagram-id: scope -->
 ```mermaid
 flowchart LR
     A[Deploy] --> B[Monitor]

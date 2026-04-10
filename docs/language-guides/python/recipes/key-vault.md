@@ -1,9 +1,18 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/app-service/app-service-key-vault-references
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial
+---
+
 # Key Vault Integration
 
 This recipe covers integrating Azure Key Vault with Azure Functions to securely manage secrets, certificates, and keys. You will learn the Key Vault references approach (zero code changes) and the SDK approach (for dynamic secret access at runtime).
 
 ## Architecture
 
+<!-- diagram-id: architecture -->
 ```mermaid
 flowchart LR
     PLATFORM[Azure Functions Platform] --> FA[Function App]

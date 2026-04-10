@@ -1,3 +1,19 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue-trigger
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/performance-reliability
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/storage/common/monitor-storage
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-monitor/app/analytics
+---
+
 # Queue Messages Piling Up
 ## 1. Summary
 | Item | Details |
@@ -6,6 +22,7 @@
 | Primary risk | SLA/SLO breach, stale outcomes, and downstream saturation cascades. |
 | Typical components | Azure Storage Queue, Azure Functions queue trigger, App Insights, downstream APIs/DBs. |
 | First classification decision | Is this H1 scale lag, H2 poison loop, H3 regression, or H4 dependency bottleneck? |
+<!-- diagram-id: 1-summary -->
 ```mermaid
 flowchart TD
     A[Queue count and age rising] --> B{Dequeue retries or poison growth?}

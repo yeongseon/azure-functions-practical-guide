@@ -1,3 +1,17 @@
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-create-vnet
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-networking-options#private-endpoints
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/private-link/private-endpoint-dns
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/functions-app-settings
+---
+
 # Networking Best Practices for Azure Functions
 
 Azure Functions networking decisions directly affect runtime safety: trigger reachability, host startup, scale-out behavior, and dependency access. This guide focuses on practical patterns for VNet integration, private endpoints, DNS correctness, and safe outbound control.
@@ -91,6 +105,7 @@ Root cause is usually split resolution paths without consistent zone linkage.
 | Public access policy | Public network access disabled when private-only required | Prevents policy bypass over public endpoint | Validate both private and internet paths intentionally |
 | Runtime path validation | Function runtime subnet resolves same private records as callers | Prevents "portal works, runtime fails" scenarios | In-app DNS lookup and dependency probe |
 
+<!-- diagram-id: the-dns-confusion-trap -->
 ```mermaid
 flowchart LR
     C1[Internal caller in linked VNet] --> R1[Private DNS resolver path]
@@ -232,6 +247,7 @@ Minimum safe pattern:
 | Hub-and-spoke | Private or restricted ingress via shared network services | Egress inspected through hub firewall/NAT | Multi-team platform with centralized controls | Shared hub dependencies can become bottleneck |
 | Hybrid | Private/restricted Azure ingress + on-prem caller paths | VNet integration + VPN/ExpressRoute routes | Legacy system integration with on-prem services | Route and DNS drift causes intermittent failures |
 
+<!-- diagram-id: hybrid -->
 ```mermaid
 flowchart TD
     A[Architecture selection] --> F1[Fully private]
@@ -247,6 +263,7 @@ flowchart TD
 
 ### Networking decision flowchart
 
+<!-- diagram-id: networking-decision-flowchart -->
 ```mermaid
 flowchart TD
     S[Start networking design] --> I{Need private inbound?}
