@@ -1,0 +1,129 @@
+name: Validate Content Sources
+
+on:
+  pull_request:
+    paths:
+      - 'docs/**/*.md'
+  push:
+    branches:
+      - main
+    paths:
+      - 'docs/**/*.md'
+
+jobs:
+  validate-content-sources:
+    name: Validate Content Source Metadata
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install pyyaml
+      
+      - name: Validate content sources
+        run: |
+          python scripts/validate_content_sources.py
+      
+      - name: Check for missing diagram IDs
+        run: |
+          # Count mermaid blocks
+          MERMAID_COUNT=$(grep -r '```mermaid' docs/ --include="*.md" | wc -l)
+          
+          # Count diagram-id comments
+          DIAGRAM_ID_COUNT=$(grep -r '<!-- diagram-id:' docs/ --include="*.md" | wc -l)
+          
+          echo "Mermaid blocks: $MERMAID_COUNT"
+          echo "Diagram IDs: $DIAGRAM_ID_COUNT"
+          
+          if [ "$MERMAID_COUNT" -ne "$DIAGRAM_ID_COUNT" ]; then
+            echo "::error::Mismatch! Some mermaid blocks are missing diagram-id comments."
+            echo "Missing: $((MERMAID_COUNT - DIAGRAM_ID_COUNT)) diagram IDs"
+            exit 1
+          fi
+          
+          echo "All mermaid blocks have diagram-id comments."
+      
+      - name: Check for content_sources in new/modified files
+        run: |
+          # Get list of changed markdown files with mermaid
+          CHANGED_FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha || 'HEAD~1' }} -- 'docs/**/*.md' 2>/dev/null || echo "")
+          
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "No markdown files changed."
+            exit 0
+          fi
+          
+          MISSING_SOURCES=""
+          
+          for file in $CHANGED_FILES; do
+            if [ -f "$file" ]; then
+              # Check if file has mermaid
+              if grep -q '```mermaid' "$file"; then
+                # Check if file has content_sources
+                if ! grep -q 'content_sources:' "$file"; then
+                  MISSING_SOURCES="$MISSING_SOURCES\n  - $file"
+                fi
+              fi
+            fi
+          done
+          
+          if [ -n "$MISSING_SOURCES" ]; then
+            echo "::error::Files with mermaid diagrams missing content_sources metadata:"
+            echo -e "$MISSING_SOURCES"
+            exit 1
+          fi
+          
+          echo "All changed files with mermaid diagrams have content_sources metadata."
+
+  validate-mslearn-urls:
+    name: Validate MSLearn URLs
+    runs-on: ubuntu-latest
+    # Only run on push to main to avoid rate limiting
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install pyyaml requests
+      
+      - name: Validate MSLearn URLs
+        run: |
+          python scripts/validate_mslearn_urls.py --verbose
+        continue-on-error: true  # Don't fail build on URL issues, just report
+
+  build-docs:
+    name: Build Documentation
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install MkDocs
+        run: |
+          pip install mkdocs-material mkdocs-minify-plugin
+      
+      - name: Build with strict mode
+        run: |
+          mkdocs build --strict
