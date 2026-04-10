@@ -468,10 +468,10 @@ Recovery criteria:
 
 ## See Also
 - [Troubleshooting Architecture](../architecture.md)
-- [First 10 Minutes](../first-10-minutes.md)
-- [KQL Query Library](../kql.md)
+- [First 10 Minutes](../first-10-minutes/index.md)
+- [KQL Query Library](../kql/index.md)
 - [Troubleshooting Methodology](../methodology.md)
-- [Troubleshooting Lab Guides](../lab-guides.md)
+- [Troubleshooting Lab Guides](../lab-guides/index.md)
 
 ## Sources
 - [Monitor Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-monitoring)

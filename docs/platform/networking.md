@@ -389,7 +389,7 @@ Runtime focus areas:
 - [Scaling](scaling.md)
 - [Security](security.md)
 - [Troubleshooting architecture](../troubleshooting/architecture.md)
-- [Troubleshooting playbooks](../troubleshooting/playbooks.md)
+- [Troubleshooting playbooks](../troubleshooting/playbooks/index.md)
 - [Deployment Scenarios](deployment-scenarios.md) — Cross-plan comparison of VNet, PE, identity, and deployment patterns
 
 ## Sources

@@ -11,7 +11,7 @@ content_sources:
 This reference consolidates high-impact anti-patterns that repeatedly cause Azure Functions incidents across hosting, triggers, security, deployment, and operations. Use it during design review, pre-production checks, and incident retrospectives.
 
 !!! tip "Use with operational runbooks"
-    Pair this page with [Troubleshooting Playbooks](../troubleshooting/playbooks.md) to translate each anti-pattern into detection and recovery actions.
+Pair this page with [Troubleshooting Playbooks](../troubleshooting/playbooks/index.md) to translate each anti-pattern into detection and recovery actions.
 
 ## Why This Matters
 
@@ -120,7 +120,7 @@ flowchart TD
 | Severity | High |
 
 !!! tip "Best practice"
-    Align retry policy with idempotent handler logic and poison workflow ownership in [Troubleshooting Playbooks](../troubleshooting/playbooks.md).
+Align retry policy with idempotent handler logic and poison workflow ownership in [Troubleshooting Playbooks](../troubleshooting/playbooks/index.md).
 
 <a id="ap-unbounded-scale"></a>
 ### Anti-pattern: Unbounded scale
@@ -291,7 +291,7 @@ flowchart TD
 | Severity | High |
 
 !!! tip "Best practice"
-    Track poison handling as an SLO with explicit response time targets in [Troubleshooting Playbooks](../troubleshooting/playbooks.md).
+Track poison handling as an SLO with explicit response time targets in [Troubleshooting Playbooks](../troubleshooting/playbooks/index.md).
 
 <a id="ap-shared-storage"></a>
 ### Anti-pattern: Shared storage account across many function apps
@@ -368,7 +368,7 @@ Use this anti-pattern checklist at three control points:
 - [Best Practices: Cost Optimization](./cost-optimization.md)
 - [Platform: Hosting](../platform/hosting.md)
 - [Platform: Scaling](../platform/scaling.md)
-- [Troubleshooting Playbooks](../troubleshooting/playbooks.md)
+- [Troubleshooting Playbooks](../troubleshooting/playbooks/index.md)
 
 ## Sources
 

@@ -136,9 +136,9 @@ Choose the track that matches your immediate goal:
 
 ### Sequence
 
-1. [First 10 Minutes](../troubleshooting/first-10-minutes.md)
+1. [First 10 Minutes](../troubleshooting/first-10-minutes/index.md)
 2. [Troubleshooting Methodology](../troubleshooting/methodology.md)
-3. [Playbooks](../troubleshooting/playbooks.md)
+3. [Playbooks](../troubleshooting/playbooks/index.md)
 4. KQL workflow guidance in [Troubleshooting Index](../troubleshooting/index.md)
 5. Lab workflow guidance in [Troubleshooting Index](../troubleshooting/index.md)
 

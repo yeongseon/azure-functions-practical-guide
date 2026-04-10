@@ -392,7 +392,7 @@ az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "Ap
 
 - **Example A**: HTTP requests fail only after idle periods.
     - Start with hosting plan architecture and cold start flow.
-    - Open: [High Latency](playbooks/high-latency.md), [Quick Diagnosis Cards](quick-diagnosis-cards.md), and [First 10 Minutes](first-10-minutes.md).
+- Open: [High Latency](playbooks/high-latency.md), [Quick Diagnosis Cards](quick-diagnosis-cards.md), and [First 10 Minutes](first-10-minutes/index.md).
 - **Example B**: Queue depth rises while the app shows healthy in the portal.
     - Start with trigger and binding architecture, then scale controller behavior.
     - Open: [Functions Not Executing](playbooks/functions-not-executing.md) and [Queue Piling Up](playbooks/queue-piling-up.md).
@@ -415,7 +415,7 @@ az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "Ap
 - [Decision Tree](decision-tree.md)
 - [Troubleshooting Mental Model](mental-model.md)
 - [Quick Diagnosis Cards](quick-diagnosis-cards.md)
-- [First 10 Minutes](first-10-minutes.md)
+- [First 10 Minutes](first-10-minutes/index.md)
 - [Troubleshooting Method](methodology/troubleshooting-method.md)
 - [Detector Map](methodology/detector-map.md)
 - [Playbooks Index](playbooks/index.md)

@@ -421,8 +421,8 @@ az functionapp deployment source config-zip --name <app-name> --resource-group <
 ## See Also
 - [Troubleshooting Architecture](../../architecture.md)
 - [Troubleshooting Methodology](../../methodology.md)
-- [Troubleshooting KQL Guide](../../kql.md)
-- [Troubleshooting Lab Guides](../../lab-guides.md)
+- [Troubleshooting KQL Guide](../../kql/index.md)
+- [Troubleshooting Lab Guides](../../lab-guides/index.md)
 - [Event Hub / Service Bus Trigger Lag](./event-hub-service-bus-lag.md)
 
 ## Sources

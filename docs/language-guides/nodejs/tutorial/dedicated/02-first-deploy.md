@@ -353,6 +353,11 @@ flowchart TD
     az account set --subscription "<subscription-id>"
     ```
 
+    | Command/Parameter | Purpose |
+    |-------------------|---------|
+    | `az login` | Authenticates your CLI session with Azure. |
+    | `az account set --subscription` | Targets the specific Azure subscription for resource creation. |
+
 3. Create resource group.
 
     ```bash
@@ -360,6 +365,12 @@ flowchart TD
       --name "$RG" \
       --location "$LOCATION"
     ```
+
+    | Command/Parameter | Purpose |
+    |-------------------|---------|
+    | `az group create` | Provisions a new Azure resource group container. |
+    | `--name "$RG"` | Specifies the resource group name. |
+    | `--location "$LOCATION"` | Sets the geographical region for the group. |
 
     Expected output (abridged):
 
@@ -385,6 +396,16 @@ flowchart TD
       --allow-blob-public-access false
     ```
 
+    | Command/Parameter | Purpose |
+    |-------------------|---------|
+    | `az storage account create` | Provisions a new Azure Storage account. |
+    | `--name "$STORAGE_NAME"` | Sets the unique name for the storage account. |
+    | `--resource-group "$RG"` | Assigns the storage account to the specified resource group. |
+    | `--location "$LOCATION"` | Places the storage account in the chosen region. |
+    | `--sku "Standard_LRS"` | Selects locally-redundant storage for cost-efficiency. |
+    | `--kind "StorageV2"` | Uses the general-purpose v2 storage account type. |
+    | `--allow-blob-public-access false` | Disables public access to blobs for better security. |
+
     Expected output (abridged):
 
     ```json
@@ -409,6 +430,15 @@ flowchart TD
       --sku "B1" \
       --is-linux
     ```
+
+    | Command/Parameter | Purpose |
+    |-------------------|---------|
+    | `az appservice plan create` | Provisions a standard Azure App Service Plan. |
+    | `--name "$PLAN_NAME"` | Sets the name for the App Service (Dedicated) plan. |
+    | `--resource-group "$RG"` | Links the plan to the target resource group. |
+    | `--location "$LOCATION"` | Places the plan in the chosen region. |
+    | `--sku "B1"` | Selects the Basic B1 pricing tier. |
+    | `--is-linux` | Configures the plan for Linux-based workers. |
 
     Expected output (abridged):
 
@@ -439,6 +469,18 @@ flowchart TD
       --os-type "Linux"
     ```
 
+    | Command/Parameter | Purpose |
+    |-------------------|---------|
+    | `az functionapp create` | Provisions the core Function App resource. |
+    | `--name "$APP_NAME"` | Sets the globally unique name for the Function App. |
+    | `--resource-group "$RG"` | Places the app in the specified resource group. |
+    | `--plan "$PLAN_NAME"` | Links the app to the Dedicated App Service Plan. |
+    | `--storage-account "$STORAGE_NAME"` | Connects the app to the specified storage account. |
+    | `--runtime "node"` | Selects the Node.js execution environment. |
+    | `--runtime-version "20"` | Pins the Node.js version to v20. |
+    | `--functions-version "4"` | Uses version 4 of the Azure Functions runtime host. |
+    | `--os-type "Linux"` | Deploys the app on a Linux infrastructure. |
+
     !!! warning "Node.js 20 EOL approaching"
         Azure CLI warns: `Use node version 24 as 20 will reach end-of-life on 2026-04-30`. Consider using `--runtime-version 22` or later for new projects.
 
@@ -466,9 +508,17 @@ flowchart TD
       --name "$APP_NAME" \
       --resource-group "$RG" \
       --settings \
-        "EventHubConnection__fullyQualifiedNamespace=placeholder.servicebus.windows.net" \
-        "QueueStorage=$(az storage account show-connection-string --name $STORAGE_NAME --resource-group $RG --query connectionString --output tsv)"
+      "EventHubConnection__fullyQualifiedNamespace=placeholder.servicebus.windows.net" \
+      "QueueStorage=$(az storage account show-connection-string --name $STORAGE_NAME --resource-group $RG --query connectionString --output tsv)"
     ```
+
+    | Command/Parameter | Purpose |
+    |-------------------|---------|
+    | `az functionapp config appsettings set` | Updates the application settings for the Function App. |
+    | `--name "$APP_NAME"` | Targets the specific Function App. |
+    | `--resource-group "$RG"` | Specifies the resource group containing the app. |
+    | `--settings` | Defines the key-value pairs required by the function triggers. |
+    | `az storage account show-connection-string` | Retrieves the connection string for the storage account. |
 
     !!! note "EventHub placeholder required"
         If your app includes an Event Hub trigger, the function host may fail to start without a valid `EventHubConnection` setting. Set a placeholder namespace to allow function indexing.
@@ -479,6 +529,12 @@ flowchart TD
     cd apps/nodejs
     func azure functionapp publish "$APP_NAME"
     ```
+
+    | Command/Parameter | Purpose |
+    |-------------------|---------|
+    | `cd apps/nodejs` | Moves the terminal into the source code directory. |
+    | `func azure functionapp publish` | Bundles, uploads, and deploys the app source code. |
+    | `"$APP_NAME"` | Specifies the target Function App for publication. |
 
     Expected output (abridged):
 
@@ -498,6 +554,13 @@ flowchart TD
       --resource-group "$RG" \
       --output table
     ```
+
+    | Command/Parameter | Purpose |
+    |-------------------|---------|
+    | `az functionapp function list` | Queries ARM to retrieve the list of indexed functions. |
+    | `--name "$APP_NAME"` | Targets the specific Function App. |
+    | `--resource-group "$RG"` | Specifies the resource group containing the app. |
+    | `--output table` | Formats the function list as a readable text table. |
 
     !!! tip "Function indexing delay"
         After the first publish, it may take 30–60 seconds for all functions to appear in the ARM API. If the list is empty, wait and retry.
@@ -524,6 +587,11 @@ flowchart TD
     curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
     ```
 
+    | Command/Parameter | Purpose |
+    |-------------------|---------|
+    | `curl --request GET` | Sends an HTTP GET request to verify the health endpoint. |
+    | `"https://..."` | Specifies the URL of the deployed function endpoint. |
+
     Expected output:
 
     ```json
@@ -534,6 +602,11 @@ flowchart TD
     curl --request GET "https://$APP_NAME.azurewebsites.net/api/hello/Dedicated"
     ```
 
+    | Command/Parameter | Purpose |
+    |-------------------|---------|
+    | `curl --request GET` | Sends an HTTP GET request to verify the hello endpoint. |
+    | `"https://..."` | Targets the specific hello API endpoint with a parameter. |
+
     Expected output:
 
     ```json
@@ -543,6 +616,11 @@ flowchart TD
     ```bash
     curl --request GET "https://$APP_NAME.azurewebsites.net/api/info"
     ```
+
+    | Command/Parameter | Purpose |
+    |-------------------|---------|
+    | `curl --request GET` | Sends an HTTP GET request to verify the info endpoint. |
+    | `"https://..."` | Targets the info API endpoint for environment details. |
 
     Expected output:
 

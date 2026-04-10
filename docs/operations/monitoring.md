@@ -35,6 +35,12 @@ APP_NAME=<app-name>
 SUBSCRIPTION_ID=<subscription-id>
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `RG` | Sets the resource group name variable |
+| `APP_NAME` | Sets the function app name variable |
+| `SUBSCRIPTION_ID` | Sets the Azure subscription identifier variable |
+
 ## When to Use
 
 Use the signal that best answers the operational question.
@@ -85,6 +91,13 @@ az functionapp config appsettings set \
     --settings APPLICATIONINSIGHTS_CONNECTION_STRING="InstrumentationKey=<masked>;IngestionEndpoint=https://<region>.in.applicationinsights.azure.com/"
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp config appsettings set` | Configures the Application Insights connection string |
+| `--resource-group <resource-group>` | Specifies the resource group |
+| `--name <app-name>` | Specifies the function app name |
+| `--settings` | Sets the connection string to route telemetry to the correct resource |
+
 Prefer connection strings over legacy instrumentation-key-only configuration.
 
 ### Core metrics to track
@@ -120,6 +133,17 @@ az monitor metrics list \
     --end-time 2026-04-05T01:00:00Z \
     --output table
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp show` | Gets the resource ID of the function app |
+| `az monitor metrics list` | Retrieves numerical platform metrics |
+| `--resource "$APP_ID"` | Target resource for metric retrieval |
+| `--metric` | List of metrics to query (execution count and units) |
+| `--interval PT5M` | Aggregates data into 5-minute time grains |
+| `--aggregation Total Average` | Specified aggregation types to return |
+| `--start-time` / `--end-time` | ISO 8601 timestamps for the query window |
+| `--output table` | Formats the metrics as a table |
 
 Sample output (PII masked):
 
@@ -299,6 +323,13 @@ az monitor metrics list \
     --output table
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az monitor metrics list` | Queries the specified metric |
+| `--metric "Function Execution Count"` | Tracks how many times functions were invoked |
+| `--query` | JMESPath filter to only show intervals where total executions are greater than zero |
+| `--output table` | Formats results as a table |
+
 Log verification command:
 
 ```kql
@@ -329,6 +360,12 @@ az functionapp config appsettings list \
     --output tsv
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp config appsettings list` | Lists application settings |
+| `--query` | Extracts the value of the Application Insights connection string |
+| `--output tsv` | Returns the raw string value |
+
 ### Sampling too aggressive
 
 - Log request counts are much lower than platform metrics.
@@ -354,7 +391,7 @@ Rollback:
 
 - [Alerts](alerts.md)
 - [Cold Start](cold-start.md)
-- [Troubleshooting KQL](../troubleshooting/kql.md)
+- [Troubleshooting KQL](../troubleshooting/kql/index.md)
 
 ## Sources
 

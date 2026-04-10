@@ -482,10 +482,10 @@ az monitor log-analytics query \
 ## See Also
 
 - [Troubleshooting Architecture](../architecture.md)
-- [First 10 Minutes](../first-10-minutes.md)
-- [Troubleshooting KQL](../kql.md)
+- [First 10 Minutes](../first-10-minutes/index.md)
+- [Troubleshooting KQL](../kql/index.md)
 - [Troubleshooting Methodology](../methodology.md)
-- [All Playbooks](../playbooks.md)
+- [All Playbooks](../playbooks/index.md)
 - [Related Labs: DNS and VNet Resolution](../lab-guides/dns-vnet-resolution.md)
 
 ## Sources

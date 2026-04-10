@@ -538,10 +538,10 @@ az group delete --name "$RG" --yes --no-wait --output table
 
 ## See Also
 
-- [Troubleshooting Lab Guides](../lab-guides.md)
+- [Troubleshooting Lab Guides](../lab-guides/index.md)
 - [Troubleshooting Methodology](../methodology.md)
-- [First 10 Minutes Triage](../first-10-minutes.md)
-- [KQL Guide](../kql.md)
+- [First 10 Minutes Triage](../first-10-minutes/index.md)
+- [KQL Guide](../kql/index.md)
 
 ## Sources
 

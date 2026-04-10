@@ -427,7 +427,7 @@ az functionapp deployment source config-zip --name <app-name> --resource-group <
 ## See Also
 - [Troubleshooting Architecture](../../architecture.md)
 - [Troubleshooting Methodology](../../methodology.md)
-- [Troubleshooting KQL Guide](../../kql.md)
+- [Troubleshooting KQL Guide](../../kql/index.md)
 - [Event Hub checkpoint lag lab guide](../../lab-guides/event-hub-checkpoint-lag.md)
 - [Timeout / Execution Time Limit Exceeded](./timeout-execution-limit.md)
 

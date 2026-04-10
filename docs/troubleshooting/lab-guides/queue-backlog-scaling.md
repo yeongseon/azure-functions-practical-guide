@@ -516,10 +516,10 @@ If using shared resources (`rg-lab-y1-shared`), skip deletion and only clear tes
 ## See Also
 
 - [Troubleshooting methodology](../methodology.md)
-- [First 10 minutes triage](../first-10-minutes.md)
-- [KQL investigation guide](../kql.md)
+- [First 10 minutes triage](../first-10-minutes/index.md)
+- [KQL investigation guide](../kql/index.md)
 - [Evidence map](../evidence-map.md)
-- [Other lab guides](../lab-guides.md)
+- [Other lab guides](../lab-guides/index.md)
 
 ## Sources
 

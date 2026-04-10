@@ -432,10 +432,10 @@ az monitor log-analytics query \
 - [Queue Backlog Scaling Lab](../lab-guides/queue-backlog-scaling.md)
 
 ## See Also
-- [Troubleshooting Playbooks](../playbooks.md)
-- [KQL Query Library](../kql.md)
+- [Troubleshooting Playbooks](../playbooks/index.md)
+- [KQL Query Library](../kql/index.md)
 - [Troubleshooting Methodology](../methodology.md)
-- [Troubleshooting Lab Guides](../lab-guides.md)
+- [Troubleshooting Lab Guides](../lab-guides/index.md)
 - [Queue Backlog Scaling Lab](../lab-guides/queue-backlog-scaling.md)
 
 ## Sources

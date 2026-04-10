@@ -386,7 +386,7 @@ Cross-reference for implementation decisions:
 - [Networking](networking.md)
 - [Reliability](reliability.md)
 - [Operations: Monitoring](../operations/monitoring.md)
-- [Troubleshooting: Playbooks](../troubleshooting/playbooks.md)
+- [Troubleshooting: Playbooks](../troubleshooting/playbooks/index.md)
 
 ## Sources
 - [Microsoft Learn: Azure Functions hosting options](https://learn.microsoft.com/azure/azure-functions/functions-scale)

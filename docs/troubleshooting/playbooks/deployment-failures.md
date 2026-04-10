@@ -476,9 +476,9 @@ az functionapp restart \
     - pin supported extension bundle ranges
     - keep version compatibility matrix by app and plan
 ## See Also
-- [First 10 Minutes](../first-10-minutes.md)
+- [First 10 Minutes](../first-10-minutes/index.md)
 - [Methodology](../methodology.md)
-- [KQL Query Library](../kql.md)
+- [KQL Query Library](../kql/index.md)
 - [Deployment and release patterns](../../best-practices/deployment.md)
 - Related Labs: [Cold Start Lab](../lab-guides/cold-start.md)
 ## Sources

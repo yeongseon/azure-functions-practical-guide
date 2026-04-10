@@ -417,7 +417,7 @@ flowchart TD
 ## See Also
 - [Troubleshooting architecture](../../architecture.md)
 - [Troubleshooting methodology](../../methodology.md)
-- [Troubleshooting KQL guide](../../kql.md)
+- [Troubleshooting KQL guide](../../kql/index.md)
 - [Durable replay storm lab guide](../../lab-guides/durable-replay-storm.md)
 - [Out of memory / worker crash playbook](./out-of-memory-worker-crash.md)
 

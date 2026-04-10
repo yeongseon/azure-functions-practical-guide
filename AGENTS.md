@@ -17,18 +17,18 @@ Guidance for AI agents working in this repository.
 │   └── workflows/              # GitHub Pages deployment
 ├── apps/
 │   ├── python/                 # Python reference application (v2 model)
-│   ├── nodejs/                 # Node.js (stub)
-│   ├── dotnet/                 # .NET (stub)
-│   └── java/                   # Java (stub)
+│   ├── nodejs/                 # Node.js reference application (v4 model)
+│   ├── dotnet/                 # .NET reference application (isolated worker)
+│   └── java/                   # Java reference application (Maven)
 ├── docs/
 │   ├── assets/                 # Images, icons
 │   ├── best-practices/         # Production patterns and anti-patterns (9 pages)
 │   ├── javascripts/            # Mermaid zoom JS
 │   ├── language-guides/
 │   │   ├── python/             # Python — 4 plans × 7 tutorials + recipes
-│   │   ├── nodejs/             # Node.js (stub)
-│   │   ├── java/               # Java (stub)
-│   │   └── dotnet/             # .NET (stub)
+│   │   ├── nodejs/             # Node.js — 4 plans × 7 tutorials + recipes
+│   │   ├── java/               # Java — 4 plans × 7 tutorials + recipes
+│   │   └── dotnet/             # .NET — 4 plans × 7 tutorials + recipes
 │   ├── operations/             # Day-2 operational execution (9 pages)
 │   ├── platform/               # Architecture and design decisions (7 pages)
 │   ├── reference/              # CLI cheatsheet, host.json, limits (5 pages)

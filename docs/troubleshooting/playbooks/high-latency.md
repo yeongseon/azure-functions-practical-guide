@@ -122,7 +122,7 @@ api.partner.internal           HTTP  328    2       1260
 [2026-04-04T11:40:01Z] Dependency call success: target=api.partner.internal, duration=84ms
 ```
 ### KQL Queries with Example Output
-#### Query 1: Function execution summary (from kql.md #1)
+#### Query 1: Function execution summary (from kql/index.md #1)
 ```kusto
 let appName = "func-myapp-prod";
 requests
@@ -140,7 +140,7 @@ requests
 | FunctionName | Invocations | Failures | FailureRatePercent | P95Ms |
 |---|---|---|---|---|
 | Functions.HttpIngress | 50 | 0 | 0.00 | 1729.33 |
-#### Query 2: Cold start analysis (from kql.md #3)
+#### Query 2: Cold start analysis (from kql/index.md #3)
 ```kusto
 let appName = "func-myapp-prod";
 traces
@@ -160,7 +160,7 @@ traces
 | timestamp | StartupEvents | FirstInvocation | FirstDurationMs |
 |---|---|---|---|
 | 2026-04-04T11:30:00Z | 83 | 2026-04-04T11:30:00.003Z | 3024.9 |
-#### Query 3: Dependency call failures (from kql.md #4)
+#### Query 3: Dependency call failures (from kql/index.md #4)
 ```kusto
 let appName = "func-myapp-prod";
 dependencies
@@ -454,10 +454,10 @@ union isfuzzy=true
 ### Related Labs
 - [Cold Start Lab](../lab-guides/cold-start.md)
 ## See Also
-- [First 10 Minutes](../first-10-minutes.md)
+- [First 10 Minutes](../first-10-minutes/index.md)
 - [Troubleshooting Methodology](../methodology.md)
-- [KQL Query Library](../kql.md)
-- [Troubleshooting Playbooks](../playbooks.md)
+- [KQL Query Library](../kql/index.md)
+- [Troubleshooting Playbooks](../playbooks/index.md)
 ## Sources
 - [Monitor Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-monitoring)
 - [Application Insights telemetry data model](https://learn.microsoft.com/azure/azure-monitor/app/data-model-complete)

@@ -847,9 +847,9 @@ az group delete \
 
 ## See Also
 
-- [Lab Guides Hub](../lab-guides.md)
-- [KQL Query Library](../kql.md)
-- [First 10 Minutes](../first-10-minutes.md)
+- [Lab Guides Hub](../lab-guides/index.md)
+- [KQL Query Library](../kql/index.md)
+- [First 10 Minutes](../first-10-minutes/index.md)
 - [Troubleshooting Methodology](../methodology.md)
 - [Functions Not Executing](../playbooks/functions-not-executing.md)
 

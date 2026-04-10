@@ -86,6 +86,14 @@ az login
 az account set --subscription "<subscription-id>"
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `RG` | Resource group name |
+| `APP_NAME` | Unique name for the function app |
+| `STORAGE_NAME` | Storage account for state and deployment |
+| `az login` | Authenticates your CLI session |
+| `--subscription` | Sets the target subscription context |
+
 ### Step 2 - Create resource group and storage account
 
 ```bash
@@ -99,6 +107,11 @@ az storage account create \
   --kind StorageV2
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az group create` | Creates the resource group container |
+| `--kind StorageV2` | Required for Flex Consumption deployment features |
+
 ### Step 3 - Create the deployment container
 
 ```bash
@@ -107,6 +120,11 @@ az storage container create \
   --account-name "$STORAGE_NAME" \
   --auth-mode login
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `app-package` | Standard name for the deployment artifact container |
+| `--auth-mode login` | Uses your Microsoft Entra identity for creation |
 
 !!! warning "Container must exist before function app creation"
     Flex Consumption requires a pre-existing blob container for deployment packages. If the container does not exist, `az functionapp create` fails with a `ContainerNotFound` error.
@@ -125,6 +143,12 @@ az functionapp create \
   --deployment-storage-container-name app-package \
   --deployment-storage-auth-type SystemAssignedIdentity
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `--runtime dotnet-isolated` | Targets the isolated worker process |
+| `--flexconsumption-location` | Identifies this as a Flex Consumption app |
+| `--deployment-storage-auth-type` | Uses Managed Identity for secure artifact access |
 
 !!! note "Flex Consumption vs Consumption CLI differences"
     Flex Consumption uses `--flexconsumption-location` instead of `--consumption-plan-location`. It also requires `--deployment-storage-name`, `--deployment-storage-container-name`, and `--deployment-storage-auth-type` parameters.
@@ -155,6 +179,11 @@ az role assignment create \
   --scope "$STORAGE_ID"
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp identity show` | Retrieves the app's Managed Identity ID |
+| `az role assignment create` | Grants the app permission to read its own code |
+
 !!! warning "Role propagation delay"
     Azure role assignments can take 1-2 minutes to propagate. If publishing fails with a 403 error immediately after assignment, wait and retry.
 
@@ -173,6 +202,10 @@ az functionapp config appsettings set \
     "QueueStorage=$STORAGE_CONN" \
     "EventHubConnection=Endpoint=sb://placeholder.servicebus.windows.net/;SharedAccessKeyName=placeholder;SharedAccessKey=cGxhY2Vob2xkZXI=;EntityPath=placeholder"
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp config appsettings set` | Configures environment variables |
 
 !!! warning "Placeholder settings prevent host crashes"
     The .NET reference app includes triggers for Queue, EventHub, Blob, and Timer. Use connection string format for EventHubConnection — the `__fullyQualifiedNamespace` format triggers DefaultAzureCredential which may not be configured for all services.
@@ -194,6 +227,11 @@ az storage container create \
   --auth-mode login
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az storage queue create` | Creates the queue for order processing |
+| `az storage container create` | Creates the blob container for uploads |
+
 ### Step 8 - Build and publish
 
 ```bash
@@ -203,6 +241,11 @@ dotnet publish --configuration Release --output ./publish
 cd publish
 func azure functionapp publish "$APP_NAME" --dotnet-isolated
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `dotnet publish` | Compiles the project and dependencies |
+| `func azure functionapp publish` | Deploys the artifacts to Azure |
 
 !!! danger "Must publish from output directory with --dotnet-isolated flag"
     When publishing from the compiled output directory, Core Tools cannot detect the project language. Always pass `--dotnet-isolated` to specify the worker runtime explicitly. Without this flag, the publish may succeed but functions will not be indexed correctly.
@@ -232,6 +275,13 @@ curl --request GET "https://$APP_NAME.azurewebsites.net/api/hello/FlexTest"
 # Test the info endpoint
 curl --request GET "https://$APP_NAME.azurewebsites.net/api/info"
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp function list` | Lists all indexed functions in the app |
+| `curl --request GET` | Sends validation requests to the app |
+| `/api/health` | Probes service health state |
+| `/api/info` | Inspects app configuration values |
 
 ### Step 10 - Review Flex Consumption-specific notes
 

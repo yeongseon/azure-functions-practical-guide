@@ -708,6 +708,18 @@ flowchart TD
       --allow-blob-public-access false
     ```
 
+    | Command/Parameter | Purpose |
+    |-------------------|---------|
+    | `az group create` | Provisions a new resource group. |
+    | `--name "$RG"` | Sets the resource group name. |
+    | `--location "$LOCATION"` | Places the resource group in the target region. |
+    | `az storage account create` | Creates a storage account for function app use. |
+    | `--name "$STORAGE_NAME"` | Sets the unique name for the storage account. |
+    | `--resource-group "$RG"` | Assigns the storage account to the specified resource group. |
+    | `--sku "Standard_LRS"` | Uses Standard Locally Redundant Storage. |
+    | `--kind "StorageV2"` | Selects General Purpose v2 storage account type. |
+    | `--allow-blob-public-access false` | Disables public anonymous access to blobs. |
+
     Expected output (abridged):
 
     ```json
@@ -754,6 +766,23 @@ flowchart TD
       --os-type "Linux"
     ```
 
+    | Command/Parameter | Purpose |
+    |-------------------|---------|
+    | `az functionapp plan create` | Provisions an Elastic Premium hosting plan. |
+    | `--name "$PLAN_NAME"` | Sets the plan name. |
+    | `--resource-group "$RG"` | Links the plan to the resource group. |
+    | `--location "$LOCATION"` | Places the plan in the target region. |
+    | `--sku "EP1"` | Selects the initial Premium tier size. |
+    | `--is-linux` | Configures the plan for Linux hosting. |
+    | `az functionapp create` | Provisions the function app within the Premium plan. |
+    | `--name "$APP_NAME"` | Sets the globally unique name for the Function App. |
+    | `--plan "$PLAN_NAME"` | Links the app to the newly created plan. |
+    | `--storage-account "$STORAGE_NAME"` | Connects the app to the specified storage account. |
+    | `--runtime "python"` | Sets the language runtime to Python. |
+    | `--runtime-version "3.11"` | Specifies the Python version. |
+    | `--functions-version "4"` | Selects version 4.x of the runtime. |
+    | `--os-type "Linux"` | Deploys the app on a Linux host. |
+
 !!! tip "Globally unique names required"
     Both `$APP_NAME` and `$STORAGE_NAME` must be globally unique across all Azure subscriptions. If you get a naming conflict, append a random suffix (e.g., `func-prem-04091234`).
 
@@ -799,6 +828,15 @@ flowchart TD
         "AzureWebJobsStorage__credential=managedidentity"
     ```
 
+    | Command/Parameter | Purpose |
+    |-------------------|---------|
+    | `az functionapp config appsettings set` | Configures environment variables for the function app. |
+    | `--name "$APP_NAME"` | Targets the specific Function App. |
+    | `--resource-group "$RG"` | Specifies the resource group. |
+    | `"FUNCTIONS_WORKER_RUNTIME=python"` | Sets the runtime worker to Python. |
+    | `"AzureWebJobsStorage__accountName=$STORAGE_NAME"` | Sets the storage account name for host storage. |
+    | `"AzureWebJobsStorage__credential=managedidentity"` | Configures the host to use managed identity for storage access. |
+
     Expected output (abridged):
 
     ```json
@@ -835,6 +873,15 @@ flowchart TD
       --query "principalId" \
       --output tsv)
     ```
+
+    | Command/Parameter | Purpose |
+    |-------------------|---------|
+    | `az functionapp identity assign` | Enables system-assigned managed identity for the app. |
+    | `--name "$APP_NAME"` | Targets the specific Function App. |
+    | `--resource-group "$RG"` | Specifies the resource group. |
+    | `az functionapp identity show` | Retrieves properties of the app's identity. |
+    | `--query "principalId"` | Extracts the principal ID for RBAC role assignments. |
+    | `--output tsv` | Formats output for variable capture. |
 
     Expected output (abridged):
 
@@ -879,6 +926,19 @@ flowchart TD
       --role "Storage File Data Privileged Contributor" \
       --scope "$STORAGE_ID"
     ```
+
+    | Command/Parameter | Purpose |
+    |-------------------|---------|
+    | `az storage account show` | Retrieves the storage account resource ID. |
+    | `--name "$STORAGE_NAME"` | Targets the specific storage account. |
+    | `--resource-group "$RG"` | Specifies the resource group. |
+    | `az role assignment create` | Grants a specific RBAC role to the managed identity. |
+    | `--assignee "$MI_PRINCIPAL_ID"` | Targets the function app's system-assigned identity. |
+    | `--role "Storage Blob Data Owner"` | Grants full blob access for host data. |
+    | `--role "Storage Account Contributor"` | Allows platform-level management of the storage account. |
+    | `--role "Storage Queue Data Contributor"` | Grants access to storage queues for runtime operations. |
+    | `--role "Storage File Data Privileged Contributor"` | Grants access to file shares for Premium content storage. |
+    | `--scope "$STORAGE_ID"` | Limits the role assignment to the specific storage account. |
 
     Expected output (abridged):
 
@@ -968,6 +1028,17 @@ flowchart TD
     done
     ```
 
+    | Command/Parameter | Purpose |
+    |-------------------|---------|
+    | `az network vnet create` | Provisions a new Virtual Network. |
+    | `--address-prefixes "10.20.0.0/16"` | Defines the CIDR range for the VNet. |
+    | `az network vnet subnet create` | Adds a subnet for private endpoints. |
+    | `az network vnet subnet update` | Modifies the integration subnet. |
+    | `--delegations "Microsoft.Web/serverFarms"` | Delegating the subnet to Premium hosting plans. |
+    | `az functionapp vnet-integration add` | Configures outbound traffic to flow through the VNet. |
+    | `az network private-endpoint create` | Provisions private endpoints for storage services. |
+    | `--group-ids "$SVC"` | Specifies the storage sub-resource (blob, queue, etc). |
+
     Expected output (abridged):
 
     ```json
@@ -1016,6 +1087,14 @@ flowchart TD
       --group-ids "sites" \
       --connection-name "conn-$APP_NAME"
     ```
+
+    | Command/Parameter | Purpose |
+    |-------------------|---------|
+    | `az functionapp show` | Retrieves the function app resource ID. |
+    | `--name "$APP_NAME"` | Targets the specific Function App. |
+    | `az network private-endpoint create` | Provisions an inbound private endpoint for the function app. |
+    | `--group-ids "sites"` | Targets the primary web app (site) resource. |
+    | `--connection-name "conn-$APP_NAME"` | Sets the private link connection name. |
 
     Expected output (abridged):
 
@@ -1079,6 +1158,13 @@ flowchart TD
     done
     ```
 
+    | Command/Parameter | Purpose |
+    |-------------------|---------|
+    | `az network private-dns zone create` | Provisions private DNS zones for name resolution. |
+    | `--name "privatelink.azurewebsites.net"` | Specifies the DNS zone for Function App sites. |
+    | `az network private-dns link vnet create` | Links the DNS zone to the VNet for resolution. |
+    | `az network private-endpoint dns-zone-group create` | Connects the private endpoint to its DNS zone for automatic IP registration. |
+
     Expected output (abridged):
 
     ```json
@@ -1121,6 +1207,12 @@ flowchart TD
     func azure functionapp publish "$APP_NAME" --python
     ```
 
+    | Command/Parameter | Purpose |
+    |-------------------|---------|
+    | `cd apps/python` | Navigates to the project directory. |
+    | `func azure functionapp publish "$APP_NAME"` | Deploys the local project to the Azure Function App. |
+    | `--python` | Sets the application language for publication. |
+
     Expected output (abridged):
 
     ```text
@@ -1141,6 +1233,13 @@ flowchart TD
 
     curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
     ```
+
+    | Command/Parameter | Purpose |
+    |-------------------|---------|
+    | `az functionapp show` | Displays function app status. |
+    | `--name "$APP_NAME"` | Targets the specific Function App. |
+    | `--output table` | Formats output as a table. |
+    | `curl --request GET` | Tests the public HTTP endpoint. |
 
     Expected output (abridged):
 

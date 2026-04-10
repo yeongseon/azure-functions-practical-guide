@@ -429,7 +429,7 @@ timestamp                    message
 ## See Also
 - [Troubleshooting Architecture](../../architecture.md)
 - [Troubleshooting Methodology](../../methodology.md)
-- [KQL Query Guide](../../kql.md)
+- [KQL Query Guide](../../kql/index.md)
 - [Troubleshooting Playbooks Index](../index.md)
 - [Managed Identity and RBAC Authentication Failure](./managed-identity-rbac-failure.md)
 - [Storage Access Failure Lab](../../lab-guides/storage-access-failure.md)

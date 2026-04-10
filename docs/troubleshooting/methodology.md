@@ -106,7 +106,7 @@ Testing rules:
 
 Common test tools:
 
-- [KQL Query Library](kql.md)
+- [KQL Query Library](kql/index.md)
 - `az monitor metrics list`
 - `az monitor log-analytics query`
 - health endpoint (`/api/health`)
@@ -181,9 +181,9 @@ flowchart TD
 
 ## See Also
 
-- [First 10 Minutes](first-10-minutes.md)
-- [Playbooks](playbooks.md)
-- [KQL Query Library](kql.md)
+- [First 10 Minutes](first-10-minutes/index.md)
+- [Playbooks](playbooks/index.md)
+- [KQL Query Library](kql/index.md)
 
 ## Sources
 

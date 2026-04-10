@@ -92,8 +92,8 @@ Start with:
 
 - [Deployment](../operations/deployment.md)
 - [Monitoring](../operations/monitoring.md)
-- [First 10 Minutes](../troubleshooting/first-10-minutes.md)
-- [Playbooks](../troubleshooting/playbooks.md)
+- [First 10 Minutes](../troubleshooting/first-10-minutes/index.md)
+- [Playbooks](../troubleshooting/playbooks/index.md)
 
 !!! tip "Incident response"
     Pair [Monitoring](../operations/monitoring.md) with the query workflow in [Troubleshooting Index](../troubleshooting/index.md) to reduce mean time to diagnosis.

@@ -23,7 +23,7 @@ Use it as a fast index from symptom category to architecture layer ownership.
     Read each diagram left-to-right as an evidence path: symptom → likely layer → telemetry/CLI confirmation.
 
 !!! tip "Troubleshooting workflow"
-    Start with [First 10 Minutes](first-10-minutes.md), apply [Methodology](methodology.md), run focused queries from [KQL Query Library](kql.md), and then execute scenario fixes from [Functions not executing](playbooks/functions-not-executing.md), [High latency / slow responses](playbooks/high-latency.md), [Functions failing with errors](playbooks/functions-failing.md), or [Deployment failures](playbooks/deployment-failures.md).
+Start with [First 10 Minutes](first-10-minutes/index.md), apply [Methodology](methodology.md), run focused queries from [KQL Query Library](kql/index.md), and then execute scenario fixes from [Functions not executing](playbooks/functions-not-executing.md), [High latency / slow responses](playbooks/high-latency.md), [Functions failing with errors](playbooks/functions-failing.md), or [Deployment failures](playbooks/deployment-failures.md).
 
 ## Request path architecture (where user-facing failures surface)
 
@@ -255,9 +255,9 @@ flowchart TD
 
 ## See Also
 
-- [First 10 Minutes](first-10-minutes.md)
+- [First 10 Minutes](first-10-minutes/index.md)
 - [Systematic Troubleshooting Methodology](methodology.md)
-- [KQL Query Library](kql.md)
+- [KQL Query Library](kql/index.md)
 - [Functions not executing playbook](playbooks/functions-not-executing.md)
 - [High latency / slow responses playbook](playbooks/high-latency.md)
 - [Functions failing with errors playbook](playbooks/functions-failing.md)

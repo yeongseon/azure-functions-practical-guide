@@ -227,6 +227,12 @@ az functionapp scale config set \
   --maximum-instance-count 20
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp scale config set` | Updates the scaling configuration for a Flex Consumption app |
+| `--name $APP_NAME` | Specifies the function app name |
+| `--maximum-instance-count 20` | Sets the upper limit for concurrent instances to control cost |
+
 For **Consumption** and **Premium** plans:
 
 ```bash
@@ -236,6 +242,12 @@ az resource update \
   --resource-type "Microsoft.Web/sites" \
   --set properties.siteConfig.functionAppScaleLimit=20
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az resource update` | Directly updates the site configuration properties |
+| `--resource-type "Microsoft.Web/sites"` | Targets the Function App resource |
+| `--set properties.siteConfig.functionAppScaleLimit=20` | Sets the scale limit for Consumption or Premium plans |
 
 This caps your function app at 20 concurrent instances. Requests beyond capacity are queued rather than triggering new instances. The trade-off is higher latency under extreme load rather than higher cost.
 
@@ -254,6 +266,14 @@ az consumption budget create \
   --resource-group $RG \
   --notifications "{\"Actual_GreaterThan_80_Percent\":{\"enabled\":true,\"operator\":\"GreaterThan\",\"threshold\":80,\"contactEmails\":[\"<your-email>\"]}}"
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az consumption budget create` | Creates a new budget at the resource group level |
+| `--budget-name "functions-monthly"` | Name of the budget resource |
+| `--amount 50` | Sets the monthly budget amount in the account currency |
+| `--time-grain Monthly` | Specifies a monthly reset for the budget |
+| `--notifications` | JSON configuration for email alerts when the 80% threshold is exceeded |
 
 ### Cost Analysis KQL
 

@@ -62,6 +62,14 @@ export PLAN_NAME="plan-dnetded-04100301"
 export APP_NAME="func-dnetded-04100301"
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `RG` | Resource group name |
+| `LOCATION` | Azure region |
+| `STORAGE_NAME` | Storage account name |
+| `PLAN_NAME` | App Service Plan name |
+| `APP_NAME` | Function app name |
+
 ### Step 2 - Create resource group and storage account
 
 ```bash
@@ -76,6 +84,11 @@ az storage account create \
   --sku Standard_LRS
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az group create` | Creates the resource group container |
+| `az storage account create` | Provision storage for app state and logs |
+
 ### Step 3 - Create the Dedicated App Service Plan
 
 ```bash
@@ -86,6 +99,11 @@ az appservice plan create \
   --sku B1 \
   --is-linux
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `--sku B1` | Basic 1 (predictable compute for dev/test) |
+| `--is-linux` | Runs on Linux workers |
 
 !!! note "Dedicated plan uses `az appservice plan create`"
     Unlike Premium which uses `az functionapp plan create`, Dedicated plans use `az appservice plan create`. This creates a standard App Service Plan that can host both Function Apps and Web Apps.
@@ -104,6 +122,11 @@ az functionapp create \
   --os-type Linux
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `--plan "$PLAN_NAME"` | Links the app to the pre-provisioned B1 plan |
+| `--runtime dotnet-isolated` | Targets .NET 8 isolated worker |
+
 ### Step 5 - Create trigger resources
 
 ```bash
@@ -115,6 +138,11 @@ az storage container create \
   --name "uploads" \
   --account-name "$STORAGE_NAME"
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az storage queue create` | Creates the queue for order processing |
+| `az storage container create` | Creates the blob container for uploads |
 
 ### Step 6 - Configure app settings
 
@@ -133,6 +161,10 @@ az functionapp config appsettings set \
     "EventHubConnection=Endpoint=sb://placeholder.servicebus.windows.net/;SharedAccessKeyName=placeholder;SharedAccessKey=cGxhY2Vob2xkZXI=;EntityPath=events"
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp config appsettings set` | Configures environment variables |
+
 ### Step 7 - Build and publish
 
 ```bash
@@ -142,6 +174,11 @@ dotnet publish --configuration Release --output ./publish
 cd publish
 func azure functionapp publish "$APP_NAME" --dotnet-isolated
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `dotnet publish` | Compiles the project and dependencies |
+| `func azure functionapp publish` | Deploys the artifacts to Azure |
 
 !!! note "Must pass --dotnet-isolated flag"
     When publishing from the compiled output directory, Core Tools cannot detect the project language. Always pass `--dotnet-isolated` to specify the worker runtime explicitly.
@@ -155,6 +192,10 @@ az functionapp function list \
   --query "[].{name:name, language:language}" \
   --output table
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp function list` | Lists all indexed functions in the app |
 
 Expected output (16 functions):
 
@@ -189,6 +230,12 @@ curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
 curl --request GET "https://$APP_NAME.azurewebsites.net/api/hello/Dedicated"
 curl --request GET "https://$APP_NAME.azurewebsites.net/api/info"
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `curl --request GET` | Sends validation requests to the app |
+| `/api/health` | Probes service health state |
+| `/api/info` | Inspects app configuration values |
 
 ## Verification
 

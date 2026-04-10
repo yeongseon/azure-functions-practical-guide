@@ -756,8 +756,8 @@ If recovery occurs before role restoration, the hypothesis is falsified for that
 - [Functions Failing with Errors](../playbooks/functions-failing.md)
 ## See Also
 - [Functions Failing with Errors](../playbooks/functions-failing.md)
-- [First 10 Minutes](../first-10-minutes.md)
-- [KQL Query Library](../kql.md)
+- [First 10 Minutes](../first-10-minutes/index.md)
+- [KQL Query Library](../kql/index.md)
 - [Lab Guides Index](index.md)
 
 ## Sources

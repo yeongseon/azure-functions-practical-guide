@@ -587,10 +587,10 @@ az group delete --name "$RG" --yes --no-wait
 
 ## See Also
 
-- [Troubleshooting Lab Guides](../lab-guides.md)
-- [First 10 Minutes Triage](../first-10-minutes.md)
+- [Troubleshooting Lab Guides](../lab-guides/index.md)
+- [First 10 Minutes Triage](../first-10-minutes/index.md)
 - [Troubleshooting Methodology](../methodology.md)
-- [KQL Reference for Troubleshooting](../kql.md)
+- [KQL Reference for Troubleshooting](../kql/index.md)
 - [Evidence Map](../evidence-map.md)
 
 ## Sources

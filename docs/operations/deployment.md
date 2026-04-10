@@ -29,9 +29,19 @@ az --version
 func --version
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az --version` | Checks the Azure CLI version |
+| `func --version` | Checks the Azure Functions Core Tools version |
+
 ```bash
 az account show --output table
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az account show` | Shows the current Azure subscription details |
+| `--output table` | Formats the output as a table |
 
 ### RBAC permissions
 Minimum deployment role is `Contributor` on the target resource group.
@@ -43,6 +53,13 @@ az role assignment list \
     --output table
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az role assignment list` | Lists role assignments |
+| `--assignee <object-id>` | Filters by the user, group, or service principal object ID |
+| `--resource-group <resource-group>` | Filters by the resource group name |
+| `--output table` | Formats the output as a table |
+
 ### Artifact ready
 Build once and deploy one immutable artifact.
 
@@ -50,6 +67,11 @@ Build once and deploy one immutable artifact.
 ls -lh <path-to-artifact-zip>
 sha256sum <path-to-artifact-zip>
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `ls -lh` | Lists file details with human-readable sizes |
+| `sha256sum` | Computes the SHA256 hash of the artifact for integrity verification |
 
 ### Hosting plan check
 ```bash
@@ -59,6 +81,14 @@ az functionapp show \
     --query "{name:name,kind:kind,reserved:reserved,state:state}" \
     --output table
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp show` | Gets the details of a function app |
+| `--resource-group <resource-group>` | Specifies the resource group |
+| `--name <app-name>` | Specifies the function app name |
+| `--query` | JMESPath query to filter specific properties |
+| `--output table` | Formats the output as a table |
 
 ## When to Use
 Choose deployment method by governance level, release frequency, and plan capability.
@@ -104,6 +134,11 @@ flowchart LR
 func azure functionapp publish <app-name>
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `func azure functionapp publish` | Deploys the local function project to Azure |
+| `<app-name>` | Specifies the target function app name |
+
 Use this for operator-driven release or emergency recovery deployment.
 
 !!! note "Production practice"
@@ -117,6 +152,13 @@ az functionapp deployment source config-zip \
     --src <path-to-artifact-zip>
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp deployment source config-zip` | Deploys a zip artifact to the function app |
+| `--resource-group <resource-group>` | Specifies the resource group |
+| `--name <app-name>` | Specifies the function app name |
+| `--src <path-to-artifact-zip>` | Path to the local zip file to deploy |
+
 Enable run-from-package when using immutable artifact patterns:
 
 ```bash
@@ -125,6 +167,13 @@ az functionapp config appsettings set \
     --name <app-name> \
     --settings WEBSITE_RUN_FROM_PACKAGE=1
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp config appsettings set` | Configures application settings for the function app |
+| `--resource-group <resource-group>` | Specifies the resource group |
+| `--name <app-name>` | Specifies the function app name |
+| `--settings WEBSITE_RUN_FROM_PACKAGE=1` | Enables the app to run directly from the deployment package |
 
 ### GitHub Actions pipeline
 ```yaml
@@ -187,6 +236,13 @@ az functionapp deployment slot create \
     --slot staging
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp deployment slot create` | Creates a new deployment slot for the function app |
+| `--resource-group <resource-group>` | Specifies the resource group |
+| `--name <app-name>` | Specifies the function app name |
+| `--slot staging` | Names the slot "staging" |
+
 #### Configure slot-specific settings
 ```bash
 az functionapp config appsettings set \
@@ -196,6 +252,12 @@ az functionapp config appsettings set \
     --slot-settings AZURE_FUNCTIONS_ENVIRONMENT=Staging
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp config appsettings set` | Configures app settings for the specified slot |
+| `--slot staging` | Target slot for the setting change |
+| `--slot-settings` | Defines settings as "sticky" to the slot (doesn't swap with production) |
+
 #### Swap staging into production
 ```bash
 az functionapp deployment slot swap \
@@ -204,6 +266,12 @@ az functionapp deployment slot swap \
     --slot staging \
     --target-slot production
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp deployment slot swap` | Swaps the traffic between two slots |
+| `--slot staging` | Specifies the source slot |
+| `--target-slot production` | Specifies the target slot for cutover |
 
 ### Flex Consumption deployment specifics
 1. **No deployment slots**
@@ -230,6 +298,13 @@ az functionapp function list \
     --output table
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp function list` | Lists all functions within the app |
+| `--resource-group <resource-group>` | Specifies the resource group |
+| `--name <app-name>` | Specifies the function app name |
+| `--output table` | Formats the list as a table |
+
 ```bash
 az monitor app-insights metrics show \
     --app <app-insights-name> \
@@ -239,6 +314,15 @@ az monitor app-insights metrics show \
     --offset 30m \
     --output table
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az monitor app-insights metrics show` | Retrieves metrics from Application Insights |
+| `--app <app-insights-name>` | Specifies the Application Insights resource |
+| `--metrics requests/failed` | Filters for failed request counts |
+| `--interval PT5M` | Aggregates data in 5-minute intervals |
+| `--offset 30m` | Looks back at the last 30 minutes of data |
+| `--output table` | Formats metrics as a table |
 
 ## Verification
 Validate deployment state, slot inventory, runtime health, and release identity.
@@ -252,6 +336,13 @@ az functionapp deployment source show \
     --name <app-name> \
     --output json
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp deployment source show` | Shows the source control deployment configuration |
+| `--resource-group <resource-group>` | Specifies the resource group |
+| `--name <app-name>` | Specifies the function app name |
+| `--output json` | Formats output as JSON to see detail |
 
 ```json
 {
@@ -270,6 +361,13 @@ az functionapp deployment slot list \
     --output table
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp deployment slot list` | Lists all deployment slots for the app |
+| `--resource-group <resource-group>` | Specifies the resource group |
+| `--name <app-name>` | Specifies the function app name |
+| `--output table` | Formats the slot list as a table |
+
 ```text
 Name         Status     Traffic %
 -----------  ---------  ---------
@@ -286,9 +384,22 @@ az functionapp show \
     --output table
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp show` | Gets the status and metadata for the function app |
+| `--query` | Extracts state, hostname, and last modified timestamp |
+| `--output table` | Formats the output as a table |
+
 ```bash
 curl --silent --show-error --fail https://<app-name>.azurewebsites.net/api/health
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `curl --silent` | Suppresses progress meter and error messages |
+| `--show-error` | Shows error message if it fails |
+| `--fail` | Returns a non-zero exit code if the HTTP response is 4xx or 5xx |
+| `https://<app-name>.azurewebsites.net/api/health` | URL of the health check endpoint |
 
 ```text
 {"status":"ok","version":"2026.01.15","commit":"a1b2c3d4"}
@@ -316,6 +427,12 @@ az functionapp deployment slot swap \
     --target-slot production
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp deployment slot swap` | Swaps the traffic between two slots |
+| `--slot staging` | Specifies the source slot |
+| `--target-slot production` | Specifies the target slot for cutover |
+
 ### Artifact rollback
 ```bash
 az functionapp deployment source config-zip \
@@ -324,12 +441,23 @@ az functionapp deployment source config-zip \
     --src <last-known-good-zip>
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp deployment source config-zip` | Redeploys a known-good artifact to the function app |
+| `--src <last-known-good-zip>` | Path to the stable zip file to restore |
+
 ### Diagnostics during rollback
 ```bash
 az functionapp log tail \
     --resource-group <resource-group> \
     --name <app-name>
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp log tail` | Streams the real-time log output for the function app |
+| `--resource-group <resource-group>` | Specifies the resource group |
+| `--name <app-name>` | Specifies the function app name |
 
 ```text
 2026-01-15T12:02:11Z [Information] Host started (Id=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)
@@ -342,6 +470,12 @@ az monitor log-analytics query \
     --workspace "$WORKSPACE_ID" \
     --analytics-query "AppRequests | where TimeGenerated > ago(30m) | summarize total=count(), failed=countif(Success == false)"
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az monitor log-analytics query` | Executes a KQL query against Log Analytics |
+| `--workspace "$WORKSPACE_ID"` | ID of the target Log Analytics workspace |
+| `--analytics-query` | The Kusto query string |
 
 ```text
 TableName      total    failed

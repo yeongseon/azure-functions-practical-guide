@@ -797,7 +797,7 @@ If this is a shared EP1 lab environment, skip deletion and only stop test traffi
 
 ## Related Playbook
 
-- [Durable replay and orchestration latency playbook](../playbooks.md)
+- [Durable replay and orchestration latency playbook](../playbooks/index.md)
 
 ## See Also
 
@@ -806,7 +806,7 @@ If this is a shared EP1 lab environment, skip deletion and only stop test traffi
 - [Lab guide: Queue backlog scaling](./queue-backlog-scaling.md)
 - [Troubleshooting methodology](../methodology.md)
 - [Troubleshooting evidence map](../evidence-map.md)
-- [KQL quick reference for troubleshooting](../kql.md)
+- [KQL quick reference for troubleshooting](../kql/index.md)
 
 ## Sources
 

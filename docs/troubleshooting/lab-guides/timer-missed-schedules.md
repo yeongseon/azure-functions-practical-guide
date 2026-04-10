@@ -353,15 +353,15 @@ az group delete --name "$RG" --yes --no-wait
 
 ## Related Playbook
 
-- [Timer trigger execution drift playbook](../playbooks.md)
+- [Timer trigger execution drift playbook](../playbooks/index.md)
 
 ## See Also
 
 - [Troubleshooting methodology](../methodology.md)
-- [First 10 minutes triage](../first-10-minutes.md)
-- [KQL investigation guide](../kql.md)
+- [First 10 minutes triage](../first-10-minutes/index.md)
+- [KQL investigation guide](../kql/index.md)
 - [Evidence map](../evidence-map.md)
-- [Other lab guides](../lab-guides.md)
+- [Other lab guides](../lab-guides/index.md)
 
 ## Sources
 

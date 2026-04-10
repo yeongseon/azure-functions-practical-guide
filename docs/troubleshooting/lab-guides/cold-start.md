@@ -735,8 +735,8 @@ rm -rf "labs/cold-start/artifacts"
 - [High Latency / Slow Responses](../playbooks/high-latency.md)
 ## See Also
 - [Troubleshooting Methodology](../methodology.md)
-- [First 10 Minutes](../first-10-minutes.md)
-- [KQL Query Library](../kql.md)
+- [First 10 Minutes](../first-10-minutes/index.md)
+- [KQL Query Library](../kql/index.md)
 - [Lab Guides Index](index.md)
 - [Azure Functions Cold Start Guide](../../operations/cold-start.md)
 ## Sources

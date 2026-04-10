@@ -422,7 +422,7 @@ timeline
 ## See Also
 - [Troubleshooting Architecture](../../architecture.md)
 - [Troubleshooting Methodology](../../methodology.md)
-- [KQL Query Guide](../../kql.md)
+- [KQL Query Guide](../../kql/index.md)
 - [Troubleshooting Lab Guides](../../lab-guides/index.md)
 - [Managed Identity Authentication Lab](../../lab-guides/managed-identity-auth.md)
 - [App Settings Misconfiguration Playbook](./app-settings-misconfiguration.md)

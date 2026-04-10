@@ -97,12 +97,12 @@ graph TD
 4. Use inline KQL queries directly in the playbook — no need to switch to a separate query library.
 
 !!! tip "Troubleshooting Workflow"
-    Start with [First 10 Minutes](../first-10-minutes.md), follow [Methodology](../methodology.md), use playbook-embedded KQL queries, and map hands-on practice from [Lab Guides](../lab-guides/index.md).
+    Start with [First 10 Minutes](../first-10-minutes/index.md), follow [Methodology](../methodology.md), use playbook-embedded KQL queries, and map hands-on practice from [Lab Guides](../lab-guides/index.md).
 
 ## See Also
 
-- [First 10 Minutes](../first-10-minutes.md)
+- [First 10 Minutes](../first-10-minutes/index.md)
 - [Methodology](../methodology.md)
-- [KQL Query Library](../kql.md)
+- [KQL Query Library](../kql/index.md)
 - [Lab Guides](../lab-guides/index.md)
 - [Evidence Map](../evidence-map.md)

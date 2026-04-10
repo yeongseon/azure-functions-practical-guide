@@ -2306,10 +2306,10 @@ graph LR
 
 ## See Also
 
-- [Lab Guides Hub](../lab-guides.md)
+- [Lab Guides Hub](../lab-guides/index.md)
 - [Troubleshooting Methodology](../methodology.md)
-- [KQL Query Library](../kql.md)
-- [First 10 Minutes](../first-10-minutes.md)
+- [KQL Query Library](../kql/index.md)
+- [First 10 Minutes](../first-10-minutes/index.md)
 - [Functions Failing](../playbooks/functions-failing.md)
 
 ## Sources

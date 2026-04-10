@@ -17,9 +17,9 @@ Comprehensive guide for running serverless applications on Azure Functions — f
 ## Language Guides
 
 - **Python** (v2 decorator model, 4 hosting plan tracks)
-- **Node.js** (coming soon)
-- **Java** (coming soon)
-- **.NET** (coming soon)
+- **Node.js** (v4 programming model, 4 hosting plan tracks)
+- **Java** (4 hosting plan tracks)
+- **.NET** (isolated worker model, 4 hosting plan tracks)
 
 Each guide covers: local development, first deploy, configuration, logging, infrastructure as code, CI/CD, and trigger extensions.
 
@@ -43,9 +43,9 @@ Visit `http://127.0.0.1:8000` to browse the documentation locally.
 Minimal reference applications demonstrating Azure Functions patterns:
 
 - `apps/python/` — v2 programming model with blueprints and OpenTelemetry
-- `apps/nodejs/` — Node.js (coming soon)
-- `apps/java/` — Java (coming soon)
-- `apps/dotnet/` — .NET (coming soon)
+- `apps/nodejs/` — v4 programming model with HTTP, Timer, Queue, and Event Hub triggers
+- `apps/java/` — Maven-based with HTTP and Timer triggers
+- `apps/dotnet/` — Isolated worker model with HTTP and Timer triggers
 
 ## Infrastructure as Code
 

@@ -471,7 +471,7 @@ az functionapp config appsettings list \
 
 - [General Deployment Failures](deployment-failures.md)
 - [Managed Identity and RBAC Failure](auth-config/managed-identity-rbac-failure.md)
-- [First 10 Minutes](../first-10-minutes.md)
+- [First 10 Minutes](../first-10-minutes/index.md)
 - [Flex Consumption Tutorial — First Deploy](../../language-guides/python/tutorial/flex-consumption/02-first-deploy.md)
 - [Methodology](../methodology.md)
 

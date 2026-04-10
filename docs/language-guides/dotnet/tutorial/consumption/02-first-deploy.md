@@ -58,6 +58,13 @@ export STORAGE_NAME="stdotnetcon0410"
 export APP_NAME="func-dotnetcon-04100220"
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `RG` | Resource group name |
+| `LOCATION` | Azure region |
+| `STORAGE_NAME` | Storage account name |
+| `APP_NAME` | Function app name |
+
 ### Step 2 - Create resource group and storage account
 
 ```bash
@@ -71,6 +78,11 @@ az storage account create \
   --location "$LOCATION" \
   --sku Standard_LRS
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az group create` | Creates the resource group container |
+| `--sku Standard_LRS` | Uses standard locally-redundant storage |
 
 ### Step 3 - Create the Consumption function app
 
@@ -86,6 +98,12 @@ az functionapp create \
   --os-type Linux
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `--runtime dotnet-isolated` | Specifies .NET isolated worker process |
+| `--runtime-version 8` | Targets .NET 8 LTS |
+| `--os-type Linux` | Runs on Linux workers |
+
 ### Step 4 - Create trigger resources
 
 ```bash
@@ -97,6 +115,11 @@ az storage container create \
   --name "uploads" \
   --account-name "$STORAGE_NAME"
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az storage queue create` | Creates the queue for order processing |
+| `az storage container create` | Creates the blob container for uploads |
 
 ### Step 5 - Configure app settings
 
@@ -115,6 +138,11 @@ az functionapp config appsettings set \
     "EventHubConnection=Endpoint=sb://placeholder.servicebus.windows.net/;SharedAccessKeyName=placeholder;SharedAccessKey=cGxhY2Vob2xkZXI=;EntityPath=events"
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az storage account show-connection-string` | Retrieves the storage access key |
+| `az functionapp config appsettings set` | Configures environment variables for the app |
+
 ### Step 6 - Build and publish
 
 ```bash
@@ -124,6 +152,11 @@ dotnet publish --configuration Release --output ./publish
 cd publish
 func azure functionapp publish "$APP_NAME" --dotnet-isolated
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `dotnet publish` | Compiles the project and dependencies |
+| `func azure functionapp publish` | Deploys the artifacts to Azure |
 
 !!! note "Must pass --dotnet-isolated flag"
     When publishing from the compiled output directory, Core Tools cannot detect the project language. Always pass `--dotnet-isolated` to specify the worker runtime explicitly.
@@ -137,6 +170,10 @@ az functionapp function list \
   --query "[].{name:name, language:language}" \
   --output table
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp function list` | Lists all deployed functions in the app |
 
 Expected output (16 functions):
 
@@ -168,6 +205,13 @@ curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
 curl --request GET "https://$APP_NAME.azurewebsites.net/api/hello/Consumption"
 curl --request GET "https://$APP_NAME.azurewebsites.net/api/info"
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `curl --request GET` | Sends HTTP GET requests to validation endpoints |
+| `/api/health` | Probes service health state |
+| `/api/hello/` | Validates route parameter handling |
+| `/api/info` | Inspects app configuration values |
 
 ## Verification
 

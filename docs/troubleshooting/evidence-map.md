@@ -18,10 +18,10 @@ Use this page when you need to answer: "I need to know X, where do I look first?
 It maps diagnostic questions to the fastest evidence source, then shows what healthy and unhealthy log patterns look like.
 
 !!! tip "Use with incident workflow"
-    Pair this quick map with [First 10 Minutes](first-10-minutes.md) for triage order,
+    Pair this quick map with [First 10 Minutes](first-10-minutes/index.md) for triage order,
     [Methodology](methodology.md) for hypothesis-driven validation,
-    [KQL Query Library](kql.md) for reusable queries,
-    and [Playbooks](playbooks.md) for scenario-specific recovery actions.
+    [KQL Query Library](kql/index.md) for reusable queries,
+    and [Playbooks](playbooks/index.md) for scenario-specific recovery actions.
 
 ## Evidence path overview
 
@@ -245,10 +245,10 @@ dependencies
 
 ## See Also
 
-- [First 10 Minutes](first-10-minutes.md)
+- [First 10 Minutes](first-10-minutes/index.md)
 - [Systematic Troubleshooting Methodology](methodology.md)
-- [KQL Query Library](kql.md)
-- [Azure Functions Incident Playbooks](playbooks.md)
+- [KQL Query Library](kql/index.md)
+- [Azure Functions Incident Playbooks](playbooks/index.md)
 - [Monitoring](../operations/monitoring.md)
 
 ## Sources

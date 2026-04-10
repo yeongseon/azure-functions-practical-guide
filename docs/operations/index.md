@@ -51,4 +51,4 @@ flowchart LR
 
 - [Hosting](../platform/hosting.md)
 - [Reliability](../platform/reliability.md)
-- [Troubleshooting: First 10 Minutes](../troubleshooting/first-10-minutes.md)
+- [Troubleshooting: First 10 Minutes](../troubleshooting/first-10-minutes/index.md)

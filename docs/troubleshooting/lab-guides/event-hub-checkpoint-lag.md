@@ -827,15 +827,15 @@ If this is a shared troubleshooting environment, keep resources and only disable
 
 ## Related Playbook
 
-- [Event Hub trigger lag playbook](../playbooks.md)
+- [Event Hub trigger lag playbook](../playbooks/index.md)
 
 ## See Also
 
 - [Troubleshooting architecture](../architecture.md)
 - [Troubleshooting evidence map](../evidence-map.md)
 - [Troubleshooting methodology](../methodology.md)
-- [KQL quick reference](../kql.md)
-- [Troubleshooting lab guides](../lab-guides.md)
+- [KQL quick reference](../kql/index.md)
+- [Troubleshooting lab guides](../lab-guides/index.md)
 
 ## Sources
 

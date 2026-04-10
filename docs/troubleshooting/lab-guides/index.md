@@ -130,9 +130,9 @@ Start with broad reliability issues, then move into specialized scenarios:
 For each lab, confirm your team can do all of the following without guesswork:
 
 - Detect the issue from alerts or dashboard anomalies.
-- Execute the [First 10 Minutes](../first-10-minutes.md) checklist.
+- Execute the [First 10 Minutes](../first-10-minutes/index.md) checklist.
 - Select the right [Playbook](../playbooks/index.md) and isolate likely causes.
-- Run 2-3 focused KQL queries from [KQL Library](../kql.md).
+- Run 2-3 focused KQL queries from [KQL Library](../kql/index.md).
 - Apply a minimal fix and verify recovery in telemetry.
 - Document root cause and prevention tasks.
 
@@ -169,10 +169,10 @@ Each lab trains specific diagnostic skills:
 
 ## See Also
 
-- [First 10 Minutes](../first-10-minutes.md)
+- [First 10 Minutes](../first-10-minutes/index.md)
 - [Playbooks](../playbooks/index.md)
 - [Methodology](../methodology.md)
-- [KQL Query Library](../kql.md)
+- [KQL Query Library](../kql/index.md)
 
 ## Sources
 

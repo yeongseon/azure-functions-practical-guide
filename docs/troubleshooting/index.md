@@ -24,21 +24,21 @@ It is designed for incident response first, then root-cause analysis and prevent
 
 ## What this section covers
 
-- [First 10 Minutes](first-10-minutes.md): incident triage checklist for rapid stabilization.
+- [First 10 Minutes](first-10-minutes/index.md): incident triage checklist for rapid stabilization.
 - [Decision Tree](decision-tree.md): visual routing from symptom to investigation path.
 - [Mental Model](mental-model.md): conceptual framework for Azure Functions troubleshooting.
-- [Playbooks](playbooks.md): scenario runbooks with symptoms, diagnosis, and fixes.
+- [Playbooks](playbooks/index.md): scenario runbooks with symptoms, diagnosis, and fixes.
 - [Methodology](methodology.md): repeatable troubleshooting workflow for complex incidents.
-- [KQL Query Library](kql.md): ready-to-use Application Insights and Log Analytics queries.
-- [Lab Guides](lab-guides.md): hands-on failure simulations to practice response.
+- [KQL Query Library](kql/index.md): ready-to-use Application Insights and Log Analytics queries.
+- [Lab Guides](lab-guides/index.md): hands-on failure simulations to practice response.
 
 ## Suggested incident flow
 
-1. Start with [First 10 Minutes](first-10-minutes.md) to verify platform health and blast radius.
-2. Move to [Playbooks](playbooks.md) for scenario-specific diagnosis paths.
-3. Use [KQL Query Library](kql.md) to validate hypotheses with telemetry.
+1. Start with [First 10 Minutes](first-10-minutes/index.md) to verify platform health and blast radius.
+2. Move to [Playbooks](playbooks/index.md) for scenario-specific diagnosis paths.
+3. Use [KQL Query Library](kql/index.md) to validate hypotheses with telemetry.
 4. Apply [Methodology](methodology.md) to avoid guesswork and reduce MTTR.
-5. Rehearse with [Lab Guides](lab-guides.md) to improve operational readiness.
+5. Rehearse with [Lab Guides](lab-guides/index.md) to improve operational readiness.
 
 ## Troubleshooting mental model
 
@@ -89,21 +89,21 @@ flowchart TD
 
 - For architecture context, see [Troubleshooting Architecture](architecture.md).
 - For "where do I look first?", see [Evidence Map](evidence-map.md).
-- For fast triage sequence, start at [First 10 Minutes](first-10-minutes.md).
+- For fast triage sequence, start at [First 10 Minutes](first-10-minutes/index.md).
 
 ## Updated section map
 
 | Document | Coverage |
 |---|---|
-| [First 10 Minutes](first-10-minutes.md) | Time-boxed triage checks for active incidents |
+| [First 10 Minutes](first-10-minutes/index.md) | Time-boxed triage checks for active incidents |
 | [Decision Tree](decision-tree.md) | Visual routing from symptom to investigation path |
 | [Mental Model](mental-model.md) | Conceptual framework for Azure Functions troubleshooting |
-| [Playbooks](playbooks.md) | Scenario-based diagnostics and mitigations |
+| [Playbooks](playbooks/index.md) | Scenario-based diagnostics and mitigations |
 | [Methodology](methodology.md) | Reproducible Observe → Hypothesize → Test → Fix → Verify workflow |
-| [KQL Query Library](kql.md) | Reusable telemetry and evidence queries |
+| [KQL Query Library](kql/index.md) | Reusable telemetry and evidence queries |
 | [Troubleshooting Architecture](architecture.md) | Component boundaries and failure-domain context |
 | [Evidence Map](evidence-map.md) | Symptom-to-evidence lookup for first-query selection |
-| [Lab Guides](lab-guides.md) | Failure drills for response readiness |
+| [Lab Guides](lab-guides/index.md) | Failure drills for response readiness |
 
 ## Scope and source policy
 
@@ -113,10 +113,10 @@ flowchart TD
 
 ## See Also
 
-- [First 10 Minutes](first-10-minutes.md)
-- [Playbooks](playbooks.md)
+- [First 10 Minutes](first-10-minutes/index.md)
+- [Playbooks](playbooks/index.md)
 - [Methodology](methodology.md)
-- [KQL Query Library](kql.md)
+- [KQL Query Library](kql/index.md)
 
 ## Sources
 

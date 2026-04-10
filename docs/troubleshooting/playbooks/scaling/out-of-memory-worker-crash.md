@@ -420,7 +420,7 @@ Plan memory guidance for escalation decisions:
 ## See Also
 - [Troubleshooting architecture](../../architecture.md)
 - [Troubleshooting methodology](../../methodology.md)
-- [Troubleshooting KQL guide](../../kql.md)
+- [Troubleshooting KQL guide](../../kql/index.md)
 - [Out of memory crash lab guide](../../lab-guides/out-of-memory-crash.md)
 - [Durable orchestration stuck playbook](./durable-orchestration-stuck.md)
 

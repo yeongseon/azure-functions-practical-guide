@@ -275,7 +275,7 @@ flowchart TD
 - [Operations: Deployment](../operations/deployment.md)
 - [Platform: Hosting](../platform/hosting.md)
 - [Platform: Scaling](../platform/scaling.md)
-- [Troubleshooting Playbooks](../troubleshooting/playbooks.md)
+- [Troubleshooting Playbooks](../troubleshooting/playbooks/index.md)
 
 ## Sources
 

@@ -481,8 +481,8 @@ az functionapp restart --resource-group "$RG" --name "$APP_NAME"
 ## See Also
 
 - [Troubleshooting Methodology](../methodology.md)
-- [First 10 Minutes](../first-10-minutes.md)
-- [KQL Query Library](../kql.md)
+- [First 10 Minutes](../first-10-minutes/index.md)
+- [KQL Query Library](../kql/index.md)
 - [Troubleshooting Evidence Map](../evidence-map.md)
 - [Troubleshooting Architecture](../architecture.md)
 
