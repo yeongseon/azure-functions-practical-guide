@@ -1,31 +1,23 @@
----
-content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
----
-
 # Tutorial Validation Status
 
 This page tracks which tutorials have been validated against real Azure deployments. Each tutorial can be tested via **az-cli** (manual CLI commands) or **Bicep** (infrastructure as code). Tutorials not tested within 90 days are marked as stale.
 
 ## Summary
 
-*Generated: 2026-04-10*
+*Generated: 2026-04-11*
 
 | Metric | Count |
 |---|---:|
-| Total tutorials | 112 |
-| ✅ Validated | 112 |
+| Total tutorials | 120 |
+| ✅ Validated | 114 |
 | ⚠️ Stale (>90 days) | 0 |
 | ❌ Failed | 0 |
-| ➖ Not tested | 0 |
+| ➖ Not tested | 6 |
 
-<!-- diagram-id: summary -->
 ```mermaid
 pie title Tutorial Validation Status
-    "Validated" : 112
+    "Validated" : 114
+    "Not Tested" : 6
 ```
 
 ## Validation Matrix
@@ -42,14 +34,16 @@ pie title Tutorial Validation Status
 | [06 Ci Cd](../language-guides/dotnet/tutorial/consumption/06-ci-cd.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [07 Extending Triggers](../language-guides/dotnet/tutorial/consumption/07-extending-triggers.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [01 Local Run](../language-guides/dotnet/tutorial/flex-consumption/01-local-run.md) | Flex Consumption (FC1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
-| [02 First Deploy](../language-guides/dotnet/tutorial/flex-consumption/02-first-deploy.md) | Flex Consumption (FC1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
+| [02 First Deploy](../language-guides/dotnet/tutorial/flex-consumption/02-first-deploy.md) | Flex Consumption (FC1) | ✅ Pass | ➖ Not Tested | 2026-04-11 | ✅ Pass |
+| [02 First Deploy Private](../language-guides/dotnet/tutorial/flex-consumption/02-first-deploy-private.md) | Flex Consumption (FC1) | ➖ Not Tested | ➖ Not Tested | — | ➖ Not Tested |
 | [03 Configuration](../language-guides/dotnet/tutorial/flex-consumption/03-configuration.md) | Flex Consumption (FC1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [04 Logging Monitoring](../language-guides/dotnet/tutorial/flex-consumption/04-logging-monitoring.md) | Flex Consumption (FC1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [05 Infrastructure As Code](../language-guides/dotnet/tutorial/flex-consumption/05-infrastructure-as-code.md) | Flex Consumption (FC1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [06 Ci Cd](../language-guides/dotnet/tutorial/flex-consumption/06-ci-cd.md) | Flex Consumption (FC1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [07 Extending Triggers](../language-guides/dotnet/tutorial/flex-consumption/07-extending-triggers.md) | Flex Consumption (FC1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [01 Local Run](../language-guides/dotnet/tutorial/premium/01-local-run.md) | Premium (EP) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
-| [02 First Deploy](../language-guides/dotnet/tutorial/premium/02-first-deploy.md) | Premium (EP) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
+| [02 First Deploy](../language-guides/dotnet/tutorial/premium/02-first-deploy.md) | Premium (EP) | ✅ Pass | ➖ Not Tested | 2026-04-11 | ✅ Pass |
+| [02 First Deploy Private](../language-guides/dotnet/tutorial/premium/02-first-deploy-private.md) | Premium (EP) | ➖ Not Tested | ➖ Not Tested | — | ➖ Not Tested |
 | [03 Configuration](../language-guides/dotnet/tutorial/premium/03-configuration.md) | Premium (EP) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [04 Logging Monitoring](../language-guides/dotnet/tutorial/premium/04-logging-monitoring.md) | Premium (EP) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [05 Infrastructure As Code](../language-guides/dotnet/tutorial/premium/05-infrastructure-as-code.md) | Premium (EP) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
@@ -76,13 +70,15 @@ pie title Tutorial Validation Status
 | [07 Extending Triggers](../language-guides/java/tutorial/consumption/07-extending-triggers.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [01 Local Run](../language-guides/java/tutorial/flex-consumption/01-local-run.md) | Flex Consumption (FC1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [02 First Deploy](../language-guides/java/tutorial/flex-consumption/02-first-deploy.md) | Flex Consumption (FC1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
+| [02 First Deploy Private](../language-guides/java/tutorial/flex-consumption/02-first-deploy-private.md) | Flex Consumption (FC1) | ➖ Not Tested | ➖ Not Tested | — | ➖ Not Tested |
 | [03 Configuration](../language-guides/java/tutorial/flex-consumption/03-configuration.md) | Flex Consumption (FC1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [04 Logging Monitoring](../language-guides/java/tutorial/flex-consumption/04-logging-monitoring.md) | Flex Consumption (FC1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [05 Infrastructure As Code](../language-guides/java/tutorial/flex-consumption/05-infrastructure-as-code.md) | Flex Consumption (FC1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [06 Ci Cd](../language-guides/java/tutorial/flex-consumption/06-ci-cd.md) | Flex Consumption (FC1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [07 Extending Triggers](../language-guides/java/tutorial/flex-consumption/07-extending-triggers.md) | Flex Consumption (FC1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [01 Local Run](../language-guides/java/tutorial/premium/01-local-run.md) | Premium (EP) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
-| [02 First Deploy](../language-guides/java/tutorial/premium/02-first-deploy.md) | Premium (EP) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
+| [02 First Deploy](../language-guides/java/tutorial/premium/02-first-deploy.md) | Premium (EP) | ✅ Pass | ➖ Not Tested | 2026-04-11 | ✅ Pass |
+| [02 First Deploy Private](../language-guides/java/tutorial/premium/02-first-deploy-private.md) | Premium (EP) | ➖ Not Tested | ➖ Not Tested | — | ➖ Not Tested |
 | [03 Configuration](../language-guides/java/tutorial/premium/03-configuration.md) | Premium (EP) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [04 Logging Monitoring](../language-guides/java/tutorial/premium/04-logging-monitoring.md) | Premium (EP) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [05 Infrastructure As Code](../language-guides/java/tutorial/premium/05-infrastructure-as-code.md) | Premium (EP) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
@@ -108,14 +104,16 @@ pie title Tutorial Validation Status
 | [06 Ci Cd](../language-guides/nodejs/tutorial/consumption/06-ci-cd.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [07 Extending Triggers](../language-guides/nodejs/tutorial/consumption/07-extending-triggers.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [01 Local Run](../language-guides/nodejs/tutorial/flex-consumption/01-local-run.md) | Flex Consumption (FC1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
-| [02 First Deploy](../language-guides/nodejs/tutorial/flex-consumption/02-first-deploy.md) | Flex Consumption (FC1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
+| [02 First Deploy](../language-guides/nodejs/tutorial/flex-consumption/02-first-deploy.md) | Flex Consumption (FC1) | ✅ Pass | ➖ Not Tested | 2026-04-11 | ✅ Pass |
+| [02 First Deploy Private](../language-guides/nodejs/tutorial/flex-consumption/02-first-deploy-private.md) | Flex Consumption (FC1) | ➖ Not Tested | ➖ Not Tested | — | ➖ Not Tested |
 | [03 Configuration](../language-guides/nodejs/tutorial/flex-consumption/03-configuration.md) | Flex Consumption (FC1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [04 Logging Monitoring](../language-guides/nodejs/tutorial/flex-consumption/04-logging-monitoring.md) | Flex Consumption (FC1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [05 Infrastructure As Code](../language-guides/nodejs/tutorial/flex-consumption/05-infrastructure-as-code.md) | Flex Consumption (FC1) | ✅ Pass | ✅ Pass | 2026-04-10 | ✅ Pass |
 | [06 Ci Cd](../language-guides/nodejs/tutorial/flex-consumption/06-ci-cd.md) | Flex Consumption (FC1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [07 Extending Triggers](../language-guides/nodejs/tutorial/flex-consumption/07-extending-triggers.md) | Flex Consumption (FC1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [01 Local Run](../language-guides/nodejs/tutorial/premium/01-local-run.md) | Premium (EP) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
-| [02 First Deploy](../language-guides/nodejs/tutorial/premium/02-first-deploy.md) | Premium (EP) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
+| [02 First Deploy](../language-guides/nodejs/tutorial/premium/02-first-deploy.md) | Premium (EP) | ✅ Pass | ➖ Not Tested | 2026-04-11 | ✅ Pass |
+| [02 First Deploy Private](../language-guides/nodejs/tutorial/premium/02-first-deploy-private.md) | Premium (EP) | ➖ Not Tested | ➖ Not Tested | — | ➖ Not Tested |
 | [03 Configuration](../language-guides/nodejs/tutorial/premium/03-configuration.md) | Premium (EP) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [04 Logging Monitoring](../language-guides/nodejs/tutorial/premium/04-logging-monitoring.md) | Premium (EP) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [05 Infrastructure As Code](../language-guides/nodejs/tutorial/premium/05-infrastructure-as-code.md) | Premium (EP) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
@@ -141,14 +139,16 @@ pie title Tutorial Validation Status
 | [06 Ci Cd](../language-guides/python/tutorial/consumption/06-ci-cd.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-09 | ✅ Pass |
 | [07 Extending Triggers](../language-guides/python/tutorial/consumption/07-extending-triggers.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-09 | ✅ Pass |
 | [01 Local Run](../language-guides/python/tutorial/flex-consumption/01-local-run.md) | Flex Consumption (FC1) | ✅ Pass | ➖ Not Tested | 2026-04-09 | ✅ Pass |
-| [02 First Deploy](../language-guides/python/tutorial/flex-consumption/02-first-deploy.md) | Flex Consumption (FC1) | ✅ Pass | ➖ Not Tested | 2026-04-09 | ✅ Pass |
+| [02 First Deploy](../language-guides/python/tutorial/flex-consumption/02-first-deploy.md) | Flex Consumption (FC1) | ✅ Pass | ➖ Not Tested | 2026-04-11 | ✅ Pass |
+| [02 First Deploy Private](../language-guides/python/tutorial/flex-consumption/02-first-deploy-private.md) | Flex Consumption (FC1) | ✅ Pass | ➖ Not Tested | 2026-04-09 | ✅ Pass |
 | [03 Configuration](../language-guides/python/tutorial/flex-consumption/03-configuration.md) | Flex Consumption (FC1) | ✅ Pass | ➖ Not Tested | 2026-04-09 | ✅ Pass |
 | [04 Logging Monitoring](../language-guides/python/tutorial/flex-consumption/04-logging-monitoring.md) | Flex Consumption (FC1) | ✅ Pass | ➖ Not Tested | 2026-04-09 | ✅ Pass |
 | [05 Infrastructure As Code](../language-guides/python/tutorial/flex-consumption/05-infrastructure-as-code.md) | Flex Consumption (FC1) | ✅ Pass | ➖ Not Tested | 2026-04-09 | ✅ Pass |
 | [06 Ci Cd](../language-guides/python/tutorial/flex-consumption/06-ci-cd.md) | Flex Consumption (FC1) | ✅ Pass | ➖ Not Tested | 2026-04-09 | ✅ Pass |
 | [07 Extending Triggers](../language-guides/python/tutorial/flex-consumption/07-extending-triggers.md) | Flex Consumption (FC1) | ✅ Pass | ➖ Not Tested | 2026-04-09 | ✅ Pass |
 | [01 Local Run](../language-guides/python/tutorial/premium/01-local-run.md) | Premium (EP) | ✅ Pass | ➖ Not Tested | 2026-04-09 | ✅ Pass |
-| [02 First Deploy](../language-guides/python/tutorial/premium/02-first-deploy.md) | Premium (EP) | ✅ Pass | ➖ Not Tested | 2026-04-09 | ✅ Pass |
+| [02 First Deploy](../language-guides/python/tutorial/premium/02-first-deploy.md) | Premium (EP) | ✅ Pass | ➖ Not Tested | 2026-04-11 | ✅ Pass |
+| [02 First Deploy Private](../language-guides/python/tutorial/premium/02-first-deploy-private.md) | Premium (EP) | ✅ Pass | ➖ Not Tested | 2026-04-09 | ✅ Pass |
 | [03 Configuration](../language-guides/python/tutorial/premium/03-configuration.md) | Premium (EP) | ✅ Pass | ➖ Not Tested | 2026-04-09 | ✅ Pass |
 | [04 Logging Monitoring](../language-guides/python/tutorial/premium/04-logging-monitoring.md) | Premium (EP) | ✅ Pass | ➖ Not Tested | 2026-04-09 | ✅ Pass |
 | [05 Infrastructure As Code](../language-guides/python/tutorial/premium/05-infrastructure-as-code.md) | Premium (EP) | ✅ Pass | ➖ Not Tested | 2026-04-09 | ✅ Pass |
