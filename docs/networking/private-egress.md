@@ -238,10 +238,10 @@ az storage account update \
 !!! warning "Order Matters"
     Disable public access **after** private endpoints and DNS zones are configured. Otherwise, your function app will lose storage connectivity.
 
-### Step 8: Configure Identity-Based Storage (Recommended)
+### Step 8: Configure Storage Authentication and Content Routing
 
 !!! info "RBAC Required"
-    Identity-based storage requires RBAC role assignments. Assign `Storage Blob Data Owner` and `Storage Queue Data Contributor` to the managed identity before configuring app settings.
+    Identity-based host storage requires RBAC role assignments. Assign `Storage Blob Data Owner` and `Storage Queue Data Contributor` to the managed identity before configuring app settings.
 
 !!! tip "Durable Functions"
     If using Durable Functions, also assign `Storage Table Data Contributor` for orchestration state storage.
@@ -341,9 +341,55 @@ az storage account update \
         "AzureWebJobsStorage__clientId=$MI_CLIENT_ID"
     ```
 
-=== "Premium (EP) / Dedicated (S1+)"
+=== "Premium (EP)"
 
-    EP and ASP can use system-assigned managed identity:
+    Premium plans can use identity-based host storage, but private storage scenarios still need Azure Files content share settings for deployment and scale operations.
+
+    ```bash
+    # Enable system-assigned identity (if not already enabled)
+    az functionapp identity assign \
+      --name "$APP_NAME" \
+      --resource-group "$RG"
+
+    # Get principal ID
+    export PRINCIPAL_ID=$(az functionapp identity show \
+      --name "$APP_NAME" \
+      --resource-group "$RG" \
+      --query "principalId" \
+      --output tsv)
+
+    export STORAGE_CONNECTION_STRING=$(az storage account show-connection-string \
+      --name "$STORAGE_NAME" \
+      --resource-group "$RG" \
+      --query "connectionString" \
+      --output tsv)
+
+    # Assign storage RBAC roles for host storage
+    az role assignment create \
+      --assignee "$PRINCIPAL_ID" \
+      --role "Storage Blob Data Owner" \
+      --scope "$STORAGE_ID"
+
+    az role assignment create \
+      --assignee "$PRINCIPAL_ID" \
+      --role "Storage Queue Data Contributor" \
+      --scope "$STORAGE_ID"
+
+    # Configure host storage and content share routing
+    az functionapp config appsettings set \
+      --name "$APP_NAME" \
+      --resource-group "$RG" \
+      --settings \
+        "AzureWebJobsStorage__accountName=$STORAGE_NAME" \
+        "AzureWebJobsStorage__credential=managedidentity" \
+        "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING=$STORAGE_CONNECTION_STRING" \
+        "WEBSITE_CONTENTSHARE=$APP_NAME" \
+        "WEBSITE_CONTENTOVERVNET=1"
+    ```
+
+=== "Dedicated (S1+)"
+
+    Dedicated plans can avoid Azure Files content share dependency by deploying with `WEBSITE_RUN_FROM_PACKAGE=1`.
 
     ```bash
     # Enable system-assigned identity (if not already enabled)
@@ -375,16 +421,22 @@ az storage account update \
       --resource-group "$RG" \
       --settings \
         "AzureWebJobsStorage__accountName=$STORAGE_NAME" \
-        "AzureWebJobsStorage__credential=managedidentity"
+        "AzureWebJobsStorage__credential=managedidentity" \
+        "WEBSITE_RUN_FROM_PACKAGE=1"
     ```
 
 | Command/Parameter | Purpose |
 |-------------------|---------|
 | `az functionapp identity assign` | Enables managed identity on the function app |
 | `az role assignment create` | Grants storage access to the managed identity |
+| `az storage account show-connection-string` | Retrieves the Azure Files connection string required by Premium content share deployment |
 | `AzureWebJobsStorage__accountName` | Storage account name (not connection string) |
 | `AzureWebJobsStorage__credential=managedidentity` | Use managed identity for authentication |
 | `AzureWebJobsStorage__clientId` | (UAMI only) Specifies which identity to use |
+| `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING` | Keeps Premium content share access working when storage is private |
+| `WEBSITE_CONTENTSHARE` | Sets the Premium content share name |
+| `WEBSITE_CONTENTOVERVNET=1` | Routes Premium content share traffic through the integrated VNet |
+| `WEBSITE_RUN_FROM_PACKAGE=1` | Uses package-based deployment for Dedicated plans instead of Azure Files content share |
 
 ## Verification
 
@@ -397,11 +449,19 @@ az functionapp vnet-integration list \
   --output table
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp vnet-integration list` | Confirms that the function app is attached to the expected VNet and subnet |
+
 ### Test DNS Resolution (from within VNet)
 
 ```bash
 nslookup $STORAGE_NAME.blob.core.windows.net
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `nslookup $STORAGE_NAME.blob.core.windows.net` | Verifies that the storage account resolves to the private endpoint IP from inside the VNet |
 
 Expected: Returns private IP (e.g., `10.0.2.x`), not public IP.
 
@@ -410,6 +470,10 @@ Expected: Returns private IP (e.g., `10.0.2.x`), not public IP.
 ```bash
 curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `curl --request GET` | Confirms that the public endpoint still responds while outbound storage traffic stays private |
 
 ## Troubleshooting
 
