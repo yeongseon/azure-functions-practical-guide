@@ -55,7 +55,7 @@ Platform-Subscription AzureCloud   <subscription-id>   <tenant-id>        Enable
 flowchart LR
     C["Client / Caller"] --> APIM["Optional Front Door / APIM"]
     APIM --> FA[Function App]
-    FA -->|VNet Integration outbound| VNET[(Virtual Network)]
+    FA -->|VNet Integration outbound| VNET[Virtual Network]
     VNET --> PE1["Private Endpoint: SQL/Cosmos/Storage"]
     VNET --> FW["Firewall/NAT"]
     FW --> EXT[Approved external services]
