@@ -142,6 +142,7 @@ nav:
         - Flex Consumption (FC1):
           - language-guides/python/tutorial/flex-consumption/01-local-run.md
           - language-guides/python/tutorial/flex-consumption/02-first-deploy.md
+          - language-guides/python/tutorial/flex-consumption/02-first-deploy-private.md
           - language-guides/python/tutorial/flex-consumption/03-configuration.md
           - language-guides/python/tutorial/flex-consumption/04-logging-monitoring.md
           - language-guides/python/tutorial/flex-consumption/05-infrastructure-as-code.md
@@ -150,6 +151,7 @@ nav:
         - Premium (EP):
           - language-guides/python/tutorial/premium/01-local-run.md
           - language-guides/python/tutorial/premium/02-first-deploy.md
+          - language-guides/python/tutorial/premium/02-first-deploy-private.md
           - language-guides/python/tutorial/premium/03-configuration.md
           - language-guides/python/tutorial/premium/04-logging-monitoring.md
           - language-guides/python/tutorial/premium/05-infrastructure-as-code.md

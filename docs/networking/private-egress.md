@@ -243,6 +243,9 @@ az storage account update \
 !!! info "RBAC Required"
     Identity-based storage requires RBAC role assignments. Assign `Storage Blob Data Owner` and `Storage Queue Data Contributor` to the managed identity before configuring app settings.
 
+!!! tip "Durable Functions"
+    If using Durable Functions, also assign `Storage Table Data Contributor` for orchestration state storage.
+
 === "Flex Consumption (FC1)"
 
     FC1 supports both system-assigned and user-assigned managed identity for storage. System-assigned is simpler; user-assigned is required if you need to pre-configure RBAC before app creation.
