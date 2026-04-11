@@ -65,8 +65,10 @@ flowchart TD
 | Consumption (Y1) | :material-close: | N/A |
 | Flex Consumption (FC1) | :material-check: | `Microsoft.App/environments` |
 | Premium (EP) | :material-check: | `Microsoft.Web/serverFarms` |
-| Dedicated (B1) | :material-close: | N/A (requires S1+) |
+| Dedicated (B1) | :material-minus:[^1] | N/A |
 | Dedicated (S1+) | :material-check: | `Microsoft.Web/serverFarms` |
+
+[^1]: Basic (B1) supports VNet integration per Azure documentation, but is not tested or recommended for private networking scenarios in this guide. Use Standard (S1+) for production.
 
 ## Prerequisites
 
@@ -238,6 +240,9 @@ az storage account update \
 
 ### Step 8: Configure Identity-Based Storage (Recommended)
 
+!!! info "RBAC Required"
+    Identity-based storage requires RBAC role assignments. Assign `Storage Blob Data Owner` and `Storage Queue Data Contributor` to the managed identity before configuring app settings.
+
 === "Flex Consumption (FC1)"
 
     FC1 supports both system-assigned and user-assigned managed identity for storage. System-assigned is simpler; user-assigned is required if you need to pre-configure RBAC before app creation.
@@ -245,6 +250,30 @@ az storage account update \
     **Option A: System-Assigned (simpler)**
 
     ```bash
+    # Enable system-assigned identity (if not already enabled)
+    az functionapp identity assign \
+      --name "$APP_NAME" \
+      --resource-group "$RG"
+
+    # Get principal ID
+    export PRINCIPAL_ID=$(az functionapp identity show \
+      --name "$APP_NAME" \
+      --resource-group "$RG" \
+      --query "principalId" \
+      --output tsv)
+
+    # Assign storage RBAC roles
+    az role assignment create \
+      --assignee "$PRINCIPAL_ID" \
+      --role "Storage Blob Data Owner" \
+      --scope "$STORAGE_ID"
+
+    az role assignment create \
+      --assignee "$PRINCIPAL_ID" \
+      --role "Storage Queue Data Contributor" \
+      --scope "$STORAGE_ID"
+
+    # Configure identity-based storage
     az functionapp config appsettings set \
       --name "$APP_NAME" \
       --resource-group "$RG" \
@@ -256,12 +285,50 @@ az storage account update \
     **Option B: User-Assigned (pre-configured RBAC)**
 
     ```bash
+    # Create user-assigned managed identity
+    export MI_NAME="mi-$APP_NAME"
+    az identity create \
+      --name "$MI_NAME" \
+      --resource-group "$RG" \
+      --location "$LOCATION"
+
+    # Get identity resource ID and client ID
+    export MI_ID=$(az identity show \
+      --name "$MI_NAME" \
+      --resource-group "$RG" \
+      --query "id" \
+      --output tsv)
+
+    export MI_PRINCIPAL_ID=$(az identity show \
+      --name "$MI_NAME" \
+      --resource-group "$RG" \
+      --query "principalId" \
+      --output tsv)
+
     export MI_CLIENT_ID=$(az identity show \
       --name "$MI_NAME" \
       --resource-group "$RG" \
       --query "clientId" \
       --output tsv)
 
+    # Assign storage RBAC roles to UAMI
+    az role assignment create \
+      --assignee "$MI_PRINCIPAL_ID" \
+      --role "Storage Blob Data Owner" \
+      --scope "$STORAGE_ID"
+
+    az role assignment create \
+      --assignee "$MI_PRINCIPAL_ID" \
+      --role "Storage Queue Data Contributor" \
+      --scope "$STORAGE_ID"
+
+    # Attach UAMI to function app
+    az functionapp identity assign \
+      --name "$APP_NAME" \
+      --resource-group "$RG" \
+      --identities "$MI_ID"
+
+    # Configure identity-based storage with UAMI
     az functionapp config appsettings set \
       --name "$APP_NAME" \
       --resource-group "$RG" \
@@ -276,6 +343,30 @@ az storage account update \
     EP and ASP can use system-assigned managed identity:
 
     ```bash
+    # Enable system-assigned identity (if not already enabled)
+    az functionapp identity assign \
+      --name "$APP_NAME" \
+      --resource-group "$RG"
+
+    # Get principal ID
+    export PRINCIPAL_ID=$(az functionapp identity show \
+      --name "$APP_NAME" \
+      --resource-group "$RG" \
+      --query "principalId" \
+      --output tsv)
+
+    # Assign storage RBAC roles
+    az role assignment create \
+      --assignee "$PRINCIPAL_ID" \
+      --role "Storage Blob Data Owner" \
+      --scope "$STORAGE_ID"
+
+    az role assignment create \
+      --assignee "$PRINCIPAL_ID" \
+      --role "Storage Queue Data Contributor" \
+      --scope "$STORAGE_ID"
+
+    # Configure identity-based storage
     az functionapp config appsettings set \
       --name "$APP_NAME" \
       --resource-group "$RG" \
@@ -286,8 +377,11 @@ az storage account update \
 
 | Command/Parameter | Purpose |
 |-------------------|---------|
+| `az functionapp identity assign` | Enables managed identity on the function app |
+| `az role assignment create` | Grants storage access to the managed identity |
 | `AzureWebJobsStorage__accountName` | Storage account name (not connection string) |
 | `AzureWebJobsStorage__credential=managedidentity` | Use managed identity for authentication |
+| `AzureWebJobsStorage__clientId` | (UAMI only) Specifies which identity to use |
 
 ## Verification
 

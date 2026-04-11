@@ -45,7 +45,7 @@ flowchart TD
 | Consumption (Y1) | :material-check: | Default and only option |
 | Flex Consumption (FC1) | :material-check: | VNet integration is optional |
 | Premium (EP) | :material-check: | VNet integration is optional |
-| Dedicated (B1) | :material-check: | VNet not available on Basic tier |
+| Dedicated (B1) | :material-check: | Public only in this guide; VNet scenarios use S1+ |
 | Dedicated (S1+) | :material-check: | VNet integration is optional |
 
 ## Prerequisites
@@ -154,7 +154,7 @@ az functionapp create \
 
 ### Dedicated (B1) — Public Only
 
-Basic tier does not support VNet integration.
+This guide uses B1 for public-only scenarios. For VNet integration, see [Private Egress](private-egress.md) with Standard (S1+) tier.
 
 ```bash
 az appservice plan create \
@@ -177,7 +177,7 @@ az functionapp create \
 
 | Command/Parameter | Purpose |
 |-------------------|---------|
-| `--sku B1` | Creates a Basic tier App Service plan (no VNet support) |
+| `--sku B1` | Creates a Basic tier App Service plan (public-only in this guide) |
 
 ## Verification
 

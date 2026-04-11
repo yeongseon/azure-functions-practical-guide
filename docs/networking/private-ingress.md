@@ -72,8 +72,10 @@ flowchart TD
 | Consumption (Y1) | :material-close: | No private endpoint support |
 | Flex Consumption (FC1) | :material-check: | Requires VNet integration first |
 | Premium (EP) | :material-check: | Recommended for private workloads |
-| Dedicated (B1) | :material-close: | Requires S1+ tier |
+| Dedicated (B1) | :material-minus:[^1] | Not tested in this guide |
 | Dedicated (S1+) | :material-check: | Full support |
+
+[^1]: Basic (B1) supports VNet integration and private endpoints per Azure documentation, but is not tested or recommended for private networking scenarios in this guide. Use Standard (S1+) for production.
 
 ## Prerequisites
 
@@ -283,7 +285,7 @@ az functionapp update \
 |---------|--------------|----------|
 | Connection refused | DNS resolving to public IP | Verify DNS zone linked to VNet |
 | 403 Forbidden | Public access disabled, not on VNet | Connect via VPN or from VM in VNet |
-| Deployment fails | SCM site not accessible | Add SCM private endpoint or use temporary public access |
+| Deployment fails | SCM site not accessible | Deploy from VNet (see Step 6) or use temporary public access (Option D) |
 | DNS not resolving | Zone not linked or cached | Check `az network private-dns link vnet list`, clear DNS cache |
 
 ## Next Steps

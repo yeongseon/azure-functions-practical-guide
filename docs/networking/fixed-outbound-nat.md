@@ -61,8 +61,10 @@ flowchart TD
 | Consumption (Y1) | :material-close: | No VNet integration |
 | Flex Consumption (FC1) | :material-check: | Attach NAT to integration subnet |
 | Premium (EP) | :material-check: | Full support |
-| Dedicated (B1) | :material-close: | Requires S1+ for VNet |
+| Dedicated (B1) | :material-minus:[^1] | Not tested in this guide |
 | Dedicated (S1+) | :material-check: | Full support |
+
+[^1]: Basic (B1) supports VNet integration per Azure documentation, but is not tested or recommended for NAT Gateway scenarios in this guide. Use Standard (S1+) for production.
 
 ## Prerequisites
 
