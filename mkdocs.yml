@@ -199,6 +199,7 @@ nav:
         - Flex Consumption (FC1):
           - language-guides/nodejs/tutorial/flex-consumption/01-local-run.md
           - language-guides/nodejs/tutorial/flex-consumption/02-first-deploy.md
+          - language-guides/nodejs/tutorial/flex-consumption/02-first-deploy-private.md
           - language-guides/nodejs/tutorial/flex-consumption/03-configuration.md
           - language-guides/nodejs/tutorial/flex-consumption/04-logging-monitoring.md
           - language-guides/nodejs/tutorial/flex-consumption/05-infrastructure-as-code.md
@@ -207,6 +208,7 @@ nav:
         - Premium (EP):
           - language-guides/nodejs/tutorial/premium/01-local-run.md
           - language-guides/nodejs/tutorial/premium/02-first-deploy.md
+          - language-guides/nodejs/tutorial/premium/02-first-deploy-private.md
           - language-guides/nodejs/tutorial/premium/03-configuration.md
           - language-guides/nodejs/tutorial/premium/04-logging-monitoring.md
           - language-guides/nodejs/tutorial/premium/05-infrastructure-as-code.md
@@ -256,6 +258,7 @@ nav:
         - Flex Consumption (FC1):
           - language-guides/dotnet/tutorial/flex-consumption/01-local-run.md
           - language-guides/dotnet/tutorial/flex-consumption/02-first-deploy.md
+          - language-guides/dotnet/tutorial/flex-consumption/02-first-deploy-private.md
           - language-guides/dotnet/tutorial/flex-consumption/03-configuration.md
           - language-guides/dotnet/tutorial/flex-consumption/04-logging-monitoring.md
           - language-guides/dotnet/tutorial/flex-consumption/05-infrastructure-as-code.md
@@ -264,6 +267,7 @@ nav:
         - Premium (EP):
           - language-guides/dotnet/tutorial/premium/01-local-run.md
           - language-guides/dotnet/tutorial/premium/02-first-deploy.md
+          - language-guides/dotnet/tutorial/premium/02-first-deploy-private.md
           - language-guides/dotnet/tutorial/premium/03-configuration.md
           - language-guides/dotnet/tutorial/premium/04-logging-monitoring.md
           - language-guides/dotnet/tutorial/premium/05-infrastructure-as-code.md
@@ -313,6 +317,7 @@ nav:
         - Flex Consumption (FC1):
           - language-guides/java/tutorial/flex-consumption/01-local-run.md
           - language-guides/java/tutorial/flex-consumption/02-first-deploy.md
+          - language-guides/java/tutorial/flex-consumption/02-first-deploy-private.md
           - language-guides/java/tutorial/flex-consumption/03-configuration.md
           - language-guides/java/tutorial/flex-consumption/04-logging-monitoring.md
           - language-guides/java/tutorial/flex-consumption/05-infrastructure-as-code.md
@@ -321,6 +326,7 @@ nav:
         - Premium (EP):
           - language-guides/java/tutorial/premium/01-local-run.md
           - language-guides/java/tutorial/premium/02-first-deploy.md
+          - language-guides/java/tutorial/premium/02-first-deploy-private.md
           - language-guides/java/tutorial/premium/03-configuration.md
           - language-guides/java/tutorial/premium/04-logging-monitoring.md
           - language-guides/java/tutorial/premium/05-infrastructure-as-code.md

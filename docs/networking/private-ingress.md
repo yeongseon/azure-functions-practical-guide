@@ -231,13 +231,120 @@ Expected: Returns private IP (e.g., `10.0.2.x`), not public IP.
 
 ### Test Function Endpoint (from VNet)
 
+After disabling public access, the function is only reachable from within the VNet. You need a client inside the VNet to test. Choose one of the following options.
+
+#### Option A: Jump Box VM (Simplest)
+
+Create a lightweight VM inside the VNet and test directly:
+
 ```bash
-curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
+# Create a subnet for the jump box (if not already present)
+az network vnet subnet create \
+  --resource-group "$RG" \
+  --vnet-name "$VNET_NAME" \
+  --name "snet-jumpbox" \
+  --address-prefixes "10.0.4.0/24"
+
+# Create a jump box VM (no public IP)
+az vm create \
+  --resource-group "$RG" \
+  --name "vm-jumpbox" \
+  --image "Ubuntu2204" \
+  --size "Standard_B1s" \
+  --vnet-name "$VNET_NAME" \
+  --subnet "snet-jumpbox" \
+  --admin-username "azureuser" \
+  --generate-ssh-keys \
+  --public-ip-address ""
 ```
 
-!!! note "Access from VNet Only"
-    After disabling public access, the function is only reachable from within the VNet or connected networks (VPN/ExpressRoute).
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `--image "Ubuntu2204"` | Lightweight Linux VM for testing |
+| `--size "Standard_B1s"` | Smallest burstable VM (~$0.01/hour) |
+| `--public-ip-address ""` | No public IP — access via Bastion only |
 
+#### Option B: Azure Bastion (Recommended for Production)
+
+Azure Bastion provides secure browser-based SSH/RDP access to VMs without a public IP:
+
+```bash
+# Create Bastion subnet (must be named AzureBastionSubnet)
+az network vnet subnet create \
+  --resource-group "$RG" \
+  --vnet-name "$VNET_NAME" \
+  --name "AzureBastionSubnet" \
+  --address-prefixes "10.0.5.0/26"
+
+# Create public IP for Bastion
+az network public-ip create \
+  --resource-group "$RG" \
+  --name "pip-bastion" \
+  --sku "Standard" \
+  --location "$LOCATION"
+
+# Create Bastion host
+az network bastion create \
+  --resource-group "$RG" \
+  --name "bastion-$APP_NAME" \
+  --vnet-name "$VNET_NAME" \
+  --public-ip-address "pip-bastion" \
+  --location "$LOCATION" \
+  --sku "Basic"
+```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `AzureBastionSubnet` | Required subnet name (Azure enforced) |
+| `--sku "Basic"` | Basic tier (~$0.19/hour); use Standard for production |
+
+Connect to the jump box via Bastion:
+
+```bash
+az network bastion ssh \
+  --resource-group "$RG" \
+  --name "bastion-$APP_NAME" \
+  --target-resource-id $(az vm show \
+    --resource-group "$RG" \
+    --name "vm-jumpbox" \
+    --query "id" \
+    --output tsv) \
+  --auth-type "ssh-key" \
+  --username "azureuser" \
+  --ssh-key "~/.ssh/id_rsa"
+```
+
+#### Test from Inside the VNet
+
+Once connected to the jump box VM (via Bastion or other means), run:
+
+```bash
+# Verify DNS resolves to private IP
+nslookup $APP_NAME.azurewebsites.net
+# Expected: 10.0.2.x (private IP, not public)
+
+# Test the function endpoint
+curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
+# Expected: HTTP 200 with health check response
+```
+
+#### Option C: Other Connectivity Methods
+
+| Method | Use Case | Setup Complexity |
+|--------|----------|-----------------|
+| Point-to-Site VPN | Test from local machine | High (VPN Gateway required) |
+| ExpressRoute | Corporate network connectivity | High (existing circuit required) |
+| Azure Cloud Shell (VNet) | Quick ad-hoc testing | Medium (Cloud Shell VNet integration) |
+| VNet peering | Test from another VNet | Medium |
+
+!!! tip "Cost Optimization"
+    Delete the jump box VM and Bastion host after testing to avoid ongoing charges:
+    
+    ```bash
+    az vm delete --resource-group "$RG" --name "vm-jumpbox" --yes
+    az network bastion delete --resource-group "$RG" --name "bastion-$APP_NAME"
+    az network public-ip delete --resource-group "$RG" --name "pip-bastion"
+    ```
 ## CI/CD Considerations
 
 With public access disabled, deployment requires VNet connectivity:
@@ -303,3 +410,5 @@ az functionapp update \
 - [Azure Functions networking options (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-networking-options)
 - [Use private endpoints for Azure App Service (Microsoft Learn)](https://learn.microsoft.com/azure/app-service/networking/private-endpoint)
 - [What is Azure Private Endpoint? (Microsoft Learn)](https://learn.microsoft.com/azure/private-link/private-endpoint-overview)
+- [What is Azure Bastion? (Microsoft Learn)](https://learn.microsoft.com/azure/bastion/bastion-overview)
+- [Create a Linux VM in the Azure portal (Microsoft Learn)](https://learn.microsoft.com/azure/virtual-machines/linux/quick-create-portal)
