@@ -35,6 +35,16 @@ Deploy a Node.js Function App to an Elastic Premium plan (`EP1`) with always-war
 - Always-warm instances for production latency requirements.
 - A first deployment pipeline (`func azure functionapp publish`) and endpoint verification.
 
+!!! tip "Network Scenario Choices"
+    This tutorial deploys with **public networking**. Premium supports VNet integration:
+
+    | Scenario | Description | Guide |
+    |----------|-------------|-------|
+    | **Public Only** | No VNet (this tutorial) | Current page |
+    | **Private Egress** | VNet + Storage PE | [Private Egress](../../../../networking/private-egress.md) |
+    | **Private Ingress** | + Site Private Endpoint | [Private Ingress](../../../../networking/private-ingress.md) |
+    | **Fixed Outbound IP** | + NAT Gateway | [Fixed Outbound](../../../../networking/fixed-outbound-nat.md) |
+
 !!! info "Infrastructure Context"
     **Plan**: Premium (EP1) | **Network**: Public (VNet optional) | **Always warm**: ✅
 

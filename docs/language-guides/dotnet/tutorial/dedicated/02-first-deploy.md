@@ -36,6 +36,16 @@ Deploy your .NET 8 isolated worker app to a Dedicated (App Service Plan) B1 with
 !!! info "Dedicated plan basics"
     Dedicated (App Service Plan) runs on pre-provisioned compute with predictable cost. Always On keeps the host loaded for non-HTTP triggers. Supports VNet integration and deployment slots on eligible SKUs. No execution timeout limit.
 
+!!! tip "Network Scenario Choices"
+    This tutorial deploys with **public networking** on B1 (Basic tier). For VNet integration, use Standard (S1) or higher:
+
+    | Scenario | Description | Guide |
+    |----------|-------------|-------|
+    | **Public Only** | No VNet (this tutorial, B1) | Current page |
+    | **Private Egress** | VNet + Storage PE (S1+) | [Private Egress](../../../../networking/private-egress.md) |
+    | **Private Ingress** | + Site Private Endpoint (S1+) | [Private Ingress](../../../../networking/private-ingress.md) |
+    | **Fixed Outbound IP** | + NAT Gateway (S1+) | [Fixed Outbound](../../../../networking/fixed-outbound-nat.md) |
+
 ## What You'll Build
 
 A Linux Dedicated Function App running the .NET 8 isolated worker on a B1 App Service Plan, deployed from your local project with Core Tools, then validated through all HTTP endpoints.

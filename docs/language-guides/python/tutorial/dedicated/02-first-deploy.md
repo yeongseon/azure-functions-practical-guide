@@ -48,6 +48,16 @@ export LOCATION="koreacentral"
 
 You will provision a Basic (B1) Linux App Service Plan, create a Python Function App on that plan, deploy from `apps/python`, and validate live endpoints.
 
+!!! tip "Network Scenario Choices"
+    This tutorial deploys with **public networking** (B1 tier). For private networking, upgrade to Standard (S1+):
+
+    | Scenario | Description | Guide |
+    |----------|-------------|-------|
+    | **Public Only** | No VNet (this tutorial, B1) | Current page |
+    | **Private Egress** | VNet + Storage PE (S1+ required) | [Private Egress](../../../../networking/private-egress.md) |
+    | **Private Ingress** | + Site Private Endpoint (S1+ required) | [Private Ingress](../../../../networking/private-ingress.md) |
+    | **Fixed Outbound IP** | + NAT Gateway (S1+ required) | [Fixed Outbound](../../../../networking/fixed-outbound-nat.md) |
+
 !!! info "Infrastructure Context"
     **Plan**: Dedicated (B1) | **Network**: Public internet | **VNet**: ❌ (requires Standard+ tier)
 

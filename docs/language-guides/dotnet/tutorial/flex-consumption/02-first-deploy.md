@@ -39,6 +39,16 @@ Provision Azure resources and deploy the .NET 8 isolated worker reference applic
 
 You will provision a Linux Flex Consumption Function App for .NET 8 isolated worker, deploy with `func azure functionapp publish` from the compiled output directory, and validate HTTP endpoints.
 
+!!! tip "Network Scenario Choices"
+    This tutorial deploys with **public networking**. FC1 supports full private networking:
+
+    | Scenario | Description | Guide |
+    |----------|-------------|-------|
+    | **Public Only** | No VNet (this tutorial) | Current page |
+    | **Private Egress** | VNet + Storage PE | [Private Egress](../../../../networking/private-egress.md) |
+    | **Private Ingress** | + Site Private Endpoint | [Private Ingress](../../../../networking/private-ingress.md) |
+    | **Fixed Outbound IP** | + NAT Gateway | [Fixed Outbound](../../../../networking/fixed-outbound-nat.md) |
+
 !!! info "Infrastructure Context"
     **Plan**: Flex Consumption (FC1) | **Network**: VNet integration supported | **Storage auth**: SystemAssigned MI
 

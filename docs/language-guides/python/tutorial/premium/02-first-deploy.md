@@ -35,6 +35,16 @@ Deploy a Python Function App to an Elastic Premium plan (`EP1`) with VNet integr
 - VNet integration and a site private endpoint for private inbound access.
 - A first deployment pipeline (`func azure functionapp publish`) and endpoint verification.
 
+!!! tip "Network Scenario Choices"
+    This tutorial deploys with **VNet + Private Endpoints**. For other network configurations:
+
+    | Scenario | Description | Guide |
+    |----------|-------------|-------|
+    | **Public Only** | No VNet, simplest setup | [Public Only](../../../../networking/public-only.md) |
+    | **Private Egress** | VNet + Storage PE | [Private Egress](../../../../networking/private-egress.md) |
+    | **Private Ingress** | + Site Private Endpoint (this tutorial) | Current page |
+    | **Fixed Outbound IP** | + NAT Gateway | [Fixed Outbound](../../../../networking/fixed-outbound-nat.md) |
+
 !!! info "Infrastructure Context"
     **Plan**: Premium (EP1) | **Network**: VNet + Private Endpoints | **Always warm**: ✅
 

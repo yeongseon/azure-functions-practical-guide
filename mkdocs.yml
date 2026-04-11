@@ -106,6 +106,12 @@ nav:
     - platform/security.md
     - platform/functions-vs-app-service.md
     - platform/deployment-scenarios.md
+  - Networking Scenarios:
+    - networking/index.md
+    - networking/public-only.md
+    - networking/private-egress.md
+    - networking/private-ingress.md
+    - networking/fixed-outbound-nat.md
   - Best Practices:
     - best-practices/index.md
     - best-practices/hosting-plan-selection.md

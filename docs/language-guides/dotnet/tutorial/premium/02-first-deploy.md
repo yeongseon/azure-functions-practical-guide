@@ -36,6 +36,16 @@ Deploy your .NET 8 isolated worker app to the Premium (EP1) plan with long-form 
 !!! info "Premium plan basics"
     Premium (EP1) keeps at least one warm instance, supports VNet integration, private endpoints, and deployment slots. No cold-start penalty, with up to 100 instances and no execution timeout.
 
+!!! tip "Network Scenario Choices"
+    This tutorial deploys with **public networking**. Premium supports full private networking:
+
+    | Scenario | Description | Guide |
+    |----------|-------------|-------|
+    | **Public Only** | No VNet (this tutorial) | Current page |
+    | **Private Egress** | VNet + Storage PE | [Private Egress](../../../../networking/private-egress.md) |
+    | **Private Ingress** | + Site Private Endpoint | [Private Ingress](../../../../networking/private-ingress.md) |
+    | **Fixed Outbound IP** | + NAT Gateway | [Fixed Outbound](../../../../networking/fixed-outbound-nat.md) |
+
 ## What You'll Build
 
 A Linux Premium Function App running the .NET 8 isolated worker on an EP1 plan, deployed from your local project with Core Tools, then validated through all HTTP endpoints.

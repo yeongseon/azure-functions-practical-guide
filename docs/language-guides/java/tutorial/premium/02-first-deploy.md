@@ -40,6 +40,16 @@ Provision Azure resources and deploy the Java reference application to the Premi
 
 You will provision a Linux Premium (EP1) Function App for Java, deploy with `func azure functionapp publish` from the Maven staging directory, and validate HTTP endpoints.
 
+!!! tip "Network Scenario Choices"
+    This tutorial deploys with **public networking**. Premium supports VNet integration:
+
+    | Scenario | Description | Guide |
+    |----------|-------------|-------|
+    | **Public Only** | No VNet (this tutorial) | Current page |
+    | **Private Egress** | VNet + Storage PE | [Private Egress](../../../../networking/private-egress.md) |
+    | **Private Ingress** | + Site Private Endpoint | [Private Ingress](../../../../networking/private-ingress.md) |
+    | **Fixed Outbound IP** | + NAT Gateway | [Fixed Outbound](../../../../networking/fixed-outbound-nat.md) |
+
 !!! info "Infrastructure Context"
     **Plan**: Premium EP1 | **Network**: Public internet + VNet integration supported | **Always On**: ✅ Enabled by default
 

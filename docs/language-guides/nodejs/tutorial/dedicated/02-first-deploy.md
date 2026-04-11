@@ -35,6 +35,16 @@ Provision resources and publish your first Node.js v4 function app to an App Ser
 - A first deployment pipeline (`func azure functionapp publish`) and endpoint verification.
 - All 20 functions indexed and serving requests on Dedicated infrastructure.
 
+!!! tip "Network Scenario Choices"
+    This tutorial deploys with **public networking** (B1 tier). For private networking, upgrade to Standard (S1+):
+
+    | Scenario | Description | Guide |
+    |----------|-------------|-------|
+    | **Public Only** | No VNet (this tutorial, B1) | Current page |
+    | **Private Egress** | VNet + Storage PE (S1+ required) | [Private Egress](../../../../networking/private-egress.md) |
+    | **Private Ingress** | + Site Private Endpoint (S1+ required) | [Private Ingress](../../../../networking/private-ingress.md) |
+    | **Fixed Outbound IP** | + NAT Gateway (S1+ required) | [Fixed Outbound](../../../../networking/fixed-outbound-nat.md) |
+
 !!! info "Infrastructure Context"
     **Plan**: Dedicated (B1) | **Network**: Public | **Always On**: ✅
 

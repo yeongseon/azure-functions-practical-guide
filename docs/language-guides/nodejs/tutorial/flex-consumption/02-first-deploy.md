@@ -39,6 +39,16 @@ Deploy the app to Azure Functions Flex Consumption (FC1) using long-form CLI com
 
 You will provision a Linux Function App on the Flex Consumption plan, publish your Node.js v4 app, and validate trigger discovery.
 
+!!! tip "Network Scenario Choices"
+    This tutorial deploys with **public networking**. FC1 supports full private networking:
+
+    | Scenario | Description | Guide |
+    |----------|-------------|-------|
+    | **Public Only** | No VNet (this tutorial) | Current page |
+    | **Private Egress** | VNet + Storage PE | [Private Egress](../../../../networking/private-egress.md) |
+    | **Private Ingress** | + Site Private Endpoint | [Private Ingress](../../../../networking/private-ingress.md) |
+    | **Fixed Outbound IP** | + NAT Gateway | [Fixed Outbound](../../../../networking/fixed-outbound-nat.md) |
+
 !!! info "Infrastructure Context"
     **Plan**: Flex Consumption (FC1) | **Network**: VNet integration supported | **Storage auth**: SystemAssigned MI
 

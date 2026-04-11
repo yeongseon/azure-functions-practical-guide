@@ -36,6 +36,16 @@ Deploy your first Azure Functions app to the Flex Consumption plan (FC1), valida
 
 You will provision a Flex Consumption Function App with Azure CLI, publish Python code, and validate FC1 runtime behavior in Azure.
 
+!!! tip "Network Scenario Choices"
+    This tutorial deploys with **full private networking** (VNet + Storage PE). For other network configurations:
+
+    | Scenario | Description | Guide |
+    |----------|-------------|-------|
+    | **Public Only** | No VNet, simplest setup | [Public Only](../../../../networking/public-only.md) |
+    | **Private Egress** | VNet + Storage PE (this tutorial) | Current page |
+    | **Private Ingress** | + Site Private Endpoint | [Private Ingress](../../../../networking/private-ingress.md) |
+    | **Fixed Outbound IP** | + NAT Gateway | [Fixed Outbound](../../../../networking/fixed-outbound-nat.md) |
+
 !!! info "Infrastructure Context"
     **Plan**: Flex Consumption (FC1) | **Network**: Full private network | **VNet**: ✅
 
