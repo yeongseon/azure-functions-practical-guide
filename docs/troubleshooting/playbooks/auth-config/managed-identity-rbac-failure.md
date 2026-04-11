@@ -85,8 +85,8 @@ sequenceDiagram
 <!-- diagram-id: identity-authorization-map -->
 ```mermaid
 flowchart LR
-    F[Function App] --> I[(System-assigned MI)]
-    F --> U[(User-assigned MI)]
+    F[Function App] --> I[System-assigned MI]
+    F --> U[User-assigned MI]
     I --> RBAC1[Role Assignment: Storage Blob Data Contributor]
     U --> RBAC2[Role Assignment: Azure Service Bus Data Receiver]
     I --> KV[Key Vault]
