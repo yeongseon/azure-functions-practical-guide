@@ -54,3 +54,4 @@ labs/*/artifacts/
 .env
 .env.local
 *.pem
+apps/dotnet/publish/
