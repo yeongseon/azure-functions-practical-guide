@@ -29,7 +29,7 @@ Thank you for your interest in contributing!
 - Infrastructure: Use Bicep over ARM templates.
 
 ## Review Process
-1. Automated CI checks (MkDocs build, linting).
+1. Automated CI checks (MkDocs build).
 2. Maintainer review for accuracy and completeness.
 3. Merge to main triggers deployment.
 
