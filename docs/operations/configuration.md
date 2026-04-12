@@ -10,6 +10,23 @@ content_sources:
     url: https://learn.microsoft.com/azure/azure-functions/functions-reference#configure-an-identity-based-connection
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-functions/functions-how-to-use-azure-function-app-settings
+content_validation:
+  status: verified
+  last_reviewed: 2026-04-12
+  reviewer: agent
+  core_claims:
+    - claim: "App settings are the correct layer for environment-specific values, secrets, and feature flags in Azure Functions."
+      source: https://learn.microsoft.com/azure/azure-functions/functions-app-settings
+      verified: true
+    - claim: "host.json controls host-wide runtime behavior such as logging, retries, extension tuning, and sampling."
+      source: https://learn.microsoft.com/azure/azure-functions/functions-host-json
+      verified: true
+    - claim: "Key Vault references can be used to back app settings with secrets managed outside the Function App configuration itself."
+      source: https://learn.microsoft.com/azure/app-service/app-service-key-vault-references
+      verified: true
+    - claim: "Identity-based connections are supported for Azure Functions configuration instead of storing connection secrets directly."
+      source: https://learn.microsoft.com/azure/azure-functions/functions-reference#configure-an-identity-based-connection
+      verified: true
 ---
 
 # Configuration

@@ -12,6 +12,23 @@ content_sources:
     url: https://learn.microsoft.com/azure/azure-functions/functions-reference#configure-an-identity-based-connection
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-functions/event-driven-scaling
+content_validation:
+  status: verified
+  last_reviewed: 2026-04-12
+  reviewer: agent
+  core_claims:
+    - claim: "Each Azure Function has exactly one trigger and can also use input and output bindings"
+      source: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+      verified: true
+    - claim: "Flex Consumption uses the Event Grid-based blob trigger model instead of polling"
+      source: https://learn.microsoft.com/azure/azure-functions/functions-event-grid-blob-trigger
+      verified: true
+    - claim: "Bindings can use identity-based connections configured with service URIs and managed identity settings"
+      source: https://learn.microsoft.com/azure/azure-functions/functions-reference#configure-an-identity-based-connection
+      verified: true
+    - claim: "Azure Functions scaling is driven by the trigger type and workload signal"
+      source: https://learn.microsoft.com/azure/azure-functions/event-driven-scaling
+      verified: true
 ---
 
 # Triggers and Bindings

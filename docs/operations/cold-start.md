@@ -10,6 +10,23 @@ content_sources:
     url: https://learn.microsoft.com/azure/azure-functions/performance-reliability
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-functions/analyze-telemetry-data
+content_validation:
+  status: verified
+  last_reviewed: 2026-04-12
+  reviewer: agent
+  core_claims:
+    - claim: "Cold start includes worker allocation, host startup, language worker startup, and application initialization phases."
+      source: https://learn.microsoft.com/azure/azure-functions/performance-reliability
+      verified: true
+    - claim: "Flex Consumption supports always-ready instances to reduce cold-start frequency for selected functions or app behavior."
+      source: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+      verified: true
+    - claim: "Premium plan provides always-ready and pre-warmed instances to reduce startup latency."
+      source: https://learn.microsoft.com/azure/azure-functions/functions-premium-plan
+      verified: true
+    - claim: "Dedicated plans use Always On to keep workers active and reduce cold-start effects."
+      source: https://learn.microsoft.com/azure/azure-functions/functions-scale
+      verified: true
 ---
 
 # Cold Start

@@ -8,6 +8,23 @@ content_sources:
     url: https://learn.microsoft.com/azure/azure-functions/functions-scale
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+content_validation:
+  status: verified
+  last_reviewed: 2026-04-12
+  reviewer: agent
+  core_claims:
+    - claim: "Azure Functions 스케일링은 이벤트 기반이며 다운스트림 한계 때문에 선형 확장을 보장하지 않는다."
+      source: https://learn.microsoft.com/azure/azure-functions/event-driven-scaling
+      verified: true
+    - claim: "Consumption과 Premium에서는 functionAppScaleLimit로 최대 인스턴스 수를 제한할 수 있다."
+      source: https://learn.microsoft.com/azure/azure-functions/functions-scale
+      verified: true
+    - claim: "Flex Consumption은 always-ready 인스턴스와 메모리 프로필 같은 추가 스케일 튜닝 옵션을 제공한다."
+      source: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+      verified: true
+    - claim: "동시성 설정은 트리거 유형과 런타임 특성에 맞게 조정해야 한다."
+      source: https://learn.microsoft.com/azure/azure-functions/functions-concurrency
+      verified: true
 ---
 
 # Scaling Best Practices

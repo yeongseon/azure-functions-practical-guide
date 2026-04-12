@@ -10,6 +10,23 @@ content_sources:
     url: https://learn.microsoft.com/azure/azure-monitor/alerts/alerts-create-log-alert-rule
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-monitor/alerts/proactive-diagnostics
+content_validation:
+  status: verified
+  last_reviewed: 2026-04-12
+  reviewer: agent
+  core_claims:
+    - claim: "Action groups should be created before alert rules so alerts route consistently to the right receivers."
+      source: https://learn.microsoft.com/azure/azure-monitor/alerts/action-groups
+      verified: true
+    - claim: "Metric alerts are best suited for fast platform symptoms such as 5xx bursts and short evaluation windows."
+      source: https://learn.microsoft.com/azure/azure-monitor/alerts/alerts-metric
+      verified: true
+    - claim: "Log query alerts are appropriate when the alert condition depends on KQL-based context or scoped failure patterns."
+      source: https://learn.microsoft.com/azure/azure-monitor/alerts/alerts-log
+      verified: true
+    - claim: "Smart detection and proactive diagnostics should be treated as supplemental anomaly signals rather than the only paging mechanism."
+      source: https://learn.microsoft.com/azure/azure-monitor/alerts/proactive-diagnostics
+      verified: true
 ---
 
 # Alerts

@@ -13,6 +13,23 @@ content_sources:
       justification: "VNet integration pattern from MSLearn networking documentation"
       based_on:
         - https://learn.microsoft.com/azure/azure-functions/functions-create-vnet
+content_validation:
+  status: verified
+  last_reviewed: 2026-04-12
+  reviewer: agent
+  core_claims:
+    - claim: "Consumption plan does not support VNet integration for Azure Functions"
+      source: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+      verified: true
+    - claim: "Flex Consumption requires Microsoft.App/environments subnet delegation for VNet integration"
+      source: https://learn.microsoft.com/azure/azure-functions/functions-create-vnet
+      verified: true
+    - claim: "Premium and Dedicated plans use Microsoft.Web/serverFarms subnet delegation for VNet integration"
+      source: https://learn.microsoft.com/azure/app-service/overview-vnet-integration
+      verified: true
+    - claim: "Private endpoints let a function app reach storage over private network paths instead of public endpoints"
+      source: https://learn.microsoft.com/azure/azure-functions/functions-create-vnet
+      verified: true
 ---
 
 # Scenario 2: Private Egress (VNet + Storage PE)

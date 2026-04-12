@@ -12,6 +12,23 @@ content_sources:
     url: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-overview
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-functions/functions-custom-handlers
+content_validation:
+  status: verified
+  last_reviewed: 2026-04-12
+  reviewer: agent
+  core_claims:
+    - claim: "Azure Functions uses a host/worker architecture so multiple languages can run on one platform"
+      source: https://learn.microsoft.com/azure/azure-functions/functions-overview
+      verified: true
+    - claim: "The Function App is the primary deployment and configuration boundary in Azure Functions"
+      source: https://learn.microsoft.com/azure/azure-functions/functions-overview
+      verified: true
+    - claim: "Flex Consumption supports VNet integration and inbound private endpoints"
+      source: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+      verified: true
+    - claim: "Flex Consumption requires identity-based host storage and uses Event Grid for blob triggers"
+      source: https://learn.microsoft.com/azure/azure-functions/functions-scale
+      verified: true
 ---
 
 # Azure Functions Architecture

@@ -10,6 +10,14 @@ content_sources:
     url: https://learn.microsoft.com/azure/azure-functions/functions-scale
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-functions/configure-networking-how-to
+content_validation:
+  status: verified
+  last_reviewed: 2026-04-12
+  reviewer: agent
+  core_claims:
+    - claim: "Lab Guide: Hosting Plan Security Matrix — Private Endpoint + Managed Identity Fault Injection 관련 핵심 진단 절차와 운영 판단 기준"
+      source: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+      verified: true
 ---
 
 # Lab Guide: Hosting Plan Security Matrix — Private Endpoint + Managed Identity Fault Injection

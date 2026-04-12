@@ -6,6 +6,23 @@ content_sources:
     url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-functions/performance-reliability
+content_validation:
+  status: verified
+  last_reviewed: 2026-04-12
+  reviewer: agent
+  core_claims:
+    - claim: "Sporadic workload에는 scale-to-zero가 가능한 Consumption 또는 Flex Consumption이 유리할 수 있다."
+      source: https://learn.microsoft.com/azure/azure-functions/functions-scale
+      verified: true
+    - claim: "Private networking 요구가 있으면 Flex Consumption 또는 Premium 같은 지원 플랜을 우선 검토해야 한다."
+      source: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+      verified: true
+    - claim: "엄격한 저지연 HTTP 요구사항에는 warm baseline을 제공하는 Premium 플랜이 적합하다."
+      source: https://learn.microsoft.com/azure/azure-functions/functions-scale
+      verified: true
+    - claim: "호스팅 플랜 선택은 비용표가 아니라 워크로드 특성과 성능/신뢰성 요구를 기준으로 해야 한다."
+      source: https://learn.microsoft.com/azure/azure-functions/performance-reliability
+      verified: true
 ---
 
 # Hosting Plan Selection Best Practices

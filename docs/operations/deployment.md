@@ -8,6 +8,23 @@ content_sources:
     url: https://learn.microsoft.com/azure/azure-functions/functions-deployment-slots
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-functions/functions-run-local
+content_validation:
+  status: verified
+  last_reviewed: 2026-04-12
+  reviewer: agent
+  core_claims:
+    - claim: "Running a function app from a deployment package supports immutable artifact deployment behavior."
+      source: https://learn.microsoft.com/azure/azure-functions/run-functions-from-deployment-package
+      verified: true
+    - claim: "GitHub Actions is a supported CI/CD deployment method for Azure Functions."
+      source: https://learn.microsoft.com/azure/azure-functions/functions-how-to-github-actions
+      verified: true
+    - claim: "Deployment slots are used for safer releases and rollback on supported Azure Functions hosting plans."
+      source: https://learn.microsoft.com/azure/azure-functions/functions-deployment-slots
+      verified: true
+    - claim: "Local validation with Azure Functions Core Tools is part of the supported deployment workflow before publishing."
+      source: https://learn.microsoft.com/azure/azure-functions/functions-run-local
+      verified: true
 ---
 
 # Deployment

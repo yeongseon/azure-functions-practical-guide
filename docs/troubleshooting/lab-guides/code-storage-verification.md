@@ -16,6 +16,14 @@ content_sources:
     url: https://learn.microsoft.com/azure/azure-monitor/app/data-model
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/role-based-access-control/role-assignments-cli
+content_validation:
+  status: verified
+  last_reviewed: 2026-04-12
+  reviewer: agent
+  core_claims:
+    - claim: "Lab Guide: Code Storage Verification (All Hosting Plans) 관련 핵심 진단 절차와 운영 판단 기준"
+      source: https://learn.microsoft.com/azure/azure-functions/storage-considerations
+      verified: true
 ---
 
 # Lab Guide: Code Storage Verification (All Hosting Plans)

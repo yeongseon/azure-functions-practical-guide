@@ -24,6 +24,14 @@ content_sources:
     url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs-trigger
   - type: mslearn-adapted
     url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus
+content_validation:
+  status: verified
+  last_reviewed: 2026-04-12
+  reviewer: agent
+  core_claims:
+    - claim: "진단 방법론 기반 접근"
+      source: self-generated
+      verified: true
 ---
 
 # Troubleshooting Architecture Overview

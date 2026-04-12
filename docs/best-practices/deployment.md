@@ -4,6 +4,23 @@ content_sources:
     url: https://learn.microsoft.com/azure/azure-functions/functions-deployment-technologies
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-functions/run-functions-from-deployment-package
+content_validation:
+  status: verified
+  last_reviewed: 2026-04-12
+  reviewer: agent
+  core_claims:
+    - claim: "Run-from-package 배포는 패키지를 읽기 전용으로 마운트해 배포 중 파일 변이를 줄인다."
+      source: https://learn.microsoft.com/azure/azure-functions/run-functions-from-deployment-package
+      verified: true
+    - claim: "Flex Consumption은 Kudu/SCM 엔드포인트를 사용하지 않는 배포 방식을 따라야 한다."
+      source: https://learn.microsoft.com/azure/azure-functions/functions-deployment-technologies
+      verified: true
+    - claim: "Consumption 플랜의 배포 슬롯은 프로덕션을 포함해 총 2개까지만 지원된다."
+      source: https://learn.microsoft.com/azure/azure-functions/functions-deployment-technologies
+      verified: true
+    - claim: "동일한 빌드 산출물을 환경별로 승격하는 immutable artifact 배포 방식이 안전하다."
+      source: https://learn.microsoft.com/azure/azure-functions/run-functions-from-deployment-package
+      verified: true
 ---
 
 # Deployment Best Practices

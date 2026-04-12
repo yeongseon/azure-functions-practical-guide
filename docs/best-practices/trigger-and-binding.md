@@ -6,6 +6,23 @@ content_sources:
     url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-blob-trigger
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-functions/functions-event-grid-blob-trigger
+content_validation:
+  status: verified
+  last_reviewed: 2026-04-12
+  reviewer: agent
+  core_claims:
+    - claim: "트리거와 바인딩 선택은 워크로드의 전달 의미와 실패 처리 방식에 맞춰야 한다."
+      source: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+      verified: true
+    - claim: "Flex Consumption의 Blob 트리거 워크로드는 Event Grid 기반 blob trigger source를 사용해야 한다."
+      source: https://learn.microsoft.com/azure/azure-functions/functions-event-grid-blob-trigger
+      verified: true
+    - claim: "일반적인 Blob 트리거는 스토리지 이벤트를 처리할 수 있지만 플랜별 지원 모델 차이를 검증해야 한다."
+      source: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-blob-trigger
+      verified: true
+    - claim: "함수 호스트와 일부 트리거는 호스트 스토리지 및 바인딩 구성을 올바르게 필요로 한다."
+      source: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+      verified: true
 ---
 
 # Trigger and Binding Best Practices

@@ -10,6 +10,23 @@ content_sources:
     url: https://learn.microsoft.com/azure/architecture/guide/technology-choices/compute-decision-tree
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-functions/functions-compare-logic-apps-ms-flow-webjobs
+content_validation:
+  status: verified
+  last_reviewed: 2026-04-12
+  reviewer: agent
+  core_claims:
+    - claim: "Azure Functions and Azure App Service both run on the underlying App Service platform infrastructure"
+      source: https://learn.microsoft.com/azure/azure-functions/functions-overview
+      verified: true
+    - claim: "Azure Functions supports scale-to-zero on Consumption and Flex Consumption plans, while App Service does not"
+      source: https://learn.microsoft.com/azure/azure-functions/functions-scale
+      verified: true
+    - claim: "Azure Functions provides trigger and binding-based event-driven execution, while App Service is centered on web app hosting"
+      source: https://learn.microsoft.com/azure/azure-functions/functions-overview
+      verified: true
+    - claim: "App Service supports native WebSocket hosting, unlike Azure Functions"
+      source: https://learn.microsoft.com/azure/app-service/overview
+      verified: true
 ---
 
 # Azure Functions vs Azure App Service

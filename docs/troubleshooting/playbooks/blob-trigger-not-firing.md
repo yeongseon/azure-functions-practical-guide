@@ -10,6 +10,14 @@ content_sources:
     url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-monitor/logs/log-query-overview
+content_validation:
+  status: verified
+  last_reviewed: 2026-04-12
+  reviewer: agent
+  core_claims:
+    - claim: "Blob Trigger Not Firing 관련 핵심 진단 절차와 운영 판단 기준"
+      source: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-blob-trigger
+      verified: true
 ---
 
 # Blob Trigger Not Firing

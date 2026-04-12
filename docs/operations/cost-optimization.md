@@ -10,6 +10,23 @@ content_sources:
     url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-monitor/logs/cost-logs
+content_validation:
+  status: verified
+  last_reviewed: 2026-04-12
+  reviewer: agent
+  core_claims:
+    - claim: "The Consumption plan billing model charges for executions and GB-seconds of resource consumption."
+      source: https://learn.microsoft.com/azure/azure-functions/consumption-plan
+      verified: true
+    - claim: "The legacy Consumption plan includes a monthly free grant for executions and GB-seconds at the subscription level."
+      source: https://learn.microsoft.com/azure/azure-functions/consumption-plan
+      verified: true
+    - claim: "Flex Consumption adds optional always-ready baseline cost behavior in addition to consumption-based execution billing."
+      source: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+      verified: true
+    - claim: "Application Insights and Log Analytics ingestion and retention can materially affect overall Azure Functions operating cost."
+      source: https://learn.microsoft.com/azure/azure-monitor/logs/cost-logs
+      verified: true
 ---
 
 # Cost Optimization

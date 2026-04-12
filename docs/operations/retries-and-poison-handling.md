@@ -8,6 +8,23 @@ content_sources:
     url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-service-bus-trigger
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-event-hubs-trigger
+content_validation:
+  status: verified
+  last_reviewed: 2026-04-12
+  reviewer: agent
+  core_claims:
+    - claim: "Azure Functions reliability for event triggers depends on trigger delivery semantics, retry behavior, and poison or dead-letter handling after retries are exhausted."
+      source: https://learn.microsoft.com/azure/azure-functions/functions-bindings-error-pages
+      verified: true
+    - claim: "For Storage Queue triggers, maxDequeueCount determines when a message is treated as poison and moved to the poison queue."
+      source: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue-trigger
+      verified: true
+    - claim: "Service Bus triggers expose extension and client retry settings that affect transport and message-processing behavior."
+      source: https://learn.microsoft.com/azure/azure-functions/functions-bindings-service-bus-trigger
+      verified: true
+    - claim: "Event Hubs trigger clientRetryOptions control SDK transport retries and are distinct from Azure Functions invocation retry policy."
+      source: https://learn.microsoft.com/azure/azure-functions/functions-bindings-event-hubs-trigger
+      verified: true
 ---
 
 # Retries and Poison Handling

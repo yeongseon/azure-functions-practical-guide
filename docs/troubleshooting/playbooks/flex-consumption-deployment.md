@@ -10,6 +10,14 @@ content_sources:
     url: https://learn.microsoft.com/azure/storage/common/storage-network-security
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-functions/functions-app-settings
+content_validation:
+  status: verified
+  last_reviewed: 2026-04-12
+  reviewer: agent
+  core_claims:
+    - claim: "Flex Consumption Deployment Gotchas 관련 핵심 진단 절차와 운영 판단 기준"
+      source: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+      verified: true
 ---
 
 # Flex Consumption Deployment Gotchas

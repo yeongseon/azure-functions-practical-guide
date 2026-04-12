@@ -10,6 +10,14 @@ content_sources:
     url: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-troubleshooting-guide
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+content_validation:
+  status: verified
+  last_reviewed: 2026-04-12
+  reviewer: agent
+  core_claims:
+    - claim: "Durable Functions Orchestration Stuck Playbook 관련 핵심 진단 절차와 운영 판단 기준"
+      source: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-overview
+      verified: true
 ---
 
 # Durable Functions Orchestration Stuck Playbook

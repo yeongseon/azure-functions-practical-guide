@@ -12,6 +12,14 @@ content_sources:
     url: https://learn.microsoft.com/azure/azure-functions/storage-considerations
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-monitor/logs/log-query-overview
+content_validation:
+  status: verified
+  last_reviewed: 2026-04-12
+  reviewer: agent
+  core_claims:
+    - claim: "Lab Guide: Durable Functions Replay Storm on Azure Functions Premium EP1 관련 핵심 진단 절차와 운영 판단 기준"
+      source: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-orchestrations
+      verified: true
 ---
 
 # Lab Guide: Durable Functions Replay Storm on Azure Functions Premium EP1

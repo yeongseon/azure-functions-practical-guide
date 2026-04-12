@@ -8,6 +8,23 @@ content_sources:
     url: https://learn.microsoft.com/azure/azure-monitor/logs/data-platform-logs
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-monitor/visualize/workbooks-overview
+content_validation:
+  status: verified
+  last_reviewed: 2026-04-12
+  reviewer: agent
+  core_claims:
+    - claim: "Azure Functions monitoring combines Azure Monitor platform metrics with Application Insights telemetry."
+      source: https://learn.microsoft.com/azure/azure-functions/monitor-functions
+      verified: true
+    - claim: "Application Insights provides requests, dependencies, traces, and exceptions for operational analysis."
+      source: https://learn.microsoft.com/azure/azure-monitor/app/app-insights-overview
+      verified: true
+    - claim: "Control-plane and platform logs are available through Azure Monitor logs for operational investigations."
+      source: https://learn.microsoft.com/azure/azure-monitor/logs/data-platform-logs
+      verified: true
+    - claim: "Azure Monitor workbooks are used to build dashboards and visual operational views over collected telemetry."
+      source: https://learn.microsoft.com/azure/azure-monitor/visualize/workbooks-overview
+      verified: true
 ---
 
 # Monitoring

@@ -4,6 +4,23 @@ content_sources:
     url: https://learn.microsoft.com/azure/azure-functions/performance-reliability
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-functions/functions-best-practices
+content_validation:
+  status: verified
+  last_reviewed: 2026-04-12
+  reviewer: agent
+  core_claims:
+    - claim: "Azure Functions 핸들러는 재시작과 스케일 아웃에 대비해 상태 비저장으로 설계해야 한다."
+      source: https://learn.microsoft.com/azure/azure-functions/performance-reliability
+      verified: true
+    - claim: "이벤트 기반 처리에서는 중복 전달과 재시도를 고려해 멱등성을 구현해야 한다."
+      source: https://learn.microsoft.com/azure/azure-functions/performance-reliability
+      verified: true
+    - claim: "연결 문자열 비밀 대신 관리형 ID와 Key Vault 같은 더 안전한 비밀 관리 방식을 우선해야 한다."
+      source: https://learn.microsoft.com/azure/azure-functions/functions-best-practices
+      verified: true
+    - claim: "Flex Consumption에서는 Blob 트리거를 Event Grid 기반으로 구성해야 한다."
+      source: https://learn.microsoft.com/azure/azure-functions/functions-best-practices
+      verified: true
 ---
 
 # Common Azure Functions Anti-Patterns

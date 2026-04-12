@@ -12,6 +12,23 @@ content_sources:
     url: https://learn.microsoft.com/azure/traffic-manager/traffic-manager-monitoring
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/frontdoor/health-probes
+content_validation:
+  status: verified
+  last_reviewed: 2026-04-12
+  reviewer: agent
+  core_claims:
+    - claim: "Azure Functions recovery planning should define RTO and RPO before incidents occur."
+      source: https://learn.microsoft.com/azure/architecture/framework/resiliency/disaster-recovery
+      verified: true
+    - claim: "Deployment slots provide a fast rollback path for supported Azure Functions hosting plans."
+      source: https://learn.microsoft.com/azure/azure-functions/functions-deployment-slots
+      verified: true
+    - claim: "Regional recovery design depends on storage redundancy and multi-region resiliency planning."
+      source: https://learn.microsoft.com/azure/storage/common/storage-redundancy
+      verified: true
+    - claim: "Traffic Manager and Front Door health probes can be used to monitor and steer traffic during failover."
+      source: https://learn.microsoft.com/azure/frontdoor/health-probes
+      verified: true
 ---
 
 # Recovery

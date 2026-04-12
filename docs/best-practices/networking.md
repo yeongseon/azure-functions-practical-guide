@@ -10,6 +10,23 @@ content_sources:
     url: https://learn.microsoft.com/azure/private-link/private-endpoint-dns
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-functions/functions-app-settings
+content_validation:
+  status: verified
+  last_reviewed: 2026-04-12
+  reviewer: agent
+  core_claims:
+    - claim: "Consumption 플랜은 VNet 통합이나 private endpoint 기반 아키텍처에 적합하지 않다."
+      source: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+      verified: true
+    - claim: "Flex Consumption의 통합 서브넷은 Microsoft.App/environments 위임을 사용해야 한다."
+      source: https://learn.microsoft.com/azure/azure-functions/functions-create-vnet
+      verified: true
+    - claim: "Function App private endpoint를 사용할 때는 private DNS zone과 VNet 링크를 함께 구성해야 한다."
+      source: https://learn.microsoft.com/azure/private-link/private-endpoint-dns
+      verified: true
+    - claim: "Private-only 인바운드가 필요하면 public network access 설정도 함께 검토해야 한다."
+      source: https://learn.microsoft.com/azure/azure-functions/functions-networking-options#private-endpoints
+      verified: true
 ---
 
 # Networking Best Practices for Azure Functions

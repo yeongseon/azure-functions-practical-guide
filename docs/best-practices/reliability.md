@@ -16,6 +16,23 @@ content_sources:
     url: https://learn.microsoft.com/azure/azure-functions/functions-scale#timeout
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-overview
+content_validation:
+  status: verified
+  last_reviewed: 2026-04-12
+  reviewer: agent
+  core_claims:
+    - claim: "이벤트 기반 Azure Functions 처리는 중복 전달 가능성을 전제로 멱등하게 설계해야 한다."
+      source: https://learn.microsoft.com/azure/azure-functions/functions-idempotent
+      verified: true
+    - claim: "신뢰할 수 있는 이벤트 처리를 위해 재시도, 중복, 부분 실패를 고려한 설계가 필요하다."
+      source: https://learn.microsoft.com/azure/azure-functions/functions-reliable-event-processing
+      verified: true
+    - claim: "Storage Queue 트리거는 maxDequeueCount 초과 시 poison queue로 메시지를 이동시킨다."
+      source: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue-trigger
+      verified: true
+    - claim: "Durable Functions는 장기 실행 워크플로를 위해 상태와 체크포인트를 유지하는 오케스트레이션 모델을 제공한다."
+      source: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-overview
+      verified: true
 ---
 
 # Reliability Best Practices for Azure Functions

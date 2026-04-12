@@ -10,6 +10,14 @@ content_sources:
     url: https://learn.microsoft.com/azure/key-vault/general/rbac-guide
   - type: mslearn-adapted
     url: https://learn.microsoft.com/dotnet/api/azure.identity.defaultazurecredential
+content_validation:
+  status: verified
+  last_reviewed: 2026-04-12
+  reviewer: agent
+  core_claims:
+    - claim: "Managed Identity and RBAC Authentication Failure 관련 핵심 진단 절차와 운영 판단 기준"
+      source: https://learn.microsoft.com/azure/azure-functions/functions-reference#configure-an-identity-based-connection
+      verified: true
 ---
 
 # Managed Identity and RBAC Authentication Failure

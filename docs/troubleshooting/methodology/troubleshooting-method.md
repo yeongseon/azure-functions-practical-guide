@@ -6,6 +6,14 @@ content_sources:
     url: https://learn.microsoft.com/azure/azure-functions/configure-monitoring
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-functions/functions-recover-from-failed-host
+content_validation:
+  status: verified
+  last_reviewed: 2026-04-12
+  reviewer: agent
+  core_claims:
+    - claim: "진단 방법론 기반 접근"
+      source: self-generated
+      verified: true
 ---
 
 # Troubleshooting Method

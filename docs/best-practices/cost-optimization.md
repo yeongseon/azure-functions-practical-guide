@@ -4,6 +4,23 @@ content_sources:
     url: https://learn.microsoft.com/azure/azure-functions/functions-consumption-costs
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-functions/pricing
+content_validation:
+  status: verified
+  last_reviewed: 2026-04-12
+  reviewer: agent
+  core_claims:
+    - claim: "Consumption 플랜에는 월 1,000,000회 실행과 400,000 GB-초의 무료 사용량이 제공된다."
+      source: https://learn.microsoft.com/azure/azure-functions/functions-consumption-costs
+      verified: true
+    - claim: "Application Insights 샘플링은 고트래픽 Functions 워크로드의 텔레메트리 수집 비용을 줄이는 핵심 제어 수단이다."
+      source: https://learn.microsoft.com/azure/azure-functions/functions-consumption-costs
+      verified: true
+    - claim: "Azure Functions 비용에는 컴퓨트 외에도 스토리지와 모니터링 같은 종속 서비스 비용이 포함될 수 있다."
+      source: https://learn.microsoft.com/azure/azure-functions/pricing
+      verified: true
+    - claim: "최대 인스턴스 수 같은 스케일 가드레일을 설정하면 과도한 확장으로 인한 비용 급증을 억제할 수 있다."
+      source: https://learn.microsoft.com/azure/azure-functions/functions-consumption-costs
+      verified: true
 ---
 
 # Cost Optimization Best Practices

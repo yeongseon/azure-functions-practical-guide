@@ -12,6 +12,23 @@ content_sources:
     url: https://learn.microsoft.com/azure/azure-functions/functions-deployment-technologies
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-functions/functions-reference?tabs=blob#configure-an-identity-based-connection
+content_validation:
+  status: verified
+  last_reviewed: 2026-04-12
+  reviewer: agent
+  core_claims:
+    - claim: "Consumption plan does not support VNet integration, while Flex Consumption, Premium, and Dedicated do"
+      source: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+      verified: true
+    - claim: "Flex Consumption uses blob-container deployment through functionAppConfig instead of Kudu/SCM"
+      source: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+      verified: true
+    - claim: "Premium and Dedicated plans can host multiple apps per plan"
+      source: https://learn.microsoft.com/azure/azure-functions/functions-scale
+      verified: true
+    - claim: "Identity-based binding connections use app settings with service URIs instead of a single connection string secret"
+      source: https://learn.microsoft.com/azure/azure-functions/functions-reference?tabs=blob#configure-an-identity-based-connection
+      verified: true
 ---
 
 # Deployment Scenarios

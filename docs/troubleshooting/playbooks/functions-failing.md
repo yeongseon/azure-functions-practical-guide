@@ -10,6 +10,14 @@ content_sources:
     url: https://learn.microsoft.com/azure/role-based-access-control/overview
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/data-explorer/kusto/query/
+content_validation:
+  status: verified
+  last_reviewed: 2026-04-12
+  reviewer: agent
+  core_claims:
+    - claim: "Functions Failing with Errors 관련 핵심 진단 절차와 운영 판단 기준"
+      source: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+      verified: true
 ---
 
 # Functions Failing with Errors

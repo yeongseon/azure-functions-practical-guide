@@ -13,6 +13,20 @@ content_sources:
       justification: "NAT Gateway integration pattern from MSLearn documentation"
       based_on:
         - https://learn.microsoft.com/azure/app-service/overview-nat-gateway-integration
+content_validation:
+  status: verified
+  last_reviewed: 2026-04-12
+  reviewer: agent
+  core_claims:
+    - claim: "Azure Functions plans without VNet integration cannot use NAT Gateway for outbound egress control"
+      source: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+      verified: true
+    - claim: "App Service VNet integration can route outbound traffic through a NAT Gateway attached to the integration subnet"
+      source: https://learn.microsoft.com/azure/app-service/overview-nat-gateway-integration
+      verified: true
+    - claim: "NAT Gateway provides stable outbound public IP addresses for internet egress"
+      source: https://learn.microsoft.com/azure/nat-gateway/nat-overview
+      verified: true
 ---
 
 # Scenario 4: Fixed Outbound IP (NAT Gateway)

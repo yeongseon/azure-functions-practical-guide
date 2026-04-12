@@ -12,6 +12,23 @@ content_sources:
     url: https://learn.microsoft.com/azure/app-service/app-service-key-vault-references
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-functions/function-keys-how-to
+content_validation:
+  status: verified
+  last_reviewed: 2026-04-12
+  reviewer: agent
+  core_claims:
+    - claim: "Azure Functions는 임베디드 비밀보다 관리형 ID와 identity-based connection 구성을 우선해야 한다."
+      source: https://learn.microsoft.com/azure/azure-functions/functions-reference#configure-an-identity-based-connection
+      verified: true
+    - claim: "Key Vault 참조는 app settings에서 비밀 값을 직접 저장하지 않고 사용할 수 있게 해준다."
+      source: https://learn.microsoft.com/azure/app-service/app-service-key-vault-references
+      verified: true
+    - claim: "Function key는 호출 제어용 공유 비밀이지 완전한 사용자 인증/권한 부여 모델이 아니다."
+      source: https://learn.microsoft.com/azure/azure-functions/function-keys-how-to
+      verified: true
+    - claim: "HTTPS-only와 최소 TLS 1.2 같은 전송 보안 기준을 강제해야 한다."
+      source: https://learn.microsoft.com/azure/azure-functions/security-concepts
+      verified: true
 ---
 
 # Security Best Practices for Azure Functions

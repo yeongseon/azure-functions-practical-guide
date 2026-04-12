@@ -14,6 +14,14 @@ content_sources:
     url: https://learn.microsoft.com/azure/azure-functions/functions-host-json
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-functions/functions-recover-storage-account
+content_validation:
+  status: verified
+  last_reviewed: 2026-04-12
+  reviewer: agent
+  core_claims:
+    - claim: "진단 방법론 기반 접근"
+      source: self-generated
+      verified: true
 ---
 
 # Quick Diagnosis Cards

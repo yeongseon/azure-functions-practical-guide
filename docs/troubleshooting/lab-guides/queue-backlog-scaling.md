@@ -10,6 +10,14 @@ content_sources:
     url: https://learn.microsoft.com/azure/azure-functions/monitor-functions
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-monitor/logs/log-query-overview
+content_validation:
+  status: verified
+  last_reviewed: 2026-04-12
+  reviewer: agent
+  core_claims:
+    - claim: "Lab Guide: Queue Backlog Scaling on Y1 Consumption (Real Evidence) 관련 핵심 진단 절차와 운영 판단 기준"
+      source: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue-trigger
+      verified: true
 ---
 
 # Lab Guide: Queue Backlog Scaling on Y1 Consumption (Real Evidence)

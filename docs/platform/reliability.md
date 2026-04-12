@@ -10,6 +10,23 @@ content_sources:
     url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-service-bus
+content_validation:
+  status: verified
+  last_reviewed: 2026-04-12
+  reviewer: agent
+  core_claims:
+    - claim: "Reliable Azure Functions designs depend on trigger semantics, function behavior, platform behavior, and dependency behavior"
+      source: https://learn.microsoft.com/azure/azure-functions/performance-reliability
+      verified: true
+    - claim: "Azure Functions supports built-in retries for supported triggers and retries should target transient failures"
+      source: https://learn.microsoft.com/azure/azure-functions/performance-reliability
+      verified: true
+    - claim: "Storage Queue triggers move messages to a poison queue after maxDequeueCount is exceeded"
+      source: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue
+      verified: true
+    - claim: "Service Bus trigger reliability behavior includes dead-letter handling after delivery failures"
+      source: https://learn.microsoft.com/azure/azure-functions/functions-bindings-service-bus
+      verified: true
 ---
 
 # Reliability

@@ -13,6 +13,23 @@ content_sources:
       justification: "Private endpoint ingress pattern from MSLearn networking documentation"
       based_on:
         - https://learn.microsoft.com/azure/app-service/networking/private-endpoint
+content_validation:
+  status: verified
+  last_reviewed: 2026-04-12
+  reviewer: agent
+  core_claims:
+    - claim: "Azure Functions private endpoints are supported on Flex Consumption, Premium, and Dedicated plans, but not classic Consumption"
+      source: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+      verified: true
+    - claim: "App Service private endpoints use the sites group for the main app endpoint"
+      source: https://learn.microsoft.com/azure/app-service/networking/private-endpoint
+      verified: true
+    - claim: "Private endpoints provide private IP-based access to the app through Azure Private Link"
+      source: https://learn.microsoft.com/azure/private-link/private-endpoint-overview
+      verified: true
+    - claim: "Disabling public network access prevents public ingress to the function app"
+      source: https://learn.microsoft.com/azure/app-service/networking/private-endpoint
+      verified: true
 ---
 
 # Scenario 3: Private Ingress (Site Private Endpoint)
