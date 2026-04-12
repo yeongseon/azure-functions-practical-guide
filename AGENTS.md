@@ -134,6 +134,45 @@ Every Mermaid diagram must have source metadata in frontmatter.
 - See [Content Validation Status](docs/reference/content-validation-status.md) for current status.
 - See [Tutorial Validation Status](docs/reference/validation-status.md) for tutorial testing.
 
+### Text Content Validation
+
+Every non-tutorial document should include a `content_validation` block in frontmatter to track the verification status of its core claims.
+
+```yaml
+---
+content_sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/azure-functions/...
+content_validation:
+  status: verified  # verified | pending_review | unverified
+  last_reviewed: 2026-04-12
+  reviewer: agent  # agent | human
+  core_claims:
+    - claim: "Flex Consumption supports VNet integration"
+      source: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+      verified: true
+    - claim: "Premium plan requires Azure Files content share"
+      source: https://learn.microsoft.com/azure/azure-functions/storage-considerations
+      verified: true
+---
+```
+
+#### Validation Status Values
+
+| Status | Description |
+|--------|-------------|
+| `verified` | All core claims have been traced to Microsoft Learn sources |
+| `pending_review` | Document exists but claims need source verification |
+| `unverified` | New document, no validation performed |
+
+#### Agent Rules for Content Validation
+
+1. When creating or modifying Platform, Best Practices, or Operations documents, add `content_validation` frontmatter.
+2. List 2-5 core claims that are factual assertions (not opinions or procedures).
+3. Each claim must have a Microsoft Learn source URL.
+4. Set `status: verified` only when ALL core claims have verified sources.
+5. Run `python3 scripts/generate_content_validation_status.py` after updates.
+
 ### PII Removal (Quality Gate)
 
 **CRITICAL**: All CLI output examples MUST have PII removed.

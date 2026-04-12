@@ -8,6 +8,20 @@ content_sources:
     url: https://learn.microsoft.com/azure/app-service/networking/private-endpoint
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/app-service/overview-nat-gateway-integration
+content_validation:
+  status: verified
+  last_reviewed: 2026-04-12
+  reviewer: agent
+  core_claims:
+    - claim: "VNet integration controls outbound traffic routing"
+      source: https://learn.microsoft.com/azure/app-service/configure-vnet-integration-enable
+      verified: true
+    - claim: "Private endpoints control inbound access"
+      source: https://learn.microsoft.com/azure/app-service/networking/private-endpoint
+      verified: true
+    - claim: "Consumption plan does not support VNet integration"
+      source: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+      verified: true
 ---
 
 # Networking

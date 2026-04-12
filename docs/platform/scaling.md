@@ -12,6 +12,20 @@ content_sources:
     url: https://learn.microsoft.com/azure/azure-functions/functions-concurrency
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-perf-and-scale
+content_validation:
+  status: verified
+  last_reviewed: 2026-04-12
+  reviewer: agent
+  core_claims:
+    - claim: "Scaling is trigger-specific with plan-dependent limits"
+      source: https://learn.microsoft.com/azure/azure-functions/event-driven-scaling
+      verified: true
+    - claim: "Consumption plan can scale to 200 instances (Linux) or 100 (Windows)"
+      source: https://learn.microsoft.com/azure/azure-functions/functions-scale
+      verified: true
+    - claim: "HTTP triggers scale based on concurrent request rate"
+      source: https://learn.microsoft.com/azure/azure-functions/event-driven-scaling
+      verified: true
 ---
 
 # Scaling Behavior

@@ -10,6 +10,23 @@ content_sources:
     url: https://learn.microsoft.com/azure/app-service/overview-hosting-plans
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+content_validation:
+  status: verified
+  last_reviewed: 2026-04-12
+  reviewer: agent
+  core_claims:
+    - claim: "Consumption plan scales to zero and bills per execution"
+      source: https://learn.microsoft.com/azure/azure-functions/consumption-plan
+      verified: true
+    - claim: "Flex Consumption supports VNet integration with identity-based storage"
+      source: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+      verified: true
+    - claim: "Premium plan provides pre-warmed instances to avoid cold starts"
+      source: https://learn.microsoft.com/azure/azure-functions/functions-premium-plan
+      verified: true
+    - claim: "Dedicated plan runs on App Service infrastructure with always-on support"
+      source: https://learn.microsoft.com/azure/app-service/overview-hosting-plans
+      verified: true
 ---
 
 # Hosting Plans
