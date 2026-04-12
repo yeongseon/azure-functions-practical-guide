@@ -271,10 +271,28 @@ func azure functionapp publish "$APP_NAME"
 ### Step 8 - Validate deployment
 
 ```bash
-# Wait for function indexing (may take 30-60 seconds)
-sleep 30
+# Wait for publish completion, indexing, and worker warmup
+echo "Waiting for Java functions to appear..."
 
-# List deployed functions
+for attempt in 1 2 3 4 5 6; do
+  az functionapp function list \
+    --name "$APP_NAME" \
+    --resource-group "$RG" \
+    --output table
+
+  if [ "$(az functionapp function list \
+    --name "$APP_NAME" \
+    --resource-group "$RG" \
+    --query "length(@)" \
+    --output tsv)" -gt 0 ]; then
+    break
+  fi
+
+  echo "Functions not indexed yet. Waiting 30 seconds before retrying..."
+  sleep 30
+done
+
+# List deployed functions one more time for confirmation
 az functionapp function list \
   --name "$APP_NAME" \
   --resource-group "$RG" \
@@ -292,10 +310,16 @@ curl --request GET "https://$APP_NAME.azurewebsites.net/api/info"
 
 | Command/Parameter | Purpose |
 |-------------------|---------|
-| `sleep 30` | Wait for Azure to index the newly deployed functions |
+| `for attempt in 1 2 3 4 5 6` | Retries function discovery for up to about 3 minutes after publish |
 | `az functionapp function list` | Verify that all expected functions are indexed |
 | `--output table` | Display the list in a human-readable table format |
 | `curl --request GET` | Test the HTTP endpoints for functionality |
+
+!!! warning "Java function activation can lag behind publish completion"
+    `func azure functionapp publish` can finish before the Java worker has fully started and indexed all functions. If `az functionapp function list` is empty or every endpoint returns `404`, wait another 30 seconds and retry. In real deployments, initial indexing can take up to 2-3 minutes.
+
+!!! tip "If functions stay empty"
+    Re-run `az functionapp function list` until functions appear. If the list remains empty after several minutes, confirm that you published from `target/azure-functions/azure-functions-java-guide/` so the generated `function.json` files were included in the deployment package.
 
 ### Step 9 - Review Flex Consumption-specific notes
 

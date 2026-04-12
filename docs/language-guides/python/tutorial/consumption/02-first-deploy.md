@@ -3,10 +3,10 @@ hide:
   - toc
 validation:
   az_cli:
-    last_tested: 2026-04-09
-    cli_version: "2.83.0"
-    core_tools_version: "4.8.0"
-    result: pass
+    last_tested: 2026-04-12
+    cli_version: "2.70.0"
+    core_tools_version: "4.6.0"
+    result: fail
   bicep:
     last_tested: null
     result: not_tested
@@ -243,6 +243,26 @@ Health response:
 ```
 
 ### Verification notes
+
+!!! warning "Current validation failure (2026-04-12)"
+    The Korea Central Consumption deployment provisioned successfully and `func azure functionapp publish --build remote --python` completed a remote build, but Core Tools removed `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING` and `WEBSITE_CONTENTSHARE` during publish.
+
+    After restoring both settings, trigger sync still failed with `Error calling sync triggers (BadRequest)` and the public endpoint kept returning `503 Function host is not running`.
+
+    **Observed output:**
+
+    ```text
+    Removing WEBSITE_CONTENTAZUREFILECONNECTIONSTRING app setting.
+    Removing WEBSITE_CONTENTSHARE app setting.
+    ...
+    Remote build succeeded!
+    Error calling sync triggers (BadRequest).
+    ```
+
+    ```text
+    HTTP/1.1 503 Service Unavailable
+    Function host is not running.
+    ```
 
 !!! warning "Blocked by enterprise policy"
     In our Korea Central deployment, Y1 Consumption was blocked during provisioning. The subscription's Azure Policy enforced `allowSharedKeyAccess: false` on the storage account, which prevented the platform from creating the required content file share.

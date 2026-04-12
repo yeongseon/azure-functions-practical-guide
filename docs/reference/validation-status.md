@@ -4,19 +4,20 @@ This page tracks which tutorials have been validated against real Azure deployme
 
 ## Summary
 
-*Generated: 2026-04-11*
+*Generated: 2026-04-12*
 
 | Metric | Count |
 |---|---:|
 | Total tutorials | 120 |
-| ✅ Validated | 114 |
+| ✅ Validated | 113 |
 | ⚠️ Stale (>90 days) | 0 |
-| ❌ Failed | 0 |
+| ❌ Failed | 1 |
 | ➖ Not tested | 6 |
 
 ```mermaid
 pie title Tutorial Validation Status
-    "Validated" : 114
+    "Validated" : 113
+    "Failed" : 1
     "Not Tested" : 6
 ```
 
@@ -27,7 +28,7 @@ pie title Tutorial Validation Status
 | Tutorial | Hosting Plan | az-cli | Bicep | Last Tested | Status |
 |---|---|---|---|---|---|
 | [01 Local Run](../language-guides/dotnet/tutorial/consumption/01-local-run.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
-| [02 First Deploy](../language-guides/dotnet/tutorial/consumption/02-first-deploy.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
+| [02 First Deploy](../language-guides/dotnet/tutorial/consumption/02-first-deploy.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-12 | ✅ Pass |
 | [03 Configuration](../language-guides/dotnet/tutorial/consumption/03-configuration.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [04 Logging Monitoring](../language-guides/dotnet/tutorial/consumption/04-logging-monitoring.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [05 Infrastructure As Code](../language-guides/dotnet/tutorial/consumption/05-infrastructure-as-code.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
@@ -50,7 +51,7 @@ pie title Tutorial Validation Status
 | [06 Ci Cd](../language-guides/dotnet/tutorial/premium/06-ci-cd.md) | Premium (EP) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [07 Extending Triggers](../language-guides/dotnet/tutorial/premium/07-extending-triggers.md) | Premium (EP) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [01 Local Run](../language-guides/dotnet/tutorial/dedicated/01-local-run.md) | Dedicated (App Service) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
-| [02 First Deploy](../language-guides/dotnet/tutorial/dedicated/02-first-deploy.md) | Dedicated (App Service) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
+| [02 First Deploy](../language-guides/dotnet/tutorial/dedicated/02-first-deploy.md) | Dedicated (App Service) | ✅ Pass | ➖ Not Tested | 2026-04-12 | ✅ Pass |
 | [03 Configuration](../language-guides/dotnet/tutorial/dedicated/03-configuration.md) | Dedicated (App Service) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [04 Logging Monitoring](../language-guides/dotnet/tutorial/dedicated/04-logging-monitoring.md) | Dedicated (App Service) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [05 Infrastructure As Code](../language-guides/dotnet/tutorial/dedicated/05-infrastructure-as-code.md) | Dedicated (App Service) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
@@ -62,7 +63,7 @@ pie title Tutorial Validation Status
 | Tutorial | Hosting Plan | az-cli | Bicep | Last Tested | Status |
 |---|---|---|---|---|---|
 | [01 Local Run](../language-guides/java/tutorial/consumption/01-local-run.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
-| [02 First Deploy](../language-guides/java/tutorial/consumption/02-first-deploy.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
+| [02 First Deploy](../language-guides/java/tutorial/consumption/02-first-deploy.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-12 | ✅ Pass |
 | [03 Configuration](../language-guides/java/tutorial/consumption/03-configuration.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [04 Logging Monitoring](../language-guides/java/tutorial/consumption/04-logging-monitoring.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [05 Infrastructure As Code](../language-guides/java/tutorial/consumption/05-infrastructure-as-code.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
@@ -97,7 +98,7 @@ pie title Tutorial Validation Status
 | Tutorial | Hosting Plan | az-cli | Bicep | Last Tested | Status |
 |---|---|---|---|---|---|
 | [01 Local Run](../language-guides/nodejs/tutorial/consumption/01-local-run.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
-| [02 First Deploy](../language-guides/nodejs/tutorial/consumption/02-first-deploy.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
+| [02 First Deploy](../language-guides/nodejs/tutorial/consumption/02-first-deploy.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-12 | ✅ Pass |
 | [03 Configuration](../language-guides/nodejs/tutorial/consumption/03-configuration.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [04 Logging Monitoring](../language-guides/nodejs/tutorial/consumption/04-logging-monitoring.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [05 Infrastructure As Code](../language-guides/nodejs/tutorial/consumption/05-infrastructure-as-code.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
@@ -120,7 +121,7 @@ pie title Tutorial Validation Status
 | [06 Ci Cd](../language-guides/nodejs/tutorial/premium/06-ci-cd.md) | Premium (EP) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [07 Extending Triggers](../language-guides/nodejs/tutorial/premium/07-extending-triggers.md) | Premium (EP) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [01 Local Run](../language-guides/nodejs/tutorial/dedicated/01-local-run.md) | Dedicated (App Service) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
-| [02 First Deploy](../language-guides/nodejs/tutorial/dedicated/02-first-deploy.md) | Dedicated (App Service) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
+| [02 First Deploy](../language-guides/nodejs/tutorial/dedicated/02-first-deploy.md) | Dedicated (App Service) | ✅ Pass | ➖ Not Tested | 2026-04-12 | ✅ Pass |
 | [03 Configuration](../language-guides/nodejs/tutorial/dedicated/03-configuration.md) | Dedicated (App Service) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [04 Logging Monitoring](../language-guides/nodejs/tutorial/dedicated/04-logging-monitoring.md) | Dedicated (App Service) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
 | [05 Infrastructure As Code](../language-guides/nodejs/tutorial/dedicated/05-infrastructure-as-code.md) | Dedicated (App Service) | ✅ Pass | ➖ Not Tested | 2026-04-10 | ✅ Pass |
@@ -132,7 +133,7 @@ pie title Tutorial Validation Status
 | Tutorial | Hosting Plan | az-cli | Bicep | Last Tested | Status |
 |---|---|---|---|---|---|
 | [01 Local Run](../language-guides/python/tutorial/consumption/01-local-run.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-09 | ✅ Pass |
-| [02 First Deploy](../language-guides/python/tutorial/consumption/02-first-deploy.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-09 | ✅ Pass |
+| [02 First Deploy](../language-guides/python/tutorial/consumption/02-first-deploy.md) | Consumption (Y1) | ❌ Fail | ➖ Not Tested | 2026-04-12 | ❌ Fail |
 | [03 Configuration](../language-guides/python/tutorial/consumption/03-configuration.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-09 | ✅ Pass |
 | [04 Logging Monitoring](../language-guides/python/tutorial/consumption/04-logging-monitoring.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-09 | ✅ Pass |
 | [05 Infrastructure As Code](../language-guides/python/tutorial/consumption/05-infrastructure-as-code.md) | Consumption (Y1) | ✅ Pass | ➖ Not Tested | 2026-04-09 | ✅ Pass |
@@ -155,7 +156,7 @@ pie title Tutorial Validation Status
 | [06 Ci Cd](../language-guides/python/tutorial/premium/06-ci-cd.md) | Premium (EP) | ✅ Pass | ➖ Not Tested | 2026-04-09 | ✅ Pass |
 | [07 Extending Triggers](../language-guides/python/tutorial/premium/07-extending-triggers.md) | Premium (EP) | ✅ Pass | ➖ Not Tested | 2026-04-09 | ✅ Pass |
 | [01 Local Run](../language-guides/python/tutorial/dedicated/01-local-run.md) | Dedicated (App Service) | ✅ Pass | ➖ Not Tested | 2026-04-09 | ✅ Pass |
-| [02 First Deploy](../language-guides/python/tutorial/dedicated/02-first-deploy.md) | Dedicated (App Service) | ✅ Pass | ➖ Not Tested | 2026-04-09 | ✅ Pass |
+| [02 First Deploy](../language-guides/python/tutorial/dedicated/02-first-deploy.md) | Dedicated (App Service) | ✅ Pass | ➖ Not Tested | 2026-04-12 | ✅ Pass |
 | [03 Configuration](../language-guides/python/tutorial/dedicated/03-configuration.md) | Dedicated (App Service) | ✅ Pass | ➖ Not Tested | 2026-04-09 | ✅ Pass |
 | [04 Logging Monitoring](../language-guides/python/tutorial/dedicated/04-logging-monitoring.md) | Dedicated (App Service) | ✅ Pass | ➖ Not Tested | 2026-04-09 | ✅ Pass |
 | [05 Infrastructure As Code](../language-guides/python/tutorial/dedicated/05-infrastructure-as-code.md) | Dedicated (App Service) | ✅ Pass | ➖ Not Tested | 2026-04-09 | ✅ Pass |

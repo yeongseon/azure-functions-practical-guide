@@ -78,9 +78,11 @@ flowchart LR
     A[Set variables + login] --> B[Create RG + storage]
     B --> C[Create deployment container]
     C --> D[Create function app]
-    D --> E[Set placeholder settings]
-    E --> F["func azure functionapp publish"]
-    F --> G[Validate endpoints]
+    D --> E[Assign Storage Blob Data Contributor]
+    E --> F[Wait for role propagation]
+    F --> G[Set placeholder settings]
+    G --> H["func azure functionapp publish"]
+    H --> I[Validate endpoints]
 ```
 
 ## Steps
@@ -176,7 +178,44 @@ az functionapp create \
 !!! note "Flex Consumption vs Consumption CLI differences"
     Flex Consumption uses `--flexconsumption-location` instead of `--consumption-plan-location`. It also requires `--deployment-storage-name`, `--deployment-storage-container-name`, and `--deployment-storage-auth-type` parameters.
 
-### Step 5 - Set placeholder trigger settings
+### Step 5 - Assign Storage Blob Data Contributor role
+
+The managed identity needs explicit permission to upload deployment packages to blob storage:
+
+```bash
+PRINCIPAL_ID=$(az functionapp identity show \
+  --name "$APP_NAME" \
+  --resource-group "$RG" \
+  --query principalId \
+  --output tsv)
+
+STORAGE_ID=$(az storage account show \
+  --name "$STORAGE_NAME" \
+  --resource-group "$RG" \
+  --query id \
+  --output tsv)
+
+az role assignment create \
+  --assignee "$PRINCIPAL_ID" \
+  --role "Storage Blob Data Contributor" \
+  --scope "$STORAGE_ID"
+
+# Wait for role assignment propagation (30-60 seconds)
+echo "Waiting for role assignment propagation..."
+sleep 60
+```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp identity show` | Retrieves the principal ID of the function app's managed identity. |
+| `az storage account show` | Retrieves the Azure resource ID of the deployment storage account. |
+| `az role assignment create` | Grants the function app permission to upload deployment packages to blob storage. |
+| `sleep 60` | Waits for Azure RBAC propagation before attempting the first publish. |
+
+!!! warning "Wait before publishing"
+    If you run `func azure functionapp publish` immediately after the role assignment, the deployment can fail with a blob storage `403` error while RBAC changes are still propagating. Wait 30-60 seconds first.
+
+### Step 6 - Set placeholder trigger settings
 
 ```bash
 STORAGE_CONN=$(az storage account show-connection-string \
@@ -201,7 +240,7 @@ az functionapp config appsettings set \
 !!! warning "Placeholder settings prevent host errors"
     The Python v2 reference app includes triggers for Queue and Timer. If these connection settings are missing, the Functions host enters an `Error` state and cannot index any functions.
 
-### Step 6 - Publish app
+### Step 7 - Publish app
 
 ```bash
 cd apps/python && func azure functionapp publish "$APP_NAME"
@@ -215,7 +254,7 @@ cd apps/python && func azure functionapp publish "$APP_NAME"
 !!! note "Upload size"
     Python function apps are typically smaller than Node.js (~6.5 MB vs ~49 MB) as dependencies are installed remotely.
 
-### Step 7 - Validate deployment
+### Step 8 - Validate deployment
 
 ```bash
 # List deployed functions
@@ -238,7 +277,7 @@ curl --request GET "https://$APP_NAME.azurewebsites.net/api/hello/FlexTest"
 | `curl --request GET` | Sends an HTTP GET request to verify the live endpoints. |
 
 
-### Step 8 - Review Flex Consumption-specific notes
+### Step 9 - Review Flex Consumption-specific notes
 
 - Flex Consumption routes all traffic through the integrated VNet by default once configured.
 - Flex Consumption does not support custom container hosting for Function Apps.
