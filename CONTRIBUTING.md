@@ -1,4 +1,4 @@
-# Contributing to Azure PaaS Troubleshooting Labs
+# Contributing to Azure Functions Practical Guide
 
 Thank you for your interest in contributing!
 
@@ -7,28 +7,26 @@ Thank you for your interest in contributing!
 ### Reporting Issues
 - Use GitHub Issues for bugs, questions, or suggestions.
 - Include reproduction steps when reporting bugs.
-- Tag issues appropriately (experiment, documentation, infrastructure).
+- Tag issues appropriately (documentation, bug, enhancement).
 
-### Submitting Experiments
+### Submitting Changes
 1. Fork the repository.
-2. Create a branch: `experiment/your-experiment-name`.
-3. Follow the [experiment template](experiments/templates/experiment-template.md).
-4. Include:
-    - Complete 16-section documentation.
-    - Reproduction scripts (if applicable).
-    - Evidence-tagged conclusions.
+2. Create a branch: `feature/your-change-description`.
+3. Make your changes — guide content, troubleshooting playbooks, lab guides, or language tutorials.
+4. Test with `mkdocs build --strict` before submitting.
 5. Submit a Pull Request.
 
 ### Documentation Standards
-- Use the canonical templates in `experiments/templates/`.
-- Follow [Evidence Levels](docs/methodology/evidence-levels.md) for conclusions.
-- Include KQL queries where applicable.
-- Test with `mkdocs build --strict` before submitting.
+- All CLI examples must use long flags (`--resource-group`, not `-g`).
+- All documents should include Mermaid diagrams where applicable.
+- All content must reference Microsoft Learn with source URLs.
+- No PII (subscription IDs, tenant IDs, etc.) in CLI output examples.
+- Use 4-space indentation for nested lists and admonitions.
 
 ### Code Standards
 - Shell scripts: Use `set -e`, quote variables.
 - Python: Follow PEP 8, include type hints.
-- Infrastructure: Use Bicep over ARM.
+- Infrastructure: Use Bicep over ARM templates.
 
 ## Review Process
 1. Automated CI checks (MkDocs build, linting).
