@@ -35,6 +35,7 @@ flowchart TD
 - [Triggers and bindings](triggers-and-bindings.md) — eventing patterns and integration contracts.
 - [Scaling](scaling.md) — how scale decisions differ by trigger type and hosting plan.
 - [Networking](networking.md) — VNet integration, private endpoints, and hybrid connectivity.
+- [Networking Scenarios](networking-scenarios/index.md) — practical deployment patterns for public, private egress, private ingress, and fixed outbound IP.
 - [Reliability](reliability.md) — retries, poison message handling, and high-availability choices.
 - [Security](security.md) — auth models, managed identity, and network isolation.
 
@@ -42,7 +43,7 @@ flowchart TD
 
 1. Pick a hosting plan from [Hosting](hosting.md).
 2. Validate scale behavior in [Scaling](scaling.md).
-3. Design private/public paths in [Networking](networking.md).
+3. Design private/public paths in [Networking](networking.md) and [Networking Scenarios](networking-scenarios/index.md).
 4. Add failure handling from [Reliability](reliability.md).
 5. Lock down access using [Security](security.md).
 

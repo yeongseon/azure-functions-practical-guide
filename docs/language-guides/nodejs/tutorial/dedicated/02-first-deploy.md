@@ -41,9 +41,9 @@ Provision resources and publish your first Node.js v4 function app to an App Ser
     | Scenario | Description | Guide |
     |----------|-------------|-------|
     | **Public Only** | No VNet (this tutorial, B1) | Current page |
-    | **Private Egress** | VNet + Storage PE (S1+ required) | [Private Egress](../../../../networking/private-egress.md) |
-    | **Private Ingress** | + Site Private Endpoint (S1+ required) | [Private Ingress](../../../../networking/private-ingress.md) |
-    | **Fixed Outbound IP** | + NAT Gateway (S1+ required) | [Fixed Outbound](../../../../networking/fixed-outbound-nat.md) |
+    | **Private Egress** | VNet + Storage PE (S1+ required) | [Private Egress](../../../../platform/networking-scenarios/private-egress.md) |
+    | **Private Ingress** | + Site Private Endpoint (S1+ required) | [Private Ingress](../../../../platform/networking-scenarios/private-ingress.md) |
+    | **Fixed Outbound IP** | + NAT Gateway (S1+ required) | [Fixed Outbound](../../../../platform/networking-scenarios/fixed-outbound-nat.md) |
 
 !!! info "Infrastructure Context"
     **Plan**: Dedicated (B1) | **Network**: Public | **Always On**: ✅

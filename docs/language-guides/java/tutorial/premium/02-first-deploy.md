@@ -46,9 +46,9 @@ You will provision a Linux Premium (EP1) Function App for Java, deploy with `fun
     | Scenario | Description | Guide |
     |----------|-------------|-------|
     | **Public Only** | No VNet (this tutorial) | Current page |
-    | **Private Egress** | VNet + Storage PE | [Private Egress](../../../../networking/private-egress.md) |
-    | **Private Ingress** | + Site Private Endpoint | [Private Ingress](../../../../networking/private-ingress.md) |
-    | **Fixed Outbound IP** | + NAT Gateway | [Fixed Outbound](../../../../networking/fixed-outbound-nat.md) |
+    | **Private Egress** | VNet + Storage PE | [Private Egress](../../../../platform/networking-scenarios/private-egress.md) |
+    | **Private Ingress** | + Site Private Endpoint | [Private Ingress](../../../../platform/networking-scenarios/private-ingress.md) |
+    | **Fixed Outbound IP** | + NAT Gateway | [Fixed Outbound](../../../../platform/networking-scenarios/fixed-outbound-nat.md) |
 
 !!! info "Infrastructure Context"
     **Plan**: Premium EP1 | **Network**: Public internet + VNet integration supported | **Always On**: ✅ Enabled by default

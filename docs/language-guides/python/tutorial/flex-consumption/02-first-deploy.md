@@ -45,11 +45,11 @@ You will provision a Linux Function App on the Flex Consumption plan, publish yo
     | Scenario | Description | Guide |
     |----------|-------------|-------|
     | **Public Only** | No VNet (this tutorial) | Current page |
-    | **Private Egress** | VNet + Storage PE | [Private Egress](../../../../networking/private-egress.md) |
-    | **Private Ingress** | + Site Private Endpoint | [Private Ingress](../../../../networking/private-ingress.md) |
-    | **Fixed Outbound IP** | + NAT Gateway | [Fixed Outbound](../../../../networking/fixed-outbound-nat.md) |
+    | **Private Egress** | VNet + Storage PE | [Private Egress](../../../../platform/networking-scenarios/private-egress.md) |
+    | **Private Ingress** | + Site Private Endpoint | [Private Ingress](../../../../platform/networking-scenarios/private-ingress.md) |
+    | **Fixed Outbound IP** | + NAT Gateway | [Fixed Outbound](../../../../platform/networking-scenarios/fixed-outbound-nat.md) |
 
-    Looking for a **private egress deployment** (VNet + Storage PE)? See [02 - First Deploy (Private Egress)](02-first-deploy-private.md).
+    Looking for a **private egress deployment** (VNet + Storage PE)? See [02 - First Deploy (Private Egress)](02a-first-deploy-private-egress.md).
 
 !!! info "Infrastructure Context"
     **Plan**: Flex Consumption (FC1) | **Network**: VNet integration supported | **Storage auth**: SystemAssigned MI
@@ -313,8 +313,8 @@ Hello endpoint response:
 
 ## Next Steps
 
-- **Add VNet integration**: See [Private Egress](../../../../networking/private-egress.md) for VNet + Storage PE
-- **Private egress deployment**: See [02 - First Deploy (Private Egress)](02-first-deploy-private.md) for VNet + Storage PE tutorial
+- **Add VNet integration**: See [Private Egress](../../../../platform/networking-scenarios/private-egress.md) for VNet + Storage PE
+- **Private egress deployment**: See [02 - First Deploy (Private Egress)](02a-first-deploy-private-egress.md) for VNet + Storage PE tutorial
 
 > **Next:** [03 - Configuration](03-configuration.md)
 

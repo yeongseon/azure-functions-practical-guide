@@ -41,11 +41,11 @@ Deploy a Python Function App to an Elastic Premium plan (`EP1`) with always-warm
     | Scenario | Description | Guide |
     |----------|-------------|-------|
     | **Public Only** | No VNet (this tutorial) | Current page |
-    | **Private Egress** | VNet + Storage PE | [Private Egress](../../../../networking/private-egress.md) |
-    | **Private Ingress** | + Site Private Endpoint | [Private Ingress](../../../../networking/private-ingress.md) |
-    | **Fixed Outbound IP** | + NAT Gateway | [Fixed Outbound](../../../../networking/fixed-outbound-nat.md) |
+    | **Private Egress** | VNet + Storage PE | [Private Egress](../../../../platform/networking-scenarios/private-egress.md) |
+    | **Private Ingress** | + Site Private Endpoint | [Private Ingress](../../../../platform/networking-scenarios/private-ingress.md) |
+    | **Fixed Outbound IP** | + NAT Gateway | [Fixed Outbound](../../../../platform/networking-scenarios/fixed-outbound-nat.md) |
 
-    Looking for a **complete private networking deployment**? See [02 - First Deploy (Private Networking)](02-first-deploy-private.md).
+    Looking for a **complete private networking deployment**? See [02 - First Deploy (Private Networking)](02a-first-deploy-private-egress.md).
 
 !!! info "Infrastructure Context"
     **Plan**: Premium (EP1) | **Network**: Public (VNet optional) | **Always warm**: ✅
@@ -332,8 +332,8 @@ The output confirms that Azure indexed your function definitions and the app ser
 
 ## Next Steps
 
-- **Add VNet integration**: See [Private Egress](../../../../networking/private-egress.md) for VNet + Storage PE
-- **Full private deployment**: See [02 - First Deploy (Private Networking)](02-first-deploy-private.md)
+- **Add VNet integration**: See [Private Egress](../../../../platform/networking-scenarios/private-egress.md) for VNet + Storage PE
+- **Full private deployment**: See [02 - First Deploy (Private Networking)](02a-first-deploy-private-egress.md)
 
 ## See Also
 

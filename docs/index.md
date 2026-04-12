@@ -6,11 +6,27 @@ content_sources:
 
 # Azure Functions Practical Guide
 
-Comprehensive, practical documentation for building, deploying, operating, and troubleshooting serverless applications on Azure Functions.
+**Production-focused documentation for operators and engineers** — from first deployment to incident response.
 
-This site is organized as a learning and operations guide so you can move from fundamentals to production troubleshooting with clear, repeatable workflows.
+Unlike introductory tutorials, this guide emphasizes what happens *after* your functions go live: troubleshooting real incidents, hypothesis-driven debugging with KQL, runbooks for common failures, and battle-tested operational patterns.
 
 <div class="grid cards" markdown>
+
+-   :material-bug:{ .lg .middle } **Investigating an Incident?**
+
+    ---
+
+    Jump straight to hypothesis-driven playbooks with real KQL queries, evidence patterns, and hands-on lab exercises.
+
+    [:octicons-arrow-right-24: Troubleshooting](troubleshooting/index.md)
+
+-   :material-server:{ .lg .middle } **Running Production Workloads?**
+
+    ---
+
+    Apply battle-tested patterns for hosting selection, scaling, reliability, networking, and deployment safety.
+
+    [:octicons-arrow-right-24: Best Practices](best-practices/index.md)
 
 -   :material-rocket-launch:{ .lg .middle } **New to Azure Functions?**
 
@@ -20,23 +36,17 @@ This site is organized as a learning and operations guide so you can move from f
 
     [:octicons-arrow-right-24: Start Here](start-here/index.md)
 
--   :material-server:{ .lg .middle } **Running Production Workloads?**
-
-    ---
-
-    Apply battle-tested patterns for hosting selection, scaling, reliability, and deployment safety.
-
-    [:octicons-arrow-right-24: Best Practices](best-practices/index.md)
-
--   :material-bug:{ .lg .middle } **Investigating an Incident?**
-
-    ---
-
-    Jump straight to hypothesis-driven playbooks with real KQL queries and evidence patterns.
-
-    [:octicons-arrow-right-24: Troubleshooting](troubleshooting/index.md)
-
 </div>
+
+## What Makes This Guide Different
+
+| This Guide | Typical Tutorials |
+|---|---|
+| **Troubleshooting playbooks** with falsifiable hypotheses | "It works" happy-path only |
+| **KQL query library** for real investigation | No observability guidance |
+| **Hands-on lab guides** reproducing actual failures | No failure scenarios |
+| **Operations runbooks** for day-2 tasks | Setup-only documentation |
+| **4 languages × 4 hosting plans** with tested CLI | Single language/plan examples |
 
 ## Navigate the Guide
 

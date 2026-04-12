@@ -1,0 +1,397 @@
+[
+  {
+    "name": "blobProcessor",
+    "scriptFile": "AzureFunctionsGuide.dll",
+    "entryPoint": "AzureFunctionsGuide.Functions.BlobProcessorFunction.Run",
+    "language": "dotnet-isolated",
+    "properties": {
+      "IsCodeless": false
+    },
+    "bindings": [
+      {
+        "name": "content",
+        "direction": "In",
+        "type": "blobTrigger",
+        "path": "uploads/{name}",
+        "connection": "AzureWebJobsStorage",
+        "properties": {
+          "supportsDeferredBinding": "True"
+        }
+      }
+    ]
+  },
+  {
+    "name": "dnsResolve",
+    "scriptFile": "AzureFunctionsGuide.dll",
+    "entryPoint": "AzureFunctionsGuide.Functions.DnsResolveFunction.Run",
+    "language": "dotnet-isolated",
+    "properties": {
+      "IsCodeless": false
+    },
+    "bindings": [
+      {
+        "name": "req",
+        "direction": "In",
+        "type": "httpTrigger",
+        "authLevel": "Anonymous",
+        "methods": [
+          "get"
+        ],
+        "route": "dns/{hostname}",
+        "properties": {}
+      },
+      {
+        "name": "$return",
+        "type": "http",
+        "direction": "Out"
+      }
+    ]
+  },
+  {
+    "name": "eventhubLagProcessor",
+    "scriptFile": "AzureFunctionsGuide.dll",
+    "entryPoint": "AzureFunctionsGuide.Functions.EventHubLagProcessorFunction.Run",
+    "language": "dotnet-isolated",
+    "properties": {
+      "IsCodeless": false
+    },
+    "bindings": [
+      {
+        "name": "messages",
+        "direction": "In",
+        "type": "eventHubTrigger",
+        "eventHubName": "events",
+        "connection": "EventHubConnection",
+        "cardinality": "Many",
+        "dataType": "String",
+        "properties": {}
+      }
+    ]
+  },
+  {
+    "name": "externalDependency",
+    "scriptFile": "AzureFunctionsGuide.dll",
+    "entryPoint": "AzureFunctionsGuide.Functions.ExternalDependencyFunction.Run",
+    "language": "dotnet-isolated",
+    "properties": {
+      "IsCodeless": false
+    },
+    "bindings": [
+      {
+        "name": "req",
+        "direction": "In",
+        "type": "httpTrigger",
+        "authLevel": "Anonymous",
+        "methods": [
+          "get"
+        ],
+        "route": "dependency",
+        "properties": {}
+      },
+      {
+        "name": "$return",
+        "type": "http",
+        "direction": "Out"
+      }
+    ]
+  },
+  {
+    "name": "health",
+    "scriptFile": "AzureFunctionsGuide.dll",
+    "entryPoint": "AzureFunctionsGuide.Functions.HealthFunction.Run",
+    "language": "dotnet-isolated",
+    "properties": {
+      "IsCodeless": false
+    },
+    "bindings": [
+      {
+        "name": "req",
+        "direction": "In",
+        "type": "httpTrigger",
+        "authLevel": "Anonymous",
+        "methods": [
+          "get"
+        ],
+        "route": "health",
+        "properties": {}
+      },
+      {
+        "name": "$return",
+        "type": "http",
+        "direction": "Out"
+      }
+    ]
+  },
+  {
+    "name": "helloHttp",
+    "scriptFile": "AzureFunctionsGuide.dll",
+    "entryPoint": "AzureFunctionsGuide.Functions.HelloHttpFunction.Run",
+    "language": "dotnet-isolated",
+    "properties": {
+      "IsCodeless": false
+    },
+    "bindings": [
+      {
+        "name": "req",
+        "direction": "In",
+        "type": "httpTrigger",
+        "authLevel": "Anonymous",
+        "methods": [
+          "get"
+        ],
+        "route": "hello/{name?}",
+        "properties": {}
+      },
+      {
+        "name": "$return",
+        "type": "http",
+        "direction": "Out"
+      }
+    ]
+  },
+  {
+    "name": "identityProbe",
+    "scriptFile": "AzureFunctionsGuide.dll",
+    "entryPoint": "AzureFunctionsGuide.Functions.IdentityProbeFunction.Run",
+    "language": "dotnet-isolated",
+    "properties": {
+      "IsCodeless": false
+    },
+    "bindings": [
+      {
+        "name": "req",
+        "direction": "In",
+        "type": "httpTrigger",
+        "authLevel": "Anonymous",
+        "methods": [
+          "get"
+        ],
+        "route": "identity",
+        "properties": {}
+      },
+      {
+        "name": "$return",
+        "type": "http",
+        "direction": "Out"
+      }
+    ]
+  },
+  {
+    "name": "info",
+    "scriptFile": "AzureFunctionsGuide.dll",
+    "entryPoint": "AzureFunctionsGuide.Functions.InfoFunction.Run",
+    "language": "dotnet-isolated",
+    "properties": {
+      "IsCodeless": false
+    },
+    "bindings": [
+      {
+        "name": "req",
+        "direction": "In",
+        "type": "httpTrigger",
+        "authLevel": "Anonymous",
+        "methods": [
+          "get"
+        ],
+        "route": "info",
+        "properties": {}
+      },
+      {
+        "name": "$return",
+        "type": "http",
+        "direction": "Out"
+      }
+    ]
+  },
+  {
+    "name": "logLevels",
+    "scriptFile": "AzureFunctionsGuide.dll",
+    "entryPoint": "AzureFunctionsGuide.Functions.LogLevelsFunction.Run",
+    "language": "dotnet-isolated",
+    "properties": {
+      "IsCodeless": false
+    },
+    "bindings": [
+      {
+        "name": "req",
+        "direction": "In",
+        "type": "httpTrigger",
+        "authLevel": "Anonymous",
+        "methods": [
+          "get"
+        ],
+        "route": "loglevels",
+        "properties": {}
+      },
+      {
+        "name": "$return",
+        "type": "http",
+        "direction": "Out"
+      }
+    ]
+  },
+  {
+    "name": "queueProcessor",
+    "scriptFile": "AzureFunctionsGuide.dll",
+    "entryPoint": "AzureFunctionsGuide.Functions.QueueProcessorFunction.Run",
+    "language": "dotnet-isolated",
+    "properties": {
+      "IsCodeless": false
+    },
+    "bindings": [
+      {
+        "name": "message",
+        "direction": "In",
+        "type": "queueTrigger",
+        "dataType": "String",
+        "queueName": "incoming-orders",
+        "connection": "QueueStorage",
+        "properties": {}
+      }
+    ]
+  },
+  {
+    "name": "scheduledCleanup",
+    "scriptFile": "AzureFunctionsGuide.dll",
+    "entryPoint": "AzureFunctionsGuide.Functions.ScheduledCleanupFunction.Run",
+    "language": "dotnet-isolated",
+    "properties": {
+      "IsCodeless": false
+    },
+    "bindings": [
+      {
+        "name": "timer",
+        "direction": "In",
+        "type": "timerTrigger",
+        "schedule": "0 0 2 * * *",
+        "properties": {}
+      }
+    ]
+  },
+  {
+    "name": "slowResponse",
+    "scriptFile": "AzureFunctionsGuide.dll",
+    "entryPoint": "AzureFunctionsGuide.Functions.SlowResponseFunction.Run",
+    "language": "dotnet-isolated",
+    "properties": {
+      "IsCodeless": false
+    },
+    "bindings": [
+      {
+        "name": "req",
+        "direction": "In",
+        "type": "httpTrigger",
+        "authLevel": "Anonymous",
+        "methods": [
+          "get"
+        ],
+        "route": "slow",
+        "properties": {}
+      },
+      {
+        "name": "$return",
+        "type": "http",
+        "direction": "Out"
+      }
+    ]
+  },
+  {
+    "name": "storageProbe",
+    "scriptFile": "AzureFunctionsGuide.dll",
+    "entryPoint": "AzureFunctionsGuide.Functions.StorageProbeFunction.Run",
+    "language": "dotnet-isolated",
+    "properties": {
+      "IsCodeless": false
+    },
+    "bindings": [
+      {
+        "name": "req",
+        "direction": "In",
+        "type": "httpTrigger",
+        "authLevel": "Anonymous",
+        "methods": [
+          "get"
+        ],
+        "route": "storage/probe",
+        "properties": {}
+      },
+      {
+        "name": "$return",
+        "type": "http",
+        "direction": "Out"
+      }
+    ]
+  },
+  {
+    "name": "testError",
+    "scriptFile": "AzureFunctionsGuide.dll",
+    "entryPoint": "AzureFunctionsGuide.Functions.TestErrorFunction.Run",
+    "language": "dotnet-isolated",
+    "properties": {
+      "IsCodeless": false
+    },
+    "bindings": [
+      {
+        "name": "req",
+        "direction": "In",
+        "type": "httpTrigger",
+        "authLevel": "Anonymous",
+        "methods": [
+          "get"
+        ],
+        "route": "testerror",
+        "properties": {}
+      },
+      {
+        "name": "$return",
+        "type": "http",
+        "direction": "Out"
+      }
+    ]
+  },
+  {
+    "name": "timerLab",
+    "scriptFile": "AzureFunctionsGuide.dll",
+    "entryPoint": "AzureFunctionsGuide.Functions.TimerLabFunction.Run",
+    "language": "dotnet-isolated",
+    "properties": {
+      "IsCodeless": false
+    },
+    "bindings": [
+      {
+        "name": "timer",
+        "direction": "In",
+        "type": "timerTrigger",
+        "schedule": "0 */5 * * * *",
+        "properties": {}
+      }
+    ]
+  },
+  {
+    "name": "unhandledError",
+    "scriptFile": "AzureFunctionsGuide.dll",
+    "entryPoint": "AzureFunctionsGuide.Functions.UnhandledErrorFunction.Run",
+    "language": "dotnet-isolated",
+    "properties": {
+      "IsCodeless": false
+    },
+    "bindings": [
+      {
+        "name": "req",
+        "direction": "In",
+        "type": "httpTrigger",
+        "authLevel": "Anonymous",
+        "methods": [
+          "get"
+        ],
+        "route": "unhandlederror",
+        "properties": {}
+      },
+      {
+        "name": "$return",
+        "type": "http",
+        "direction": "Out"
+      }
+    ]
+  }
+]
