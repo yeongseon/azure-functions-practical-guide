@@ -25,23 +25,23 @@ Guidance for AI agents working in this repository.
 │   ├── best-practices/         # Production patterns and anti-patterns (9 pages)
 │   ├── javascripts/            # Mermaid zoom JS
 │   ├── language-guides/
-│   │   ├── python/             # Python — 4 plans × 7 tutorials + recipes
-│   │   ├── nodejs/             # Node.js — 4 plans × 7 tutorials + recipes
-│   │   ├── java/               # Java — 4 plans × 7 tutorials + recipes
-│   │   └── dotnet/             # .NET — 4 plans × 7 tutorials + recipes
+│   │   ├── python/             # Python — 4 plans × 7-8 tutorials + recipes
+│   │   ├── nodejs/             # Node.js — 4 plans × 7-8 tutorials + recipes
+│   │   ├── java/               # Java — 4 plans × 7-8 tutorials + recipes
+│   │   └── dotnet/             # .NET — 4 plans × 7-8 tutorials + recipes
 │   ├── operations/             # Day-2 operational execution (9 pages)
 │   ├── platform/               # Architecture and design decisions (7 pages)
 │   ├── reference/              # CLI cheatsheet, host.json, limits (5 pages)
 │   ├── start-here/             # Overview, learning paths, repository map (4 pages)
 │   ├── stylesheets/            # Custom CSS (mermaid zoom, etc.)
-│   └── troubleshooting/        # Troubleshooting hub (7 pages)
+│   └── troubleshooting/        # Troubleshooting hub
 │       ├── architecture.md
 │       ├── evidence-map.md
-│       ├── first-10-minutes.md
-│       ├── kql.md
-│       ├── lab-guides.md
-│       ├── methodology.md
-│       └── playbooks.md
+│       ├── first-10-minutes/   # First-10-minutes guides
+│       ├── kql/                # KQL query packs
+│       ├── lab-guides/         # Lab guide documents
+│       ├── methodology/        # Methodology guides
+│       └── playbooks/          # Playbook documents
 ├── infra/                      # Bicep templates for all hosting plans
 │   ├── consumption/
 │   ├── flex-consumption/
@@ -49,8 +49,10 @@ Guidance for AI agents working in this repository.
 │   ├── dedicated/
 │   └── modules/
 ├── labs/                       # Lab infrastructure + app source
+│   ├── code-storage-verification/
 │   ├── cold-start/
 │   ├── dns-vnet-resolution/
+│   ├── event-hub-checkpoint-lag/
 │   ├── managed-identity-auth/
 │   ├── queue-backlog-scaling/
 │   └── storage-access-failure/
