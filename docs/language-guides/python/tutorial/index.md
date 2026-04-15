@@ -1,6 +1,4 @@
 ---
-hide:
-  - toc
 content_sources:
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-functions/migration/migrate-plan-consumption-to-flex

@@ -1,6 +1,4 @@
 ---
-hide:
-  - toc
 validation:
   az_cli:
     last_tested: 2026-04-09
