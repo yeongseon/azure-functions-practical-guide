@@ -189,7 +189,7 @@ Choose rollback path based on plan capabilities.
 
 <!-- diagram-id: recommended-rollback-order -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Deploy artifact to staging slot or isolated preprod app] --> B[Run health and trigger-aware smoke tests]
     B --> C{Validation passed}
     C -->|Yes| D[Swap to production or promote artifact]

@@ -54,7 +54,7 @@ flowchart TD
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Log with context.log] --> B[Create App Insights]
     B --> C[Set connection string]
     C --> D[Invoke function]

@@ -22,7 +22,7 @@ Each track is built around Microsoft Learn concepts and organized for different 
 
 <!-- diagram-id: learning-paths -->
 ```mermaid
-flowchart LR
+flowchart TD
     Q[Quick Start\n30 min] --> C[Core Path\n2-3 hrs]
     C --> P[Production Path\n4-6 hrs]
     C --> T[Troubleshooting Path]

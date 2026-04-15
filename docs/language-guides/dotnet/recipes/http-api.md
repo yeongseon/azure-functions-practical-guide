@@ -12,7 +12,7 @@ Build robust HTTP APIs with `HttpRequestData` and `HttpResponseData` in .NET iso
 
 <!-- diagram-id: http-api-patterns -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Trigger] --> B[Function]
     B --> C[Binding or SDK]
     C --> D[Azure service]

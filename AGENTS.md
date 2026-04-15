@@ -212,6 +212,26 @@ For MkDocs admonitions (`!!!` / `???`), every line in the body must be indented 
 
 All architectural diagrams use Mermaid. Every documentation page should include at least one diagram. Test with `mkdocs build --strict`.
 
+#### Diagram Orientation Rule
+
+- **Sequential flows with 5+ nodes**: Use `flowchart TD` (top-down) to prevent horizontal overflow.
+- **Short diagrams with fewer than 5 nodes**: `flowchart LR` (left-right) is acceptable.
+- **Layered architecture diagrams** (e.g., network layers, stack diagrams): Always use `flowchart TD`.
+
+```mermaid
+%% CORRECT — 5+ node sequential flow uses TD
+flowchart TD
+    A[Commit] --> B[Build and test]
+    B --> C[Package artifact]
+    C --> D[Deploy to staging]
+    D --> E[Validation]
+    E --> F[Swap to production]
+
+%% WRONG — long horizontal overflow
+flowchart LR
+    A[Commit] --> B[Build and test] --> C[Package] --> D[Deploy] --> E[Validate] --> F[Swap]
+```
+
 ### Nested List Indentation
 
 All nested list items MUST use **4-space indent** (Python-Markdown standard).

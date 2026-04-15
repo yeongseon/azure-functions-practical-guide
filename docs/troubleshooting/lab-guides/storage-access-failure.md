@@ -170,7 +170,7 @@ sequenceDiagram
 
 <!-- diagram-id: 2-2-causal-chain -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Role assignment removed or invalid storage auth] --> B[Storage probe returns 403 AuthorizationPermissionMismatch]
     B --> C[Listener initialization fails for Functions.scheduled_cleanup]
     C --> D[Host emits unhealthy storage signal]
@@ -813,7 +813,7 @@ This section defines the expected observation pattern before, during, and after 
 
 <!-- diagram-id: evidence-timeline -->
 ```mermaid
-graph LR
+graph TD
     A[Baseline healthy state] --> B[Role removal trigger]
     B --> C[Auth failure traces appear]
     C --> D[Listener startup failure]

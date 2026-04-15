@@ -124,7 +124,7 @@ Root cause is usually split resolution paths without consistent zone linkage.
 
 <!-- diagram-id: the-dns-confusion-trap -->
 ```mermaid
-flowchart LR
+flowchart TD
     C1[Internal caller in linked VNet] --> R1[Private DNS resolver path]
     R1 --> PZ[privatelink.azurewebsites.net]
     PZ --> PE[Function App private endpoint IP]

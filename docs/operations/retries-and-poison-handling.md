@@ -137,7 +137,7 @@ This prevents infinite reprocessing loops and preserves failed payloads for inve
 
 <!-- diagram-id: poison-queue-behavior-storage-queue -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Message received] --> B[Process message]
     B -->|Success| C[Complete]
     B -->|Transient failure| D[Retry attempt]

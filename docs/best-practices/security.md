@@ -279,7 +279,7 @@ flowchart TD
 
 <!-- diagram-id: security-boundary-and-identity-flow -->
 ```mermaid
-flowchart LR
+flowchart TD
     Caller[Client or service caller] --> Ingress[Function endpoint\nHTTP trigger]
     Ingress --> Auth{Auth control}
     Auth -->|"User/API token"| AppAuth[App Service Auth or APIM JWT]

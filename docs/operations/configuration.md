@@ -280,7 +280,7 @@ az functionapp config appsettings set \
 Use a controlled workflow for every production configuration update.
 <!-- diagram-id: configuration-change-management-workflow -->
 ```mermaid
-flowchart LR
+flowchart TD
     A["Propose change<br/>Ticket and risk assessment"] --> B["Review<br/>Peer and platform owner approval"]
     B --> C["Deploy<br/>Staging then production"]
     C --> D["Verify<br/>Health, logs, and dependency checks"]

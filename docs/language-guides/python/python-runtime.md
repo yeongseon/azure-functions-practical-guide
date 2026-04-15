@@ -16,7 +16,7 @@ This reference covers the Python runtime configuration for Azure Functions — s
 
 <!-- diagram-id: python-runtime -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Azure Functions host] --> B[Python language worker process]
     B --> C[ThreadPoolExecutor for sync functions]
     B --> D[Async event loop for async functions]

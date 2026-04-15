@@ -24,7 +24,7 @@ Durable Functions use three function types:
 
 <!-- diagram-id: overview -->
 ```mermaid
-flowchart LR
+flowchart TD
     HTTP["HTTP Request"] --> CL["Client Function\n(HTTP Trigger)\nStarts orchestration"]
     CL -->|"start_new()\nreturns instance_id"| ORC["Orchestrator Function\nDefines workflow logic\n(deterministic)"]
     ORC -->|"call_activity()"| A1["Activity Function\nvalidate_order"]

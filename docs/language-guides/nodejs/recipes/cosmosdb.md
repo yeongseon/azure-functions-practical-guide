@@ -14,7 +14,7 @@ This recipe demonstrates real Azure Cosmos DB input/output bindings in Node.js v
 
 <!-- diagram-id: architecture -->
 ```mermaid
-flowchart LR
+flowchart TD
     API[HTTP Trigger] --> FUNC[Node.js v4 Function]
     FUNC -->|extraInputs| COSMOSIN[Cosmos DB Input Binding]
     FUNC -->|extraOutputs| COSMOSOUT[Cosmos DB Output Binding]

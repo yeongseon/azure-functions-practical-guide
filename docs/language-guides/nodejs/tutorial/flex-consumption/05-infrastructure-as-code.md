@@ -60,7 +60,7 @@ flowchart TD
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Review Bicep template] --> B["az deployment group create"]
     B --> C[Verify provisioning]
 ```

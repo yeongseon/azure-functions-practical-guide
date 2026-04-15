@@ -198,7 +198,7 @@ The rest of the guide is organized to produce those answers with repeatable evid
 
 <!-- diagram-id: 2-2-causal-chain -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Apply same fault class to FC1 EP1 Y1 S1] --> B[Plan-specific infrastructure path activated]
     B --> C[Different token lifecycle and dependency startup behavior]
     C --> D[Different external symptom shape]

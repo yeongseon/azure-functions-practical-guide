@@ -176,7 +176,7 @@ gantt
 
 <!-- diagram-id: causal-chain -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[No ContinueAsNew] --> B[History size increases continuously]
     B --> C[Replay work per wake-up increases]
     C --> D[Orchestrator duration increases]

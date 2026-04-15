@@ -180,7 +180,7 @@ Place Functions behind APIM when you need centralized API security and governanc
 ### APIM as a security gateway
 <!-- diagram-id: apim-as-a-security-gateway -->
 ```mermaid
-flowchart LR
+flowchart TD
     Client[Client or partner] --> APIM[Azure API Management]
     APIM -->|validate-jwt, rate-limit, ip-filter| Func[Azure Functions]
     Func --> Resource[Azure resources via managed identity]

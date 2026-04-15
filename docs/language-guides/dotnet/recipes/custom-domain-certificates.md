@@ -12,7 +12,7 @@ Configure HTTPS custom domains, managed certificates, and secure endpoint polici
 
 <!-- diagram-id: custom-domain-and-certificates -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Trigger] --> B[Function]
     B --> C[Binding or SDK]
     C --> D[Azure service]

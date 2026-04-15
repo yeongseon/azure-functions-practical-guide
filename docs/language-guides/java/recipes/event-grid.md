@@ -14,7 +14,7 @@ This recipe uses native Event Grid bindings in Java with `@EventGridTrigger` to 
 
 <!-- diagram-id: architecture -->
 ```mermaid
-flowchart LR
+flowchart TD
     SOURCE[Storage account events] --> TOPIC["Event Grid topic/system topic"]
     TOPIC --> SUB[Event subscription]
     SUB --> FUNC[@EventGridTrigger handler]

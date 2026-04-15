@@ -14,7 +14,7 @@ This recipe uses App Service Authentication (Easy Auth) with Node.js v4 HTTP tri
 
 <!-- diagram-id: architecture -->
 ```mermaid
-flowchart LR
+flowchart TD
     USER[User or API Client] --> ENTRA[Microsoft Entra ID]
     ENTRA --> EASYAUTH[App Service Authentication]
     EASYAUTH --> FUNC[HTTP Trigger authLevel anonymous]

@@ -14,7 +14,7 @@ This recipe uses Java timer triggers with NCRONTAB schedules, past-due handling,
 
 <!-- diagram-id: architecture -->
 ```mermaid
-flowchart LR
+flowchart TD
     SCHEDULE[NCRONTAB schedule] --> TIMER[@TimerTrigger]
     TIMER --> WORK[Scheduled work]
     WORK --> LOGS[Execution logs and metrics]

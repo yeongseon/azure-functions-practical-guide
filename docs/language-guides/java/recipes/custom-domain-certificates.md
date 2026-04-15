@@ -14,7 +14,7 @@ This recipe focuses on platform configuration for custom domains and TLS certifi
 
 <!-- diagram-id: architecture -->
 ```mermaid
-flowchart LR
+flowchart TD
     DNS[Public DNS zone] --> HOSTNAME[Function App hostname binding]
     CERT[Uploaded certificate] --> SSL[SSL binding]
     HOSTNAME --> APP[Function App endpoint]

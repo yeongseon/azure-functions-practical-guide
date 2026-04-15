@@ -82,7 +82,7 @@ These values are emitted in the `message` column of `traces` and must be parsed 
 
 <!-- diagram-id: failure-progression-model-for-this-incident -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Burst injection starts\n08:23:09 UTC] --> B[2000 messages injected\nends 08:23:31 UTC]
     B --> C[Single Y1 instance processes queue]
     C --> D[Per-minute throughput ramps up\n25 -> 518]

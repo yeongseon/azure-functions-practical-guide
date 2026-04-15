@@ -14,7 +14,7 @@ Quick reference for Java Azure Functions operational workflows.
 
 <!-- diagram-id: topic-command-groups -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[host.json] --> B[extensions.http]
     A --> C[logging]
     A --> D[functionTimeout]

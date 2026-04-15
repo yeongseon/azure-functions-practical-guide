@@ -102,7 +102,7 @@ flowchart TD
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
-flowchart LR
+flowchart TD
     Internet[Internet Client] --> App[Function App\nFlex Consumption FC1\nLinux]
     App --> VNet["VNet Integration Subnet\nDelegation: Microsoft.App/environments"]
     VNet --> Backend[Private Backend\nStorage Account]

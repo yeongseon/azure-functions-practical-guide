@@ -60,7 +60,7 @@ flowchart TD
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Bicep template] --> B[Storage account]
     A --> C[Linux Consumption plan Y1]
     A --> D[Function App]

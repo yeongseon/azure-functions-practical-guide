@@ -14,7 +14,7 @@ This recipe uses `app.eventGrid()` (not HTTP trigger emulation) to handle native
 
 <!-- diagram-id: architecture -->
 ```mermaid
-flowchart LR
+flowchart TD
     SOURCE[Storage Account Event Source] --> TOPIC[Event Grid System Topic]
     TOPIC --> SUB[Event Subscription]
     SUB --> FUNC[eventGrid Trigger]

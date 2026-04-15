@@ -91,7 +91,7 @@ sequenceDiagram
 ### Settings dependency map
 <!-- diagram-id: settings-dependency-map -->
 ```mermaid
-flowchart LR
+flowchart TD
     S1[AzureWebJobsStorage] --> H[Host runtime state]
     S2[FUNCTIONS_WORKER_RUNTIME] --> I[Indexing and worker selection]
     S3[FUNCTIONS_EXTENSION_VERSION] --> E[Runtime extension bundle]

@@ -132,7 +132,7 @@ Choose deployment method by governance level, release frequency, and plan capabi
 ### Deployment workflow
 <!-- diagram-id: deployment-workflow -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Build] --> B[Artifact]
     B --> C[Deploy]
     C --> D[Verify]

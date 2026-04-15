@@ -38,7 +38,7 @@ A .NET 8 isolated worker Function App with 16 functions that runs locally, retur
 
 <!-- diagram-id: what-you-ll-build -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[dotnet build] --> B[func start]
     B --> C[HTTP Trigger endpoint]
     C --> D[HttpRequest via ASP.NET Core]

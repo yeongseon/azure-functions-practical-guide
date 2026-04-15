@@ -21,7 +21,7 @@ This reference covers runtime versions, worker configuration, target framework c
 
 <!-- diagram-id: supported-runtimes-and-models -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[.NET 8 LTS] --> B[Isolated worker]
     C[.NET 9 STS] --> B
     D[In-process] --> E[.NET 8 only]

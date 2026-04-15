@@ -10,7 +10,7 @@ Azure Functions has platform-imposed limits that vary by hosting plan. Understan
 
 <!-- diagram-id: platform-limits -->
 ```mermaid
-flowchart LR
+flowchart TD
     C[Consumption] --> L[10 min max timeout]
     F[Flex Consumption] --> M[Up to 1,000 instances]
     P[Premium] --> N[20-100 max instances]

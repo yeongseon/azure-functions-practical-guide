@@ -24,7 +24,7 @@ Common use cases with Azure Functions:
 
 <!-- diagram-id: architecture -->
 ```mermaid
-flowchart LR
+flowchart TD
     SRC[Event Source] --> EG[Event Grid Topic or System Topic]
     EG --> FA[Function App]
     FA --> DOWN[Downstream Service]

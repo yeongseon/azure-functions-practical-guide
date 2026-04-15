@@ -89,7 +89,7 @@ flowchart TD
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
-flowchart LR
+flowchart TD
     Bicep["Bicep/ARM config"] --> App[Function App on FC1]
     App --> Runtime[functionAppConfig.runtime]
     App --> Storage[AzureWebJobsStorage__* settings]

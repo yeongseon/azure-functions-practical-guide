@@ -41,7 +41,7 @@ A Java Azure Functions app built with Maven annotations, validated locally with 
 
 <!-- diagram-id: steps -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Clone reference app] --> B[Build with Maven]
     B --> C[Start Functions host]
     C --> D[Test local endpoints]

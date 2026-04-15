@@ -14,7 +14,7 @@ This recipe uses App Service Authentication (Easy Auth) with Java HTTP triggers,
 
 <!-- diagram-id: architecture -->
 ```mermaid
-flowchart LR
+flowchart TD
     CLIENT[Client with Microsoft Entra sign-in] --> EASYAUTH[Easy Auth on Function App]
     EASYAUTH --> FUNC[HTTP Trigger authLevel=ANONYMOUS]
     FUNC --> CLAIMS[Read Easy Auth identity headers]

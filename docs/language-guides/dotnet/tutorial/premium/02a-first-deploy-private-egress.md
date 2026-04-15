@@ -749,7 +749,7 @@ Functions in <app-name>:
 
 <!-- diagram-id: deployment-verification-results -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Internet] --> B[Private Endpoint]
     B --> C[Function App Premium EP1]
     C --> D[VNet Integration Subnet]

@@ -44,7 +44,7 @@ You will create a GitHub Actions workflow for Consumption deployment and confirm
 
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
-flowchart LR
+flowchart TD
     GH["GitHub Actions"] -->|"publish profile"| FA[Function App\nConsumption Y1]
     DEV["Developer"] -->|"git push"| GH
 
@@ -54,7 +54,7 @@ flowchart LR
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Create workflow YAML] --> B[Store secrets]
     B --> C[Push to trigger]
     C --> D[Validate deployment]

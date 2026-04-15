@@ -38,7 +38,7 @@ You will instrument .NET isolated worker handlers with structured logs via `ILog
 
 <!-- diagram-id: what-you-ll-build -->
 ```mermaid
-flowchart LR
+flowchart TD
     A["ILogger<T> in handler"] --> B[FunctionAppLogs]
     B --> C[Application Insights]
     C --> D[Dashboards and alerts]

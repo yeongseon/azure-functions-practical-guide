@@ -275,7 +275,7 @@ If no timeout/cancellation signatures appear, checkpoint blockage likely origina
 ### Failure Progression Timeline
 <!-- diagram-id: failure-progression-timeline -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Producer rate increases] --> B[Batch pulled by trigger]
     B --> C[Processing slows from dependency latency]
     C --> D["Checkpoint/settlement delayed"]

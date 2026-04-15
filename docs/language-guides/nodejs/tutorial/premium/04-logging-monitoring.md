@@ -47,7 +47,7 @@ You will query recent traces to verify that runtime events are captured and sear
 
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
-flowchart LR
+flowchart TD
     FA[Function App\nPremium EP1] -->|APPLICATIONINSIGHTS_CONNECTION_STRING| AI[Application Insights\nsame name as function app]
     AI --> LAW[Log Analytics\nWorkspace]
     USER[Developer] -->|az monitor app-insights query| AI

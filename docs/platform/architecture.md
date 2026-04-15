@@ -76,7 +76,7 @@ At a high level, every invocation follows this path:
 
 <!-- diagram-id: runtime-execution-path -->
 ```mermaid
-flowchart LR
+flowchart TD
     E["Event Source\nHTTP / Timer / Queue / Blob / Event Grid"] --> T[Trigger Listener]
     T --> H[Azure Functions Host\n.NET runtime process]
     H --> W["Language Worker\nPython / Node.js / Java / .NET isolated"]
@@ -324,7 +324,7 @@ Best fit: latency-sensitive workloads with region-tolerant data architecture.
 
 <!-- diagram-id: pattern-b-active-active-with-regional-affinity -->
 ```mermaid
-flowchart LR
+flowchart TD
     U[Clients] --> FD["Global Front Door / Traffic Manager"]
     FD --> R1[Function App - Region A]
     FD --> R2[Function App - Region B]

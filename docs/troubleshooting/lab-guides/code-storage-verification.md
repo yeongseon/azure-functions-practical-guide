@@ -184,7 +184,7 @@ sequenceDiagram
 
 <!-- diagram-id: 2-2-causal-chain-mermaid-flowchart -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Hosting plan selected] --> B[Plan-specific storage contract expected]
     B --> C{Contract valid?}
     C -->|Yes| D["Code package/content resolves"]
@@ -2269,7 +2269,7 @@ Final verdict: **Hypothesis supported**.
 
 <!-- diagram-id: evidence-timeline-mermaid -->
 ```mermaid
-graph LR
+graph TD
     A[Baseline: all plans pass verification matrix] --> B[Content resilience scenarios: A P — platform auto-regeneration]
     B --> C[Validate: no degradation, config drift from IaC baseline]
     C --> D[Content + compound failure scenarios: C I J]

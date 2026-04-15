@@ -90,7 +90,7 @@ flowchart TD
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
-flowchart LR
+flowchart TD
     Queue[Storage Queue: tasks] --> QueueFn[Queue trigger]
     Blob[Blob uploads container] --> EG[Event Grid subscription]
     EG --> BlobFn[Blob trigger source=EventGrid]

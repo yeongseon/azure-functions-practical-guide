@@ -93,7 +93,7 @@ flowchart TD
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Function App telemetry] --> B[Application Insights]
     B --> C[Log Analytics queries]
     B --> D[Metric alert rule]

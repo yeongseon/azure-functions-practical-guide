@@ -14,7 +14,7 @@ This recipe covers the essential HTTP API patterns for Azure Functions Python v2
 
 <!-- diagram-id: request-flow -->
 ```mermaid
-flowchart LR
+flowchart TD
     CLIENT[HTTP Client] --> APIM[Optional API Gateway]
     APIM --> FUNC[Azure Functions HTTP Trigger]
     FUNC --> AUTH[Auth and Validation]

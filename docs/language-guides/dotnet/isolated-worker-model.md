@@ -18,7 +18,7 @@ The isolated worker model runs your function code in a separate process from the
 
 <!-- diagram-id: why-isolated-worker-is-the-default -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Functions Host Runtime] --> B[gRPC worker channel]
     B --> C[.NET isolated worker process]
     C --> D[Function methods]

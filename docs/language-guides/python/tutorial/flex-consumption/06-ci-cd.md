@@ -89,7 +89,7 @@ flowchart TD
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
-flowchart LR
+flowchart TD
     GH[GitHub Actions] --> OIDC[OIDC login to Azure]
     OIDC --> Deploy["azure/functions-action"]
     Deploy --> Flex[Function App on FC1]

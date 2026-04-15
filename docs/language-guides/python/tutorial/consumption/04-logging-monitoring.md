@@ -60,7 +60,7 @@ flowchart TD
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Function App requests] --> B[Application Insights]
     B --> C[CLI query for recent requests]
     A --> D[Live log tail]

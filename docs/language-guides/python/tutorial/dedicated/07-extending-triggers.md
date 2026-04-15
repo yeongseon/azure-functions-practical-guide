@@ -93,7 +93,7 @@ flowchart TD
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Timer trigger] --> D[Dedicated Function App]
     B[Blob upload] --> D
     C[Queue message] --> D

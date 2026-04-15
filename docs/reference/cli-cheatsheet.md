@@ -14,7 +14,7 @@ Quick reference for the most commonly used commands when developing, deploying, 
 
 <!-- diagram-id: cli-cheatsheet -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Local dev] --> B[Deploy]
     B --> C[Configure]
     C --> D[Monitor]

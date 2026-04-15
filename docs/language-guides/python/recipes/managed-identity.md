@@ -12,7 +12,7 @@ Managed Identity lets your Azure Functions app authenticate to other Azure servi
 
 <!-- diagram-id: architecture -->
 ```mermaid
-flowchart LR
+flowchart TD
     FA[Function App] -.-> MI[Managed Identity]
     MI -.-> ENTRA[Microsoft Entra ID]
     FA --> BLOB[Blob Storage]

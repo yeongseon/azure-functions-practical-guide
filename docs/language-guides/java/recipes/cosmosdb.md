@@ -14,7 +14,7 @@ This recipe shows Java bindings for Azure Cosmos DB trigger, input, and output p
 
 <!-- diagram-id: architecture -->
 ```mermaid
-flowchart LR
+flowchart TD
     API[HTTP Trigger] --> OUT[@CosmosDBOutput]
     OUT --> COSMOS[(Cosmos DB Container)]
     COSMOS --> TRIGGER[@CosmosDBTrigger]

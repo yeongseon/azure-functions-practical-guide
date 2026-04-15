@@ -14,7 +14,7 @@ This recipe combines Key Vault references in app settings with direct SDK access
 
 <!-- diagram-id: architecture -->
 ```mermaid
-flowchart LR
+flowchart TD
     FUNC[Function App] --> APPSETTINGS[App Settings Key Vault reference]
     APPSETTINGS --> KV[(Azure Key Vault)]
     FUNC --> SDK[SecretClient + DefaultAzureCredential]

@@ -47,7 +47,7 @@ You will also tune host-level timeout behavior appropriate for the Premium plan 
 
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
-flowchart LR
+flowchart TD
     CLI[az CLI] -->|appsettings set| FA[Function App\nPremium EP1]
     FA --> RUNTIME["Runtime Config\n• FUNCTIONS_WORKER_RUNTIME=node\n• FUNCTIONS_EXTENSION_VERSION=~4"]
     FA --> NODE["Node.js Config\n• --max-old-space-size=4096"]

@@ -66,7 +66,7 @@ Platform-Subscription AzureCloud   <subscription-id>   <tenant-id>        Enable
 ### Reference architecture
 <!-- diagram-id: reference-architecture -->
 ```mermaid
-flowchart LR
+flowchart TD
     C["Client / Caller"] --> APIM["Optional Front Door / APIM"]
     APIM --> FA[Function App]
     FA -->|VNet Integration outbound| VNET[Virtual Network]
@@ -173,7 +173,7 @@ Example output (sanitized):
 #### 3) Zero-trust ingress architecture pattern
 <!-- diagram-id: 3-zero-trust-ingress-architecture-pattern -->
 ```mermaid
-flowchart LR
+flowchart TD
     U[User] --> FD[Front Door + WAF]
     FD --> APIM[API Management]
     APIM --> PE[Private Endpoint: Function App]

@@ -14,7 +14,7 @@ This deep dive explains how Java functions are declared, discovered, and execute
 
 <!-- diagram-id: main-content -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Java class and method] --> B["@FunctionName"]
     B --> C[Trigger and binding annotations]
     C --> D[Functions host metadata index]

@@ -12,7 +12,7 @@ KQL queries for correlating signals across telemetry sources to connect symptoms
 
 <!-- diagram-id: correlation-queries -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Collect OperationId] --> B[Query AppRequests]
     B --> C[Join dependencies]
     C --> D[Join exceptions and traces]

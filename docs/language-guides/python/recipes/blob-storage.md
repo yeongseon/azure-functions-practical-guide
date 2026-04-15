@@ -18,7 +18,7 @@ This recipe covers integrating Azure Blob Storage with Azure Functions Python v2
 
 <!-- diagram-id: architecture -->
 ```mermaid
-flowchart LR
+flowchart TD
     BLOB[Blob Storage Event] --> TRIG[Blob Trigger]
     TRIG --> FA[Function App]
     FA --> DOWN[Downstream Service]

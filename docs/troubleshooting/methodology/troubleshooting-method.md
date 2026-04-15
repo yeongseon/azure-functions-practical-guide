@@ -37,7 +37,7 @@ The following seven steps form the foundation of every investigation in this rep
 
 <!-- diagram-id: the-method-step-by-step -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[1. Observe] --> B[2. Hypothesize]
     B --> C[3. Prioritize]
     C --> D[4. Collect Evidence]

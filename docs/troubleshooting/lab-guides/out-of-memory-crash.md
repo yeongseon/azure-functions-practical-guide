@@ -96,7 +96,7 @@ If the Python blob function buffers full payloads in memory while high concurren
 
 <!-- diagram-id: causal-chain -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[In-memory blob buffering] --> B[High per-invocation memory cost]
     B --> C[Concurrent invocation overlap]
     C --> D[Private Bytes enters critical band]

@@ -16,7 +16,7 @@ This document provides a deep dive into the Python v2 programming model for Azur
 
 <!-- diagram-id: python-v2-programming-model -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Decorators in function_app.py and blueprints] --> B[Python worker indexes functions]
     B --> C[Function metadata registered with host]
     C --> D[Azure Functions host builds trigger and route map]

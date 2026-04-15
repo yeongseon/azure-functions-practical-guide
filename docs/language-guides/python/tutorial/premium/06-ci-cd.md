@@ -91,7 +91,7 @@ flowchart TD
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Push to main] --> B[OIDC Azure login]
     B --> C[Install Python dependencies]
     C --> D[Deploy to staging slot]

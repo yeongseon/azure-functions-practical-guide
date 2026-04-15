@@ -19,7 +19,7 @@ Java functions are declared with `@FunctionName` and trigger/binding annotations
 
 <!-- diagram-id: main-content -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[01 Local Run] --> B[02 First Deploy]
     B --> C[03 Configuration]
     C --> D[04 Logging & Monitoring]

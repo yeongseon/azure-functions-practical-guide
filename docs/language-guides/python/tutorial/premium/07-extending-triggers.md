@@ -91,7 +91,7 @@ flowchart TD
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Add timer blueprint] --> B[Add blob blueprint]
     B --> C[Register in function_app.py]
     C --> D[Upload test blob]

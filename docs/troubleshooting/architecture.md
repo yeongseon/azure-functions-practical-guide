@@ -40,7 +40,7 @@ Most `5xx`, timeout, DNS, and auth issues can be mapped to one of these nodes.
 
 <!-- diagram-id: request-path-architecture-where-user-facing-failures-surface -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Client] --> B[DNS]
     B --> C[Load Balancer]
     C --> D[Frontend]
@@ -127,7 +127,7 @@ Map failures by stage so rollback and forward-fix decisions are evidence-based.
 
 <!-- diagram-id: deployment-path-where-release-regressions-appear -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Code] --> B[Build]
     B --> C[Artifact]
     C --> D[Deploy Target]
@@ -175,7 +175,7 @@ Use this path to separate DNS, routing, NSG, and SNAT issues.
 
 <!-- diagram-id: network-and-outbound-path-where-external-connectivity-fails -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Function App] --> B[VNet Integration]
     B --> C[Subnet]
     C --> D[NSG]
@@ -207,7 +207,7 @@ During incidents, choose evidence source by hypothesis rather than querying ever
 
 <!-- diagram-id: observability-map-where-evidence-is-collected -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Function App] --> B[Application Insights]
     A --> C[Platform Logs]
     B --> D[Log Analytics Workspace]

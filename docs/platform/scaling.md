@@ -103,7 +103,7 @@ Flex introduces the most significant scaling architecture changes.
 - Blob trigger requires Event Grid source on Flex.
 <!-- diagram-id: flex-specific-operational-constraints-affecting-scale -->
 ```mermaid
-flowchart LR
+flowchart TD
     H[HTTP Group] --> SCH[Scale Controller]
     Q[Queue Group] --> SCQ[Scale Controller]
     B["Blob/Event Grid Group"] --> SCB[Scale Controller]

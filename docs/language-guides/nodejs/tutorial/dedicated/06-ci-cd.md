@@ -38,7 +38,7 @@ Automate build and deployment with GitHub Actions and environment gates.
 
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
-flowchart LR
+flowchart TD
     GH[GitHub\nmain branch] -->|push| GA[GitHub Actions\nubuntu-latest]
     GA -->|npm ci + test| BUILD[Build Package]
     BUILD -->|functions-action| FA[Function App\nDedicated B1]

@@ -151,7 +151,7 @@ sequenceDiagram
 
 <!-- diagram-id: 2-2-causal-chain -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Blob DNS VNet link removed] --> B[Blob FQDN resolves to public IP]
     B --> C[Storage call routes to public endpoint]
     C --> D[MI token rejected: AuthorizationFailure]

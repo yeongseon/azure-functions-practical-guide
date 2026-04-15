@@ -44,14 +44,14 @@ You will run the Python Functions app locally from `apps/python`, load local set
 
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
-flowchart LR
+flowchart TD
     DEV["Local Machine"] --> HOST["Functions Host :7071"]
     HOST --> AZURITE["Azurite Local Storage"]
 ```
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Activate Python venv] --> B["Install deps from apps/python/requirements.txt"]
     B --> C[Copy local settings example]
     C --> D["Start Functions host in apps/python"]

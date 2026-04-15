@@ -12,7 +12,7 @@ This reference lists key environment and app settings for Azure Functions Node.j
 
 <!-- diagram-id: topic-command-groups -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Settings] --> B[Runtime]
     A --> C[Node worker]
     A --> D[Observability]

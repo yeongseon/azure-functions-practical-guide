@@ -33,7 +33,7 @@ For trigger mechanics and extension details, see [Platform: Triggers and Binding
 
 <!-- diagram-id: trigger-and-binding-best-practices -->
 ```mermaid
-flowchart LR
+flowchart TD
     E[Event source] --> T[Trigger listener]
     T --> SC[Scale controller signal]
     SC --> I[Instance allocation]

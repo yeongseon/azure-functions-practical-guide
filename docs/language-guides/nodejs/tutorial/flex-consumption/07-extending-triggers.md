@@ -57,7 +57,7 @@ flowchart TD
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Add timer trigger] --> B[Add queue trigger]
     B --> C[Add blob trigger]
     C --> D[Create storage resources]

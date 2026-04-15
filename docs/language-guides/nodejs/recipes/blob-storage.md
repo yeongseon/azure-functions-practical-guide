@@ -14,7 +14,7 @@ This recipe covers Blob trigger processing plus blob input/output bindings in No
 
 <!-- diagram-id: architecture -->
 ```mermaid
-flowchart LR
+flowchart TD
     UPLOAD[Blob Upload to incoming container] --> TRIGGER[storageBlob Trigger]
     TRIGGER --> TRANSFORM[Parse and Transform Content]
     TRANSFORM --> OUTPUT[Blob Output Binding to processed container]

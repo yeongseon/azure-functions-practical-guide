@@ -53,14 +53,14 @@ export LOCATION="koreacentral"
 
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
-flowchart LR
+flowchart TD
     DEV[Local Machine] --> HOST[Functions Host :7071]
     HOST --> AZURITE[Azurite Local Storage]
 ```
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Python venv + dependencies] --> B[Local settings]
     B --> C[Azurite host storage]
     C --> D[func host start]

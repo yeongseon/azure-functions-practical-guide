@@ -148,7 +148,7 @@ sequenceDiagram
 
 <!-- diagram-id: causal-chain -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[delayMs=0 baseline] --> B[proc ~5-6ms and backlog ~0.1s]
     B --> C[delayMs=2500 set at 13:28:29]
     C --> D[request avg rises to ~2559-2566ms]

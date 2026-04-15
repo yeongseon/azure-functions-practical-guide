@@ -47,7 +47,7 @@ You will validate the local route at `/api/hello/{name?}` and confirm the functi
 
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
-flowchart LR
+flowchart TD
     DEV[Developer Machine] -->|func start| HOST[Core Tools Host\nNode.js 20\nPort 7071]
     HOST --> HTTP[HTTP Trigger\nhelloHttp]
     HTTP -->|GET /api/hello| RESP[JSON Response]

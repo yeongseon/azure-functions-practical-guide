@@ -36,7 +36,7 @@ Use these when you have 60 seconds to classify the failure before opening the de
 
 <!-- diagram-id: card-1-slow-first-invocation-cold-start -->
 ```mermaid
-graph LR
+graph TD
     A[Slow first invocation] --> B[First Query]
     B --> C[Platform Segment]
     C --> D[Playbook]
@@ -81,7 +81,7 @@ az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "Ap
 
 <!-- diagram-id: card-2-trigger-failures-by-trigger-type -->
 ```mermaid
-graph LR
+graph TD
     A[Trigger not firing] --> B{Trigger type}
     B --> C[Source evidence]
     C --> D[Listener traces]
@@ -132,7 +132,7 @@ az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "Ap
 
 <!-- diagram-id: card-3-binding-and-extension-errors -->
 ```mermaid
-graph LR
+graph TD
     A[Binding errors] --> B[Indexing traces]
     B --> C[Config mismatch]
     C --> D[Auth or extension fix]
@@ -178,7 +178,7 @@ az functionapp config show --resource-group "$RG" --name "$APP_NAME" --output js
 
 <!-- diagram-id: card-4-timeout-execution-limit-exceeded -->
 ```mermaid
-graph LR
+graph TD
     A[Timeout symptom] --> B[Duration query]
     B --> C[Plan limit check]
     C --> D[Timeout playbook]
@@ -222,7 +222,7 @@ az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "Ap
 
 <!-- diagram-id: card-5-memory-or-cpu-exhaustion -->
 ```mermaid
-graph LR
+graph TD
     A[Worker slowdown] --> B[Metrics]
     B --> C[Restart or crash traces]
     C --> D[Resource-pressure playbook]
@@ -267,7 +267,7 @@ az monitor metrics list --resource "/subscriptions/$SUBSCRIPTION_ID/resourceGrou
 
 <!-- diagram-id: card-6-deployment-succeeded-but-functions-broke -->
 ```mermaid
-graph LR
+graph TD
     A[Failure after deploy] --> B[Activity Log]
     B --> C[Startup and indexing traces]
     C --> D[Deployment playbook]
@@ -314,7 +314,7 @@ az functionapp config appsettings list --resource-group "$RG" --name "$APP_NAME"
 
 <!-- diagram-id: card-7-scale-out-not-keeping-up -->
 ```mermaid
-graph LR
+graph TD
     A[Backlog grows] --> B[Invocation trend]
     B --> C[Scale signals]
     C --> D[Queue or event-hub playbook]

@@ -18,7 +18,7 @@ Use this section after reading platform fundamentals so you can apply the same a
 
 <!-- diagram-id: language-guides -->
 ```mermaid
-flowchart LR
+flowchart TD
     LG[Language Guides] --> P[Python]
     LG --> N[Node.js]
     LG --> D[.NET]

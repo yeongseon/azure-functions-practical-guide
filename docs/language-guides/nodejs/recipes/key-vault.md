@@ -14,7 +14,7 @@ This recipe covers both Key Vault reference app settings and direct SDK access w
 
 <!-- diagram-id: architecture -->
 ```mermaid
-flowchart LR
+flowchart TD
     FUNC[Function App] --> MSI[Managed Identity]
     MSI --> KV[Azure Key Vault]
     KV --> SETTING[App Setting via Key Vault Reference]

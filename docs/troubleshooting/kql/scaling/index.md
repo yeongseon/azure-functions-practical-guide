@@ -12,7 +12,7 @@ KQL queries for analyzing cold starts, scaling behavior, and host lifecycle even
 
 <!-- diagram-id: scaling-queries -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Cold start query] --> B[Scaling events timeline]
     B --> C[Host startup and shutdown]
     C --> D[Instance count trend]

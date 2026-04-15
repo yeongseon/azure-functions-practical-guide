@@ -12,7 +12,7 @@ Apply API auth patterns for .NET isolated worker with function keys, Easy Auth, 
 
 <!-- diagram-id: http-authentication -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Trigger] --> B[Function]
     B --> C[Binding or SDK]
     C --> D[Azure service]

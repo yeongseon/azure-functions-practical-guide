@@ -12,7 +12,7 @@ Azure Functions has platform-imposed limits that vary by hosting plan. Understan
 
 <!-- diagram-id: platform-limits -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Hosting plan selection] --> B[Scale-out limits]
     A --> C[Execution timeout limits]
     A --> D[Networking and connection limits]

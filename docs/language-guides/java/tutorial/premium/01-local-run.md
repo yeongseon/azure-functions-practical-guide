@@ -39,7 +39,7 @@ You will clone the Java reference application, build it with Maven, and run all 
 
 <!-- diagram-id: what-you-ll-build -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Clone reference app] --> B[Maven build]
     B --> C[Start Functions host]
     C --> D[Test local endpoints]

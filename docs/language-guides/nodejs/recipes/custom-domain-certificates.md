@@ -14,7 +14,7 @@ This recipe shows production custom domain + TLS certificate binding for HTTP-tr
 
 <!-- diagram-id: architecture -->
 ```mermaid
-flowchart LR
+flowchart TD
     DNS[Public DNS CNAME or A Record] --> DOMAIN[Custom Domain]
     DOMAIN --> TLS[TLS Certificate Binding]
     TLS --> APP[Function App HTTPS Endpoint]

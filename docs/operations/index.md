@@ -23,7 +23,7 @@ Use it to deploy, configure, monitor, alert, and recover production workloads.
 
 <!-- diagram-id: scope -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Deploy] --> B[Monitor]
     B --> C[Alert]
     C --> D[Recover]

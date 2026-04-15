@@ -92,7 +92,7 @@ flowchart TD
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[GitHub push] --> B[GitHub Actions workflow]
     B --> C["Build and deploy apps/python"]
     C --> D[Dedicated Function App]

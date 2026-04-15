@@ -34,7 +34,7 @@ This page summarizes the fundamentals from Microsoft Learn and maps them to deci
 
 <!-- diagram-id: overview-what-is-azure-functions -->
 ```mermaid
-flowchart LR
+flowchart TD
     E[Event Source] --> T[Trigger]
     T --> F[Azure Function]
     B1[Input Binding] --> F

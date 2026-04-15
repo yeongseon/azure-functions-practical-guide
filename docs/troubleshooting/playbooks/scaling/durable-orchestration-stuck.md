@@ -68,7 +68,7 @@ flowchart TD
 
 <!-- diagram-id: signal-snapshot -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Orchestrator starts] --> B[Load history from storage]
     B --> C[Replay deterministic steps]
     C --> D[Schedule activity]

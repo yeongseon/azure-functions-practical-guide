@@ -53,7 +53,7 @@ flowchart TD
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Set app settings] --> B[Configure host timeout]
     B --> C[Validate effective config]
 ```

@@ -12,7 +12,7 @@ Access Key Vault secrets from functions with managed identity and least-privileg
 
 <!-- diagram-id: key-vault -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Trigger] --> B[Function]
     B --> C[Binding or SDK]
     C --> D[Azure service]

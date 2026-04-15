@@ -14,7 +14,7 @@ This recipe shows production-ready Java HTTP trigger patterns: route parameters,
 
 <!-- diagram-id: architecture -->
 ```mermaid
-flowchart LR
+flowchart TD
     CLIENT[Client] --> API[HTTP Trigger Function]
     API --> VALIDATE[Validate route, query, body]
     VALIDATE --> RESPONSE[JSON Response + HTTP status]

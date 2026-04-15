@@ -58,7 +58,7 @@ Azure Functions does not have one runtime shape. The failure domain changes mate
 
 <!-- diagram-id: 1-hosting-plan-architecture-where-startup-and-scale-behavior-change -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Client or Event Source] --> B["Azure Functions Front Door / Trigger Source"]
     B --> C{Hosting plan}
     C -->|Consumption| D[Shared serverless workers\nScale to zero]
@@ -125,7 +125,7 @@ flowchart TD
 
 <!-- diagram-id: request-flow-examples-by-trigger-type -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[HTTP client] --> B[Functions endpoint]
     B --> C[Host route table]
     C --> D[Function invocation]
@@ -189,7 +189,7 @@ flowchart TD
 
 <!-- diagram-id: scale-out-decision-flow -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Queue depth, partition lag, HTTP demand, concurrency pressure] --> B{Trigger-specific thresholds crossed?}
     B -->|No| C[Remain at current size]
     B -->|Yes| D{Hosting plan can add instances now?}
@@ -346,7 +346,7 @@ Azure Functions usually sits in the middle of other services rather than at the 
 
 <!-- diagram-id: 6-azure-service-integration-path-where-dependencies-amplify-failure -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Function invocation] --> B{Integration type}
     B -->|Host storage| C[Azure Storage account]
     B -->|Streaming input| D[Event Hubs]

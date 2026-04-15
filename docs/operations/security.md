@@ -89,7 +89,7 @@ Operate controls in a fixed loop so key material, identities, and network bounda
 
 <!-- diagram-id: procedure -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Key Rotation] --> B[Identity Audit]
     B --> C[Network Policy Review]
     C --> D[Incident Response]

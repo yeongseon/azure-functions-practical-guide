@@ -60,7 +60,7 @@ flowchart TD
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Read current app settings] --> B[Set runtime and custom settings]
     B --> C[Optional identity-based host storage]
     C --> D[Validate effective configuration]

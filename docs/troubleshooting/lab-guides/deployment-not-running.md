@@ -116,7 +116,7 @@ If deployment succeeds but runtime configuration or Python package structure is 
 
 <!-- diagram-id: causal-chain -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[config-zip success] --> B[Host startup]
     B --> C[Runtime or package mismatch]
     C --> D[Function indexing failure]

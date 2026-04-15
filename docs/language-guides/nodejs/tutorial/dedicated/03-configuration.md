@@ -39,7 +39,7 @@ Manage environment settings, runtime options, and host behavior per environment.
 
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
-flowchart LR
+flowchart TD
     CLI[Azure CLI] -->|appsettings set| FA[Function App\nDedicated B1]
 
     subgraph CONFIG["App Settings"]

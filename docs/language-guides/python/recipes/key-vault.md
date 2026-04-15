@@ -14,7 +14,7 @@ This recipe covers integrating Azure Key Vault with Azure Functions to securely 
 
 <!-- diagram-id: architecture -->
 ```mermaid
-flowchart LR
+flowchart TD
     PLATFORM[Azure Functions Platform] --> FA[Function App]
     FA -.-> MI[Managed Identity]
     MI -.-> ENTRA[Microsoft Entra ID]

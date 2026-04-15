@@ -14,7 +14,7 @@ A timer trigger fires on a schedule defined by an NCRONTAB expression. Unlike HT
 
 <!-- diagram-id: overview -->
 ```mermaid
-flowchart LR
+flowchart TD
     SCHED[NCRONTAB Schedule] --> RUNTIME[Functions Runtime Scheduler]
     RUNTIME --> TRIGGER[Timer Trigger Invocation]
     TRIGGER --> TASK[Background Task Execution]

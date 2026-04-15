@@ -65,7 +65,7 @@ Azure Functions supports four main hosting models:
 
 <!-- diagram-id: hosting-plans-at-a-glance -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Workload Requirement] --> B{Scale to zero required?}
     B -->|Yes| C{Private networking required?}
     B -->|No| D{Existing App Service estate?}

@@ -66,7 +66,7 @@ Every function has:
 - zero or more **output bindings**.
 <!-- diagram-id: core-model -->
 ```mermaid
-flowchart LR
+flowchart TD
     S[Event Source] --> T[Trigger\nexactly 1]
     T --> F[Function]
     I[Input Bindings\n0..n] --> F
@@ -183,7 +183,7 @@ Decision guidance:
 One trigger can coordinate multiple bindings in one function boundary.
 <!-- diagram-id: input-output-binding-data-flow-multi-service -->
 ```mermaid
-flowchart LR
+flowchart TD
     EH[Event Hub Trigger] --> FN[Function]
     COS[(Cosmos DB Input Binding)] --> FN
     FN --> SB[(Service Bus Output Binding)]
@@ -255,7 +255,7 @@ Design notes:
 A common pattern is HTTP ingest + queue output + queue-trigger processor.
 <!-- diagram-id: queue-trigger-output-pattern-architectural -->
 ```mermaid
-flowchart LR
+flowchart TD
     C[Client] --> H[HTTP Trigger]
     H --> Q[(Queue Output Binding)]
     Q --> P[Queue Trigger Processor]
@@ -352,7 +352,7 @@ Durable Functions adds orchestration-centric triggers:
 - **Entity trigger**: provides serialized stateful operations.
 <!-- diagram-id: durable-functions-triggers -->
 ```mermaid
-flowchart LR
+flowchart TD
     C["Client/Starter"] --> O[Orchestration Trigger]
     O --> A1[Activity Trigger: Validate]
     O --> A2[Activity Trigger: Enrich]

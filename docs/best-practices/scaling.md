@@ -198,7 +198,7 @@ Scale-to-zero reduces idle cost but can increase startup latency.
 
 <!-- diagram-id: phase-4-recovery -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Phase 1 Baseline] --> B[Phase 2 Burst]
     B --> C[Phase 3 Failure injection]
     C --> D[Phase 4 Recovery]

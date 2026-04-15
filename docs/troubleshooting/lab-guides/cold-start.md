@@ -150,7 +150,7 @@ Authoritative links are listed in [Sources](#sources).
 ### 2.2 Causal chain
 <!-- diagram-id: 2-2-causal-chain -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Idle period with no active instance] --> B[First request arrives]
     B --> C[Platform allocates worker]
     C --> D[Host starts quickly once worker available]
@@ -696,7 +696,7 @@ Use this section as a validation rubric while running the lab.
 ### Evidence Timeline
 <!-- diagram-id: evidence-timeline -->
 ```mermaid
-graph LR
+graph TD
     A[Baseline Warm Capture] --> B[Idle Window ~13m]
     B --> C[First Hit: 30.485s]
     C --> D["Host Traces: 363ms / 453ms"]

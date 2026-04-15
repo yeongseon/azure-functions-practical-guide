@@ -60,7 +60,7 @@ flowchart TD
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Push to main] --> B[GitHub Actions workflow]
     B --> C[Install Python dependencies]
     C --> D[Azure Functions Action deploy]

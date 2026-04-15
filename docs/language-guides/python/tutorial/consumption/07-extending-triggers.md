@@ -60,7 +60,7 @@ flowchart TD
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
-flowchart LR
+flowchart TD
     A["Add queue/blob blueprints"] --> B["Register in apps/python/function_app.py"]
     B --> C[Publish to Consumption app]
     C --> D[Send queue message and upload blob]

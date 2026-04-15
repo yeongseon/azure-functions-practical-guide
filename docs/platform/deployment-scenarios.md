@@ -42,7 +42,7 @@ This page compares the reference deployment patterns used in this guide across t
 
 <!-- diagram-id: scenario-overview -->
 ```mermaid
-flowchart LR
+flowchart TD
     subgraph PUBLIC["Scenario A: Public Serverless"]
         A1[Consumption Y1] --- A2[No VNet]
         A2 --- A3[Connection string]

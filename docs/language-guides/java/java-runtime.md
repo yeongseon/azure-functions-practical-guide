@@ -46,7 +46,7 @@ az functionapp config appsettings set   --name $APP_NAME   --resource-group $RG 
 
 <!-- diagram-id: maven-build-and-deployment -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[pom.xml] --> B[mvn clean package]
     B --> C[azure-functions-maven-plugin]
     C --> D[Function App deployment]

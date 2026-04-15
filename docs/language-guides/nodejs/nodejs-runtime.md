@@ -16,7 +16,7 @@ This reference describes Node.js runtime support, worker settings, and dependenc
 
 <!-- diagram-id: main-content -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Node 18 LTS] --> D[Supported]
     B[Node 20 LTS] --> D
     C[Node 22 Current] --> D

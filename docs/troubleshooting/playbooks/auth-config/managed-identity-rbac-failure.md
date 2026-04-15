@@ -92,7 +92,7 @@ sequenceDiagram
 ### Identity authorization map
 <!-- diagram-id: identity-authorization-map -->
 ```mermaid
-flowchart LR
+flowchart TD
     F[Function App] --> I[System-assigned MI]
     F --> U[User-assigned MI]
     I --> RBAC1[Role Assignment: Storage Blob Data Contributor]

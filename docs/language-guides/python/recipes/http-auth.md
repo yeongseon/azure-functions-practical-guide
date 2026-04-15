@@ -14,7 +14,7 @@ This recipe covers authentication and authorization for Azure Functions HTTP tri
 
 <!-- diagram-id: authentication-flow -->
 ```mermaid
-flowchart LR
+flowchart TD
     CLIENT[Client App] --> TOKEN[Identity Provider Token Issuance]
     TOKEN --> REQUEST[Bearer Token in HTTP Request]
     REQUEST --> EASYAUTH[Easy Auth on Function App]

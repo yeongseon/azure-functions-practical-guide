@@ -12,7 +12,7 @@ Coordinate long-running workflows with Durable Functions in .NET isolated worker
 
 <!-- diagram-id: durable-orchestration -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Trigger] --> B[Function]
     B --> C[Binding or SDK]
     C --> D[Azure service]

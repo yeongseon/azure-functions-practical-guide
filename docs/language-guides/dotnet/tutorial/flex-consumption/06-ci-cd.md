@@ -38,7 +38,7 @@ You will configure a GitHub Actions pipeline that builds and deploys a .NET isol
 
 <!-- diagram-id: what-you-ll-build -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Push to main] --> B[GitHub Actions]
     B --> C[dotnet build + publish]
     C --> D[azure/functions-action]

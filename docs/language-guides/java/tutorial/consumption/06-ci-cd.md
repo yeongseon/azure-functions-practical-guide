@@ -39,7 +39,7 @@ You will configure a GitHub Actions pipeline that builds and deploys a Java Func
 
 <!-- diagram-id: what-you-ll-build -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Push to main] --> B[GitHub Actions]
     B --> C[Maven build and test]
     C --> D[Publish from staging dir]

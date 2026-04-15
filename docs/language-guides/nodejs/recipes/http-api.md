@@ -14,7 +14,7 @@ This recipe shows production-ready HTTP trigger patterns in the Node.js v4 progr
 
 <!-- diagram-id: architecture -->
 ```mermaid
-flowchart LR
+flowchart TD
     CLIENT[API Client] --> HTTP[HTTP Trigger]
     HTTP --> VALIDATE[Validate Query and JSON Body]
     VALIDATE --> LOGIC[Business Logic]

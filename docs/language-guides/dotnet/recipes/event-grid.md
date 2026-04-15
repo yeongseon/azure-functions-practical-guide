@@ -12,7 +12,7 @@ Subscribe to Event Grid events and route them into isolated worker handlers.
 
 <!-- diagram-id: event-grid -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Trigger] --> B[Function]
     B --> C[Binding or SDK]
     C --> D[Azure service]

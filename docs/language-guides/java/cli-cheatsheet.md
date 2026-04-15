@@ -14,7 +14,7 @@ Quick reference for Java Azure Functions operational workflows.
 
 <!-- diagram-id: topic-command-groups -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[func commands] --> B[Local development]
     C[az functionapp] --> D[Cloud operations]
     E[mvn] --> F[Build and deploy]

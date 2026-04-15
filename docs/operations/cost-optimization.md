@@ -143,7 +143,7 @@ Price examples in this section are approximate as of 2026-04 and can change over
 
 <!-- diagram-id: break-even-analysis -->
 ```mermaid
-graph LR
+graph TD
     A[Monthly Executions] --> B{Volume?}
     B -->|< 1M| C[Consumption: $0]
     B -->|1M - 10M| D[Consumption: $0.20 - $2.00]

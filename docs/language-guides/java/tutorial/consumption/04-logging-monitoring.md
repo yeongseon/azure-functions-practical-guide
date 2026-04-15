@@ -39,7 +39,7 @@ You will instrument Java handlers with structured logs, route telemetry to Appli
 
 <!-- diagram-id: what-you-ll-build -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[ExecutionContext logger] --> B[FunctionAppLogs]
     B --> C[Application Insights]
     C --> D[Dashboards and alerts]

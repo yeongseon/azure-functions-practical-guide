@@ -66,7 +66,7 @@ flowchart TD
 
 <!-- diagram-id: signal-snapshot -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Trigger receives event] --> B[Function worker allocates payload]
     B --> C[Deserializer + transform buffers]
     C --> D[Business logic allocations]

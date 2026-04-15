@@ -242,7 +242,7 @@ Zone-aware architecture options are strongest on Premium, Dedicated, and Flex Co
 
 <!-- diagram-id: availability-zones-and-high-availability -->
 ```mermaid
-flowchart LR
+flowchart TD
     subgraph Region[Azure Region]
         subgraph Z1[Zone 1]
             F1[Function Workers]
@@ -318,7 +318,7 @@ Protect downstream dependencies using:
 ### Reliability architecture pattern
 <!-- diagram-id: reliability-architecture-pattern -->
 ```mermaid
-flowchart LR
+flowchart TD
     In[Trigger Event] --> Fn[Function Handler]
     Fn -->|Success| Ok["Commit / Ack"]
     Fn -->|Transient error| Rt[Retry Policy]

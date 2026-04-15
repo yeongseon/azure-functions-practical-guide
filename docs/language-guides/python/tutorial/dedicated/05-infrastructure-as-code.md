@@ -92,7 +92,7 @@ flowchart TD
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Bicep template] --> B[App Service Plan B1]
     A --> C[Storage Account]
     A --> D[Function App Linux Python]

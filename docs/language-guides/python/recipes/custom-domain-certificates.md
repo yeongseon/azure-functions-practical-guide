@@ -14,7 +14,7 @@ Azure Function Apps support custom domains similarly to Azure App Service. On th
 
 <!-- diagram-id: architecture -->
 ```mermaid
-flowchart LR
+flowchart TD
     CLIENT[Client] --> DNS[Public DNS]
     DNS --> CNAME[CNAME or A record]
     DNS --> TXT[TXT asuid verification]
@@ -23,7 +23,7 @@ flowchart LR
 
 <!-- diagram-id: architecture-2 -->
 ```mermaid
-flowchart LR
+flowchart TD
     C[Client HTTPS Request] --> DOMAIN[Custom Domain]
     DOMAIN --> TLS[TLS Certificate Binding]
     TLS --> FA[Function App]

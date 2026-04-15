@@ -63,7 +63,7 @@ flowchart TD
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Set variables + login] --> B[Create RG + storage]
     B --> C[Create function app]
     C --> D[Set placeholder settings]

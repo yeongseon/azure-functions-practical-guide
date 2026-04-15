@@ -52,7 +52,7 @@ Pair this page with [Troubleshooting Playbooks](../troubleshooting/playbooks/ind
 
 <!-- diagram-id: why-this-matters -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Wrong hosting plan selection] --> B[Trigger and networking mismatch]
     B --> C[Scale and listener instability]
     C --> D[Retries and backlog growth]

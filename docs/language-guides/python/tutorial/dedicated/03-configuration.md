@@ -91,7 +91,7 @@ flowchart TD
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Function App settings] --> B[Runtime config on Dedicated plan]
     B --> C[Validated effective configuration]
 ```

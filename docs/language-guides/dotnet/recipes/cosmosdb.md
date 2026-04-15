@@ -12,7 +12,7 @@ Use Cosmos DB bindings and SDK patterns from isolated worker functions.
 
 <!-- diagram-id: cosmos-db -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Trigger] --> B[Function]
     B --> C[Binding or SDK]
     C --> D[Azure service]

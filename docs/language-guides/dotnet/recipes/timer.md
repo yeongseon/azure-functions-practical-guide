@@ -12,7 +12,7 @@ Schedule periodic jobs with cron expressions and safe idempotent processing.
 
 <!-- diagram-id: timer-trigger -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Trigger] --> B[Function]
     B --> C[Binding or SDK]
     C --> D[Azure service]

@@ -14,7 +14,7 @@ This recipe uses `app.timer()` with NCRONTAB scheduling, demonstrates the `isPas
 
 <!-- diagram-id: architecture -->
 ```mermaid
-flowchart LR
+flowchart TD
     SCHED[NCRONTAB Schedule] --> TIMER[Timer Trigger]
     TIMER --> CHECK[isPastDue Check]
     CHECK --> JOB[Maintenance Logic]

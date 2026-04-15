@@ -12,7 +12,7 @@ Design queue-driven background processing with retries, dead-letter strategy, an
 
 <!-- diagram-id: queue -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Trigger] --> B[Function]
     B --> C[Binding or SDK]
     C --> D[Azure service]

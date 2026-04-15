@@ -12,7 +12,7 @@ This recipe covers integrating Azure Queue Storage with Azure Functions Python v
 
 <!-- diagram-id: architecture -->
 ```mermaid
-flowchart LR
+flowchart TD
     Q[Queue Storage Message] --> TRIG[Queue Trigger]
     TRIG --> FA[Function App]
     FA --> DOWN[Downstream Service]

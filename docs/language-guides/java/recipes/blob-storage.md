@@ -14,7 +14,7 @@ This recipe covers Java blob processing using trigger, input, and output binding
 
 <!-- diagram-id: architecture -->
 ```mermaid
-flowchart LR
+flowchart TD
     BLOBIN[(incoming container)] --> TRIGGER[@BlobTrigger]
     TRIGGER --> TRANSFORM[Transform content]
     TRANSFORM --> BLOBOUT[@BlobOutput processed container]

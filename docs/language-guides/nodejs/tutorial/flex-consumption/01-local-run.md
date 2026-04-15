@@ -46,14 +46,14 @@ You will run the Node.js v4 Functions app locally from `apps/nodejs`, install de
 
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
-flowchart LR
+flowchart TD
     DEV["Local Machine"] --> HOST["Functions Host :7071"]
     HOST --> STORAGE["Local Storage\n(Azurite or connection string)"]
 ```
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
-flowchart LR
+flowchart TD
     A["npm install in apps/nodejs"] --> B[Copy local settings example]
     B --> C["Start Functions host"]
     C --> D["Test /api/hello locally"]

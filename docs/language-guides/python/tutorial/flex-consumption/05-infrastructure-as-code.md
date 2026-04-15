@@ -89,7 +89,7 @@ flowchart TD
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
-flowchart LR
+flowchart TD
     Bicep["infra/flex-consumption/main.bicep"] --> Deploy[Resource group deployment]
     Deploy --> Plan[FC1 plan]
     Deploy --> App[Function App]

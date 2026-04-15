@@ -14,7 +14,7 @@ This recipe implements a complete Durable Functions Node.js v4 workflow with an 
 
 <!-- diagram-id: architecture -->
 ```mermaid
-flowchart LR
+flowchart TD
     START[HTTP Starter] --> CLIENT[Durable Client]
     CLIENT --> ORCH[Orchestrator Function]
     ORCH --> ACT1[Activity: validateOrder]

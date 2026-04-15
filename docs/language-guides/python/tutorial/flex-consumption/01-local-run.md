@@ -41,14 +41,14 @@ You will run the Python reference Function App locally with Azurite, validate HT
 
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
-flowchart LR
+flowchart TD
     DEV[Local Machine] --> HOST[Functions Host :7071]
     HOST --> AZURITE[Azurite Local Storage]
 ```
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
-flowchart LR
+flowchart TD
     Dev[Developer Shell] --> Venv[Python venv + dependencies]
     Dev --> Azurite[Azurite local storage]
     Venv --> Host[Functions host :7071]

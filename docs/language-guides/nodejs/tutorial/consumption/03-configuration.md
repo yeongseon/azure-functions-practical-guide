@@ -54,7 +54,7 @@ flowchart TD
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Set app settings] --> B[Set linuxFxVersion]
     B --> C[Configure host timeout]
     C --> D[Validate effective config]

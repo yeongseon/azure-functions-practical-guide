@@ -89,7 +89,7 @@ flowchart TD
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Function App Premium] --> B[Application Insights]
     B --> C[Request and trace telemetry]
     C --> D[KQL verification queries]

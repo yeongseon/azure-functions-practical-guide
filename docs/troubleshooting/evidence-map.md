@@ -35,7 +35,7 @@ It maps diagnostic questions to the fastest evidence source, then shows what hea
 
 <!-- diagram-id: evidence-path-overview -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Diagnostic question] --> B{What kind of symptom?}
     B -->|Request failure or latency| C[Application Insights: requests and dependencies]
     B -->|Startup or trigger issue| D[Application Insights: traces]

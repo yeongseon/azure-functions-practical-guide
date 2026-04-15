@@ -45,7 +45,7 @@ You will configure a GitHub Actions pipeline that builds and deploys a Java Func
 
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
-flowchart LR
+flowchart TD
     GH["GitHub Actions"] -->|"publish profile\n+ staging dir"| FA[Function App\nFlex Consumption FC1]
     DEV["Developer"] -->|"git push"| GH
 
@@ -55,7 +55,7 @@ flowchart LR
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Push to main] --> B[GitHub Actions]
     B --> C[Maven build and test]
     C --> D[Publish from staging dir]

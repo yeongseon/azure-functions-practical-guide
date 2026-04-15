@@ -16,7 +16,7 @@ Best Practices in this guide are intentionally execution-focused: hosting plan c
 
 <!-- diagram-id: best-practices -->
 ```mermaid
-flowchart LR
+flowchart TD
     P["Platform<br/>how it works"] --> B["Best Practices<br/>how to choose and configure safely"]
     B --> O["Operations<br/>how to run at day-2"]
     O --> T["Troubleshooting<br/>how to recover quickly"]

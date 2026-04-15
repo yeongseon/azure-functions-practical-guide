@@ -12,7 +12,7 @@ Implement blob trigger and blob output scenarios for ingestion and transformatio
 
 <!-- diagram-id: blob-storage -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Trigger] --> B[Function]
     B --> C[Binding or SDK]
     C --> D[Azure service]

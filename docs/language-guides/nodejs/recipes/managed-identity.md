@@ -14,7 +14,7 @@ This recipe enables system-assigned managed identity, grants RBAC roles, and use
 
 <!-- diagram-id: architecture -->
 ```mermaid
-flowchart LR
+flowchart TD
     FUNC[Function App] --> MSI[System-assigned Managed Identity]
     MSI --> ENTRA[Microsoft Entra ID]
     ENTRA --> STORAGE[Azure Storage Data Plane]

@@ -14,7 +14,7 @@ This recipe demonstrates Java queue trigger and queue output bindings with retry
 
 <!-- diagram-id: architecture -->
 ```mermaid
-flowchart LR
+flowchart TD
     API[HTTP enqueue] --> QUEUE[(work-items queue)]
     QUEUE --> TRIGGER[@QueueTrigger worker]
     TRIGGER --> RESULT[@QueueOutput results queue]

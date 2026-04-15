@@ -14,7 +14,7 @@ This recipe configures a system-assigned managed identity and uses `DefaultAzure
 
 <!-- diagram-id: architecture -->
 ```mermaid
-flowchart LR
+flowchart TD
     FUNC[Function App] --> MSI[System-assigned managed identity]
     MSI --> ENTRA[Microsoft Entra token endpoint]
     FUNC --> SDK[Azure SDK with DefaultAzureCredential]

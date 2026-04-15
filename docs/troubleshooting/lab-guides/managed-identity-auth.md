@@ -141,7 +141,7 @@ gantt
 
 <!-- diagram-id: 2-2-causal-chain -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Role assignment removed] --> B[Blob data-plane authorization denied]
     B --> C[403 AuthorizationPermissionMismatch]
     C --> D[Host storage probe failures]

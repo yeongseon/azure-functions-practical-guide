@@ -39,7 +39,7 @@ You will verify Application Insights connectivity, query structured logs from th
 
 <!-- diagram-id: what-you-ll-build -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[ExecutionContext logger] --> B[FunctionAppLogs]
     B --> C[Application Insights]
     C --> D[Dashboards and alerts]

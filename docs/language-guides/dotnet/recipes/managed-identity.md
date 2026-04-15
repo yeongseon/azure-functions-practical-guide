@@ -12,7 +12,7 @@ Use system-assigned managed identity for passwordless access to Azure resources 
 
 <!-- diagram-id: managed-identity -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Trigger] --> B[Function]
     B --> C[Binding or SDK]
     C --> D[Azure service]

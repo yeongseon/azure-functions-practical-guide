@@ -14,7 +14,7 @@ This recipe shows Java Durable Functions with an HTTP starter, orchestrator, and
 
 <!-- diagram-id: architecture -->
 ```mermaid
-flowchart LR
+flowchart TD
     CLIENT[Client] --> STARTER[HTTP starter]
     STARTER --> ORCH[Orchestrator function]
     ORCH --> ACT1[Activity: validate]

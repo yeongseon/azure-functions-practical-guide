@@ -89,7 +89,7 @@ flowchart TD
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
-flowchart LR
+flowchart TD
     Client[HTTP requests] --> Func[Flex Function App]
     Func --> AI[Application Insights]
     AI --> KQL[KQL queries via Azure CLI]

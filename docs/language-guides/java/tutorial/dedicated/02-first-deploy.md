@@ -75,7 +75,7 @@ flowchart TD
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Set variables + login] --> B[Create RG + storage]
     B --> C[Create App Service plan]
     C --> D[Create function app]

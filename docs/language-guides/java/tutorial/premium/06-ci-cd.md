@@ -39,7 +39,7 @@ You will create a GitHub Actions workflow that builds the Java project with Mave
 
 <!-- diagram-id: what-you-ll-build -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Push to main] --> B[GitHub Actions]
     B --> C[Maven build + test]
     C --> D["Publish from staging dir"]

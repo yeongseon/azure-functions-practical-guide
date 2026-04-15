@@ -228,7 +228,7 @@ Multi-region failover architecture:
 
 <!-- diagram-id: regional-recovery-planning -->
 ```mermaid
-flowchart LR
+flowchart TD
     U[Clients] --> E[Edge Routing]
     E --> TM[Traffic Manager or Front Door]
     TM --> P[Primary Region Function App]

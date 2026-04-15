@@ -12,7 +12,7 @@ Azure Functions limits vary by hosting plan and affect throughput, latency, time
 
 <!-- diagram-id: topic-command-groups -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Limits] --> B[Timeout]
     A --> C[Scale]
     A --> D[Memory]

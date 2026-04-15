@@ -63,7 +63,7 @@ flowchart TD
 
 <!-- diagram-id: trigger-specific-decision-tree -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Trigger type] --> B{Which trigger?}
     B -->|HTTP| C{Status code pattern}
     B -->|"Queue/Service Bus"| D{Processing pattern}

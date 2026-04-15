@@ -14,7 +14,7 @@ Quick reference for the most commonly used commands when developing, deploying, 
 
 <!-- diagram-id: cli-cheatsheet -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Initialize project] --> B[Develop locally with func host start]
     B --> C[Test and validate settings]
     C --> D[Deploy with func azure functionapp publish]

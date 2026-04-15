@@ -12,7 +12,7 @@ Implementation-focused patterns for .NET isolated worker Azure Functions.
 
 <!-- diagram-id: recipe-categories -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[HTTP] --> B[Storage]
     B --> C[Security]
     C --> D[Advanced]

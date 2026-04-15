@@ -91,7 +91,7 @@ flowchart TD
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Bicep deployment] --> B[Premium plan and Function App]
     B --> C[Managed identity host storage]
     B --> D[Azure Files content share]

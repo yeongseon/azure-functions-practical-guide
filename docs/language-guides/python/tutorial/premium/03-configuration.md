@@ -91,7 +91,7 @@ flowchart TD
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Validate Premium plan] --> B[Apply runtime app settings]
     B --> C[Choose host storage model]
     C --> D[Configure content share settings]

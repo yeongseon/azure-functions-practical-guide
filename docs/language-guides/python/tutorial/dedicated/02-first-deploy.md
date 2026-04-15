@@ -246,7 +246,7 @@ curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
 
 <!-- diagram-id: step-6-verify-deployment -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Internet] --> B[Function App\nLinux, Python 3.11]
     B --> C[App Service Plan B1\nAlways Running]
     B --> D[Azure Services\nStorage, Monitor, App Insights]

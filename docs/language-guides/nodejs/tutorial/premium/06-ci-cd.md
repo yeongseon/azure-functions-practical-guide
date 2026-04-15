@@ -45,7 +45,7 @@ You will validate release health from runtime logs after the deployment finishes
 
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
-flowchart LR
+flowchart TD
     GH[GitHub\nmain branch] -->|push| GA[GitHub Actions]
     GA -->|npm ci + test| BUILD[Build]
     BUILD -->|func publish| FA[Function App\nPremium EP1]

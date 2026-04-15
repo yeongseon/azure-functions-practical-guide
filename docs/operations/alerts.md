@@ -87,7 +87,7 @@ Use alert rules that are:
 ### Alert processing flow
 <!-- diagram-id: alert-processing-flow -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Metric or log signal] --> B[Alert rule evaluation]
     B --> C{Condition matched}
     C -->|No| D[No alert instance]

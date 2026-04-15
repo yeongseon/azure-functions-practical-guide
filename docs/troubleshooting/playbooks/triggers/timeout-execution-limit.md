@@ -274,7 +274,7 @@ If shutdown markers are not present near failed invocations, interruption is mor
 ### Failure Progression Timeline
 <!-- diagram-id: failure-progression-timeline -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Dependency latency increase] --> B[Function duration rises]
     B --> C[Approaches functionTimeout]
     C --> D[Timeout exception]

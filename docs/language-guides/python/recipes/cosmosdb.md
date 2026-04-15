@@ -14,7 +14,7 @@ This recipe covers integrating Azure Cosmos DB with Azure Functions Python v2 us
 
 <!-- diagram-id: architecture -->
 ```mermaid
-flowchart LR
+flowchart TD
     SRC[HTTP Trigger or Cosmos DB Binding] --> FA[Function App]
     FA --> COSMOS[Azure Cosmos DB]
     FA -.-> MI[Managed Identity]

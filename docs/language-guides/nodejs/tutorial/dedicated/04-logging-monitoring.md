@@ -39,7 +39,7 @@ Capture structured logs, query telemetry, and validate operational visibility.
 
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
-flowchart LR
+flowchart TD
     FA[Function App\nDedicated B1] -->|Telemetry SDK| AI[Application Insights\nfunc-ndded-04100022]
     FA -->|stdout/stderr| LOGS[Log Stream\naz webapp log tail]
 

@@ -85,7 +85,7 @@ Use all three for complete operational visibility.
 
 <!-- diagram-id: monitoring-architecture -->
 ```mermaid
-flowchart LR
+flowchart TD
     A[Function App Runtime] --> B[Azure Monitor Metrics]
     A --> C[Application Insights]
     A --> D[Activity Log]
