@@ -193,6 +193,7 @@ These constraints are design-time decisions, not post-deployment tweaks.
 
 ### Configuration layers
 Azure Functions behavior is controlled through layered configuration:
+
 1. Hosting plan capabilities (hard platform boundaries).
 2. Function App settings (runtime/environment behavior).
 3. `host.json` (extension and concurrency behavior).
@@ -358,6 +359,7 @@ flowchart TD
 ```
 
 Architecture considerations:
+
 1. Orchestrator code must remain deterministic.
 2. Activity idempotency is critical for replay safety.
 3. Storage throughput and latency directly affect orchestration performance.
@@ -366,6 +368,7 @@ Architecture considerations:
 ### Custom handler model
 Custom handlers let you run unsupported or specialized runtimes behind the Functions host contract.
 How it works:
+
 1. The Functions host receives trigger events.
 2. The host forwards invocation payloads to your custom executable over HTTP.
 3. Your executable returns response payloads following handler contract.

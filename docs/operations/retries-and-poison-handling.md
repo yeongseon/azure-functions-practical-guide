@@ -44,6 +44,7 @@ Use these patterns to protect reliability under transient failures and malformed
 Use this runbook when retries, poison queues, or dead-letter counts start increasing and delivery latency grows.
 
 Choose the retry layer intentionally:
+
 1. **Trigger/runtime retries** for transient infrastructure issues.
 2. **Application-level retries** for dependency-specific failures where business logic can decide what is retryable.
 3. **Both layers** only when cumulative retry budget is explicitly bounded.
@@ -156,6 +157,7 @@ Operational responsibilities:
 
 ### Retry strategy design
 Use layered retry design:
+
 1. **Trigger/runtime retries** for transient infrastructure issues.
 2. **Application-level retries** for outbound dependencies when safe.
 3. **Circuit breaker/timeouts** to avoid cascading failure.
@@ -350,12 +352,14 @@ Verification checklist:
 Use this section when retries trigger cascading failures (dependency saturation, lock churn, rising latency).
 
 Immediate containment:
+
 1. Reduce trigger concurrency before increasing retries.
 2. Roll back `host.json` retry settings to known-good values.
 3. Pause replay workers if poison/dead-letter growth accelerates.
 4. Tighten timeout and circuit breaker policies for weak dependencies.
 
 Troubleshooting sequence:
+
 1. Confirm whether failures are transient or deterministic from sampled payloads.
 2. Compare retry volume with downstream dependency error rates.
 3. Validate visibility timeout or lock duration versus actual processing time.

@@ -81,6 +81,7 @@ flowchart TD
 ### Why this lab can be misread
 
 Common misdiagnoses:
+
 1. Treating dependency failures as the primary cause when they are downstream effects.
 2. Looking only at request latency without memory and worker-lifecycle correlation.
 3. Searching for `.NET` exception strings in a Python worker incident.

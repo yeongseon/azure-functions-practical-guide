@@ -244,6 +244,7 @@ flowchart TD
 SNAT exhaustion appears when many outbound sockets are opened to the same destination without reuse.
 
 Planning baseline:
+
 1. Reuse SDK/HTTP clients; avoid one client per request.
 2. Prefer pooled transport defaults unless measured otherwise.
 
@@ -353,6 +354,7 @@ Networking should align with identity and authorization controls:
 ## Advanced Topics
 ### Zero-trust ingress pattern
 A practical zero-trust ingress model for Functions is:
+
 1. Front Door + WAF at the edge.
 2. APIM policy enforcement in front of backend APIs.
 3. Function App private endpoint only.
@@ -372,11 +374,13 @@ For dev/test/prod environments:
 
 ### SNAT exhaustion detection and mitigation
 Detection approach:
+
 1. Inspect dependency timeout bursts.
 2. Correlate with scale events and traffic fan-out.
 3. Identify high-frequency destination endpoints.
 
 Mitigation approach:
+
 1. Reuse clients and improve pooling behavior.
 2. Reduce avoidable parallel outbound calls.
 3. Increase NAT capacity and retest.

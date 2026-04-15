@@ -748,6 +748,7 @@ gantt
 
 ### Evidence Chain: Why This Proves the Hypothesis
 The hypothesis requires more than one isolated signal. It requires a coherent chain:
+
 1. A concrete authorization change event (role deletion) is visible in Activity Log.
 2. Soon after restart, blob dependencies fail with 403 and `AuthorizationPermissionMismatch`.
 3. In the same window, listener startup for `Functions.scheduled_cleanup` fails.

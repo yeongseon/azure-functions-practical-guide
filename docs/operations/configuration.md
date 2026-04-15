@@ -59,6 +59,7 @@ flowchart TB
 ## Procedure
 ### Configuration layers
 Use a layered model:
+
 1. App settings for environment values.
 2. `host.json` for runtime host behavior.
 3. Local development settings for workstation execution.
@@ -286,6 +287,7 @@ flowchart LR
     D --> E["Document<br/>Record baseline and evidence"]
 ```
 Recommended sequence:
+
 1. Propose change with expected impact and rollback trigger.
 2. Review against security, scale, and dependency constraints.
 3. Deploy to staging slot or non-production app first.
@@ -350,6 +352,7 @@ Success indicators:
 ## Rollback / Troubleshooting
 Use this section when new settings cause startup errors, trigger failures, or inconsistent behavior across environments.
 Config drift and incorrect settings playbook:
+
 1. Re-list current settings and compare with approved baseline from source control or release records.
 2. Restore known-good app settings and `host.json` values from last successful deployment.
 3. Restart the app and verify host startup and trigger listener status.

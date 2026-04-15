@@ -81,6 +81,7 @@ Easy Auth is built-in authentication/authorization from App Service, available t
 
 ### How it works
 Easy Auth is platform middleware that runs **before your code**. It can:
+
 1. Challenge unauthenticated requests.
 2. Validate tokens from configured identity providers.
 3. Forward identity claims to your function via headers.
@@ -156,6 +157,7 @@ Manual validation is common when:
 - Validation is centralized in APIM or custom middleware.
 
 Minimum validation checks:
+
 1. Signature verification with trusted signing keys.
 2. Issuer (`iss`) allow-list check.
 3. Audience (`aud`) check for your API.
@@ -163,6 +165,7 @@ Minimum validation checks:
 
 ### OAuth 2.0 client credentials flow
 For service-to-service access:
+
 1. Service acquires token from Microsoft Entra ID.
 2. Service calls Function App or APIM with bearer token.
 3. Gateway/platform/function validates token.
@@ -243,6 +246,7 @@ Use Easy Auth, APIM OAuth, or JWT validation when you need per-user identity, cl
 Managed identity removes embedded credentials from code and app settings.
 
 Recommended pattern:
+
 1. Enable system-assigned or user-assigned identity.
 2. Grant least-privilege RBAC on target resources.
 3. Use identity-based connection settings where supported.
@@ -264,6 +268,7 @@ Flex Consumption requires identity-based host storage configuration. Plan identi
 
 ### Key and secret handling
 Preferred order:
+
 1. Managed identity (no secret)
 2. Key Vault references in app settings
 3. Direct secret values only when unavoidable
@@ -283,6 +288,7 @@ Common attack vectors in Functions workloads:
 - Cold-start timing side-channel considerations for sensitive paths
 
 Defense-in-depth baseline:
+
 1. Explicit HTTP `authLevel`
 2. Easy Auth and/or JWT validation
 3. APIM and network isolation

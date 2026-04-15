@@ -262,6 +262,7 @@ Application Insights smart detection can identify anomalies such as sudden failu
 Use smart detection as supplementary signal, not your only paging mechanism.
 ### Recommended baseline alert set
 Start with this minimum set and tune after two to four weeks of production data:
+
 1. **Availability / health endpoint failures**.
 2. **HTTP 5xx count spike**.
 3. **P95 duration increase**.
@@ -340,6 +341,7 @@ dependency-failure-warning      True       3
 - Rule is reviewed after every major incident.
 ## Verification
 Validate alert creation, firing, and delivery before production sign-off.
+
 1. Verify alert definitions exist.
 
     ```bash

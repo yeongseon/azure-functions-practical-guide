@@ -57,6 +57,7 @@ Invest in cold start mitigation when at least one condition is true:
 ### 1) Understand startup phases
 #### What causes cold start
 Cold start usually combines several phases:
+
 1. Worker instance allocation.
 2. Functions host startup.
 3. Language worker startup.
@@ -353,6 +354,7 @@ FunctionExecutionUnits  00:05:00     1.47
 
 ## Rollback / Troubleshooting
 If mitigation does not improve latency, run this sequence:
+
 1. Verify settings are persisted on the target resource.
 2. Re-check app initialization for blocking network calls and heavy package load.
 3. Roll back warm-capacity changes if cost increased without measurable benefit.

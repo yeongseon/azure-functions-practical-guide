@@ -363,6 +363,7 @@ flowchart LR
 Keep orchestrator code deterministic and move all I/O into activities.
 ### Extension bundle versioning strategy
 Treat extension bundle upgrades like dependency upgrades with staged rollout:
+
 1. Validate bundle range changes in lower environments with representative load.
 2. Compare failure rates, cold start behavior, and throughput.
 3. Promote gradually with rollback criteria.

@@ -72,6 +72,7 @@ flowchart TD
 ### 1.3 App under test
 The lab workload is a minimal HTTP-triggered app used to expose startup and request timing differences without heavy downstream dependency noise.
 Design intent for this lab:
+
 1. Preserve a very low warm execution baseline.
 2. Trigger a full idle-to-first-hit path in FC1.
 3. Compare full idle cold, post-restart cold, and fully warm behavior.
@@ -128,6 +129,7 @@ sequenceDiagram
 | Scheduled synthetic warm traffic | All plans | Keeps app active | Can reduce idle cold frequency | Operational workaround, not platform guarantee |
 ### 1.7 Why this matters for troubleshooting quality
 Misclassification of cold-start signals creates expensive operational mistakes:
+
 1. False rollback decisions when code is healthy.
 2. Escalation to app team when capacity-path behavior is the true driver.
 3. Incorrect mitigation (dependency tuning) for a provisioning bottleneck.
@@ -160,6 +162,7 @@ flowchart LR
 ```
 ### 2.3 Proof criteria
 All criteria below should be satisfied to support the hypothesis:
+
 1. `traces` include healthy/fast host startup messages (for example `Host started (363ms)`).
 2. Full-idle first-hit client latency is dramatically larger than host startup duration.
 3. Warm baseline remains low and stable (`67ms-99ms` client-side; `3.63ms-5.86ms` server-side).
@@ -251,6 +254,7 @@ Kind               functionapp,linux
 ```
 ### 3.5 Trigger measurement workflow
 Execute the measurement workflow in this order:
+
 1. Capture warm baseline with 3 quick requests.
 2. Keep app idle for ~13 minutes.
 3. Send first request and capture full idle cold latency.
@@ -569,6 +573,7 @@ Sample interpretation table:
 | `Functions.info` | Variable | 0 | Higher when cold bins included | Correlate with startup events |
 #### 4.6.2 Query 3 cold-start analysis highlights
 What to validate:
+
 1. Startup event bins appear in same windows as elevated first invocation duration.
 2. FC1 can show many startup events without indicating failure by itself.
 3. Gap between startup events and request windows helps identify allocation delays.
@@ -702,6 +707,7 @@ graph LR
 ### Evidence Chain: Why This Proves the Hypothesis
 !!! success "Falsification logic"
     The hypothesis is supported only when all three classes of evidence align:
+
     1. A severe full-idle client symptom (`30.485s`) is present.
     2. Host startup duration remains fast (`363ms`/`453ms`), ruling out host-start as the dominant bottleneck.
     3. Warm steady-state remains healthy (`67-99ms` client, `3.63-5.86ms` server), ruling out sustained regression.
@@ -716,6 +722,7 @@ Use this worksheet to run at least three cycles and reduce one-off noise.
 | Run 2 | 13 |  |  |  |  |  |  |
 | Run 3 | 13 |  |  |  |  |  |  |
 Decision guidance after repeated runs:
+
 1. If full-idle first-hit remains high while host-start stays sub-second, keep provisioning-dominant classification.
 2. If host-start grows into multi-second range, inspect runtime startup path and extension initialization.
 3. If warm mean drifts upward across cycles, investigate sustained regression causes before final attribution.

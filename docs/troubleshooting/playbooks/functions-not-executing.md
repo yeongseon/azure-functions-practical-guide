@@ -416,6 +416,7 @@ Disproof condition:
 
 ## 8. Immediate Mitigations
 Apply in order and stop once recovery criteria are met.
+
 1. Remove unintended disable setting(s).
 2. Fix trigger connection/auth settings and identity permissions.
 3. Restart the Function App to reinitialize listeners.

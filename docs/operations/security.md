@@ -141,6 +141,7 @@ Only supply explicit `--key-value` when you have a specific operational need (fo
 
 Automate rotation with Azure Automation, Logic Apps, or a scheduled function.
 Recommended runbook:
+
 1. Generate and set new keys.
 2. Save values as new Azure Key Vault secret versions.
 3. Notify consumers to refresh secrets.
@@ -440,6 +441,7 @@ Use these actions when a control change breaks production traffic or when indica
 ### Incident: key rotation caused client failures
 Symptoms: increased 401 responses and client authentication failures immediately after key update.
 Recovery steps:
+
 1. Confirm clients still using old key versions.
 2. Re-issue previous key value only for emergency bridge window.
 3. Enforce a timed rollback window and track remaining callers.
@@ -456,6 +458,7 @@ az functionapp function keys set --name "$APP_NAME" --resource-group "$RG" --fun
 
 ### Incident: RBAC change locked out operators
 ...
+
 3. Remove emergency assignment after remediation validation.
 
 ```bash
@@ -471,6 +474,7 @@ az role assignment create --assignee "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" --ro
 
 ### Incident: access restrictions blocked valid ingress
 ...
+
 3. Reconcile intended CIDR ranges and remove temporary rules.
 
 ```bash

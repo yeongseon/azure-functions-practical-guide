@@ -166,6 +166,7 @@ Design guidance:
 - validate downstream service quotas before increasing scale limits.
 
 Concurrency tuning checklist:
+
 1. Baseline queue drain rate at current settings.
 2. Increase concurrency gradually and measure error or timeout impact.
 3. Confirm downstream services stay below throttling thresholds.
@@ -341,6 +342,7 @@ Use this matrix for fast triage when observed scaling does not match expectation
 Always-ready instances reduce cold-path impact for latency-critical entry points, but they also establish a cost floor.
 
 Recommended approach:
+
 1. Start with one always-ready instance on the most latency-sensitive function group.
 2. Measure p95 and p99 improvement over at least one full traffic cycle.
 3. Increase only when SLO gain justifies added baseline cost.

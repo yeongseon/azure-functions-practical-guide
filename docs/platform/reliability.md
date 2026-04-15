@@ -42,6 +42,7 @@ Before you finalize reliability design decisions, verify these prerequisites:
 ## Main Content
 ### Reliability layers
 Design for reliability across four layers:
+
 1. **Trigger semantics** (delivery guarantees, retries, checkpointing)
 2. **Function behavior** (idempotency, timeout, exception handling)
 3. **Platform behavior** (scale transitions, zone support, host restarts)
@@ -373,6 +374,7 @@ Durable Functions improves reliability for long-running orchestration, but relia
 
 ### Exactly-once processing patterns
 Exactly-once transport is rarely available end-to-end; achieve exactly-once effects by combining idempotency and atomic state transitions.
+
 1. **Inbox table pattern**
     - Record processed event key before side effect.
     - Skip side effect when key already exists.

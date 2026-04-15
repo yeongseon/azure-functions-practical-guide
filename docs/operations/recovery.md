@@ -218,6 +218,7 @@ Recovery depends on those services' durability configuration:
 ### Regional recovery planning
 Region-level recovery usually requires pre-provisioned secondary environment.
 Recommended pattern:
+
 1. Provision primary and secondary environments with infrastructure as code.
 2. Replicate critical configuration and secrets strategy.
 3. Use traffic management or DNS failover process.

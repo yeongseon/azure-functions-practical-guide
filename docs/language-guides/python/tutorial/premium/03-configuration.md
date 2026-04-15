@@ -154,8 +154,10 @@ flowchart LR
 
         1. Enable system-assigned managed identity on the Function App:
            `az functionapp identity assign --name "$APP_NAME" --resource-group "$RG"`
+
         2. Get the managed identity principal ID:
            `az functionapp identity show --name "$APP_NAME" --resource-group "$RG" --query "principalId" --output tsv`
+
         3. Grant required storage-account scoped RBAC roles:
            - `Storage Blob Data Owner`
            - `Storage Queue Data Contributor`

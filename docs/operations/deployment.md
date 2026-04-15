@@ -423,6 +423,7 @@ curl --silent --show-error --fail https://<app-name>.azurewebsites.net/api/healt
 ```
 
 Expected output:
+
 1. Function App state is `Running`.
 2. Health endpoint returns HTTP `200`.
 3. Version and commit match the released artifact.
