@@ -439,4 +439,5 @@ nav:
     - reference/content-validation-status.md
     - reference/validation-status.md
   - Contributing:
+    - contributing/index.md
     - contributing/cross-guide-baseline.md
