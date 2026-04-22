@@ -118,6 +118,13 @@ flowchart TD
 - [Methodology](methodology.md)
 - [KQL Query Library](kql/index.md)
 
+### Cross-service references
+
+If you also operate App Service or Container Apps with container-based continuous deployment that uses managed identity to pull from Azure Container Registry, the same RBAC unique-key constraint on `(scope, principal, role)` can surface as `RoleAssignmentExists` on CD reconnect. Although Azure Functions managed deployments do not currently expose this exact failure mode, the diagnostic pattern (convert hex assignment ID → GUID, look up principal, delete orphaned assignment) transfers directly:
+
+- [App Service: CD RBAC Role Assignment Conflict (playbook)](https://yeongseon.github.io/azure-app-service-practical-guide/troubleshooting/playbooks/cd-rbac-role-assignment-conflict/)
+- [Container Apps: CD RBAC Role Assignment Conflict (playbook)](https://yeongseon.github.io/azure-container-apps-practical-guide/troubleshooting/playbooks/identity-and-configuration/cd-rbac-role-assignment-conflict/)
+
 ## Sources
 
 - [Azure Functions documentation](https://learn.microsoft.com/azure/azure-functions/)
