@@ -1,17 +1,77 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-overview
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-overview
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-custom-handlers
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/azure/azure-functions/functions-overview
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-overview
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/azure/azure-functions/functions-custom-handlers
+  diagrams:
+    - id: functions-architecture-overview
+      type: flowchart
+      source: self-generated
+      justification: "Synthesized end-to-end runtime view from Azure Functions overview, hosting, and networking documentation"
+      based_on:
+        - https://learn.microsoft.com/azure/azure-functions/functions-overview
+        - https://learn.microsoft.com/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+    - id: control-data-plane
+      type: flowchart
+      source: self-generated
+      justification: "Synthesized control plane versus runtime execution model from Azure Functions management, scale, and networking documentation"
+      based_on:
+        - https://learn.microsoft.com/azure/azure-functions/functions-overview
+        - https://learn.microsoft.com/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+    - id: runtime-execution-path
+      type: flowchart
+      source: self-generated
+      justification: "Summarizes the documented trigger-to-host-to-worker execution model"
+      based_on:
+        - https://learn.microsoft.com/azure/azure-functions/functions-overview
+        - https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+    - id: detailed-host-worker-communication-sequence
+      type: sequenceDiagram
+      source: self-generated
+      justification: "Expanded invocation sequence based on Functions host, worker, and binding concepts"
+      based_on:
+        - https://learn.microsoft.com/azure/azure-functions/functions-overview
+        - https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+    - id: core-resource-relationships
+      type: flowchart
+      source: self-generated
+      justification: "Synthesizes core Function App dependencies around hosting, storage, identity, and monitoring"
+      based_on:
+        - https://learn.microsoft.com/azure/azure-functions/functions-overview
+        - https://learn.microsoft.com/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+    - id: configuration-layers-diagram
+      type: flowchart
+      source: self-generated
+      justification: "Shows the configuration hierarchy described across hosting, app settings, host.json, and bindings documentation"
+      based_on:
+        - https://learn.microsoft.com/azure/azure-functions/functions-overview
+        - https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+    - id: pattern-b-active-active-with-regional-affinity
+      type: flowchart
+      source: self-generated
+      justification: "Adapted multi-region pattern based on Azure traffic management and replicated dependency guidance"
+      based_on:
+        - https://learn.microsoft.com/azure/azure-functions/functions-overview
+        - https://learn.microsoft.com/azure/azure-functions/functions-scale
+    - id: durable-functions-orchestration-architecture
+      type: flowchart
+      source: self-generated
+      justification: "Summarizes Durable Functions orchestration, activities, timers, and state persistence"
+      based_on:
+        - https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-overview
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
@@ -62,6 +122,88 @@ az account set --subscription "$SUBSCRIPTION_ID"
 
 ## Main Content
 
+### Architecture at a Glance
+This view gives you the end-to-end mental model before you dive into individual runtime, scaling, networking, and deployment details.
+
+<!-- diagram-id: functions-architecture-overview -->
+```mermaid
+flowchart TD
+    Events["Event sources<br/>HTTP, timers, queues, blobs, Event Grid"]
+    Config["Function app settings<br/>Identity and configuration"]
+
+    subgraph Control["Control plane"]
+        ARM["Azure Resource Manager"]
+        ScaleCtrl["Scale controller"]
+    end
+
+    subgraph Plan["Hosting plan<br/>Consumption, Flex, Premium, or Dedicated"]
+        subgraph Instance["Function app instance"]
+            Host["Functions host runtime"]
+            Bindings["Trigger and binding extensions"]
+            Worker["Language worker process"]
+        end
+        InstanceN["Additional instances<br/>when scaled out"]
+    end
+
+    State["Storage account<br/>Checkpoints and durable state"]
+    Outputs["Downstream services<br/>Databases, messaging, APIs"]
+    Monitor["Application Insights<br/>and platform logs"]
+
+    Events --> ScaleCtrl
+    Events --> Bindings
+    Config --> Host
+    ScaleCtrl --> Instance
+    ScaleCtrl --> InstanceN
+    Bindings --> Host
+    Host --> Worker
+    Host --> State
+    Worker --> Outputs
+    Host --> Monitor
+```
+
+- Event sources feed both trigger listeners and the scale controller, so workload shape affects execution and scale behavior together.
+- The hosting plan defines the runtime boundary where the Functions host, extensions, and language worker actually run.
+- Storage is a runtime dependency for checkpoints, leases, and durable state, not just a deployment prerequisite.
+- Observability flows out of the host into Application Insights and platform logs, which is why host health is central to troubleshooting.
+
+### Control Plane vs Data Plane
+Azure Functions works best when you separate what you configure from what executes during live traffic processing.
+
+<!-- diagram-id: control-data-plane -->
+```mermaid
+flowchart TD
+    subgraph CP["Control plane<br/>What you configure"]
+        C1["Hosting plan selection"]
+        C2["Function app settings"]
+        C3["Identity and RBAC assignment"]
+        C4["Networking and access restrictions"]
+        C5["Deployment and slot configuration"]
+        C6["Scale limits"]
+    end
+
+    subgraph DP["Data plane<br/>What runs at runtime"]
+        D1["Trigger listeners"]
+        D2["Functions host execution"]
+        D3["Language worker invocation"]
+        D4["Input and output binding resolution"]
+        D5["Scale controller decisions"]
+        D6["Checkpoint and lease management"]
+    end
+
+    CP --> DP
+```
+
+| Operation | Plane | Example |
+|---|---|---|
+| Create Function App | Control | `az functionapp create` |
+| Change app setting | Control (triggers host restart) | `az functionapp config appsettings set` |
+| Process queue message | Data | Event → Trigger → Host → Worker → Output |
+| Scale out instances | Control (scale controller adds instances to data plane) | Automatic based on event backlog |
+| Deploy function code | Control/Data boundary | `az functionapp deployment source config-zip` |
+| Assign managed identity | Control | `az functionapp identity assign` |
+
+In practice, Azure manages scale-controller policy as platform orchestration, while the visible effect of that decision is more or fewer active data-plane instances.
+
 ### Why architecture matters
 Architecture decisions in Azure Functions determine:
 - how events are received and dispatched,
@@ -77,12 +219,12 @@ At a high level, every invocation follows this path:
 <!-- diagram-id: runtime-execution-path -->
 ```mermaid
 flowchart TD
-    E["Event Source\nHTTP / Timer / Queue / Blob / Event Grid"] --> T[Trigger Listener]
-    T --> H[Azure Functions Host\n.NET runtime process]
-    H --> W["Language Worker\nPython / Node.js / Java / .NET isolated"]
-    W --> C[Function Code]
-    C --> O[Output Bindings\noptional]
-    O --> D[Destination Service]
+    E["Event Source<br/>HTTP / Timer / Queue / Blob / Event Grid"] --> T["Trigger Listener"]
+    T --> H["Azure Functions Host<br/>.NET runtime process"]
+    H --> W["Language Worker<br/>Python / Node.js / Java / .NET isolated"]
+    W --> C["Function Code"]
+    C --> O["Output Bindings<br/>optional"]
+    O --> D["Destination Service"]
 ```
 
 ### Host process responsibilities
@@ -158,18 +300,18 @@ Most platform choices are applied at Function App scope, then interpreted at fun
 <!-- diagram-id: core-resource-relationships -->
 ```mermaid
 flowchart TD
-    SRC[Event Sources\nHTTP, Queue, Blob, Event Hub, Service Bus] --> FA[Function App]
+    SRC["Event Sources<br/>HTTP, Queue, Blob, Event Hub, Service Bus"] --> FA["Function App"]
 
-    subgraph PLAN["Hosting Plan\nConsumption / Flex / Premium / Dedicated"]
+    subgraph PLAN["Hosting Plan<br/>Consumption / Flex / Premium / Dedicated"]
         FA
     end
 
-    FA --> ST[Storage Account\nHost state, leases, checkpoints]
-    FA --> AI[Application Insights]
-    FA -. identity .-> MI[Managed Identity]
-    MI --> ENTRA[Microsoft Entra ID]
+    FA --> ST["Storage Account<br/>Host state, leases, checkpoints"]
+    FA --> AI["Application Insights"]
+    FA -. identity .-> MI["Managed Identity"]
+    MI --> ENTRA["Microsoft Entra ID"]
 
-    FA --> DATA[Downstream Services\nSQL, Cosmos DB, Storage, Key Vault]
+    FA --> DATA["Downstream Services<br/>SQL, Cosmos DB, Storage, Key Vault"]
 ```
 
 #### Important design implication
@@ -202,11 +344,11 @@ Azure Functions behavior is controlled through layered configuration:
 #### Configuration layers diagram
 <!-- diagram-id: configuration-layers-diagram -->
 ```mermaid
-flowchart TB
-    P[Layer 1: Hosting Plan\nScale model, network capability, cold-start profile] --> A[Layer 2: Function App Settings\nApp settings, identity, connection references]
-    A --> H[Layer 3: host.json\nConcurrency, retries, extension settings]
-    H --> F[Layer 4: Function Metadata\nTrigger and binding definitions]
-    F --> R[Runtime Behavior\nExecution, retries, output commits]
+flowchart TD
+    P["Layer 1: Hosting Plan<br/>Scale model, network capability, cold-start profile"] --> A["Layer 2: Function App Settings<br/>App settings, identity, connection references"]
+    A --> H["Layer 3: host.json<br/>Concurrency, retries, extension settings"]
+    H --> F["Layer 4: Function Metadata<br/>Trigger and binding definitions"]
+    F --> R["Runtime Behavior<br/>Execution, retries, output commits"]
 ```
 
 #### Example host-level setting (cross-language)
@@ -325,12 +467,12 @@ Best fit: latency-sensitive workloads with region-tolerant data architecture.
 <!-- diagram-id: pattern-b-active-active-with-regional-affinity -->
 ```mermaid
 flowchart TD
-    U[Clients] --> FD["Global Front Door / Traffic Manager"]
-    FD --> R1[Function App - Region A]
-    FD --> R2[Function App - Region B]
-    R1 --> D1[Regional Dependencies A]
-    R2 --> D2[Regional Dependencies B]
-    D1 <--> DR["("Replication / Event Relay")"]
+    U["Clients"] --> FD["Global Front Door / Traffic Manager"]
+    FD --> R1["Function App - Region A"]
+    FD --> R2["Function App - Region B"]
+    R1 --> D1["Regional Dependencies A"]
+    R2 --> D2["Regional Dependencies B"]
+    D1 <--> DR["Replication and Event Relay"]
     D2 <--> DR
 ```
 
@@ -348,10 +490,10 @@ Core components:
 <!-- diagram-id: durable-functions-orchestration-architecture -->
 ```mermaid
 flowchart TD
-    C["Client Trigger\nHTTP / Queue / Event"] --> O[Orchestrator Function]
+    C["Client Trigger<br/>HTTP / Queue / Event"] --> O["Orchestrator Function"]
     O --> S[(Durable State Store)]
-    O --> A1[Activity Function A]
-    O --> A2[Activity Function B]
+    O --> A1["Activity Function A"]
+    O --> A2["Activity Function B"]
     A1 --> S
     A2 --> S
     O --> T["Timer / External Event Wait"]
