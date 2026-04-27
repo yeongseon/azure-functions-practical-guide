@@ -118,7 +118,7 @@ Use [Language Guides Overview](../index.md) for a side-by-side worker/programmin
 ## See Also
 
 - [Language Guides Overview](../index.md)
-- [Platform: Architecture](../../platform/architecture.md)
+- [Platform: Architecture](../../platform/architecture/index.md)
 - [Platform: Hosting](../../platform/hosting.md)
 - [Operations: Deployment](../../operations/deployment.md)
 - [Operations: Monitoring](../../operations/monitoring.md)

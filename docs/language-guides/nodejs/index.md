@@ -96,7 +96,7 @@ The following content is planned for the Node.js track:
 - [Python Guide (reference implementation)](../python/index.md)
 - [Java Guide](../java/index.md)
 - [.NET Guide](../dotnet/index.md)
-- [Platform: Architecture](../../platform/architecture.md)
+- [Platform: Architecture](../../platform/architecture/index.md)
 - [Platform: Hosting](../../platform/hosting.md)
 - [Operations: Deployment](../../operations/deployment.md)
 - [Operations: Monitoring](../../operations/monitoring.md)

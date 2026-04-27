@@ -195,7 +195,7 @@ Executed 'Functions.blob_worker' (Succeeded, Duration=58ms)
 
 You completed the Consumption tutorial track. Continue with core runtime concepts.
 
-> **Next:** [How Functions Works](../../../../platform/architecture.md)
+> **Next:** [How Functions Works](../../../../platform/architecture/index.md)
 
 ## See Also
 

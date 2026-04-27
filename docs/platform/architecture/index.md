@@ -421,10 +421,10 @@ Keep these concerns separate:
 - **Operations docs:** how to deploy, monitor, and recover.
 
 !!! tip "Operations Guide"
-    For implementation and day-2 procedures, see [Deployment](../operations/deployment.md) and [Monitoring](../operations/monitoring.md).
+    For implementation and day-2 procedures, see [Deployment](../../operations/deployment.md) and [Monitoring](../../operations/monitoring.md).
 
 !!! tip "Language Guide"
-    For Python worker indexing and decorator model specifics, see [v2 Programming Model](../language-guides/python/v2-programming-model.md).
+    For Python worker indexing and decorator model specifics, see [v2 Programming Model](../../language-guides/python/v2-programming-model.md).
 
 ### Troubleshooting matrix
 Use this matrix to map symptoms to architecture layers before making changes.
@@ -530,12 +530,12 @@ Trade-offs:
 Platform architecture is consistent, but implementation details vary by language worker and programming model.
 
 ### Where to continue by language
-- Python overview: [Python Guide](../language-guides/python/index.md)
-- Python worker/runtime details: [Python Runtime](../language-guides/python/python-runtime.md)
-- Python programming model: [v2 Programming Model](../language-guides/python/v2-programming-model.md)
-- Node.js status and roadmap: [Node.js Guide](../language-guides/nodejs/index.md)
-- Java status and roadmap: [Java Guide](../language-guides/java/index.md)
-- .NET status and roadmap: [.NET Guide](../language-guides/dotnet/index.md)
+- Python overview: [Python Guide](../../language-guides/python/index.md)
+- Python worker/runtime details: [Python Runtime](../../language-guides/python/python-runtime.md)
+- Python programming model: [v2 Programming Model](../../language-guides/python/v2-programming-model.md)
+- Node.js status and roadmap: [Node.js Guide](../../language-guides/nodejs/index.md)
+- Java status and roadmap: [Java Guide](../../language-guides/java/index.md)
+- .NET status and roadmap: [.NET Guide](../../language-guides/dotnet/index.md)
 
 ### Architecture interpretation tips per language
 | Language | Architecture focus | Practical check |
@@ -546,14 +546,14 @@ Platform architecture is consistent, but implementation details vary by language
 | .NET isolated | Worker process separation and middleware pipeline | Validate host/worker boundary logging and dependency injection startup |
 
 ## See Also
-- [Hosting](hosting.md)
-- [Triggers and bindings](triggers-and-bindings.md)
-- [Scaling](scaling.md)
-- [Networking](networking.md)
-- [Security](security.md)
-- [Deployment](../operations/deployment.md)
-- [Monitoring](../operations/monitoring.md)
-- [Language Guides Home](../language-guides/index.md)
+- [Hosting](../hosting.md)
+- [Triggers and bindings](../triggers-and-bindings.md)
+- [Scaling](../scaling.md)
+- [Networking](../networking.md)
+- [Security](../security.md)
+- [Deployment](../../operations/deployment.md)
+- [Monitoring](../../operations/monitoring.md)
+- [Language Guides Home](../../language-guides/index.md)
 
 ## Sources
 - [Microsoft Learn: Azure Functions overview](https://learn.microsoft.com/azure/azure-functions/functions-overview)

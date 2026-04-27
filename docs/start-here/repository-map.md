@@ -57,7 +57,7 @@ flowchart TD
 
 ## Platform pages (design decisions)
 
-- [Architecture](../platform/architecture.md)
+- [Architecture](../platform/architecture/index.md)
 - [Hosting Plans](../platform/hosting.md)
 - [Triggers and Bindings](../platform/triggers-and-bindings.md)
 - [Scaling](../platform/scaling.md)

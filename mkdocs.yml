@@ -98,15 +98,16 @@ nav:
     - start-here/repository-map.md
   - Platform:
     - platform/index.md
-    - platform/architecture.md
-    - platform/hosting.md
-    - platform/triggers-and-bindings.md
-    - platform/scaling.md
-    - platform/networking.md
-    - platform/reliability.md
-    - platform/security.md
-    - platform/functions-vs-app-service.md
-    - platform/deployment-scenarios.md
+    - Architecture:
+      - Overview: platform/architecture/index.md
+    - Hosting: platform/hosting.md
+    - Triggers and Bindings: platform/triggers-and-bindings.md
+    - Scaling: platform/scaling.md
+    - Networking: platform/networking.md
+    - Reliability: platform/reliability.md
+    - Security: platform/security.md
+    - Functions vs App Service: platform/functions-vs-app-service.md
+    - Deployment Scenarios: platform/deployment-scenarios.md
     - Networking Scenarios:
       - platform/networking-scenarios/index.md
       - platform/networking-scenarios/public-only.md

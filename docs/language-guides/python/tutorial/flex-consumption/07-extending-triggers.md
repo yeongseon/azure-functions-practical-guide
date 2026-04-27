@@ -313,7 +313,7 @@ Expected output:
 
 ## Next Steps
 
-> **Next:** [How Azure Functions Works](../../../../platform/architecture.md)
+> **Next:** [How Azure Functions Works](../../../../platform/architecture/index.md)
 
 ## See Also
 

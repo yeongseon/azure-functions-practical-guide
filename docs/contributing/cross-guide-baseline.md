@@ -288,7 +288,7 @@ Every tutorial (01–07) MUST include these See Also links:
 - [Python Guide (reference implementation)](../python/index.md)
 - [{Other Language 1} Guide](../{lang1}/index.md)
 - [{Other Language 2} Guide](../{lang2}/index.md)
-- [Platform: Architecture](../../platform/architecture.md)
+- [Platform: Architecture](../../platform/architecture/index.md)
 - [Platform: Hosting](../../platform/hosting.md)
 - [Operations: Deployment](../../operations/deployment.md)
 - [Operations: Monitoring](../../operations/monitoring.md)
@@ -403,7 +403,7 @@ Use this checklist when adding or reviewing a language guide:
 - [Node.js Language Guide](../language-guides/nodejs/index.md)
 - [Java Language Guide](../language-guides/java/index.md)
 - [.NET Language Guide](../language-guides/dotnet/index.md)
-- [Platform: Architecture](../platform/architecture.md)
+- [Platform: Architecture](../platform/architecture/index.md)
 - [Start Here: Repository Map](../start-here/repository-map.md)
 
 ## Sources

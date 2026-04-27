@@ -383,7 +383,7 @@ Use conceptual formulas to compare plan behavior before detailed calculator mode
 
 ## See Also
 
-- [Architecture](architecture.md)
+- [Architecture](architecture/index.md)
 - [Scaling](scaling.md)
 - [Networking](networking.md)
 - [Security](security.md)

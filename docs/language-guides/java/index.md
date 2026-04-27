@@ -108,7 +108,7 @@ The following content is planned for the Java track:
 - [Python Guide (reference implementation)](../python/index.md)
 - [Node.js Guide](../nodejs/index.md)
 - [.NET Guide](../dotnet/index.md)
-- [Platform: Architecture](../../platform/architecture.md)
+- [Platform: Architecture](../../platform/architecture/index.md)
 - [Platform: Hosting](../../platform/hosting.md)
 - [Operations: Deployment](../../operations/deployment.md)
 - [Operations: Monitoring](../../operations/monitoring.md)

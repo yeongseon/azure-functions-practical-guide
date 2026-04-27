@@ -32,7 +32,7 @@ pie title Document Validation Status
 
 | Document | Has Sources | Status | Claims | Last Reviewed |
 |---|---|---|---|---|
-| [Architecture](../platform/architecture.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
+| [Architecture](../platform/architecture/index.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
 | [Deployment Scenarios](../platform/deployment-scenarios.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
 | [Fixed Outbound Nat](../platform/networking-scenarios/fixed-outbound-nat.md) | ❌ | ❓ No Metadata | — | — |
 | [Functions Vs App Service](../platform/functions-vs-app-service.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
@@ -167,4 +167,3 @@ python3 scripts/generate_content_validation_status.py
 
 - [Tutorial Validation Status](validation-status.md)
 - [CLI Cheatsheet](cli-cheatsheet.md)
-

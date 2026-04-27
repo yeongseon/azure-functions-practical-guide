@@ -248,7 +248,7 @@ Application log sample (Kudu/Log Stream):
 
 You now have a full Dedicated track implementation with HTTP, timer, blob, and queue triggers, plus deployment and operations foundations.
 
-> **Next:** [How Azure Functions Works](../../../../platform/architecture.md)
+> **Next:** [How Azure Functions Works](../../../../platform/architecture/index.md)
 
 ## See Also
 

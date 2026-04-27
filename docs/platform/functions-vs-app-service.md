@@ -307,7 +307,7 @@ During migration from one service to the other, run both side by side with traff
 ## See Also
 
 - [Hosting Plans](hosting.md) — detailed comparison of Azure Functions hosting plans
-- [Architecture](architecture.md) — Azure Functions runtime architecture and execution model
+- [Architecture](architecture/index.md) — Azure Functions runtime architecture and execution model
 - [Scaling](scaling.md) — event-driven scaling behavior across hosting plans
 - [Hosting Plan Selection](../best-practices/hosting-plan-selection.md) — best practices for choosing a hosting plan
 - [Hosting Options Overview](../start-here/hosting-options.md) — quick start guide for hosting options

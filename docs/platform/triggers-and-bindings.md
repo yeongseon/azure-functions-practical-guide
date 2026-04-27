@@ -390,7 +390,7 @@ Use language guides for runtime-specific syntax, decorators/attributes, and pack
 - [Java Guide](../language-guides/java/index.md)
 - [.NET Guide](../language-guides/dotnet/index.md)
 ## See Also
-- [Architecture](architecture.md)
+- [Architecture](architecture/index.md)
 - [Scaling](scaling.md)
 - [Reliability](reliability.md)
 - [Hosting Plans](hosting.md)

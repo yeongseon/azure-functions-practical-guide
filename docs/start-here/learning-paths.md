@@ -71,7 +71,7 @@ Choose the track that matches your immediate goal:
 
 1. [Overview](overview.md)
 2. [Hosting Options](hosting-options.md)
-3. [Platform: Architecture](../platform/architecture.md)
+3. [Platform: Architecture](../platform/architecture/index.md)
 4. [Platform: Triggers and Bindings](../platform/triggers-and-bindings.md)
 5. [Language Guides](../language-guides/index.md) and your target language index
 

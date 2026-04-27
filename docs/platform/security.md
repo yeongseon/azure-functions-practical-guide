@@ -333,7 +333,7 @@ Defense-in-depth baseline:
 ## See Also
 - [Reliability](reliability.md)
 - [Networking](networking.md)
-- [Architecture](architecture.md)
+- [Architecture](architecture/index.md)
 
 ## Sources
 - [Microsoft Learn: Security concepts](https://learn.microsoft.com/azure/azure-functions/security-concepts)

@@ -30,7 +30,7 @@ flowchart TD
     D --> E[Security]
 ```
 
-- [Architecture](architecture.md) — host/worker runtime model, deployment unit, and resource relationships.
+- [Architecture](architecture/index.md) — host/worker runtime model, deployment unit, and resource relationships.
 - [Hosting](hosting.md) — Consumption, Flex Consumption, Premium, and Dedicated plan behavior.
 - [Triggers and bindings](triggers-and-bindings.md) — eventing patterns and integration contracts.
 - [Scaling](scaling.md) — how scale decisions differ by trigger type and hosting plan.
