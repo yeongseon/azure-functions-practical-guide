@@ -82,6 +82,14 @@ az functionapp config appsettings set \
     "languageWorkers__node__arguments=--max-old-space-size=4096"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings`, `--max-old-space-size` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 ### Step 3 - Set Node.js runtime version
 
 ```bash
@@ -90,6 +98,14 @@ az functionapp config set \
   --resource-group "$RG" \
   --linux-fx-version "Node|20"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config set` |
+| Key flags | `--name`, `--resource-group`, `--linux-fx-version` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 !!! note "Node version setting on Linux Consumption"
     Linux Consumption uses `linuxFxVersion` for runtime selection. The format is `Node|20` (case-sensitive pipe separator). Verify with `az functionapp config show`.
@@ -116,6 +132,14 @@ az functionapp config appsettings list \
   --resource-group "$RG" \
   --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings list` |
+| Key flags | `--name`, `--resource-group`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 ### Step 6 - Review Consumption-specific notes
 
@@ -156,6 +180,14 @@ az functionapp config show \
   --query "linuxFxVersion" \
   --output tsv
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config show` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 Expected output:
 

@@ -52,6 +52,14 @@ flowchart TD
     style AI fill:#68217A,color:#fff
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights query"\| AI` |
+| Key flags | None |
+| Variables | None |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart TD
@@ -98,6 +106,14 @@ az monitor app-insights component show \
   --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights component show` |
+| Key flags | `--resource-group`, `--query`, `--output` |
+| Variables | `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 !!! note "Auto-created App Insights"
     `az functionapp create` on Flex Consumption automatically provisions Application Insights using the function app name. The connection string is already set in app settings.
 
@@ -121,6 +137,14 @@ az monitor app-insights query \
   --analytics-query "traces | take 5" \
   --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights query` |
+| Key flags | `--app`, `--resource-group`, `--analytics-query`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 !!! note "Use function app name for `--app`"
     On Flex Consumption, the App Insights resource has the same name as the function app. Use `--app "$APP_NAME"` (not `--app "$APP_NAME-ai"`).

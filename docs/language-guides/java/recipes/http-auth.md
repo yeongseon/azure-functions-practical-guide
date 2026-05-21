@@ -33,6 +33,14 @@ az webapp auth update \
   --action LoginWithAzureActiveDirectory
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az webapp auth update` |
+| Key flags | `--resource-group`, `--name`, `--enabled`, `--action` |
+| Variables | `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 Set unauthenticated behavior to require sign-in:
 
 ```bash
@@ -42,6 +50,14 @@ az resource update \
   --resource-type "Microsoft.Web/sites/config" \
   --set properties.globalValidation.unauthenticatedClientAction=RedirectToLoginPage
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az resource update` |
+| Key flags | `--resource-group`, `--name`, `--resource-type`, `--set` |
+| Variables | `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 ## Java implementation
 

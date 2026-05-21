@@ -36,6 +36,14 @@ az storage container create --name incoming --account-name $STORAGE_NAME --auth-
 az storage container create --name processed --account-name $STORAGE_NAME --auth-mode login
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage account create`, `az storage container create` |
+| Key flags | `--name`, `--resource-group`, `--location`, `--sku`, `--account-name`, `--auth-mode` |
+| Variables | `$STORAGE_NAME`, `$RG`, `$LOCATION` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 Configure storage connection:
 
 ```bash
@@ -44,6 +52,14 @@ az functionapp config appsettings set \
   --resource-group $RG \
   --settings "AzureWebJobsStorage=<storage-connection-string>"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 ## Java implementation
 

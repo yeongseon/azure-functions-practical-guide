@@ -70,6 +70,14 @@ az functionapp config appsettings set \
   --settings "FUNCTIONS_WORKER_RUNTIME=python"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 ### FUNCTIONS_EXTENSION_VERSION
 
 Specifies the major version of the Azure Functions runtime. Use `~4` to pin to the latest 4.x release:
@@ -80,6 +88,14 @@ az functionapp config appsettings set \
   --resource-group $RG \
   --settings "FUNCTIONS_EXTENSION_VERSION=~4"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 ### AzureWebJobsFeatureFlags
 
@@ -93,6 +109,14 @@ az functionapp config appsettings set \
   --resource-group $RG \
   --settings "AzureWebJobsFeatureFlags=EnableWorkerIndexing"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 ### AzureWebJobsStorage
 
@@ -127,6 +151,14 @@ az functionapp config appsettings set \
   --settings "APPLICATIONINSIGHTS_CONNECTION_STRING=InstrumentationKey=xxx;IngestionEndpoint=https://eastus-8.in.applicationinsights.azure.com/"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 > **Tip:** Use the full connection string format rather than just the `APPINSIGHTS_INSTRUMENTATIONKEY`. The connection string supports regional endpoints and Private Link.
 
 ## Python Worker Variables
@@ -148,6 +180,14 @@ az functionapp config appsettings set \
   --settings "PYTHON_THREADPOOL_THREAD_COUNT=16"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 ### FUNCTIONS_WORKER_PROCESS_COUNT
 
 Run multiple Python worker processes to increase throughput. Each process handles requests independently:
@@ -158,6 +198,14 @@ az functionapp config appsettings set \
   --resource-group $RG \
   --settings "FUNCTIONS_WORKER_PROCESS_COUNT=4"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 > **Caution:** More worker processes means more memory usage. On the Consumption plan, stay within the 1.5 GB memory limit per instance. On Flex Consumption, size worker count against the configured instance memory (512 MB, 2048 MB, or 4096 MB).
 

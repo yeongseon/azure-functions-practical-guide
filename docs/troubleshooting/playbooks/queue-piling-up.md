@@ -202,6 +202,14 @@ az monitor log-analytics query \
     --workspace "$WORKSPACE_ID" \
     --analytics-query "traces | where timestamp > ago(30m) | where message has_any ('scale','worker','drain') | project timestamp, message | order by timestamp desc"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage message peek`, `az monitor metrics list`, `az monitor log-analytics query` |
+| Key flags | `--account-name`, `--queue-name`, `--num-messages`, `--auth-mode`, `--resource`, `--metric`, `--interval`, `--aggregation`, `--offset`, `--output`, plus 2 more |
+| Variables | `$SUBSCRIPTION_ID`, `$RG`, `$WORKSPACE_ID` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 **Example output (`az storage message peek`):**
 ```json
 [
@@ -280,6 +288,14 @@ az monitor metrics list \
     --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor metrics list` |
+| Key flags | `--resource`, `--metric`, `--interval`, `--aggregation`, `--offset`, `--output` |
+| Variables | `$SUBSCRIPTION_ID`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ### H2: Poison-message loop
 **Signals that support**
 - Message samples show high `dequeueCount` (commonly >= 5).
@@ -322,6 +338,14 @@ az storage message peek \
     --auth-mode login
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage message peek` |
+| Key flags | `--account-name`, `--queue-name`, `--num-messages`, `--auth-mode` |
+| Variables | None |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
+
 ### H3: Per-message processing regression
 **Signals that support**
 - P95/P99 duration increase after release/config/runtime change.
@@ -361,6 +385,14 @@ az monitor log-analytics query \
     --analytics-query "requests | where timestamp > ago(6h) | where operation_Name startswith 'Functions.QueueProcessor' | summarize AvgMs=avg(duration), P95Ms=percentile(duration,95), P99Ms=percentile(duration,99) by bin(timestamp,15m)"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor log-analytics query` |
+| Key flags | `--workspace`, `--analytics-query` |
+| Variables | `$WORKSPACE_ID` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ### H4: Downstream dependency bottleneck
 **Signals that support**
 - Dependency failure rate and latency rise with backlog growth.
@@ -397,6 +429,14 @@ az monitor log-analytics query \
     --workspace "$WORKSPACE_ID" \
     --analytics-query "dependencies | where timestamp > ago(1h) | summarize Calls=count(), Failures=countif(success == false), P95Ms=percentile(duration,95) by target, resultCode"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor log-analytics query` |
+| Key flags | `--workspace`, `--analytics-query` |
+| Variables | `$WORKSPACE_ID` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 ## 7. Likely Root Cause Patterns
 1. Scale lag under burst + conservative host concurrency limits.

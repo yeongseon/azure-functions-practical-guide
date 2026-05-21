@@ -26,6 +26,14 @@ az functionapp identity assign --name "$APP_NAME" --resource-group "$RG"
 az role assignment create   --assignee-object-id "<object-id>"   --role "Key Vault Secrets User"   --scope "/subscriptions/<subscription-id>/resourceGroups/$RG/providers/Microsoft.KeyVault/vaults/$KEYVAULT_NAME"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp identity assign`, `az role assignment create` |
+| Key flags | `--name`, `--resource-group`, `--assignee-object-id`, `--role`, `--scope` |
+| Variables | `$APP_NAME`, `$RG`, `$KEYVAULT_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ### Read secret from function
 ```csharp
 var client = new SecretClient(new Uri(keyVaultUrl), new DefaultAzureCredential());

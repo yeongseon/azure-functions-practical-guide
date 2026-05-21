@@ -56,6 +56,14 @@ az functionapp create \
   --os-type linux
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp create` |
+| Key flags | `--name`, `--resource-group`, `--storage-account`, `--consumption-plan-location`, `--runtime`, `--runtime-version`, `--functions-version`, `--os-type` |
+| Variables | None |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 > **Flex Consumption:** The `--consumption-plan-location` flag creates a classic Consumption plan. To create a Flex Consumption app, use `az functionapp create` with a pre-created Flex Consumption plan (`--plan`), or use the Bicep template in `infra/main.bicep`. See [Flex Consumption plan](https://learn.microsoft.com/azure/azure-functions/flex-consumption-how-to) for CLI details.
 
 > **Important:** Azure Functions for Python only runs on Linux. The `--os-type linux` flag is required.
@@ -69,6 +77,14 @@ az functionapp config show \
   --query "linuxFxVersion" --output tsv
 # Output: Python|3.11
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config show` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output` |
+| Variables | None |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 ## Worker Process Settings
 
@@ -88,6 +104,14 @@ az functionapp config appsettings set \
   --resource-group your-rg \
   --settings "PYTHON_THREADPOOL_THREAD_COUNT=16"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings` |
+| Variables | None |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 **When to increase:** If your functions are I/O-bound (making HTTP calls, querying databases, reading files). The GIL is released during I/O operations, so additional threads provide real concurrency.
 
@@ -237,6 +261,14 @@ az functionapp config appsettings set \
   --resource-group your-rg \
   --settings "PYTHON_ISOLATE_WORKER_DEPENDENCIES=1"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings` |
+| Variables | None |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 ### Large Dependencies
 

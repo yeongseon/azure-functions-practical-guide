@@ -124,6 +124,14 @@ az ad app create --display-name "github-flex-functions" --output json
 az ad sp create --id "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" --output json
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az ad app create`, `az ad sp create` |
+| Key flags | `--display-name`, `--output`, `--id` |
+| Variables | None |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 Expected output:
 
 
@@ -142,6 +150,14 @@ Expected output:
 az ad app federated-credential create --id "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" --parameters '{"name":"github-main","issuer":"https://token.actions.githubusercontent.com","subject":"repo:your-org/azure-functions-python-guide:ref:refs/heads/main","audiences":["api://AzureADTokenExchange"]}' --output json
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az ad app federated-credential create` |
+| Key flags | `--id`, `--parameters`, `--output` |
+| Variables | None |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 Expected output:
 
 
@@ -159,6 +175,14 @@ Expected output:
 ```bash
 az role assignment create --assignee "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" --role "Contributor" --scope "/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RG" --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az role assignment create` |
+| Key flags | `--assignee`, `--role`, `--scope`, `--output` |
+| Variables | `$SUBSCRIPTION_ID`, `$RG` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 Expected output:
 
@@ -241,6 +265,14 @@ For Flex Consumption, `azure/functions-action@v1` should use remote build (or pr
 curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
 az monitor app-insights query --app "$APPINSIGHTS_NAME" --analytics-query "requests | where timestamp > ago(15m) | project timestamp, name, resultCode | order by timestamp desc | take 10" --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights query` |
+| Key flags | `--request`, `--app`, `--analytics-query`, `--output` |
+| Variables | `$APP_NAME`, `$APPINSIGHTS_NAME` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 Expected output:
 

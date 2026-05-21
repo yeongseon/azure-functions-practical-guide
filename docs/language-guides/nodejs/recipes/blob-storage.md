@@ -54,6 +54,14 @@ az storage container create \
   --account-name $STORAGE_NAME
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage account create`, `az storage container create` |
+| Key flags | `--name`, `--resource-group`, `--location`, `--sku`, `--account-name` |
+| Variables | `$STORAGE_NAME`, `$RG`, `$LOCATION` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ## Working Node.js v4 Code
 
 ```javascript

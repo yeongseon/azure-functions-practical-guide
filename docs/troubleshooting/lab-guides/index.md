@@ -5,7 +5,7 @@ content_sources:
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-functions/configure-monitoring
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-recover-from-failed-host
+    url: https://learn.microsoft.com/azure/azure-functions/functions-diagnostics
 ---
 
 # Hands-on Labs
@@ -107,6 +107,14 @@ az deployment group create \
 az group delete --name rg-lab-<name> --yes --no-wait
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az group create`, `az deployment group create`, `az group delete` |
+| Key flags | `--name`, `--location`, `--resource-group`, `--template-file`, `--parameters`, `--yes`, `--no-wait` |
+| Variables | None |
+| Expected result | Azure CLI completes the removal request; verify the target no longer appears in follow-up `show` or `list` output. |
+
+
 !!! warning "Cost"
     Each lab deploys Azure Functions resources. Delete the resource group after completing the lab to avoid ongoing charges.
 
@@ -178,4 +186,4 @@ Each lab trains specific diagnostic skills:
 
 - [Azure Functions monitoring](https://learn.microsoft.com/azure/azure-functions/functions-monitoring)
 - [Application Insights for Azure Functions](https://learn.microsoft.com/azure/azure-functions/configure-monitoring)
-- [Troubleshoot Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-recover-from-failed-host)
+- [Troubleshoot Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-diagnostics)

@@ -64,6 +64,14 @@ az ad sp create-for-rbac \
   --sdk-auth
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az ad sp create-for-rbac` |
+| Key flags | `--name`, `--role`, `--scopes`, `--sdk-auth` |
+| Variables | `$RG` |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
+
 ### Step 2 - Create workflow file
 
 ```yaml
@@ -137,6 +145,14 @@ az functionapp show \
 curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp show` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output`, `--request` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ### Step 4 - Track release history
 
 ```bash
@@ -146,6 +162,14 @@ az functionapp show \
   --query "{state:state, defaultHostName:defaultHostName, kind:kind}" \
   --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp show` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 Expected output:
 
@@ -164,6 +188,14 @@ Running  func-jded-04100220.azurewebsites.net   functionapp,linux
       --resource-group "$RG" \
       --sku S1
     ```
+
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az appservice plan update` |
+    | Key flags | `--name`, `--resource-group`, `--sku` |
+    | Variables | `$PLAN_NAME`, `$RG` |
+    | Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 ## Verification
 

@@ -72,6 +72,14 @@ az functionapp identity assign \
   --resource-group your-rg
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp identity assign` |
+| Key flags | `--name`, `--resource-group` |
+| Variables | None |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 Output:
 
 ```json
@@ -113,6 +121,14 @@ az role assignment create \
   --scope "/subscriptions/<subscription-id>/resourceGroups/your-rg/providers/Microsoft.KeyVault/vaults/your-kv"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az role assignment create` |
+| Key flags | `--assignee`, `--role`, `--scope` |
+| Variables | None |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 > **Tip:** Scope role assignments to the specific resource (storage account, Key Vault) rather than the resource group or subscription. This follows the principle of least privilege.
 
 ## Step 3: Replace Connection Strings with Identity-Based Connections
@@ -135,6 +151,14 @@ az functionapp config appsettings set \
   --settings "AzureWebJobsStorage__accountName=yourstorage"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings delete`, `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--setting-names`, `--settings` |
+| Variables | None |
+| Expected result | Azure CLI completes the removal request; verify the target no longer appears in follow-up `show` or `list` output. |
+
+
 ### Custom Binding Connections
 
 For bindings that use a custom connection name (e.g., `CosmosDBConnection`), use the `__accountEndpoint` suffix:
@@ -145,6 +169,14 @@ az functionapp config appsettings set \
   --resource-group your-rg \
   --settings "CosmosDBConnection__accountEndpoint=https://your-cosmos-db.documents.azure.com:443/"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings` |
+| Variables | None |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 ## Step 4: Use DefaultAzureCredential in Code
 
@@ -232,6 +264,14 @@ az account set --subscription "<subscription-id>"
 # Your code now uses your az login credentials automatically
 func host start
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az login`, `az account set` |
+| Key flags | `--subscription` |
+| Variables | None |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 Ensure your personal Azure AD account has the same role assignments as the Managed Identity (e.g., `Storage Blob Data Contributor`).
 

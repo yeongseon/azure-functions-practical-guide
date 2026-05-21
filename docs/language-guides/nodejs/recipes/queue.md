@@ -35,6 +35,14 @@ az storage queue create \
   --name processed-orders
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage queue create` |
+| Key flags | `--account-name`, `--name` |
+| Variables | `$STORAGE_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 Queue listener defaults in `host.json`:
 
 ```json

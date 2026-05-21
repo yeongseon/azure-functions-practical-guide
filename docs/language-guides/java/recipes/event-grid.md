@@ -3,7 +3,7 @@ content_sources:
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-event-grid-trigger
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/event-grid/create-view-manage-event-subscriptions-cli
+    url: https://learn.microsoft.com/cli/azure/eventgrid/event-subscription?view=azure-cli-latest
 ---
 
 # Event Grid Trigger
@@ -34,6 +34,14 @@ az eventgrid event-subscription create \
   --endpoint-type azurefunction \
   --endpoint "/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RG/providers/Microsoft.Web/sites/$APP_NAME/functions/handleEventGrid"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage account show`, `az eventgrid event-subscription create` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output`, `--source-resource-id`, `--endpoint-type`, `--endpoint` |
+| Variables | `$STORAGE_NAME`, `$RG`, `$STORAGE_ID`, `$SUBSCRIPTION_ID`, `$APP_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 ## Java implementation
 
@@ -84,4 +92,4 @@ public class EventGridFunctions {
 ## Sources
 
 - [Event Grid trigger for Azure Functions (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-bindings-event-grid-trigger)
-- [Create event subscriptions with Azure CLI (Microsoft Learn)](https://learn.microsoft.com/azure/event-grid/create-view-manage-event-subscriptions-cli)
+- [Create event subscriptions with Azure CLI (Microsoft Learn)](https://learn.microsoft.com/cli/azure/eventgrid/event-subscription?view=azure-cli-latest)

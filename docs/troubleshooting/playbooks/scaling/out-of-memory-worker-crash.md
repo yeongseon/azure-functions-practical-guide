@@ -130,6 +130,14 @@ az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "tr
 az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "AppMetrics | where TimeGenerated > ago(30m) | where Name in ('WorkingSet','PrivateBytes') | summarize avg(Value), max(Value) by Name, bin(TimeGenerated, 5m)" --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp show`, `az monitor log-analytics query` |
+| Key flags | `--name`, `--resource-group`, `--output`, `--workspace`, `--analytics-query` |
+| Variables | `$APP_NAME`, `$RG`, `$WORKSPACE_ID` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ### Example output
 ```text
 Name                ResourceGroup        State    RuntimeVersion    LinuxFxVersion
@@ -356,19 +364,51 @@ flowchart TD
    ```bash
    az functionapp config appsettings set --name $APP_NAME --resource-group $RG --settings "AzureFunctionsJobHost__extensions__queues__batchSize=8" "AzureFunctionsJobHost__extensions__queues__newBatchThreshold=4" --output table
    ```
+
+   | CLI element | Explanation |
+   |---|---|
+   | Command(s) | `az functionapp config appsettings set` |
+   | Key flags | `--name`, `--resource-group`, `--settings`, `--output` |
+   | Variables | `$APP_NAME`, `$RG` |
+   | Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 2. Switch blob handling to streaming patterns and avoid loading entire content into byte arrays before processing.
    ```bash
    az functionapp deployment source config-zip --name $APP_NAME --resource-group $RG --src ./deployments/streaming-hotfix.zip --output table
    ```
+
+   | CLI element | Explanation |
+   |---|---|
+   | Command(s) | `az functionapp deployment source config-zip` |
+   | Key flags | `--name`, `--resource-group`, `--src`, `--output` |
+   | Variables | `$APP_NAME`, `$RG` |
+   | Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 3. Temporarily scale to a higher Premium SKU when sustained peaks approach current plan limits.
    ```bash
    az functionapp plan update --name $PLAN_NAME --resource-group $RG --sku EP2 --number-of-workers 2 --output table
    ```
+
+   | CLI element | Explanation |
+   |---|---|
+   | Command(s) | `az functionapp plan update` |
+   | Key flags | `--name`, `--resource-group`, `--sku`, `--number-of-workers`, `--output` |
+   | Variables | `$PLAN_NAME`, `$RG` |
+   | Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 4. Apply guardrails for payload size at the application level. Validate incoming payload size in function code and reject oversized items before buffering.
    ```bash
    # Redeploy with payload validation guards added to function handlers
    az functionapp deployment source config-zip --name $APP_NAME --resource-group $RG --src ./deployments/payload-guard-hotfix.zip --output table
    ```
+
+   | CLI element | Explanation |
+   |---|---|
+   | Command(s) | `az functionapp deployment source config-zip` |
+   | Key flags | `--name`, `--resource-group`, `--src`, `--output` |
+   | Variables | `$APP_NAME`, `$RG` |
+   | Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 5. Configure queue poison-queue threshold and retry interval via `host.json` extensions so repeated crash retries do not amplify memory pressure. Messages exceeding `maxDequeueCount` are moved to the poison queue; `visibilityTimeout` controls the delay between retry attempts.
    ```json
    {

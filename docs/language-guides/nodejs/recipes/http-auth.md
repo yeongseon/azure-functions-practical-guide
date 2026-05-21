@@ -56,6 +56,14 @@ az webapp auth microsoft update \
   --tenant-id <tenant-id>
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp identity assign`, `az webapp auth update`, `az webapp auth microsoft update` |
+| Key flags | `--name`, `--resource-group`, `--enabled`, `--action`, `--client-id`, `--client-secret-setting-name`, `--tenant-id` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 ## Working Node.js v4 Code
 
 ```javascript

@@ -207,6 +207,14 @@ az functionapp cors add \
   --allowed-origins "https://app.contoso.example"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp cors add` |
+| Key flags | `--name`, `--resource-group`, `--allowed-origins` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
+
 Wildcard origin risks:
 - `*` allows any origin.
 - Increases browser-side data exposure risk.
@@ -234,6 +242,14 @@ az functionapp function keys list \
   --function-name "HttpExample"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp function keys list` |
+| Key flags | `--name`, `--resource-group`, `--function-name` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ### Storing keys in Key Vault
 - Store shared keys in Key Vault.
 - Distribute through secure channels only.
@@ -257,12 +273,28 @@ az functionapp identity assign \
   --resource-group "$RG"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp identity assign` |
+| Key flags | `--name`, `--resource-group` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 ```bash
 az role assignment create \
   --assignee "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" \
   --role "Storage Blob Data Contributor" \
   --scope "/subscriptions/<subscription-id>/resourceGroups/$RG/providers/Microsoft.Storage/storageAccounts/$STORAGE_NAME"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az role assignment create` |
+| Key flags | `--assignee`, `--role`, `--scope` |
+| Variables | `$RG`, `$STORAGE_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 Flex Consumption requires identity-based host storage configuration. Plan identity and RBAC early.
 

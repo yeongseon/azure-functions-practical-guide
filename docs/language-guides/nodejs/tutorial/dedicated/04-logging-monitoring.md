@@ -101,6 +101,14 @@ flowchart TD
       --output json
     ```
 
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az monitor app-insights query` |
+    | Key flags | `--app`, `--resource-group`, `--analytics-query`, `--output` |
+    | Variables | `$APP_NAME`, `$RG` |
+    | Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
     Expected output (abridged):
 
     ```json
@@ -140,6 +148,14 @@ flowchart TD
       --resource-group "$RG"
     ```
 
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az webapp log tail` |
+    | Key flags | `--name`, `--resource-group` |
+    | Variables | `$APP_NAME`, `$RG` |
+    | Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
+
     Then in another terminal, trigger a request:
 
     ```bash
@@ -164,6 +180,14 @@ flowchart TD
       --analytics-query "requests | where timestamp > ago(30m) | project timestamp, name, resultCode, duration | take 10" \
       --output json
     ```
+
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az monitor app-insights query` |
+    | Key flags | `--app`, `--resource-group`, `--analytics-query`, `--output` |
+    | Variables | `$APP_NAME`, `$RG` |
+    | Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 ## Verification
 

@@ -143,6 +143,14 @@ az role assignment list --assignee "$PRINCIPAL_ID" --scope "$RESOURCE_ID" --outp
 az keyvault show --name "$KV_NAME" --resource-group "$RG" --query "{name:name,enableRbacAuthorization:properties.enableRbacAuthorization}" --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp identity show`, `az role assignment list`, `az keyvault show` |
+| Key flags | `--name`, `--resource-group`, `--output`, `--assignee`, `--scope`, `--query` |
+| Variables | `$APP_NAME`, `$RG`, `$PRINCIPAL_ID`, `$RESOURCE_ID`, `$KV_NAME` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ### Example output
 ```text
 {
@@ -394,14 +402,38 @@ timeline
    az functionapp identity assign --resource-group "$RG" --name "$APP_NAME" \
      --identities "/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RG/providers/Microsoft.ManagedIdentity/userAssignedIdentities/$IDENTITY_NAME"
    ```
+
+   | CLI element | Explanation |
+   |---|---|
+   | Command(s) | `az functionapp identity assign` |
+   | Key flags | `--name`, `--resource-group`, `--output`, `--identities` |
+   | Variables | `$APP_NAME`, `$RG`, `$SUBSCRIPTION_ID`, `$IDENTITY_NAME` |
+   | Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 2. Grant missing blob data-plane permissions for blob-trigger workloads.
    ```bash
    az role assignment create --assignee-object-id "$PRINCIPAL_ID" --assignee-principal-type ServicePrincipal --role "Storage Blob Data Contributor" --scope "$STORAGE_RESOURCE_ID" --output json
    ```
+
+   | CLI element | Explanation |
+   |---|---|
+   | Command(s) | `az role assignment create` |
+   | Key flags | `--assignee-object-id`, `--assignee-principal-type`, `--role`, `--scope`, `--output` |
+   | Variables | `$PRINCIPAL_ID`, `$STORAGE_RESOURCE_ID` |
+   | Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 3. Grant missing Service Bus data-plane permissions for Service Bus trigger workloads.
    ```bash
    az role assignment create --assignee-object-id "$PRINCIPAL_ID" --assignee-principal-type ServicePrincipal --role "Azure Service Bus Data Receiver" --scope "$SERVICEBUS_RESOURCE_ID" --output json
    ```
+
+   | CLI element | Explanation |
+   |---|---|
+   | Command(s) | `az role assignment create` |
+   | Key flags | `--assignee-object-id`, `--assignee-principal-type`, `--role`, `--scope`, `--output` |
+   | Variables | `$PRINCIPAL_ID`, `$SERVICEBUS_RESOURCE_ID` |
+   | Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 4. Align Key Vault permission mode and grants.
    !!! warning "Verify Before Switching"
        Switching from access-policy to RBAC authorization may break existing access-policy-based consumers.
@@ -410,14 +442,38 @@ timeline
    ```bash
    az keyvault update --name "$KV_NAME" --resource-group "$RG" --enable-rbac-authorization true --output json
    ```
+
+   | CLI element | Explanation |
+   |---|---|
+   | Command(s) | `az keyvault update` |
+   | Key flags | `--name`, `--resource-group`, `--enable-rbac-authorization`, `--output` |
+   | Variables | `$KV_NAME`, `$RG` |
+   | Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 5. Restart the function host after RBAC changes to reduce stale token persistence risk.
    ```bash
    az functionapp restart --name "$APP_NAME" --resource-group "$RG"
    ```
+
+   | CLI element | Explanation |
+   |---|---|
+   | Command(s) | `az functionapp restart` |
+   | Key flags | `--name`, `--resource-group` |
+   | Variables | `$APP_NAME`, `$RG` |
+   | Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
 6. Validate recovery with bounded log checks before incident closure.
    ```bash
    az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "dependencies | where timestamp > ago(15m) | summarize AuthFailures=countif(resultCode in ('401','403'))" --output table
    ```
+
+   | CLI element | Explanation |
+   |---|---|
+   | Command(s) | `az monitor log-analytics query` |
+   | Key flags | `--workspace`, `--analytics-query`, `--output` |
+   | Variables | `$WORKSPACE_ID` |
+   | Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 ## 9. Prevention
 1. Standardize managed identity and RBAC assignments in infrastructure as code with review gates.

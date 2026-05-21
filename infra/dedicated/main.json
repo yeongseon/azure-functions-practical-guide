@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.41.2.15936",
-      "templateHash": "1752434628076480857"
+      "version": "0.42.1.51946",
+      "templateHash": "17700857932742391418"
     }
   },
   "parameters": {
@@ -464,8 +464,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.41.2.15936",
-              "templateHash": "4044749569571336357"
+              "version": "0.42.1.51946",
+              "templateHash": "14584762403987809360"
             }
           },
           "parameters": {
@@ -556,8 +556,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.41.2.15936",
-              "templateHash": "12560368737130882639"
+              "version": "0.42.1.51946",
+              "templateHash": "1931134581953219945"
             }
           },
           "parameters": {
@@ -623,13 +623,6 @@
             "primaryEndpoints": {
               "type": "object",
               "value": "[reference(resourceId('Microsoft.Storage/storageAccounts', parameters('name')), '2023-05-01').primaryEndpoints]"
-            },
-            "accessKey": {
-              "type": "string",
-              "metadata": {
-                "description": "Primary access key for the storage account"
-              },
-              "value": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('name')), '2023-05-01').keys[0].value]"
             }
           }
         }
@@ -667,8 +660,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.41.2.15936",
-              "templateHash": "10024143766933896089"
+              "version": "0.42.1.51946",
+              "templateHash": "11919253298146197641"
             }
           },
           "parameters": {
@@ -748,6 +741,7 @@
                 "privateEndpointNetworkPolicies": "Disabled"
               },
               "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), 'subnet-integration')]",
                 "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]"
               ]
             }

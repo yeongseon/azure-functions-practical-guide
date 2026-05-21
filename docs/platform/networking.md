@@ -41,6 +41,14 @@ Prepare these items before applying networking controls:
 az account show --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az account show` |
+| Key flags | `--output` |
+| Variables | None |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 Example output (sanitized):
 
 ```text
@@ -92,6 +100,14 @@ az functionapp config access-restriction add \
   --ip-address "203.0.113.0/24"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config access-restriction add` |
+| Key flags | `--name`, `--resource-group`, `--rule-name`, `--priority`, `--action`, `--ip-address` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 List current restrictions:
 
 ```bash
@@ -100,6 +116,14 @@ az webapp config access-restriction show \
   --resource-group "$RG" \
   --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az webapp config access-restriction show` |
+| Key flags | `--name`, `--resource-group`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 Example output (sanitized):
 
@@ -137,6 +161,14 @@ az network private-endpoint create \
   --connection-name "pe-conn-$APP_NAME"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az network private-endpoint create` |
+| Key flags | `--name`, `--resource-group`, `--vnet-name`, `--subnet`, `--private-connection-resource-id`, `--group-id`, `--connection-name` |
+| Variables | `$APP_NAME`, `$RG`, `$VNET_NAME`, `$PE_SUBNET` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 Inspect private endpoint status:
 
 ```bash
@@ -145,6 +177,14 @@ az network private-endpoint show \
   --resource-group "$RG" \
   --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az network private-endpoint show` |
+| Key flags | `--name`, `--resource-group`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 Example output (sanitized):
 
@@ -194,6 +234,14 @@ az functionapp vnet-integration add \
   --subnet "$INTEGRATION_SUBNET"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp vnet-integration add` |
+| Key flags | `--name`, `--resource-group`, `--vnet`, `--subnet` |
+| Variables | `$APP_NAME`, `$RG`, `$VNET_NAME`, `$INTEGRATION_SUBNET` |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
+
 Validate integration:
 
 ```bash
@@ -202,6 +250,14 @@ az functionapp vnet-integration list \
   --resource-group "$RG" \
   --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp vnet-integration list` |
+| Key flags | `--name`, `--resource-group`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 Example output (sanitized):
 
@@ -225,6 +281,14 @@ az functionapp config appsettings set \
   --resource-group "$RG" \
   --settings "WEBSITE_VNET_ROUTE_ALL=1"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 Flex Consumption already routes outbound traffic through the integrated VNet path, so `WEBSITE_VNET_ROUTE_ALL=1` is not required on Flex.
 

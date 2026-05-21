@@ -69,6 +69,14 @@ flowchart TD
         "languageWorkers__node__arguments=--max-old-space-size=4096"
     ```
 
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az functionapp config appsettings set` |
+    | Key flags | `--name`, `--resource-group`, `--settings`, `--max-old-space-size` |
+    | Variables | `$APP_NAME`, `$RG` |
+    | Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
     Expected output (abridged):
 
     ```text
@@ -108,6 +116,14 @@ flowchart TD
       --resource-group "$RG" \
       --output table
     ```
+
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az functionapp config appsettings list` |
+    | Key flags | `--name`, `--resource-group`, `--output` |
+    | Variables | `$APP_NAME`, `$RG` |
+    | Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
     Expected output (abridged):
 

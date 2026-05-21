@@ -3,7 +3,7 @@ content_sources:
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-event-grid-trigger
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/event-grid/create-view-manage-event-subscriptions-cli
+    url: https://learn.microsoft.com/cli/azure/eventgrid/event-subscription?view=azure-cli-latest
 ---
 
 # Event Grid Events
@@ -45,6 +45,14 @@ az eventgrid event-subscription create \
   --endpoint "/subscriptions/<subscription-id>/resourceGroups/$RG/providers/Microsoft.Web/sites/$APP_NAME/functions/processStorageEvent"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az eventgrid event-subscription create` |
+| Key flags | `--name`, `--source-resource-id`, `--resource-group`, `--query`, `--output`, `--endpoint-type`, `--endpoint` |
+| Variables | `$STORAGE_NAME`, `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ## Working Node.js v4 Code
 
 ```javascript
@@ -85,4 +93,4 @@ app.eventGrid("processStorageEvent", {
 
 ## Sources
 - [Event Grid trigger for Azure Functions (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-bindings-event-grid-trigger)
-- [Create Event Grid subscriptions with Azure CLI (Microsoft Learn)](https://learn.microsoft.com/azure/event-grid/create-view-manage-event-subscriptions-cli)
+- [Create Event Grid subscriptions with Azure CLI (Microsoft Learn)](https://learn.microsoft.com/cli/azure/eventgrid/event-subscription?view=azure-cli-latest)

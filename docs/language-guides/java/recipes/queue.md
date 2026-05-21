@@ -30,6 +30,14 @@ az storage queue create --name work-items --account-name $STORAGE_NAME --auth-mo
 az storage queue create --name work-results --account-name $STORAGE_NAME --auth-mode login
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage queue create` |
+| Key flags | `--name`, `--account-name`, `--auth-mode` |
+| Variables | `$STORAGE_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 Queue runtime defaults in `host.json`:
 
 ```json
@@ -102,6 +110,14 @@ az storage message peek \
   --account-name $STORAGE_NAME \
   --auth-mode login
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage message peek` |
+| Key flags | `--queue-name`, `--account-name`, `--auth-mode` |
+| Variables | `$STORAGE_NAME` |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
 
 ## Implementation notes
 

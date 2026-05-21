@@ -158,6 +158,22 @@ def generate_dashboard(tutorials: list[dict[str, Any]], today: date) -> str:
         f"Tutorials not tested within {STALENESS_DAYS} days are marked as stale."
     )
     lines.append("")
+    lines.append("## Scope")
+    lines.append("")
+    lines.append(
+        "This dashboard intentionally tracks leaf tutorial runbooks under "
+        "`docs/language-guides/*/tutorial/<hosting-plan>/*.md`, excluding `index.md` chooser pages. "
+        "The tracked pages are the documents a reader can execute end-to-end against Azure."
+    )
+    lines.append("")
+    lines.append("Out of scope for this dashboard:")
+    lines.append("")
+    lines.append("- Tutorial `index.md` chooser pages, which explain plan selection but are not executable deployment runbooks.")
+    lines.append(
+        "- Troubleshooting lab guides under `docs/troubleshooting/lab-guides/`, which are experiment reports tracked by "
+        "`content_validation`, `Lab Metadata`, `Experiment Log`, and `Expected Evidence` sections instead of tutorial execution status."
+    )
+    lines.append("")
 
     # Summary section
     lines.append("## Summary")
@@ -293,7 +309,7 @@ def generate_dashboard(tutorials: list[dict[str, Any]], today: date) -> str:
     lines.append("- [Platform Limits](platform-limits.md)")
     lines.append("")
 
-    return "\n".join(lines) + "\n"
+    return "\n".join(lines).rstrip() + "\n"
 
 
 def main() -> None:

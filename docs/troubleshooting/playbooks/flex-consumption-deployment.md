@@ -49,6 +49,14 @@ flowchart TD
     K --> K1["Fix: Set ENVIRONMENT app setting explicitly"]
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp plan create`, `az functionapp create`, `az functionapp deployment config set\n--deployment-storage-auth-type`, `az storage account update` |
+| Key flags | `--sku`, `--flexconsumption-location`, `--deployment-storage-auth-type`, `--default-action` |
+| Variables | None |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ### Incident framing
 
 - Common symptom: provisioning command fails, publish returns auth error, or app deploys but host enters error state.
@@ -125,6 +133,14 @@ SUBSCRIPTION_ID="<subscription-id>"
         --query "{name:name, state:properties.state, sku:properties.sku}" \
         --output json
     ```
+
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az functionapp show` |
+    | Key flags | `--name`, `--resource-group`, `--query`, `--output` |
+    | Variables | `$APP_NAME`, `$RG` |
+    | Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 3. Check storage account security settings:
     ```bash
     az storage account show \
@@ -133,6 +149,14 @@ SUBSCRIPTION_ID="<subscription-id>"
         --query "{allowSharedKeyAccess:allowSharedKeyAccess, defaultAction:networkRuleSet.defaultAction}" \
         --output json
     ```
+
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az storage account show` |
+    | Key flags | `--name`, `--resource-group`, `--query`, `--output` |
+    | Variables | `$STORAGE_NAME`, `$RG` |
+    | Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 4. Check deployment storage auth type:
     ```bash
     az functionapp deployment config show \
@@ -141,6 +165,14 @@ SUBSCRIPTION_ID="<subscription-id>"
         --query "deploymentStorage" \
         --output json
     ```
+
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az functionapp deployment config show` |
+    | Key flags | `--name`, `--resource-group`, `--query`, `--output` |
+    | Variables | `$APP_NAME`, `$RG` |
+    | Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 5. Check for missing app settings referenced by trigger bindings.
 
 ## 5. Evidence to Collect
@@ -219,6 +251,14 @@ az storage account show \
     --output json
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage account show` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output` |
+| Variables | `$STORAGE_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 Example output:
 
 ```json
@@ -246,6 +286,14 @@ az functionapp deployment config show \
     --query "deploymentStorage" \
     --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp deployment config show` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 Example output:
 
@@ -296,6 +344,14 @@ az functionapp show \
     --output json
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp show` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ### H2: Identity/auth configuration gap
 
 #### Signals that support
@@ -326,6 +382,14 @@ az functionapp deployment config show \
     --output tsv
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage account show`, `az functionapp deployment config show` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output` |
+| Variables | `$STORAGE_NAME`, `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 !!! tip "How to Read This"
     If `allowSharedKeyAccess` is `false` and deployment auth type is `storageaccountconnectionstring`, this is the root cause. Switch to managed identity auth before publishing.
 
@@ -351,6 +415,14 @@ az storage account show \
     --query "networkRuleSet.defaultAction" \
     --output tsv
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage account show` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output` |
+| Variables | `$STORAGE_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 ### H4: Missing app settings break host
 
@@ -389,6 +461,14 @@ az functionapp config appsettings list \
     --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings list` |
+| Key flags | `--name`, `--resource-group`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 ## 7. Likely Root Cause Patterns
 
 1. **Provisioning model confusion**
@@ -424,6 +504,14 @@ az functionapp config appsettings list \
         --deployment-storage-auth-value "$MI_ID"
     ```
 
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az functionapp deployment config set` |
+    | Key flags | `--name`, `--resource-group`, `--deployment-storage-auth-type`, `--deployment-storage-auth-value` |
+    | Variables | `$APP_NAME`, `$RG`, `$MI_ID` |
+    | Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 3. **Storage public access**: Lock down after PE and DNS setup:
     ```bash
     az storage account update \
@@ -431,6 +519,14 @@ az functionapp config appsettings list \
         --resource-group $RG \
         --default-action Deny
     ```
+
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az storage account update` |
+    | Key flags | `--name`, `--resource-group`, `--default-action` |
+    | Variables | `$STORAGE_NAME`, `$RG` |
+    | Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 4. **Missing connection setting**: Add the missing app setting:
     ```bash
@@ -440,6 +536,14 @@ az functionapp config appsettings list \
         --settings "EventHubConnection=<connection-string>"
     ```
 
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az functionapp config appsettings set` |
+    | Key flags | `--name`, `--resource-group`, `--settings` |
+    | Variables | `$APP_NAME`, `$RG` |
+    | Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 5. **Environment variable**: Set explicitly:
     ```bash
     az functionapp config appsettings set \
@@ -447,6 +551,14 @@ az functionapp config appsettings list \
         --resource-group $RG \
         --settings "ENVIRONMENT=production"
     ```
+
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az functionapp config appsettings set` |
+    | Key flags | `--name`, `--resource-group`, `--settings` |
+    | Variables | `$APP_NAME`, `$RG` |
+    | Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 ## 9. Prevention
 

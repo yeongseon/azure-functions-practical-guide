@@ -1,7 +1,7 @@
 ---
 content_sources:
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-recover-from-failed-host
+    url: https://learn.microsoft.com/azure/azure-functions/functions-diagnostics
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-functions/functions-deployment-technologies
   - type: mslearn-adapted
@@ -16,7 +16,7 @@ content_validation:
   reviewer: agent
   core_claims:
     - claim: "Deployment Failures 관련 핵심 진단 절차와 운영 판단 기준"
-      source: https://learn.microsoft.com/azure/azure-functions/functions-recover-from-failed-host
+      source: https://learn.microsoft.com/azure/azure-functions/functions-diagnostics
       verified: true
 ---
 
@@ -112,6 +112,14 @@ az functionapp show \
     --query "{state:state, kind:kind, reserved:reserved, linuxFxVersion:siteConfig.linuxFxVersion}" \
     --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp show` |
+| Key flags | `--resource-group`, `--name`, `--subscription`, `--query`, `--output` |
+| Variables | `$RG`, `$APP_NAME`, `$SUBSCRIPTION_ID` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 Expected read:
 - `state` should settle at `Running`.
 - `linuxFxVersion` should match intended runtime.
@@ -193,6 +201,14 @@ az functionapp show \
     --subscription $SUBSCRIPTION_ID \
     --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp show` |
+| Key flags | `--resource-group`, `--name`, `--subscription`, `--output` |
+| Variables | `$RG`, `$APP_NAME`, `$SUBSCRIPTION_ID` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 Example output:
 ```json
 {
@@ -212,6 +228,14 @@ az functionapp config appsettings list \
     --subscription $SUBSCRIPTION_ID \
     --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings list` |
+| Key flags | `--resource-group`, `--name`, `--subscription`, `--output` |
+| Variables | `$RG`, `$APP_NAME`, `$SUBSCRIPTION_ID` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 Example output:
 ```text
 Name                           Value
@@ -230,6 +254,14 @@ az monitor activity-log list \
     --status Failed \
     --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor activity-log list` |
+| Key flags | `--subscription`, `--resource-group`, `--offset`, `--status`, `--output` |
+| Variables | `$SUBSCRIPTION_ID`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 Example output:
 ```text
 EventTimestamp              OperationNameValue                     Status  ResourceGroup
@@ -282,6 +314,14 @@ az functionapp config appsettings list \
     --query "[?name=='FUNCTIONS_WORKER_RUNTIME']" \
     --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp show`, `az functionapp config appsettings list` |
+| Key flags | `--resource-group`, `--name`, `--subscription`, `--query`, `--output` |
+| Variables | `$RG`, `$APP_NAME`, `$SUBSCRIPTION_ID` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 Example output:
 ```json
 {
@@ -327,6 +367,14 @@ az functionapp config appsettings list \
     --query "[?name=='AzureWebJobsStorage' || name=='FUNCTIONS_WORKER_RUNTIME' || name=='WEBSITE_RUN_FROM_PACKAGE']" \
     --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings list` |
+| Key flags | `--resource-group`, `--name`, `--subscription`, `--query`, `--output` |
+| Variables | `$RG`, `$APP_NAME`, `$SUBSCRIPTION_ID` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 Example output:
 ```text
 Name                      Value
@@ -372,6 +420,14 @@ az monitor activity-log list \
     --offset 3h \
     --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings list`, `az monitor activity-log list` |
+| Key flags | `--resource-group`, `--name`, `--subscription`, `--query`, `--output`, `--offset` |
+| Variables | `$RG`, `$APP_NAME`, `$SUBSCRIPTION_ID` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 Example output:
 ```text
 Name                     Value
@@ -420,6 +476,14 @@ az functionapp show \
     --query "{state:state, defaultHostName:defaultHostName}" \
     --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor activity-log list`, `az functionapp show` |
+| Key flags | `--subscription`, `--resource-group`, `--offset`, `--status`, `--output`, `--name`, `--query` |
+| Variables | `$SUBSCRIPTION_ID`, `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 Example output:
 ```text
 EventTimestamp              OperationNameValue                     Status  SubStatus
@@ -467,6 +531,14 @@ az functionapp restart \
     --name $APP_NAME \
     --subscription $SUBSCRIPTION_ID
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set`, `az functionapp restart` |
+| Key flags | `--resource-group`, `--name`, `--subscription`, `--settings` |
+| Variables | `$RG`, `$APP_NAME`, `$SUBSCRIPTION_ID` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 ## 9. Prevention
 1. Add CI/CD guardrails:
     - validate `FUNCTIONS_WORKER_RUNTIME`, `linuxFxVersion`, and artifact language compatibility
@@ -490,7 +562,7 @@ az functionapp restart \
 - [Deployment and release patterns](../../best-practices/deployment.md)
 - Related Labs: [Cold Start Lab](../lab-guides/cold-start.md)
 ## Sources
-- [Troubleshoot Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-recover-from-failed-host)
+- [Troubleshoot Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-diagnostics)
 - [Deployment technologies in Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-deployment-technologies)
 - [Run your functions from a package file](https://learn.microsoft.com/azure/azure-functions/run-functions-from-deployment-package)
 - [Azure Functions app settings reference](https://learn.microsoft.com/azure/azure-functions/functions-app-settings)

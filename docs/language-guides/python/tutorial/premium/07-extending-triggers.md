@@ -168,6 +168,14 @@ flowchart TD
 5. Publish updated code to Premium.
 
     ```bash
+
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az storage container create`, `az storage blob upload` |
+    | Key flags | `--name`, `--account-name`, `--auth-mode`, `--container-name`, `--file` |
+    | Variables | `$STORAGE_NAME` |
+    | Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
     cd apps/python
     func azure functionapp publish "$APP_NAME" --python
     ```

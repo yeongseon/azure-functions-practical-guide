@@ -112,6 +112,14 @@ az monitor metrics list \
   --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor metrics list` |
+| Key flags | `--resource`, `--metric`, `--interval`, `--aggregation`, `--offset`, `--output` |
+| Variables | `$SUBSCRIPTION_ID`, `$RG`, `$APP_NAME`, `$STORAGE_NAME` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ## Application Insights Tables Reference
 
 | Table | What It Contains | Primary Use |

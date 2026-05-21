@@ -52,6 +52,14 @@ flowchart TD
     F --> G["func azure functionapp publish"]
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az deployment group create]` |
+| Key flags | None |
+| Variables | None |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ## Steps
 
 ### Step 1 - Author Bicep parameters
@@ -161,6 +169,14 @@ az deployment group create \
   --parameters baseName="jded-demo"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az deployment group create` |
+| Key flags | `--resource-group`, `--template-file`, `--parameters` |
+| Variables | `$RG` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ### Step 6 - Deploy application artifact
 
 ```bash
@@ -193,6 +209,14 @@ az resource list \
   --query "[].{name:name, type:type, location:location}"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az resource list` |
+| Key flags | `--resource-group`, `--output`, `--query` |
+| Variables | `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 Expected resources:
 
 ```text
@@ -214,6 +238,14 @@ az functionapp show \
   --query "{state:state, alwaysOn:siteConfig.alwaysOn, linuxFxVersion:siteConfig.linuxFxVersion}" \
   --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp show` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 ```text
 State    AlwaysOn    LinuxFxVersion

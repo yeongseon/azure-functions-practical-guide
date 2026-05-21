@@ -15,6 +15,10 @@ content_sources:
     url: https://learn.microsoft.com/azure/azure-functions/functions-how-to-github-actions
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-functions/functions-deployment-slots
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/app-service/overview-vnet-integration
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/app-service/networking/private-endpoint
 ---
 
 # 06 - CI/CD (Dedicated)
@@ -40,9 +44,9 @@ export LOCATION="koreacentral"
 You will package the Python Function App from `apps/python`, deploy it with Zip Deploy and remote build settings, and implement an automated GitHub Actions deployment workflow.
 
 !!! info "Infrastructure Context"
-    **Plan**: Dedicated (B1) | **Network**: Public internet | **VNet**: ❌ (requires Standard+ tier)
+    **Plan**: Dedicated (B1) | **Network**: Public internet in this tutorial | **VNet**: Supported by platform, not configured here
 
-    Basic B1 has no VNet integration or private endpoints. The app runs on a fixed App Service Plan (always on, no scale-to-zero). VNet support requires upgrading to Standard (S1) or Premium (P1v3) tier.
+    The app runs on a fixed App Service Plan (always on, no scale-to-zero). Basic B1 supports App Service VNet integration and private endpoints, but this guide uses Standard (S1+) for private networking scenarios to provide scale headroom, deployment slots, and a production-oriented validation path.
 
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
@@ -128,6 +132,14 @@ az functionapp deployment source config-zip \
   --src functionapp.zip
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set`, `az functionapp deployment source config-zip` |
+| Key flags | `--name`, `--resource-group`, `--settings`, `--src` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 !!! warning "CLI overrides `SCM_DO_BUILD_DURING_DEPLOYMENT`"
     The `az functionapp deployment source config-zip` command automatically sets `SCM_DO_BUILD_DURING_DEPLOYMENT=false`, which prevents pip install from running during deployment. For Python apps on Dedicated, prefer `func azure functionapp publish $APP_NAME --python` instead of manual zip deploy — it handles the remote build correctly.
 
@@ -141,6 +153,14 @@ az functionapp deployment list-publishing-profiles \
 
 curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp deployment list-publishing-profiles` |
+| Key flags | `--name`, `--resource-group`, `--output`, `--request` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 ### Step 4 - Add GitHub Actions workflow (recommended)
 
@@ -197,6 +217,14 @@ az functionapp deployment slot swap \
   --slot staging \
   --target-slot production
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az appservice plan update`, `az functionapp deployment slot create`, `az functionapp deployment source config-zip`, `az functionapp deployment slot swap` |
+| Key flags | `--name`, `--resource-group`, `--sku`, `--slot`, `--src`, `--target-slot` |
+| Variables | `$PLAN_NAME`, `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 !!! info "Requires Standard tier or higher"
     Deployment slots are not available on Basic (B1) tier. Upgrade to Standard (S1) or Premium (P1v2) before using slots.

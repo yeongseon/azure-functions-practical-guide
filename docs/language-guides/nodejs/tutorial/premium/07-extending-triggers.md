@@ -140,6 +140,14 @@ az storage container create \
   --auth-mode key
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage queue create`, `az storage container create` |
+| Key flags | `--name`, `--account-name`, `--auth-mode` |
+| Variables | `$STORAGE_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ### Step 5 — Configure queue connection
 
 Set the `QueueStorage` connection string for the queue trigger:
@@ -157,6 +165,14 @@ az functionapp config appsettings set \
   --settings "QueueStorage=$CONN_STR"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage account show-connection-string`, `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output`, `--settings` |
+| Variables | `$STORAGE_NAME`, `$RG`, `$APP_NAME`, `$CONN_STR` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 ### Step 6 — Deploy and verify trigger indexing
 
 ```bash
@@ -172,6 +188,14 @@ az functionapp function list \
   --query "[].{Name:name, Language:language}" \
   --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp function list` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 Expected output (key rows):
 
@@ -193,6 +217,14 @@ func-ndprem-04100022/timerLab                 node
     az functionapp restart --name "$APP_NAME" --resource-group "$RG"
     ```
 
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az functionapp restart` |
+    | Key flags | `--name`, `--resource-group` |
+    | Variables | `$APP_NAME`, `$RG` |
+    | Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
+
 ### Step 7 — Test queue trigger
 
 Send a test message to the queue:
@@ -204,6 +236,14 @@ az storage message put \
   --account-name "$STORAGE_NAME" \
   --auth-mode key
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage message put` |
+| Key flags | `--queue-name`, `--content`, `--account-name`, `--auth-mode` |
+| Variables | `$STORAGE_NAME` |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
 
 Expected output:
 
@@ -230,6 +270,14 @@ az storage blob upload \
   --overwrite
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage blob upload` |
+| Key flags | `--container-name`, `--file`, `--name`, `--account-name`, `--auth-mode`, `--overwrite` |
+| Variables | `$STORAGE_NAME` |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
+
 ### Step 9 — Verify trigger execution via Application Insights
 
 Wait 2–3 minutes for telemetry ingestion, then query:
@@ -241,6 +289,14 @@ az monitor app-insights query \
   --analytics-query "requests | where timestamp > ago(30m) | summarize count() by name | order by count_ desc" \
   --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights query` |
+| Key flags | `--app`, `--resource-group`, `--analytics-query`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 Expected output (abridged):
 
@@ -269,6 +325,14 @@ az monitor app-insights query \
   --analytics-query "traces | where timestamp > ago(30m) and message contains 'queueProcessor' | project timestamp, message | take 5" \
   --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights query` |
+| Key flags | `--app`, `--resource-group`, `--analytics-query`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 Expected output:
 

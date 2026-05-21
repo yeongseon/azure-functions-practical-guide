@@ -33,6 +33,14 @@ public void BlobCreatedEvent([EventGridTrigger] BinaryData eventData)
 az eventgrid event-subscription create   --name "sub-func-events"   --source-resource-id "<source-resource-id>"   --endpoint-type azurefunction   --endpoint "/subscriptions/<subscription-id>/resourceGroups/$RG/providers/Microsoft.Web/sites/$APP_NAME/functions/BlobCreatedEvent"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az eventgrid event-subscription create` |
+| Key flags | `--name`, `--source-resource-id`, `--endpoint-type`, `--endpoint` |
+| Variables | `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ## See Also
 - [Recipes Index](index.md)
 - [.NET Language Guide](../index.md)

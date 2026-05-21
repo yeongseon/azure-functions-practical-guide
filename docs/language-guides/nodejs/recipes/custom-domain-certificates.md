@@ -56,6 +56,14 @@ az functionapp create \
   --functions-version 4
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az group create`, `az storage account create`, `az functionapp create` |
+| Key flags | `--name`, `--location`, `--resource-group`, `--sku`, `--storage-account`, `--plan`, `--runtime`, `--runtime-version`, `--functions-version` |
+| Variables | `$RG`, `$LOCATION`, `$STORAGE_NAME`, `$APP_NAME`, `$PLAN_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 Add a host name and upload/bind certificate:
 
 ```bash
@@ -77,6 +85,14 @@ az functionapp config ssl bind \
   --ssl-type SNI
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config hostname add`, `az functionapp config ssl upload`, `az functionapp config ssl bind` |
+| Key flags | `--webapp-name`, `--resource-group`, `--hostname`, `--name`, `--certificate-file`, `--certificate-password`, `--certificate-thumbprint`, `--ssl-type` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 Set HTTPS-only mode:
 
 ```bash
@@ -85,6 +101,14 @@ az functionapp update \
   --resource-group $RG \
   --set httpsOnly=true
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp update` |
+| Key flags | `--name`, `--resource-group`, `--set` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 Important hosting plan note:
 - Flex Consumption does not support App Service managed/platform certificates.

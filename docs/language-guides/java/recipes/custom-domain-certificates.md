@@ -38,6 +38,14 @@ az functionapp config hostname add \
   --hostname api.contoso.com
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config hostname add` |
+| Key flags | `--webapp-name`, `--resource-group`, `--hostname` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 Upload certificate:
 
 ```bash
@@ -48,6 +56,14 @@ az functionapp config ssl upload \
   --certificate-password "<pfx-password>"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config ssl upload` |
+| Key flags | `--resource-group`, `--name`, `--certificate-file`, `--certificate-password` |
+| Variables | `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 Bind certificate to hostname:
 
 ```bash
@@ -57,6 +73,14 @@ az functionapp config ssl bind \
   --certificate-thumbprint <thumbprint> \
   --ssl-type SNI
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config ssl bind` |
+| Key flags | `--resource-group`, `--name`, `--certificate-thumbprint`, `--ssl-type` |
+| Variables | `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 ## Flex Consumption note
 

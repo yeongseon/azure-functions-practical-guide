@@ -307,6 +307,14 @@ az functionapp identity assign \
     --resource-group "$RG"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp identity assign` |
+| Key flags | `--name`, `--resource-group` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 Set HTTPS-only and TLS minimum:
 
 ```bash
@@ -321,6 +329,14 @@ az functionapp config set \
     --min-tls-version "1.2"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp update`, `az functionapp config set` |
+| Key flags | `--name`, `--resource-group`, `--https-only`, `--min-tls-version` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 Set Key Vault-backed app setting:
 
 ```bash
@@ -329,6 +345,14 @@ az functionapp config appsettings set \
     --resource-group "$RG" \
     --settings "DbPassword=@Microsoft.KeyVault(SecretUri=https://$KEYVAULT_NAME.vault.azure.net/secrets/DbPassword/)"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings` |
+| Variables | `$APP_NAME`, `$RG`, `$KEYVAULT_NAME` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 Grant storage data role to managed identity principal:
 
@@ -339,6 +363,14 @@ az role assignment create \
     --role "Storage Blob Data Contributor" \
     --scope "/subscriptions/<subscription-id>/resourceGroups/$RG/providers/Microsoft.Storage/storageAccounts/$STORAGE_NAME"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az role assignment create` |
+| Key flags | `--assignee-object-id`, `--assignee-principal-type`, `--role`, `--scope` |
+| Variables | `$RG`, `$STORAGE_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 ## Validation Checklist
 

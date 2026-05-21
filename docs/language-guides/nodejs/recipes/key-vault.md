@@ -51,6 +51,14 @@ az keyvault secret set \
   --value "sample-secret-value"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az keyvault create`, `az keyvault secret set` |
+| Key flags | `--name`, `--resource-group`, `--location`, `--vault-name`, `--value` |
+| Variables | `$RG`, `$LOCATION` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 Enable managed identity and grant Key Vault secret permissions:
 
 ```bash
@@ -62,6 +70,14 @@ az role assignment create \
   --scope $(az keyvault show --name <key-vault-name> --resource-group $RG --query id --output tsv)
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp identity assign`, `az role assignment create` |
+| Key flags | `--name`, `--resource-group`, `--assignee`, `--role`, `--scope`, `--query`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 Configure a version-pinned Key Vault reference in app settings:
 
 ```bash
@@ -70,6 +86,14 @@ az functionapp config appsettings set \
   --resource-group $RG \
   --settings "PaymentApiKey=@Microsoft.KeyVault(SecretUri=https://<key-vault-name>.vault.azure.net/secrets/payment-api-key/<secret-version-guid>)"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 Install packages for direct SDK access:
 

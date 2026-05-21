@@ -10,20 +10,19 @@ This page tracks the source validation status of all documentation content. All 
 
 ## Summary
 
-*Generated: 2026-04-12*
+*Generated: 2026-05-22*
 
 | Content Type | Total | Verified | Pending | Unverified | No Metadata |
 |---|---:|---:|---:|---:|---:|
 | Mermaid Diagrams | 475 | 475 | 0 | 0 | 0 |
-| Text Documents | 69 | 65 | 0 | 0 | 4 |
+| Text Documents | 68 | 68 | 0 | 0 | 0 |
 
-!!! warning "Validation In Progress"
-    4 documents need `content_validation` metadata added.
+!!! success "All Content Verified"
+    All text documents have verified Microsoft Learn sources for core claims.
 
 ```mermaid
 pie title Document Validation Status
-    "Verified" : 65
-    "No Metadata" : 4
+    "Verified" : 68
 ```
 
 ## By Section
@@ -32,15 +31,14 @@ pie title Document Validation Status
 
 | Document | Has Sources | Status | Claims | Last Reviewed |
 |---|---|---|---|---|
-| [Architecture](../platform/architecture/index.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
 | [Deployment Scenarios](../platform/deployment-scenarios.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
-| [Fixed Outbound Nat](../platform/networking-scenarios/fixed-outbound-nat.md) | ❌ | ❓ No Metadata | — | — |
+| [Fixed Outbound Nat](../platform/networking-scenarios/fixed-outbound-nat.md) | ✅ | ✅ Verified | 3/3 | 2026-04-12 |
 | [Functions Vs App Service](../platform/functions-vs-app-service.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
 | [Hosting](../platform/hosting.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
 | [Networking](../platform/networking.md) | ✅ | ✅ Verified | 3/3 | 2026-04-12 |
-| [Private Egress](../platform/networking-scenarios/private-egress.md) | ❌ | ❓ No Metadata | — | — |
-| [Private Ingress](../platform/networking-scenarios/private-ingress.md) | ❌ | ❓ No Metadata | — | — |
-| [Public Only](../platform/networking-scenarios/public-only.md) | ❌ | ❓ No Metadata | — | — |
+| [Private Egress](../platform/networking-scenarios/private-egress.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
+| [Private Ingress](../platform/networking-scenarios/private-ingress.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
+| [Public Only](../platform/networking-scenarios/public-only.md) | ✅ | ✅ Verified | 3/3 | 2026-04-12 |
 | [Reliability](../platform/reliability.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
 | [Scaling](../platform/scaling.md) | ✅ | ✅ Verified | 3/3 | 2026-04-12 |
 | [Security](../platform/security.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |

@@ -147,6 +147,14 @@ az storage blob upload \
   --auth-mode login
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage queue create`, `az storage message put`, `az storage container create`, `az storage blob upload` |
+| Key flags | `--name`, `--account-name`, `--auth-mode`, `--queue-name`, `--content`, `--container-name`, `--file` |
+| Variables | `$STORAGE_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ### Step 6 - Confirm trigger activity
 
 ```bash
@@ -154,6 +162,14 @@ az webapp log tail \
   --name "$APP_NAME" \
   --resource-group "$RG"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az webapp log tail` |
+| Key flags | `--name`, `--resource-group` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
 
 Consumption scaling reminder:
 

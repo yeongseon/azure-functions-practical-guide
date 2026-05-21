@@ -261,6 +261,14 @@ az group create \
   --location "$LOCATION"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az group create` |
+| Key flags | `--name`, `--location` |
+| Variables | `$RG`, `$LOCATION` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 Deploy the lab stack:
 
 ```bash
@@ -269,6 +277,14 @@ az deployment group create \
   --template-file "$LAB_PATH/main.bicep" \
   --parameters "appName=$APP_NAME" "storageName=$STORAGE_NAME" "location=$LOCATION"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az deployment group create` |
+| Key flags | `--resource-group`, `--template-file`, `--parameters` |
+| Variables | `$RG`, `$LAB_PATH`, `$APP_NAME`, `$STORAGE_NAME`, `$LOCATION` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 Validate app and storage resources:
 
@@ -284,6 +300,14 @@ az storage account show \
   --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp show`, `az storage account show` |
+| Key flags | `--resource-group`, `--name`, `--output` |
+| Variables | `$RG`, `$APP_NAME`, `$STORAGE_NAME` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ### 3.4 Baseline verification (pre-failure)
 
 Confirm the app is reachable and host is stable:
@@ -295,6 +319,14 @@ az functionapp function list \
   --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp function list` |
+| Key flags | `--resource-group`, `--name`, `--output` |
+| Variables | `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 Capture app settings relevant to storage:
 
 ```bash
@@ -303,6 +335,14 @@ az functionapp config appsettings list \
   --name "$APP_NAME" \
   --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings list` |
+| Key flags | `--resource-group`, `--name`, `--output` |
+| Variables | `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 Check baseline host logs in short time window:
 
@@ -397,6 +437,14 @@ az role assignment list \
   --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp identity show`, `az storage account show`, `az role assignment list` |
+| Key flags | `--resource-group`, `--name`, `--query`, `--output`, `--assignee`, `--scope` |
+| Variables | `$RG`, `$APP_NAME`, `$STORAGE_NAME`, `$APP_PRINCIPAL_ID`, `$STORAGE_ID` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 Remove required roles (failure trigger):
 
 ```bash
@@ -425,6 +473,14 @@ az role assignment delete \
 
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az role assignment delete` |
+| Key flags | `--assignee-object-id`, `--role`, `--scope` |
+| Variables | `$APP_PRINCIPAL_ID`, `$STORAGE_ID` |
+| Expected result | Azure CLI completes the removal request; verify the target no longer appears in follow-up `show` or `list` output. |
+
+
 Restart Function App so host performs fresh storage initialization:
 
 ```bash
@@ -432,6 +488,14 @@ az functionapp restart \
   --resource-group "$RG" \
   --name "$APP_NAME"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp restart` |
+| Key flags | `--resource-group`, `--name` |
+| Variables | `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
 
 Wait for 2-5 minutes for telemetry propagation.
 
@@ -575,6 +639,14 @@ az role assignment create \
 
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az role assignment create` |
+| Key flags | `--assignee-object-id`, `--role`, `--scope` |
+| Variables | `$APP_PRINCIPAL_ID`, `$STORAGE_ID` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 Restart the app:
 
 ```bash
@@ -582,6 +654,14 @@ az functionapp restart \
   --resource-group "$RG" \
   --name "$APP_NAME"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp restart` |
+| Key flags | `--resource-group`, `--name` |
+| Variables | `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
 
 Wait 2-5 minutes and re-run the incident queries.
 
@@ -848,6 +928,14 @@ az group delete \
   --yes \
   --no-wait
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az group delete` |
+| Key flags | `--name`, `--yes`, `--no-wait` |
+| Variables | `$RG` |
+| Expected result | Azure CLI completes the removal request; verify the target no longer appears in follow-up `show` or `list` output. |
+
 
 ## Related Playbook
 

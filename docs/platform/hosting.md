@@ -209,6 +209,14 @@ az functionapp create \
   --functions-version 4
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp create` |
+| Key flags | `--resource-group`, `--name`, `--storage-account`, `--consumption-plan-location`, `--runtime`, `--functions-version` |
+| Variables | `$RG`, `$APP_NAME`, `$STORAGE_NAME`, `$LOCATION` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ```bash
 # Flex Consumption Function App
 az functionapp create \
@@ -219,6 +227,14 @@ az functionapp create \
   --runtime python \
   --runtime-version 3.12
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp create` |
+| Key flags | `--resource-group`, `--name`, `--storage-account`, `--flexconsumption-location`, `--runtime`, `--runtime-version` |
+| Variables | `$RG`, `$APP_NAME`, `$STORAGE_NAME`, `$LOCATION` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 ```bash
 # Premium plan + Function App
@@ -238,6 +254,14 @@ az functionapp create \
   --functions-version 4
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp plan create`, `az functionapp create` |
+| Key flags | `--resource-group`, `--name`, `--location`, `--sku`, `--is-linux`, `--plan`, `--storage-account`, `--runtime`, `--functions-version` |
+| Variables | `$RG`, `$PLAN_NAME`, `$LOCATION`, `$APP_NAME`, `$STORAGE_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 #### CLI inspection examples with output
 
 ```bash
@@ -247,6 +271,14 @@ az functionapp plan show \
   --name "$PLAN_NAME" \
   --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp plan show` |
+| Key flags | `--resource-group`, `--name`, `--output` |
+| Variables | `$RG`, `$PLAN_NAME` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 Example output (PII masked):
 
@@ -275,6 +307,14 @@ az functionapp list \
   --resource-group "$RG" \
   --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp list` |
+| Key flags | `--resource-group`, `--output` |
+| Variables | `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 Example output (PII masked):
 
