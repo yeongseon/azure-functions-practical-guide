@@ -5,7 +5,7 @@ content_sources:
   - type: mslearn-adapted
     url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-recover-from-failed-host
+    url: https://learn.microsoft.com/azure/azure-functions/functions-diagnostics
 ---
 
 # Operations

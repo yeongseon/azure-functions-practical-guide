@@ -311,7 +311,7 @@ def generate_dashboard(documents: list[dict[str, Any]], today: date) -> str:
     lines.append("- [CLI Cheatsheet](cli-cheatsheet.md)")
     lines.append("")
 
-    return "\n".join(lines) + "\n"
+    return "\n".join(lines).rstrip() + "\n"
 
 
 def main() -> None:

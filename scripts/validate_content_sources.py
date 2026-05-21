@@ -25,7 +25,7 @@ import sys
 import re
 import argparse
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 try:
     import yaml
@@ -123,6 +123,26 @@ def find_diagram_id_comments(content: str) -> Dict[int, str]:
     return comments
 
 
+def get_diagram_sources(content_sources: Any) -> Tuple[List[dict], bool]:
+    """
+    Return diagram-level source metadata from content_sources.
+
+    Older pages in this repository use list-form content_sources for document-level
+    Microsoft Learn attribution. Keep those pages actionable by validating their
+    diagram-id comments without treating the legacy shape as a Python error.
+    """
+    if isinstance(content_sources, dict):
+        diagrams = content_sources.get("diagrams", [])
+        if isinstance(diagrams, list):
+            return diagrams, False
+        return [], False
+
+    if isinstance(content_sources, list):
+        return [], True
+
+    return [], False
+
+
 def validate_file(file_path: Path, verbose: bool = False) -> List[ValidationError]:
     """Validate a single markdown file."""
     errors = []
@@ -140,10 +160,9 @@ def validate_file(file_path: Path, verbose: bool = False) -> List[ValidationErro
 
     rel_path = str(file_path)
 
-    # Skip example code blocks in validation status pages
+    # Skip generated status pages; they include summary/example mermaid blocks.
     if "content-validation-status" in rel_path or "validation-status" in rel_path:
-        # These may contain example mermaid blocks in code fences
-        pass
+        return []
 
     # Check for frontmatter
     frontmatter, fm_end_line = extract_frontmatter(content)
@@ -160,10 +179,7 @@ def validate_file(file_path: Path, verbose: bool = False) -> List[ValidationErro
         )
         return errors
 
-    diagrams = content_sources.get("diagrams", [])
-    if not diagrams:
-        errors.append(ValidationError(rel_path, "content_sources.diagrams is empty"))
-        return errors
+    diagrams, legacy_list_sources = get_diagram_sources(content_sources)
 
     # Find diagram-id comments
     diagram_id_comments = find_diagram_id_comments(content)
@@ -183,6 +199,18 @@ def validate_file(file_path: Path, verbose: bool = False) -> List[ValidationErro
                     rel_path, f"Mermaid block missing diagram-id comment", block_line
                 )
             )
+
+    if not diagrams:
+        if legacy_list_sources:
+            if verbose:
+                print(
+                    f"  Note: {rel_path}: using legacy list-form content_sources; "
+                    "validated diagram-id comments only"
+                )
+            return errors
+
+        errors.append(ValidationError(rel_path, "content_sources.diagrams is empty"))
+        return errors
 
     # Validate each diagram entry
     diagram_ids_in_frontmatter = set()

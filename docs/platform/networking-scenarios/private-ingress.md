@@ -1,11 +1,12 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/app-service/networking/private-endpoint
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/private-link/private-endpoint-overview
+  sources:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/azure/app-service/networking/private-endpoint
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/azure/private-link/private-endpoint-overview
   diagrams:
     - id: private-ingress-architecture
       type: flowchart

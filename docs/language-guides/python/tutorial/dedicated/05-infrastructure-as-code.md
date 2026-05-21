@@ -15,6 +15,10 @@ content_sources:
     url: https://learn.microsoft.com/azure/templates/microsoft.web/serverfarms
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/templates/microsoft.web/sites
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/app-service/overview-vnet-integration
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/app-service/networking/private-endpoint
 ---
 
 # 05 - Infrastructure as Code (Dedicated)
@@ -40,9 +44,9 @@ export LOCATION="koreacentral"
 You will define and deploy a Dedicated App Service Plan, storage account, and Linux Python Function App by using `infra/dedicated/main.bicep`, then validate the deployed resources.
 
 !!! info "Infrastructure Context"
-    **Plan**: Dedicated (B1) | **Network**: Public internet | **VNet**: ❌ (requires Standard+ tier)
+    **Plan**: Dedicated (B1) | **Network**: Public internet in this tutorial | **VNet**: Supported by platform, not configured here
 
-    Basic B1 has no VNet integration or private endpoints. The app runs on a fixed App Service Plan (always on, no scale-to-zero). VNet support requires upgrading to Standard (S1) or Premium (P1v3) tier.
+    The app runs on a fixed App Service Plan (always on, no scale-to-zero). Basic B1 supports App Service VNet integration and private endpoints, but this guide uses Standard (S1+) for private networking scenarios to provide scale headroom, deployment slots, and a production-oriented validation path.
 
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
@@ -345,13 +349,13 @@ az functionapp config appsettings set \
   --settings "APPLICATIONINSIGHTS_CONNECTION_STRING=$APPINSIGHTS_CONNECTION_STRING"
 ```
 
-??? example "Optional: VNet and Private Endpoints (Standard+ Tier)"
-    If you deployed with `--sku S1` or higher, you can add full network isolation.
+??? example "Optional: VNet and Private Endpoints"
+    Basic (B1) can use App Service VNet integration and private endpoints. This optional path upgrades to `S1` so the tutorial matches the guide-tested private networking scenario and provides more production headroom.
 
-    !!! info "Requires Standard tier or higher"
-        VNet integration is not available on Basic (B1) tier. Upgrade to Standard (S1) or Premium (P1v2) for VNet support.
+    !!! info "B1 network support and guide scope"
+        B1 supports these platform networking features, but this guide validates private networking on Standard (S1+) for production-oriented examples.
 
-        If you add optional VNet integration in this template, document subnet delegation to `Microsoft.Web/serverFarms` and deploy with S1 or higher.
+        If you add optional VNet integration in this template, document subnet delegation to `Microsoft.Web/serverFarms` and use S1 or higher when you want to match this guide exactly.
 
     #### B-7: Upgrade to Standard (if needed)
 

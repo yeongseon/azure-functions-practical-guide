@@ -1,13 +1,14 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-premium-plan
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/app-service/overview-vnet-integration
+  sources:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/azure/azure-functions/functions-premium-plan
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/azure/app-service/overview-vnet-integration
   diagrams:
     - id: network-scenario-decision-tree
       type: flowchart
@@ -15,6 +16,20 @@ content_sources:
       justification: "Decision tree synthesized from MSLearn networking options documentation"
       based_on:
         - https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+content_validation:
+  status: verified
+  last_reviewed: 2026-05-21
+  reviewer: agent
+  core_claims:
+    - claim: "Azure Functions supports different networking capabilities depending on the hosting plan."
+      source: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+      verified: true
+    - claim: "Flex Consumption has plan-specific networking behavior documented separately from classic Consumption and Dedicated plans."
+      source: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+      verified: true
+    - claim: "App Service VNet integration is available on Basic and higher dedicated compute tiers."
+      source: https://learn.microsoft.com/azure/app-service/overview-vnet-integration
+      verified: true
 ---
 
 # Networking Scenarios
