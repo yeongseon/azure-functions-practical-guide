@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.41.2.15936",
-      "templateHash": "4024084883532572749"
+      "version": "0.42.1.51946",
+      "templateHash": "14506736350749764505"
     }
   },
   "parameters": {
@@ -110,7 +110,7 @@
             },
             {
               "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
-              "value": "[format('DefaultEndpointsProtocol=https;AccountName={0};AccountKey={1};EndpointSuffix={2}', reference(resourceId('Microsoft.Resources/deployments', 'storageModule'), '2025-04-01').outputs.name.value, reference(resourceId('Microsoft.Resources/deployments', 'storageModule'), '2025-04-01').outputs.accessKey.value, environment().suffixes.storage)]"
+              "value": "[format('DefaultEndpointsProtocol=https;AccountName={0};AccountKey={1};EndpointSuffix={2}', variables('storageAccountName'), listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2023-05-01').keys[0].value, environment().suffixes.storage)]"
             },
             {
               "name": "WEBSITE_CONTENTSHARE",
@@ -134,8 +134,7 @@
       "dependsOn": [
         "[resourceId('Microsoft.Resources/deployments', 'appInsightsModule')]",
         "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
-        "[resourceId('Microsoft.Storage/storageAccounts/fileServices/shares', split(format('{0}/default/{1}', variables('storageAccountName'), variables('contentShareName')), '/')[0], split(format('{0}/default/{1}', variables('storageAccountName'), variables('contentShareName')), '/')[1], split(format('{0}/default/{1}', variables('storageAccountName'), variables('contentShareName')), '/')[2])]",
-        "[resourceId('Microsoft.Resources/deployments', 'storageModule')]"
+        "[resourceId('Microsoft.Storage/storageAccounts/fileServices/shares', split(format('{0}/default/{1}', variables('storageAccountName'), variables('contentShareName')), '/')[0], split(format('{0}/default/{1}', variables('storageAccountName'), variables('contentShareName')), '/')[1], split(format('{0}/default/{1}', variables('storageAccountName'), variables('contentShareName')), '/')[2])]"
       ]
     },
     {
@@ -221,8 +220,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.41.2.15936",
-              "templateHash": "4044749569571336357"
+              "version": "0.42.1.51946",
+              "templateHash": "14584762403987809360"
             }
           },
           "parameters": {
@@ -313,8 +312,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.41.2.15936",
-              "templateHash": "12560368737130882639"
+              "version": "0.42.1.51946",
+              "templateHash": "1931134581953219945"
             }
           },
           "parameters": {
@@ -380,13 +379,6 @@
             "primaryEndpoints": {
               "type": "object",
               "value": "[reference(resourceId('Microsoft.Storage/storageAccounts', parameters('name')), '2023-05-01').primaryEndpoints]"
-            },
-            "accessKey": {
-              "type": "string",
-              "metadata": {
-                "description": "Primary access key for the storage account"
-              },
-              "value": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('name')), '2023-05-01').keys[0].value]"
             }
           }
         }

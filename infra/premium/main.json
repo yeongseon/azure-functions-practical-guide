@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.41.2.15936",
-      "templateHash": "8108509489638883723"
+      "version": "0.42.1.51946",
+      "templateHash": "10676235578581281667"
     }
   },
   "parameters": {
@@ -120,7 +120,7 @@
             },
             {
               "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
-              "value": "[format('DefaultEndpointsProtocol=https;AccountName={0};AccountKey={1};EndpointSuffix={2}', reference(resourceId('Microsoft.Resources/deployments', 'storageModule'), '2025-04-01').outputs.name.value, reference(resourceId('Microsoft.Resources/deployments', 'storageModule'), '2025-04-01').outputs.accessKey.value, environment().suffixes.storage)]"
+              "value": "[format('DefaultEndpointsProtocol=https;AccountName={0};AccountKey={1};EndpointSuffix={2}', variables('storageAccountName'), listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2023-05-01').keys[0].value, environment().suffixes.storage)]"
             },
             {
               "name": "WEBSITE_CONTENTSHARE",
@@ -144,7 +144,6 @@
         "[resourceId('Microsoft.Storage/storageAccounts/fileServices/shares', split(format('{0}/default/{1}', variables('storageAccountName'), variables('contentShareName')), '/')[0], split(format('{0}/default/{1}', variables('storageAccountName'), variables('contentShareName')), '/')[1], split(format('{0}/default/{1}', variables('storageAccountName'), variables('contentShareName')), '/')[2])]",
         "[resourceId('Microsoft.Network/privateEndpoints/privateDnsZoneGroups', format('{0}-pe-file', parameters('baseName')), 'file-dns-zone-group')]",
         "[resourceId('Microsoft.Network/privateEndpoints/privateDnsZoneGroups', format('{0}-pe-queue', parameters('baseName')), 'queue-dns-zone-group')]",
-        "[resourceId('Microsoft.Resources/deployments', 'storageModule')]",
         "[resourceId('Microsoft.Network/privateEndpoints/privateDnsZoneGroups', format('{0}-pe-table', parameters('baseName')), 'table-dns-zone-group')]",
         "[resourceId('Microsoft.Resources/deployments', 'vnetModule')]"
       ]
@@ -567,8 +566,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.41.2.15936",
-              "templateHash": "4044749569571336357"
+              "version": "0.42.1.51946",
+              "templateHash": "14584762403987809360"
             }
           },
           "parameters": {
@@ -659,8 +658,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.41.2.15936",
-              "templateHash": "12560368737130882639"
+              "version": "0.42.1.51946",
+              "templateHash": "1931134581953219945"
             }
           },
           "parameters": {
@@ -726,13 +725,6 @@
             "primaryEndpoints": {
               "type": "object",
               "value": "[reference(resourceId('Microsoft.Storage/storageAccounts', parameters('name')), '2023-05-01').primaryEndpoints]"
-            },
-            "accessKey": {
-              "type": "string",
-              "metadata": {
-                "description": "Primary access key for the storage account"
-              },
-              "value": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('name')), '2023-05-01').keys[0].value]"
             }
           }
         }
@@ -770,8 +762,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.41.2.15936",
-              "templateHash": "10024143766933896089"
+              "version": "0.42.1.51946",
+              "templateHash": "11919253298146197641"
             }
           },
           "parameters": {
@@ -851,6 +843,7 @@
                 "privateEndpointNetworkPolicies": "Disabled"
               },
               "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), 'subnet-integration')]",
                 "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]"
               ]
             }

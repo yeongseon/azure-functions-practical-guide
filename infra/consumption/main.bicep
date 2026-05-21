@@ -38,7 +38,8 @@ var storageQueueDataContributorRoleId = '974c5e8b-45b9-4653-ba55-5f855dd0fb88'
 var storageFileDataPrivilegedContributorRoleId = '69566ab7-960f-475b-8e7c-b3118f30c6bd'
 
 // Connection string for WEBSITE_CONTENTAZUREFILECONNECTIONSTRING (required by platform for provisioning)
-var storageConnectionString = 'DefaultEndpointsProtocol=https;AccountName=${storageModule.outputs.name};AccountKey=${storageModule.outputs.accessKey};EndpointSuffix=${environment().suffixes.storage}'
+var storageAccountKey = listKeys(resourceId('Microsoft.Storage/storageAccounts', storageAccountName), '2023-05-01').keys[0].value
+var storageConnectionString = 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};AccountKey=${storageAccountKey};EndpointSuffix=${environment().suffixes.storage}'
 
 module appInsightsModule '../modules/app-insights.bicep' = {
   name: 'appInsightsModule'
