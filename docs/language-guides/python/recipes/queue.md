@@ -185,6 +185,14 @@ az storage message peek \
   --num-messages 32
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage message peek` |
+| Key flags | `--queue-name`, `--account-name`, `--num-messages` |
+| Variables | None |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
+
 ## Queue Output with Custom Message Properties
 
 Set message visibility delay and time-to-live programmatically:

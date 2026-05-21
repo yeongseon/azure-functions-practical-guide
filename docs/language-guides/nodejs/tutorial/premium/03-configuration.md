@@ -59,6 +59,14 @@ flowchart TD
     style HOST fill:#FFF3E0
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az CLI]` |
+| Key flags | `--max-old-space-size` |
+| Variables | None |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
+
 ## Steps
 
 ### Step 1 — Configure app settings
@@ -72,6 +80,14 @@ az functionapp config appsettings set \
     "FUNCTIONS_EXTENSION_VERSION=~4" \
     "languageWorkers__node__arguments=--max-old-space-size=4096"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings`, `--max-old-space-size` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 Expected output (abridged):
 
@@ -120,6 +136,14 @@ az functionapp config appsettings list \
   --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings list` |
+| Key flags | `--name`, `--resource-group`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 Expected output (key rows):
 
 ```text
@@ -141,6 +165,14 @@ az functionapp config appsettings list \
   --query "[?name=='WEBSITE_CONTENTAZUREFILECONNECTIONSTRING' || name=='WEBSITE_CONTENTSHARE' || name=='AzureWebJobsStorage'].{Name:name, Value:'(set)'}" \
   --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings list` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 Expected output:
 

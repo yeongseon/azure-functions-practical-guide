@@ -242,6 +242,14 @@ az functionapp show \
     --query siteConfig
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp show` |
+| Key flags | `--resource-group`, `--name`, `--query` |
+| Variables | `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 Example output (PII masked):
 ```json
 {
@@ -259,6 +267,14 @@ az functionapp scale show \
     --resource-group $RG \
     --name $APP_NAME
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp scale show` |
+| Key flags | `--resource-group`, `--name` |
+| Variables | `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 Example output (PII masked):
 ```json
@@ -281,6 +297,14 @@ az monitor metrics list \
     --start-time 2026-01-10T09:00:00Z \
     --end-time 2026-01-10T10:00:00Z
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor metrics list` |
+| Key flags | `--resource`, `--metric`, `--interval`, `--aggregation`, `--start-time`, `--end-time` |
+| Variables | `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 Example output (PII masked):
 ```json

@@ -54,6 +54,14 @@ flowchart TD
     style FA fill:#FFF3E0
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az deployment\ngroup create\| ARM[Azure Resource` |
+| Key flags | None |
+| Variables | None |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
+
 ## Steps
 
 1. Review the Dedicated Bicep template.
@@ -138,6 +146,14 @@ flowchart TD
       --parameters baseName="$BASE_NAME"
     ```
 
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az deployment group create` |
+    | Key flags | `--resource-group`, `--template-file`, `--parameters` |
+    | Variables | `$RG`, `$BASE_NAME` |
+    | Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 3. Verify deployment state.
 
     ```bash
@@ -146,6 +162,14 @@ flowchart TD
       --name main \
       --output json
     ```
+
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az deployment group show` |
+    | Key flags | `--resource-group`, `--name`, `--output` |
+    | Variables | `$RG` |
+    | Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
     Expected output (abridged):
 

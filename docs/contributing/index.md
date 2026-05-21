@@ -178,6 +178,14 @@ az functionapp create --resource-group $RG --name $APP_NAME --plan $PLAN_NAME --
 az functionapp create -g $RG -n $APP_NAME  # ❌ Don't do this
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp create` |
+| Key flags | `--resource-group`, `--name`, `--plan`, `--runtime` |
+| Variables | `$RG`, `$APP_NAME`, `$PLAN_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ### Variables
 
 | Variable | Description | Example |

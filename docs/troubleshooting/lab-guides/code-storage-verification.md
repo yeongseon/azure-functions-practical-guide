@@ -298,6 +298,14 @@ az group create \
   --location "$LOCATION"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az group create` |
+| Key flags | `--name`, `--location` |
+| Variables | `$RG_Y1`, `$LOCATION` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 Deploy infrastructure:
 
 ```bash
@@ -306,6 +314,14 @@ az deployment group create \
   --template-file "infra/consumption/main.bicep" \
   --parameters "baseName=$BASE_Y1" "location=$LOCATION"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az deployment group create` |
+| Key flags | `--resource-group`, `--template-file`, `--parameters` |
+| Variables | `$RG_Y1`, `$BASE_Y1`, `$LOCATION` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 Validation focus:
 
@@ -323,6 +339,14 @@ az group create \
   --location "$LOCATION"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az group create` |
+| Key flags | `--name`, `--location` |
+| Variables | `$RG_FC1`, `$LOCATION` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 Deploy infrastructure:
 
 ```bash
@@ -331,6 +355,14 @@ az deployment group create \
   --template-file "infra/flex-consumption/main.bicep" \
   --parameters "baseName=$BASE_FC1" "location=$LOCATION"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az deployment group create` |
+| Key flags | `--resource-group`, `--template-file`, `--parameters` |
+| Variables | `$RG_FC1`, `$BASE_FC1`, `$LOCATION` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 Validation focus:
 
@@ -348,6 +380,14 @@ az group create \
   --location "$LOCATION"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az group create` |
+| Key flags | `--name`, `--location` |
+| Variables | `$RG_EP`, `$LOCATION` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 Deploy infrastructure:
 
 ```bash
@@ -356,6 +396,14 @@ az deployment group create \
   --template-file "infra/premium/main.bicep" \
   --parameters "baseName=$BASE_EP" "location=$LOCATION"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az deployment group create` |
+| Key flags | `--resource-group`, `--template-file`, `--parameters` |
+| Variables | `$RG_EP`, `$BASE_EP`, `$LOCATION` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 Validation focus:
 
@@ -373,6 +421,14 @@ az group create \
   --location "$LOCATION"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az group create` |
+| Key flags | `--name`, `--location` |
+| Variables | `$RG_ASP`, `$LOCATION` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 Deploy infrastructure:
 
 ```bash
@@ -381,6 +437,14 @@ az deployment group create \
   --template-file "infra/dedicated/main.bicep" \
   --parameters "baseName=$BASE_ASP" "location=$LOCATION"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az deployment group create` |
+| Key flags | `--resource-group`, `--template-file`, `--parameters` |
+| Variables | `$RG_ASP`, `$BASE_ASP`, `$LOCATION` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 Validation focus:
 
@@ -401,6 +465,14 @@ az functionapp config appsettings list \
   --output json
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings list` |
+| Key flags | `--resource-group`, `--name`, `--output` |
+| Variables | `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 Show function app config (required for Flex verification):
 
 ```bash
@@ -411,6 +483,14 @@ az functionapp show \
   --output json
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp show` |
+| Key flags | `--resource-group`, `--name`, `--query`, `--output` |
+| Variables | `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 Check identity:
 
 ```bash
@@ -419,6 +499,14 @@ az functionapp identity show \
   --name "$APP_NAME" \
   --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp identity show` |
+| Key flags | `--resource-group`, `--name`, `--output` |
+| Variables | `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 Check hosting plan SKU:
 
@@ -429,6 +517,14 @@ az functionapp plan show \
   --query "sku" \
   --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp plan show` |
+| Key flags | `--resource-group`, `--name`, `--query`, `--output` |
+| Variables | `$RG`, `$PLAN_NAME` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 Check role assignments:
 
@@ -442,6 +538,14 @@ PRINCIPAL_ID="$(az functionapp identity show \
   --output tsv)"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp identity show` |
+| Key flags | `--resource-group`, `--name`, `--query`, `--output` |
+| Variables | `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 For FC1 (user-assigned identity):
 
 ```bash
@@ -452,6 +556,14 @@ PRINCIPAL_ID="$(az functionapp identity show \
   --output tsv)"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp identity show` |
+| Key flags | `--resource-group`, `--name`, `--query`, `--output` |
+| Variables | `$RG_FC1`, `$APP_FC1` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 Then list assignments against storage scope:
 ```bash
 az role assignment list \
@@ -459,6 +571,14 @@ az role assignment list \
   --scope "$STORAGE_ID" \
   --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az role assignment list` |
+| Key flags | `--assignee`, `--scope`, `--output` |
+| Variables | `$PRINCIPAL_ID`, `$STORAGE_ID` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 Check storage account settings:
 
@@ -469,6 +589,14 @@ az storage account show \
   --query "{allowPublicAccess: allowBlobPublicAccess, allowSharedKeyAccess: allowSharedKeyAccess}" \
   --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage account show` |
+| Key flags | `--resource-group`, `--name`, `--query`, `--output` |
+| Variables | `$RG`, `$STORAGE_NAME` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 Run baseline checks for each plan:
 
@@ -658,6 +786,14 @@ az functionapp restart \
   --name "$APP_Y1"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings delete`, `az functionapp restart` |
+| Key flags | `--resource-group`, `--name`, `--setting-names` |
+| Variables | `$RG_Y1`, `$APP_Y1` |
+| Expected result | Azure CLI completes the removal request; verify the target no longer appears in follow-up `show` or `list` output. |
+
+
 Expected behavior:
 
 - Platform auto-regenerates `WEBSITE_CONTENTSHARE` with a new random share name on restart.
@@ -683,6 +819,14 @@ az functionapp restart \
   --name "$APP_FC1"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az resource update`, `az functionapp restart` |
+| Key flags | `--resource-group`, `--name`, `--resource-type`, `--set` |
+| Variables | `$RG_FC1`, `$APP_FC1` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 Expected behavior:
 
 - Deployment artifact resolution failures.
@@ -700,6 +844,14 @@ az functionapp restart \
   --resource-group "$RG_EP" \
   --name "$APP_EP"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings delete`, `az functionapp restart` |
+| Key flags | `--resource-group`, `--name`, `--setting-names` |
+| Variables | `$RG_EP`, `$APP_EP` |
+| Expected result | Azure CLI completes the removal request; verify the target no longer appears in follow-up `show` or `list` output. |
+
 
 Expected behavior:
 
@@ -723,6 +875,14 @@ az functionapp restart \
   --name "$APP_ASP"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings delete`, `az functionapp restart` |
+| Key flags | `--resource-group`, `--name`, `--setting-names` |
+| Variables | `$RG_ASP`, `$APP_ASP` |
+| Expected result | Azure CLI completes the removal request; verify the target no longer appears in follow-up `show` or `list` output. |
+
+
 Expected behavior:
 
 - Package mount semantics drift.
@@ -740,6 +900,14 @@ az functionapp restart \
   --resource-group "$RG_Y1" \
   --name "$APP_Y1"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings delete`, `az functionapp restart` |
+| Key flags | `--resource-group`, `--name`, `--setting-names` |
+| Variables | `$RG_Y1`, `$APP_Y1` |
+| Expected result | Azure CLI completes the removal request; verify the target no longer appears in follow-up `show` or `list` output. |
+
 
 Expected behavior:
 
@@ -761,6 +929,14 @@ az functionapp restart \
   --resource-group "$RG_EP" \
   --name "$APP_EP"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set`, `az functionapp restart` |
+| Key flags | `--resource-group`, `--name`, `--settings` |
+| Variables | `$RG_EP`, `$APP_EP` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 Expected behavior:
 
@@ -801,6 +977,14 @@ az functionapp restart \
   --name "$APP_Y1"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp identity show`, `az storage account show`, `az role assignment delete`, `az functionapp restart` |
+| Key flags | `--resource-group`, `--name`, `--query`, `--output`, `--assignee-object-id`, `--role`, `--scope` |
+| Variables | `$RG_Y1`, `$APP_Y1`, `$STORAGE_Y1`, `$PRINCIPAL_ID_Y1`, `$ROLE_NAME`, `$STORAGE_ID_Y1` |
+| Expected result | Azure CLI completes the removal request; verify the target no longer appears in follow-up `show` or `list` output. |
+
+
 Expected behavior:
 
 - Managed identity token acquisition succeeds but storage operations return authorization failures.
@@ -822,6 +1006,14 @@ az functionapp restart \
   --name "$APP_FC1"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set`, `az functionapp restart` |
+| Key flags | `--resource-group`, `--name`, `--settings` |
+| Variables | `$RG_FC1`, `$APP_FC1` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 Expected behavior:
 
 - Runtime fails to resolve storage endpoints derived from account name.
@@ -842,6 +1034,14 @@ az functionapp restart \
   --resource-group "$RG_Y1" \
   --name "$APP_Y1"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings delete`, `az functionapp restart` |
+| Key flags | `--resource-group`, `--name`, `--setting-names` |
+| Variables | `$RG_Y1`, `$APP_Y1` |
+| Expected result | Azure CLI completes the removal request; verify the target no longer appears in follow-up `show` or `list` output. |
+
 
 Expected behavior:
 
@@ -866,6 +1066,14 @@ az functionapp restart \
   --name "$APP_Y1"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set`, `az functionapp restart` |
+| Key flags | `--resource-group`, `--name`, `--settings` |
+| Variables | `$RG_Y1`, `$APP_Y1` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 Expected behavior:
 
 - Startup attempts to mount a share path that does not exist.
@@ -886,6 +1094,14 @@ az functionapp restart \
   --resource-group "$RG_Y1" \
   --name "$APP_Y1"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set`, `az functionapp restart` |
+| Key flags | `--resource-group`, `--name`, `--settings` |
+| Variables | `$RG_Y1`, `$APP_Y1` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 Expected behavior:
 
@@ -908,6 +1124,14 @@ az functionapp restart \
   --name "$APP_FC1"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings delete`, `az functionapp restart` |
+| Key flags | `--resource-group`, `--name`, `--setting-names` |
+| Variables | `$RG_FC1`, `$APP_FC1` |
+| Expected result | Azure CLI completes the removal request; verify the target no longer appears in follow-up `show` or `list` output. |
+
+
 Expected behavior:
 
 - User-assigned identity is attached but storage binding cannot select the intended client identity.
@@ -929,6 +1153,14 @@ az functionapp restart \
   --resource-group "$RG_FC1" \
   --name "$APP_FC1"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az resource update`, `az functionapp restart` |
+| Key flags | `--resource-group`, `--name`, `--resource-type`, `--set` |
+| Variables | `$RG_FC1`, `$APP_FC1` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 Expected behavior:
 
@@ -953,6 +1185,14 @@ az functionapp restart \
   --name "$APP_FC1"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set`, `az functionapp restart` |
+| Key flags | `--resource-group`, `--name`, `--settings` |
+| Variables | `$RG_FC1`, `$APP_FC1`, `$FC1_LEGACY_CONN_STRING` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 Expected behavior:
 
 - Runtime may emit mixed-mode warnings about non-applicable content settings.
@@ -974,6 +1214,14 @@ az functionapp restart \
   --name "$APP_FC1"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage account update`, `az functionapp restart` |
+| Key flags | `--resource-group`, `--name`, `--allow-shared-key-access` |
+| Variables | `$RG_FC1`, `$STORAGE_FC1`, `$APP_FC1` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 Expected behavior:
 
 - App may continue running, but storage security posture drifts from hardened baseline.
@@ -994,6 +1242,14 @@ az functionapp restart \
   --resource-group "$RG_EP" \
   --name "$APP_EP"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings delete`, `az functionapp restart` |
+| Key flags | `--resource-group`, `--name`, `--setting-names` |
+| Variables | `$RG_EP`, `$APP_EP` |
+| Expected result | Azure CLI completes the removal request; verify the target no longer appears in follow-up `show` or `list` output. |
+
 
 Expected behavior:
 
@@ -1019,6 +1275,14 @@ az functionapp restart \
   --name "$APP_EP"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp vnet-integration remove`, `az functionapp restart` |
+| Key flags | `--resource-group`, `--name` |
+| Variables | `$RG_EP`, `$APP_EP` |
+| Expected result | Azure CLI completes the removal request; verify the target no longer appears in follow-up `show` or `list` output. |
+
+
 Expected behavior:
 
 - Network path assumptions in premium topology drift from baseline design.
@@ -1039,6 +1303,14 @@ az functionapp restart \
   --resource-group "$RG_ASP" \
   --name "$APP_ASP"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config set`, `az functionapp restart` |
+| Key flags | `--resource-group`, `--name`, `--always-on` |
+| Variables | `$RG_ASP`, `$APP_ASP` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 Expected behavior:
 
@@ -1062,6 +1334,14 @@ az functionapp restart \
   --resource-group "$RG_ASP" \
   --name "$APP_ASP"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set`, `az functionapp restart` |
+| Key flags | `--resource-group`, `--name`, `--settings` |
+| Variables | `$RG_ASP`, `$APP_ASP`, `$ASP_LEGACY_CONN_STRING` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 Expected behavior:
 
@@ -1412,6 +1692,14 @@ az functionapp restart \
   --name "$APP_Y1"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage account show-connection-string`, `az functionapp config appsettings set`, `az functionapp restart` |
+| Key flags | `--resource-group`, `--name`, `--output`, `--settings` |
+| Variables | `$RG_Y1`, `$STORAGE_Y1`, `$APP_Y1`, `$Y1_CONTENT_SHARE`, `$Y1_CONN_STRING` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 #### 3.12.2 Recovery: Flex (`FC1`)
 
 Restore deployment storage path to the container defined by template (`deployment-packages`):
@@ -1430,6 +1718,14 @@ az functionapp restart \
   --name "$APP_FC1"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az resource update`, `az functionapp restart` |
+| Key flags | `--resource-group`, `--name`, `--resource-type`, `--set` |
+| Variables | `$RG_FC1`, `$APP_FC1` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 #### 3.12.3 Recovery: Premium (`EP`)
 
 ```bash
@@ -1446,6 +1742,14 @@ az functionapp restart \
   --name "$APP_EP"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage account show-connection-string`, `az functionapp config appsettings set`, `az functionapp restart` |
+| Key flags | `--resource-group`, `--name`, `--output`, `--settings` |
+| Variables | `$RG_EP`, `$STORAGE_EP`, `$APP_EP`, `$EP_CONN_STRING`, `$EP_CONTENT_SHARE` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 #### 3.12.4 Recovery: Dedicated (`ASP`)
 
 ```bash
@@ -1458,6 +1762,14 @@ az functionapp restart \
   --resource-group "$RG_ASP" \
   --name "$APP_ASP"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set`, `az functionapp restart` |
+| Key flags | `--resource-group`, `--name`, `--settings` |
+| Variables | `$RG_ASP`, `$APP_ASP` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 #### 3.12.5 Recovery: Scenario E (`Y1`) restore `AzureWebJobsStorage__accountName`
 
@@ -1472,6 +1784,14 @@ az functionapp restart \
   --name "$APP_Y1"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set`, `az functionapp restart` |
+| Key flags | `--resource-group`, `--name`, `--settings` |
+| Variables | `$RG_Y1`, `$APP_Y1`, `$STORAGE_Y1` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 #### 3.12.6 Recovery: Scenario F (`EP`) restore valid `AzureWebJobsStorage__credential`
 
 ```bash
@@ -1484,6 +1804,14 @@ az functionapp restart \
   --resource-group "$RG_EP" \
   --name "$APP_EP"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set`, `az functionapp restart` |
+| Key flags | `--resource-group`, `--name`, `--settings` |
+| Variables | `$RG_EP`, `$APP_EP` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 #### 3.12.7 Recovery: Scenario G (`Y1`) re-assign storage RBAC roles
 
@@ -1516,6 +1844,14 @@ az functionapp restart \
   --name "$APP_Y1"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp identity show`, `az storage account show`, `az role assignment create`, `az functionapp restart` |
+| Key flags | `--resource-group`, `--name`, `--query`, `--output`, `--assignee-object-id`, `--role`, `--scope` |
+| Variables | `$RG_Y1`, `$APP_Y1`, `$STORAGE_Y1`, `$PRINCIPAL_ID_Y1`, `$ROLE_NAME`, `$STORAGE_ID_Y1` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 #### 3.12.8 Recovery: Scenario H (`FC1`) restore `AzureWebJobsStorage__accountName`
 
 ```bash
@@ -1528,6 +1864,14 @@ az functionapp restart \
   --resource-group "$RG_FC1" \
   --name "$APP_FC1"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set`, `az functionapp restart` |
+| Key flags | `--resource-group`, `--name`, `--settings` |
+| Variables | `$RG_FC1`, `$APP_FC1`, `$STORAGE_FC1` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 #### 3.12.9 Recovery: Scenario I (`Y1`) restore content connection setting
 
@@ -1544,6 +1888,14 @@ az functionapp restart \
   --name "$APP_Y1"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage account show-connection-string`, `az functionapp config appsettings set`, `az functionapp restart` |
+| Key flags | `--resource-group`, `--name`, `--output`, `--settings` |
+| Variables | `$RG_Y1`, `$STORAGE_Y1`, `$APP_Y1`, `$Y1_CONN_STRING` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 #### 3.12.10 Recovery: Scenario J (`Y1`) restore `WEBSITE_CONTENTSHARE`
 
 ```bash
@@ -1559,6 +1911,14 @@ az functionapp restart \
   --name "$APP_Y1"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set`, `az functionapp restart` |
+| Key flags | `--resource-group`, `--name`, `--settings` |
+| Variables | `$RG_Y1`, `$APP_Y1`, `$Y1_CONTENT_SHARE` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 #### 3.12.11 Recovery: Scenario K (`Y1`) restore `WEBSITE_RUN_FROM_PACKAGE=1`
 
 ```bash
@@ -1571,6 +1931,14 @@ az functionapp restart \
   --resource-group "$RG_Y1" \
   --name "$APP_Y1"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set`, `az functionapp restart` |
+| Key flags | `--resource-group`, `--name`, `--settings` |
+| Variables | `$RG_Y1`, `$APP_Y1` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 #### 3.12.12 Recovery: Scenario L (`FC1`) restore `AzureWebJobsStorage__clientId`
 
@@ -1591,6 +1959,14 @@ az functionapp restart \
   --name "$APP_FC1"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az identity show`, `az functionapp config appsettings set`, `az functionapp restart` |
+| Key flags | `--resource-group`, `--name`, `--query`, `--output`, `--settings` |
+| Variables | `$RG_FC1`, `$APP_FC1`, `$FC1_UAI_CLIENT_ID` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 #### 3.12.13 Recovery: Scenario M (`FC1`) restore deployment auth type to `UserAssignedIdentity`
 
 ```bash
@@ -1606,6 +1982,14 @@ az functionapp restart \
   --name "$APP_FC1"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az resource update`, `az functionapp restart` |
+| Key flags | `--resource-group`, `--name`, `--resource-type`, `--set` |
+| Variables | `$RG_FC1`, `$APP_FC1`, `$SUBSCRIPTION_ID` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 #### 3.12.14 Recovery: Scenario N (`FC1`) remove legacy `WEBSITE_CONTENT*` settings
 
 ```bash
@@ -1619,6 +2003,14 @@ az functionapp restart \
   --name "$APP_FC1"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings delete`, `az functionapp restart` |
+| Key flags | `--resource-group`, `--name`, `--setting-names` |
+| Variables | `$RG_FC1`, `$APP_FC1` |
+| Expected result | Azure CLI completes the removal request; verify the target no longer appears in follow-up `show` or `list` output. |
+
+
 #### 3.12.15 Recovery: Scenario O (`FC1`) restore `allowSharedKeyAccess=false`
 
 ```bash
@@ -1631,6 +2023,14 @@ az functionapp restart \
   --resource-group "$RG_FC1" \
   --name "$APP_FC1"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage account update`, `az functionapp restart` |
+| Key flags | `--resource-group`, `--name`, `--allow-shared-key-access` |
+| Variables | `$RG_FC1`, `$STORAGE_FC1`, `$APP_FC1` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 #### 3.12.16 Recovery: Scenario P (`EP`) restore `WEBSITE_CONTENTSHARE`
 
@@ -1646,6 +2046,14 @@ az functionapp restart \
   --resource-group "$RG_EP" \
   --name "$APP_EP"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set`, `az functionapp restart` |
+| Key flags | `--resource-group`, `--name`, `--settings` |
+| Variables | `$RG_EP`, `$APP_EP`, `$EP_CONTENT_SHARE` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 #### 3.12.17 Recovery: Scenario Q (`EP`) re-enable VNet integration
 
@@ -1664,6 +2072,14 @@ az functionapp restart \
   --name "$APP_EP"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp vnet-integration add`, `az functionapp restart` |
+| Key flags | `--resource-group`, `--name`, `--vnet`, `--subnet` |
+| Variables | `$RG_EP`, `$APP_EP`, `$VNET_EP`, `$SUBNET_EP` |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
+
 #### 3.12.18 Recovery: Scenario R (`ASP`) restore `alwaysOn=true`
 
 ```bash
@@ -1677,6 +2093,14 @@ az functionapp restart \
   --name "$APP_ASP"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config set`, `az functionapp restart` |
+| Key flags | `--resource-group`, `--name`, `--always-on` |
+| Variables | `$RG_ASP`, `$APP_ASP` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 #### 3.12.19 Recovery: Scenario S (`ASP`) remove legacy `WEBSITE_CONTENT*` settings
 
 ```bash
@@ -1689,6 +2113,14 @@ az functionapp restart \
   --resource-group "$RG_ASP" \
   --name "$APP_ASP"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings delete`, `az functionapp restart` |
+| Key flags | `--resource-group`, `--name`, `--setting-names` |
+| Variables | `$RG_ASP`, `$APP_ASP` |
+| Expected result | Azure CLI completes the removal request; verify the target no longer appears in follow-up `show` or `list` output. |
+
 
 ### 3.13 Verify recovery
 
@@ -1757,6 +2189,14 @@ az group delete \
   --yes \
   --no-wait
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az group delete` |
+| Key flags | `--name`, `--yes`, `--no-wait` |
+| Variables | `$RG_Y1`, `$RG_FC1`, `$RG_EP`, `$RG_ASP` |
+| Expected result | Azure CLI completes the removal request; verify the target no longer appears in follow-up `show` or `list` output. |
+
 
 ## 4) Experiment Log
 

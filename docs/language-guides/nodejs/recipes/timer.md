@@ -44,6 +44,14 @@ az functionapp config appsettings set \
   --settings "WEBSITE_TIME_ZONE=Korea Standard Time"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 `WEBSITE_TIME_ZONE` support:
 - Windows plans: supported
 - Linux Premium and Dedicated: supported

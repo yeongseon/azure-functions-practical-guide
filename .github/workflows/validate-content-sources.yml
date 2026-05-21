@@ -4,11 +4,15 @@ on:
   pull_request:
     paths:
       - 'docs/**/*.md'
+      - 'scripts/**'
+      - '.github/workflows/validate-content-sources.yml'
   push:
     branches:
       - main
     paths:
       - 'docs/**/*.md'
+      - 'scripts/**'
+      - '.github/workflows/validate-content-sources.yml'
 
 jobs:
   validate-content-sources:
@@ -39,6 +43,10 @@ jobs:
       - name: Validate content sources
         run: |
           python scripts/validate_content_sources.py
+
+      - name: Validate CLI explanation tables
+        run: |
+          python scripts/validate_cli_explanations.py
       
       - name: Check for missing diagram IDs
         run: |

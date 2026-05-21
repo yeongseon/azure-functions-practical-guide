@@ -35,6 +35,14 @@ az keyvault secret set \
   --value "replace-with-real-secret"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az keyvault create`, `az keyvault secret set` |
+| Key flags | `--name`, `--resource-group`, `--location`, `--vault-name`, `--value` |
+| Variables | `$KEY_VAULT_NAME`, `$RG`, `$LOCATION` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 Add a version-pinned Key Vault reference:
 
 ```bash
@@ -43,6 +51,14 @@ az functionapp config appsettings set \
   --resource-group $RG \
   --settings "ExternalApiKey=@Microsoft.KeyVault(SecretUri=https://$KEY_VAULT_NAME.vault.azure.net/secrets/ApiKey/<secret-version>)"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings` |
+| Variables | `$APP_NAME`, `$RG`, `$KEY_VAULT_NAME` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 Maven dependencies for direct access:
 

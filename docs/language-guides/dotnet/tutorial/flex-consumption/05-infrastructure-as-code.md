@@ -45,6 +45,14 @@ flowchart TD
     D --> E["Build + publish from output dir"]
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az deployment group create]` |
+| Key flags | None |
+| Variables | None |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ## Steps
 
 ### Step 1 - Create a Bicep template for Flex Consumption
@@ -149,6 +157,14 @@ az deployment group create \
   --parameters baseName="$BASE_NAME"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az deployment group create` |
+| Key flags | `--resource-group`, `--template-file`, `--parameters` |
+| Variables | `$RG`, `$BASE_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ### Step 5 - Deploy application artifact
 
 After infrastructure is provisioned, build and publish from the output directory:
@@ -178,6 +194,14 @@ az functionapp show \
   --resource-group "$RG" \
   --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az deployment group show`, `az functionapp show` |
+| Key flags | `--resource-group`, `--name`, `--query`, `--output` |
+| Variables | `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 ## Verification
 

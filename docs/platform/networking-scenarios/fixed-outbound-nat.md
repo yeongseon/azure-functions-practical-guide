@@ -162,6 +162,14 @@ az network public-ip show \
   --output tsv
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az network public-ip show` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output` |
+| Variables | `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 Save this IP address for downstream allowlisting.
 
 ### Step 5: Enable Route All (Premium/Dedicated Only)
@@ -220,6 +228,14 @@ az network vnet subnet show \
   --output tsv
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az network vnet subnet show` |
+| Key flags | `--name`, `--resource-group`, `--vnet-name`, `--query`, `--output` |
+| Variables | `$RG`, `$VNET_NAME` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ### Verify Outbound IP
 
 Create a function that calls an external service showing the source IP:
@@ -251,6 +267,14 @@ az functionapp show \
   --query "outboundIpAddresses" \
   --output tsv
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp show` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 !!! warning "outboundIpAddresses vs NAT Gateway"
     The `outboundIpAddresses` property shows default platform IPs. With NAT Gateway configured, actual egress uses the NAT Gateway IP, not these listed IPs.

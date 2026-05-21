@@ -135,6 +135,14 @@ func --version
 python3 --version
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az account show` |
+| Key flags | `--output`, `--version` |
+| Variables | None |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ### Variables
 
 ```bash
@@ -157,6 +165,14 @@ az functionapp plan create --name "$PLAN_NAME" --resource-group "$RG" --location
 az functionapp create --name "$APP_NAME" --resource-group "$RG" --plan "$PLAN_NAME" --runtime python --runtime-version 3.11 --functions-version 4 --storage-account "$STORAGE_NAME" --app-insights "$AI_NAME"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az group create`, `az storage account create`, `az monitor app-insights component create`, `az functionapp plan create`, plus 1 more |
+| Key flags | `--name`, `--location`, `--resource-group`, `--sku`, `--kind`, `--app`, `--application-type`, `--is-linux`, `--plan`, `--runtime`, plus 4 more |
+| Variables | `$RG`, `$LOCATION`, `$STORAGE_NAME`, `$AI_NAME`, `$PLAN_NAME`, `$APP_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ### 3.2 Deploy memory-buffering version
 
 ```bash
@@ -164,6 +180,14 @@ az functionapp deployment source config-zip --name "$APP_NAME" --resource-group 
 az functionapp config appsettings set --name "$APP_NAME" --resource-group "$RG" --settings "FUNCTIONS_WORKER_RUNTIME=python" "BLOB_BATCH_SIZE=32" "MAX_CONCURRENT_INVOCATIONS=48"
 az functionapp restart --name "$APP_NAME" --resource-group "$RG"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp deployment source config-zip`, `az functionapp config appsettings set`, `az functionapp restart` |
+| Key flags | `--name`, `--resource-group`, `--src`, `--settings` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 !!! note "Lab artifacts"
     The ZIP packages and load files referenced in this lab are pre-built assets. Prepare them before starting:
@@ -249,6 +273,14 @@ az monitor app-insights query --apps "$AI_NAME" --resource-group "$RG" --analyti
 az monitor app-insights query --apps "$AI_NAME" --resource-group "$RG" --analytics-query "let appName='${APP_NAME}'; let t0=datetime(2026-04-05 01:30:00Z); let t1=datetime(2026-04-05 01:45:00Z); requests | where timestamp between (t0 .. t1) | where cloud_RoleName == appName | summarize total=count(), failures=countif(success == false), p95Ms=round(percentile(toreal(duration / 1ms),95),2), failureRatePercent=round(100.0*failures/total,2) by bin(timestamp,5m) | order by timestamp asc" --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights query` |
+| Key flags | `--apps`, `--resource-group`, `--analytics-query`, `--output` |
+| Variables | `$AI_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ### 3.4 Trigger controlled incident phases
 
 Use a fixed timeline to avoid drift:
@@ -266,6 +298,14 @@ az storage blob upload-batch --account-name "$STORAGE_NAME" --destination "input
 az storage blob upload-batch --account-name "$STORAGE_NAME" --destination "input" --source "./load/phase2" --auth-mode login
 az storage blob upload-batch --account-name "$STORAGE_NAME" --destination "input" --source "./load/phase3" --auth-mode login
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage container create`, `az storage blob upload-batch` |
+| Key flags | `--name`, `--account-name`, `--auth-mode`, `--destination`, `--source` |
+| Variables | `$STORAGE_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 ### 3.5 Collect incident evidence (T0+15m to T0+55m)
 
@@ -370,6 +410,14 @@ az monitor app-insights query --apps "$AI_NAME" --resource-group "$RG" --analyti
 az monitor app-insights query --apps "$AI_NAME" --resource-group "$RG" --analytics-query "let appName='${APP_NAME}'; let tStart=datetime(2026-04-05 01:45:00Z); let tEnd=datetime(2026-04-05 02:25:00Z); performanceCounters | where timestamp between (tStart .. tEnd) | where cloud_RoleName == appName | where counter == 'Private Bytes' | summarize avgMemoryMB=round(avg(value)/(1024.0*1024.0),1), maxMemoryMB=round(max(value)/(1024.0*1024.0),1) by bin(timestamp,5m) | order by timestamp asc" --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights query` |
+| Key flags | `--apps`, `--resource-group`, `--analytics-query`, `--output` |
+| Variables | `$AI_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ### 3.6 Apply remediation and verify (T0+55m to T0+70m)
 
 1. Deploy streaming implementation.
@@ -381,6 +429,14 @@ az functionapp deployment source config-zip --name "$APP_NAME" --resource-group 
 az functionapp config appsettings set --name "$APP_NAME" --resource-group "$RG" --settings "BLOB_BATCH_SIZE=8" "MAX_CONCURRENT_INVOCATIONS=12"
 az functionapp restart --name "$APP_NAME" --resource-group "$RG"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp deployment source config-zip`, `az functionapp config appsettings set`, `az functionapp restart` |
+| Key flags | `--name`, `--resource-group`, `--src`, `--settings` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 Post-fix verification queries:
 
@@ -589,6 +645,14 @@ gantt
 ```bash
 az group delete --name "$RG" --yes --no-wait
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az group delete` |
+| Key flags | `--name`, `--yes`, `--no-wait` |
+| Variables | `$RG` |
+| Expected result | Azure CLI completes the removal request; verify the target no longer appears in follow-up `show` or `list` output. |
+
 
 ## Related Playbook
 

@@ -67,6 +67,14 @@ flowchart TD
     style VNET fill:#E8F5E9
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az deployment group create\| RG[Resource` |
+| Key flags | None |
+| Variables | None |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ## Steps
 
 ### Step 1 — Review Bicep template
@@ -142,6 +150,14 @@ az deployment group create \
   --parameters baseName="$BASE_NAME"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az deployment group create` |
+| Key flags | `--resource-group`, `--template-file`, `--parameters` |
+| Variables | `$RG`, `$BASE_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 !!! tip "baseName length"
     Storage account names are limited to 24 characters. Keep `baseName` to 17 characters or fewer (the template appends `storage`).
 
@@ -154,6 +170,14 @@ az deployment group what-if \
   --parameters baseName="$BASE_NAME"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az deployment group what-if` |
+| Key flags | `--resource-group`, `--template-file`, `--parameters` |
+| Variables | `$RG`, `$BASE_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ### Step 3 — Verify deployment state
 
 ```bash
@@ -163,6 +187,14 @@ az deployment group show \
   --query "{name:name, provisioningState:properties.provisioningState, timestamp:properties.timestamp}" \
   --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az deployment group show` |
+| Key flags | `--resource-group`, `--name`, `--query`, `--output` |
+| Variables | `$RG` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 Expected output:
 

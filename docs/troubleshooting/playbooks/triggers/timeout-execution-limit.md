@@ -102,6 +102,14 @@ az functionapp config appsettings list --name <app-name> --resource-group <resou
 az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "FunctionAppLogs | where TimeGenerated > ago(30m) | where Message has_any ('timeout','FunctionTimeoutException','Execution was canceled') | project TimeGenerated, Level, Message | take 20" --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp show`, `az functionapp config appsettings list`, `az monitor log-analytics query` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output`, `--workspace`, `--analytics-query` |
+| Variables | `$WORKSPACE_ID` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 ### Example output
 ```text
 Name                          Value
@@ -407,17 +415,41 @@ Use these three queries together when initial evidence is conflicting. If timeou
 az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "dependencies | where timestamp > ago(30m) | summarize p95=percentile(duration,95), fail=countif(success == false) by target" --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor log-analytics query` |
+| Key flags | `--workspace`, `--analytics-query`, `--output` |
+| Variables | `$WORKSPACE_ID` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 5. If retries amplify incident, temporarily reduce intake by scaling upstream producers or pausing non-critical schedules:
 
 ```bash
 az functionapp config appsettings set --name <app-name> --resource-group <resource-group> --settings "AzureWebJobs.NonCriticalTimer.Disabled=true" --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings`, `--output` |
+| Variables | None |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 6. Capture current config and rollout a controlled mitigation deployment with explicit timeout and retry settings:
 
 ```bash
 az functionapp deployment source config-zip --name <app-name> --resource-group <resource-group> --src <path-to-package.zip>
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp deployment source config-zip` |
+| Key flags | `--name`, `--resource-group`, `--src` |
+| Variables | None |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 ## 9. Prevention
 1. Design every trigger path with explicit time budget and allocate budget per stage (deserialize, business logic, dependency calls, commit).

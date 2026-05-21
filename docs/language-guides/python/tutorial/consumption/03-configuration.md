@@ -85,6 +85,14 @@ az functionapp config appsettings list \
   --resource-group "$RG"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings list` |
+| Key flags | `--name`, `--resource-group` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 ### Step 3 - Set required and custom app settings
 
 ```bash
@@ -97,6 +105,14 @@ az functionapp config appsettings set \
     "APP_ENV=production" \
     "LOG_LEVEL=Information"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings` |
+| Variables | `$APP_NAME`, `$RG`, `$STORAGE_NAME` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 For Consumption, app settings are handled as classic app settings (backed by `siteConfig.appSettings`), not the Flex-specific configuration model.
 
@@ -112,6 +128,14 @@ az functionapp config appsettings set \
     "AzureWebJobsStorage__accountName=$STORAGE_NAME" \
     "AzureWebJobsStorage__credential=managedidentity"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings` |
+| Variables | `$APP_NAME`, `$RG`, `$STORAGE_NAME` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 !!! warning "Identity-based storage requires Managed Identity and RBAC"
     Before using identity-based host storage, you must:
@@ -140,6 +164,14 @@ az functionapp config appsettings list \
   --resource-group "$RG" \
   --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings list` |
+| Key flags | `--name`, `--resource-group`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 App settings update excerpt (values are hidden by the platform for security):
 ```json
@@ -171,6 +203,14 @@ az functionapp show \
   --query "{id:id,kind:kind,state:state}" \
   --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp show` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 App details excerpt:
 

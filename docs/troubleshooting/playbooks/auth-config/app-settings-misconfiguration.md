@@ -141,6 +141,14 @@ az functionapp config show --name "$APP_NAME" --resource-group "$RG" --output js
 az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "traces | where timestamp > ago(30m) | where cloud_RoleName =~ '$APP_NAME' | where message has_any ('Host started','Host initialization','WorkerConfig','FUNCTIONS_WORKER_RUNTIME','AzureWebJobsStorage','KeyVault','Error indexing method') | project timestamp, severityLevel, message | order by timestamp desc" --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings list`, `az functionapp config show`, `az monitor log-analytics query` |
+| Key flags | `--name`, `--resource-group`, `--output`, `--workspace`, `--analytics-query` |
+| Variables | `$APP_NAME`, `$RG`, `$WORKSPACE_ID` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 ### Example output
 ```text
 Name                                      Value
@@ -406,26 +414,74 @@ timestamp                    message
    ```bash
    az functionapp config appsettings set --name "$APP_NAME" --resource-group "$RG" --settings "FUNCTIONS_EXTENSION_VERSION=~4" "FUNCTIONS_WORKER_RUNTIME=$WORKER_RUNTIME" --output json
    ```
+
+   | CLI element | Explanation |
+   |---|---|
+   | Command(s) | `az functionapp config appsettings set` |
+   | Key flags | `--name`, `--resource-group`, `--settings`, `--output` |
+   | Variables | `$APP_NAME`, `$RG`, `$WORKER_RUNTIME` |
+   | Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 2. Correct `AzureWebJobsStorage` with the intended storage connection.
    ```bash
    az functionapp config appsettings set --name "$APP_NAME" --resource-group "$RG" --settings "AzureWebJobsStorage=$AZURE_WEBJOBS_STORAGE" --output json
    ```
+
+   | CLI element | Explanation |
+   |---|---|
+   | Command(s) | `az functionapp config appsettings set` |
+   | Key flags | `--name`, `--resource-group`, `--settings`, `--output` |
+   | Variables | `$APP_NAME`, `$RG`, `$AZURE_WEBJOBS_STORAGE` |
+   | Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 3. For Consumption or Premium plans, set content share settings explicitly.
    ```bash
    az functionapp config appsettings set --name "$APP_NAME" --resource-group "$RG" --settings "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING=$CONTENT_STORAGE_CONNECTION" "WEBSITE_CONTENTSHARE=$CONTENT_SHARE" --output json
    ```
+
+   | CLI element | Explanation |
+   |---|---|
+   | Command(s) | `az functionapp config appsettings set` |
+   | Key flags | `--name`, `--resource-group`, `--settings`, `--output` |
+   | Variables | `$APP_NAME`, `$RG`, `$CONTENT_STORAGE_CONNECTION`, `$CONTENT_SHARE` |
+   | Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 4. Fix invalid Key Vault references by using canonical syntax.
    ```bash
    az functionapp config appsettings set --name "$APP_NAME" --resource-group "$RG" --settings "QueueConnection=@Microsoft.KeyVault(SecretUri=$SECRET_URI)" --output json
    ```
+
+   | CLI element | Explanation |
+   |---|---|
+   | Command(s) | `az functionapp config appsettings set` |
+   | Key flags | `--name`, `--resource-group`, `--settings`, `--output` |
+   | Variables | `$APP_NAME`, `$RG`, `$SECRET_URI` |
+   | Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 5. Restart the host to apply and validate corrected settings.
    ```bash
    az functionapp restart --name "$APP_NAME" --resource-group "$RG"
    ```
+
+   | CLI element | Explanation |
+   |---|---|
+   | Command(s) | `az functionapp restart` |
+   | Key flags | `--name`, `--resource-group` |
+   | Variables | `$APP_NAME`, `$RG` |
+   | Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
 6. Verify startup and discovery recovery using a bounded query.
    ```bash
    az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "traces | where timestamp > ago(15m) | where cloud_RoleName =~ '$APP_NAME' | where message has_any ('Host started','Error indexing method','No job functions found') | project timestamp, message | order by timestamp desc" --output table
    ```
+
+   | CLI element | Explanation |
+   |---|---|
+   | Command(s) | `az monitor log-analytics query` |
+   | Key flags | `--workspace`, `--analytics-query`, `--output` |
+   | Variables | `$WORKSPACE_ID`, `$APP_NAME` |
+   | Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 ## 9. Prevention
 1. Maintain an environment-specific settings contract and validate it during CI/CD.

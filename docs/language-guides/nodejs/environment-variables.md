@@ -36,6 +36,14 @@ az functionapp config appsettings set --name $APP_NAME --resource-group $RG --se
 az functionapp config set --name $APP_NAME --resource-group $RG --linux-fx-version "Node|20"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set`, `az functionapp config set` |
+| Key flags | `--name`, `--resource-group`, `--settings`, `--max-old-space-size`, `--linux-fx-version` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 - Windows apps use `WEBSITE_NODE_DEFAULT_VERSION`.
 - Linux apps use `siteConfig.linuxFxVersion` through `az functionapp config set --linux-fx-version "Node|20"`.
 

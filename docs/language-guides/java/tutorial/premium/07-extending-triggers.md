@@ -111,6 +111,14 @@ az storage container list \
   --output tsv
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage queue list`, `az storage container list` |
+| Key flags | `--account-name`, `--output`, `--query` |
+| Variables | `$STORAGE_NAME` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ### Step 4 - Test queue trigger
 
 ```bash
@@ -128,6 +136,14 @@ az storage message peek \
   --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage message put`, `az storage message peek` |
+| Key flags | `--queue-name`, `--account-name`, `--content`, `--output` |
+| Variables | `$STORAGE_NAME` |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
+
 ### Step 5 - Test blob trigger
 
 ```bash
@@ -140,6 +156,14 @@ az storage blob upload \
   --file "/tmp/test-blob.txt"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage blob upload` |
+| Key flags | `--container-name`, `--account-name`, `--name`, `--file` |
+| Variables | `$STORAGE_NAME` |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
+
 ### Step 6 - Verify timer functions
 
 Timer functions run on schedule and can be verified via Application Insights:
@@ -150,6 +174,14 @@ az monitor app-insights query \
   --resource-group "$RG" \
   --analytics-query "traces | where message contains 'timer' or message contains 'cleanup' | where timestamp > ago(30m) | project timestamp, message | order by timestamp desc | take 5"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights query` |
+| Key flags | `--apps`, `--resource-group`, `--analytics-query` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 ### Step 7 - Verify all function responses
 
@@ -197,6 +229,14 @@ Containers: azure-webjobs-eventhub, azure-webjobs-hosts, azure-webjobs-secrets, 
 ```bash
 az group delete --name "$RG" --yes --no-wait
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az group delete` |
+| Key flags | `--name`, `--yes`, `--no-wait` |
+| Variables | `$RG` |
+| Expected result | Azure CLI completes the removal request; verify the target no longer appears in follow-up `show` or `list` output. |
+
 
 ## See Also
 

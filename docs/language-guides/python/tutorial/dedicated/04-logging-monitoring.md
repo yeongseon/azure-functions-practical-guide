@@ -114,6 +114,14 @@ az monitor log-analytics workspace create \
   --location $LOCATION
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor log-analytics workspace create` |
+| Key flags | `--resource-group`, `--workspace-name`, `--location` |
+| Variables | `$RG`, `$LOG_ANALYTICS_NAME`, `$LOCATION` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ### Step 2 - Create Application Insights (workspace-based)
 
 ```bash
@@ -131,6 +139,14 @@ az monitor app-insights component create \
   --application-type web
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor log-analytics workspace show`, `az monitor app-insights component create` |
+| Key flags | `--resource-group`, `--workspace-name`, `--query`, `--output`, `--app`, `--location`, `--workspace`, `--application-type` |
+| Variables | `$RG`, `$LOG_ANALYTICS_NAME`, `$APPINSIGHTS_NAME`, `$LOCATION`, `$WORKSPACE_ID` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ### Step 3 - Connect Function App to Application Insights
 
 ```bash
@@ -147,6 +163,14 @@ az functionapp config appsettings set \
     APPLICATIONINSIGHTS_CONNECTION_STRING="$APPINSIGHTS_CONNECTION_STRING"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights component show`, `az functionapp config appsettings set` |
+| Key flags | `--app`, `--resource-group`, `--query`, `--output`, `--name`, `--settings` |
+| Variables | `$APPINSIGHTS_NAME`, `$RG`, `$APP_NAME`, `$APPINSIGHTS_CONNECTION_STRING` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 ### Step 4 - Stream platform logs
 
 ```bash
@@ -160,6 +184,14 @@ az webapp log tail \
   --name $APP_NAME \
   --resource-group $RG
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az webapp log config`, `az webapp log tail` |
+| Key flags | `--name`, `--resource-group`, `--application-logging`, `--level` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 Kudu/SCM is available on Dedicated, so you can also inspect diagnostics through `https://$APP_NAME.scm.azurewebsites.net`.
 
@@ -177,6 +209,14 @@ az monitor app-insights query \
   --analytics-query "requests | take 5" \
   --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights component show`, `az monitor app-insights query` |
+| Key flags | `--app`, `--resource-group`, `--query`, `--output`, `--analytics-query` |
+| Variables | `$APPINSIGHTS_NAME`, `$RG`, `$APPINSIGHTS_APP_ID` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 !!! tip "Use `--output json` for App Insights queries"
     The `--output table` format for `az monitor app-insights query` may return empty results even when data exists. Use `--output json` to reliably retrieve query results.
@@ -207,6 +247,14 @@ az monitor metrics alert create \
   --evaluation-frequency 1m \
   --action $ACTION_GROUP_ID
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp show`, `az monitor action-group create`, `az monitor metrics alert create` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output`, `--short-name`, `--action`, `--scopes`, `--condition`, `--window-size`, `--evaluation-frequency` |
+| Variables | `$APP_NAME`, `$RG`, `$APP_ID`, `$ACTION_GROUP_ID` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 ## Verification
 

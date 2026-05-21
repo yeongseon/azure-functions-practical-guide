@@ -45,6 +45,14 @@ az eventgrid event-subscription create \
   --endpoint "/subscriptions/<subscription-id>/resourceGroups/$RG/providers/Microsoft.Web/sites/$APP_NAME/functions/processStorageEvent"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az eventgrid event-subscription create` |
+| Key flags | `--name`, `--source-resource-id`, `--resource-group`, `--query`, `--output`, `--endpoint-type`, `--endpoint` |
+| Variables | `$STORAGE_NAME`, `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ## Working Node.js v4 Code
 
 ```javascript

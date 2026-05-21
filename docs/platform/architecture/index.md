@@ -117,6 +117,14 @@ SUBSCRIPTION_ID="<subscription-id>"
 az account set --subscription "$SUBSCRIPTION_ID"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az account set` |
+| Key flags | `--subscription` |
+| Variables | `$SUBSCRIPTION_ID` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 !!! note
     All command examples in this page use long CLI flags and sanitized output. Replace placeholders with your own values.
 
@@ -380,6 +388,14 @@ az functionapp show \
   --output json
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp show` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 Example output (sanitized):
 ```json
 {
@@ -403,6 +419,14 @@ az functionapp config show \
   --query "{linuxFxVersion:linuxFxVersion, alwaysOn:alwaysOn, ftpsState:ftpsState, minTlsVersion:minTlsVersion, vnetRouteAllEnabled:vnetRouteAllEnabled}" \
   --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config show` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 Example output (sanitized):
 ```json

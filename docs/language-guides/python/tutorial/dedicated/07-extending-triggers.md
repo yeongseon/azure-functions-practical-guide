@@ -114,6 +114,14 @@ az functionapp config set \
   --always-on true
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config set` |
+| Key flags | `--name`, `--resource-group`, `--always-on` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 Timer triggers are most reliable when Always On is enabled on Dedicated.
 
 ### Step 2 - Add a timer trigger
@@ -193,6 +201,14 @@ az storage message put \
   --queue-name jobs \
   --content "run-job-001"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage container create`, `az storage queue create`, `az storage blob upload`, `az storage message put` |
+| Key flags | `--python`, `--name`, `--account-name`, `--container-name`, `--file`, `--queue-name`, `--content` |
+| Variables | `$APP_NAME`, `$STORAGE_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 ### Step 6 - Review runtime and scale behavior
 

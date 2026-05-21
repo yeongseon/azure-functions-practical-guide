@@ -90,6 +90,14 @@ az monitor app-insights component create \
   --application-type web
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights component create` |
+| Key flags | `--app`, `--resource-group`, `--location`, `--application-type` |
+| Variables | `$RG`, `$LOCATION` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ### Step 3 - Link Function App to Application Insights
 
 ```bash
@@ -104,6 +112,14 @@ az functionapp config appsettings set \
   --resource-group "$RG" \
   --settings "APPLICATIONINSIGHTS_CONNECTION_STRING=$APPINSIGHTS_CONNECTION_STRING"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights component show`, `az functionapp config appsettings set` |
+| Key flags | `--app`, `--resource-group`, `--query`, `--output`, `--name`, `--settings` |
+| Variables | `$RG`, `$APP_NAME`, `$APPINSIGHTS_CONNECTION_STRING` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 ### Step 4 - Generate test traffic
 
@@ -123,6 +139,14 @@ az monitor app-insights query \
   --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights query` |
+| Key flags | `--app`, `--resource-group`, `--analytics-query`, `--output` |
+| Variables | `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 !!! tip "Telemetry ingestion delay"
     Application Insights has a 2-5 minute ingestion delay. If Step 5 returns empty results immediately after Step 4, wait a few minutes and retry.
 
@@ -133,6 +157,14 @@ az webapp log tail \
   --name "$APP_NAME" \
   --resource-group "$RG"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az webapp log tail` |
+| Key flags | `--name`, `--resource-group` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
 
 !!! tip "Cold start and log streaming"
     On Consumption (Y1), the app may be cold (scaled to zero) when you start log streaming. Send a request to the health endpoint first to wake the app, then start the log tail. Press `Ctrl+C` to stop streaming.

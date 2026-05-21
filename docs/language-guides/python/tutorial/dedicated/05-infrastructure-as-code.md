@@ -218,6 +218,14 @@ az deployment group create \
     storageName=$STORAGE_NAME
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az group create`, `az deployment group create` |
+| Key flags | `--name`, `--location`, `--resource-group`, `--template-file`, `--parameters` |
+| Variables | `$RG`, `$LOCATION`, `$PLAN_NAME`, `$APP_NAME`, `$STORAGE_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ### Step 5 - Validate deployed resources
 
 ```bash
@@ -234,6 +242,14 @@ az functionapp show \
   --output json
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az appservice plan show`, `az functionapp show` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output` |
+| Variables | `$PLAN_NAME`, `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ### Option B: Deploy with Azure CLI (No Bicep)
 
 Use this full CLI sequence when you want to provision the same Dedicated baseline without Bicep.
@@ -246,6 +262,14 @@ az group create \
   --location "$LOCATION"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az group create` |
+| Key flags | `--name`, `--location` |
+| Variables | `$RG`, `$LOCATION` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 #### B-2: Storage Account
 
 ```bash
@@ -257,6 +281,14 @@ az storage account create \
   --kind "StorageV2"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage account create` |
+| Key flags | `--name`, `--resource-group`, `--location`, `--sku`, `--kind` |
+| Variables | `$STORAGE_NAME`, `$RG`, `$LOCATION` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 #### B-3: App Service Plan (B1)
 
 ```bash
@@ -267,6 +299,14 @@ az appservice plan create \
   --sku "B1" \
   --is-linux
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az appservice plan create` |
+| Key flags | `--name`, `--resource-group`, `--location`, `--sku`, `--is-linux` |
+| Variables | `$PLAN_NAME`, `$RG`, `$LOCATION` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 #### B-4: Function App (with Always On)
 
@@ -287,6 +327,14 @@ az functionapp config set \
   --always-on true
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp create`, `az functionapp config set` |
+| Key flags | `--name`, `--resource-group`, `--plan`, `--storage-account`, `--runtime`, `--runtime-version`, `--functions-version`, `--os-type`, `--always-on` |
+| Variables | `$APP_NAME`, `$RG`, `$PLAN_NAME`, `$STORAGE_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 #### B-5: App Settings (connection string or identity-based)
 
 ```bash
@@ -295,6 +343,14 @@ az functionapp config appsettings set \
   --resource-group "$RG" \
   --settings "WEBSITE_RUN_FROM_PACKAGE=1" "FUNCTIONS_WORKER_RUNTIME=python"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 Connection string mode:
 
@@ -311,6 +367,14 @@ az functionapp config appsettings set \
   --settings "AzureWebJobsStorage=$STORAGE_CONN_STRING"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage account show-connection-string`, `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output`, `--settings` |
+| Variables | `$STORAGE_NAME`, `$RG`, `$APP_NAME`, `$STORAGE_CONN_STRING` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 Identity-based mode:
 
 ```bash
@@ -325,6 +389,14 @@ az functionapp config appsettings set \
     "AzureWebJobsStorage__accountName=$STORAGE_NAME" \
     "AzureWebJobsStorage__credential=managedidentity"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp identity assign`, `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings` |
+| Variables | `$APP_NAME`, `$RG`, `$STORAGE_NAME` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 #### B-6: Application Insights
 
@@ -349,6 +421,14 @@ az functionapp config appsettings set \
   --settings "APPLICATIONINSIGHTS_CONNECTION_STRING=$APPINSIGHTS_CONNECTION_STRING"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights component create`, `az monitor app-insights component show`, `az functionapp config appsettings set` |
+| Key flags | `--app`, `--resource-group`, `--location`, `--application-type`, `--query`, `--output`, `--name`, `--settings` |
+| Variables | `$APP_NAME`, `$APPINSIGHTS_NAME`, `$RG`, `$LOCATION`, `$APPINSIGHTS_CONNECTION_STRING` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ??? example "Optional: VNet and Private Endpoints"
     Basic (B1) can use App Service VNet integration and private endpoints. This optional path upgrades to `S1` so the tutorial matches the guide-tested private networking scenario and provides more production headroom.
 
@@ -365,6 +445,14 @@ az functionapp config appsettings set \
       --resource-group "$RG" \
       --sku S1
     ```
+
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az appservice plan update` |
+    | Key flags | `--name`, `--resource-group`, `--sku` |
+    | Variables | `$PLAN_NAME`, `$RG` |
+    | Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
     #### B-8: VNet and Subnets
 
@@ -392,6 +480,14 @@ az functionapp config appsettings set \
       --delegations "Microsoft.Web/serverFarms"
     ```
 
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az network vnet create`, `az network vnet subnet create`, `az network vnet subnet update` |
+    | Key flags | `--name`, `--resource-group`, `--location`, `--address-prefixes`, `--subnet-name`, `--subnet-prefixes`, `--vnet-name`, `--delegations` |
+    | Variables | `$VNET_NAME`, `$RG`, `$LOCATION` |
+    | Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
     #### B-9: VNet Integration
 
     ```bash
@@ -401,6 +497,14 @@ az functionapp config appsettings set \
       --vnet "$VNET_NAME" \
       --subnet "snet-integration"
     ```
+
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az functionapp vnet-integration add` |
+    | Key flags | `--name`, `--resource-group`, `--vnet`, `--subnet` |
+    | Variables | `$APP_NAME`, `$RG`, `$VNET_NAME` |
+    | Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
 
     #### B-10: Managed Identity and RBAC
 
@@ -437,6 +541,14 @@ az functionapp config appsettings set \
       --scope "$STORAGE_ID"
     ```
 
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az functionapp identity assign`, `az functionapp identity show`, `az storage account show`, `az role assignment create` |
+    | Key flags | `--name`, `--resource-group`, `--query`, `--output`, `--assignee`, `--role`, `--scope` |
+    | Variables | `$APP_NAME`, `$RG`, `$STORAGE_NAME`, `$MI_PRINCIPAL_ID`, `$STORAGE_ID` |
+    | Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
     #### B-11: Lock Down Storage
 
     ```bash
@@ -445,6 +557,14 @@ az functionapp config appsettings set \
       --resource-group "$RG" \
       --allow-blob-public-access false
     ```
+
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az storage account update` |
+    | Key flags | `--name`, `--resource-group`, `--allow-blob-public-access` |
+    | Variables | `$STORAGE_NAME`, `$RG` |
+    | Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
     #### B-12: Storage Private Endpoints (x4)
 
@@ -461,6 +581,14 @@ az functionapp config appsettings set \
         --connection-name "conn-st-$SVC"
     done
     ```
+
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az network private-endpoint create` |
+    | Key flags | `--name`, `--resource-group`, `--location`, `--vnet-name`, `--subnet`, `--private-connection-resource-id`, `--group-ids`, `--connection-name` |
+    | Variables | `$SVC`, `$RG`, `$LOCATION`, `$VNET_NAME`, `$STORAGE_ID` |
+    | Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
     #### B-13: Private DNS Zones and VNet Links (x4)
 
@@ -486,6 +614,14 @@ az functionapp config appsettings set \
     done
     ```
 
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az network private-dns zone create`, `az network private-dns link vnet`, `az network private-endpoint dns-zone-group create` |
+    | Key flags | `--resource-group`, `--name`, `--zone-name`, `--virtual-network`, `--registration-enabled`, `--endpoint-name`, `--private-dns-zone` |
+    | Variables | `$RG`, `$SVC`, `$VNET_NAME` |
+    | Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
     #### B-14: Identity-Based Storage Config
 
     ```bash
@@ -496,6 +632,14 @@ az functionapp config appsettings set \
         "AzureWebJobsStorage__accountName=$STORAGE_NAME" \
         "AzureWebJobsStorage__credential=managedidentity"
     ```
+
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az functionapp config appsettings set` |
+    | Key flags | `--name`, `--resource-group`, `--settings` |
+    | Variables | `$APP_NAME`, `$RG`, `$STORAGE_NAME` |
+    | Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 ## Verification
 

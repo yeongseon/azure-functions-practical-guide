@@ -287,6 +287,14 @@ az functionapp create \
     --storage-account $STORAGE_NAME
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az appservice plan create`, `az webapp create`, `az functionapp create` |
+| Key flags | `--resource-group`, `--name`, `--sku`, `--is-linux`, `--plan`, `--runtime`, `--functions-version`, `--storage-account` |
+| Variables | `$RG`, `$PLAN_NAME`, `$APP_NAME`, `$FUNC_NAME`, `$STORAGE_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 !!! warning "Resource contention"
     Web apps and function apps on the same plan share CPU and memory. A spike in function app executions can starve the web app. Monitor both apps and consider separate plans for production workloads with strict SLAs.
 

@@ -79,6 +79,14 @@ az functionapp config appsettings set \
     "AZURE_FUNCTIONS_ENVIRONMENT=Production"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 ### Step 3 - Set runtime guardrails
 
 ```bash
@@ -90,6 +98,14 @@ az functionapp config appsettings set \
     "FUNCTIONS_WORKER_RUNTIME=dotnet-isolated"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 ### Step 4 - Enable Always On for non-HTTP triggers
 
 ```bash
@@ -98,6 +114,14 @@ az functionapp config set \
   --resource-group "$RG" \
   --always-on true
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config set` |
+| Key flags | `--name`, `--resource-group`, `--always-on` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 !!! warning "Always On is critical for Dedicated"
     Without Always On, the app may unload after idle periods, causing timer and queue triggers to stop firing. Always On is available on Basic (B1) and higher SKUs.
@@ -134,6 +158,14 @@ az functionapp config appsettings list \
   --resource-group "$RG" \
   --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings list` |
+| Key flags | `--name`, `--resource-group`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 ### Step 7 - Verify runtime behavior with info endpoint
 

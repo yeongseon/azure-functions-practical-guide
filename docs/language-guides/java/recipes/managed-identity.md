@@ -55,6 +55,14 @@ az functionapp identity assign --name $APP_NAME --resource-group $RG
 PRINCIPAL_ID=$(az functionapp identity show --name $APP_NAME --resource-group $RG --query principalId --output tsv)
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp identity assign`, `az functionapp identity show` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 Grant RBAC access to a storage account:
 
 ```bash
@@ -66,6 +74,14 @@ az role assignment create \
   --role "Storage Blob Data Reader" \
   --scope $STORAGE_SCOPE
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage account show`, `az role assignment create` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output`, `--assignee-object-id`, `--assignee-principal-type`, `--role`, `--scope` |
+| Variables | `$STORAGE_NAME`, `$RG`, `$PRINCIPAL_ID`, `$STORAGE_SCOPE` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 Maven dependencies:
 

@@ -102,6 +102,14 @@ az servicebus queue show --name <queue-name> --namespace-name <service-bus-names
 az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "FunctionAppLogs | where TimeGenerated > ago(30m) | where Message has_any ('lag','checkpoint','lock lost','dead-letter','timeout') | project TimeGenerated, Level, Message | take 30" --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az eventhubs eventhub show`, `az servicebus queue show`, `az monitor log-analytics query` |
+| Key flags | `--name`, `--namespace-name`, `--resource-group`, `--output`, `--workspace`, `--analytics-query` |
+| Variables | `$WORKSPACE_ID` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ### Example output
 ```text
 Name                 PartitionCount    MessageRetentionInDays
@@ -398,17 +406,41 @@ When lag slope and p95 duration rise together, throughput is constrained by proc
    az servicebus queue show --name <queue-name> --namespace-name <service-bus-namespace> --resource-group <resource-group> --query "{activeMessageCount:countDetails.activeMessageCount, deadLetterMessageCount:countDetails.deadLetterMessageCount}" --output table
    ```
 
+   | CLI element | Explanation |
+   |---|---|
+   | Command(s) | `az servicebus queue show` |
+   | Key flags | `--name`, `--namespace-name`, `--resource-group`, `--query`, `--output` |
+   | Variables | None |
+   | Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 3. Validate broker and downstream latency before scaling out consumers blindly:
 
 ```bash
 az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "dependencies | where timestamp > ago(30m) | summarize p95=percentile(duration,95), failures=countif(success == false) by target" --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor log-analytics query` |
+| Key flags | `--workspace`, `--analytics-query`, `--output` |
+| Variables | `$WORKSPACE_ID` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 4. Temporarily throttle producer throughput or apply backpressure policy to stop uncontrolled lag growth while draining backlog.
 
 ```bash
 az eventhubs eventhub authorization-rule keys list --name <rule-name> --eventhub-name <event-hub-name> --namespace-name <event-hubs-namespace> --resource-group <resource-group> --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az eventhubs eventhub authorization-rule keys` |
+| Key flags | `--name`, `--eventhub-name`, `--namespace-name`, `--resource-group`, `--output` |
+| Variables | None |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 !!! note
     Producer throttling is application-specific. The auth key listed above is for connection verification, not throttling. Coordinate with the upstream producer team to reduce send rate.
@@ -419,11 +451,27 @@ az eventhubs eventhub authorization-rule keys list --name <rule-name> --eventhub
 az eventhubs eventhub update --name <event-hub-name> --namespace-name <event-hubs-namespace> --resource-group <resource-group> --partition-count 16 --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az eventhubs eventhub update` |
+| Key flags | `--name`, `--namespace-name`, `--resource-group`, `--partition-count`, `--output` |
+| Variables | None |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 6. Redeploy with validated extension settings and monitor lag slope every 5 minutes until stable decline is confirmed.
 
 ```bash
 az functionapp deployment source config-zip --name <app-name> --resource-group <resource-group> --src <path-to-package.zip>
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp deployment source config-zip` |
+| Key flags | `--name`, `--resource-group`, `--src` |
+| Variables | None |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 ## 9. Prevention
 1. Set explicit lag SLOs (partition, queue, subscription) and alert on slope, not only absolute depth.

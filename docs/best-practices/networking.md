@@ -316,6 +316,14 @@ az functionapp vnet-integration list \
     --resource-group "$RG"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp vnet-integration list` |
+| Key flags | `--name`, `--resource-group` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ### Verify subnet delegation
 
 ```bash
@@ -326,6 +334,14 @@ az network vnet subnet show \
     --query "delegations[].serviceName"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az network vnet subnet show` |
+| Key flags | `--name`, `--resource-group`, `--vnet-name`, `--query` |
+| Variables | `$INTEGRATION_SUBNET`, `$RG`, `$VNET_NAME` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ### Verify private endpoint status
 
 ```bash
@@ -335,6 +351,14 @@ az network private-endpoint show \
     --query "{provisioningState:provisioningState,networkInterfaces:networkInterfaces[].id}"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az network private-endpoint show` |
+| Key flags | `--name`, `--resource-group`, `--query` |
+| Variables | `$PE_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ### Verify private DNS zone links
 
 ```bash
@@ -343,6 +367,14 @@ az network private-dns link vnet list \
     --zone-name "privatelink.azurewebsites.net"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az network private-dns link vnet` |
+| Key flags | `--resource-group`, `--zone-name` |
+| Variables | `$DNS_RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ### Verify app access restrictions
 
 ```bash
@@ -350,6 +382,14 @@ az functionapp config access-restriction show \
     --name "$APP_NAME" \
     --resource-group "$RG"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config access-restriction show` |
+| Key flags | `--name`, `--resource-group` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 ??? tip "Cross-check with security controls"
     Networking isolation does not replace identity and secret hygiene. Apply [Security Best Practices](./security.md) together with these network controls.

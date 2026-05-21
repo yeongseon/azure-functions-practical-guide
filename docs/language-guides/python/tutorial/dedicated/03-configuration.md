@@ -111,6 +111,14 @@ az functionapp config appsettings list \
   --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings list` |
+| Key flags | `--name`, `--resource-group`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 ### Step 2 - Set required and custom app settings
 
 Dedicated supports both connection-string and identity-based host storage configuration.
@@ -133,6 +141,14 @@ az functionapp config appsettings set \
     APP_ENV=dedicated-dev
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage account show-connection-string`, `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output`, `--settings` |
+| Variables | `$STORAGE_NAME`, `$RG`, `$APP_NAME`, `$STORAGE_CONNECTION_STRING` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 Identity-based option (alternative):
 
 ```bash
@@ -147,6 +163,14 @@ az functionapp config appsettings set \
     AzureWebJobsStorage__accountName=$STORAGE_NAME \
     AzureWebJobsStorage__credential=managedidentity
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp identity assign`, `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings` |
+| Variables | `$APP_NAME`, `$RG`, `$STORAGE_NAME` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 !!! warning "Identity-based storage requires Managed Identity and RBAC"
     Before using identity-based host storage, you must:
@@ -164,6 +188,14 @@ az functionapp config set \
   --always-on true \
   --number-of-workers 1
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config set` |
+| Key flags | `--name`, `--resource-group`, `--always-on`, `--number-of-workers` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 ### Step 4 - Set function timeout in host.json
 
@@ -195,6 +227,14 @@ az functionapp config show \
   --query "{alwaysOn:alwaysOn,linuxFxVersion:linuxFxVersion,numberOfWorkers:numberOfWorkers}" \
   --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config show` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 !!! info "Dedicated uses classic configuration model"
     For Dedicated (App Service Plan), configure settings through classic App Service app settings (`siteConfig.appSettings`). Do not use `functionAppConfig` in this plan.

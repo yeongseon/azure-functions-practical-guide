@@ -101,6 +101,14 @@ az functionapp config appsettings list \
   --output tsv
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings list` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 ### Step 4 - Query recent traces
 
 ```bash
@@ -109,6 +117,14 @@ az monitor app-insights query \
   --resource-group "$RG" \
   --analytics-query "traces | where timestamp > ago(30m) | project timestamp, message, severityLevel | order by timestamp desc | take 20"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights query` |
+| Key flags | `--app`, `--resource-group`, `--analytics-query` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 !!! note "Use `--resource-group` with `--app`"
     On Flex Consumption, `--app "$APP_NAME"` alone may fail with `PathNotFoundError`. Always include `--resource-group "$RG"` to resolve the App Insights component correctly.
@@ -122,6 +138,14 @@ az monitor app-insights query \
   --analytics-query "requests | where timestamp > ago(30m) | project timestamp, name, resultCode, duration | order by timestamp desc | take 20"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights query` |
+| Key flags | `--app`, `--resource-group`, `--analytics-query` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ### Step 6 - View live log stream
 
 ```bash
@@ -129,6 +153,14 @@ az webapp log tail \
   --name "$APP_NAME" \
   --resource-group "$RG"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az webapp log tail` |
+| Key flags | `--name`, `--resource-group` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
 
 !!! warning "`az functionapp log tail` does not exist"
     As of Azure CLI 2.83.0, use `az webapp log tail` (not `az functionapp log tail`) to stream live logs from a function app.
@@ -150,6 +182,14 @@ az monitor metrics alert create \
   --window-size 5m \
   --evaluation-frequency 1m
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp show`, `az monitor metrics alert create` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output`, `--scopes`, `--condition`, `--window-size`, `--evaluation-frequency` |
+| Variables | `$APP_NAME`, `$RG`, `$FUNCTION_APP_ID` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 ## Verification
 

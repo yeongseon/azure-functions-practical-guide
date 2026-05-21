@@ -20,6 +20,14 @@ flowchart TD
     E[mvn] --> F[Build and deploy]
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp]` |
+| Key flags | None |
+| Variables | None |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
+
 ### Core Tools
 
 ```bash
@@ -42,6 +50,14 @@ az functionapp create --name $APP_NAME --resource-group $RG --storage-account $S
 az functionapp config appsettings list --name $APP_NAME --resource-group $RG --output table
 az functionapp log tail --name $APP_NAME --resource-group $RG
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp create`, `az functionapp config appsettings list`, `az functionapp log tail` |
+| Key flags | `--name`, `--resource-group`, `--storage-account`, `--plan`, `--runtime`, `--runtime-version`, `--functions-version`, `--os-type`, `--output` |
+| Variables | `$APP_NAME`, `$RG`, `$STORAGE_NAME`, `$PLAN_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 ## See Also
 

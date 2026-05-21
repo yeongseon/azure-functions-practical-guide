@@ -29,6 +29,14 @@ flowchart TD
 az functionapp log tail --name "$APP_NAME" --resource-group "$RG"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp log tail` |
+| Key flags | `--name`, `--resource-group` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
+
 ### Startup failure due to package mismatch
 - Align worker SDK and extension package versions.
 - Rebuild and republish with clean output.

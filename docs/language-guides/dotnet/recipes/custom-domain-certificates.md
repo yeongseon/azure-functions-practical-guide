@@ -25,15 +25,39 @@ flowchart TD
 az functionapp config hostname add --name "$APP_NAME" --resource-group "$RG" --hostname "api.example.com"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config hostname add` |
+| Key flags | `--name`, `--resource-group`, `--hostname` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 ### Create managed certificate
 ```bash
 az functionapp config ssl create --name "$APP_NAME" --resource-group "$RG" --hostname "api.example.com"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config ssl create` |
+| Key flags | `--name`, `--resource-group`, `--hostname` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ### Bind certificate
 ```bash
 az functionapp config ssl bind --name "$APP_NAME" --resource-group "$RG" --certificate-thumbprint "<thumbprint>" --ssl-type SNI
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config ssl bind` |
+| Key flags | `--name`, `--resource-group`, `--certificate-thumbprint`, `--ssl-type` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 ### Hosting plan caveat
 - Flex Consumption does not support managed/platform certificates.

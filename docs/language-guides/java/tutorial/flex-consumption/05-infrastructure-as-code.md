@@ -57,6 +57,14 @@ flowchart TD
     style FA fill:#0078d4,color:#fff
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az deployment group create"\| RG[Resource` |
+| Key flags | None |
+| Variables | None |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart TD
@@ -64,6 +72,14 @@ flowchart TD
     B --> C[Function App + Plan + Storage]
     C --> D["Build + publish from staging dir"]
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az deployment group create]` |
+| Key flags | None |
+| Variables | None |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 ## Steps
 
@@ -171,6 +187,14 @@ az deployment group create \
   --parameters baseName="$BASE_NAME"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az deployment group create` |
+| Key flags | `--resource-group`, `--template-file`, `--parameters` |
+| Variables | `$RG`, `$BASE_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ### Step 3 - Deploy application artifact
 
 After infrastructure is provisioned, build and publish from the Maven staging directory:
@@ -199,6 +223,14 @@ az functionapp show \
   --resource-group "$RG" \
   --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az deployment group show`, `az functionapp show` |
+| Key flags | `--resource-group`, `--name`, `--query`, `--output` |
+| Variables | `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 ### Step 5 - Review Flex Consumption-specific notes
 

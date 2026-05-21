@@ -74,6 +74,14 @@ az cosmosdb create \
   --kind GlobalDocumentDB
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage account create`, `az cosmosdb create` |
+| Key flags | `--name`, `--resource-group`, `--location`, `--sku`, `--kind` |
+| Variables | `$STORAGE_NAME`, `$RG`, `$LOCATION` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 Enable identity and capture principal id:
 
 ```bash
@@ -81,6 +89,14 @@ az functionapp identity assign \
   --name $APP_NAME \
   --resource-group $RG
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp identity assign` |
+| Key flags | `--name`, `--resource-group` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 Assign RBAC roles:
 
@@ -97,6 +113,14 @@ az cosmosdb sql role assignment create \
   --principal-id <principal-id> \
   --role-definition-name "Cosmos DB Built-in Data Contributor"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az role assignment create`, `az cosmosdb sql role assignment` |
+| Key flags | `--assignee`, `--role`, `--scope`, `--name`, `--resource-group`, `--query`, `--output`, `--account-name`, `--principal-id`, `--role-definition-name` |
+| Variables | `$STORAGE_NAME`, `$RG` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 Install SDK packages:
 

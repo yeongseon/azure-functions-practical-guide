@@ -107,6 +107,14 @@ az functionapp config show --resource-group "$RG" --name "$APP_NAME" --output js
 az functionapp identity show --resource-group "$RG" --name "$APP_NAME" --output json
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az account show`, `az functionapp show`, `az functionapp config show`, `az functionapp identity show` |
+| Key flags | `--subscription`, `--output`, `--resource-group`, `--name` |
+| Variables | `$SUBSCRIPTION_ID`, `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 ## 5. Evidence to Collect
 
 ### Required evidence set
@@ -228,6 +236,14 @@ az role assignment list --scope "$STORAGE_ID" --query "[?principalId=='<principa
 az monitor activity-log list --subscription "$SUBSCRIPTION_ID" --resource-group "$RG" --max-events 50 --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor log-analytics query`, `az storage account show`, `az role assignment list`, `az monitor activity-log list` |
+| Key flags | `--workspace`, `--analytics-query`, `--output`, `--resource-group`, `--name`, `--query`, `--scope`, `--subscription`, `--max-events` |
+| Variables | `$WORKSPACE_ID`, `$APP_NAME`, `$RG`, `$STORAGE_NAME`, `$STORAGE_ID`, `$SUBSCRIPTION_ID` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 **Example Output (sanitized)**
 
 ```text
@@ -243,6 +259,14 @@ Role                              Scope
 --------------------------------  -------------------------------------------------------------------------------------------------------------
 Storage Blob Data Contributor     /subscriptions/<subscription-id>/resourceGroups/rg-app-prod/providers/Microsoft.Storage/storageAccounts/stfuncprod
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor log-analytics query`, `az storage account show`, `az role assignment list` |
+| Key flags | `--workspace`, `--analytics-query`, `--output`, `-----------------------------------------------------------`, `------------------------------------------------------------------------------`, `------`, `--resource-group`, `--name`, `--query`, `--scope`, plus 2 more |
+| Variables | `$WORKSPACE_ID`, `$APP_NAME`, `$RG`, `$STORAGE_NAME`, `$STORAGE_ID` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 ## 6. Validation and Disproof by Hypothesis
 
@@ -288,6 +312,14 @@ PRINCIPAL_ID=$(az functionapp identity show --resource-group "$RG" --name "$APP_
 STORAGE_ID=$(az storage account show --resource-group "$RG" --name "$STORAGE_NAME" --query id --output tsv)
 az role assignment list --scope "$STORAGE_ID" --query "[?principalId=='$PRINCIPAL_ID'].{role:roleDefinitionName, scope:scope}" --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp identity show`, `az storage account show`, `az role assignment list` |
+| Key flags | `--resource-group`, `--name`, `--output`, `--query`, `--scope` |
+| Variables | `$RG`, `$APP_NAME`, `$STORAGE_NAME`, `$STORAGE_ID`, `$PRINCIPAL_ID` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 ### H2: Function timeout reached
 
@@ -335,6 +367,14 @@ az functionapp config show --resource-group "$RG" --name "$APP_NAME" --output js
 az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "exceptions | where timestamp > ago(2h) | where cloud_RoleName =~ '$APP_NAME' | where outerMessage has_any ('timed out','FunctionTimeoutException') | summarize count() by type, outerMessage" --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings list`, `az functionapp config show`, `az monitor log-analytics query` |
+| Key flags | `--resource-group`, `--name`, `--output`, `--workspace`, `--analytics-query` |
+| Variables | `$RG`, `$APP_NAME`, `$WORKSPACE_ID` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 ### H3: Memory pressure or runtime mismatch
 
 - **Signals that support**
@@ -375,6 +415,14 @@ az functionapp config show --resource-group "$RG" --name "$APP_NAME" --query "li
 az functionapp config appsettings list --resource-group "$RG" --name "$APP_NAME" --output table
 az functionapp log deployment show --resource-group "$RG" --name "$APP_NAME"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config show`, `az functionapp config appsettings list`, `az functionapp log deployment show` |
+| Key flags | `--resource-group`, `--name`, `--query`, `--output` |
+| Variables | `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 ### H4: Deployment regression
 
@@ -425,6 +473,14 @@ az functionapp deployment list-publishing-profiles --resource-group "$RG" --name
 az monitor activity-log list --subscription "$SUBSCRIPTION_ID" --resource-group "$RG" --max-events 50 --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp deployment source show`, `az functionapp deployment list-publishing-profiles`, `az monitor activity-log list` |
+| Key flags | `--resource-group`, `--name`, `--output`, `--subscription`, `--max-events` |
+| Variables | `$RG`, `$APP_NAME`, `$SUBSCRIPTION_ID` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ### Normal vs Abnormal Comparison
 
 | Signal | Normal | Abnormal | Interpretation |
@@ -462,6 +518,14 @@ az role assignment create --assignee-object-id "<principal-id>" --role "Storage 
 az role assignment create --assignee-object-id "<principal-id>" --role "Storage Queue Data Contributor" --scope "/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RG/providers/Microsoft.Storage/storageAccounts/<storage-account-name>"
 az functionapp restart --resource-group "$RG" --name "$APP_NAME"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az role assignment create`, `az functionapp restart` |
+| Key flags | `--assignee-object-id`, `--role`, `--scope`, `--resource-group`, `--name` |
+| Variables | `$SUBSCRIPTION_ID`, `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 !!! warning "Mitigation discipline"
     Change one variable at a time, then re-check failure rate and dominant exception type before applying the next action.

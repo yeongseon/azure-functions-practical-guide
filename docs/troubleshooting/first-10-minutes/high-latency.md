@@ -67,6 +67,14 @@ az rest --method get \
   --url "https://management.azure.com/subscriptions/$SUBSCRIPTION_ID/providers/Microsoft.ResourceHealth/events?api-version=2022-10-01&\$filter=eventType eq 'ServiceIssue' and status eq 'Active'"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az account set`, `az rest` |
+| Key flags | `--subscription`, `--method`, `--url` |
+| Variables | `$SUBSCRIPTION_ID`, `$filter` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 ### How to Read This
 
 | Signal | Interpretation | Action |
@@ -233,6 +241,14 @@ az monitor activity-log list \
   --status Succeeded \
   --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor activity-log list` |
+| Key flags | `--resource-group`, `--offset`, `--status`, `--output` |
+| Variables | `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 Correlate deployment timestamps with latency onset.
 

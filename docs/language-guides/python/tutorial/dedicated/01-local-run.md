@@ -69,6 +69,14 @@ az login
 az account set --subscription "<subscription-id>"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az login`, `az account set` |
+| Key flags | `--subscription` |
+| Variables | None |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 ## Steps
 
 ### Step 1 - Clone the project and install dependencies

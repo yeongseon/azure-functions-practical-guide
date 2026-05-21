@@ -58,6 +58,14 @@ flowchart TD
     E --> F[HTTP endpoint validation]
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp plan create EP1]` |
+| Key flags | None |
+| Variables | None |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ## Steps
 
 ### Step 1 - Set deployment variables

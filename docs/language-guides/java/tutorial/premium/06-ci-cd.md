@@ -64,6 +64,14 @@ az ad sp create-for-rbac \
   --sdk-auth
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az ad sp create-for-rbac` |
+| Key flags | `--name`, `--role`, `--scopes`, `--sdk-auth` |
+| Variables | `$RG` |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
+
 ### Step 2 - Create workflow file
 
 ```yaml
@@ -137,6 +145,14 @@ az functionapp show \
 curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp show` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output`, `--request` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ### Step 4 - Track release history
 
 ```bash
@@ -146,6 +162,14 @@ az functionapp show \
   --query "{state:state, defaultHostName:defaultHostName, kind:kind, sku:sku}" \
   --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp show` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 Expected output:
 
@@ -166,6 +190,14 @@ Running  func-jprem-04100200.azurewebsites.net  functionapp,linux  ElasticPremiu
       --slot staging \
       --target-slot production
     ```
+
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az functionapp deployment slot swap` |
+    | Key flags | `--slot`, `--name`, `--resource-group`, `--target-slot` |
+    | Variables | `$APP_NAME`, `$RG` |
+    | Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 ## Verification
 

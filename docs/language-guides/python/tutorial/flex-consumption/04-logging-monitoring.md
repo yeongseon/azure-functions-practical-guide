@@ -123,6 +123,14 @@ az monitor app-insights component show --app "$APPINSIGHTS_NAME" --resource-grou
 az functionapp config appsettings list --name "$APP_NAME" --resource-group "$RG" --query "[?name=='APPLICATIONINSIGHTS_CONNECTION_STRING']" --output json
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights component show`, `az functionapp config appsettings list` |
+| Key flags | `--app`, `--resource-group`, `--output`, `--name`, `--query` |
+| Variables | `$APPINSIGHTS_NAME`, `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 Expected output:
 
 
@@ -175,6 +183,14 @@ az monitor app-insights query --app "$APPINSIGHTS_NAME" --analytics-query "reque
 az monitor app-insights query --app "$APPINSIGHTS_NAME" --analytics-query "exceptions | where timestamp > ago(30m) | project timestamp, type, outerMessage | order by timestamp desc | take 20" --output json
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights query` |
+| Key flags | `--app`, `--analytics-query`, `--output` |
+| Variables | `$APPINSIGHTS_NAME` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 !!! tip "App Insights query by name vs appId"
     If `--app "$APPINSIGHTS_NAME"` fails with `PathNotFoundError`, use the appId instead:
 
@@ -184,6 +200,14 @@ az monitor app-insights query --app "$APPINSIGHTS_NAME" --analytics-query "excep
       --query "appId" --output tsv)
     az monitor app-insights query --apps "$APPINSIGHTS_ID" --analytics-query "..."
     ```
+
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az monitor app-insights component show`, `az monitor app-insights query` |
+    | Key flags | `--app`, `--resource-group`, `--query`, `--output`, `--apps`, `--analytics-query` |
+    | Variables | `$APPINSIGHTS_NAME`, `$RG`, `$APPINSIGHTS_ID` |
+    | Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
     Telemetry ingestion can take 2-5 minutes after requests. Wait and retry if results are empty.
 
@@ -216,6 +240,14 @@ Flex can scale to zero and out to 1000 instances, so monitor cold starts, errors
 ```bash
 az monitor app-insights query --app "$APPINSIGHTS_NAME" --analytics-query "traces | where timestamp > ago(30m) | where message contains 'Function started' or message contains 'Host lock lease acquired' | project timestamp, severityLevel, message | order by timestamp desc | take 50" --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights query` |
+| Key flags | `--app`, `--analytics-query`, `--output` |
+| Variables | `$APPINSIGHTS_NAME` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 Expected output:
 

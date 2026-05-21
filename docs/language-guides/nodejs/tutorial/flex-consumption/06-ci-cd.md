@@ -114,6 +114,14 @@ jobs:
       --xml
     ```
 
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az functionapp deployment list-publishing-profiles` |
+    | Key flags | `--name`, `--resource-group`, `--xml` |
+    | Variables | `$APP_NAME`, `$RG` |
+    | Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 2. In your GitHub repository, go to **Settings → Secrets and variables → Actions**
 3. Add the following secrets:
     - `APP_NAME`: Your function app name
@@ -165,6 +173,14 @@ az monitor app-insights query \
   --analytics-query "requests | where name == 'health' | take 5" \
   --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights query` |
+| Key flags | `--app`, `--resource-group`, `--analytics-query`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 ## Next Steps
 

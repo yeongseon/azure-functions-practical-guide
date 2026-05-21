@@ -52,6 +52,14 @@ flowchart TD
     style AI fill:#68217A,color:#fff
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights query"\| AI` |
+| Key flags | None |
+| Variables | None |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart TD
@@ -102,6 +110,14 @@ az monitor app-insights component create \
   --kind web
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights component create` |
+| Key flags | `--app`, `--location`, `--resource-group`, `--kind` |
+| Variables | `$APP_NAME`, `$LOCATION`, `$RG` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 !!! note "Auto-created by `az functionapp create`"
     Since Azure CLI 2.80+, `az functionapp create` automatically provisions an Application Insights resource. Check with `az functionapp config appsettings list` for `APPLICATIONINSIGHTS_CONNECTION_STRING`. If it already exists, skip this step.
 
@@ -119,6 +135,14 @@ az functionapp config appsettings set \
   --resource-group "$RG" \
   --settings "APPLICATIONINSIGHTS_CONNECTION_STRING=$AI_CONN"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights component show`, `az functionapp config appsettings set` |
+| Key flags | `--app`, `--resource-group`, `--query`, `--output`, `--name`, `--settings` |
+| Variables | `$APP_NAME`, `$RG`, `$AI_CONN` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 ### Step 5 - Generate telemetry
 
@@ -142,6 +166,14 @@ az monitor app-insights query \
   --analytics-query "traces | take 5" \
   --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights query` |
+| Key flags | `--app`, `--resource-group`, `--analytics-query`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 ### Step 7 - Review Consumption-specific notes
 

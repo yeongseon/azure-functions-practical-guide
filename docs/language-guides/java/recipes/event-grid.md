@@ -35,6 +35,14 @@ az eventgrid event-subscription create \
   --endpoint "/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RG/providers/Microsoft.Web/sites/$APP_NAME/functions/handleEventGrid"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage account show`, `az eventgrid event-subscription create` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output`, `--source-resource-id`, `--endpoint-type`, `--endpoint` |
+| Variables | `$STORAGE_NAME`, `$RG`, `$STORAGE_ID`, `$SUBSCRIPTION_ID`, `$APP_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ## Java implementation
 
 ```java

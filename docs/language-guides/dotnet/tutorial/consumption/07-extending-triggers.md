@@ -63,6 +63,14 @@ az storage container create \
   --account-name "$STORAGE_NAME"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage queue create`, `az storage container create` |
+| Key flags | `--name`, `--account-name` |
+| Variables | `$STORAGE_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ### Step 2 - Review the queue trigger function
 
 The reference app includes `QueueProcessorFunction.cs`:
@@ -180,6 +188,14 @@ az storage container list \
   --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage queue list`, `az storage container list` |
+| Key flags | `--account-name`, `--output` |
+| Variables | `$STORAGE_NAME` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ### Step 7 - Test queue trigger
 
 ```bash
@@ -195,6 +211,14 @@ az monitor app-insights query \
   --resource-group "$RG" \
   --analytics-query "traces | where message contains 'Queue message received' | order by timestamp desc | take 5"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage message put`, `az monitor app-insights query` |
+| Key flags | `--queue-name`, `--account-name`, `--content`, `--app`, `--resource-group`, `--analytics-query` |
+| Variables | `$STORAGE_NAME`, `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 ### Step 8 - Test blob trigger
 
@@ -215,6 +239,14 @@ az monitor app-insights query \
   --analytics-query "traces | where message contains 'Blob processed' | order by timestamp desc | take 5"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage blob upload`, `az monitor app-insights query` |
+| Key flags | `--container-name`, `--name`, `--file`, `--account-name`, `--overwrite`, `--app`, `--resource-group`, `--analytics-query` |
+| Variables | `$STORAGE_NAME`, `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ### Step 9 - Verify all functions are registered
 
 ```bash
@@ -223,6 +255,14 @@ az functionapp function list \
   --resource-group "$RG" \
   --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp function list` |
+| Key flags | `--name`, `--resource-group`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 ## Verification
 
@@ -299,6 +339,14 @@ All 16 functions deployed and verified:
 ```bash
 az group delete --name "$RG" --yes --no-wait
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az group delete` |
+| Key flags | `--name`, `--yes`, `--no-wait` |
+| Variables | `$RG` |
+| Expected result | Azure CLI completes the removal request; verify the target no longer appears in follow-up `show` or `list` output. |
+
 
 ## Next Steps
 

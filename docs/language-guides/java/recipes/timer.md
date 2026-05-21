@@ -31,6 +31,14 @@ az functionapp config appsettings set \
   --settings "NightlySchedule=0 0 2 * * *"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 Time-zone caveat:
 
 - `WEBSITE_TIME_ZONE` is supported on Windows plans and Linux Premium/Dedicated.

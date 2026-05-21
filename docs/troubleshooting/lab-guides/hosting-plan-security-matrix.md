@@ -298,6 +298,14 @@ az deployment group create \
     baseName="$BASE_FC1"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az group create`, `az deployment group create` |
+| Key flags | `--name`, `--location`, `--resource-group`, `--template-file`, `--parameters` |
+| Variables | `$RG_FC1`, `$LOCATION`, `$BASE_FC1` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 #### 3.2.2 EP1 deployment
 
 ```bash
@@ -311,6 +319,14 @@ az deployment group create \
   --parameters \
     baseName="$BASE_EP1"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az group create`, `az deployment group create` |
+| Key flags | `--name`, `--location`, `--resource-group`, `--template-file`, `--parameters` |
+| Variables | `$RG_EP1`, `$LOCATION`, `$BASE_EP1` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 #### 3.2.3 Y1 deployment
 
@@ -326,6 +342,14 @@ az deployment group create \
     baseName="$BASE_Y1"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az group create`, `az deployment group create` |
+| Key flags | `--name`, `--location`, `--resource-group`, `--template-file`, `--parameters` |
+| Variables | `$RG_Y1`, `$LOCATION`, `$BASE_Y1` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 #### 3.2.4 Dedicated S1 deployment
 
 ```bash
@@ -339,6 +363,14 @@ az deployment group create \
   --parameters \
     baseName="$BASE_S1"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az group create`, `az deployment group create` |
+| Key flags | `--name`, `--location`, `--resource-group`, `--template-file`, `--parameters` |
+| Variables | `$RG_S1`, `$LOCATION`, `$BASE_S1` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 ### 3.3 Baseline collection procedure
 
@@ -379,12 +411,28 @@ STORAGE_ID_Y1=$(az storage account show --resource-group "$RG_Y1" --name "$STORA
 STORAGE_ID_S1=$(az storage account show --resource-group "$RG_S1" --name "$STORAGE_S1" --query "id" --output tsv)
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az identity show`, `az functionapp identity show`, `az storage account show` |
+| Key flags | `--resource-group`, `--name`, `--query`, `--output` |
+| Variables | `$RG_FC1`, `$IDENTITY_FC1`, `$RG_EP1`, `$APP_EP1`, `$RG_Y1`, `$APP_Y1`, `$RG_S1`, `$APP_S1`, `$STORAGE_FC1`, `$STORAGE_EP1`, plus 2 more |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ```bash
 az role assignment list --assignee "$MI_PRINCIPAL_FC1" --scope "$STORAGE_ID_FC1" --output table
 az role assignment list --assignee "$APP_PRINCIPAL_EP1" --scope "$STORAGE_ID_EP1" --output table
 az role assignment list --assignee "$APP_PRINCIPAL_Y1" --scope "$STORAGE_ID_Y1" --output table
 az role assignment list --assignee "$APP_PRINCIPAL_S1" --scope "$STORAGE_ID_S1" --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az role assignment list` |
+| Key flags | `--assignee`, `--scope`, `--output` |
+| Variables | `$MI_PRINCIPAL_FC1`, `$STORAGE_ID_FC1`, `$APP_PRINCIPAL_EP1`, `$STORAGE_ID_EP1`, `$APP_PRINCIPAL_Y1`, `$STORAGE_ID_Y1`, `$APP_PRINCIPAL_S1`, `$STORAGE_ID_S1` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 #### 3.3.4 Baseline KQL pack
 
@@ -433,6 +481,14 @@ az role assignment delete \
   --scope "$STORAGE_ID_S1"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az role assignment delete` |
+| Key flags | `--assignee-object-id`, `--role`, `--scope` |
+| Variables | `$MI_PRINCIPAL_FC1`, `$STORAGE_ID_FC1`, `$APP_PRINCIPAL_EP1`, `$STORAGE_ID_EP1`, `$APP_PRINCIPAL_Y1`, `$STORAGE_ID_Y1`, `$APP_PRINCIPAL_S1`, `$STORAGE_ID_S1` |
+| Expected result | Azure CLI completes the removal request; verify the target no longer appears in follow-up `show` or `list` output. |
+
+
 #### 3.4.2 Expected observation by plan
 
 | Plan | Expected immediate behavior | Typical emergence window |
@@ -468,6 +524,14 @@ az role assignment create --assignee-object-id "$APP_PRINCIPAL_Y1" --role "Stora
 az role assignment create --assignee-object-id "$APP_PRINCIPAL_S1" --role "Storage Blob Data Owner" --scope "$STORAGE_ID_S1"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az role assignment create` |
+| Key flags | `--assignee-object-id`, `--role`, `--scope` |
+| Variables | `$MI_PRINCIPAL_FC1`, `$STORAGE_ID_FC1`, `$APP_PRINCIPAL_EP1`, `$STORAGE_ID_EP1`, `$APP_PRINCIPAL_Y1`, `$STORAGE_ID_Y1`, `$APP_PRINCIPAL_S1`, `$STORAGE_ID_S1` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 Wait for propagation, then probe again.
 
 ### 3.5 Fault Injection 2: identity removal
@@ -489,6 +553,14 @@ az functionapp identity remove --resource-group "$RG_EP1" --name "$APP_EP1" --id
 az functionapp identity remove --resource-group "$RG_Y1" --name "$APP_Y1" --identities "[system]"
 az functionapp identity remove --resource-group "$RG_S1" --name "$APP_S1" --identities "[system]"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az identity show`, `az functionapp identity remove` |
+| Key flags | `--resource-group`, `--name`, `--query`, `--output`, `--identities` |
+| Variables | `$RG_FC1`, `$IDENTITY_FC1`, `$APP_FC1`, `$UAI_ID`, `$RG_EP1`, `$APP_EP1`, `$RG_Y1`, `$APP_Y1`, `$RG_S1`, `$APP_S1` |
+| Expected result | Azure CLI completes the removal request; verify the target no longer appears in follow-up `show` or `list` output. |
+
 
 #### 3.5.2 Expected observation by plan
 
@@ -515,6 +587,14 @@ az functionapp restart --resource-group "$RG_EP1" --name "$APP_EP1"
 az functionapp restart --resource-group "$RG_S1" --name "$APP_S1"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp restart` |
+| Key flags | `--resource-group`, `--name` |
+| Variables | `$RG_EP1`, `$APP_EP1`, `$RG_S1`, `$APP_S1` |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
+
 #### 3.5.4 Recovery procedure
 
 ```bash
@@ -523,12 +603,28 @@ az functionapp identity assign --resource-group "$RG_Y1" --name "$APP_Y1"
 az functionapp identity assign --resource-group "$RG_S1" --name "$APP_S1"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp identity assign` |
+| Key flags | `--resource-group`, `--name` |
+| Variables | `$RG_EP1`, `$APP_EP1`, `$RG_Y1`, `$APP_Y1`, `$RG_S1`, `$APP_S1` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 For FC1 user-assigned identity:
 
 ```bash
 UAI_ID=$(az identity show --resource-group "$RG_FC1" --name "$IDENTITY_FC1" --query "id" --output tsv)
 az functionapp identity assign --resource-group "$RG_FC1" --name "$APP_FC1" --identities "$UAI_ID"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az identity show`, `az functionapp identity assign` |
+| Key flags | `--resource-group`, `--name`, `--query`, `--output`, `--identities` |
+| Variables | `$RG_FC1`, `$IDENTITY_FC1`, `$APP_FC1`, `$UAI_ID` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 Restore required storage roles after identity reattachment.
 
@@ -548,6 +644,14 @@ az network private-dns link vnet delete \
   --yes
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az network private-dns link vnet` |
+| Key flags | `--resource-group`, `--zone-name`, `--name`, `--yes` |
+| Variables | `$RG_FC1`, `$BASE_FC1` |
+| Expected result | Azure CLI completes the removal request; verify the target no longer appears in follow-up `show` or `list` output. |
+
+
 Repeat for `queue`, `table`, and (where applicable) `file` zones, substituting the service name. DNS link names follow the pattern `${BASE}-${service}-dns-link`.
 
 Option B: inject incorrect A records in private zones.
@@ -559,6 +663,14 @@ az network private-dns record-set a add-record \
   --record-set-name "$STORAGE_EP1" \
   --ipv4-address "10.255.255.254"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az network private-dns record-set a` |
+| Key flags | `--resource-group`, `--zone-name`, `--record-set-name`, `--ipv4-address` |
+| Variables | `$RG_EP1`, `$STORAGE_EP1` |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
 
 #### 3.6.2 Expected observation by plan
 
@@ -594,6 +706,14 @@ az network private-dns record-set a remove-record \
   --ipv4-address "10.255.255.254"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az network private-dns record-set a` |
+| Key flags | `--resource-group`, `--zone-name`, `--record-set-name`, `--ipv4-address` |
+| Variables | `$RG_EP1`, `$STORAGE_EP1` |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
+
 Restart `EP1` and `S1` to flush stale resolution state where needed.
 
 ### 3.7 Fault Injection 4: network path break
@@ -610,6 +730,14 @@ az network private-endpoint delete --resource-group "$RG_FC1" --name "$BASE_FC1-
 az network private-endpoint delete --resource-group "$RG_FC1" --name "$BASE_FC1-pe-table"
 az network private-endpoint delete --resource-group "$RG_FC1" --name "$BASE_FC1-pe-file"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az network private-endpoint delete` |
+| Key flags | `--resource-group`, `--name` |
+| Variables | `$RG_FC1`, `$BASE_FC1` |
+| Expected result | Azure CLI completes the removal request; verify the target no longer appears in follow-up `show` or `list` output. |
+
 
 Option B: restrict subnet NSG/UDR path used by integration subnet.
 
@@ -629,6 +757,14 @@ Option B: restrict subnet NSG/UDR path used by integration subnet.
       --network-security-group "nsg-s1-integration"
     ```
 
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az network nsg create`, `az network vnet subnet update` |
+    | Key flags | `--resource-group`, `--name`, `--location`, `--vnet-name`, `--network-security-group` |
+    | Variables | `$RG_S1`, `$LOCATION`, `$BASE_S1` |
+    | Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ```bash
 az network nsg rule create \
   --resource-group "$RG_S1" \
@@ -643,6 +779,14 @@ az network nsg rule create \
   --destination-address-prefixes "Storage" \
   --destination-port-ranges "443"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az network nsg rule create` |
+| Key flags | `--resource-group`, `--nsg-name`, `--name`, `--priority`, `--direction`, `--access`, `--protocol`, `--source-address-prefixes`, `--source-port-ranges`, `--destination-address-prefixes`, plus 1 more |
+| Variables | `$RG_S1` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 #### 3.7.2 Expected observation by plan
 
@@ -677,6 +821,14 @@ az network nsg rule delete \
   --nsg-name "nsg-s1-integration" \
   --name "deny-storage-443"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az network nsg rule delete` |
+| Key flags | `--resource-group`, `--nsg-name`, `--name` |
+| Variables | `$RG_S1` |
+| Expected result | Azure CLI completes the removal request; verify the target no longer appears in follow-up `show` or `list` output. |
+
 
 ---
 
@@ -1200,6 +1352,14 @@ az group delete --name "$RG_EP1" --yes --no-wait
 az group delete --name "$RG_Y1" --yes --no-wait
 az group delete --name "$RG_S1" --yes --no-wait
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az group delete` |
+| Key flags | `--name`, `--yes`, `--no-wait` |
+| Variables | `$RG_FC1`, `$RG_EP1`, `$RG_Y1`, `$RG_S1` |
+| Expected result | Azure CLI completes the removal request; verify the target no longer appears in follow-up `show` or `list` output. |
+
 
 ---
 

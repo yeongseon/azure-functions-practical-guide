@@ -9,6 +9,7 @@ on:
       - 'infra/**/*.bicep'
       - 'mkdocs.yml'
       - '.github/workflows/ci.yml'
+      - 'scripts/**'
   workflow_dispatch:
 
 permissions:
@@ -29,7 +30,9 @@ jobs:
       - name: Install dependencies
         run: pip install mkdocs-material mkdocs-minify-plugin
       - name: Validate documentation
-        run: mkdocs build --strict
+        run: |
+          python scripts/validate_cli_explanations.py
+          mkdocs build --strict
 
   validate-infra:
     runs-on: ubuntu-latest

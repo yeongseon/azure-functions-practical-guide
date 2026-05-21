@@ -75,6 +75,14 @@ traces
 az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "AppTraces | where TimeGenerated > ago(2h) | where AppRoleName =~ '$APP_NAME' | where Message has_any ('Host started','Initializing Host','Host lock lease acquired') | project TimeGenerated, Message | order by TimeGenerated desc" --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor log-analytics query` |
+| Key flags | `--workspace`, `--analytics-query`, `--output` |
+| Variables | `$WORKSPACE_ID`, `$APP_NAME` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ---
 
 ## Card 2: Trigger Failures by Trigger Type
@@ -126,6 +134,14 @@ az functionapp function list --resource-group "$RG" --name "$APP_NAME" --output 
 az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "AppTraces | where TimeGenerated > ago(1h) | where AppRoleName =~ '$APP_NAME' | where Message has_any ('listener','unable to start','Timer','Blob','Queue','EventHub','Cosmos','isPastDue') | project TimeGenerated, Message | order by TimeGenerated desc" --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp function list`, `az monitor log-analytics query` |
+| Key flags | `--resource-group`, `--name`, `--output`, `--workspace`, `--analytics-query` |
+| Variables | `$RG`, `$APP_NAME`, `$WORKSPACE_ID` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ---
 
 ## Card 3: Binding and Extension Errors
@@ -172,6 +188,14 @@ az functionapp config appsettings list --resource-group "$RG" --name "$APP_NAME"
 az functionapp config show --resource-group "$RG" --name "$APP_NAME" --output json
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings list`, `az functionapp config show` |
+| Key flags | `--resource-group`, `--name`, `--output` |
+| Variables | `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 ---
 
 ## Card 4: Timeout / Execution Limit Exceeded
@@ -215,6 +239,14 @@ requests
 az functionapp config appsettings list --resource-group "$RG" --name "$APP_NAME" --output table
 az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "AppExceptions | where TimeGenerated > ago(2h) | where AppRoleName =~ '$APP_NAME' | where OuterMessage has_any ('timeout','timed out','execution time') | project TimeGenerated, ExceptionType, OuterMessage | order by TimeGenerated desc" --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings list`, `az monitor log-analytics query` |
+| Key flags | `--resource-group`, `--name`, `--output`, `--workspace`, `--analytics-query` |
+| Variables | `$RG`, `$APP_NAME`, `$WORKSPACE_ID` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 ---
 
@@ -260,6 +292,14 @@ traces
 ```bash
 az monitor metrics list --resource "/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RG/providers/Microsoft.Web/sites/$APP_NAME" --metric "CpuPercentage" "MemoryWorkingSet" "Requests" --interval PT1M --aggregation Average Maximum Total --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor metrics list` |
+| Key flags | `--resource`, `--metric`, `--interval`, `--aggregation`, `--output` |
+| Variables | `$SUBSCRIPTION_ID`, `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 ---
 
@@ -308,6 +348,14 @@ az functionapp function list --resource-group "$RG" --name "$APP_NAME" --output 
 az functionapp config appsettings list --resource-group "$RG" --name "$APP_NAME" --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor activity-log list`, `az functionapp function list`, `az functionapp config appsettings list` |
+| Key flags | `--resource-group`, `--offset`, `--max-events`, `--output`, `--name` |
+| Variables | `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 ---
 
 ## Card 7: Scale Out Not Keeping Up
@@ -346,6 +394,14 @@ requests
 az monitor metrics list --resource "/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RG/providers/Microsoft.Web/sites/$APP_NAME" --metric "FunctionExecutionCount" "FunctionExecutionUnits" "Requests" --interval PT5M --aggregation Total Average --output table
 az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "AppTraces | where TimeGenerated > ago(2h) | where AppRoleName =~ '$APP_NAME' | where Message has_any ('scale','partition','checkpoint','listener','backlog') | project TimeGenerated, Message | order by TimeGenerated desc" --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor metrics list`, `az monitor log-analytics query` |
+| Key flags | `--resource`, `--metric`, `--interval`, `--aggregation`, `--output`, `--workspace`, `--analytics-query` |
+| Variables | `$SUBSCRIPTION_ID`, `$RG`, `$APP_NAME`, `$WORKSPACE_ID` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 ---
 

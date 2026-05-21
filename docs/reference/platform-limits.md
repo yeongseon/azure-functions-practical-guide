@@ -104,6 +104,14 @@ az functionapp scale config always-ready set \
   --settings http=<count>
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp scale config set`, `az functionapp scale config always-ready` |
+| Key flags | `--resource-group`, `--name`, `--maximum-instance-count`, `--settings` |
+| Variables | `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 Capacity planning should account for subnet sizing and outbound networking capacity when VNet integration is enabled.
 
 ## HTTP Request and Response Limits

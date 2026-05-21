@@ -223,6 +223,14 @@ az monitor metrics list --resource "/subscriptions/<subscription-id>/resourceGro
 az monitor activity-log list --resource-group "<resource-group>" --offset 2h --max-events 100 --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp show`, `az functionapp plan show`, `az monitor metrics list`, `az monitor activity-log list` |
+| Key flags | `--resource-group`, `--name`, `--output`, `--resource`, `--metric`, `--interval`, `--aggregation`, `--offset`, `--max-events` |
+| Variables | None |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ## 4) Cold Start Flow (where first-execution latency appears)
 
 Cold start is not one step. It is a chain: instance allocation, host specialization, runtime loading, extension startup, application import, and first dependency initialization.
@@ -273,6 +281,14 @@ az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "Ap
 az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "AppRequests | where TimeGenerated > ago(2h) | summarize p50=percentile(DurationMs,50), p95=percentile(DurationMs,95), maxDuration=max(DurationMs) by bin(TimeGenerated, 5m) | order by TimeGenerated desc" --output table
 az functionapp config appsettings list --resource-group "<resource-group>" --name "<app-name>" --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor log-analytics query`, `az functionapp config appsettings list` |
+| Key flags | `--workspace`, `--analytics-query`, `--output`, `--resource-group`, `--name` |
+| Variables | `$WORKSPACE_ID` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 ## 5) Durable Functions Orchestration Architecture (where replay and state coordination confuse diagnosis)
 
@@ -340,6 +356,14 @@ az storage queue list --account-name "<storage-name>" --auth-mode login --output
 az storage table list --account-name "<storage-name>" --auth-mode login --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp function list`, `az monitor log-analytics query`, `az storage queue list`, `az storage table list` |
+| Key flags | `--resource-group`, `--name`, `--output`, `--workspace`, `--analytics-query`, `--account-name`, `--auth-mode` |
+| Variables | `$WORKSPACE_ID` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ## 6) Azure Service Integration Path (where dependencies amplify failure)
 
 Azure Functions usually sits in the middle of other services rather than at the edge alone. That means incidents often reflect integration failure, not runtime failure.
@@ -395,6 +419,14 @@ az monitor metrics list --resource "/subscriptions/<subscription-id>/resourceGro
 az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "AppRequests | where TimeGenerated > ago(2h) | summarize total=count(), failed=countif(Success == false), p95=percentile(DurationMs,95) by bin(TimeGenerated, 5m) | order by TimeGenerated asc" --output table
 az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "AppDependencies | where TimeGenerated > ago(2h) | summarize failed=countif(Success == false), p95=percentile(DurationMs,95) by Target | order by failed desc" --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp show`, `az functionapp config appsettings list`, `az functionapp function list`, `az monitor activity-log list`, plus 2 more |
+| Key flags | `--resource-group`, `--name`, `--output`, `--offset`, `--max-events`, `--resource`, `--metric`, `--interval`, `--aggregation`, `--workspace`, plus 1 more |
+| Variables | `$WORKSPACE_ID` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 ## 8) Fast routing examples
 
