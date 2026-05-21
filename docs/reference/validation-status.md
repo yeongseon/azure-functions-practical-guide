@@ -2,9 +2,18 @@
 
 This page tracks which tutorials have been validated against real Azure deployments. Each tutorial can be tested via **az-cli** (manual CLI commands) or **Bicep** (infrastructure as code). Tutorials not tested within 90 days are marked as stale.
 
+## Scope
+
+This dashboard intentionally tracks leaf tutorial runbooks under `docs/language-guides/*/tutorial/<hosting-plan>/*.md`, excluding `index.md` chooser pages. The tracked pages are the documents a reader can execute end-to-end against Azure.
+
+Out of scope for this dashboard:
+
+- Tutorial `index.md` chooser pages, which explain plan selection but are not executable deployment runbooks.
+- Troubleshooting lab guides under `docs/troubleshooting/lab-guides/`, which are experiment reports tracked by `content_validation`, `Lab Metadata`, `Experiment Log`, and `Expected Evidence` sections instead of tutorial execution status.
+
 ## Summary
 
-*Generated: 2026-04-12*
+*Generated: 2026-05-22*
 
 | Metric | Count |
 |---|---:|
@@ -169,6 +178,8 @@ To mark a tutorial as validated, add a `validation` block to its YAML frontmatte
 
 ```yaml
 ---
+hide:
+  - toc
 validation:
   az_cli:
     last_tested: 2026-04-09
@@ -199,4 +210,3 @@ python3 scripts/generate_validation_status.py
 - [Tutorial Overview & Plan Chooser](../language-guides/python/tutorial/index.md)
 - [CLI Cheatsheet](cli-cheatsheet.md)
 - [Platform Limits](platform-limits.md)
-
