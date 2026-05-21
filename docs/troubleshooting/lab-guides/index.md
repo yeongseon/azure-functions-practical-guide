@@ -107,6 +107,14 @@ az deployment group create \
 az group delete --name rg-lab-<name> --yes --no-wait
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az group create`, `az deployment group create`, `az group delete` |
+| Key flags | `--name`, `--location`, `--resource-group`, `--template-file`, `--parameters`, `--yes`, `--no-wait` |
+| Variables | None |
+| Expected result | Azure CLI completes the removal request; verify the target no longer appears in follow-up `show` or `list` output. |
+
+
 !!! warning "Cost"
     Each lab deploys Azure Functions resources. Delete the resource group after completing the lab to avoid ongoing charges.
 

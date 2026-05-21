@@ -220,6 +220,14 @@ az deployment group create \
     "planName=$PLAN_NAME"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az group create`, `az deployment group create` |
+| Key flags | `--name`, `--location`, `--resource-group`, `--template-file`, `--parameters` |
+| Variables | `$RG`, `$LOCATION`, `$APP_NAME`, `$STORAGE_NAME`, `$PLAN_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 Confirm Function App identity state:
 
 ```bash
@@ -228,6 +236,14 @@ az functionapp identity show \
   --name "$APP_NAME" \
   --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp identity show` |
+| Key flags | `--resource-group`, `--name`, `--output` |
+| Variables | `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 Example output (sanitized):
 
@@ -256,6 +272,14 @@ APP_PRINCIPAL_ID=$(az functionapp identity show \
   --output tsv)
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage account show`, `az functionapp identity show` |
+| Key flags | `--resource-group`, `--name`, `--query`, `--output` |
+| Variables | `$RG`, `$STORAGE_NAME`, `$APP_NAME` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 Validate baseline RBAC:
 
 ```bash
@@ -264,6 +288,14 @@ az role assignment list \
   --scope "$STORAGE_ID" \
   --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az role assignment list` |
+| Key flags | `--assignee`, `--scope`, `--output` |
+| Variables | `$APP_PRINCIPAL_ID`, `$STORAGE_ID` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 Example output (sanitized):
 
@@ -339,6 +371,14 @@ az role assignment delete \
   --scope "$STORAGE_ID"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az role assignment delete` |
+| Key flags | `--assignee-object-id`, `--role`, `--scope` |
+| Variables | `$APP_PRINCIPAL_ID`, `$STORAGE_ID` |
+| Expected result | Azure CLI completes the removal request; verify the target no longer appears in follow-up `show` or `list` output. |
+
+
 Example output:
 
 ```text
@@ -352,6 +392,14 @@ az functionapp restart \
   --resource-group "$RG" \
   --name "$APP_NAME"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp restart` |
+| Key flags | `--resource-group`, `--name` |
+| Variables | `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
 
 Timestamp this trigger point in your logbook.
 
@@ -475,6 +523,14 @@ az functionapp identity show \
   --output json
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp identity show` |
+| Key flags | `--resource-group`, `--name`, `--output` |
+| Variables | `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 Example output:
 
 ```json
@@ -495,6 +551,14 @@ az role assignment list \
   --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az role assignment list` |
+| Key flags | `--assignee`, `--scope`, `--output` |
+| Variables | `$APP_PRINCIPAL_ID`, `$STORAGE_ID` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 Example output during incident:
 
 ```text
@@ -512,6 +576,14 @@ az ad sp show \
   --id "$APP_PRINCIPAL_ID" \
   --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az ad sp show` |
+| Key flags | `--id`, `--output` |
+| Variables | `$APP_PRINCIPAL_ID` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 Example output:
 
@@ -536,6 +608,14 @@ az monitor activity-log list \
   --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor activity-log list` |
+| Key flags | `--resource-group`, `--offset`, `--status`, `--output` |
+| Variables | `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 Example output:
 
 ```text
@@ -557,6 +637,14 @@ az role assignment create \
   --scope "$STORAGE_ID"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az role assignment create` |
+| Key flags | `--assignee-object-id`, `--role`, `--scope` |
+| Variables | `$APP_PRINCIPAL_ID`, `$STORAGE_ID` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 Example output:
 
 ```json
@@ -576,6 +664,14 @@ az functionapp restart \
   --resource-group "$RG" \
   --name "$APP_NAME"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp restart` |
+| Key flags | `--resource-group`, `--name` |
+| Variables | `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
 
 Run recovery verification query:
 
@@ -636,6 +732,14 @@ az group delete \
   --yes \
   --no-wait
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az group delete` |
+| Key flags | `--name`, `--yes`, `--no-wait` |
+| Variables | `$RG` |
+| Expected result | Azure CLI completes the removal request; verify the target no longer appears in follow-up `show` or `list` output. |
+
 
 ---
 

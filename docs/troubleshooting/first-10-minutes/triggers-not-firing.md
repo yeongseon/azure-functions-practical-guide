@@ -76,6 +76,14 @@ az rest --method get \
   --url "https://management.azure.com/subscriptions/$SUBSCRIPTION_ID/providers/Microsoft.ResourceHealth/events?api-version=2022-10-01&\$filter=eventType eq 'ServiceIssue' and status eq 'Active'"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az account set`, `az monitor activity-log list`, `az rest` |
+| Key flags | `--subscription`, `--resource-group`, `--offset`, `--max-events`, `--output`, `--method`, `--url` |
+| Variables | `$SUBSCRIPTION_ID`, `$RG`, `$filter` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 ### How to Read This
 
 | Signal | Interpretation | Action |
@@ -102,6 +110,14 @@ az functionapp config appsettings list \
   --query "[?contains(name, 'AzureWebJobs') || contains(name, 'DISABLE')]" \
   --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp function list`, `az functionapp config appsettings list` |
+| Key flags | `--name`, `--resource-group`, `--output`, `--query` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 ### Example Output
 
@@ -192,6 +208,14 @@ az monitor metrics list \
   --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor metrics list` |
+| Key flags | `--resource`, `--metric`, `--interval`, `--aggregation`, `--offset`, `--output` |
+| Variables | `$SUBSCRIPTION_ID`, `$RG`, `$STORAGE_NAME`, `$EH_NAMESPACE` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ### How to Read This
 
 | Signal | Interpretation | Action |
@@ -214,6 +238,14 @@ az functionapp config appsettings list \
   --resource-group "$RG" \
   --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor activity-log list`, `az functionapp config appsettings list` |
+| Key flags | `--resource-group`, `--offset`, `--status`, `--output`, `--name` |
+| Variables | `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 ### How to Read This
 

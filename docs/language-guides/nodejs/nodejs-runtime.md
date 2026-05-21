@@ -49,6 +49,14 @@ az functionapp config appsettings set --name $APP_NAME --resource-group $RG --se
 az functionapp config set --name $APP_NAME --resource-group $RG --linux-fx-version "Node|20"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set`, `az functionapp config set` |
+| Key flags | `--name`, `--resource-group`, `--settings`, `--max-old-space-size`, `--linux-fx-version` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 - Windows apps: set `WEBSITE_NODE_DEFAULT_VERSION=~20`.
 - Linux apps: set runtime via `linuxFxVersion` (`Node|20`).
 

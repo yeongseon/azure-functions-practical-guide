@@ -89,6 +89,14 @@ az monitor log-analytics query \
   --analytics-query "dependencies | where timestamp > ago(1h) | where cloud_RoleName =~ '$APP_NAME' | summarize Calls=count(), Failed=countif(success==false), P95Ms=percentile(duration,95) by target, type | order by P95Ms desc" \
   --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az account set`, `az monitor metrics list`, `az monitor log-analytics query` |
+| Key flags | `--subscription`, `--resource`, `--metric`, `--interval`, `--aggregation`, `--offset`, `--output`, `--workspace`, `--analytics-query` |
+| Variables | `$SUBSCRIPTION_ID`, `$RG`, `$APP_NAME`, `$WORKSPACE_ID` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 **Example output:**
 ```text
 MetricName            TimeGrain  Average   Total
@@ -226,6 +234,14 @@ az monitor log-analytics query \
   --analytics-query "traces | where timestamp > ago(6h) | where cloud_RoleName =~ '$APP_NAME' | where message has_any ('Host started','Initializing Host','Host lock lease acquired') | summarize StartupEvents=count() by bin(timestamp, 15m) | order by timestamp desc" \
   --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor log-analytics query` |
+| Key flags | `--workspace`, `--analytics-query`, `--output` |
+| Variables | `$WORKSPACE_ID`, `$APP_NAME` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 **Example output:**
 ```text
 timestamp                StartupEvents
@@ -267,6 +283,14 @@ az monitor log-analytics query \
   --analytics-query "dependencies | where timestamp > ago(1h) | where cloud_RoleName =~ '$APP_NAME' | summarize Calls=count(), Failed=countif(success==false), FailureRatePercent=round(100.0*countif(success==false)/count(),2), P95Ms=percentile(duration,95) by target, type | order by Failed desc, P95Ms desc" \
   --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor log-analytics query` |
+| Key flags | `--workspace`, `--analytics-query`, `--output` |
+| Variables | `$WORKSPACE_ID`, `$APP_NAME` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 **Example output:**
 ```text
 target                          type  Calls  Failed  FailureRatePercent  P95Ms
@@ -317,6 +341,14 @@ az monitor log-analytics query \
   --analytics-query "traces | where timestamp > ago(2h) | where cloud_RoleName =~ '$APP_NAME' | where message has_any ('worker','instance','concurrency','drain','scale') | project timestamp, severityLevel, message | order by timestamp desc" \
   --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor metrics list`, `az monitor log-analytics query` |
+| Key flags | `--resource`, `--metric`, `--interval`, `--aggregation`, `--offset`, `--output`, `--workspace`, `--analytics-query` |
+| Variables | `$SUBSCRIPTION_ID`, `$RG`, `$APP_NAME`, `$WORKSPACE_ID` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 **Example output:**
 ```text
 MetricName            TimeGrain  Total  Average
@@ -365,6 +397,14 @@ az functionapp plan show \
   --name "$PLAN_NAME" \
   --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor log-analytics query`, `az functionapp plan show` |
+| Key flags | `--workspace`, `--analytics-query`, `--output`, `--resource-group`, `--name` |
+| Variables | `$WORKSPACE_ID`, `$APP_NAME`, `$RG`, `$PLAN_NAME` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 **Example output:**
 ```text
 timestamp                severityLevel  message

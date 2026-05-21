@@ -164,6 +164,14 @@ az monitor activity-log list \
   --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor activity-log list` |
+| Key flags | `--resource-group`, `--offset`, `--max-events`, `--output` |
+| Variables | `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 !!! warning "Avoid branch bias"
     Do not choose a branch only because it matches a familiar past issue.
     If the first branch is disproven by timestamps, return to the top and re-classify.

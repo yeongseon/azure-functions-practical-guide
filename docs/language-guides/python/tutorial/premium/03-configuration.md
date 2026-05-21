@@ -110,6 +110,14 @@ flowchart TD
       --output json
     ```
 
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az functionapp plan show` |
+    | Key flags | `--name`, `--resource-group`, `--query`, `--output` |
+    | Variables | `$PLAN_NAME`, `$RG` |
+    | Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 2. Set required runtime app settings (classic app settings path).
 
     ```bash
@@ -120,6 +128,14 @@ flowchart TD
         "FUNCTIONS_WORKER_RUNTIME=python" \
         "FUNCTIONS_EXTENSION_VERSION=~4"
     ```
+
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az functionapp config appsettings set` |
+    | Key flags | `--name`, `--resource-group`, `--settings` |
+    | Variables | `$APP_NAME`, `$RG` |
+    | Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
     Do not set `WEBSITE_RUN_FROM_PACKAGE=1` for this Premium track when you use Azure Files content share settings (`WEBSITE_CONTENTSHARE` and `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING`).
 
@@ -138,6 +154,14 @@ flowchart TD
       --settings "AzureWebJobsStorage=$STORAGE_CONNECTION_STRING"
     ```
 
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az storage account show-connection-string`, `az functionapp config appsettings set` |
+    | Key flags | `--name`, `--resource-group`, `--query`, `--output`, `--settings` |
+    | Variables | `$STORAGE_NAME`, `$RG`, `$APP_NAME`, `$STORAGE_CONNECTION_STRING` |
+    | Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 4. (Alternative) configure host storage as identity-based.
 
     ```bash
@@ -148,6 +172,14 @@ flowchart TD
         "AzureWebJobsStorage__accountName=$STORAGE_NAME" \
         "AzureWebJobsStorage__credential=managedidentity"
     ```
+
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az functionapp config appsettings set` |
+    | Key flags | `--name`, `--resource-group`, `--settings` |
+    | Variables | `$APP_NAME`, `$RG`, `$STORAGE_NAME` |
+    | Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
     !!! warning "Identity-based storage requires Managed Identity and RBAC"
         Before using identity-based host storage, you must:
@@ -176,6 +208,14 @@ flowchart TD
         "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING=$STORAGE_CONNECTION_STRING"
     ```
 
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az functionapp config appsettings set` |
+    | Key flags | `--name`, `--resource-group`, `--settings` |
+    | Variables | `$APP_NAME`, `$RG`, `$STORAGE_CONNECTION_STRING` |
+    | Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 6. Set Premium behavior settings and environment values.
 
     ```bash
@@ -188,6 +228,14 @@ flowchart TD
         "WEBSITE_VNET_ROUTE_ALL=1"
     ```
 
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az functionapp config appsettings set` |
+    | Key flags | `--name`, `--resource-group`, `--settings` |
+    | Variables | `$APP_NAME`, `$RG` |
+    | Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 7. Inspect current app settings and verify key values.
 
     ```bash
@@ -196,6 +244,14 @@ flowchart TD
       --resource-group "$RG" \
       --output table
     ```
+
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az functionapp config appsettings list` |
+    | Key flags | `--name`, `--resource-group`, `--output` |
+    | Variables | `$APP_NAME`, `$RG` |
+    | Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 8. Review Premium configuration constraints.
 

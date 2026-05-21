@@ -51,6 +51,14 @@ flowchart TD
     style FA fill:#ff8c00,color:#fff
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az webapp log tail]` |
+| Key flags | None |
+| Variables | None |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
+
 ## Steps
 
 1. Create the GitHub Actions workflow.
@@ -91,6 +99,14 @@ flowchart TD
       --xml
     ```
 
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az functionapp deployment list-publishing-profiles` |
+    | Key flags | `--name`, `--resource-group`, `--xml` |
+    | Variables | `$APP_NAME`, `$RG` |
+    | Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
     Copy the XML output and paste it as the `AZURE_FUNCTIONAPP_PUBLISH_PROFILE` secret value.
 
 3. Validate release health.
@@ -103,6 +119,14 @@ flowchart TD
       --name "$APP_NAME" \
       --resource-group "$RG"
     ```
+
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az webapp log tail` |
+    | Key flags | `--name`, `--resource-group` |
+    | Variables | `$APP_NAME`, `$RG` |
+    | Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
 
     Expected log stream output:
 
@@ -121,6 +145,14 @@ flowchart TD
       --resource-group "$RG" \
       --output table
     ```
+
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az functionapp function list` |
+    | Key flags | `--name`, `--resource-group`, `--output` |
+    | Variables | `$APP_NAME`, `$RG` |
+    | Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
     Expected output (abridged):
 

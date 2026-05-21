@@ -151,6 +151,14 @@ az network vnet subnet create \
       --delegations "Microsoft.App/environments"
     ```
 
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az network vnet subnet update` |
+    | Key flags | `--name`, `--resource-group`, `--vnet-name`, `--delegations` |
+    | Variables | `$RG`, `$VNET_NAME` |
+    | Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 === "Premium (EP) / Dedicated (S1+)"
 
     ```bash
@@ -303,6 +311,14 @@ az storage account update \
         "AzureWebJobsStorage__credential=managedidentity"
     ```
 
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az functionapp identity assign`, `az functionapp identity show`, `az role assignment create`, `az functionapp config appsettings set` |
+    | Key flags | `--name`, `--resource-group`, `--query`, `--output`, `--assignee`, `--role`, `--scope`, `--settings` |
+    | Variables | `$APP_NAME`, `$RG`, `$PRINCIPAL_ID`, `$STORAGE_ID`, `$STORAGE_NAME` |
+    | Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
     **Option B: User-Assigned (pre-configured RBAC)**
 
     ```bash
@@ -359,6 +375,14 @@ az storage account update \
         "AzureWebJobsStorage__clientId=$MI_CLIENT_ID"
     ```
 
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az identity create`, `az identity show`, `az role assignment create`, `az functionapp identity assign`, plus 1 more |
+    | Key flags | `--name`, `--resource-group`, `--location`, `--query`, `--output`, `--assignee`, `--role`, `--scope`, `--identities`, `--settings` |
+    | Variables | `$APP_NAME`, `$MI_NAME`, `$RG`, `$LOCATION`, `$MI_PRINCIPAL_ID`, `$STORAGE_ID`, `$MI_ID`, `$STORAGE_NAME`, `$MI_CLIENT_ID` |
+    | Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 === "Premium (EP)"
 
     Premium plans can use identity-based host storage, but private storage scenarios still need Azure Files content share settings for deployment and scale operations.
@@ -404,6 +428,14 @@ az storage account update \
         "WEBSITE_CONTENTSHARE=$APP_NAME" \
         "WEBSITE_CONTENTOVERVNET=1"
     ```
+
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az functionapp identity assign`, `az functionapp identity show`, `az storage account show-connection-string`, `az role assignment create`, plus 1 more |
+    | Key flags | `--name`, `--resource-group`, `--query`, `--output`, `--assignee`, `--role`, `--scope`, `--settings` |
+    | Variables | `$APP_NAME`, `$RG`, `$STORAGE_NAME`, `$PRINCIPAL_ID`, `$STORAGE_ID`, `$STORAGE_CONNECTION_STRING` |
+    | Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 === "Dedicated (S1+)"
 

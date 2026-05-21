@@ -247,6 +247,14 @@ az functionapp show \
   --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp show` |
+| Key flags | `--name`, `--resource-group`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ```bash
 az storage account show \
   --name "$STORAGE_NAME" \
@@ -254,12 +262,28 @@ az storage account show \
   --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage account show` |
+| Key flags | `--name`, `--resource-group`, `--output` |
+| Variables | `$STORAGE_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ```bash
 az monitor app-insights component show \
   --app "$AI_APP_ID" \
   --resource-group "$RG" \
   --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights component show` |
+| Key flags | `--app`, `--resource-group`, `--output` |
+| Variables | `$AI_APP_ID`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 ### 3.2 Validate Durable storage RBAC for managed identity
 
@@ -489,6 +513,14 @@ az monitor log-analytics query \
   --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor log-analytics query` |
+| Key flags | `--workspace`, `--analytics-query`, `--output` |
+| Variables | `$LOG_WORKSPACE_ID` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ```bash
 az monitor log-analytics query \
   --workspace "$LOG_WORKSPACE_ID" \
@@ -496,12 +528,28 @@ az monitor log-analytics query \
   --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor log-analytics query` |
+| Key flags | `--workspace`, `--analytics-query`, `--output` |
+| Variables | `$LOG_WORKSPACE_ID` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ```bash
 az monitor log-analytics query \
   --workspace "$LOG_WORKSPACE_ID" \
   --analytics-query "AppTraces | where TimeGenerated >= datetime(2026-04-07 12:56:00Z) and TimeGenerated < datetime(2026-04-07 13:02:00Z) | where AppRoleName == 'func-durable-lab' | where Message has_any ('ContinueAsNew', 'Orchestration complete') | project TimeGenerated, Message | order by TimeGenerated asc" \
   --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor log-analytics query` |
+| Key flags | `--workspace`, `--analytics-query`, `--output` |
+| Variables | `$LOG_WORKSPACE_ID` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 ### 3.9 Decision flow during live troubleshooting
 
@@ -800,6 +848,14 @@ az group delete \
   --yes \
   --no-wait
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az group delete` |
+| Key flags | `--name`, `--yes`, `--no-wait` |
+| Variables | `$RG` |
+| Expected result | Azure CLI completes the removal request; verify the target no longer appears in follow-up `show` or `list` output. |
+
 
 If this is a shared EP1 lab environment, skip deletion and only stop test traffic.
 

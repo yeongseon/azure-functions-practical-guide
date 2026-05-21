@@ -84,6 +84,14 @@ export LOCATION="koreacentral"
 az group create --name "$RG" --location "$LOCATION"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az group create` |
+| Key flags | `--name`, `--location` |
+| Variables | `$RG`, `$LOCATION` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ### Step 3 - Author `infra/consumption/main.bicep`
 
 Use a Consumption plan resource with Y1/Dynamic SKU and classic app settings on the Function App:

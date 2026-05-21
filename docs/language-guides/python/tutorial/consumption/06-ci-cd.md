@@ -87,6 +87,14 @@ az functionapp deployment list-publishing-profiles \
   --xml
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp deployment list-publishing-profiles` |
+| Key flags | `--name`, `--resource-group`, `--xml` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 Copy the XML output into GitHub secret `AZURE_FUNCTIONAPP_PUBLISH_PROFILE`.
 
 ### Step 3 - Create workflow file

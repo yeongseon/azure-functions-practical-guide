@@ -51,6 +51,14 @@ az functionapp show \
   --output tsv
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp show` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 2. Add DNS records at your DNS provider:
     - TXT record: `asuid.<subdomain>` with the verification ID from step 1
     - CNAME record for subdomain mapping (or A record where supported by plan and DNS scenario)
@@ -63,6 +71,14 @@ az functionapp config hostname add \
   --resource-group $RG \
   --hostname api.contoso.com
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config hostname add` |
+| Key flags | `--name`, `--resource-group`, `--hostname` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 ## Create Managed Certificate
 
@@ -81,6 +97,14 @@ az functionapp config ssl bind \
   --ssl-type SNI
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config ssl create`, `az functionapp config ssl bind` |
+| Key flags | `--resource-group`, `--name`, `--hostname`, `--certificate-thumbprint`, `--ssl-type` |
+| Variables | `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ## Enforce HTTPS
 
 ```bash
@@ -89,6 +113,14 @@ az functionapp update \
   --name $APP_NAME \
   --set httpsOnly=true
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp update` |
+| Key flags | `--resource-group`, `--name`, `--set` |
+| Variables | `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 ## Plan Limitations
 
@@ -111,6 +143,14 @@ az functionapp config hostname list \
   --resource-group $RG
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config hostname list` |
+| Key flags | `--webapp-name`, `--resource-group` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 - Confirm HTTPS-only is enabled:
 
 ```bash
@@ -119,6 +159,14 @@ az functionapp show \
   --resource-group $RG \
   --query httpsOnly
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp show` |
+| Key flags | `--name`, `--resource-group`, `--query` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 - Validate TLS in browser or with curl:
 

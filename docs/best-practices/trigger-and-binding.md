@@ -118,6 +118,14 @@ az functionapp cors add \
   --allowed-origins "https://portal.contoso.example"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp cors add` |
+| Key flags | `--resource-group`, `--name`, `--allowed-origins` |
+| Variables | `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
+
 ### Queue trigger best practices
 
 Queue-trigger workloads are operationally safe only when retry and poison behavior are explicit.

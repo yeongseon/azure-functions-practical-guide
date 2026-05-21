@@ -198,6 +198,14 @@ az functionapp cors credentials \
   --enable true
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp cors add`, `az functionapp cors credentials` |
+| Key flags | `--name`, `--resource-group`, `--allowed-origins`, `--enable` |
+| Variables | None |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
+
 ### Manual CORS Headers
 
 For fine-grained control, set CORS headers in your response:

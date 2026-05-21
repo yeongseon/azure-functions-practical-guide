@@ -171,6 +171,14 @@ az monitor log-analytics query \
     --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az eventgrid event-subscription list`, `az functionapp function list`, `az monitor log-analytics query` |
+| Key flags | `--source-resource-id`, `--output`, `--name`, `--resource-group`, `--workspace`, `--analytics-query` |
+| Variables | `$SUBSCRIPTION_ID`, `$RG`, `$APP_NAME`, `$WORKSPACE_ID` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ```text
 # Event subscription list (normal)
 Name                                ProvisioningState    DestinationEndpointType
@@ -236,6 +244,14 @@ az eventgrid event-subscription list \
     --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az eventgrid event-subscription list` |
+| Key flags | `--source-resource-id`, `--output` |
+| Variables | `$SUBSCRIPTION_ID`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 Example output:
 
 ```text
@@ -290,6 +306,14 @@ az monitor log-analytics query \
     --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor log-analytics query` |
+| Key flags | `--workspace`, `--analytics-query`, `--output` |
+| Variables | `$WORKSPACE_ID`, `$APP_NAME` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 Example output:
 
 ```text
@@ -339,6 +363,14 @@ az functionapp function list \
     --resource-group "$RG" \
     --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp function list` |
+| Key flags | `--name`, `--resource-group`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 Example output:
 
@@ -414,6 +446,14 @@ az eventgrid event-subscription list \
     --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp show`, `az functionapp plan show`, `az eventgrid event-subscription list` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output`, `--source-resource-id` |
+| Variables | `$APP_NAME`, `$RG`, `$PLAN_NAME`, `$SUBSCRIPTION_ID` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 Example output:
 
 ```text
@@ -478,6 +518,14 @@ az monitor log-analytics query \
     --analytics-query "traces | where timestamp > ago(30m) | where cloud_RoleName =~ '$APP_NAME' | where message has_any ('BlobTrigger listener started','Executing ''Functions.BlobIngestor''') | order by timestamp desc" \
     --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az eventgrid event-subscription list`, `az functionapp function list`, `az monitor log-analytics query` |
+| Key flags | `--source-resource-id`, `--output`, `--name`, `--resource-group`, `--workspace`, `--analytics-query` |
+| Variables | `$SUBSCRIPTION_ID`, `$RG`, `$APP_NAME`, `$WORKSPACE_ID` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 ## 9. Prevention
 

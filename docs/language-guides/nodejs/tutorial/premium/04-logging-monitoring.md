@@ -57,6 +57,14 @@ flowchart TD
     style LAW fill:#FFF3E0
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights query\| AI` |
+| Key flags | None |
+| Variables | None |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ## Steps
 
 ### Step 1 — Verify Application Insights is connected
@@ -70,6 +78,14 @@ az monitor app-insights component show \
   --query "{name:name, connectionString:connectionString}" \
   --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights component show` |
+| Key flags | `--app`, `--resource-group`, `--query`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 Expected output (abridged):
 
@@ -109,6 +125,14 @@ az monitor app-insights query \
   --output json
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights query` |
+| Key flags | `--app`, `--resource-group`, `--analytics-query`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 Expected output (abridged):
 
 ```json
@@ -140,6 +164,14 @@ az monitor app-insights query \
   --analytics-query "requests | where timestamp > ago(30m) | summarize count() by name | order by count_ desc" \
   --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights query` |
+| Key flags | `--app`, `--resource-group`, `--analytics-query`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 Expected output (abridged):
 

@@ -79,6 +79,14 @@ az functionapp config appsettings set \
     "JAVA_OPTS=-Xmx512m"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 ### Step 3 - Set JVM and runtime guardrails
 
 ```bash
@@ -89,6 +97,14 @@ az functionapp config appsettings set \
     "FUNCTIONS_EXTENSION_VERSION=~4" \
     "JAVA_OPTS=-Xmx512m -XX:+UseContainerSupport"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 !!! note "Dedicated JVM tuning"
     Dedicated B1 provides 1.75 GB memory. Setting `-Xmx512m` is conservative. For larger SKUs (S1, P1v2), you can increase the heap. The `UseContainerSupport` flag ensures the JVM respects container memory limits.
@@ -132,6 +148,14 @@ az functionapp config appsettings list \
   --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings list` |
+| Key flags | `--name`, `--resource-group`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 ### Step 6 - Verify runtime behavior with info endpoint
 
 ```bash
@@ -160,6 +184,14 @@ az functionapp config show \
   --query "{linuxFxVersion:linuxFxVersion, alwaysOn:alwaysOn, numberOfWorkers:numberOfWorkers}" \
   --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config show` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 Expected output:
 

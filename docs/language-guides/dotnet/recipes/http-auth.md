@@ -38,6 +38,14 @@ az webapp auth config-version upgrade --name "$APP_NAME" --resource-group "$RG"
 az webapp auth update --name "$APP_NAME" --resource-group "$RG" --enabled true
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az webapp auth config-version upgrade`, `az webapp auth update` |
+| Key flags | `--name`, `--resource-group`, `--enabled` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 ### Validate JWT claims in code (ASP.NET Core integration)
 ```csharp
 var principal = HttpContext.User;

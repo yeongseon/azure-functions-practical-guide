@@ -56,6 +56,14 @@ az functionapp create \
   --functions-version 4
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az group create`, `az storage account create`, `az functionapp create` |
+| Key flags | `--name`, `--location`, `--resource-group`, `--sku`, `--storage-account`, `--consumption-plan-location`, `--runtime`, `--runtime-version`, `--functions-version` |
+| Variables | `$RG`, `$LOCATION`, `$STORAGE_NAME`, `$APP_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ## Working Node.js v4 Code
 
 ```javascript

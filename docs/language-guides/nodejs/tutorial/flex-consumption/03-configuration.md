@@ -78,6 +78,14 @@ az functionapp config appsettings set \
     "languageWorkers__node__arguments=--max-old-space-size=4096"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings`, `--max-old-space-size` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 !!! warning "`FUNCTIONS_WORKER_RUNTIME` is platform-managed on Flex Consumption"
     Unlike Consumption and Premium plans, Flex Consumption does **not** allow setting `FUNCTIONS_WORKER_RUNTIME` via app settings. Attempting to set it returns an error:
 
@@ -110,6 +118,14 @@ az functionapp config appsettings list \
   --resource-group "$RG" \
   --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings list` |
+| Key flags | `--name`, `--resource-group`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 ### Step 5 - Review Flex Consumption-specific notes
 

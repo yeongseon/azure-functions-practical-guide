@@ -64,6 +64,14 @@ az cosmosdb sql container create \
   --partition-key-path "/category"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az cosmosdb create`, `az cosmosdb sql database create`, `az cosmosdb sql container create` |
+| Key flags | `--name`, `--resource-group`, `--kind`, `--account-name`, `--database-name`, `--partition-key-path` |
+| Variables | `$COSMOS_ACCOUNT`, `$RG` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 Connection string setting:
 
 ```bash
@@ -73,6 +81,14 @@ az functionapp config appsettings set \
   --settings "CosmosDBConnection=<cosmos-connection-string>"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 Managed identity alternative:
 
 ```bash
@@ -81,6 +97,14 @@ az functionapp config appsettings set \
   --resource-group $RG \
   --settings "CosmosDBConnection__accountEndpoint=https://$COSMOS_ACCOUNT.documents.azure.com:443/"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings` |
+| Variables | `$APP_NAME`, `$RG`, `$COSMOS_ACCOUNT` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 ## Java implementation
 

@@ -38,6 +38,14 @@ az functionapp log tail \
   --resource-group $RG
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp log tail` |
+| Key flags | `--name`, `--resource-group` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
+
 Verify in `local.settings.json` for local development:
 
 ```json
@@ -66,6 +74,14 @@ Verify in `local.settings.json` for local development:
       --name $APP_NAME \
       --resource-group $RG
    ```
+
+   | CLI element | Explanation |
+   |---|---|
+   | Command(s) | `az functionapp log tail` |
+   | Key flags | `--name`, `--resource-group` |
+   | Variables | `$APP_NAME`, `$RG` |
+   | Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
 
 2. Look for `ImportError`, `SyntaxError`, or `ModuleNotFoundError` in the output.
 
@@ -98,6 +114,14 @@ az functionapp config appsettings set \
   --settings "SCM_DO_BUILD_DURING_DEPLOYMENT=true" "ENABLE_ORYX_BUILD=true"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 Deploy with remote build flag:
 
 ```bash
@@ -111,6 +135,14 @@ az functionapp deployment source config-zip \
   --src deploy.zip \
   --build-remote true
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp deployment source config-zip` |
+| Key flags | `--python`, `--build`, `--name`, `--resource-group`, `--src`, `--build-remote` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 For Flex Consumption apps, prefer the standard `func azure functionapp publish --python` workflow and avoid relying on legacy Kudu-specific app settings.
 
@@ -266,6 +298,14 @@ az role assignment create \
   --scope "<resource-id>"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az role assignment list`, `az role assignment create` |
+| Key flags | `--assignee`, `--all`, `--output`, `--role`, `--scope` |
+| Variables | None |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 > **Note:** Role assignments can take up to 5 minutes to propagate. Wait and retry before further troubleshooting.
 
 ---
@@ -290,6 +330,14 @@ az functionapp deployment slot list \
   --resource-group $RG
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp restart`, `az functionapp deployment slot list` |
+| Key flags | `--name`, `--resource-group` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ---
 
 ## 10. Application Insights Shows No Data
@@ -307,6 +355,14 @@ az functionapp config appsettings list \
   --resource-group $RG \
   --query "[?name=='APPLICATIONINSIGHTS_CONNECTION_STRING']"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings list` |
+| Key flags | `--name`, `--resource-group`, `--query` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 Check `host.json` sampling settings — if `maxTelemetryItemsPerSecond` is set very low, telemetry may appear to be missing:
 
@@ -344,6 +400,14 @@ az functionapp vnet-integration list \
   --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp vnet-integration list` |
+| Key flags | `--name`, `--resource-group`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 Expected output: one row showing the subnet resource ID. An empty table means VNet integration is not configured — see the [Networking operations guide](../platform/networking.md) to set it up.
 
 For traffic to private resources, ensure `WEBSITE_VNET_ROUTE_ALL` is set to `1`:
@@ -355,6 +419,14 @@ az functionapp config appsettings list \
   --query "[?name=='WEBSITE_VNET_ROUTE_ALL']"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings list` |
+| Key flags | `--name`, `--resource-group`, `--query` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 If the setting is missing or `0`, add it:
 
 ```bash
@@ -363,6 +435,14 @@ az functionapp config appsettings set \
   --resource-group "$RG" \
   --settings "WEBSITE_VNET_ROUTE_ALL=1"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 Verify DNS resolution from the app (via Kudu console or SSH where available):
 
@@ -392,6 +472,14 @@ az functionapp show \
   --output json
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp show` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 Add **all** IPs in `possibleOutboundIpAddresses` to the target service's allowlist — not just the currently active ones, as the active set can rotate.
 
 !!! warning "NAT Gateway for stable egress"
@@ -416,6 +504,14 @@ az network private-dns link vnet list \
   --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az network private-dns link vnet` |
+| Key flags | `--resource-group`, `--zone-name`, `--output` |
+| Variables | `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 If no link exists, create one:
 
 ```bash
@@ -426,6 +522,14 @@ az network private-dns link vnet create \
   --virtual-network "vnet-prod" \
   --registration-enabled false
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az network private-dns link vnet` |
+| Key flags | `--resource-group`, `--zone-name`, `--name`, `--virtual-network`, `--registration-enabled` |
+| Variables | `$RG` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 After linking, verify resolution from the app (Kudu console where available):
 

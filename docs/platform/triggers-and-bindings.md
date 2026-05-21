@@ -58,6 +58,14 @@ If you validate configuration with Azure CLI, keep long flags for readability:
 az functionapp config appsettings list --resource-group $RG --name $APP_NAME
 az functionapp config show --resource-group $RG --name $APP_NAME
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings list`, `az functionapp config show` |
+| Key flags | `--resource-group`, `--name` |
+| Variables | `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 ## Main Content
 ### Core model
 Every function has:
@@ -335,6 +343,14 @@ az functionapp config appsettings list --resource-group $RG --name $APP_NAME
 az functionapp function show --resource-group $RG --name $APP_NAME --function-name $FUNCTION_NAME
 az monitor app-insights query --app <application-insights-name> --analytics-query "traces | take 20"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings list`, `az functionapp function show`, `az monitor app-insights query` |
+| Key flags | `--resource-group`, `--name`, `--function-name`, `--app`, `--analytics-query` |
+| Variables | `$RG`, `$APP_NAME`, `$FUNCTION_NAME` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 !!! tip "Reliability Guide"
     For retry and poison-message design, see [Reliability](reliability.md).
 !!! tip "Language Guide"

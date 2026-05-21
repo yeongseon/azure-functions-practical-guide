@@ -103,6 +103,14 @@ flowchart TD
           --settings "QueueStorage=$(az storage account show-connection-string --name $STORAGE_NAME --resource-group $RG --query connectionString --output tsv)"
         ```
 
+        | CLI element | Explanation |
+        |---|---|
+        | Command(s) | `az functionapp config appsettings set` |
+        | Key flags | `--name`, `--resource-group`, `--settings`, `--query`, `--output` |
+        | Variables | `$APP_NAME`, `$RG`, `$STORAGE_NAME` |
+        | Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 3. Add blob trigger.
 
     The reference app includes `src/functions/blobProcessor.js`:
@@ -135,6 +143,14 @@ flowchart TD
       --resource-group "$RG" \
       --output table
     ```
+
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az functionapp function list` |
+    | Key flags | `--name`, `--resource-group`, `--output` |
+    | Variables | `$APP_NAME`, `$RG` |
+    | Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
     Expected output (all 20 functions):
 

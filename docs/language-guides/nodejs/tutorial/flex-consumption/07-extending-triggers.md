@@ -142,6 +142,14 @@ az storage container create \
   --auth-mode login
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage queue create`, `az storage container create` |
+| Key flags | `--name`, `--account-name`, `--auth-mode` |
+| Variables | `$STORAGE_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ### Step 6 - Verify local trigger indexing
 
 ```bash
@@ -162,6 +170,14 @@ az storage message put \
   --content '{"orderId":"test-flex-001","item":"widget"}' \
   --account-name "$STORAGE_NAME"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage message put` |
+| Key flags | `--queue-name`, `--content`, `--account-name` |
+| Variables | `$STORAGE_NAME` |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
 
 !!! note "Queue auth mode"
     If `--auth-mode login` fails with a permissions error, use `--auth-mode key` or pass `--account-key` explicitly. The Storage Queue Data Contributor role is required for login-based queue writes.
@@ -195,6 +211,14 @@ az functionapp function list \
   --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp function list` |
+| Key flags | `--name`, `--resource-group`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ## Clean Up
 
 If you are finished with the Flex Consumption tutorials, delete the resource group:
@@ -202,6 +226,14 @@ If you are finished with the Flex Consumption tutorials, delete the resource gro
 ```bash
 az group delete --name "$RG" --yes --no-wait
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az group delete` |
+| Key flags | `--name`, `--yes`, `--no-wait` |
+| Variables | `$RG` |
+| Expected result | Azure CLI completes the removal request; verify the target no longer appears in follow-up `show` or `list` output. |
+
 
 ## See Also
 

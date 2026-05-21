@@ -75,6 +75,14 @@ az functionapp deployment list-publishing-profiles \
   --xml
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp deployment list-publishing-profiles` |
+| Key flags | `--name`, `--resource-group`, `--xml` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ### Step 2 - Store deployment secrets in GitHub
 
 Add repository secrets:
@@ -161,6 +169,14 @@ curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
 # Test hello endpoint
 curl --request GET "https://$APP_NAME.azurewebsites.net/api/hello/CICD"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp show` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output`, `--request` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 Use GitHub Actions run history as the deployment timeline of record (`Actions` tab → workflow runs → latest commit SHA), and compare it with `lastModifiedTimeUtc` to confirm release timing.
 

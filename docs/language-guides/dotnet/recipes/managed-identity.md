@@ -49,6 +49,14 @@ Azure RBAC enforces a uniqueness constraint: only one role assignment can exist 
 az functionapp identity assign   --name "$APP_NAME"   --resource-group "$RG"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp identity assign` |
+| Key flags | `--name`, `--resource-group` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 ### Access Storage SDK with DefaultAzureCredential
 ```csharp
 var credential = new DefaultAzureCredential();
