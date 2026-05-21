@@ -34,12 +34,12 @@ This lab guide documents a completed Azure Functions Premium EP1 experiment that
 | Duration | 60-90 minutes |
 | Hosting plan | Premium EP1 (Linux) |
 | Runtime | Azure Functions v4, Python 3.11 (v2 model) |
-| Function app | `labep1shared-func` |
-| Resource group | `rg-lab-ep1-shared` |
+| Function app | `func-durable-lab` |
+| Resource group | `rg-functions-lab` |
 | Region | `koreacentral` |
-| Storage account | `labep1sharedstorage` (managed identity auth) |
+| Storage account | `stfunctionslab` (managed identity auth) |
 | Durable app model | `df.DFApp` + blueprint `apps/python/blueprints/durable_lab.py` |
-| Application Insights app ID | `928dbc99-8353-4e70-889b-860f3401220e` |
+| Application Insights app ID | `<app-insights-app-id>` |
 | Trigger path | `POST /api/durable/start-replay-lab` |
 | Activity function | `replay_lab_activity` |
 | Orchestrator function | `replay_storm_orchestrator` |
@@ -218,7 +218,7 @@ Neither condition occurred in the evidence.
 
 ## 3) Runbook
 
-### Variables (generic first, then concrete values)
+### Variables (generic first, then sanitized examples)
 
 ```bash
 RG="<resource-group>"
@@ -228,14 +228,14 @@ LOCATION="<azure-region>"
 AI_APP_ID="<app-insights-app-id>"
 ```
 
-Concrete values used in this completed experiment:
+Sanitized example values used for this completed experiment:
 
 ```bash
-RG="rg-lab-ep1-shared"
-APP_NAME="labep1shared-func"
-STORAGE_NAME="labep1sharedstorage"
+RG="rg-functions-lab"
+APP_NAME="func-durable-lab"
+STORAGE_NAME="stfunctionslab"
 LOCATION="koreacentral"
-AI_APP_ID="928dbc99-8353-4e70-889b-860f3401220e"
+AI_APP_ID="<app-insights-app-id>"
 ```
 
 ### 3.1 Validate deployment context
@@ -360,17 +360,17 @@ let IncidentEnd = datetime(2026-04-07 12:56:18Z);
 let RunEnd = datetime(2026-04-07 13:02:00Z);
 let baseline = requests
     | where timestamp >= datetime(2026-04-07 12:28:00Z) and timestamp < BaselineEnd
-    | where cloud_RoleName == "labep1shared-func"
+    | where cloud_RoleName == "func-durable-lab"
     | where operation_Name has "replay_storm_orchestrator"
     | extend phase = "Baseline";
 let incident = requests
     | where timestamp >= BaselineEnd and timestamp < IncidentEnd
-    | where cloud_RoleName == "labep1shared-func"
+    | where cloud_RoleName == "func-durable-lab"
     | where operation_Name has "replay_storm_orchestrator"
     | extend phase = "Incident";
 let recovery = requests
     | where timestamp >= IncidentEnd and timestamp < RunEnd
-    | where cloud_RoleName == "labep1shared-func"
+    | where cloud_RoleName == "func-durable-lab"
     | where operation_Name has "replay_storm_orchestrator"
     | extend phase = "Recovery";
 union baseline, incident, recovery
@@ -391,17 +391,17 @@ let IncidentEnd = datetime(2026-04-07 12:56:18Z);
 let RunEnd = datetime(2026-04-07 13:02:00Z);
 let baseline = requests
     | where timestamp >= datetime(2026-04-07 12:28:00Z) and timestamp < BaselineEnd
-    | where cloud_RoleName == "labep1shared-func"
+    | where cloud_RoleName == "func-durable-lab"
     | where operation_Name has "replay_lab_activity"
     | extend phase = "Baseline";
 let incident = requests
     | where timestamp >= BaselineEnd and timestamp < IncidentEnd
-    | where cloud_RoleName == "labep1shared-func"
+    | where cloud_RoleName == "func-durable-lab"
     | where operation_Name has "replay_lab_activity"
     | extend phase = "Incident";
 let recovery = requests
     | where timestamp >= IncidentEnd and timestamp < RunEnd
-    | where cloud_RoleName == "labep1shared-func"
+    | where cloud_RoleName == "func-durable-lab"
     | where operation_Name has "replay_lab_activity"
     | extend phase = "Recovery";
 union baseline, incident, recovery
@@ -421,7 +421,7 @@ let BaselineId = "7192e16593814d7f859c77558543c1da";
 let IncidentId = "7a21e8d1258a488bad8392f1bdfa36bf";
 let RecoveryId = "58ce8fb52432461787717b8b1a83256b";
 requests
-| where cloud_RoleName == "labep1shared-func"
+| where cloud_RoleName == "func-durable-lab"
 | where operation_Name has "replay_storm_orchestrator"
 | where operation_Id in (BaselineId, IncidentId, RecoveryId)
 | summarize
@@ -441,7 +441,7 @@ requests
 let IncidentId = "7a21e8d1258a488bad8392f1bdfa36bf";
 traces
 | where timestamp >= datetime(2026-04-07 12:28:00Z) and timestamp < datetime(2026-04-07 13:02:00Z)
-| where cloud_RoleName == "labep1shared-func"
+| where cloud_RoleName == "func-durable-lab"
 | where message has "ReplayIteration"
 | where operation_Id == IncidentId or operation_ParentId == IncidentId
 | parse message with * "batch=" batch:int " iteration=" iter:int "/" total:int " elapsed=" elapsed_ms:real "ms"
@@ -455,7 +455,7 @@ traces
 let RecoveryId = "58ce8fb52432461787717b8b1a83256b";
 traces
 | where timestamp >= datetime(2026-04-07 12:56:00Z) and timestamp < datetime(2026-04-07 13:02:00Z)
-| where cloud_RoleName == "labep1shared-func"
+| where cloud_RoleName == "func-durable-lab"
 | where message has_any ("ContinueAsNew", "Orchestration complete")
 | where operation_Id == RecoveryId or operation_ParentId == RecoveryId
 | project timestamp, message
@@ -468,7 +468,7 @@ traces
 let IncidentId = "7a21e8d1258a488bad8392f1bdfa36bf";
 traces
 | where timestamp >= datetime(2026-04-07 12:28:00Z) and timestamp < datetime(2026-04-07 13:02:00Z)
-| where cloud_RoleName == "labep1shared-func"
+| where cloud_RoleName == "func-durable-lab"
 | where message has "ReplayIteration"
 | where operation_Id == IncidentId or operation_ParentId == IncidentId
 | parse message with * "iteration=" iter:int "/" total:int *
@@ -485,21 +485,21 @@ traces
 ```bash
 az monitor log-analytics query \
   --workspace "$LOG_WORKSPACE_ID" \
-  --analytics-query "let StartTime = datetime(2026-04-07 12:28:00Z); let EndTime = datetime(2026-04-07 13:02:00Z); AppRequests | where TimeGenerated >= StartTime and TimeGenerated < EndTime | where AppRoleName == 'labep1shared-func' | where OperationName has 'replay_storm_orchestrator' | summarize executions = count(), avg_ms = round(avg(DurationMs), 1), p95_ms = round(percentile(DurationMs, 95), 1), max_ms = round(max(DurationMs), 1) by bin(TimeGenerated, 2m) | order by TimeGenerated asc" \
+  --analytics-query "let StartTime = datetime(2026-04-07 12:28:00Z); let EndTime = datetime(2026-04-07 13:02:00Z); AppRequests | where TimeGenerated >= StartTime and TimeGenerated < EndTime | where AppRoleName == 'func-durable-lab' | where OperationName has 'replay_storm_orchestrator' | summarize executions = count(), avg_ms = round(avg(DurationMs), 1), p95_ms = round(percentile(DurationMs, 95), 1), max_ms = round(max(DurationMs), 1) by bin(TimeGenerated, 2m) | order by TimeGenerated asc" \
   --output table
 ```
 
 ```bash
 az monitor log-analytics query \
   --workspace "$LOG_WORKSPACE_ID" \
-  --analytics-query "let StartTime = datetime(2026-04-07 12:28:00Z); let EndTime = datetime(2026-04-07 13:02:00Z); AppRequests | where TimeGenerated >= StartTime and TimeGenerated < EndTime | where AppRoleName == 'labep1shared-func' | where OperationName has 'replay_lab_activity' | summarize activities = count(), avg_ms = round(avg(DurationMs), 1), p95_ms = round(percentile(DurationMs, 95), 1), max_ms = round(max(DurationMs), 1) by bin(TimeGenerated, 2m) | order by TimeGenerated asc" \
+  --analytics-query "let StartTime = datetime(2026-04-07 12:28:00Z); let EndTime = datetime(2026-04-07 13:02:00Z); AppRequests | where TimeGenerated >= StartTime and TimeGenerated < EndTime | where AppRoleName == 'func-durable-lab' | where OperationName has 'replay_lab_activity' | summarize activities = count(), avg_ms = round(avg(DurationMs), 1), p95_ms = round(percentile(DurationMs, 95), 1), max_ms = round(max(DurationMs), 1) by bin(TimeGenerated, 2m) | order by TimeGenerated asc" \
   --output table
 ```
 
 ```bash
 az monitor log-analytics query \
   --workspace "$LOG_WORKSPACE_ID" \
-  --analytics-query "AppTraces | where TimeGenerated >= datetime(2026-04-07 12:56:00Z) and TimeGenerated < datetime(2026-04-07 13:02:00Z) | where AppRoleName == 'labep1shared-func' | where Message has_any ('ContinueAsNew', 'Orchestration complete') | project TimeGenerated, Message | order by TimeGenerated asc" \
+  --analytics-query "AppTraces | where TimeGenerated >= datetime(2026-04-07 12:56:00Z) and TimeGenerated < datetime(2026-04-07 13:02:00Z) | where AppRoleName == 'func-durable-lab' | where Message has_any ('ContinueAsNew', 'Orchestration complete') | project TimeGenerated, Message | order by TimeGenerated asc" \
   --output table
 ```
 
