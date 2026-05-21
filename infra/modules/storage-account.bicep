@@ -33,6 +33,3 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
 output id string = storageAccount.id
 output name string = storageAccount.name
 output primaryEndpoints object = storageAccount.properties.primaryEndpoints
-
-@description('Primary access key for the storage account')
-output accessKey string = storageAccount.listKeys().keys[0].value
