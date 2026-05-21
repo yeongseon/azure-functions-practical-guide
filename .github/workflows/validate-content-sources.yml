@@ -56,10 +56,14 @@ jobs:
       - name: Audit existing diagram IDs
         run: |
           # Count mermaid blocks
-          MERMAID_COUNT=$(grep -r '```mermaid' docs/ --include="*.md" | wc -l)
+          MERMAID_COUNT=$(grep -r '```mermaid' docs/ --include="*.md" \
+            --exclude="content-validation-status.md" \
+            --exclude="validation-status.md" | wc -l)
           
           # Count diagram-id comments
-          DIAGRAM_ID_COUNT=$(grep -r '<!-- diagram-id:' docs/ --include="*.md" | wc -l)
+          DIAGRAM_ID_COUNT=$(grep -r '<!-- diagram-id:' docs/ --include="*.md" \
+            --exclude="content-validation-status.md" \
+            --exclude="validation-status.md" | wc -l)
           
           echo "Mermaid blocks: $MERMAID_COUNT"
           echo "Diagram IDs: $DIAGRAM_ID_COUNT"
