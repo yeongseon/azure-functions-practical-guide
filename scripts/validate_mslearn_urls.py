@@ -22,7 +22,7 @@ import re
 import argparse
 import time
 from pathlib import Path
-from typing import Dict, List, Tuple, Optional
+from typing import Any, Dict, Iterable, List, Tuple, Optional
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 try:
@@ -39,8 +39,9 @@ except ImportError:
 
 
 # Rate limiting settings
-REQUEST_DELAY = 0.1  # seconds between requests
-MAX_WORKERS = 5  # parallel requests
+REQUEST_DELAY = 0.25  # seconds between completed requests
+MAX_WORKERS = 3  # parallel requests
+MAX_RETRIES = 3
 
 
 def extract_frontmatter(content: str) -> Optional[dict]:
@@ -54,27 +55,51 @@ def extract_frontmatter(content: str) -> Optional[dict]:
         return None
 
 
+def add_mslearn_url(urls: set, url: Any) -> None:
+    """Add a Microsoft Learn URL to the set when the value is URL-like."""
+    if isinstance(url, str) and "learn.microsoft.com" in url:
+        urls.add(url)
+
+
+def add_mslearn_urls(urls: set, values: Any) -> None:
+    """Add one URL or an iterable of URLs."""
+    if isinstance(values, str):
+        add_mslearn_url(urls, values)
+    elif isinstance(values, Iterable):
+        for value in values:
+            add_mslearn_url(urls, value)
+
+
 def extract_mslearn_urls(frontmatter: dict) -> List[str]:
     """Extract all MSLearn URLs from content_sources in frontmatter."""
     urls = set()
 
     content_sources = frontmatter.get("content_sources", {})
-    diagrams = content_sources.get("diagrams", [])
 
-    for diagram in diagrams:
-        if isinstance(diagram, dict):
-            # Direct mslearn_url
-            if "mslearn_url" in diagram:
-                url = diagram["mslearn_url"]
-                if url and "learn.microsoft.com" in url:
-                    urls.add(url)
+    source_items = []
+    if isinstance(content_sources, dict):
+        nested_sources = content_sources.get("sources", [])
+        if isinstance(nested_sources, list):
+            source_items.extend(nested_sources)
+        source_items.extend(content_sources.get("diagrams", []))
+        source_items.append(content_sources)
+    elif isinstance(content_sources, list):
+        source_items.extend(content_sources)
+    else:
+        source_items = []
 
-            # based_on list
-            based_on = diagram.get("based_on", [])
-            if isinstance(based_on, list):
-                for url in based_on:
-                    if url and "learn.microsoft.com" in url:
-                        urls.add(url)
+    for source in source_items:
+        if isinstance(source, dict):
+            add_mslearn_url(urls, source.get("url"))
+            add_mslearn_url(urls, source.get("mslearn_url"))
+            add_mslearn_urls(urls, source.get("based_on", []))
+
+            nested_diagrams = source.get("diagrams", [])
+            if isinstance(nested_diagrams, list):
+                for diagram in nested_diagrams:
+                    if isinstance(diagram, dict):
+                        add_mslearn_url(urls, diagram.get("mslearn_url"))
+                        add_mslearn_urls(urls, diagram.get("based_on", []))
 
     return list(urls)
 
@@ -109,29 +134,50 @@ def check_url(
         - status: 'ok', 'redirect', 'error', 'timeout'
         - redirect_url: Final URL if redirected, None otherwise
     """
-    try:
-        # Use HEAD first, fall back to GET if needed
-        response = session.head(url, allow_redirects=True, timeout=10)
+    last_status = 0
 
-        # Some servers don't support HEAD
-        if response.status_code == 405:
-            response = session.get(url, allow_redirects=True, timeout=10)
+    for attempt in range(MAX_RETRIES + 1):
+        try:
+            # Use HEAD first, fall back to GET if needed.
+            response = session.head(url, allow_redirects=True, timeout=10)
 
-        final_url = response.url
+            # Some servers don't support HEAD.
+            if response.status_code == 405:
+                response = session.get(url, allow_redirects=True, timeout=10)
 
-        if response.status_code == 200:
-            if final_url != url:
-                return (url, response.status_code, "redirect", final_url)
-            return (url, response.status_code, "ok", None)
-        elif response.status_code == 404:
-            return (url, response.status_code, "error", None)
-        else:
-            return (url, response.status_code, "error", None)
+            last_status = response.status_code
 
-    except requests.Timeout:
-        return (url, 0, "timeout", None)
-    except requests.RequestException as e:
-        return (url, 0, "error", str(e))
+            if response.status_code == 429:
+                retry_after = response.headers.get("Retry-After")
+                if attempt < MAX_RETRIES:
+                    delay = float(retry_after) if retry_after and retry_after.isdigit() else 2**attempt
+                    time.sleep(delay)
+                    continue
+                return (url, response.status_code, "rate_limited", None)
+
+            final_url = response.url
+
+            if response.status_code == 200:
+                if final_url != url:
+                    return (url, response.status_code, "redirect", final_url)
+                return (url, response.status_code, "ok", None)
+            elif response.status_code == 404:
+                return (url, response.status_code, "error", None)
+            else:
+                return (url, response.status_code, "error", None)
+
+        except requests.Timeout:
+            if attempt < MAX_RETRIES:
+                time.sleep(2**attempt)
+                continue
+            return (url, last_status, "timeout", None)
+        except requests.RequestException as e:
+            if attempt < MAX_RETRIES:
+                time.sleep(2**attempt)
+                continue
+            return (url, last_status, "error", str(e))
+
+    return (url, last_status, "error", None)
 
 
 def find_docs_files(docs_dir: Path) -> List[Path]:
@@ -161,6 +207,7 @@ def validate_project(
         "ok": [],
         "redirects": [],
         "errors": [],
+        "rate_limited": [],
         "files_checked": 0,
         "files_with_urls": {},
     }
@@ -228,6 +275,13 @@ def validate_project(
                 )
                 print(f"    [REDIRECT] {url}")
                 print(f"             -> {redirect_url}")
+            elif status == "rate_limited":
+                results["rate_limited"].append(
+                    {"url": url, "status_code": status_code, "files": url_to_files[url]}
+                )
+                print(f"    [RATE LIMITED {status_code}] {url}")
+                for f in url_to_files[url]:
+                    print(f"             in: {f}")
             else:
                 results["errors"].append(
                     {"url": url, "status_code": status_code, "files": url_to_files[url]}
@@ -252,19 +306,30 @@ def main():
     parser.add_argument("--fix", action="store_true", help="Auto-fix redirected URLs")
     parser.add_argument("--verbose", "-v", action="store_true", help="Show all URLs")
     parser.add_argument("--project", "-p", type=str, help="Specific project to check")
+    parser.add_argument(
+        "--all-siblings",
+        action="store_true",
+        help="Validate every azure-*-practical-guide sibling checkout",
+    )
     args = parser.parse_args()
 
-    # Find all practical-guide projects
-    github_dir = Path(__file__).parent.parent.parent
+    repo_root = Path(__file__).parent.parent
+    github_dir = repo_root.parent
 
     if args.project:
-        projects = [github_dir / args.project]
-    else:
+        project_path = Path(args.project)
+        if not project_path.exists():
+            project_path = github_dir / args.project
+        projects = [project_path]
+    elif args.all_siblings:
         projects = sorted(github_dir.glob("azure-*-practical-guide"))
+    else:
+        projects = [repo_root]
 
     all_results = {}
     total_errors = 0
     total_redirects = 0
+    total_rate_limited = 0
 
     for project_path in projects:
         if not project_path.is_dir():
@@ -288,9 +353,11 @@ def main():
         print(f"    OK: {len(results['ok'])}")
         print(f"    Redirects: {len(results['redirects'])}")
         print(f"    Errors: {len(results['errors'])}")
+        print(f"    Rate limited: {len(results['rate_limited'])}")
 
         total_errors += len(results["errors"])
         total_redirects += len(results["redirects"])
+        total_rate_limited += len(results["rate_limited"])
 
     # Final summary
     print(f"\n{'=' * 60}")
@@ -299,10 +366,14 @@ def main():
     print(f"Projects checked: {len(all_results)}")
     print(f"Total redirects: {total_redirects}")
     print(f"Total errors: {total_errors}")
+    print(f"Total rate limited: {total_rate_limited}")
 
     if total_errors > 0:
         print("\nBroken URLs require manual fixing!")
         sys.exit(1)
+    elif total_rate_limited > 0:
+        print("\nSome URLs were rate limited after retries; rerun later for full coverage.")
+        sys.exit(0)
     elif total_redirects > 0:
         print("\nRedirected URLs should be updated to canonical versions.")
         if args.fix:

@@ -12,7 +12,7 @@ content_sources:
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-functions/monitor-functions
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/cli/azure/monitor/app-insights/query
+    url: https://learn.microsoft.com/cli/azure/monitor/app-insights?view=azure-cli-latest
   - type: mslearn-adapted
     url: https://learn.microsoft.com/cli/azure/webapp/log
 ---
@@ -175,5 +175,5 @@ Use Infrastructure as Code to make this setup repeatable.
 ## Sources
 
 - [Monitor Azure Functions](https://learn.microsoft.com/azure/azure-functions/monitor-functions)
-- [Application Insights query with Azure CLI](https://learn.microsoft.com/cli/azure/monitor/app-insights/query)
+- [Application Insights query with Azure CLI](https://learn.microsoft.com/cli/azure/monitor/app-insights?view=azure-cli-latest)
 - [Stream logs with Azure CLI](https://learn.microsoft.com/cli/azure/webapp/log)

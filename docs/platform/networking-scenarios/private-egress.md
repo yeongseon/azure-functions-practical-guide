@@ -1,11 +1,12 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-create-vnet
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/app-service/overview-vnet-integration
+  sources:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/azure/azure-functions/functions-create-vnet
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/azure/app-service/overview-vnet-integration
   diagrams:
     - id: private-egress-architecture
       type: flowchart

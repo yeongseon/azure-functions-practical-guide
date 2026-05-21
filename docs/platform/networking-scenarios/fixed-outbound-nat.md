@@ -1,17 +1,27 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/app-service/overview-nat-gateway-integration
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/nat-gateway/nat-overview
+  sources:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/azure/app-service/overview-nat-gateway-integration
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/azure/app-service/networking/private-endpoint
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/azure/nat-gateway/nat-overview
   diagrams:
     - id: nat-gateway-architecture
       type: flowchart
       source: self-generated
       justification: "NAT Gateway integration pattern from MSLearn documentation"
       based_on:
+        - https://learn.microsoft.com/azure/app-service/overview-nat-gateway-integration
+    - id: full-isolation-with-nat
+      type: flowchart
+      source: self-generated
+      justification: "Full private ingress and NAT egress pattern synthesized from MSLearn networking documentation"
+      based_on:
+        - https://learn.microsoft.com/azure/app-service/networking/private-endpoint
         - https://learn.microsoft.com/azure/app-service/overview-nat-gateway-integration
 content_validation:
   status: verified
@@ -317,4 +327,5 @@ flowchart TD
 
 - [Azure Functions networking options (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-networking-options)
 - [NAT Gateway integration with App Service (Microsoft Learn)](https://learn.microsoft.com/azure/app-service/overview-nat-gateway-integration)
+- [Use private endpoints for Azure App Service (Microsoft Learn)](https://learn.microsoft.com/azure/app-service/networking/private-endpoint)
 - [What is Azure NAT Gateway? (Microsoft Learn)](https://learn.microsoft.com/azure/nat-gateway/nat-overview)

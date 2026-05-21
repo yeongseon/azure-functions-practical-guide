@@ -15,6 +15,10 @@ content_sources:
     url: https://learn.microsoft.com/azure/azure-functions/functions-how-to-github-actions
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-functions/functions-deployment-slots
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/app-service/overview-vnet-integration
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/app-service/networking/private-endpoint
 ---
 
 # 06 - CI/CD (Dedicated)
@@ -40,9 +44,9 @@ export LOCATION="koreacentral"
 You will package the Python Function App from `apps/python`, deploy it with Zip Deploy and remote build settings, and implement an automated GitHub Actions deployment workflow.
 
 !!! info "Infrastructure Context"
-    **Plan**: Dedicated (B1) | **Network**: Public internet | **VNet**: ❌ (requires Standard+ tier)
+    **Plan**: Dedicated (B1) | **Network**: Public internet in this tutorial | **VNet**: Supported by platform, not configured here
 
-    Basic B1 has no VNet integration or private endpoints. The app runs on a fixed App Service Plan (always on, no scale-to-zero). VNet support requires upgrading to Standard (S1) or Premium (P1v3) tier.
+    The app runs on a fixed App Service Plan (always on, no scale-to-zero). Basic B1 supports App Service VNet integration and private endpoints, but this guide uses Standard (S1+) for private networking scenarios to provide scale headroom, deployment slots, and a production-oriented validation path.
 
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid

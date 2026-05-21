@@ -17,6 +17,10 @@ content_sources:
     url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-blob-trigger
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue-trigger
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/app-service/overview-vnet-integration
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/azure/app-service/networking/private-endpoint
 ---
 
 # 07 - Extending with Triggers (Dedicated)
@@ -41,9 +45,9 @@ export LOCATION="koreacentral"
 You will add timer, blob, and queue-triggered functions under `apps/python/blueprints/`, register them in the app entry point, and validate trigger execution after deployment.
 
 !!! info "Infrastructure Context"
-    **Plan**: Dedicated (B1) | **Network**: Public internet | **VNet**: ❌ (requires Standard+ tier)
+    **Plan**: Dedicated (B1) | **Network**: Public internet in this tutorial | **VNet**: Supported by platform, not configured here
 
-    Basic B1 has no VNet integration or private endpoints. The app runs on a fixed App Service Plan (always on, no scale-to-zero). VNet support requires upgrading to Standard (S1) or Premium (P1v3) tier.
+    The app runs on a fixed App Service Plan (always on, no scale-to-zero). Basic B1 supports App Service VNet integration and private endpoints, but this guide uses Standard (S1+) for private networking scenarios to provide scale headroom, deployment slots, and a production-oriented validation path.
 
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
@@ -198,8 +202,8 @@ az storage message put \
 - Timeout default is 30 minutes and max is unlimited.
 - Memory depends on selected plan SKU.
 
-!!! info "Requires Standard tier or higher"
-    VNet integration is not available on Basic (B1) tier. Upgrade to Standard (S1) or Premium (P1v2) for VNet support.
+!!! info "B1 network support and guide scope"
+    Basic (B1) supports App Service VNet integration. This guide's private networking scenarios use Standard (S1+) as the validated production path, so upgrade when you want to follow those walkthroughs exactly.
 
 !!! info "Private endpoints on Dedicated"
     App Service private endpoints are supported on Basic (B1) and higher tiers. When enabled, validate private DNS resolution for the app hostname.

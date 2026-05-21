@@ -12,7 +12,7 @@ content_sources:
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-functions/monitor-functions
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-monitor/app/azure-cli
+    url: https://learn.microsoft.com/cli/azure/monitor/app-insights?view=azure-cli-latest
 ---
 
 # 04 - Logging and Monitoring (Premium)
@@ -224,5 +224,5 @@ Timestamp                  Name    ResultCode    Duration
 ## Sources
 
 - [Monitor Azure Functions](https://learn.microsoft.com/azure/azure-functions/monitor-functions)
-- [Application Insights query with Azure CLI](https://learn.microsoft.com/azure/azure-monitor/app/azure-cli)
+- [Application Insights query with Azure CLI](https://learn.microsoft.com/cli/azure/monitor/app-insights?view=azure-cli-latest)
 - [Kudu service overview](https://github.com/projectkudu/kudu/wiki)
