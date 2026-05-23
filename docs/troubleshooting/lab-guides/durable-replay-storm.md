@@ -11,7 +11,7 @@ content_sources:
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-functions/storage-considerations
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-monitor/logs/log-query-overview
+    url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
@@ -879,4 +879,4 @@ If this is a shared EP1 lab environment, skip deletion and only stop test traffi
 - https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-eternal-orchestrations
 - https://learn.microsoft.com/azure/azure-functions/functions-reference-python
 - https://learn.microsoft.com/azure/azure-functions/storage-considerations
-- https://learn.microsoft.com/azure/azure-monitor/logs/log-query-overview
+- https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview

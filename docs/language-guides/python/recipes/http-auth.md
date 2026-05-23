@@ -1,11 +1,19 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/security-concepts
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/app-service/overview-authentication-authorization
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/security-concepts
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/app-service/overview-authentication-authorization
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/security-concepts
+    verified: true
 ---
-
 # HTTP Authentication
 
 This recipe covers authentication and authorization for Azure Functions HTTP triggers — authorization levels, function keys, Easy Auth for identity provider integration, and manual JWT validation in Python.

@@ -2,25 +2,33 @@
 validation:
   az_cli:
     last_tested: 2026-04-09
-    cli_version: "2.83.0"
-    core_tools_version: "4.8.0"
+    cli_version: 2.83.0
+    core_tools_version: 4.8.0
     result: pass
   bicep:
     last_tested: null
     result: not_tested
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring#application-insights
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/app-service/overview-vnet-integration
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/app-service/networking/private-endpoint
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-monitor/alerts/alerts-metric-overview
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring#application-insights
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/app-service/overview-vnet-integration
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/app-service/networking/private-endpoint
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-monitor/alerts/alerts-metric-overview
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+    verified: true
 ---
-
 # 04 - Logging & Monitoring (Dedicated)
 
 This tutorial enables monitoring for a Dedicated Function App with Application Insights and Log Analytics queries. Dedicated plans are always running, so telemetry volume and baseline cost are predictable and continuous.

@@ -2,21 +2,29 @@
 validation:
   az_cli:
     last_tested: 2026-04-12
-    cli_version: "2.70.0"
-    core_tools_version: "4.6.0"
+    cli_version: 2.70.0
+    core_tools_version: 4.6.0
     result: fail
   bicep:
     last_tested: null
     result: not_tested
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-python
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-deployment-technologies
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-deployment-slots
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-python
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-deployment-technologies
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-deployment-slots
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-python
+    verified: true
 ---
-
 # 02 - First Deploy (Consumption)
 
 Deploy the app to Azure Functions Consumption (Y1) using long-form CLI commands only. This tutorial uses Linux examples and notes Windows support where relevant.

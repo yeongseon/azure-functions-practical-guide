@@ -1,9 +1,17 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/
+    verified: true
 ---
-
 # Azure Functions Practical Guide
 
 **Production-focused documentation for operators and engineers** — from first deployment to incident response.

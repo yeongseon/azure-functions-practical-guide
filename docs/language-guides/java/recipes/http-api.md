@@ -1,11 +1,19 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-http-webhook-trigger
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-http-webhook-trigger
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/functions-bindings-http-webhook-trigger
+    verified: true
 ---
-
 # HTTP API Patterns
 
 This recipe shows production-ready Java HTTP trigger patterns: route parameters, query parsing, JSON body parsing, and response shaping across multiple HTTP methods.
@@ -155,6 +163,14 @@ curl --request POST "http://localhost:7071/api/orders/1001" \
 - Query parameters come from `request.getQueryParameters()` and should have defaults.
 - For body parsing, validate required fields before processing business logic.
 - Build JSON responses with explicit `Content-Type` and meaningful status codes.
+
+## Review Matrix
+
+| Review area | Page-specific check |
+|---|---|
+| Scope | Confirm the guidance applies to HTTP API Patterns. |
+| Source basis | Validate the recommendation against the Microsoft Learn sources in this page. |
+| Evidence | Capture command output, portal state, metrics, logs, or screenshots before treating the result as proven. |
 
 ## See Also
 

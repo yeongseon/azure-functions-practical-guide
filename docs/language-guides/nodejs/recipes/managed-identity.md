@@ -1,11 +1,19 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/overview
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/overview
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/overview
+    verified: true
 ---
-
 # Managed Identity
 
 This recipe enables system-assigned managed identity, grants RBAC roles, and uses `DefaultAzureCredential` to access Azure Storage and Cosmos DB without secrets.

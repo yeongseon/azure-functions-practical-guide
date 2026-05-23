@@ -7,7 +7,7 @@ content_sources:
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-functions/analyze-telemetry-data
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-monitor/logs/log-query-overview
+    url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-functions/performance-reliability
 content_validation:
@@ -476,5 +476,5 @@ Plan memory guidance for escalation decisions:
 - [Azure Functions hosting options](https://learn.microsoft.com/azure/azure-functions/functions-scale)
 - [Azure Functions best practices](https://learn.microsoft.com/azure/azure-functions/functions-best-practices)
 - [Monitor Azure Functions](https://learn.microsoft.com/azure/azure-functions/analyze-telemetry-data)
-- [Azure Monitor Logs query in Application Insights](https://learn.microsoft.com/azure/azure-monitor/logs/log-query-overview)
+- [Azure Monitor Logs query in Application Insights](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview)
 - [Performance and reliability for Azure Functions](https://learn.microsoft.com/azure/azure-functions/performance-reliability)

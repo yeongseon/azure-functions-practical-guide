@@ -2,23 +2,31 @@
 validation:
   az_cli:
     last_tested: 2026-04-12
-    cli_version: "2.70.0"
-    core_tools_version: "4.6.0"
+    cli_version: 2.70.0
+    core_tools_version: 4.6.0
     result: pass
   bicep:
     last_tested: null
     result: not_tested
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-how-to-use-azure-function-app-settings
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/app-service/configure-common
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/app-service/overview-vnet-integration
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/app-service/networking/private-endpoint
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-how-to-use-azure-function-app-settings
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/app-service/configure-common
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/app-service/overview-vnet-integration
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/app-service/networking/private-endpoint
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/functions-how-to-use-azure-function-app-settings
+    verified: true
 ---
-
 # 02 - First Deploy (Dedicated)
 
 In this tutorial you deploy the Function App to a Dedicated App Service Plan using Basic B1. Dedicated plans are always running (no scale-to-zero), support Linux and Windows, and use fixed monthly pricing regardless of executions.

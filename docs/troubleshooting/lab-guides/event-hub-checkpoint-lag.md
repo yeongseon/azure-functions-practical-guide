@@ -9,7 +9,7 @@ content_sources:
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/event-hubs/event-hubs-scalability
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-monitor/logs/log-query-overview
+    url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
@@ -963,4 +963,4 @@ If this is a shared troubleshooting environment, keep resources and only disable
 - https://learn.microsoft.com/azure/azure-functions/functions-host-json
 - https://learn.microsoft.com/azure/azure-functions/functions-best-practices
 - https://learn.microsoft.com/azure/event-hubs/event-hubs-scalability
-- https://learn.microsoft.com/azure/azure-monitor/logs/log-query-overview
+- https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview

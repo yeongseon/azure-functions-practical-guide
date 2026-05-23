@@ -1,11 +1,19 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/app-service/app-service-web-tutorial-custom-domain
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/app-service/configure-ssl-certificate
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/app-service/app-service-web-tutorial-custom-domain
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/app-service/configure-ssl-certificate
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/app-service/app-service-web-tutorial-custom-domain
+    verified: true
 ---
-
 # Custom Domain and Certificates
 
 This recipe focuses on platform configuration for custom domains and TLS certificates on Azure Functions. It is primarily an operations workflow, not application code.

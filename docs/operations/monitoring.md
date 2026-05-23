@@ -5,7 +5,7 @@ content_sources:
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-monitor/app/app-insights-overview
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-monitor/logs/data-platform-logs
+    url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/data-platform-logs
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-monitor/visualize/workbooks-overview
 content_validation:
@@ -20,7 +20,7 @@ content_validation:
       source: https://learn.microsoft.com/azure/azure-monitor/app/app-insights-overview
       verified: true
     - claim: "Control-plane and platform logs are available through Azure Monitor logs for operational investigations."
-      source: https://learn.microsoft.com/azure/azure-monitor/logs/data-platform-logs
+      source: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/data-platform-logs
       verified: true
     - claim: "Azure Monitor workbooks are used to build dashboards and visual operational views over collected telemetry."
       source: https://learn.microsoft.com/azure/azure-monitor/visualize/workbooks-overview
@@ -442,5 +442,5 @@ Rollback:
 
 - [Monitor Azure Functions](https://learn.microsoft.com/azure/azure-functions/monitor-functions)
 - [Application Insights overview](https://learn.microsoft.com/azure/azure-monitor/app/app-insights-overview)
-- [Logs in Azure Monitor](https://learn.microsoft.com/azure/azure-monitor/logs/data-platform-logs)
+- [Logs in Azure Monitor](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/data-platform-logs)
 - [Create and share Azure Monitor workbooks](https://learn.microsoft.com/azure/azure-monitor/visualize/workbooks-overview)

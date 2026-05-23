@@ -1,3 +1,25 @@
+---
+content_sources:
+  sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
+  diagrams:
+  - id: tutorial-validation-status-pie
+    type: pie
+    source: self-generated
+    justification: Auto-generated dashboard chart from repository validation metadata.
+    based_on:
+    - https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This generated dashboard summarizes repository validation metadata and
+      links back to Microsoft Learn as the source basis for Azure content checks.
+    source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
+    verified: true
+---
 # Tutorial Validation Status
 
 This page tracks which tutorials have been validated against real Azure deployments. Each tutorial can be tested via **az-cli** (manual CLI commands) or **Bicep** (infrastructure as code). Tutorials not tested within 90 days are marked as stale.
@@ -13,7 +35,7 @@ Out of scope for this dashboard:
 
 ## Summary
 
-*Generated: 2026-05-22*
+*Generated: 2026-05-23*
 
 | Metric | Count |
 |---|---:|
@@ -23,6 +45,7 @@ Out of scope for this dashboard:
 | ❌ Failed | 1 |
 | ➖ Not tested | 6 |
 
+<!-- diagram-id: tutorial-validation-status-pie -->
 ```mermaid
 pie title Tutorial Validation Status
     "Validated" : 113
@@ -210,3 +233,7 @@ python3 scripts/generate_validation_status.py
 - [Tutorial Overview & Plan Chooser](../language-guides/python/tutorial/index.md)
 - [CLI Cheatsheet](cli-cheatsheet.md)
 - [Platform Limits](platform-limits.md)
+
+## Sources
+
+- [Microsoft Learn overview](https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview)

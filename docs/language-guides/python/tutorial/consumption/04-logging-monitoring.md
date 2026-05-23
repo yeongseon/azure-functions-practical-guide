@@ -2,21 +2,29 @@
 validation:
   az_cli:
     last_tested: 2026-04-09
-    cli_version: "2.83.0"
-    core_tools_version: "4.8.0"
+    cli_version: 2.83.0
+    core_tools_version: 4.8.0
     result: pass
   bicep:
     last_tested: null
     result: not_tested
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/monitor-functions
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/cli/azure/monitor/app-insights?view=azure-cli-latest
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/cli/azure/webapp/log
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/monitor-functions
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/cli/azure/monitor/app-insights?view=azure-cli-latest
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/cli/azure/webapp/log
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/monitor-functions
+    verified: true
 ---
-
 # 04 - Logging and Monitoring (Consumption)
 
 Set up baseline observability for a Consumption (Y1) Function App with Application Insights and CLI log queries.

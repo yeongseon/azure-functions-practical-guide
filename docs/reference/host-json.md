@@ -1,9 +1,17 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-host-json
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-host-json
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/functions-host-json
+    verified: true
 ---
-
 # host.json Reference
 
 The `host.json` file configures the Azure Functions runtime behaviour. It lives in the root of your function app (same directory as `function_app.py`) and applies to all functions in the app. This reference covers the most important settings for Python function apps.

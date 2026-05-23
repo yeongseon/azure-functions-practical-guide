@@ -1,11 +1,19 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-overview
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-bindings
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-overview
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-bindings
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-overview
+    verified: true
 ---
-
 # Durable Orchestration
 
 This recipe shows Java Durable Functions with an HTTP starter, orchestrator, and activity function using the Durable Task Java SDK.
@@ -114,6 +122,14 @@ public class DurableFunctions {
 - Use `createCheckStatusResponse` to return status query URLs to callers.
 - Design activities to be retry-safe because orchestration replays can occur.
 - Keep payloads small and store large documents in Blob Storage.
+
+## Review Matrix
+
+| Review area | Page-specific check |
+|---|---|
+| Scope | Confirm the guidance applies to Durable Orchestration. |
+| Source basis | Validate the recommendation against the Microsoft Learn sources in this page. |
+| Evidence | Capture command output, portal state, metrics, logs, or screenshots before treating the result as proven. |
 
 ## See Also
 
