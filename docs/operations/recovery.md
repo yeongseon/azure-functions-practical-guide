@@ -68,6 +68,26 @@ HEALTH_PATH="/api/health"
 | `FD_PROFILE` | Front Door profile name |
 | `HEALTH_PATH` | API path for health checks |
 
+## Portal Walkthrough
+
+This section shows portal blades relevant to recovery operations for a live Function App (Consumption Y1, Korea Central). PII is masked.
+
+### Deployment Center Blade
+
+[Observed] The **Deployment Center** blade shows the deployment source configuration. The **Source** dropdown allows selecting CI/CD providers (GitHub Actions, Azure DevOps, etc.) for automated deployment and rollback:
+
+![Deployment Center blade showing source selection](../assets/operations/deployment/01-deployment-center.png)
+
+[Inferred] For fast rollback during incidents, configure a deployment source and use deployment slots (Premium/Dedicated). On Consumption, rollback requires redeploying a previous artifact version via CI/CD pipeline. Keep release artifacts in immutable storage with version identifiers for reliable rollback.
+
+### Function App Overview
+
+[Observed] The **Overview** blade shows the runtime status, plan details, and function list. The **Stop** and **Restart** buttons in the toolbar provide emergency controls during incidents:
+
+![Function App Overview blade](../assets/operations/overview/01-function-app-overview.png)
+
+[Inferred] During recovery, verify function status (Enabled/Disabled) and runtime version after rollback. The "Stop" button can be used as an emergency circuit breaker to halt all executions during cascading failures, but note that on Consumption plans, stopping and restarting may incur cold-start delays.
+
 ## When to Use
 Use rollback, failover, or rebuild based on blast radius and dependency health.
 ### Rollback

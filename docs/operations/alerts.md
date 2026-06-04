@@ -77,6 +77,26 @@ Quick decision rule:
 - Choose **metric alerts** for immediate platform symptoms like 5xx bursts.
 - Choose **log query alerts** for scoped conditions like per-function failure ratio.
 - Choose **smart detection** as supplementary signal, not your only paging mechanism.
+## Portal Walkthrough
+
+This section shows portal blades relevant to alerting for a live Function App (Consumption Y1, Korea Central). PII is masked.
+
+### Metrics Explorer
+
+[Observed] The **Metrics** blade provides access to platform metrics (Http5xx, FunctionExecutionCount, etc.) that form the basis for metric alerts. Charts can be pinned to dashboards for ongoing monitoring:
+
+![Metrics explorer blade showing Function App metric charts](../assets/operations/monitoring/01-metrics-explorer.png)
+
+[Inferred] Before creating metric alerts, use this blade to establish baseline metric values over 7+ days. Pin key metric charts to a shared dashboard for team visibility. Configure metric alert rules using the thresholds observed during baseline analysis.
+
+### Diagnose and Solve Problems
+
+[Observed] The **Diagnose and solve problems** blade provides built-in diagnostics for availability, performance, configuration, and function execution issues:
+
+![Diagnose and solve problems blade](../assets/operations/monitoring/03-diagnose-and-solve.png)
+
+[Inferred] Use this blade as a first-response tool during alert triage. Smart detection signals from Application Insights complement metric and log query alerts, but should not replace explicit alert rules for known failure patterns.
+
 ## Procedure
 ### Alerting principles
 Use alert rules that are:
