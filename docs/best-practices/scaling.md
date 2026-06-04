@@ -62,6 +62,18 @@ Use these expectations to set realistic SLOs before load testing.
 !!! warning "Do not promise linear scaling"
     Throughput increases can stall when downstream quotas, storage contention, or network limits become bottlenecks.
 
+## Portal Walkthrough
+
+This section shows the Scale out blade for a live Function App (Consumption Y1, Korea Central). PII is masked.
+
+### Scale Out Blade
+
+[Observed] The **Scale out** blade displays the **Dynamic Scale out** configuration. The **Enforce Scale Out Limit** option is set to **Yes** with a **Maximum Scale Out Limit** slider set to **200** (the platform maximum for Consumption):
+
+![Scale out blade showing Dynamic Scale out with maximum limit of 200](../assets/operations/scaling/01-scale-out.png)
+
+[Inferred] The default maximum of 200 instances is the platform ceiling for Consumption plans. For production workloads, set this to a lower value that matches your dependency budgets (database connection limits, API rate limits, downstream service capacity). Use `functionAppScaleLimit` in IaC templates to enforce this consistently across deployments.
+
 ## Recommended Practices
 
 ### Set hard limits before production

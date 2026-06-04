@@ -58,6 +58,18 @@ Why this matters operationally:
 !!! warning "Connection strings with secrets should be exception-only"
     If a secret-based connection string is unavoidable, isolate it to the minimum scope and define explicit rotation runbooks with cutover validation.
 
+## Portal Walkthrough
+
+This section shows the Identity blade for a live Function App (Consumption Y1, Korea Central). PII is masked.
+
+### Identity (Managed Identity) Blade
+
+[Observed] The **Identity** blade has **System assigned** and **User assigned** tabs. On the System assigned tab, the **Status** toggle is set to **On**, and an **Object (principal) ID** is displayed. The **Permissions** section provides an "Azure role assignments" button to review RBAC grants for this identity:
+
+![Identity blade showing system-assigned managed identity enabled with Object ID](../assets/operations/security/01-identity.png)
+
+[Inferred] With system-assigned managed identity enabled, this Function App can authenticate to Azure resources (Storage, Key Vault, Service Bus, etc.) without connection string secrets. Use the "Azure role assignments" button to verify least-privilege RBAC scopes. If the identity needs to access multiple distinct resource groups, consider whether a user-assigned identity provides better lifecycle management.
+
 ## Recommended Practices
 
 ### App settings vs Key Vault references vs environment values

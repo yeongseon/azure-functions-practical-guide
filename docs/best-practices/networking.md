@@ -51,6 +51,18 @@ Many production incidents come from configuring one side only.
 | Outbound | What dependencies can function workers reach? | VNet integration, NSG, UDR, firewall/NAT, DNS forwarding | Trigger works but dependencies timeout or startup fails | Dependency reachability and DNS resolution from runtime subnet |
 | Combined posture | Are ingress and egress policies aligned to the same trust boundary? | Private ingress + private host storage + controlled egress | Mixed trust boundary (private app, public storage, or vice versa) | End-to-end flow test including storage and trigger operations |
 
+## Portal Walkthrough
+
+This section shows the Networking blade for a live Function App (Consumption Y1, Korea Central). PII is masked.
+
+### Networking Blade
+
+[Observed] The **Networking** blade shows inbound and outbound traffic configuration at a glance. **Public network access** is set to "Enabled with no access restrictions", **Inbound addresses** are dynamic, and **Private endpoints** are not supported on this plan. On the outbound side, **Virtual network integration** and **Hybrid connections** are both "Not supported" for Consumption, with **Outbound DNS** using Azure-provided defaults:
+
+![Networking blade showing inbound and outbound traffic configuration](../assets/operations/networking/01-networking.png)
+
+[Inferred] For Consumption (Y1), VNet integration and private endpoints are unavailable. To use private networking features (private endpoints, VNet integration, hybrid connections), migrate to Premium (EP) or Flex Consumption (FC1). The dynamic inbound address means IP-based access restrictions must account for potential address changes.
+
 ## Recommended Practices
 
 ### VNet integration: when you need it
