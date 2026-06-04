@@ -74,6 +74,14 @@ This section shows portal blades relevant to Function App security architecture 
 
 [Inferred] The `AzureWebJobsStorage` setting controls host storage authentication. When using identity-based connections, this would be replaced with `AzureWebJobsStorage__accountName` (no connection string). Review whether secret values are stored as plain app settings or as Key Vault references.
 
+### Access Control (IAM) Blade
+
+[Observed] The **Access control (IAM)** blade shows RBAC management for the Function App resource. Tabs include Check access, Role assignments, Roles, and Deny assignments:
+
+![Access control IAM blade](../assets/operations/access-control/01-access-control-iam.png)
+
+[Inferred] RBAC assignments at the Function App scope control who can manage the resource (control plane) and what the managed identity can access (data plane). Review role assignments after identity configuration changes.
+
 ## Main Content
 
 ### Security model overview

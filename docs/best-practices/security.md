@@ -86,6 +86,14 @@ This section shows the Identity blade for a live Function App (Consumption Y1, K
 
 [Inferred] Function keys are shared secrets — treat them as credentials. The `_master` key should never be exposed publicly. Implement key rotation runbooks and prefer identity-based authentication patterns over keys for production workloads.
 
+### Access Control (IAM) Blade
+
+[Observed] The **Access control (IAM)** blade provides tabs for **Check access**, **Role assignments**, **Roles**, and **Deny assignments**. Cards for granting, viewing, and auditing role assignments are displayed:
+
+![Access control IAM blade showing RBAC management](../assets/operations/access-control/01-access-control-iam.png)
+
+[Inferred] Use "View access to this resource" to audit current RBAC assignments for the Function App. Verify that the managed identity has only the minimum roles needed. Use "Add role assignment" to grant data-plane roles (Storage Blob Data Contributor, Key Vault Secrets User, etc.) at resource scope, not subscription scope.
+
 ## Recommended Practices
 
 ### App settings vs Key Vault references vs environment values

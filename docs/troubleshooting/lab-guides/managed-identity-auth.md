@@ -38,6 +38,12 @@ These portal blades help investigate managed identity authentication issues. All
 
 ![Log stream for auth errors](../../assets/operations/monitoring/02-log-stream.png)
 
+### Access Control (IAM) Blade
+
+[Observed] Use **Access control (IAM)** > **Role assignments** to verify the managed identity has the correct data-plane roles:
+
+![Access control IAM blade](../../assets/operations/access-control/01-access-control-iam.png)
+
 ## Lab Metadata
 
 | Field | Value |
