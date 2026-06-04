@@ -46,6 +46,26 @@ Choose the deployment method that matches plan capabilities. Incorrect method se
     - FC1 does **not** support deployment slots and does **not** expose Kudu/SCM.
     - EP and Dedicated support full slot workflows.
 
+## Portal Walkthrough
+
+This section shows the Deployment Center blade for a live Function App (Consumption Y1, Korea Central). PII is masked.
+
+### Deployment Center Blade
+
+[Observed] The **Deployment Center** blade shows the current deployment source configuration. The **Source** dropdown is set to "Select a code source", indicating no CI/CD pipeline is connected. An info banner warns that the production slot is not recommended for setting up CI/CD:
+
+![Deployment Center blade showing source selection](../assets/operations/deployment/01-deployment-center.png)
+
+[Inferred] For production workloads, configure a deployment source (GitHub Actions, Azure DevOps, etc.) and use deployment slots when available (Premium/Dedicated plans). On Consumption (Y1), deployment slots (2 total including production) are available on Windows only — Linux Consumption does not support slots. On Flex Consumption, deployment slots are not available — use CI/CD pipeline-based deployment with `func azure functionapp publish` instead.
+
+### Deployment Slots Blade
+
+[Observed] The **Deployment slots** blade shows "No slots have been added." with an **Add slot** button. The toolbar includes **Swap** and **Logs** options for slot management:
+
+![Deployment slots blade showing no slots configured](../assets/operations/deployment-slots/01-deployment-slots.png)
+
+[Inferred] Deployment slot support on Consumption (Y1) is Windows-only (2 total including production). Linux Consumption does not support slots. For Premium/Dedicated, more slots are supported on both OS types. On Flex Consumption, this blade is not applicable — use CI/CD pipeline-based deployment instead.
+
 ## Recommended Practices
 
 ### Why run-from-package should be default
@@ -65,14 +85,6 @@ az functionapp config appsettings set \
     --name "<app-name>" \
     --settings WEBSITE_RUN_FROM_PACKAGE=1
 ```
-
-| CLI element | Explanation |
-|---|---|
-| Command(s) | `az functionapp config appsettings set` |
-| Key flags | `--resource-group`, `--name`, `--settings` |
-| Variables | None |
-| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
-
 
 !!! warning "Mutable deployment anti-pattern"
     Deploying without run-from-package can produce inconsistent behavior when trigger listeners restart while files are changing. For event-driven apps, this can surface as duplicate or missed processing windows.
@@ -122,14 +134,6 @@ az functionapp config appsettings set \
     --slot "staging" \
     --slot-settings AZURE_FUNCTIONS_ENVIRONMENT=Staging
 ```
-
-| CLI element | Explanation |
-|---|---|
-| Command(s) | `az functionapp config appsettings set` |
-| Key flags | `--resource-group`, `--name`, `--slot`, `--slot-settings` |
-| Variables | None |
-| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
-
 
 ### CI/CD pipeline design for Functions
 

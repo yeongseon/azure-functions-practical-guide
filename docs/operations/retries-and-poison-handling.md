@@ -48,6 +48,26 @@ Choose the retry layer intentionally:
 1. **Trigger/runtime retries** for transient infrastructure issues.
 2. **Application-level retries** for dependency-specific failures where business logic can decide what is retryable.
 3. **Both layers** only when cumulative retry budget is explicitly bounded.
+## Portal Walkthrough
+
+This section shows portal blades relevant to retry and poison handling for a live Function App (Consumption Y1, Korea Central). PII is masked.
+
+### Log Stream Blade
+
+[Observed] The **Log stream** blade provides real-time log output from the Function App, showing trigger execution, retry attempts, and error messages as they occur:
+
+![Log stream blade showing real-time function logs](../assets/operations/monitoring/02-log-stream.png)
+
+[Inferred] Use the Log stream during active debugging to observe retry behavior in real time. Look for repeated execution attempts for the same message ID, which indicates retries in progress. When messages stop appearing for a specific ID, check the poison queue or dead-letter for exhausted retries.
+
+### Configuration General Settings Blade
+
+[Observed] The **Configuration** blade's **General settings** tab shows platform settings including HTTP version, TLS, and runtime configuration that affect trigger behavior:
+
+![Configuration General settings blade](../assets/operations/configuration/02-general-settings.png)
+
+[Inferred] While retry counts are primarily configured in `host.json`, platform-level settings like timeout values and TLS configuration can affect trigger connectivity. Verify these settings after infrastructure changes that might impact trigger reliability.
+
 ## Procedure
 
 ### Reliability model
