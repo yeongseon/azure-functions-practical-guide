@@ -160,6 +160,9 @@ def validate_file(file_path: Path, verbose: bool = False) -> List[ValidationErro
         )
         return errors
 
+    if isinstance(content_sources, list):
+        # Legacy list-form frontmatter; skip diagram validation
+        return errors
     diagrams = content_sources.get("diagrams", [])
     if not diagrams:
         errors.append(ValidationError(rel_path, "content_sources.diagrams is empty"))
