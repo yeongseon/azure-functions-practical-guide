@@ -5,7 +5,7 @@ content_sources:
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-recover-from-failed-host
+    url: https://learn.microsoft.com/azure/azure-functions/functions-diagnostics
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
@@ -238,6 +238,14 @@ az monitor activity-log list \
   --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor activity-log list` |
+| Key flags | `--resource-group`, `--offset`, `--status`, `--output` |
+| Variables | `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ### Key differentiation
 
 | Sub-pattern | Evidence | Resolution Direction |
@@ -296,4 +304,4 @@ sequenceDiagram
 
 - [Azure Functions diagnostics overview](https://learn.microsoft.com/azure/azure-functions/functions-diagnostics)
 - [Monitor Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-monitoring)
-- [Troubleshoot Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-recover-from-failed-host)
+- [Troubleshoot Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-diagnostics)

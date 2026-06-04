@@ -1,11 +1,19 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide
+    verified: true
 ---
-
 # HTTP Authentication
 
 Apply API auth patterns for .NET isolated worker with function keys, Easy Auth, and token validation.
@@ -37,6 +45,14 @@ public HttpResponseData SecureEndpoint(
 az webapp auth config-version upgrade --name "$APP_NAME" --resource-group "$RG"
 az webapp auth update --name "$APP_NAME" --resource-group "$RG" --enabled true
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az webapp auth config-version upgrade`, `az webapp auth update` |
+| Key flags | `--name`, `--resource-group`, `--enabled` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 ### Validate JWT claims in code (ASP.NET Core integration)
 ```csharp

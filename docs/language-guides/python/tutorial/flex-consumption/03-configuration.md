@@ -2,21 +2,29 @@
 validation:
   az_cli:
     last_tested: 2026-04-09
-    cli_version: "2.83.0"
-    core_tools_version: "4.8.0"
+    cli_version: 2.83.0
+    core_tools_version: 4.8.0
     result: pass
   bicep:
     last_tested: null
     result: not_tested
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-app-settings
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-how-to
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-reference#connecting-to-host-storage-with-an-identity
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-app-settings
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-how-to
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-reference#connecting-to-host-storage-with-an-identity
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/functions-app-settings
+    verified: true
 ---
-
 # 03 - Configuration (Flex Consumption)
 
 Configure runtime, app settings, and host storage correctly for Flex Consumption so your app deploys cleanly and scales predictably.
@@ -132,6 +140,14 @@ az functionapp config appsettings set \
   --output json
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings`, `--output` |
+| Variables | `$APP_NAME`, `$RG`, `$STORAGE_NAME` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 !!! tip "Why __clientId is required"
     When using a **user-assigned managed identity** (UAMI), you must provide `AzureWebJobsStorage__clientId` so the Functions host knows which identity to authenticate with. Without it, the host cannot resolve which UAMI to use and storage operations will fail. The reference template sets this value in `infra/flex-consumption/main.bicep` under `functionAppSettings.properties.AzureWebJobsStorage__clientId`.
 
@@ -172,6 +188,14 @@ az functionapp config appsettings set \
   --output json
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 !!! warning "Do not set FUNCTIONS_WORKER_RUNTIME on Flex"
     `FUNCTIONS_WORKER_RUNTIME` is **not supported** on Flex Consumption. The runtime is configured via `functionAppConfig.runtime` (see Step 4). Setting it as an app setting may cause unexpected behavior.
 
@@ -196,6 +220,14 @@ On Flex, runtime/version and scale settings are defined in `functionAppConfig` (
 ```bash
 az functionapp show --name "$APP_NAME" --resource-group "$RG" --query "properties.functionAppConfig" --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp show` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 Expected output:
 
@@ -229,9 +261,25 @@ Expected output:
     echo "Actual plan name: $PLAN_NAME_ACTUAL"
     ```
 
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az functionapp show` |
+    | Key flags | `--name`, `--resource-group`, `--query`, `--output` |
+    | Variables | `$APP_NAME`, `$RG`, `$NF`, `$PLAN_NAME_ACTUAL` |
+    | Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ```bash
 az appservice plan show --name "$PLAN_NAME_ACTUAL" --resource-group "$RG" --query "{sku:sku,reserved:reserved,kind:kind}" --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az appservice plan show` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output` |
+| Variables | `$PLAN_NAME_ACTUAL`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 Expected output:
 

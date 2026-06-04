@@ -6,7 +6,10 @@ on:
       - main
     paths:
       - 'docs/**'
+      - 'infra/**/*.bicep'
       - 'mkdocs.yml'
+      - '.github/workflows/ci.yml'
+      - 'scripts/**'
   workflow_dispatch:
 
 permissions:
@@ -27,4 +30,35 @@ jobs:
       - name: Install dependencies
         run: pip install mkdocs-material mkdocs-minify-plugin
       - name: Validate documentation
-        run: mkdocs build --strict
+        run: |
+          python scripts/validate_cli_explanations.py
+          mkdocs build --strict
+
+  validate-infra:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Bicep templates
+        uses: azure/cli@v2
+        with:
+          inlineScript: |
+            set -euo pipefail
+
+            for file in \
+              infra/main.bicep \
+              infra/consumption/main.bicep \
+              infra/flex-consumption/main.bicep \
+              infra/premium/main.bicep \
+              infra/dedicated/main.bicep
+            do
+              echo "Building $file"
+              output=$(az bicep build --file "$file" --stdout 2>&1 >/dev/null) || {
+                echo "$output"
+                exit 1
+              }
+              echo "$output"
+              if echo "$output" | grep -q "outputs-should-not-contain-secrets"; then
+                echo "::error file=$file::Bicep output contains a secret-like value"
+                exit 1
+              fi
+            done

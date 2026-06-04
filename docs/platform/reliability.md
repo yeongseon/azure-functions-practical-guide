@@ -335,14 +335,38 @@ Use CLI checks during reviews and incidents to confirm reliability-related confi
 az functionapp config show   --resource-group "rg-functions-prod"   --name "func-reliability-prod"   --query "{alwaysOn:alwaysOn,http20Enabled:http20Enabled,ftpsState:ftpsState,minTlsVersion:minTlsVersion}"   --output json
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config show` |
+| Key flags | `--resource-group`, `--name`, `--query`, `--output` |
+| Variables | None |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 **Query failure and retry metrics**
 ```bash
 az monitor metrics list   --resource "/subscriptions/<subscription-id>/resourceGroups/rg-functions-prod/providers/Microsoft.Web/sites/func-reliability-prod"   --metric "FunctionExecutionCount,FunctionExecutionUnits,FunctionExecutionFailureCount"   --interval "PT5M"   --aggregation "Total"   --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor metrics list` |
+| Key flags | `--resource`, `--metric`, `--interval`, `--aggregation`, `--output` |
+| Variables | None |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ```bash
 az monitor metrics list   --resource "/subscriptions/<subscription-id>/resourceGroups/rg-functions-prod/providers/Microsoft.ServiceBus/namespaces/sb-functions-prod"   --metric "DeadletteredMessages,IncomingMessages,SuccessfulRequests,ServerErrors"   --interval "PT5M"   --aggregation "Total"   --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor metrics list` |
+| Key flags | `--resource`, `--metric`, `--interval`, `--aggregation`, `--output` |
+| Variables | None |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 ### Troubleshooting matrix
 | Symptom | Likely Cause | Validation Path |

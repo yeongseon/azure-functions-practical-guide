@@ -1,15 +1,23 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-python
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-overview
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-http-webhook
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-python
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-reference-python
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-overview
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-http-webhook
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-python
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/functions-reference-python
+    verified: true
 ---
-
 # Python v2 Programming Model
 
 This document provides a deep dive into the Python v2 programming model for Azure Functions. The v2 model uses Python decorators to define triggers, bindings, and routes — replacing the file-based `function.json` configuration from v1.

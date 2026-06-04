@@ -9,7 +9,7 @@ content_sources:
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-functions/monitor-functions
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-monitor/logs/log-query-overview
+    url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
@@ -192,6 +192,14 @@ az monitor app-insights component show \
     --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az account set`, `az functionapp show`, `az storage account show`, `az monitor app-insights component show` |
+| Key flags | `--subscription`, `--resource-group`, `--name`, `--output`, `--app` |
+| Variables | `$SUBSCRIPTION_ID`, `$RG`, `$APP_NAME`, `$STORAGE_NAME`, `$AI_NAME` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 ### Step 2: Verify queue trigger configuration in app source
 
 Review queue settings and processing code before evidence collection:
@@ -255,6 +263,14 @@ az monitor app-insights query \
     DistinctInstances=dcount(instanceId)"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights query` |
+| Key flags | `--apps`, `--resource-group`, `--analytics-query` |
+| Variables | `$AI_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 Per-minute drain curve:
 
 ```bash
@@ -269,6 +285,14 @@ az monitor app-insights query \
 | summarize Processed=count() by Minute=bin(timestamp, 1m)
 | order by Minute asc"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights query` |
+| Key flags | `--apps`, `--resource-group`, `--analytics-query` |
+| Variables | `$AI_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 Per-minute message age progression:
 
@@ -290,6 +314,14 @@ az monitor app-insights query \
 | order by Minute asc"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights query` |
+| Key flags | `--apps`, `--resource-group`, `--analytics-query` |
+| Variables | `$AI_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ### Step 5: Collect request-duration evidence
 
 ```bash
@@ -310,6 +342,14 @@ az monitor app-insights query \
     MaxDurationMs=round(max(toreal(duration / 1ms)), 2)"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights query` |
+| Key flags | `--apps`, `--resource-group`, `--analytics-query` |
+| Variables | `$AI_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 !!! tip "Why request duration differs from processing delay"
     `processingMs` in the app log represents the in-handler processing delay (5000 ms).
     `requests.duration` is the end-to-end function execution time measured by the Functions host, which includes queue message deserialization, binding setup, worker dispatch overhead, and the handler itself. It is not a batch metric — each request maps to one message — but host-level overhead causes it to exceed the pure handler time.
@@ -328,6 +368,14 @@ az monitor app-insights query \
 | where operation_Name has 'queue_processor'
 | summarize DependencyCalls=count()"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights query` |
+| Key flags | `--apps`, `--resource-group`, `--analytics-query` |
+| Variables | `$AI_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 **Poison-loop check**: Trace evidence shows `MaxDequeueCount = 1` across all 2000 messages, confirming every message succeeded on its first attempt. No poison inspection step is required for this run.
 
@@ -515,6 +563,14 @@ If this environment was dedicated to lab runs, remove resources:
 az group delete --name "$RG" --yes --no-wait
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az group delete` |
+| Key flags | `--name`, `--yes`, `--no-wait` |
+| Variables | `$RG` |
+| Expected result | Azure CLI completes the removal request; verify the target no longer appears in follow-up `show` or `list` output. |
+
+
 If using shared resources (`rg-lab-y1-shared`), skip deletion and only clear test queue data in your operational process.
 
 ## Related Playbook
@@ -535,4 +591,4 @@ If using shared resources (`rg-lab-y1-shared`), skip deletion and only clear tes
 - https://learn.microsoft.com/azure/azure-functions/functions-host-json
 - https://learn.microsoft.com/azure/azure-functions/functions-scale
 - https://learn.microsoft.com/azure/azure-functions/monitor-functions
-- https://learn.microsoft.com/azure/azure-monitor/logs/log-query-overview
+- https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview

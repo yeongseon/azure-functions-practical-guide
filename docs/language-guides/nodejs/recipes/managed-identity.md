@@ -1,11 +1,19 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/overview
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/overview
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/overview
+    verified: true
 ---
-
 # Managed Identity
 
 This recipe enables system-assigned managed identity, grants RBAC roles, and uses `DefaultAzureCredential` to access Azure Storage and Cosmos DB without secrets.
@@ -74,6 +82,14 @@ az cosmosdb create \
   --kind GlobalDocumentDB
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage account create`, `az cosmosdb create` |
+| Key flags | `--name`, `--resource-group`, `--location`, `--sku`, `--kind` |
+| Variables | `$STORAGE_NAME`, `$RG`, `$LOCATION` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 Enable identity and capture principal id:
 
 ```bash
@@ -81,6 +97,14 @@ az functionapp identity assign \
   --name $APP_NAME \
   --resource-group $RG
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp identity assign` |
+| Key flags | `--name`, `--resource-group` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 Assign RBAC roles:
 
@@ -97,6 +121,14 @@ az cosmosdb sql role assignment create \
   --principal-id <principal-id> \
   --role-definition-name "Cosmos DB Built-in Data Contributor"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az role assignment create`, `az cosmosdb sql role assignment` |
+| Key flags | `--assignee`, `--role`, `--scope`, `--name`, `--resource-group`, `--query`, `--output`, `--account-name`, `--principal-id`, `--role-definition-name` |
+| Variables | `$STORAGE_NAME`, `$RG` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 Install SDK packages:
 

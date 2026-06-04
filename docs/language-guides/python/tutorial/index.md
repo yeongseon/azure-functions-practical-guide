@@ -1,17 +1,25 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/migration/migrate-plan-consumption-to-flex
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-premium-plan
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/pricing
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/migration/migrate-plan-consumption-to-flex
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-premium-plan
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/pricing
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/migration/migrate-plan-consumption-to-flex
+    verified: true
 ---
-
 # Tutorial — Choose Your Hosting Plan
 
 This tutorial section provides **four independent, step-by-step tracks** — one for each Azure Functions hosting plan. Every track covers the same seven topics so you can follow the complete journey from local development to production on whichever plan fits your workload.

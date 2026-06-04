@@ -145,6 +145,14 @@ az resource update \
     --set properties.siteConfig.functionAppScaleLimit=20
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az resource update` |
+| Key flags | `--resource-group`, `--name`, `--resource-type`, `--set` |
+| Variables | None |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 For Flex Consumption, set `scaleAndConcurrency.maximumInstanceCount` (or equivalent portal setting) aligned to dependency capacity.
 
 ### Guardrail design rule

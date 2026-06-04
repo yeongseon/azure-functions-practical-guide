@@ -1,10 +1,41 @@
+---
+content_sources:
+  sources:
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
+  diagrams:
+  - id: tutorial-validation-status-pie
+    type: pie
+    source: self-generated
+    justification: Auto-generated dashboard chart from repository validation metadata.
+    based_on:
+    - https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This generated dashboard summarizes repository validation metadata and
+      links back to Microsoft Learn as the source basis for Azure content checks.
+    source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
+    verified: true
+---
 # Tutorial Validation Status
 
 This page tracks which tutorials have been validated against real Azure deployments. Each tutorial can be tested via **az-cli** (manual CLI commands) or **Bicep** (infrastructure as code). Tutorials not tested within 90 days are marked as stale.
 
+## Scope
+
+This dashboard intentionally tracks leaf tutorial runbooks under `docs/language-guides/*/tutorial/<hosting-plan>/*.md`, excluding `index.md` chooser pages. The tracked pages are the documents a reader can execute end-to-end against Azure.
+
+Out of scope for this dashboard:
+
+- Tutorial `index.md` chooser pages, which explain plan selection but are not executable deployment runbooks.
+- Troubleshooting lab guides under `docs/troubleshooting/lab-guides/`, which are experiment reports tracked by `content_validation`, `Lab Metadata`, `Experiment Log`, and `Expected Evidence` sections instead of tutorial execution status.
+
 ## Summary
 
-*Generated: 2026-04-12*
+*Generated: 2026-05-23*
 
 | Metric | Count |
 |---|---:|
@@ -14,6 +45,7 @@ This page tracks which tutorials have been validated against real Azure deployme
 | ❌ Failed | 1 |
 | ➖ Not tested | 6 |
 
+<!-- diagram-id: tutorial-validation-status-pie -->
 ```mermaid
 pie title Tutorial Validation Status
     "Validated" : 113
@@ -169,6 +201,8 @@ To mark a tutorial as validated, add a `validation` block to its YAML frontmatte
 
 ```yaml
 ---
+hide:
+  - toc
 validation:
   az_cli:
     last_tested: 2026-04-09
@@ -200,3 +234,6 @@ python3 scripts/generate_validation_status.py
 - [CLI Cheatsheet](cli-cheatsheet.md)
 - [Platform Limits](platform-limits.md)
 
+## Sources
+
+- [Microsoft Learn overview](https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview)

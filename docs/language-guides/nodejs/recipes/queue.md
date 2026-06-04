@@ -1,11 +1,19 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-error-pages
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-error-pages
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue
+    verified: true
 ---
-
 # Queue Processing
 
 This recipe shows real queue-triggered background processing with queue output bindings, host defaults, and poison queue behavior in Node.js v4.
@@ -34,6 +42,14 @@ az storage queue create \
   --account-name $STORAGE_NAME \
   --name processed-orders
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage queue create` |
+| Key flags | `--account-name`, `--name` |
+| Variables | `$STORAGE_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 Queue listener defaults in `host.json`:
 

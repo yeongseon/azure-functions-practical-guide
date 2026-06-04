@@ -1,11 +1,19 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/app-service/app-service-key-vault-references
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/app-service/app-service-key-vault-references
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/app-service/app-service-key-vault-references
+    verified: true
 ---
-
 # Key Vault Integration
 
 This recipe covers integrating Azure Key Vault with Azure Functions to securely manage secrets, certificates, and keys. You will learn the Key Vault references approach (zero code changes) and the SDK approach (for dynamic secret access at runtime).
@@ -50,6 +58,14 @@ az functionapp identity assign \
   --resource-group your-rg
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp identity assign` |
+| Key flags | `--name`, `--resource-group` |
+| Variables | None |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 Save the `principalId` from the output — you will need it in Step 3.
 
 #### Step 2: Create a Key Vault and Add a Secret
@@ -74,6 +90,14 @@ az keyvault secret set \
   --value "super-secret-password"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az keyvault create`, `az keyvault secret set` |
+| Key flags | `--name`, `--resource-group`, `--location`, `--vault-name`, `--value` |
+| Variables | None |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 #### Step 3: Grant Access to the Function App
 
 The function app's Managed Identity needs permission to read secrets:
@@ -93,6 +117,14 @@ az role assignment create \
   --scope "/subscriptions/<subscription-id>/resourceGroups/your-rg/providers/Microsoft.KeyVault/vaults/your-kv"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az keyvault set-policy`, `az role assignment create` |
+| Key flags | `--name`, `--resource-group`, `--object-id`, `--secret-permissions`, `--assignee`, `--role`, `--scope` |
+| Variables | None |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 #### Step 4: Reference the Secret in App Settings
 
 Set the app setting value using the Key Vault reference syntax:
@@ -110,6 +142,14 @@ az functionapp config appsettings set \
   --resource-group your-rg \
   --settings "DATABASE_PASSWORD=@Microsoft.KeyVault(VaultName=your-kv;SecretName=DatabasePassword)"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings` |
+| Variables | None |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 #### Step 5: Use in Code
 
@@ -151,6 +191,14 @@ az functionapp config appsettings list \
   --resource-group your-rg \
   --query "[?contains(value, '@Microsoft.KeyVault')]"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings list` |
+| Key flags | `--name`, `--resource-group`, `--query` |
+| Variables | None |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 !!! note
     `az functionapp config appsettings list` only confirms that the `@Microsoft.KeyVault(...)` reference string is stored in app settings. It does not prove successful resolution at runtime. Verify resolution via Application Insights logs or the Function App Configuration blade's Key Vault Reference status indicators.

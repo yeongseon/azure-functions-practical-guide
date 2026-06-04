@@ -2,21 +2,29 @@
 validation:
   az_cli:
     last_tested: 2026-04-10
-    cli_version: "2.83.0"
-    core_tools_version: "4.8.0"
+    cli_version: 2.83.0
+    core_tools_version: 4.8.0
     result: pass
   bicep:
     last_tested: null
     result: not_tested
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+    verified: true
 ---
-
 # 04 - Logging and Monitoring (Flex Consumption)
 
 Capture structured logs, connect Application Insights, and validate telemetry queries.
@@ -51,6 +59,14 @@ flowchart TD
     style FA fill:#0078d4,color:#fff
     style AI fill:#68217A,color:#fff
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights query"\| AI` |
+| Key flags | None |
+| Variables | None |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
@@ -98,6 +114,14 @@ az monitor app-insights component show \
   --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights component show` |
+| Key flags | `--resource-group`, `--query`, `--output` |
+| Variables | `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 !!! note "Auto-created App Insights"
     `az functionapp create` on Flex Consumption automatically provisions Application Insights using the function app name. The connection string is already set in app settings.
 
@@ -121,6 +145,14 @@ az monitor app-insights query \
   --analytics-query "traces | take 5" \
   --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights query` |
+| Key flags | `--app`, `--resource-group`, `--analytics-query`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 !!! note "Use function app name for `--app`"
     On Flex Consumption, the App Insights resource has the same name as the function app. Use `--app "$APP_NAME"` (not `--app "$APP_NAME-ai"`).

@@ -1,11 +1,19 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide
+    verified: true
 ---
-
 # Durable Orchestration
 
 Coordinate long-running workflows with Durable Functions in .NET isolated worker.
@@ -44,6 +52,14 @@ public async Task<HttpResponseData> StartOrder(
     return await client.CreateCheckStatusResponseAsync(req, instanceId);
 }
 ```
+
+## Review Matrix
+
+| Review area | Page-specific check |
+|---|---|
+| Scope | Confirm the guidance applies to Durable Orchestration. |
+| Source basis | Validate the recommendation against the Microsoft Learn sources in this page. |
+| Evidence | Capture command output, portal state, metrics, logs, or screenshots before treating the result as proven. |
 
 ## See Also
 - [Recipes Index](index.md)

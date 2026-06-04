@@ -1,19 +1,27 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-overview
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/supported-languages
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/performance-reliability
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-overview
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/supported-languages
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/performance-reliability
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/functions-overview
+    verified: true
 ---
-
 # Learning Paths
 
 This page provides guided learning tracks for users of this guide.

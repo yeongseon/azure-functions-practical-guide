@@ -1,11 +1,19 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/supported-languages
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/supported-languages
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/supported-languages
+    verified: true
 ---
-
 # Java Runtime
 
 This reference captures supported Java versions, JVM/runtime settings, Maven dependencies, and practical tuning choices for Azure Functions Java applications.
@@ -41,6 +49,14 @@ timeline
 ```bash
 az functionapp config appsettings set   --name $APP_NAME   --resource-group $RG   --settings "FUNCTIONS_WORKER_RUNTIME=java" "JAVA_OPTS=-Xmx512m"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 ## Maven Build and Deployment
 
@@ -98,6 +114,14 @@ project-root/
 ```bash
 az functionapp create   --name $APP_NAME   --resource-group $RG   --storage-account $STORAGE_NAME   --plan $PLAN_NAME   --runtime java   --runtime-version 17   --functions-version 4   --os-type linux
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp create` |
+| Key flags | `--name`, `--resource-group`, `--storage-account`, `--plan`, `--runtime`, `--runtime-version`, `--functions-version`, `--os-type` |
+| Variables | `$APP_NAME`, `$RG`, `$STORAGE_NAME`, `$PLAN_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 ## See Also
 

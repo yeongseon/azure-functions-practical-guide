@@ -2,21 +2,29 @@
 validation:
   az_cli:
     last_tested: 2026-04-09
-    cli_version: "2.83.0"
-    core_tools_version: "4.8.0"
+    cli_version: 2.83.0
+    core_tools_version: 4.8.0
     result: pass
   bicep:
     last_tested: null
     result: not_tested
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-infrastructure-as-code
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-resource-manager/bicep/
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/consumption-plan
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-infrastructure-as-code
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-resource-manager/bicep/
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/consumption-plan
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/functions-infrastructure-as-code
+    verified: true
 ---
-
 # 05 - Infrastructure as Code (Consumption)
 
 Define and deploy a complete Consumption (Y1) environment with Bicep. This plan is simpler than Flex: no VNet integration requirement, no private endpoints, and no mandatory managed identity (recommended for app access patterns).
@@ -83,6 +91,14 @@ export LOCATION="koreacentral"
 ```bash
 az group create --name "$RG" --location "$LOCATION"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az group create` |
+| Key flags | `--name`, `--location` |
+| Variables | `$RG`, `$LOCATION` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 ### Step 3 - Author `infra/consumption/main.bicep`
 

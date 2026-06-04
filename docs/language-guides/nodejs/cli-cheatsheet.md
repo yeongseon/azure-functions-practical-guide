@@ -1,11 +1,19 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-run-local
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/cli/azure/functionapp
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-run-local
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/cli/azure/functionapp
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/functions-run-local
+    verified: true
 ---
-
 # CLI Cheatsheet
 
 Quick command reference for developing and operating Azure Functions Node.js apps.
@@ -40,6 +48,14 @@ az functionapp config appsettings set --name $APP_NAME --resource-group $RG --se
 az functionapp log tail --name $APP_NAME --resource-group $RG
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp create`, `az functionapp config appsettings set`, `az functionapp config set`, `az functionapp log tail` |
+| Key flags | `--name`, `--resource-group`, `--storage-account`, `--consumption-plan-location`, `--runtime`, `--runtime-version`, `--functions-version`, `--os-type`, `--settings`, `--linux-fx-version` |
+| Variables | `$APP_NAME`, `$RG`, `$STORAGE_NAME`, `$LOCATION` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 - Linux apps: use `az functionapp config set --linux-fx-version "Node|20"`.
 - Windows apps: use `WEBSITE_NODE_DEFAULT_VERSION`.
 
@@ -48,6 +64,14 @@ az functionapp log tail --name $APP_NAME --resource-group $RG
 ```bash
 az deployment group create --resource-group $RG --template-file infra/main.bicep --parameters appName=$APP_NAME storageName=$STORAGE_NAME
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az deployment group create` |
+| Key flags | `--resource-group`, `--template-file`, `--parameters` |
+| Variables | `$RG`, `$APP_NAME`, `$STORAGE_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 ## See Also
 - [Environment Variables](environment-variables.md)

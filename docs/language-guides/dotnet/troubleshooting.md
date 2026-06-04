@@ -1,11 +1,19 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-host-json
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-host-json
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide
+    verified: true
 ---
-
 # Troubleshooting
 
 Common .NET isolated worker problems with direct diagnosis and remediation steps.
@@ -28,6 +36,14 @@ flowchart TD
 ```bash
 az functionapp log tail --name "$APP_NAME" --resource-group "$RG"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp log tail` |
+| Key flags | `--name`, `--resource-group` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
 
 ### Startup failure due to package mismatch
 - Align worker SDK and extension package versions.

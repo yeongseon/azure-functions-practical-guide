@@ -2,21 +2,29 @@
 validation:
   az_cli:
     last_tested: 2026-04-10
-    cli_version: "2.83.0"
-    core_tools_version: "4.8.0"
+    cli_version: 2.83.0
+    core_tools_version: 4.8.0
     result: pass
   bicep:
     last_tested: null
     result: not_tested
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-continuous-deployment
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-how-to-github-actions
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-continuous-deployment
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-how-to-github-actions
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+    verified: true
 ---
-
 # 06 - CI/CD (Consumption)
 
 Automate build and deployment with GitHub Actions.
@@ -108,6 +116,14 @@ jobs:
       --xml
     ```
 
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az functionapp deployment list-publishing-profiles` |
+    | Key flags | `--name`, `--resource-group`, `--xml` |
+    | Variables | `$APP_NAME`, `$RG` |
+    | Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 2. In your GitHub repository, go to **Settings → Secrets and variables → Actions**
 3. Add the following secrets:
     - `APP_NAME`: Your function app name (e.g., `func-ndcons-04100010`)
@@ -159,6 +175,14 @@ az monitor app-insights query \
   --analytics-query "requests | where name == 'health' | take 5" \
   --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights query` |
+| Key flags | `--app`, `--resource-group`, `--analytics-query`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 ## Next Steps
 

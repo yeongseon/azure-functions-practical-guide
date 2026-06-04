@@ -235,6 +235,14 @@ az deployment group create \
   --parameters baseName="$BASE_NAME"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az group create`, `az deployment group create` |
+| Key flags | `--name`, `--location`, `--resource-group`, `--template-file`, `--parameters` |
+| Variables | `$RG`, `$LOCATION`, `$BASE_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 Deploy the diagnostics app:
 
 ```bash
@@ -243,6 +251,14 @@ az functionapp deployment source config-zip \
   --resource-group "$RG" \
   --src "./apps/python/app.zip"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp deployment source config-zip` |
+| Key flags | `--name`, `--resource-group`, `--src` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 Verify all 4 Private DNS zone VNet links exist:
 
@@ -255,6 +271,14 @@ for zone in blob queue table file; do
     --output table
 done
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az network private-dns link vnet` |
+| Key flags | `--zone-name`, `--resource-group`, `--output` |
+| Variables | `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 ### 3.3 Capture baseline evidence
 
@@ -316,6 +340,14 @@ az network private-dns link vnet delete \
   --yes
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az network private-dns link vnet` |
+| Key flags | `--resource-group`, `--zone-name`, `--name`, `--yes` |
+| Variables | `$RG` |
+| Expected result | Azure CLI completes the removal request; verify the target no longer appears in follow-up `show` or `list` output. |
+
+
 !!! warning "Fault injection timestamp"
     Record the exact UTC timestamp of link removal. In this lab run: `2026-04-07T09:27:41Z`.
 
@@ -327,6 +359,14 @@ az network private-dns link vnet list \
   --resource-group "$RG" \
   --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az network private-dns link vnet` |
+| Key flags | `--zone-name`, `--resource-group`, `--output` |
+| Variables | `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 Expected: empty table (no VNet links for blob zone).
 
@@ -343,6 +383,14 @@ Result
 (empty — no VNet links found for blob zone)
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az network private-dns link vnet` |
+| Key flags | `--zone-name`, `--resource-group`, `--output`, `--------` |
+| Variables | `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 Verify other zones are unaffected:
 
 ```bash
@@ -354,6 +402,14 @@ for zone in queue table file; do
     --output table
 done
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az network private-dns link vnet` |
+| Key flags | `--zone-name`, `--resource-group`, `--output` |
+| Variables | `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 Expected: queue, table, and file VNet links still present.
 
@@ -428,6 +484,14 @@ curl --silent --write-out "\nHTTP Status: %{http_code}\n" \
   "https://${APP_NAME}.azurewebsites.net/api/diagnostics/storage-probe"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp restart` |
+| Key flags | `--name`, `--resource-group`, `--silent`, `--write-out` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
+
 Post-restart output:
 
 ```json
@@ -485,6 +549,14 @@ az network private-dns link vnet create \
   --registration-enabled false
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az network private-dns link vnet` |
+| Key flags | `--name`, `--zone-name`, `--resource-group`, `--virtual-network`, `--registration-enabled` |
+| Variables | `$RG`, `$VNET_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 Restart the app:
 
 ```bash
@@ -492,6 +564,14 @@ az functionapp restart \
   --name "$APP_NAME" \
   --resource-group "$RG"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp restart` |
+| Key flags | `--name`, `--resource-group` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
 
 Wait 30 seconds for DNS propagation.
 
@@ -741,6 +821,14 @@ az group delete \
   --yes \
   --no-wait
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az group delete` |
+| Key flags | `--name`, `--yes`, `--no-wait` |
+| Variables | `$RG` |
+| Expected result | Azure CLI completes the removal request; verify the target no longer appears in follow-up `show` or `list` output. |
+
 
 ## Related Playbook
 

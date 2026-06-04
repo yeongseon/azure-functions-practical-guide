@@ -163,6 +163,11 @@ Brief introduction
 ## Topic/Command Groups
 ## Usage Notes
 ## See Also
+
+## See Also
+
+- [Repository Map](../start-here/repository-map.md)
+- [Learning Paths](../start-here/learning-paths.md)
 ## Sources
 ```
 
@@ -177,6 +182,14 @@ az functionapp create --resource-group $RG --name $APP_NAME --plan $PLAN_NAME --
 # NEVER use short flags in documentation
 az functionapp create -g $RG -n $APP_NAME  # ❌ Don't do this
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp create` |
+| Key flags | `--resource-group`, `--name`, `--plan`, `--runtime` |
+| Variables | `$RG`, `$APP_NAME`, `$PLAN_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 ### Variables
 
@@ -245,6 +258,17 @@ mkdocs build --strict
 mkdocs serve
 ```
 
+### Tutorial Validation Dashboard Scope
+
+`docs/reference/validation-status.md` tracks executable leaf tutorial runbooks under `docs/language-guides/*/tutorial/<hosting-plan>/*.md`.
+
+The dashboard intentionally excludes:
+
+- Tutorial `index.md` chooser pages, because they explain plan selection and navigation rather than an end-to-end Azure deployment.
+- Troubleshooting lab guides under `docs/troubleshooting/lab-guides/`, because they are experiment reports. Validate them through their lab metadata, experiment log, expected evidence, and content source metadata instead of tutorial `validation` frontmatter.
+
+Only add or update tutorial `validation` frontmatter after actually executing the documented steps against Azure. Do not add synthetic `last_tested` dates to close dashboard gaps.
+
 ## Git Commit Style
 
 ```
@@ -262,8 +286,3 @@ Allowed types: `feat`, `fix`, `docs`, `chore`, `refactor`
 ## Code of Conduct
 
 Please read our [Code of Conduct](https://github.com/yeongseon/azure-functions-practical-guide/blob/main/CODE_OF_CONDUCT.md) before contributing.
-
-## See Also
-
-- [Repository Map](../start-here/repository-map.md)
-- [Learning Paths](../start-here/learning-paths.md)

@@ -2,21 +2,29 @@
 validation:
   az_cli:
     last_tested: 2026-04-10
-    cli_version: "2.83.0"
-    core_tools_version: "4.8.0"
+    cli_version: 2.83.0
+    core_tools_version: 4.8.0
     result: pass
   bicep:
     last_tested: null
     result: not_tested
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-java
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-java
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
+    verified: true
 ---
-
 # 06 - CI/CD (Dedicated)
 
 Automate build, test, and deployment using GitHub Actions and Maven so every change ships through the same pipeline.
@@ -63,6 +71,14 @@ az ad sp create-for-rbac \
   --scopes "/subscriptions/<subscription-id>/resourceGroups/$RG" \
   --sdk-auth
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az ad sp create-for-rbac` |
+| Key flags | `--name`, `--role`, `--scopes`, `--sdk-auth` |
+| Variables | `$RG` |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
 
 ### Step 2 - Create workflow file
 
@@ -137,6 +153,14 @@ az functionapp show \
 curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp show` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output`, `--request` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ### Step 4 - Track release history
 
 ```bash
@@ -146,6 +170,14 @@ az functionapp show \
   --query "{state:state, defaultHostName:defaultHostName, kind:kind}" \
   --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp show` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 Expected output:
 
@@ -164,6 +196,14 @@ Running  func-jded-04100220.azurewebsites.net   functionapp,linux
       --resource-group "$RG" \
       --sku S1
     ```
+
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az appservice plan update` |
+    | Key flags | `--name`, `--resource-group`, `--sku` |
+    | Variables | `$PLAN_NAME`, `$RG` |
+    | Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 ## Verification
 

@@ -1,11 +1,19 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/app-service/app-service-web-tutorial-custom-domain
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/app-service/configure-ssl-certificate
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/app-service/app-service-web-tutorial-custom-domain
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/app-service/configure-ssl-certificate
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/app-service/app-service-web-tutorial-custom-domain
+    verified: true
 ---
-
 # Custom Domain and Certificates
 
 This recipe focuses on platform configuration for custom domains and TLS certificates on Azure Functions. It is primarily an operations workflow, not application code.
@@ -38,6 +46,14 @@ az functionapp config hostname add \
   --hostname api.contoso.com
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config hostname add` |
+| Key flags | `--webapp-name`, `--resource-group`, `--hostname` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 Upload certificate:
 
 ```bash
@@ -48,6 +64,14 @@ az functionapp config ssl upload \
   --certificate-password "<pfx-password>"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config ssl upload` |
+| Key flags | `--resource-group`, `--name`, `--certificate-file`, `--certificate-password` |
+| Variables | `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 Bind certificate to hostname:
 
 ```bash
@@ -57,6 +81,14 @@ az functionapp config ssl bind \
   --certificate-thumbprint <thumbprint> \
   --ssl-type SNI
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config ssl bind` |
+| Key flags | `--resource-group`, `--name`, `--certificate-thumbprint`, `--ssl-type` |
+| Variables | `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 ## Flex Consumption note
 

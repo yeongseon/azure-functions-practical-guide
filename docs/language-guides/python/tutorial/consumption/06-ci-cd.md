@@ -2,21 +2,29 @@
 validation:
   az_cli:
     last_tested: 2026-04-09
-    cli_version: "2.83.0"
-    core_tools_version: "4.8.0"
+    cli_version: 2.83.0
+    core_tools_version: 4.8.0
     result: pass
   bicep:
     last_tested: null
     result: not_tested
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-how-to-github-actions
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/deployment-zip-push
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-how-to-github-actions#download-your-publish-profile
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-how-to-github-actions
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/deployment-zip-push
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-how-to-github-actions#download-your-publish-profile
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/functions-how-to-github-actions
+    verified: true
 ---
-
 # 06 - CI/CD (Consumption)
 
 Set up GitHub Actions deployment for Consumption (Y1) using `azure/functions-action@v1` and Linux-compatible Zip Deploy behavior.
@@ -86,6 +94,14 @@ az functionapp deployment list-publishing-profiles \
   --resource-group "$RG" \
   --xml
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp deployment list-publishing-profiles` |
+| Key flags | `--name`, `--resource-group`, `--xml` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 Copy the XML output into GitHub secret `AZURE_FUNCTIONAPP_PUBLISH_PROFILE`.
 

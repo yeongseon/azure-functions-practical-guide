@@ -1,11 +1,19 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-cosmosdb-v2
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-cosmosdb-v2
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/functions-bindings-cosmosdb-v2
+    verified: true
 ---
-
 # Cosmos DB Integration
 
 This recipe covers integrating Azure Cosmos DB with Azure Functions Python v2 using output bindings, input bindings, and the SDK approach. The examples use HTTP triggers combined with Cosmos DB bindings, a common pattern for serverless APIs.
@@ -62,6 +70,14 @@ az cosmosdb sql container create \
   --partition-key-path "/category"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az cosmosdb create`, `az cosmosdb sql database create`, `az cosmosdb sql container create` |
+| Key flags | `--name`, `--resource-group`, `--kind`, `--account-name`, `--database-name`, `--partition-key-path` |
+| Variables | None |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ### Connection String App Setting
 
 Add the Cosmos DB connection string to your app settings:
@@ -72,6 +88,14 @@ az functionapp config appsettings set \
   --resource-group your-rg \
   --settings "CosmosDBConnection=$(az cosmosdb keys list --name your-cosmos-db --resource-group your-rg --type connection-strings --query 'connectionStrings[0].connectionString' --output tsv)"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings`, `--type`, `--query`, `--output` |
+| Variables | None |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 For local development, add it to `local.settings.json`:
 
@@ -255,6 +279,14 @@ Instead of connection strings, use Managed Identity to access Cosmos DB without 
    az functionapp identity assign --name your-func --resource-group your-rg
    ```
 
+   | CLI element | Explanation |
+   |---|---|
+   | Command(s) | `az functionapp identity assign` |
+   | Key flags | `--name`, `--resource-group` |
+   | Variables | None |
+   | Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 2. Assign the `Cosmos DB Built-in Data Contributor` role:
    ```bash
    az cosmosdb sql role assignment create \
@@ -265,6 +297,14 @@ Instead of connection strings, use Managed Identity to access Cosmos DB without 
      --principal-id "<principal-id-from-step-1>"
    ```
 
+   | CLI element | Explanation |
+   |---|---|
+   | Command(s) | `az cosmosdb sql role assignment` |
+   | Key flags | `--account-name`, `--resource-group`, `--role-definition-name`, `--scope`, `--principal-id` |
+   | Variables | None |
+   | Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 3. Use identity-based connection in app settings:
    ```bash
    az functionapp config appsettings set \
@@ -272,6 +312,14 @@ Instead of connection strings, use Managed Identity to access Cosmos DB without 
      --resource-group your-rg \
      --settings "CosmosDBConnection__accountEndpoint=https://your-cosmos-db.documents.azure.com:443/"
    ```
+
+   | CLI element | Explanation |
+   |---|---|
+   | Command(s) | `az functionapp config appsettings set` |
+   | Key flags | `--name`, `--resource-group`, `--settings` |
+   | Variables | None |
+   | Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 The binding now uses the Managed Identity automatically — no connection string needed.
 

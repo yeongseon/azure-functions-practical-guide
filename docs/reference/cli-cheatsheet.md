@@ -1,13 +1,21 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-run-local
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/cli/azure/functionapp
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-develop-local
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-run-local
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/cli/azure/functionapp
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-develop-local
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/functions-run-local
+    verified: true
 ---
-
 # CLI Cheatsheet
 
 Quick reference for the most commonly used commands when developing, deploying, and managing Azure Functions Python apps.
@@ -22,6 +30,14 @@ flowchart TD
     A --> F[func]
     B --> G[az functionapp]
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp]` |
+| Key flags | None |
+| Variables | None |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
 
 ## Azure Functions Core Tools (`func`)
 
@@ -120,6 +136,14 @@ az functionapp start \
   --resource-group $RG
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp create`, `az functionapp show`, `az functionapp delete`, `az functionapp restart`, plus 2 more |
+| Key flags | `--name`, `--resource-group`, `--storage-account`, `--consumption-plan-location`, `--runtime`, `--runtime-version`, `--functions-version`, `--os-type` |
+| Variables | `$APP_NAME`, `$RG`, `$STORAGE_NAME` |
+| Expected result | Azure CLI completes the removal request; verify the target no longer appears in follow-up `show` or `list` output. |
+
+
 ### App Settings
 
 ```bash
@@ -140,6 +164,14 @@ az functionapp config appsettings delete \
   --resource-group $RG \
   --setting-names KEY1
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set`, `az functionapp config appsettings list`, `az functionapp config appsettings delete` |
+| Key flags | `--name`, `--resource-group`, `--settings`, `--setting-names` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI completes the removal request; verify the target no longer appears in follow-up `show` or `list` output. |
+
 
 ### Configuration
 
@@ -174,6 +206,14 @@ az functionapp config show \
   --resource-group $RG
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp scale config set`, `az functionapp scale config always-ready`, `az functionapp config set`, `az functionapp update`, plus 1 more |
+| Key flags | `--resource-group`, `--name`, `--maximum-instance-count`, `--settings`, `--min-tls-version`, `--set` |
+| Variables | `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 ### Deployment Slots
 
 ```bash
@@ -202,6 +242,14 @@ az functionapp deployment slot delete \
   --slot staging
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp deployment slot create`, `az functionapp deployment slot swap`, `az functionapp deployment slot list`, `az functionapp deployment slot delete` |
+| Key flags | `--name`, `--resource-group`, `--slot`, `--target-slot` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI completes the removal request; verify the target no longer appears in follow-up `show` or `list` output. |
+
+
 ### Identity and Keys
 
 ```bash
@@ -227,6 +275,14 @@ az functionapp keys list \
   --resource-group $RG
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp identity assign`, `az functionapp identity show`, `az functionapp function keys list`, `az functionapp keys list` |
+| Key flags | `--name`, `--resource-group`, `--function-name` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 ### Logs
 
 ```bash
@@ -241,6 +297,14 @@ az functionapp log download \
   --resource-group $RG \
   --log-file /tmp/func-logs.zip
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp log tail`, `az functionapp log download` |
+| Key flags | `--name`, `--resource-group`, `--log-file` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
 
 ### CORS
 
@@ -263,6 +327,14 @@ az functionapp cors remove \
   --allowed-origins "http://localhost:3000"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp cors add`, `az functionapp cors show`, `az functionapp cors remove` |
+| Key flags | `--name`, `--resource-group`, `--allowed-origins` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI completes the removal request; verify the target no longer appears in follow-up `show` or `list` output. |
+
+
 ## Azure CLI: Resource Groups (`az group`)
 
 ```bash
@@ -279,6 +351,14 @@ az group delete \
   --name $RG \
   --yes --no-wait
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az group create`, `az group list`, `az group delete` |
+| Key flags | `--name`, `--location`, `--output`, `--yes`, `--no-wait` |
+| Variables | `$RG` |
+| Expected result | Azure CLI completes the removal request; verify the target no longer appears in follow-up `show` or `list` output. |
+
 
 ## Azure CLI: Deployments (`az deployment group`)
 
@@ -306,6 +386,14 @@ az deployment group list \
   --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az deployment group create`, `az deployment group validate`, `az deployment group show`, `az deployment group list` |
+| Key flags | `--resource-group`, `--template-file`, `--parameters`, `--name`, `--output` |
+| Variables | `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ## Azure CLI: Monitoring
 
 ```bash
@@ -327,6 +415,14 @@ az monitor metrics list \
   --resource "<function-app-resource-id>" \
   --metric "FunctionExecutionCount"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor metrics alert create`, `az monitor log-analytics query`, `az monitor metrics list` |
+| Key flags | `--name`, `--resource-group`, `--scopes`, `--condition`, `--window-size`, `--workspace`, `--analytics-query`, `--resource`, `--metric` |
+| Variables | `$RG` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 ## Quick Reference Table
 

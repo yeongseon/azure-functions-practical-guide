@@ -2,21 +2,29 @@
 validation:
   az_cli:
     last_tested: 2026-04-10
-    cli_version: "2.83.0"
-    core_tools_version: "4.8.0"
+    cli_version: 2.83.0
+    core_tools_version: 4.8.0
     result: pass
   bicep:
     last_tested: null
     result: not_tested
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-resource-manager/bicep/overview
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-resource-manager/bicep/overview
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+    verified: true
 ---
-
 # 05 - Infrastructure as Code (Premium)
 
 Deploy repeatable infrastructure with Bicep and parameterized environments.
@@ -66,6 +74,14 @@ flowchart TD
     style FA fill:#ff8c00,color:#fff
     style VNET fill:#E8F5E9
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az deployment group create\| RG[Resource` |
+| Key flags | None |
+| Variables | None |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 ## Steps
 
@@ -142,6 +158,14 @@ az deployment group create \
   --parameters baseName="$BASE_NAME"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az deployment group create` |
+| Key flags | `--resource-group`, `--template-file`, `--parameters` |
+| Variables | `$RG`, `$BASE_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 !!! tip "baseName length"
     Storage account names are limited to 24 characters. Keep `baseName` to 17 characters or fewer (the template appends `storage`).
 
@@ -154,6 +178,14 @@ az deployment group what-if \
   --parameters baseName="$BASE_NAME"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az deployment group what-if` |
+| Key flags | `--resource-group`, `--template-file`, `--parameters` |
+| Variables | `$RG`, `$BASE_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ### Step 3 — Verify deployment state
 
 ```bash
@@ -163,6 +195,14 @@ az deployment group show \
   --query "{name:name, provisioningState:properties.provisioningState, timestamp:properties.timestamp}" \
   --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az deployment group show` |
+| Key flags | `--resource-group`, `--name`, `--query`, `--output` |
+| Variables | `$RG` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 Expected output:
 

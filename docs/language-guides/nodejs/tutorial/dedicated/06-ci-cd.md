@@ -2,21 +2,29 @@
 validation:
   az_cli:
     last_tested: 2026-04-10
-    cli_version: "2.83.0"
-    core_tools_version: "4.8.0"
+    cli_version: 2.83.0
+    core_tools_version: 4.8.0
     result: pass
   bicep:
     last_tested: null
     result: not_tested
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-node
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-node
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+    verified: true
 ---
-
 # 06 - CI/CD (Dedicated)
 
 Automate build and deployment with GitHub Actions and environment gates.
@@ -50,6 +58,14 @@ flowchart TD
     style GA fill:#2088FF,color:#fff
     style FA fill:#ff8c00,color:#fff
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az webapp log tail]` |
+| Key flags | None |
+| Variables | None |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
 
 ## Steps
 
@@ -91,6 +107,14 @@ flowchart TD
       --xml
     ```
 
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az functionapp deployment list-publishing-profiles` |
+    | Key flags | `--name`, `--resource-group`, `--xml` |
+    | Variables | `$APP_NAME`, `$RG` |
+    | Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
     Copy the XML output and paste it as the `AZURE_FUNCTIONAPP_PUBLISH_PROFILE` secret value.
 
 3. Validate release health.
@@ -103,6 +127,14 @@ flowchart TD
       --name "$APP_NAME" \
       --resource-group "$RG"
     ```
+
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az webapp log tail` |
+    | Key flags | `--name`, `--resource-group` |
+    | Variables | `$APP_NAME`, `$RG` |
+    | Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
 
     Expected log stream output:
 
@@ -121,6 +153,14 @@ flowchart TD
       --resource-group "$RG" \
       --output table
     ```
+
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az functionapp function list` |
+    | Key flags | `--name`, `--resource-group`, `--output` |
+    | Variables | `$APP_NAME`, `$RG` |
+    | Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
     Expected output (abridged):
 

@@ -1,11 +1,19 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/security-concepts
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/app-service/overview-authentication-authorization
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/security-concepts
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/app-service/overview-authentication-authorization
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/security-concepts
+    verified: true
 ---
-
 # HTTP Authentication
 
 This recipe covers authentication and authorization for Azure Functions HTTP triggers — authorization levels, function keys, Easy Auth for identity provider integration, and manual JWT validation in Python.
@@ -118,6 +126,14 @@ az functionapp function keys set \
   --key-value "new-key-value-here"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp function keys set` |
+| Key flags | `--name`, `--resource-group`, `--function-name`, `--key-name`, `--key-value` |
+| Variables | None |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 ## Easy Auth (Built-In Authentication)
 
 Easy Auth adds authentication at the platform level — before your function code executes. It supports multiple identity providers without any changes to your Python code.
@@ -143,6 +159,14 @@ az webapp auth update \
     --aad-client-id <client-id> \
     --aad-token-issuer-url "https://login.microsoftonline.com/<tenant-id>/v2.0"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az webapp auth update` |
+| Key flags | `--resource-group`, `--name`, `--enabled`, `--action`, `--aad-client-id`, `--aad-token-issuer-url` |
+| Variables | None |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 > **Note:** Azure Functions uses the same App Service Authentication (Easy Auth) as Web Apps. The `az webapp auth` commands apply to function apps as well.
 
@@ -274,6 +298,14 @@ TOKEN=$(az account get-access-token --resource "api://your-client-id" --query ac
 curl --header "Authorization: Bearer $TOKEN" \
   https://your-func.azurewebsites.net/api/protected/data
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az account get-access-token` |
+| Key flags | `--resource`, `--query`, `--output`, `--header` |
+| Variables | `$TOKEN` |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
 
 ## Choosing an Auth Strategy
 

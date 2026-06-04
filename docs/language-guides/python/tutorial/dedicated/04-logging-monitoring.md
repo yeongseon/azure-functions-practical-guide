@@ -2,21 +2,33 @@
 validation:
   az_cli:
     last_tested: 2026-04-09
-    cli_version: "2.83.0"
-    core_tools_version: "4.8.0"
+    cli_version: 2.83.0
+    core_tools_version: 4.8.0
     result: pass
   bicep:
     last_tested: null
     result: not_tested
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring#application-insights
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-monitor/alerts/alerts-metric-overview
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring#application-insights
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/app-service/overview-vnet-integration
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/app-service/networking/private-endpoint
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-monitor/alerts/alerts-metric-overview
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+    verified: true
 ---
-
 # 04 - Logging & Monitoring (Dedicated)
 
 This tutorial enables monitoring for a Dedicated Function App with Application Insights and Log Analytics queries. Dedicated plans are always running, so telemetry volume and baseline cost are predictable and continuous.
@@ -41,9 +53,9 @@ export LOG_ANALYTICS_NAME="log-dedi-<unique-suffix>"
 You will connect the Dedicated Function App to workspace-based Application Insights, run request queries, and configure a baseline alert for HTTP failures.
 
 !!! info "Infrastructure Context"
-    **Plan**: Dedicated (B1) | **Network**: Public internet | **VNet**: ❌ (requires Standard+ tier)
+    **Plan**: Dedicated (B1) | **Network**: Public internet in this tutorial | **VNet**: Supported by platform, not configured here
 
-    Basic B1 has no VNet integration or private endpoints. The app runs on a fixed App Service Plan (always on, no scale-to-zero). VNet support requires upgrading to Standard (S1) or Premium (P1v3) tier.
+    The app runs on a fixed App Service Plan (always on, no scale-to-zero). Basic B1 supports App Service VNet integration and private endpoints, but this guide uses Standard (S1+) for private networking scenarios to provide scale headroom, deployment slots, and a production-oriented validation path.
 
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
@@ -110,6 +122,14 @@ az monitor log-analytics workspace create \
   --location $LOCATION
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor log-analytics workspace create` |
+| Key flags | `--resource-group`, `--workspace-name`, `--location` |
+| Variables | `$RG`, `$LOG_ANALYTICS_NAME`, `$LOCATION` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ### Step 2 - Create Application Insights (workspace-based)
 
 ```bash
@@ -127,6 +147,14 @@ az monitor app-insights component create \
   --application-type web
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor log-analytics workspace show`, `az monitor app-insights component create` |
+| Key flags | `--resource-group`, `--workspace-name`, `--query`, `--output`, `--app`, `--location`, `--workspace`, `--application-type` |
+| Variables | `$RG`, `$LOG_ANALYTICS_NAME`, `$APPINSIGHTS_NAME`, `$LOCATION`, `$WORKSPACE_ID` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ### Step 3 - Connect Function App to Application Insights
 
 ```bash
@@ -143,6 +171,14 @@ az functionapp config appsettings set \
     APPLICATIONINSIGHTS_CONNECTION_STRING="$APPINSIGHTS_CONNECTION_STRING"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights component show`, `az functionapp config appsettings set` |
+| Key flags | `--app`, `--resource-group`, `--query`, `--output`, `--name`, `--settings` |
+| Variables | `$APPINSIGHTS_NAME`, `$RG`, `$APP_NAME`, `$APPINSIGHTS_CONNECTION_STRING` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 ### Step 4 - Stream platform logs
 
 ```bash
@@ -156,6 +192,14 @@ az webapp log tail \
   --name $APP_NAME \
   --resource-group $RG
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az webapp log config`, `az webapp log tail` |
+| Key flags | `--name`, `--resource-group`, `--application-logging`, `--level` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 Kudu/SCM is available on Dedicated, so you can also inspect diagnostics through `https://$APP_NAME.scm.azurewebsites.net`.
 
@@ -173,6 +217,14 @@ az monitor app-insights query \
   --analytics-query "requests | take 5" \
   --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights component show`, `az monitor app-insights query` |
+| Key flags | `--app`, `--resource-group`, `--query`, `--output`, `--analytics-query` |
+| Variables | `$APPINSIGHTS_NAME`, `$RG`, `$APPINSIGHTS_APP_ID` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 !!! tip "Use `--output json` for App Insights queries"
     The `--output table` format for `az monitor app-insights query` may return empty results even when data exists. Use `--output json` to reliably retrieve query results.
@@ -203,6 +255,14 @@ az monitor metrics alert create \
   --evaluation-frequency 1m \
   --action $ACTION_GROUP_ID
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp show`, `az monitor action-group create`, `az monitor metrics alert create` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output`, `--short-name`, `--action`, `--scopes`, `--condition`, `--window-size`, `--evaluation-frequency` |
+| Variables | `$APP_NAME`, `$RG`, `$APP_ID`, `$ACTION_GROUP_ID` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 ## Verification
 

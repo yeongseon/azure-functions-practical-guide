@@ -2,23 +2,35 @@
 validation:
   az_cli:
     last_tested: 2026-04-09
-    cli_version: "2.83.0"
-    core_tools_version: "4.8.0"
+    cli_version: 2.83.0
+    core_tools_version: 4.8.0
     result: pass
   bicep:
     last_tested: null
     result: not_tested
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-timer
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-blob-trigger
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue-trigger
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-timer
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-blob-trigger
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue-trigger
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/app-service/overview-vnet-integration
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/app-service/networking/private-endpoint
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+    verified: true
 ---
-
 # 07 - Extending with Triggers (Dedicated)
 
 This tutorial extends your Dedicated Function App beyond HTTP with timer, blob, and queue triggers. On Dedicated, all standard triggers are supported, timer workloads benefit from Always On, and blob trigger polling works normally.
@@ -41,9 +53,9 @@ export LOCATION="koreacentral"
 You will add timer, blob, and queue-triggered functions under `apps/python/blueprints/`, register them in the app entry point, and validate trigger execution after deployment.
 
 !!! info "Infrastructure Context"
-    **Plan**: Dedicated (B1) | **Network**: Public internet | **VNet**: ❌ (requires Standard+ tier)
+    **Plan**: Dedicated (B1) | **Network**: Public internet in this tutorial | **VNet**: Supported by platform, not configured here
 
-    Basic B1 has no VNet integration or private endpoints. The app runs on a fixed App Service Plan (always on, no scale-to-zero). VNet support requires upgrading to Standard (S1) or Premium (P1v3) tier.
+    The app runs on a fixed App Service Plan (always on, no scale-to-zero). Basic B1 supports App Service VNet integration and private endpoints, but this guide uses Standard (S1+) for private networking scenarios to provide scale headroom, deployment slots, and a production-oriented validation path.
 
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
@@ -109,6 +121,14 @@ az functionapp config set \
   --resource-group $RG \
   --always-on true
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config set` |
+| Key flags | `--name`, `--resource-group`, `--always-on` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 Timer triggers are most reliable when Always On is enabled on Dedicated.
 
@@ -190,6 +210,14 @@ az storage message put \
   --content "run-job-001"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage container create`, `az storage queue create`, `az storage blob upload`, `az storage message put` |
+| Key flags | `--python`, `--name`, `--account-name`, `--container-name`, `--file`, `--queue-name`, `--content` |
+| Variables | `$APP_NAME`, `$STORAGE_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ### Step 6 - Review runtime and scale behavior
 
 - Dedicated is always running and does not scale to zero.
@@ -198,8 +226,8 @@ az storage message put \
 - Timeout default is 30 minutes and max is unlimited.
 - Memory depends on selected plan SKU.
 
-!!! info "Requires Standard tier or higher"
-    VNet integration is not available on Basic (B1) tier. Upgrade to Standard (S1) or Premium (P1v2) for VNet support.
+!!! info "B1 network support and guide scope"
+    Basic (B1) supports App Service VNet integration. This guide's private networking scenarios use Standard (S1+) as the validated production path, so upgrade when you want to follow those walkthroughs exactly.
 
 !!! info "Private endpoints on Dedicated"
     App Service private endpoints are supported on Basic (B1) and higher tiers. When enabled, validate private DNS resolution for the app hostname.

@@ -1,11 +1,19 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-host-json
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-host-json
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide
+    verified: true
 ---
-
 # CLI Cheatsheet
 
 Quick command reference for .NET isolated worker development, deployment, and operations.
@@ -36,12 +44,28 @@ func azure functionapp publish "$APP_NAME"
 az functionapp create   --name "$APP_NAME"   --resource-group "$RG"   --storage-account "$STORAGE_NAME"   --runtime dotnet-isolated   --runtime-version 8   --functions-version 4   --os-type Linux
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp create` |
+| Key flags | `--configuration`, `--output`, `--name`, `--resource-group`, `--storage-account`, `--runtime`, `--runtime-version`, `--functions-version`, `--os-type` |
+| Variables | `$APP_NAME`, `$RG`, `$STORAGE_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ### Operations
 ```bash
 az functionapp config appsettings list --name "$APP_NAME" --resource-group "$RG"
 az functionapp log tail --name "$APP_NAME" --resource-group "$RG"
 az functionapp restart --name "$APP_NAME" --resource-group "$RG"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings list`, `az functionapp log tail`, `az functionapp restart` |
+| Key flags | `--name`, `--resource-group` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 ## See Also
 - [.NET Language Guide](index.md)

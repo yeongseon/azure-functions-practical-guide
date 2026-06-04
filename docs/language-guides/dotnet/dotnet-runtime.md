@@ -1,11 +1,19 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/supported-languages
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/supported-languages
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/supported-languages
+    verified: true
 ---
-
 # .NET Runtime
 
 This reference covers runtime versions, worker configuration, target framework choices, and package dependencies for Azure Functions .NET apps.
@@ -38,6 +46,14 @@ flowchart TD
 ```bash
 az functionapp config appsettings set   --name "$APP_NAME"   --resource-group "$RG"   --settings "FUNCTIONS_WORKER_RUNTIME=dotnet-isolated" "FUNCTIONS_EXTENSION_VERSION=~4"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 ### csproj baseline
 
@@ -78,6 +94,14 @@ Use runtime-safe creation flags when provisioning:
 ```bash
 az functionapp create   --name "$APP_NAME"   --resource-group "$RG"   --storage-account "$STORAGE_NAME"   --runtime dotnet-isolated   --runtime-version 8   --functions-version 4   --os-type Linux
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp create` |
+| Key flags | `--name`, `--resource-group`, `--storage-account`, `--runtime`, `--runtime-version`, `--functions-version`, `--os-type` |
+| Variables | `$APP_NAME`, `$RG`, `$STORAGE_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 ### Upgrade guidance
 

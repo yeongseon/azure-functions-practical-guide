@@ -2,21 +2,29 @@
 validation:
   az_cli:
     last_tested: 2026-04-09
-    cli_version: "2.83.0"
-    core_tools_version: "4.8.0"
+    cli_version: 2.83.0
+    core_tools_version: 4.8.0
     result: pass
   bicep:
     last_tested: null
     result: not_tested
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-how-to-github-actions
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/developer/github/connect-from-azure-openid-connect
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-deployment-technologies
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-how-to-github-actions
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/developer/github/connect-from-azure-openid-connect
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-deployment-technologies
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/functions-how-to-github-actions
+    verified: true
 ---
-
 # 06 - CI/CD (Flex Consumption)
 
 Automate build and deployment for your Flex Consumption Function App with GitHub Actions and OIDC authentication.
@@ -124,6 +132,14 @@ az ad app create --display-name "github-flex-functions" --output json
 az ad sp create --id "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" --output json
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az ad app create`, `az ad sp create` |
+| Key flags | `--display-name`, `--output`, `--id` |
+| Variables | None |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 Expected output:
 
 
@@ -142,6 +158,14 @@ Expected output:
 az ad app federated-credential create --id "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" --parameters '{"name":"github-main","issuer":"https://token.actions.githubusercontent.com","subject":"repo:your-org/azure-functions-python-guide:ref:refs/heads/main","audiences":["api://AzureADTokenExchange"]}' --output json
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az ad app federated-credential create` |
+| Key flags | `--id`, `--parameters`, `--output` |
+| Variables | None |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 Expected output:
 
 
@@ -159,6 +183,14 @@ Expected output:
 ```bash
 az role assignment create --assignee "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" --role "Contributor" --scope "/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RG" --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az role assignment create` |
+| Key flags | `--assignee`, `--role`, `--scope`, `--output` |
+| Variables | `$SUBSCRIPTION_ID`, `$RG` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 Expected output:
 
@@ -241,6 +273,14 @@ For Flex Consumption, `azure/functions-action@v1` should use remote build (or pr
 curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
 az monitor app-insights query --app "$APPINSIGHTS_NAME" --analytics-query "requests | where timestamp > ago(15m) | project timestamp, name, resultCode | order by timestamp desc | take 10" --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights query` |
+| Key flags | `--request`, `--app`, `--analytics-query`, `--output` |
+| Variables | `$APP_NAME`, `$APPINSIGHTS_NAME` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 Expected output:
 

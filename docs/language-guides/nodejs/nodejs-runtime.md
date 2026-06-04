@@ -1,13 +1,21 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-run-local
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-run-local
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+    verified: true
 ---
-
 # Node.js Runtime
 
 This reference describes Node.js runtime support, worker settings, and dependency practices for Azure Functions apps using the v4 programming model.
@@ -48,6 +56,14 @@ az functionapp config appsettings set --name $APP_NAME --resource-group $RG --se
 az functionapp config appsettings set --name $APP_NAME --resource-group $RG --settings "FUNCTIONS_WORKER_RUNTIME=node" "FUNCTIONS_EXTENSION_VERSION=~4" "languageWorkers__node__arguments=--max-old-space-size=4096"
 az functionapp config set --name $APP_NAME --resource-group $RG --linux-fx-version "Node|20"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set`, `az functionapp config set` |
+| Key flags | `--name`, `--resource-group`, `--settings`, `--max-old-space-size`, `--linux-fx-version` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 - Windows apps: set `WEBSITE_NODE_DEFAULT_VERSION=~20`.
 - Linux apps: set runtime via `linuxFxVersion` (`Node|20`).

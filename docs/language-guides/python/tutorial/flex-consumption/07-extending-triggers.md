@@ -2,21 +2,29 @@
 validation:
   az_cli:
     last_tested: 2026-04-09
-    cli_version: "2.83.0"
-    core_tools_version: "4.8.0"
+    cli_version: 2.83.0
+    core_tools_version: 4.8.0
     result: pass
   bicep:
     last_tested: null
     result: not_tested
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-event-grid-blob-trigger
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-event-grid-blob-trigger
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+    verified: true
 ---
-
 # 07 - Extending Triggers (Flex Consumption)
 
 Add non-HTTP triggers to your Flex Consumption app with the correct trigger model for FC1 scaling and networking behavior.
@@ -227,6 +235,14 @@ az eventgrid event-subscription create \
   --output json
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp keys list`, `az eventgrid event-subscription create` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output`, `--source-resource-id`, `--endpoint`, `--endpoint-type`, `--included-event-types` |
+| Variables | `$APP_NAME`, `$RG`, `$STORAGE_NAME`, `$BLOB_KEY` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 Expected output:
 
 
@@ -246,6 +262,14 @@ cd apps/python
 func azure functionapp publish "$APP_NAME" --python
 az functionapp function list --name "$APP_NAME" --resource-group "$RG" --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp function list` |
+| Key flags | `--python`, `--name`, `--resource-group`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 Expected output:
 
@@ -271,12 +295,28 @@ process_blob_event           blobTrigger
       --default-action Allow
     ```
 
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az storage account update` |
+    | Key flags | `--name`, `--resource-group`, `--default-action` |
+    | Variables | `$STORAGE_NAME`, `$RG` |
+    | Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
     Remember to lock it down again after testing.
 
 ```bash
 az storage queue create --name "tasks" --account-name "$STORAGE_NAME" --auth-mode login --output json
 az storage message put --queue-name "tasks" --content '{"task":"reindex"}' --account-name "$STORAGE_NAME" --auth-mode login --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage queue create`, `az storage message put` |
+| Key flags | `--name`, `--account-name`, `--auth-mode`, `--output`, `--queue-name`, `--content` |
+| Variables | `$STORAGE_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 Upload a blob to emit Event Grid event:
 
@@ -285,6 +325,14 @@ Upload a blob to emit Event Grid event:
 az storage container create --name "uploads" --account-name "$STORAGE_NAME" --auth-mode login --output json
 az storage blob upload --container-name "uploads" --name "sample.txt" --file "/tmp/sample.txt" --account-name "$STORAGE_NAME" --auth-mode login --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage container create`, `az storage blob upload` |
+| Key flags | `--name`, `--account-name`, `--auth-mode`, `--output`, `--container-name`, `--file` |
+| Variables | `$STORAGE_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 Expected output:
 

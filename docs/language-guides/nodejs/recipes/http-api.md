@@ -1,11 +1,19 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-http-webhook-trigger
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-http-webhook-trigger
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+    verified: true
 ---
-
 # HTTP API Patterns
 
 This recipe shows production-ready HTTP trigger patterns in the Node.js v4 programming model: query parsing, request body validation, and explicit response contracts.
@@ -55,6 +63,14 @@ az functionapp create \
   --runtime-version 20 \
   --functions-version 4
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az group create`, `az storage account create`, `az functionapp create` |
+| Key flags | `--name`, `--location`, `--resource-group`, `--sku`, `--storage-account`, `--consumption-plan-location`, `--runtime`, `--runtime-version`, `--functions-version` |
+| Variables | `$RG`, `$LOCATION`, `$STORAGE_NAME`, `$APP_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 ## Working Node.js v4 Code
 

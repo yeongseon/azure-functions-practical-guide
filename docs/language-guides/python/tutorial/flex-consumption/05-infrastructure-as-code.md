@@ -2,21 +2,29 @@
 validation:
   az_cli:
     last_tested: 2026-04-09
-    cli_version: "2.83.0"
-    core_tools_version: "4.8.0"
+    cli_version: 2.83.0
+    core_tools_version: 4.8.0
     result: pass
   bicep:
     last_tested: null
     result: not_tested
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-resource-manager/bicep/overview
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-resource-manager/bicep/overview
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-resource-manager/bicep/overview
+    verified: true
 ---
-
 # 05 - Infrastructure as Code (Flex Consumption)
 
 Use Bicep to provision Flex Consumption infrastructure reproducibly, including FC1 plan settings, identity-based host storage, and blob-based deployment configuration.
@@ -124,6 +132,14 @@ The Flex plan track template is at `infra/flex-consumption/main.bicep` and compo
 az bicep build --file "infra/flex-consumption/main.bicep"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az bicep build` |
+| Key flags | `--file` |
+| Variables | None |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
+
 Expected output:
 
 
@@ -137,6 +153,14 @@ Expected output:
 az group create --name "$RG" --location "$LOCATION" --output json
 az deployment group what-if --resource-group "$RG" --template-file "infra/flex-consumption/main.bicep" --parameters baseName="$BASE_NAME" location="$LOCATION" --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az group create`, `az deployment group what-if` |
+| Key flags | `--name`, `--location`, `--output`, `--resource-group`, `--template-file`, `--parameters` |
+| Variables | `$RG`, `$LOCATION`, `$BASE_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 Expected output:
 
@@ -159,6 +183,14 @@ Expected output:
 ```bash
 az deployment group create --resource-group "$RG" --template-file "infra/flex-consumption/main.bicep" --parameters baseName="$BASE_NAME" location="$LOCATION" --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az deployment group create` |
+| Key flags | `--resource-group`, `--template-file`, `--parameters`, `--output` |
+| Variables | `$RG`, `$BASE_NAME`, `$LOCATION` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 Expected output:
 
@@ -184,10 +216,26 @@ Expected output:
     echo "Actual plan name: $PLAN_NAME_ACTUAL"
     ```
 
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az functionapp show` |
+    | Key flags | `--name`, `--resource-group`, `--query`, `--output` |
+    | Variables | `$APP_NAME`, `$RG`, `$NF`, `$PLAN_NAME_ACTUAL` |
+    | Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ```bash
 az appservice plan show --name "$PLAN_NAME_ACTUAL" --resource-group "$RG" --query "sku" --output json
 az functionapp show --name "$APP_NAME" --resource-group "$RG" --query "properties.functionAppConfig" --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az appservice plan show`, `az functionapp show` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output` |
+| Variables | `$PLAN_NAME_ACTUAL`, `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 Expected output:
 
@@ -226,6 +274,14 @@ Flex subnet delegation must target `Microsoft.App/environments`.
 ```bash
 az network vnet subnet show --resource-group "$RG" --vnet-name "flexdemo-vnet" --name "subnet-integration" --query "delegations" --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az network vnet subnet show` |
+| Key flags | `--resource-group`, `--vnet-name`, `--name`, `--query`, `--output` |
+| Variables | `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 Expected output:
 
@@ -285,6 +341,14 @@ az storage account create \
   --min-tls-version TLS1_2
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az group create`, `az storage account create` |
+| Key flags | `--name`, `--location`, `--resource-group`, `--sku`, `--kind`, `--allow-blob-public-access`, `--allow-shared-key-access`, `--min-tls-version` |
+| Variables | `$RG`, `$LOCATION`, `$STORAGE_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 #### B-2: User-Assigned Managed Identity
 
 ```bash
@@ -314,6 +378,14 @@ export MI_ID=$(az identity show \
   --output tsv)
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az identity create`, `az identity show` |
+| Key flags | `--name`, `--resource-group`, `--location`, `--query`, `--output` |
+| Variables | `$MI_NAME`, `$RG`, `$LOCATION` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 #### B-3: RBAC Role Assignments
 
 ```bash
@@ -338,6 +410,14 @@ az role assignment create \
   --role "Storage Queue Data Contributor" \
   --scope "$STORAGE_ID"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage account show`, `az role assignment create` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output`, `--assignee`, `--role`, `--scope` |
+| Variables | `$STORAGE_NAME`, `$RG`, `$MI_PRINCIPAL_ID`, `$STORAGE_ID` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 #### B-4: VNet and Subnets
 
@@ -365,6 +445,14 @@ az network vnet subnet update \
   --delegations "Microsoft.App/environments"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az network vnet create`, `az network vnet subnet create`, `az network vnet subnet update` |
+| Key flags | `--name`, `--resource-group`, `--location`, `--address-prefixes`, `--subnet-name`, `--subnet-prefixes`, `--vnet-name`, `--delegations` |
+| Variables | `$VNET_NAME`, `$RG`, `$LOCATION` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 #### B-5: Storage Private Endpoints (×4)
 
 ```bash
@@ -380,6 +468,14 @@ for SVC in blob queue table file; do
     --connection-name "${BASE_NAME}-plsc-$SVC"
 done
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az network private-endpoint create` |
+| Key flags | `--name`, `--resource-group`, `--location`, `--vnet-name`, `--subnet`, `--private-connection-resource-id`, `--group-ids`, `--connection-name` |
+| Variables | `$SVC`, `$RG`, `$LOCATION`, `$VNET_NAME`, `$STORAGE_ID` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 #### B-6: Private DNS Zones and VNet Links (×4)
 
@@ -405,6 +501,14 @@ for SVC in blob queue table file; do
 done
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az network private-dns zone create`, `az network private-dns link vnet`, `az network private-endpoint dns-zone-group create` |
+| Key flags | `--resource-group`, `--name`, `--zone-name`, `--virtual-network`, `--registration-enabled`, `--endpoint-name`, `--private-dns-zone` |
+| Variables | `$RG`, `$SVC`, `$VNET_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 #### B-7: Deployment Blob Container
 
 ```bash
@@ -413,6 +517,14 @@ az storage container create \
   --account-name "$STORAGE_NAME" \
   --auth-mode login
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage container create` |
+| Key flags | `--name`, `--account-name`, `--auth-mode` |
+| Variables | `$STORAGE_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 #### B-8: Application Insights
 
@@ -430,6 +542,14 @@ export APPINSIGHTS_CONN=$(az monitor app-insights component show \
   --output tsv)
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights component create`, `az monitor app-insights component show` |
+| Key flags | `--app`, `--resource-group`, `--location`, `--application-type`, `--query`, `--output` |
+| Variables | `$APPINSIGHTS_NAME`, `$RG`, `$LOCATION` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 !!! warning "`az functionapp plan create --sku FC1` does not work"
     Flex Consumption plans cannot be created with `az functionapp plan create`. Instead, use `az functionapp create --flexconsumption-location` which creates both the plan and app together. The plan name is auto-generated.
 
@@ -445,6 +565,14 @@ az functionapp create \
   --assign-identity "$MI_ID"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp create` |
+| Key flags | `--name`, `--resource-group`, `--storage-account`, `--flexconsumption-location`, `--runtime`, `--runtime-version`, `--functions-version`, `--assign-identity` |
+| Variables | `$APP_NAME`, `$RG`, `$STORAGE_NAME`, `$LOCATION`, `$MI_ID` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 #### B-10: App Settings (Identity-Based Storage)
 
 ```bash
@@ -458,6 +586,14 @@ az functionapp config appsettings set \
     "APPLICATIONINSIGHTS_CONNECTION_STRING=$APPINSIGHTS_CONN"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings` |
+| Variables | `$APP_NAME`, `$RG`, `$STORAGE_NAME`, `$MI_CLIENT_ID`, `$APPINSIGHTS_CONN` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 #### B-11: VNet Integration
 
 ```bash
@@ -467,6 +603,14 @@ az functionapp vnet-integration add \
   --vnet "$VNET_NAME" \
   --subnet "subnet-integration"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp vnet-integration add` |
+| Key flags | `--name`, `--resource-group`, `--vnet`, `--subnet` |
+| Variables | `$APP_NAME`, `$RG`, `$VNET_NAME` |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
 
 #### B-12: Validate
 
@@ -484,6 +628,14 @@ az network vnet subnet show \
   --query "delegations" \
   --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az appservice plan show`, `az network vnet subnet show` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output`, `--vnet-name` |
+| Variables | `$PLAN_NAME`, `$RG`, `$VNET_NAME` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 ## Verification
 

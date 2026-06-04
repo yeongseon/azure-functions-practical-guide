@@ -1,11 +1,19 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-blob
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-blob
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-blob
+    verified: true
 ---
-
 # Blob Storage Integration
 
 This recipe covers Java blob processing using trigger, input, and output bindings for ingestion and transformed output patterns.
@@ -36,6 +44,14 @@ az storage container create --name incoming --account-name $STORAGE_NAME --auth-
 az storage container create --name processed --account-name $STORAGE_NAME --auth-mode login
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage account create`, `az storage container create` |
+| Key flags | `--name`, `--resource-group`, `--location`, `--sku`, `--account-name`, `--auth-mode` |
+| Variables | `$STORAGE_NAME`, `$RG`, `$LOCATION` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 Configure storage connection:
 
 ```bash
@@ -44,6 +60,14 @@ az functionapp config appsettings set \
   --resource-group $RG \
   --settings "AzureWebJobsStorage=<storage-connection-string>"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 ## Java implementation
 

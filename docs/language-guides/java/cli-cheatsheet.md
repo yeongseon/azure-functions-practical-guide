@@ -1,11 +1,19 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/cli/azure/functionapp
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/cli/azure/functionapp
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
+    verified: true
 ---
-
 # CLI Cheatsheet
 
 Quick reference for Java Azure Functions operational workflows.
@@ -19,6 +27,14 @@ flowchart TD
     C[az functionapp] --> D[Cloud operations]
     E[mvn] --> F[Build and deploy]
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp]` |
+| Key flags | None |
+| Variables | None |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
 
 ### Core Tools
 
@@ -42,6 +58,14 @@ az functionapp create --name $APP_NAME --resource-group $RG --storage-account $S
 az functionapp config appsettings list --name $APP_NAME --resource-group $RG --output table
 az functionapp log tail --name $APP_NAME --resource-group $RG
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp create`, `az functionapp config appsettings list`, `az functionapp log tail` |
+| Key flags | `--name`, `--resource-group`, `--storage-account`, `--plan`, `--runtime`, `--runtime-version`, `--functions-version`, `--os-type`, `--output` |
+| Variables | `$APP_NAME`, `$RG`, `$STORAGE_NAME`, `$PLAN_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 ## See Also
 

@@ -1,15 +1,23 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-event-grid-blob-trigger
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan#trigger-support
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-blob
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-event-grid-blob-trigger
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan#trigger-support
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-blob
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/functions-event-grid-blob-trigger
+    verified: true
 ---
-
 # Blob Storage
 
 This recipe covers integrating Azure Blob Storage with Azure Functions Python v2 — using output bindings to upload blobs, input bindings to read blobs, and the SDK approach for more complex scenarios like listing, streaming, and managing containers.
@@ -54,6 +62,14 @@ az storage container create \
   --name uploads \
   --account-name yourstorage
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage account create`, `az storage container create` |
+| Key flags | `--name`, `--resource-group`, `--sku`, `--account-name` |
+| Variables | None |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 On classic Consumption or Premium plans, the `AzureWebJobsStorage` connection string (already set for Azure Functions) can be reused, or you can configure a separate connection. On Flex Consumption, host storage uses identity-based settings (e.g. `AzureWebJobsStorage__accountName`); bindings referencing `connection="AzureWebJobsStorage"` resolve through those identity-based settings automatically.
 
@@ -219,6 +235,14 @@ az storage container create \
   --connection-string "UseDevelopmentStorage=true"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage container create` |
+| Key flags | `--name`, `--connection-string` |
+| Variables | None |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 **3. Start the Functions host**
 
 ```bash
@@ -238,6 +262,14 @@ az storage blob upload \
   --connection-string "UseDevelopmentStorage=true"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage blob upload` |
+| Key flags | `--container-name`, `--name`, `--file`, `--connection-string` |
+| Variables | None |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
+
 The trigger is detected after a short polling delay (typically a few seconds locally). You should see in the terminal:
 
 ```
@@ -256,6 +288,14 @@ az storage blob download \
 
 cat /tmp/result.txt   # Expected: HELLO WORLD
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage blob download` |
+| Key flags | `--container-name`, `--name`, `--file`, `--connection-string` |
+| Variables | None |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
 
 > **Polling vs. Event Grid:** The default blob trigger uses a polling mechanism, which can have delays of up to several minutes in production depending on storage activity. For low-latency, event-driven processing use the [Event Grid-based blob trigger (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-event-grid-blob-trigger) instead.
 >
@@ -349,6 +389,14 @@ Use Managed Identity instead of connection strings to access Blob Storage:
       --scope "/subscriptions/<subscription-id>/resourceGroups/your-rg/providers/Microsoft.Storage/storageAccounts/yourstorage"
    ```
 
+   | CLI element | Explanation |
+   |---|---|
+   | Command(s) | `az functionapp identity assign`, `az role assignment create` |
+   | Key flags | `--name`, `--resource-group`, `--assignee`, `--role`, `--scope` |
+   | Variables | None |
+   | Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 2. For bindings, use identity-based connection:
    ```bash
    az functionapp config appsettings set \
@@ -356,6 +404,14 @@ Use Managed Identity instead of connection strings to access Blob Storage:
      --resource-group your-rg \
      --settings "AzureWebJobsStorage__accountName=yourstorage"
    ```
+
+   | CLI element | Explanation |
+   |---|---|
+   | Command(s) | `az functionapp config appsettings set` |
+   | Key flags | `--name`, `--resource-group`, `--settings` |
+   | Variables | None |
+   | Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 See the [Managed Identity recipe](managed-identity.md) for a full walkthrough.
 

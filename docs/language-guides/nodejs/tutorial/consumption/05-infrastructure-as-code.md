@@ -2,21 +2,29 @@
 validation:
   az_cli:
     last_tested: 2026-04-10
-    cli_version: "2.83.0"
-    core_tools_version: "4.8.0"
+    cli_version: 2.83.0
+    core_tools_version: 4.8.0
     result: pass
   bicep:
     last_tested: null
     result: not_tested
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-resource-manager/bicep/overview
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-resource-manager/bicep/overview
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+    verified: true
 ---
-
 # 05 - Infrastructure as Code (Consumption)
 
 Deploy repeatable infrastructure with Bicep and parameterized environments.
@@ -57,6 +65,14 @@ flowchart TD
     style FA fill:#0078d4,color:#fff
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az deployment group create"\| RG[Resource` |
+| Key flags | None |
+| Variables | None |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart TD
@@ -64,6 +80,14 @@ flowchart TD
     B --> C[Verify provisioning]
     C --> D[Publish code]
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az deployment group create"]` |
+| Key flags | None |
+| Variables | None |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 ## Steps
 
@@ -148,6 +172,14 @@ az deployment group create \
   --parameters baseName=ndcons0410
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az deployment group create` |
+| Key flags | `--resource-group`, `--template-file`, `--parameters` |
+| Variables | `$RG` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 !!! warning "baseName length constraint"
     The Bicep template appends `storage` to the `baseName` parameter to create the storage account name. Storage account names are limited to **24 characters**. Keep `baseName` to ~17 characters or fewer to avoid exceeding this limit. For example, `ndcons0410` produces `ndcons0410storage` (17 chars) which is valid.
 
@@ -161,6 +193,14 @@ az deployment group show \
   --output tsv
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az deployment group show` |
+| Key flags | `--resource-group`, `--name`, `--query`, `--output` |
+| Variables | `$RG` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ### Step 5 - Publish code to the Bicep-deployed app
 
 ```bash
@@ -173,6 +213,14 @@ BICEP_APP=$(az deployment group show \
 
 cd apps/nodejs && func azure functionapp publish "$BICEP_APP"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az deployment group show` |
+| Key flags | `--resource-group`, `--name`, `--query`, `--output` |
+| Variables | `$RG`, `$BICEP_APP` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 ### Step 6 - Review Consumption-specific notes
 

@@ -2,21 +2,29 @@
 validation:
   az_cli:
     last_tested: 2026-04-09
-    cli_version: "2.83.0"
-    core_tools_version: "4.8.0"
+    cli_version: 2.83.0
+    core_tools_version: 4.8.0
     result: pass
   bicep:
     last_tested: null
     result: not_tested
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-run-local
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-python
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/app-service/overview-hosting-plans
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-run-local
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-reference-python
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/app-service/overview-hosting-plans
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/functions-run-local
+    verified: true
 ---
-
 # 01 - Run Locally (Dedicated)
 
 This tutorial runs the Function App locally and prepares the exact variables and conventions you will use on the Dedicated (App Service Plan) track. Dedicated is always running, billed at a fixed monthly plan price, and works well when you already have App Service capacity or want to co-host Functions with existing web apps.
@@ -68,6 +76,14 @@ Sign in and select your subscription:
 az login
 az account set --subscription "<subscription-id>"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az login`, `az account set` |
+| Key flags | `--subscription` |
+| Variables | None |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 ## Steps
 

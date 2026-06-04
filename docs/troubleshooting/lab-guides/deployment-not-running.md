@@ -9,7 +9,7 @@ content_sources:
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-functions/monitor-functions
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-monitor/logs/log-query-overview
+    url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
@@ -142,6 +142,14 @@ func --version
 python --version
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az login`, `az account set`, `az account show` |
+| Key flags | `--output`, `--subscription`, `--version` |
+| Variables | None |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 ### Variables
 
 ```bash
@@ -164,12 +172,28 @@ az monitor app-insights component create --app "$APPINSIGHTS_NAME" --location "$
 az functionapp create --name "$APP_NAME" --resource-group "$RG" --consumption-plan-location "$LOCATION" --runtime python --runtime-version 3.11 --functions-version 4 --storage-account "$STORAGE_NAME" --app-insights "$APPINSIGHTS_NAME" --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az group create`, `az storage account create`, `az monitor app-insights component create`, `az functionapp create` |
+| Key flags | `--name`, `--location`, `--output`, `--resource-group`, `--sku`, `--kind`, `--app`, `--application-type`, `--consumption-plan-location`, `--runtime`, plus 4 more |
+| Variables | `$RG`, `$LOCATION`, `$STORAGE_NAME`, `$APPINSIGHTS_NAME`, `$APP_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 If you need to verify the configured connection string, query it from Azure instead of using placeholders:
 
 ```bash
 APPLICATIONINSIGHTS_CONNECTION_STRING="$(az monitor app-insights component show --app "$APPINSIGHTS_NAME" --resource-group "$RG" --query connectionString --output tsv)"
 az functionapp config appsettings list --name "$APP_NAME" --resource-group "$RG" --query "[?name=='APPLICATIONINSIGHTS_CONNECTION_STRING'].value" --output tsv | head -c 50
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights component show`, `az functionapp config appsettings list` |
+| Key flags | `--app`, `--resource-group`, `--query`, `--output`, `--name` |
+| Variables | `$APPINSIGHTS_NAME`, `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 ### Step 2: Deploy baseline code and verify discovery
 
@@ -192,6 +216,14 @@ popd
 az functionapp config appsettings set --name "$APP_NAME" --resource-group "$RG" --settings "FUNCTIONS_WORKER_RUNTIME=python" --output table
 az functionapp restart --name "$APP_NAME" --resource-group "$RG" --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set`, `az functionapp restart` |
+| Key flags | `--python`, `--model`, `--name`, `--resource-group`, `--settings`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 Start continuous HTTP traffic and keep it running through incident and recovery windows:
 
@@ -229,6 +261,14 @@ Keep the background traffic loop running during this step so `requests` evidence
 az functionapp config appsettings set --name "$APP_NAME" --resource-group "$RG" --settings "FUNCTIONS_WORKER_RUNTIME=node" --output table
 az functionapp restart --name "$APP_NAME" --resource-group "$RG" --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set`, `az functionapp restart` |
+| Key flags | `--name`, `--resource-group`, `--settings`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 ### Step 4: Collect incident evidence (03:10-03:20 UTC)
 
@@ -315,6 +355,14 @@ CLI equivalent for Query A (include resource group explicitly):
 az monitor app-insights query --apps "$APPINSIGHTS_NAME" --resource-group "$RG" --analytics-query "traces | where timestamp between (datetime(2026-04-05 03:10:00Z) .. datetime(2026-04-05 03:20:00Z)) | where cloud_RoleName == '$APP_NAME' | where message has_any ('No job functions found','Host startup operation','AZFD0013','Failed to start') | project timestamp, severityLevel, message | order by timestamp asc" --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights query` |
+| Key flags | `--apps`, `--resource-group`, `--analytics-query`, `--output` |
+| Variables | `$APPINSIGHTS_NAME`, `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 !!! tip "How to read this evidence"
     Keep the sequence strict: deployment success -> startup failure signatures -> missing route behavior in requests.
     If startup signatures are missing, do not conclude discovery failure only from 404s.
@@ -331,6 +379,14 @@ pushd deploy-lab
 func azure functionapp publish "$APP_NAME" --python
 popd
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings`, `--output`, `--python` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 Recovery Query E: discovery restored.
 
@@ -540,6 +596,14 @@ kill "$TRAFFIC_PID"
 az group delete --name "$RG" --yes --no-wait --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az group delete` |
+| Key flags | `--name`, `--yes`, `--no-wait`, `--output` |
+| Variables | `$TRAFFIC_PID`, `$RG` |
+| Expected result | Azure CLI completes the removal request; verify the target no longer appears in follow-up `show` or `list` output. |
+
+
 ## Related Playbook
 
 - [Deployment Failures Playbook](../playbooks/deployment-failures.md)
@@ -557,4 +621,4 @@ az group delete --name "$RG" --yes --no-wait --output table
 - https://learn.microsoft.com/azure/azure-functions/functions-reference-python
 - https://learn.microsoft.com/azure/azure-functions/configure-monitoring
 - https://learn.microsoft.com/azure/azure-functions/monitor-functions
-- https://learn.microsoft.com/azure/azure-monitor/logs/log-query-overview
+- https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview

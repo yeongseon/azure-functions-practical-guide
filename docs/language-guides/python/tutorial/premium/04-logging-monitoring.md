@@ -2,19 +2,27 @@
 validation:
   az_cli:
     last_tested: 2026-04-09
-    cli_version: "2.83.0"
-    core_tools_version: "4.8.0"
+    cli_version: 2.83.0
+    core_tools_version: 4.8.0
     result: pass
   bicep:
     last_tested: null
     result: not_tested
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/monitor-functions
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-monitor/app/azure-cli
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/monitor-functions
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/cli/azure/monitor/app-insights?view=azure-cli-latest
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/monitor-functions
+    verified: true
 ---
-
 # 04 - Logging and Monitoring (Premium)
 
 Enable observability for a Premium Function App using Application Insights, Log Analytics queries, and Kudu/SCM diagnostics.
@@ -114,6 +122,14 @@ flowchart TD
       --application-type "web"
     ```
 
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az monitor log-analytics workspace create`, `az monitor app-insights component create` |
+    | Key flags | `--workspace-name`, `--resource-group`, `--location`, `--app`, `--workspace`, `--application-type` |
+    | Variables | `$APP_NAME`, `$RG`, `$LOCATION` |
+    | Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 2. Attach Application Insights connection string to the Function App.
 
     ```bash
@@ -129,12 +145,28 @@ flowchart TD
       --settings "APPLICATIONINSIGHTS_CONNECTION_STRING=$APPINSIGHTS_CONNECTION_STRING"
     ```
 
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az monitor app-insights component show`, `az functionapp config appsettings set` |
+    | Key flags | `--app`, `--resource-group`, `--query`, `--output`, `--name`, `--settings` |
+    | Variables | `$APP_NAME`, `$RG`, `$APPINSIGHTS_CONNECTION_STRING` |
+    | Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
     !!! tip "Restart after attaching Application Insights"
         After setting `APPLICATIONINSIGHTS_CONNECTION_STRING`, restart the Function App to pick up the new telemetry configuration:
 
         ```bash
         az functionapp restart --name "$APP_NAME" --resource-group "$RG"
         ```
+
+        | CLI element | Explanation |
+        |---|---|
+        | Command(s) | `az functionapp restart` |
+        | Key flags | `--name`, `--resource-group` |
+        | Variables | `$APP_NAME`, `$RG` |
+        | Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
 
         Telemetry may take 2–5 minutes to appear in Application Insights after the restart.
 
@@ -146,6 +178,14 @@ flowchart TD
       --resource-group "$RG"
     ```
 
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az webapp log tail` |
+    | Key flags | `--name`, `--resource-group` |
+    | Variables | `$APP_NAME`, `$RG` |
+    | Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
+
 4. Query recent request telemetry.
 
     ```bash
@@ -155,6 +195,14 @@ flowchart TD
       --analytics-query "requests | where timestamp > ago(15m) | project timestamp, name, resultCode, duration | order by timestamp desc | take 20" \
       --output table
     ```
+
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az monitor app-insights query` |
+    | Key flags | `--app`, `--resource-group`, `--analytics-query`, `--output` |
+    | Variables | `$APP_NAME`, `$RG` |
+    | Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
     !!! tip "Empty query results"
         If `--output table` returns no rows, the data may not have been ingested yet. Wait 2–5 minutes after the restart and retry. Use `--output json` instead of `--output table` to see raw results including empty arrays.
@@ -175,6 +223,14 @@ flowchart TD
       --output table
     ```
 
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az monitor app-insights query` |
+    | Key flags | `--app`, `--resource-group`, `--analytics-query`, `--output` |
+    | Variables | `$APP_NAME`, `$RG` |
+    | Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 6. Use Kudu/SCM for runtime diagnostics (Premium supports SCM).
 
     ```bash
@@ -183,6 +239,14 @@ flowchart TD
       --resource-group "$RG" \
       --output table
     ```
+
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az functionapp deployment list-publishing-profiles` |
+    | Key flags | `--name`, `--resource-group`, `--output` |
+    | Variables | `$APP_NAME`, `$RG` |
+    | Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
     Then open `https://$APP_NAME.scm.azurewebsites.net` and inspect:
     - `LogFiles/Application/Functions/Function/*`
@@ -224,5 +288,5 @@ Timestamp                  Name    ResultCode    Duration
 ## Sources
 
 - [Monitor Azure Functions](https://learn.microsoft.com/azure/azure-functions/monitor-functions)
-- [Application Insights query with Azure CLI](https://learn.microsoft.com/azure/azure-monitor/app/azure-cli)
+- [Application Insights query with Azure CLI](https://learn.microsoft.com/cli/azure/monitor/app-insights?view=azure-cli-latest)
 - [Kudu service overview](https://github.com/projectkudu/kudu/wiki)

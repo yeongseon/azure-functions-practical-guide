@@ -2,21 +2,29 @@
 validation:
   az_cli:
     last_tested: 2026-04-09
-    cli_version: "2.83.0"
-    core_tools_version: "4.8.0"
+    cli_version: 2.83.0
+    core_tools_version: 4.8.0
     result: pass
   bicep:
     last_tested: null
     result: not_tested
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-infrastructure-as-code
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-premium-plan
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/private-link/private-endpoint-overview
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-infrastructure-as-code
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-premium-plan
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/private-link/private-endpoint-overview
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/functions-infrastructure-as-code
+    verified: true
 ---
-
 # 05 - Infrastructure as Code (Premium)
 
 Deploy Azure Functions Premium infrastructure with Bicep from `infra/premium/main.bicep`, including Elastic Premium plan settings, VNet integration, private endpoints, identity-based host storage, and Azure Files content share.
@@ -284,6 +292,14 @@ flowchart TD
         location="$LOCATION"
     ```
 
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az group create`, `az deployment group create` |
+    | Key flags | `--name`, `--location`, `--resource-group`, `--template-file`, `--parameters` |
+    | Variables | `$RG`, `$LOCATION` |
+    | Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
     !!! note "Tutorial snippet vs actual infra/"
         The Bicep snippets above are simplified for learning. The actual `infra/premium/main.bicep` uses a `baseName` parameter and shared modules (`infra/modules/`). Use the deployment command in this section to deploy the repository template directly.
 
@@ -300,6 +316,14 @@ flowchart TD
       --query "{sku:sku.name,tier:sku.tier,maxWorkers:maximumElasticWorkerCount}" \
       --output json
     ```
+
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az resource list`, `az functionapp plan show` |
+    | Key flags | `--resource-group`, `--output`, `--name`, `--query` |
+    | Variables | `$RG`, `$PLAN_NAME` |
+    | Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 ### Option B: Deploy with Azure CLI (No Bicep)
 
@@ -327,6 +351,14 @@ az storage account create \
   --allow-blob-public-access false
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az group create`, `az storage account create` |
+| Key flags | `--name`, `--location`, `--resource-group`, `--sku`, `--kind`, `--allow-blob-public-access` |
+| Variables | `$RG`, `$LOCATION`, `$STORAGE_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 #### B-2: Azure Files content share
 
 ```bash
@@ -336,6 +368,14 @@ az storage share-rm create \
   --name "$CONTENT_SHARE_NAME" \
   --access-tier TransactionOptimized
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage share-rm create` |
+| Key flags | `--storage-account`, `--resource-group`, `--name`, `--access-tier` |
+| Variables | `$STORAGE_NAME`, `$RG`, `$CONTENT_SHARE_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 #### B-3: Premium plan (EP1) and Function App
 
@@ -358,6 +398,14 @@ az functionapp create \
   --os-type Linux
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp plan create`, `az functionapp create` |
+| Key flags | `--name`, `--resource-group`, `--location`, `--sku`, `--is-linux`, `--plan`, `--storage-account`, `--runtime`, `--runtime-version`, `--functions-version`, plus 1 more |
+| Variables | `$PLAN_NAME`, `$RG`, `$LOCATION`, `$APP_NAME`, `$STORAGE_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 #### B-4: Enable system-assigned managed identity
 
 ```bash
@@ -365,6 +413,14 @@ az functionapp identity assign \
   --name "$APP_NAME" \
   --resource-group "$RG"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp identity assign` |
+| Key flags | `--name`, `--resource-group` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 #### B-5: RBAC role assignments
 
@@ -395,6 +451,14 @@ do
 done
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp identity show`, `az storage account show`, `az role assignment create` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output`, `--assignee-object-id`, `--assignee-principal-type`, `--role`, `--scope` |
+| Variables | `$APP_NAME`, `$RG`, `$STORAGE_NAME`, `$PRINCIPAL_ID`, `$ROLE`, `$STORAGE_ID` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 #### B-6: VNet and subnets
 
 ```bash
@@ -420,6 +484,14 @@ az network vnet subnet create \
   --disable-private-endpoint-network-policies true
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az network vnet create`, `az network vnet subnet update`, `az network vnet subnet create` |
+| Key flags | `--resource-group`, `--name`, `--location`, `--address-prefixes`, `--subnet-name`, `--subnet-prefixes`, `--vnet-name`, `--delegations`, `--disable-private-endpoint-network-policies` |
+| Variables | `$RG`, `$VNET_NAME`, `$LOCATION` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 #### B-7: VNet integration
 
 ```bash
@@ -429,6 +501,14 @@ az functionapp vnet-integration add \
   --vnet "$VNET_NAME" \
   --subnet "snet-integration"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp vnet-integration add` |
+| Key flags | `--name`, `--resource-group`, `--vnet`, `--subnet` |
+| Variables | `$APP_NAME`, `$RG`, `$VNET_NAME` |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
 
 #### B-8: Storage private endpoints (blob, queue, table, file)
 
@@ -446,6 +526,14 @@ do
     --connection-name "conn-${STORAGE_NAME}-${SUBRESOURCE}"
 done
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az network private-endpoint create` |
+| Key flags | `--name`, `--resource-group`, `--location`, `--vnet-name`, `--subnet`, `--private-connection-resource-id`, `--group-ids`, `--connection-name` |
+| Variables | `$RG`, `$LOCATION`, `$VNET_NAME`, `$STORAGE_ID`, `$SUBRESOURCE` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 #### B-9: Private DNS zones and VNet links (storage)
 
@@ -492,6 +580,14 @@ do
 done
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az network vnet show`, `az network private-dns zone create`, `az network private-dns link vnet`, `az network private-dns zone show`, plus 1 more |
+| Key flags | `--resource-group`, `--name`, `--query`, `--output`, `--zone-name`, `--virtual-network`, `--registration-enabled`, `--endpoint-name`, `--private-dns-zone` |
+| Variables | `$RG`, `$VNET_NAME`, `$ZONE`, `$VNET_ID`, `$ZONE_ID` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 #### B-10: Site private endpoint (inbound private access)
 
 ```bash
@@ -511,6 +607,14 @@ az network private-endpoint create \
   --group-ids sites \
   --connection-name "conn-${APP_NAME}-sites"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp show`, `az network private-endpoint create` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output`, `--location`, `--vnet-name`, `--subnet`, `--private-connection-resource-id`, `--group-ids`, `--connection-name` |
+| Variables | `$APP_NAME`, `$RG`, `$LOCATION`, `$VNET_NAME`, `$APP_ID` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 #### B-11: Site private DNS zone (`privatelink.azurewebsites.net`)
 
@@ -540,6 +644,14 @@ az network private-endpoint dns-zone-group create \
   --zone-name "privatelink.azurewebsites.net"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az network private-dns zone create`, `az network private-dns link vnet`, `az network private-dns zone show`, `az network private-endpoint dns-zone-group create` |
+| Key flags | `--resource-group`, `--name`, `--zone-name`, `--virtual-network`, `--registration-enabled`, `--query`, `--output`, `--endpoint-name`, `--private-dns-zone` |
+| Variables | `$RG`, `$VNET_ID`, `$SITE_ZONE_ID` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 #### B-12: App settings (identity-based storage + content share connection string)
 
 ```bash
@@ -559,6 +671,14 @@ az functionapp config appsettings set \
     "WEBSITE_CONTENTSHARE=$CONTENT_SHARE_NAME" \
     "APPLICATIONINSIGHTS_CONNECTION_STRING=$APPINSIGHTS_CONN"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage account show-connection-string`, `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--output`, `--settings` |
+| Variables | `$STORAGE_NAME`, `$RG`, `$APP_NAME`, `$STORAGE_CONN`, `$CONTENT_SHARE_NAME`, `$APPINSIGHTS_CONN` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 !!! note "Premium host storage + content share requirements"
     Premium requires both identity-based storage (for `AzureWebJobsStorage`) AND a connection string (for `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING`). The content share connection string uses shared key access.
@@ -584,6 +704,14 @@ az functionapp config appsettings set \
   --settings "APPLICATIONINSIGHTS_CONNECTION_STRING=$APPINSIGHTS_CONN"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights component create`, `az monitor app-insights component show`, `az functionapp config appsettings set` |
+| Key flags | `--app`, `--location`, `--resource-group`, `--application-type`, `--query`, `--output`, `--name`, `--settings` |
+| Variables | `$APPINSIGHTS_NAME`, `$LOCATION`, `$RG`, `$APP_NAME`, `$APPINSIGHTS_CONN` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 #### B-14: Validate resources
 
 ```bash
@@ -602,6 +730,14 @@ az network private-endpoint list \
   --query "[].name" \
   --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az resource list`, `az functionapp plan show`, `az network private-endpoint list` |
+| Key flags | `--resource-group`, `--output`, `--name`, `--query` |
+| Variables | `$RG`, `$PLAN_NAME` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 ## Verification
 

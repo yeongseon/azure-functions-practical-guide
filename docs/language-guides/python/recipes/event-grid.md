@@ -1,11 +1,19 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-event-grid
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-event-grid
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/functions-bindings-event-grid
+    verified: true
 ---
-
 # Event Grid Trigger
 
 > **Note:** This recipe covers Event Grid integration for future extensibility beyond HTTP triggers. The most common pattern shown here is an HTTP trigger that publishes events to Event Grid, and an Event Grid trigger that consumes them.
@@ -67,6 +75,14 @@ az eventgrid topic key list \
   --query "key1" --output tsv
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az eventgrid topic create`, `az eventgrid topic show`, `az eventgrid topic key list` |
+| Key flags | `--name`, `--resource-group`, `--location`, `--query`, `--output` |
+| Variables | None |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ## Event Grid Output: Publish Events from HTTP Trigger
 
 Use the Event Grid output binding to publish events when an HTTP request is received:
@@ -126,6 +142,14 @@ az functionapp config appsettings set \
     "EVENT_GRID_TOPIC_KEY=<your-topic-key>"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings` |
+| Variables | None |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 ## Event Grid Trigger: Consume Events
 
 The Event Grid trigger fires when an event arrives at a subscription. Create a function that processes events from your custom topic or from Azure service events:
@@ -177,6 +201,14 @@ az eventgrid event-subscription create \
   --endpoint "$FUNCTION_URL" \
   --endpoint-type webhook
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az eventgrid event-subscription create` |
+| Key flags | `--name`, `--source-resource-id`, `--endpoint`, `--endpoint-type` |
+| Variables | `$FUNCTION_URL` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 ## SDK Approach: EventGridPublisherClient
 
@@ -250,6 +282,14 @@ az eventgrid event-subscription create \
   --endpoint "https://your-func.azurewebsites.net/runtime/webhooks/eventgrid?functionName=handle_blob_event&code=<host-key>" \
   --endpoint-type webhook
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az eventgrid event-subscription create` |
+| Key flags | `--name`, `--source-resource-id`, `--included-event-types`, `--endpoint`, `--endpoint-type` |
+| Variables | None |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 ```python
 @bp.event_grid_trigger(arg_name="event")

@@ -225,6 +225,14 @@ az deployment group create \
   --template-file "infra/flex-consumption/main.bicep" \
   --parameters baseName="$BASE_NAME"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az group create`, `az deployment group create` |
+| Key flags | `--name`, `--location`, `--resource-group`, `--template-file`, `--parameters` |
+| Variables | `$RG`, `$LOCATION`, `$BASE_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 Deploy application package from the `apps/python/` directory:
 ```bash
 func azure functionapp publish "$APP_NAME" --python
@@ -243,6 +251,14 @@ az functionapp config show \
 curl --silent --show-error "$APP_URL/api/health"
 curl --silent --show-error "$APP_URL/api/info"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp show`, `az functionapp config show` |
+| Key flags | `--resource-group`, `--name`, `--output`, `--silent`, `--show-error` |
+| Variables | `$RG`, `$APP_NAME`, `$APP_URL` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 Expected baseline snippets (sanitized):
 ```text
 State              Running
@@ -278,6 +294,14 @@ az functionapp restart \
 curl --silent --show-error --output /dev/null --write-out "cold_after_restart %{http_code} %{time_total}\n" "$APP_URL/api/health"
 curl --silent --show-error --output /dev/null --write-out "warm_after_restart %{http_code} %{time_total}\n" "$APP_URL/api/health"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp restart` |
+| Key flags | `--resource-group`, `--name`, `--silent`, `--show-error`, `--output`, `--write-out` |
+| Variables | `$RG`, `$APP_NAME`, `$APP_URL` |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
 ### 3.6 Manual fallback
 If automation script is unavailable, use this deterministic fallback set.
 #### 3.6.1 Generate time-tagged artifact folder
@@ -296,6 +320,14 @@ curl --silent --show-error --output /dev/null --write-out "idle_cold,%{http_code
 az functionapp restart --resource-group "$RG" --name "$APP_NAME"
 curl --silent --show-error --output /dev/null --write-out "restart_cold,%{http_code},%{time_total}\n" "$APP_URL/api/health" > "$ARTIFACT_ROOT/restart-cold.csv"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp restart` |
+| Key flags | `--silent`, `--show-error`, `--output`, `--write-out`, `--resource-group`, `--name` |
+| Variables | `$i`, `$APP_URL`, `$ARTIFACT_ROOT`, `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
 #### 3.6.3 Capture health and config snapshots
 ```bash
 az functionapp show \
@@ -308,6 +340,14 @@ az functionapp config show \
   --output json > "$ARTIFACT_ROOT/functionapp-config.json"
 curl --silent --show-error "$APP_URL/api/health" > "$ARTIFACT_ROOT/health.json"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp show`, `az functionapp config show` |
+| Key flags | `--resource-group`, `--name`, `--output`, `--silent`, `--show-error` |
+| Variables | `$RG`, `$APP_NAME`, `$ARTIFACT_ROOT`, `$APP_URL` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 ### 3.7 Collect KQL evidence
 Use the KQL library queries with app filter adjusted to your `$APP_NAME`.
 #### Query 1: Function execution summary
@@ -375,6 +415,14 @@ az monitor app-insights query \
   --analytics-query "traces | where timestamp > ago(6h) | where cloud_RoleName =~ '$APP_NAME' | where message has_any ('scale','instance','worker','concurrency','drain') | project timestamp, severityLevel, message | order by timestamp desc" \
   --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights query` |
+| Key flags | `--apps`, `--resource-group`, `--analytics-query`, `--output` |
+| Variables | `$AI_NAME`, `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 Export JSON artifacts for incident evidence:
 ```bash
 az monitor app-insights query \
@@ -398,6 +446,14 @@ az monitor app-insights query \
   --analytics-query "let appName = '$APP_NAME'; traces | where timestamp > ago(12h) | where cloud_RoleName =~ appName | where message has_any ('Starting Host', 'Host started', 'Job host started', 'Host shutdown', 'Host is shutting down', 'Stopping JobHost') | project timestamp, severityLevel, message | order by timestamp desc" \
   --output json > "$ARTIFACT_ROOT/kql-query8-host-startup-shutdown.json"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights query` |
+| Key flags | `--apps`, `--resource-group`, `--analytics-query`, `--output` |
+| Variables | `$AI_NAME`, `$RG`, `$APP_NAME`, `$ARTIFACT_ROOT` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 ### 3.8 Real output snippets
 The following snippets are from the repository's real FC1 lab evidence (sanitized).
 #### Host startup traces
@@ -742,6 +798,14 @@ az group delete \
   --yes \
   --no-wait
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az group delete` |
+| Key flags | `--name`, `--yes`, `--no-wait` |
+| Variables | `$RG` |
+| Expected result | Azure CLI completes the removal request; verify the target no longer appears in follow-up `show` or `list` output. |
+
 Optional local cleanup:
 ```bash
 rm -rf "labs/cold-start/artifacts"

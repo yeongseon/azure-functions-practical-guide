@@ -134,6 +134,14 @@ az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "tr
 az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "requests | where timestamp > ago(30m) | where name has_any ('orchestrator','activity') | summarize total=count(), failed=countif(success == false), p95=percentile(duration,95) by name" --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp show`, `az rest`, `az monitor log-analytics query` |
+| Key flags | `--name`, `--resource-group`, `--output`, `--method`, `--url`, `--workspace`, `--analytics-query` |
+| Variables | `$APP_NAME`, `$RG`, `$INSTANCE_ID`, `$TASK_HUB`, `$DURABLE_API_KEY`, `$WORKSPACE_ID` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ### Example output
 ```text
 Name                ResourceGroup          State    RuntimeVersion    DefaultHostName
@@ -392,28 +400,76 @@ flowchart TD
    az rest --method get --url "https://$APP_NAME.azurewebsites.net/runtime/webhooks/durabletask/instances/$INSTANCE_ID?taskHub=$TASK_HUB&connection=Storage&code=$DURABLE_API_KEY" --output json
    az rest --method post --url "https://$APP_NAME.azurewebsites.net/runtime/webhooks/durabletask/instances/$INSTANCE_ID/terminate?reason=stuck-instance-mitigation&taskHub=$TASK_HUB&connection=Storage&code=$DURABLE_API_KEY" --output json
    ```
+
+   | CLI element | Explanation |
+   |---|---|
+   | Command(s) | `az rest` |
+   | Key flags | `--method`, `--url`, `--output` |
+   | Variables | `$APP_NAME`, `$INSTANCE_ID`, `$TASK_HUB`, `$DURABLE_API_KEY` |
+   | Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 2. Reduce replay pressure by introducing `ContinueAsNew` in long-running orchestrations and redeploy.
    ```bash
    az functionapp deployment source config-zip --name $APP_NAME --resource-group $RG --src ./deployments/durable-continue-as-new-hotfix.zip --output table
    ```
+
+   | CLI element | Explanation |
+   |---|---|
+   | Command(s) | `az functionapp deployment source config-zip` |
+   | Key flags | `--name`, `--resource-group`, `--src`, `--output` |
+   | Variables | `$APP_NAME`, `$RG` |
+   | Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 3. Add explicit retry policy for critical activity calls in code. Durable Functions retries are defined per `CallActivityWithRetryAsync` in the orchestrator, not via app settings.
    ```bash
    # Redeploy with retry policy added to orchestrator code
    az functionapp deployment source config-zip --name $APP_NAME --resource-group $RG --src ./deployments/durable-retry-policy-hotfix.zip --output table
    ```
+
+   | CLI element | Explanation |
+   |---|---|
+   | Command(s) | `az functionapp deployment source config-zip` |
+   | Key flags | `--name`, `--resource-group`, `--src`, `--output` |
+   | Variables | `$APP_NAME`, `$RG` |
+   | Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 4. Validate host and plan settings to avoid worker starvation and under-provisioned execution.
    ```bash
    az functionapp show --name $APP_NAME --resource-group $RG --query "{state:state,plan:serverFarmId,kind:kind}" --output json
    az functionapp plan update --name $PLAN_NAME --resource-group $RG --number-of-workers 2 --output table
    ```
+
+   | CLI element | Explanation |
+   |---|---|
+   | Command(s) | `az functionapp show`, `az functionapp plan update` |
+   | Key flags | `--name`, `--resource-group`, `--query`, `--output`, `--number-of-workers` |
+   | Variables | `$APP_NAME`, `$RG`, `$PLAN_NAME` |
+   | Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 5. If external events are missing, replay from upstream message source or use the Durable HTTP API to raise the event manually.
    ```bash
    az rest --method post --url "https://$APP_NAME.azurewebsites.net/runtime/webhooks/durabletask/instances/$INSTANCE_ID/raiseEvent/$EVENT_NAME?taskHub=$TASK_HUB&connection=Storage&code=$DURABLE_API_KEY" --body '{"status":"compensated"}' --output json
    ```
+
+   | CLI element | Explanation |
+   |---|---|
+   | Command(s) | `az rest` |
+   | Key flags | `--method`, `--url`, `--body`, `--output` |
+   | Variables | `$APP_NAME`, `$INSTANCE_ID`, `$EVENT_NAME`, `$TASK_HUB`, `$DURABLE_API_KEY` |
+   | Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 6. Restart host only after status snapshots are captured so forensic data is preserved.
    ```bash
    az functionapp restart --name $APP_NAME --resource-group $RG
    ```
+
+   | CLI element | Explanation |
+   |---|---|
+   | Command(s) | `az functionapp restart` |
+   | Key flags | `--name`, `--resource-group` |
+   | Variables | `$APP_NAME`, `$RG` |
+   | Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
 
 ## 9. Prevention
 1. Keep orchestrator code deterministic: use context-provided time/ID APIs, never direct `DateTime.Now` or `Guid.NewGuid` inside orchestrators.

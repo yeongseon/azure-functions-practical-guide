@@ -1,11 +1,19 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-cosmosdb-v2
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-reference#configure-an-identity-based-connection
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-cosmosdb-v2
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-reference#configure-an-identity-based-connection
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/functions-bindings-cosmosdb-v2
+    verified: true
 ---
-
 # Cosmos DB Integration
 
 This recipe demonstrates real Azure Cosmos DB input/output bindings in Node.js v4 using `extraInputs` and `extraOutputs` with `app.http()`.
@@ -57,6 +65,14 @@ az cosmosdb sql container create \
   --partition-key-path "/customerId"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az cosmosdb create`, `az cosmosdb sql database create`, `az cosmosdb sql container create` |
+| Key flags | `--name`, `--resource-group`, `--kind`, `--account-name`, `--database-name`, `--partition-key-path` |
+| Variables | `$RG` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 Set connection string for binding-based access:
 
 ```bash
@@ -65,6 +81,14 @@ az functionapp config appsettings set \
   --resource-group $RG \
   --settings "CosmosDBConnection=$(az cosmosdb keys list --name <cosmos-account-name> --resource-group $RG --type connection-strings --query 'connectionStrings[0].connectionString' --output tsv)"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings`, `--type`, `--query`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 Managed identity alternative for bindings:
 
@@ -83,6 +107,14 @@ az functionapp config appsettings set \
   --resource-group $RG \
   --settings "CosmosDBConnection__accountEndpoint=https://<cosmos-account-name>.documents.azure.com:443/"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp identity assign`, `az cosmosdb sql role assignment`, `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--account-name`, `--scope`, `--principal-id`, `--role-definition-name`, `--settings` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 ## Working Node.js v4 Code
 

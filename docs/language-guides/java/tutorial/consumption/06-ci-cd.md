@@ -2,21 +2,29 @@
 validation:
   az_cli:
     last_tested: 2026-04-10
-    cli_version: "2.83.0"
-    core_tools_version: "4.8.0"
+    cli_version: 2.83.0
+    core_tools_version: 4.8.0
     result: pass
   bicep:
     last_tested: null
     result: not_tested
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-java
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-java
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
+    verified: true
 ---
-
 # 06 - CI/CD (Consumption)
 
 Automate build, test, and deployment using GitHub Actions so every change ships through the same pipeline.
@@ -58,6 +66,14 @@ az functionapp deployment list-publishing-profiles \
   --resource-group "$RG" \
   --xml
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp deployment list-publishing-profiles` |
+| Key flags | `--name`, `--resource-group`, `--xml` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 ### Step 2 - Store deployment secrets in GitHub
 
@@ -143,6 +159,14 @@ curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
 # Test hello endpoint
 curl --request GET "https://$APP_NAME.azurewebsites.net/api/hello/CICD"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp show` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output`, `--request` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 Use GitHub Actions run history as the deployment timeline of record (`Actions` tab → workflow runs → latest commit SHA), and compare it with `lastModifiedTimeUtc` to confirm release timing.
 

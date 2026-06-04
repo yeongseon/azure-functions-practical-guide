@@ -2,23 +2,31 @@
 validation:
   az_cli:
     last_tested: 2026-04-10
-    cli_version: "2.83.0"
-    core_tools_version: "4.8.0"
+    cli_version: 2.83.0
+    core_tools_version: 4.8.0
     result: pass
   bicep:
     last_tested: null
     result: not_tested
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-resource-manager/bicep/overview
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/app-service/overview-hosting-plans
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-resource-manager/bicep/overview
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/app-service/overview-hosting-plans
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide
+    verified: true
 ---
-
 # 05 - Infrastructure as Code (Dedicated)
 
 Describe your .NET Function App platform using Bicep so provisioning is deterministic and easy to review.
@@ -45,6 +53,14 @@ flowchart TD
     B --> C[Function App + App Service Plan + Storage]
     C --> D["Build + publish from output dir"]
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az deployment group create]` |
+| Key flags | None |
+| Variables | None |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 ## Steps
 
@@ -119,6 +135,14 @@ az deployment group create \
   --parameters baseName="$BASE_NAME"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az deployment group create` |
+| Key flags | `--resource-group`, `--template-file`, `--parameters` |
+| Variables | `$RG`, `$BASE_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ### Step 4 - Deploy application artifact
 
 After infrastructure is provisioned, build and publish from the output directory:
@@ -148,6 +172,14 @@ az functionapp show \
   --resource-group "$RG" \
   --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az deployment group show`, `az functionapp show` |
+| Key flags | `--resource-group`, `--name`, `--query`, `--output` |
+| Variables | `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 ## Verification
 

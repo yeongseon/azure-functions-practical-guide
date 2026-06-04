@@ -92,6 +92,14 @@ az functionapp function list --name "$APP_NAME" --resource-group "$RG" --output 
 az functionapp config appsettings list --name "$APP_NAME" --resource-group "$RG" --output table
 az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "traces | where timestamp > ago(30m) | where cloud_RoleName =~ '$APP_NAME' | where message has_any ('disabled','listener','Host started','unable to start') | project timestamp, severityLevel, message | order by timestamp desc" --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp function list`, `az functionapp config appsettings list`, `az monitor log-analytics query` |
+| Key flags | `--name`, `--resource-group`, `--output`, `--workspace`, `--analytics-query` |
+| Variables | `$APP_NAME`, `$RG`, `$WORKSPACE_ID` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 ### Example output
 ```text
 Name             Trigger    IsDisabled
@@ -212,6 +220,14 @@ az functionapp config show --name "$APP_NAME" --resource-group "$RG" --output js
 # Source activity sample (Storage)
 az monitor metrics list --resource "/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RG/providers/Microsoft.Storage/storageAccounts/<storage-account-name>" --metric "Transactions" --interval PT5M --aggregation Total --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp function list`, `az functionapp config appsettings list`, `az monitor log-analytics query`, `az functionapp config show`, plus 1 more |
+| Key flags | `--name`, `--resource-group`, `--output`, `--workspace`, `--analytics-query`, `--resource`, `--metric`, `--interval`, `--aggregation` |
+| Variables | `$APP_NAME`, `$RG`, `$WORKSPACE_ID`, `$SUBSCRIPTION_ID` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 Example command output:
 ```text
 Name                                     Value
@@ -249,6 +265,14 @@ timestamp                    message
 az functionapp function list --name "$APP_NAME" --resource-group "$RG" --output table
 az functionapp config appsettings list --name "$APP_NAME" --resource-group "$RG" --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp function list`, `az functionapp config appsettings list` |
+| Key flags | `--name`, `--resource-group`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 ```kusto
 let appName = "$APP_NAME";
 traces
@@ -390,6 +414,14 @@ Disproof condition:
 az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "traces | where timestamp > ago(2h) | where cloud_RoleName =~ '$APP_NAME' | where message has_any ('Worker process started and initialized','Failed to start language worker process','did not find functions with language','Host started') | project timestamp, message | order by timestamp desc" --output table
 az functionapp config show --name "$APP_NAME" --resource-group "$RG" --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor log-analytics query`, `az functionapp config show` |
+| Key flags | `--workspace`, `--analytics-query`, `--output`, `--name`, `--resource-group` |
+| Variables | `$WORKSPACE_ID`, `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 Example output:
 ```text
 timestamp                    message
@@ -428,6 +460,14 @@ az functionapp config appsettings delete --name "$APP_NAME" --resource-group "$R
 az functionapp config appsettings set --name "$APP_NAME" --resource-group "$RG" --settings "QueueConnection=DefaultEndpointsProtocol=https;AccountName=***;AccountKey=***"
 az functionapp restart --name "$APP_NAME" --resource-group "$RG"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings delete`, `az functionapp config appsettings set`, `az functionapp restart` |
+| Key flags | `--name`, `--resource-group`, `--setting-names`, `--settings` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI completes the removal request; verify the target no longer appears in follow-up `show` or `list` output. |
+
 ### Recovery verification
 ```kusto
 let appName = "$APP_NAME";

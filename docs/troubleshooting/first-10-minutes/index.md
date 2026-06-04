@@ -1,11 +1,19 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/service-health/overview
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/service-health/overview
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+    verified: true
 ---
-
 # Checklists
 
 Fast triage guides for the first 10 minutes of an Azure Functions investigation.

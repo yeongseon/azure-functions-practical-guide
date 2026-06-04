@@ -2,21 +2,29 @@
 validation:
   az_cli:
     last_tested: 2026-04-10
-    cli_version: "2.83.0"
-    core_tools_version: "4.8.0"
+    cli_version: 2.83.0
+    core_tools_version: 4.8.0
     result: pass
   bicep:
     last_tested: null
     result: not_tested
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+    verified: true
 ---
-
 # 04 - Logging and Monitoring (Premium)
 
 Capture structured logs, query telemetry, and validate operational visibility.
@@ -57,6 +65,14 @@ flowchart TD
     style LAW fill:#FFF3E0
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights query\| AI` |
+| Key flags | None |
+| Variables | None |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ## Steps
 
 ### Step 1 — Verify Application Insights is connected
@@ -70,6 +86,14 @@ az monitor app-insights component show \
   --query "{name:name, connectionString:connectionString}" \
   --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights component show` |
+| Key flags | `--app`, `--resource-group`, `--query`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 Expected output (abridged):
 
@@ -109,6 +133,14 @@ az monitor app-insights query \
   --output json
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights query` |
+| Key flags | `--app`, `--resource-group`, `--analytics-query`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 Expected output (abridged):
 
 ```json
@@ -140,6 +172,14 @@ az monitor app-insights query \
   --analytics-query "requests | where timestamp > ago(30m) | summarize count() by name | order by count_ desc" \
   --output json
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights query` |
+| Key flags | `--app`, `--resource-group`, `--analytics-query`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 Expected output (abridged):
 

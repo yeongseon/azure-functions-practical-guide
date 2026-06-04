@@ -168,6 +168,14 @@ az functionapp deployment slot list \
   --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor activity-log list`, `az functionapp deployment slot list` |
+| Key flags | `--subscription`, `--resource-group`, `--offset`, `--max-events`, `--output`, `--name` |
+| Variables | None |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ## Network and outbound path (where external connectivity fails)
 
 Outbound failures often look like app bugs but originate in network controls.

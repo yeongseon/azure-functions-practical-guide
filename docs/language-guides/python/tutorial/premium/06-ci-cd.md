@@ -2,21 +2,29 @@
 validation:
   az_cli:
     last_tested: 2026-04-09
-    cli_version: "2.83.0"
-    core_tools_version: "4.8.0"
+    cli_version: 2.83.0
+    core_tools_version: 4.8.0
     result: pass
   bicep:
     last_tested: null
     result: not_tested
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-how-to-github-actions
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-deployment-slots
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-deployment-slots#swap-slots
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-how-to-github-actions
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-deployment-slots
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-deployment-slots#swap-slots
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/functions-how-to-github-actions
+    verified: true
 ---
-
 # 06 - CI/CD (Premium)
 
 Build a GitHub Actions pipeline for Azure Functions Premium, then add safe production rollout with deployment slots.
@@ -125,6 +133,14 @@ flowchart TD
       --scope "/subscriptions/<subscription-id>/resourceGroups/$RG"
     ```
 
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az ad app create`, `az ad sp create`, `az ad app federated-credential create`, `az role assignment create` |
+    | Key flags | `--display-name`, `--id`, `--parameters`, `--assignee`, `--role`, `--scope` |
+    | Variables | `$APP_NAME`, `$RG` |
+    | Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 2. Create deployment slots for Premium staging and warm-up.
 
     ```bash
@@ -138,6 +154,14 @@ flowchart TD
       --resource-group "$RG" \
       --output table
     ```
+
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az functionapp deployment slot create`, `az functionapp deployment slot list` |
+    | Key flags | `--name`, `--resource-group`, `--slot`, `--output` |
+    | Variables | `$APP_NAME`, `$RG` |
+    | Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
     !!! warning "Staging slot requires separate configuration"
         The staging slot starts as a blank app. You must configure it separately:
@@ -159,6 +183,14 @@ flowchart TD
       --slot-settings \
         "AZURE_FUNCTIONS_ENVIRONMENT=Staging"
     ```
+
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az functionapp config appsettings set` |
+    | Key flags | `--name`, `--resource-group`, `--slot`, `--slot-settings` |
+    | Variables | `$APP_NAME`, `$RG` |
+    | Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 4. Define required GitHub Actions repository variables before workflow execution.
 
@@ -228,6 +260,14 @@ flowchart TD
                 --target-slot "production"
     ```
 
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az functionapp deployment slot swap` |
+    | Key flags | `--upgrade`, `--requirement`, `--request`, `--name`, `--resource-group`, `--slot`, `--target-slot` |
+    | Variables | None |
+    | Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 6. Deploy from local terminal to staging slot (manual fallback).
 
     ```bash
@@ -249,6 +289,14 @@ flowchart TD
     curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
     ```
 
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az functionapp deployment slot swap` |
+    | Key flags | `--request`, `--name`, `--resource-group`, `--slot`, `--target-slot` |
+    | Variables | `$APP_NAME`, `$RG` |
+    | Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 8. Verify deployment history and SCM endpoints.
 
     ```bash
@@ -257,6 +305,14 @@ flowchart TD
       --resource-group "$RG" \
       --output table
     ```
+
+    | CLI element | Explanation |
+    |---|---|
+    | Command(s) | `az functionapp deployment slot list` |
+    | Key flags | `--name`, `--resource-group`, `--output` |
+    | Variables | `$APP_NAME`, `$RG` |
+    | Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
     Premium includes SCM/Kudu endpoints per slot:
     - Production: `https://$APP_NAME.scm.azurewebsites.net`

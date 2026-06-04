@@ -9,7 +9,7 @@ content_sources:
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-functions/monitor-functions
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-monitor/logs/log-query-overview
+    url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
@@ -105,6 +105,14 @@ az deployment group create \
     --parameters baseName="$BASE_NAME"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az group create`, `az deployment group create` |
+| Key flags | `--name`, `--location`, `--resource-group`, `--template-file`, `--parameters` |
+| Variables | `$RG`, `$LOCATION`, `$BASE_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ### Step 2: Deploy function app code
 
 Use the 2-minute timer schedule:
@@ -126,6 +134,14 @@ az functionapp config appsettings set \
     --settings TIMER_LAB_SCHEDULE="0 */2 * * * *"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--resource-group`, `--name`, `--settings` |
+| Variables | `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 Publish from the `apps/python/` directory:
 
 ```bash
@@ -144,12 +160,28 @@ az monitor app-insights query \
     --analytics-query "traces | where cloud_RoleName == 'labshared-func' | where message has 'TimerFired' | parse message with * 'isPastDue=' isPastDue:string ' ' * | summarize invocations=count(), pastDue=countif(isPastDue == 'True') by bin(timestamp, 2m) | order by timestamp asc"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights query` |
+| Key flags | `--apps`, `--resource-group`, `--analytics-query` |
+| Variables | `$AI_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ```bash
 az monitor app-insights query \
     --apps "$AI_NAME" \
     --resource-group "$RG" \
     --analytics-query "requests | where cloud_RoleName == 'labshared-func' | where name has 'timer_lab' | summarize invocations=count() by bin(timestamp, 2m) | order by timestamp asc"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights query` |
+| Key flags | `--apps`, `--resource-group`, `--analytics-query` |
+| Variables | `$AI_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 ### Step 4: Trigger the incident
 
@@ -159,11 +191,27 @@ Stop the app:
 az functionapp stop --resource-group "$RG" --name "$APP_NAME"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp stop` |
+| Key flags | `--resource-group`, `--name` |
+| Variables | `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
+
 Wait 15-20 minutes (at least 7 schedule windows), then start the app:
 
 ```bash
 az functionapp start --resource-group "$RG" --name "$APP_NAME"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp start` |
+| Key flags | `--resource-group`, `--name` |
+| Variables | `$RG`, `$APP_NAME` |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
 
 ### Step 5: Collect incident evidence
 
@@ -212,6 +260,14 @@ Host lifecycle evidence:
 07:41:32Z  Host lock lease acquired
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp stop)` |
+| Key flags | None |
+| Variables | None |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
+
 ### Step 6: Interpret results
 
 - [ ] No invocations exist for expected windows 07:26 through 07:40 while the app is stopped.
@@ -229,6 +285,14 @@ az monitor app-insights query \
     --resource-group "$RG" \
     --analytics-query "traces | where cloud_RoleName == 'labshared-func' | where message has 'TimerFired' | parse message with * 'isPastDue=' isPastDue:string ' ' * | where timestamp between (datetime(2026-04-07 07:40:00Z) .. datetime(2026-04-07 07:44:00Z)) | project timestamp, isPastDue | order by timestamp asc"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights query` |
+| Key flags | `--apps`, `--resource-group`, `--analytics-query` |
+| Variables | `$AI_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 ## 4) Experiment Log
 
@@ -359,6 +423,14 @@ R002 expected=07:42 actual=07:42:00.003 drift_sec=0 isPastDue=False
 az group delete --name "$RG" --yes --no-wait
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az group delete` |
+| Key flags | `--name`, `--yes`, `--no-wait` |
+| Variables | `$RG` |
+| Expected result | Azure CLI completes the removal request; verify the target no longer appears in follow-up `show` or `list` output. |
+
+
 ## Related Playbook
 
 - [Timer trigger execution drift playbook](../playbooks/index.md)
@@ -377,4 +449,4 @@ az group delete --name "$RG" --yes --no-wait
 - https://learn.microsoft.com/azure/azure-functions/functions-host-json
 - https://learn.microsoft.com/azure/azure-functions/functions-reference
 - https://learn.microsoft.com/azure/azure-functions/monitor-functions
-- https://learn.microsoft.com/azure/azure-monitor/logs/log-query-overview
+- https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview

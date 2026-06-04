@@ -2,21 +2,29 @@
 validation:
   az_cli:
     last_tested: 2026-04-11
-    cli_version: "2.70.0"
-    core_tools_version: "4.6.0"
+    cli_version: 2.70.0
+    core_tools_version: 4.6.0
     result: pass
   bicep:
     last_tested: null
     result: not_tested
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-python
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-python
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-premium-plan
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-reference-python
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-python
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-premium-plan
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/functions-reference-python
+    verified: true
 ---
-
 # 02 - First Deploy (Premium)
 
 Deploy a Python Function App to an Elastic Premium plan (`EP1`) with always-warm instances, then publish code and verify the app is live.

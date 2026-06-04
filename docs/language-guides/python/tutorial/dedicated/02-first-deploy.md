@@ -2,21 +2,31 @@
 validation:
   az_cli:
     last_tested: 2026-04-12
-    cli_version: "2.70.0"
-    core_tools_version: "4.6.0"
+    cli_version: 2.70.0
+    core_tools_version: 4.6.0
     result: pass
   bicep:
     last_tested: null
     result: not_tested
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-how-to-use-azure-function-app-settings
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/app-service/configure-common
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/app-service/networking/private-endpoint
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-how-to-use-azure-function-app-settings
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/app-service/configure-common
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/app-service/overview-vnet-integration
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/app-service/networking/private-endpoint
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/functions-how-to-use-azure-function-app-settings
+    verified: true
 ---
-
 # 02 - First Deploy (Dedicated)
 
 In this tutorial you deploy the Function App to a Dedicated App Service Plan using Basic B1. Dedicated plans are always running (no scale-to-zero), support Linux and Windows, and use fixed monthly pricing regardless of executions.
@@ -47,19 +57,19 @@ export LOCATION="koreacentral"
 You will provision a Basic (B1) Linux App Service Plan, create a Python Function App on that plan, deploy from `apps/python`, and validate live endpoints.
 
 !!! tip "Network Scenario Choices"
-    This tutorial deploys with **public networking** (B1 tier). For private networking, upgrade to Standard (S1+):
+    This tutorial deploys with **public networking** on B1. Basic supports App Service VNet integration and private endpoints, but this guide uses Standard (S1+) for private networking walkthroughs to match the production-oriented validation path.
 
     | Scenario | Description | Guide |
     |----------|-------------|-------|
     | **Public Only** | No VNet (this tutorial, B1) | Current page |
-    | **Private Egress** | VNet + Storage PE (S1+ required) | [Private Egress](../../../../platform/networking-scenarios/private-egress.md) |
-    | **Private Ingress** | + Site Private Endpoint (S1+ required) | [Private Ingress](../../../../platform/networking-scenarios/private-ingress.md) |
-    | **Fixed Outbound IP** | + NAT Gateway (S1+ required) | [Fixed Outbound](../../../../platform/networking-scenarios/fixed-outbound-nat.md) |
+    | **Private Egress** | VNet + Storage PE (guide validates S1+) | [Private Egress](../../../../platform/networking-scenarios/private-egress.md) |
+    | **Private Ingress** | + Site Private Endpoint (guide validates S1+) | [Private Ingress](../../../../platform/networking-scenarios/private-ingress.md) |
+    | **Fixed Outbound IP** | + NAT Gateway (guide validates S1+) | [Fixed Outbound](../../../../platform/networking-scenarios/fixed-outbound-nat.md) |
 
 !!! info "Infrastructure Context"
-    **Plan**: Dedicated (B1) | **Network**: Public internet | **VNet**: ❌ (requires Standard+ tier)
+    **Plan**: Dedicated (B1) | **Network**: Public internet in this tutorial | **VNet**: Supported by platform, not configured here
 
-    Basic B1 has no VNet integration or private endpoints. The app runs on a fixed App Service Plan (always on, no scale-to-zero). VNet support requires upgrading to Standard (S1) or Premium (P1v3) tier.
+    The app runs on a fixed App Service Plan (always on, no scale-to-zero). Basic B1 supports App Service VNet integration and private endpoints, but this guide uses Standard (S1+) for private networking scenarios to provide scale headroom, deployment slots, and a production-oriented validation path.
 
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
@@ -150,7 +160,7 @@ az appservice plan create \
 | `--sku B1` | Selects the Basic B1 pricing tier. |
 | `--is-linux` | Configures the plan for Linux hosting. |
 
-For production workloads, use `S1` or `P1v2` when you need higher scale limits, VNet integration, or deployment slots.
+For production workloads, use `S1` or `P1v2` when you need higher scale limits, autoscale rules, deployment slots, or the same private networking path validated by this guide.
 
 ### Step 3 - Create the Function App on the plan
 
@@ -252,15 +262,15 @@ flowchart TD
     B --> D[Azure Services\nStorage, Monitor, App Insights]
 ```
 
-!!! info "VNet support requires Standard+ tier"
-    VNet integration is not available on Basic (B1) tier. See the **Optional: VNet and Private Endpoints** section below for Standard (S1) or Premium (P1v2) setup.
+!!! info "B1 network support and guide scope"
+    Basic (B1) supports App Service VNet integration and private endpoints, but this tutorial intentionally remains public-only. Use the optional section when you want to test private networking; use Standard (S1+) if you want to match the guide-tested production path.
 
-### Optional: VNet and Private Endpoints (Standard+ Tier)
+### Optional: VNet and Private Endpoints
 
-??? example "Optional: VNet and Private Endpoints (Standard+ Tier)"
-    If you deployed with `--sku S1` or higher instead of B1, you can add full network isolation with VNet integration, storage private endpoints, and managed identity.
+??? example "Optional: VNet and Private Endpoints"
+    Basic (B1) can use these platform networking features. This walkthrough upgrades to `S1` to align with the guide-tested private networking path and provide more production headroom.
 
-    #### Step A: Upgrade Plan (skip if already S1+)
+    #### Step A: Upgrade Plan (recommended guide path)
 
     ```bash
     az appservice plan update \
@@ -272,7 +282,7 @@ flowchart TD
     | Command/Parameter | Purpose |
     |-------------------|---------|
     | `az appservice plan update` | Modifies plan properties. |
-    | `--sku S1` | Upgrades the tier to Standard S1 to enable networking features. |
+    | `--sku S1` | Upgrades the tier to Standard S1 for the guide-tested private networking path. |
 
     #### Step B: Create VNet and Subnets
 

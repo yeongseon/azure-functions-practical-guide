@@ -1,13 +1,21 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/configure-monitoring
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-recover-from-failed-host
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/configure-monitoring
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-diagnostics
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+    verified: true
 ---
-
 # Hands-on Labs
 
 These labs let you practice incident response on reproducible Azure Functions failure scenarios.
@@ -107,6 +115,14 @@ az deployment group create \
 az group delete --name rg-lab-<name> --yes --no-wait
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az group create`, `az deployment group create`, `az group delete` |
+| Key flags | `--name`, `--location`, `--resource-group`, `--template-file`, `--parameters`, `--yes`, `--no-wait` |
+| Variables | None |
+| Expected result | Azure CLI completes the removal request; verify the target no longer appears in follow-up `show` or `list` output. |
+
+
 !!! warning "Cost"
     Each lab deploys Azure Functions resources. Delete the resource group after completing the lab to avoid ongoing charges.
 
@@ -178,4 +194,4 @@ Each lab trains specific diagnostic skills:
 
 - [Azure Functions monitoring](https://learn.microsoft.com/azure/azure-functions/functions-monitoring)
 - [Application Insights for Azure Functions](https://learn.microsoft.com/azure/azure-functions/configure-monitoring)
-- [Troubleshoot Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-recover-from-failed-host)
+- [Troubleshoot Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-diagnostics)

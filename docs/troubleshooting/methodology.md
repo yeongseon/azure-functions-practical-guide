@@ -5,7 +5,7 @@ content_sources:
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-functions/configure-monitoring
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-recover-from-failed-host
+    url: https://learn.microsoft.com/azure/azure-functions/functions-diagnostics
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/azure-monitor/overview
 content_validation:
@@ -197,5 +197,5 @@ flowchart TD
 
 - [Monitor Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-monitoring)
 - [Configure monitoring for Azure Functions](https://learn.microsoft.com/azure/azure-functions/configure-monitoring)
-- [Troubleshoot Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-recover-from-failed-host)
+- [Troubleshoot Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-diagnostics)
 - [Azure Monitor overview](https://learn.microsoft.com/azure/azure-monitor/overview)

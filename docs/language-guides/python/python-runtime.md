@@ -1,15 +1,23 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/supported-languages
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-how-to
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-python
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-overview
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/supported-languages
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-how-to
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-reference-python
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-overview
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/supported-languages
+    verified: true
 ---
-
 # Python Runtime
 
 This reference covers the Python runtime configuration for Azure Functions — supported versions, worker process settings, async function support, dependency management, and performance tuning.
@@ -56,6 +64,14 @@ az functionapp create \
   --os-type linux
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp create` |
+| Key flags | `--name`, `--resource-group`, `--storage-account`, `--consumption-plan-location`, `--runtime`, `--runtime-version`, `--functions-version`, `--os-type` |
+| Variables | None |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 > **Flex Consumption:** The `--consumption-plan-location` flag creates a classic Consumption plan. To create a Flex Consumption app, use `az functionapp create` with a pre-created Flex Consumption plan (`--plan`), or use the Bicep template in `infra/main.bicep`. See [Flex Consumption plan](https://learn.microsoft.com/azure/azure-functions/flex-consumption-how-to) for CLI details.
 
 > **Important:** Azure Functions for Python only runs on Linux. The `--os-type linux` flag is required.
@@ -69,6 +85,14 @@ az functionapp config show \
   --query "linuxFxVersion" --output tsv
 # Output: Python|3.11
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config show` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output` |
+| Variables | None |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 ## Worker Process Settings
 
@@ -88,6 +112,14 @@ az functionapp config appsettings set \
   --resource-group your-rg \
   --settings "PYTHON_THREADPOOL_THREAD_COUNT=16"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings` |
+| Variables | None |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 **When to increase:** If your functions are I/O-bound (making HTTP calls, querying databases, reading files). The GIL is released during I/O operations, so additional threads provide real concurrency.
 
@@ -237,6 +269,14 @@ az functionapp config appsettings set \
   --resource-group your-rg \
   --settings "PYTHON_ISOLATE_WORKER_DEPENDENCIES=1"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings` |
+| Variables | None |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 ### Large Dependencies
 

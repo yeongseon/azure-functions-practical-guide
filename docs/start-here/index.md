@@ -1,11 +1,19 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
+    verified: true
 ---
-
 # Start Here
 
 Start Here is the fastest path to understand Azure Functions fundamentals and navigate this guide with purpose.
@@ -53,9 +61,22 @@ flowchart TD
 !!! tip "Operations Guide"
     For deployment and day-2 operations, see [Operations](../operations/index.md).
 
+## Review Matrix
+
+| Review area | Page-specific check |
+|---|---|
+| Scope | Confirm the guidance applies to Start Here. |
+| Source basis | Validate the recommendation against the Microsoft Learn sources in this page. |
+| Evidence | Capture command output, portal state, metrics, logs, or screenshots before treating the result as proven. |
+
 ## See Also
 
 - [Home](../index.md)
 - [Platform](../platform/index.md)
 - [Language Guides](../language-guides/index.md)
 - [Operations](../operations/index.md)
+
+## Sources
+
+- [Microsoft Learn source 1](https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview)
+- [Microsoft Learn source 2](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)

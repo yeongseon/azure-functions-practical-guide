@@ -2,21 +2,29 @@
 validation:
   az_cli:
     last_tested: 2026-04-10
-    cli_version: "2.83.0"
-    core_tools_version: "4.8.0"
+    cli_version: 2.83.0
+    core_tools_version: 4.8.0
     result: pass
   bicep:
     last_tested: null
     result: not_tested
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+    verified: true
 ---
-
 # 07 - Extending Triggers (Flex Consumption)
 
 Add queue, timer, and blob triggers with the Node.js v4 APIs and verify the Functions host indexes each binding.
@@ -142,6 +150,14 @@ az storage container create \
   --auth-mode login
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage queue create`, `az storage container create` |
+| Key flags | `--name`, `--account-name`, `--auth-mode` |
+| Variables | `$STORAGE_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ### Step 6 - Verify local trigger indexing
 
 ```bash
@@ -162,6 +178,14 @@ az storage message put \
   --content '{"orderId":"test-flex-001","item":"widget"}' \
   --account-name "$STORAGE_NAME"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage message put` |
+| Key flags | `--queue-name`, `--content`, `--account-name` |
+| Variables | `$STORAGE_NAME` |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
 
 !!! note "Queue auth mode"
     If `--auth-mode login` fails with a permissions error, use `--auth-mode key` or pass `--account-key` explicitly. The Storage Queue Data Contributor role is required for login-based queue writes.
@@ -195,6 +219,14 @@ az functionapp function list \
   --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp function list` |
+| Key flags | `--name`, `--resource-group`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ## Clean Up
 
 If you are finished with the Flex Consumption tutorials, delete the resource group:
@@ -202,6 +234,14 @@ If you are finished with the Flex Consumption tutorials, delete the resource gro
 ```bash
 az group delete --name "$RG" --yes --no-wait
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az group delete` |
+| Key flags | `--name`, `--yes`, `--no-wait` |
+| Variables | `$RG` |
+| Expected result | Azure CLI completes the removal request; verify the target no longer appears in follow-up `show` or `list` output. |
+
 
 ## See Also
 

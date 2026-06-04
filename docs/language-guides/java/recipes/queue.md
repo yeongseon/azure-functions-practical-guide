@@ -1,11 +1,19 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-host-json
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-host-json
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue
+    verified: true
 ---
-
 # Queue Storage Integration
 
 This recipe demonstrates Java queue trigger and queue output bindings with retry behavior, host settings, and poison queue handling.
@@ -29,6 +37,14 @@ Create queues:
 az storage queue create --name work-items --account-name $STORAGE_NAME --auth-mode login
 az storage queue create --name work-results --account-name $STORAGE_NAME --auth-mode login
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage queue create` |
+| Key flags | `--name`, `--account-name`, `--auth-mode` |
+| Variables | `$STORAGE_NAME` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 Queue runtime defaults in `host.json`:
 
@@ -102,6 +118,14 @@ az storage message peek \
   --account-name $STORAGE_NAME \
   --auth-mode login
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az storage message peek` |
+| Key flags | `--queue-name`, `--account-name`, `--auth-mode` |
+| Variables | `$STORAGE_NAME` |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
 
 ## Implementation notes
 

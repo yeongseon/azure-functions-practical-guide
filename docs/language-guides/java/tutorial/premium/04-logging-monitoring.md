@@ -2,21 +2,29 @@
 validation:
   az_cli:
     last_tested: 2026-04-10
-    cli_version: "2.83.0"
-    core_tools_version: "4.8.0"
+    cli_version: 2.83.0
+    core_tools_version: 4.8.0
     result: pass
   bicep:
     last_tested: null
     result: not_tested
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-java
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-java
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
+    verified: true
 ---
-
 # 04 - Logging and Monitoring (Premium)
 
 Enable production-grade observability with Application Insights, structured logs, and baseline alerting for Java handlers.
@@ -102,6 +110,14 @@ az functionapp config appsettings list \
   --output tsv
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings list` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 Expected output:
 
 ```text
@@ -132,6 +148,14 @@ az monitor app-insights query \
   --analytics-query "traces | where timestamp > ago(30m) | project timestamp, message, severityLevel | order by timestamp desc | take 10"
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights query` |
+| Key flags | `--apps`, `--resource-group`, `--analytics-query` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ### Step 5 - Query request performance
 
 ```bash
@@ -140,6 +164,14 @@ az monitor app-insights query \
   --resource-group "$RG" \
   --analytics-query "requests | where timestamp > ago(30m) | project timestamp, name, resultCode, duration | order by timestamp desc | take 10"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor app-insights query` |
+| Key flags | `--apps`, `--resource-group`, `--analytics-query` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 !!! note "App Insights queries on Premium"
     Use `--apps "$APP_NAME" --resource-group "$RG"` to resolve the App Insights component. The `--app` flag alone may fail with `PathNotFoundError`.
@@ -151,6 +183,14 @@ az webapp log tail \
   --name "$APP_NAME" \
   --resource-group "$RG"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az webapp log tail` |
+| Key flags | `--name`, `--resource-group` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
 
 Expected output:
 
@@ -184,6 +224,14 @@ az monitor metrics alert create \
   --window-size 5m \
   --evaluation-frequency 1m
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp show`, `az monitor metrics alert create` |
+| Key flags | `--name`, `--resource-group`, `--query`, `--output`, `--scopes`, `--condition`, `--window-size`, `--evaluation-frequency` |
+| Variables | `$APP_NAME`, `$RG`, `$FUNCTION_APP_ID` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 ## Verification
 

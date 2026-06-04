@@ -9,7 +9,7 @@ content_sources:
   - type: mslearn-adapted
     url: https://learn.microsoft.com/azure/event-hubs/event-hubs-scalability
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-monitor/logs/log-query-overview
+    url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
@@ -206,12 +206,28 @@ az functionapp show \
   --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp show` |
+| Key flags | `--name`, `--resource-group`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ```bash
 az eventhubs namespace show \
   --name "$EH_NAMESPACE" \
   --resource-group "$RG" \
   --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az eventhubs namespace show` |
+| Key flags | `--name`, `--resource-group`, `--output` |
+| Variables | `$EH_NAMESPACE`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 ```bash
 az eventhubs eventhub show \
@@ -220,6 +236,14 @@ az eventhubs eventhub show \
   --resource-group "$RG" \
   --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az eventhubs eventhub show` |
+| Key flags | `--name`, `--namespace-name`, `--resource-group`, `--output` |
+| Variables | `$EH_NAME`, `$EH_NAMESPACE`, `$RG` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 ### 3.2 Set baseline delay and run baseline batch
 
@@ -230,6 +254,14 @@ az functionapp config appsettings set \
   --settings "EventHubLab__ArtificialDelayMs=0" \
   --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 ```bash
 az functionapp restart \
@@ -257,6 +289,14 @@ az functionapp config appsettings set \
   --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
+
 ```bash
 az functionapp restart \
   --name "$APP_NAME" \
@@ -283,6 +323,14 @@ az functionapp config appsettings set \
   --settings "EventHubLab__ArtificialDelayMs=0" \
   --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings`, `--output` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 ```bash
 az functionapp restart \
@@ -347,6 +395,14 @@ az monitor log-analytics query \
   --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor log-analytics query` |
+| Key flags | `--workspace`, `--analytics-query`, `--output` |
+| Variables | `$LOG_WORKSPACE_ID` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ### Query B: Checkpoint trace metrics in 2-minute bins
 
 Application Insights query:
@@ -392,6 +448,14 @@ az monitor log-analytics query \
   --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor log-analytics query` |
+| Key flags | `--workspace`, `--analytics-query`, `--output` |
+| Variables | `$LOG_WORKSPACE_ID` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ### Query C: Per-instance and per-partition detail during incident
 
 Application Insights query:
@@ -436,6 +500,14 @@ az monitor log-analytics query \
   --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor log-analytics query` |
+| Key flags | `--workspace`, `--analytics-query`, `--output` |
+| Variables | `$LOG_WORKSPACE_ID` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ### Query D: Recovery drain evidence (delayed vs recovered batches)
 
 Application Insights query:
@@ -469,6 +541,14 @@ az monitor log-analytics query \
   --analytics-query "AppTraces | where TimeGenerated >= datetime(2026-04-07 13:35:00Z) and TimeGenerated < datetime(2026-04-07 13:36:00Z) | where AppRoleName == 'labep1shared-func' | where Message has 'CheckpointDelta' | parse Message with * 'batchSize=' batchSize:int * 'seqRange=[' seqStart:long '-' seqEnd:long '] backlogAgeSec=' backlogAgeSec:real ' processingMs=' processingMs:real ' delayMs=' delayMs:real | project TimeGenerated, seqStart, seqEnd, batchSize, backlogAgeSec, processingMs, delayMs, Message | order by TimeGenerated asc" \
   --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor log-analytics query` |
+| Key flags | `--workspace`, `--analytics-query`, `--output` |
+| Variables | `$LOG_WORKSPACE_ID` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 ### Query E: Batch completed logs during incident
 
@@ -510,6 +590,14 @@ az monitor log-analytics query \
   --analytics-query "AppTraces | where TimeGenerated >= datetime(2026-04-07 13:28:00Z) and TimeGenerated < datetime(2026-04-07 13:34:00Z) | where AppRoleName == 'labep1shared-func' | where Message has 'CheckpointDelta' | parse Message with * 'batchSize=' batchSize:int * 'backlogAgeSec=' backlogAgeSec:real ' processingMs=' processingMs:real ' delayMs=' delayMs:real | summarize batch_logs = count(), avg_processing_ms = round(avg(processingMs), 1), p95_processing_ms = round(percentile(processingMs, 95), 1), max_processing_ms = round(max(processingMs), 1), avg_backlog_sec = round(avg(backlogAgeSec), 1), max_backlog_sec = round(max(backlogAgeSec), 1) by bin(TimeGenerated, 2m) | order by TimeGenerated asc" \
   --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor log-analytics query` |
+| Key flags | `--workspace`, `--analytics-query`, `--output` |
+| Variables | `$LOG_WORKSPACE_ID` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 ### Query F: Aggregate summary across all phases
 
@@ -577,6 +665,14 @@ az monitor log-analytics query \
   --output table
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor log-analytics query` |
+| Key flags | `--workspace`, `--analytics-query`, `--output` |
+| Variables | `$LOG_WORKSPACE_ID` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
+
 ### Query G: 1-minute recovery bins
 
 Application Insights query:
@@ -614,6 +710,14 @@ az monitor log-analytics query \
   --analytics-query "AppRequests | where TimeGenerated >= datetime(2026-04-07 13:34:00Z) and TimeGenerated < datetime(2026-04-07 13:36:00Z) | where AppRoleName == 'labep1shared-func' | where OperationName has 'eventhub_lag_processor' | summarize executions = count(), avg_ms = round(avg(DurationMs), 1), p95_ms = round(percentile(DurationMs, 95), 1), max_ms = round(max(DurationMs), 1), min_ms = round(min(DurationMs), 1) by bin(TimeGenerated, 1m) | order by TimeGenerated asc" \
   --output table
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az monitor log-analytics query` |
+| Key flags | `--workspace`, `--analytics-query`, `--output` |
+| Variables | `$LOG_WORKSPACE_ID` |
+| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+
 
 ### 3.6 Triage decision flow used during live response
 
@@ -831,6 +935,14 @@ az group delete \
   --no-wait
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az group delete` |
+| Key flags | `--name`, `--yes`, `--no-wait` |
+| Variables | `$RG` |
+| Expected result | Azure CLI completes the removal request; verify the target no longer appears in follow-up `show` or `list` output. |
+
+
 If this is a shared troubleshooting environment, keep resources and only disable lab traffic generation.
 
 ## Related Playbook
@@ -851,4 +963,4 @@ If this is a shared troubleshooting environment, keep resources and only disable
 - https://learn.microsoft.com/azure/azure-functions/functions-host-json
 - https://learn.microsoft.com/azure/azure-functions/functions-best-practices
 - https://learn.microsoft.com/azure/event-hubs/event-hubs-scalability
-- https://learn.microsoft.com/azure/azure-monitor/logs/log-query-overview
+- https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview

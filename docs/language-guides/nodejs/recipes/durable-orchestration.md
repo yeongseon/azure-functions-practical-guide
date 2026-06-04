@@ -1,11 +1,19 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-node-model-upgrade
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-overview
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-node-model-upgrade
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-overview
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-node-model-upgrade
+    verified: true
 ---
-
 # Durable Orchestration
 
 This recipe implements a complete Durable Functions Node.js v4 workflow with an HTTP starter, orchestrator, and activity function.
@@ -111,6 +119,14 @@ df.app.activity("emitConfirmation", {
 - Start orchestrations with the durable client start API (`client.startNew(...)`, often described as `df.app.client.start()` in starter patterns).
 - Keep orchestrator logic deterministic: no random values, no network calls, no current-time APIs inside orchestrator code.
 - Put all external interactions in activities (`df.app.activity(...)`).
+
+## Review Matrix
+
+| Review area | Page-specific check |
+|---|---|
+| Scope | Confirm the guidance applies to Durable Orchestration. |
+| Source basis | Validate the recommendation against the Microsoft Learn sources in this page. |
+| Evidence | Capture command output, portal state, metrics, logs, or screenshots before treating the result as proven. |
 
 ## See Also
 - [Node.js Recipes Index](index.md)

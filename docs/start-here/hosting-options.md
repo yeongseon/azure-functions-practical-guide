@@ -1,17 +1,25 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/consumption-plan
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-premium-plan
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/dedicated-plan
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/consumption-plan
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-premium-plan
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/dedicated-plan
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/functions-scale
+    verified: true
 ---
-
 # Hosting Options
 
 Choosing the right hosting plan is the highest-impact early decision for an Azure Functions workload.
@@ -157,6 +165,14 @@ az functionapp create \
     --functions-version 4
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp create` |
+| Key flags | `--resource-group`, `--name`, `--storage-account`, `--consumption-plan-location`, `--runtime`, `--functions-version` |
+| Variables | `$RG`, `$APP_NAME`, `$STORAGE_NAME`, `$LOCATION` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
+
 ```bash
 az functionapp plan create \
     --resource-group "$RG" \
@@ -165,6 +181,14 @@ az functionapp plan create \
     --sku EP1 \
     --is-linux
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp plan create` |
+| Key flags | `--resource-group`, `--name`, `--location`, `--sku`, `--is-linux` |
+| Variables | `$RG`, `$PLAN_NAME`, `$LOCATION` |
+| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+
 
 If sharing output snippets in runbooks, mask identifiers:
 

@@ -1,11 +1,19 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-diagnostics
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-diagnostics
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
+    verified: true
 ---
-
 # Troubleshooting
 
 This runbook-style reference captures common Node.js v4 issues with practical checks and resolutions.
@@ -29,6 +37,14 @@ flowchart TD
 az functionapp log tail --name $APP_NAME --resource-group $RG
 ```
 
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp log tail` |
+| Key flags | `--name`, `--resource-group` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+
+
 ### Runtime version mismatch
 
 - Validate runtime and Node settings.
@@ -38,6 +54,14 @@ az functionapp log tail --name $APP_NAME --resource-group $RG
 az functionapp config appsettings list --name $APP_NAME --resource-group $RG --query "[?name=='WEBSITE_NODE_DEFAULT_VERSION' || name=='FUNCTIONS_EXTENSION_VERSION']"
 az functionapp config show --name $APP_NAME --resource-group $RG --query "linuxFxVersion"
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings list`, `az functionapp config show` |
+| Key flags | `--name`, `--resource-group`, `--query` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 ### Out-of-memory under load
 

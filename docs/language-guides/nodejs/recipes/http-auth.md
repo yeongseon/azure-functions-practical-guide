@@ -1,11 +1,19 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/app-service/overview-authentication-authorization
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-http-webhook-trigger
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/app-service/overview-authentication-authorization
+- type: mslearn-adapted
+  url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-http-webhook-trigger
+content_validation:
+  status: verified
+  last_reviewed: '2026-05-23'
+  reviewer: agent
+  core_claims:
+  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
+      guidance.
+    source: https://learn.microsoft.com/azure/app-service/overview-authentication-authorization
+    verified: true
 ---
-
 # HTTP Authentication
 
 This recipe uses App Service Authentication (Easy Auth) with Node.js v4 HTTP triggers and Microsoft Entra ID, relying on platform-provided identity headers instead of custom token parsing.
@@ -55,6 +63,14 @@ az webapp auth microsoft update \
   --client-secret-setting-name MICROSOFT_PROVIDER_AUTHENTICATION_SECRET \
   --tenant-id <tenant-id>
 ```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp identity assign`, `az webapp auth update`, `az webapp auth microsoft update` |
+| Key flags | `--name`, `--resource-group`, `--enabled`, `--action`, `--client-id`, `--client-secret-setting-name`, `--tenant-id` |
+| Variables | `$APP_NAME`, `$RG` |
+| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+
 
 ## Working Node.js v4 Code
 
