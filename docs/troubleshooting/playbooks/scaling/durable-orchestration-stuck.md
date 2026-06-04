@@ -22,6 +22,16 @@ content_validation:
 
 # Durable Functions Orchestration Stuck Playbook
 
+## Portal Walkthrough
+
+Key portal blades for stuck Durable orchestration investigation. Captures from a Consumption (Y1) Function App with PII masked.
+
+![Durable Functions blade](../../../assets/operations/durable/01-durable-functions.png)
+
+![Log stream for orchestration traces](../../../assets/operations/monitoring/02-log-stream.png)
+
+![Metrics explorer](../../../assets/operations/monitoring/01-metrics-explorer.png)
+
 ## 1. Summary
 This playbook addresses incidents where Durable Functions orchestration instances stay in `Running` (or appear hung) far longer than expected, with little or no forward progress. Typical drivers include replay storms, oversized orchestration history, non-deterministic orchestrator code, failed activities without explicit retries, and workflows waiting forever for external events.
 

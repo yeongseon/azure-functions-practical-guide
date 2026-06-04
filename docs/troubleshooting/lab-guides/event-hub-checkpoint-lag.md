@@ -24,6 +24,16 @@ content_validation:
 
 This lab guide documents a completed Event Hub checkpoint lag experiment on Azure Functions Premium EP1. Every metric in this document comes from a real telemetry window (`2026-04-07 13:12:00` to `13:36:00` UTC) captured from the production-like lab deployment.
 
+## Portal Walkthrough
+
+Key portal blades for Event Hub checkpoint lag investigation. Captures from a Consumption (Y1) Function App with PII masked.
+
+![Metrics explorer for lag analysis](../../assets/operations/monitoring/01-metrics-explorer.png)
+
+![Log stream for checkpoint traces](../../assets/operations/monitoring/02-log-stream.png)
+
+![Scale out blade](../../assets/operations/scaling/01-scale-out.png)
+
 ## Lab Metadata
 
 | Field | Value |

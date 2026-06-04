@@ -24,6 +24,16 @@ content_validation:
 
 This lab reproduces and analyzes a real queue backlog burst on Azure Functions Consumption (Y1) using telemetry collected on 2026-04-07. The objective is to prove what happened, what did not happen, and why a 2000-message burst drained in about 7.3 minutes without scale-out.
 
+## Portal Walkthrough
+
+These portal blades help investigate queue backlog and scaling issues. All captures from a Consumption (Y1) Function App with PII masked.
+
+![Scale out blade showing instance limit](../../assets/operations/scaling/01-scale-out.png)
+
+![Metrics explorer for execution rate analysis](../../assets/operations/monitoring/01-metrics-explorer.png)
+
+![Log stream for processing traces](../../assets/operations/monitoring/02-log-stream.png)
+
 ## Lab Metadata
 
 | Field | Value |

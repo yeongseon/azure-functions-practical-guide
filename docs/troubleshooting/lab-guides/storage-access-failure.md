@@ -28,6 +28,16 @@ This Level 3 lab guide reproduces a storage authorization failure in Azure Funct
 
 ---
 
+## Portal Walkthrough
+
+These portal blades help investigate storage access failures. All captures from a Consumption (Y1) Function App with PII masked.
+
+![Identity blade for storage RBAC verification](../../assets/operations/security/01-identity.png)
+
+![Environment variables showing AzureWebJobsStorage](../../assets/operations/configuration/01-environment-variables.png)
+
+![Log stream for storage errors](../../assets/operations/monitoring/02-log-stream.png)
+
 ## Lab Metadata
 
 | Field | Value |
