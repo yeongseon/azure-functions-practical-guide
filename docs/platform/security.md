@@ -30,6 +30,26 @@ content_validation:
 # Security
 Security in Azure Functions is layered: endpoint authorization, user authentication, workload identity, API gateway policy, secret governance, and network isolation. This page focuses on **design decisions** so teams can choose the right security architecture before implementation.
 
+## Portal Walkthrough
+
+This section shows portal blades relevant to Function App security architecture (Consumption Y1, Korea Central). PII is masked.
+
+### Identity (Managed Identity) Blade
+
+[Observed] The **Identity** blade shows the **System assigned** managed identity with **Status: On**. An **Object (principal) ID** is displayed (masked), and the **Permissions** section provides an "Azure role assignments" button:
+
+![Identity blade showing system-assigned managed identity enabled](../assets/operations/security/01-identity.png)
+
+[Inferred] System-assigned managed identity is the foundational credential for Azure-to-Azure authentication. The Object ID is used when assigning RBAC roles. From this blade, use "Azure role assignments" to audit current permissions and verify least-privilege scoping.
+
+### Environment Variables Blade
+
+[Observed] The **Environment variables** blade lists app settings including `AzureWebJobsStorage`, `FUNCTIONS_EXTENSION_VERSION`, `FUNCTIONS_WORKER_RUNTIME`, and `APPINSIGHTS_INSTRUMENTATIONKEY`. Values are hidden by default:
+
+![Environment variables blade showing app settings](../assets/operations/configuration/01-environment-variables.png)
+
+[Inferred] The `AzureWebJobsStorage` setting controls host storage authentication. When using identity-based connections, this would be replaced with `AzureWebJobsStorage__accountName` (no connection string). Review whether secret values are stored as plain app settings or as Key Vault references.
+
 ## Main Content
 
 ### Security model overview

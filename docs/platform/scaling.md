@@ -42,6 +42,26 @@ Optional but recommended:
 - A repeatable load test path to validate scale decisions before production rollout.
 - A rollback plan for host-level concurrency and timeout changes.
 - Baseline metrics from a known healthy period for comparison.
+## Portal Walkthrough
+
+This section shows portal blades illustrating scale behavior for a live Function App (Consumption Y1, Korea Central). PII is masked.
+
+### Scale Out Blade
+
+[Observed] The **Scale out** blade shows the **Dynamic Scale out** configuration. **Enforce Scale Out Limit** is set to **Yes** with the **Maximum Scale Out Limit** slider at **200** (the Consumption platform maximum):
+
+![Scale out blade showing Dynamic Scale out with 200 max instances](../assets/operations/scaling/01-scale-out.png)
+
+[Inferred] This is the primary portal control for setting `functionAppScaleLimit`. On Consumption, the scale controller manages instance allocation automatically — the slider sets the upper bound. For Premium plans, this blade would show different controls (minimum/maximum elastic instances). For Dedicated plans, scale-out is managed through App Service autoscale rules instead.
+
+### Metrics Explorer
+
+[Observed] The **Metrics** blade provides access to platform metrics that reflect scaling behavior, including `FunctionExecutionCount`, `FunctionExecutionUnits`, and HTTP-related metrics:
+
+![Metrics explorer blade for monitoring scale behavior](../assets/operations/monitoring/01-metrics-explorer.png)
+
+[Inferred] Use the Metrics blade to observe actual scale-out behavior during load tests. Key metrics for scaling analysis: `FunctionExecutionCount` for invocation rate, `Http5xx` for error pressure during scale events, and `ActiveInstanceCount` (when available) for instance trend. Compare against the scale limit configured in the Scale out blade.
+
 ## Main Content
 ### Scale controller fundamentals
 For serverless plans, Azure Functions scale controller evaluates event pressure and target throughput, then adds or removes instances.

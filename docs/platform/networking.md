@@ -53,6 +53,26 @@ Platform-Subscription AzureCloud   <subscription-id>   <tenant-id>        Enable
     Confirm the hosting plan supports required networking features before
     implementing ingress, egress, and DNS changes.
 
+## Portal Walkthrough
+
+This section shows the Networking blade for a live Function App (Consumption Y1, Korea Central). PII is masked.
+
+### Networking Blade
+
+[Observed] The **Networking** blade shows **Inbound traffic configuration**: Public network access is "Enabled with no access restrictions", Inbound addresses are "Dynamic", and Private endpoints are "Not supported". **Outbound traffic configuration**: Virtual network integration and Hybrid connections are both "Not supported", Outbound DNS is "Default (Azure-provided)", and Outbound addresses are "Dynamic":
+
+![Networking blade showing inbound and outbound configuration for Consumption plan](../assets/operations/networking/01-networking.png)
+
+[Inferred] On Consumption (Y1), VNet integration, private endpoints, and hybrid connections are all unavailable. This aligns with the networking capability matrix below. For workloads requiring any of these features, use Flex Consumption, Premium, or Dedicated plans. The "Dynamic" inbound/outbound addresses mean IP addresses can change — do not hardcode them in allowlists.
+
+### Configuration (General Settings) Blade
+
+[Observed] The **Configuration > General settings** blade shows **HTTP version: 2.0**, **HTTPS only: unchecked**, **Minimum Inbound TLS Version: 1.2**, **SCM Minimum TLS: 1.2**, **Remote debugging: off**, and **Client certificate mode: Ignore**:
+
+![General settings blade showing TLS and HTTP configuration](../assets/operations/configuration/02-general-settings.png)
+
+[Inferred] HTTPS-only should be enabled for production. The TLS 1.2 minimum is correct baseline. These transport-level settings apply regardless of the networking features available on the hosting plan.
+
 ## Main Content
 ### Networking capability matrix
 | Capability | Consumption | Flex Consumption | Premium | Dedicated |
