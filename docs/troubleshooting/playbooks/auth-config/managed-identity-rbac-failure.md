@@ -32,6 +32,12 @@ Key portal blades for managed identity RBAC failure investigation. Captures from
 
 ![Log stream for auth errors](../../../assets/operations/monitoring/02-log-stream.png)
 
+### Access Control (IAM) Blade
+
+[Observed] The **Access control (IAM)** blade lets you verify RBAC assignments for the Function App's managed identity:
+
+![Access control IAM blade for RBAC verification](../../../assets/operations/access-control/01-access-control-iam.png)
+
 ## 1. Summary
 This playbook is for incidents where Azure Functions cannot authenticate to downstream services by using managed identity, and requests fail with `401`, `403`, or host listener startup errors. It covers both system-assigned and user-assigned managed identities, role assignment drift, stale token cache windows after RBAC changes, Key Vault authorization mode mismatch, and token audience or scope mistakes when `DefaultAzureCredential` is used.
 

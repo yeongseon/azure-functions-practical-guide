@@ -88,6 +88,14 @@ This section shows portal blades relevant to recovery operations for a live Func
 
 [Inferred] During recovery, verify function status (Enabled/Disabled) and runtime version after rollback. The "Stop" button can be used as an emergency circuit breaker to halt all executions during cascading failures, but note that on Consumption plans, stopping and restarting may incur cold-start delays.
 
+### Activity Log Blade
+
+[Observed] The **Activity log** shows timestamped control-plane operations, useful for correlating deployment events with incidents:
+
+![Activity log for incident timeline correlation](../assets/operations/activity-log/01-activity-log.png)
+
+[Inferred] During recovery, check the Activity log to identify what changed before the incident started. Filter by Timespan to narrow the window around the failure onset.
+
 ## When to Use
 Use rollback, failover, or rebuild based on blast radius and dependency health.
 ### Rollback

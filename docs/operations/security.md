@@ -102,6 +102,22 @@ Use this runbook in these cases:
 - Ownership change in CI/CD pipelines, app teams, or platform teams.
 - Policy rollout affecting TLS, networking, identity, or monitoring controls.
 
+### Activity Log Blade
+
+[Observed] The **Activity log** blade shows recent operations: CreateWebSite, Update website, Update web sites config. Each entry shows Status, Time, Subscription, and Event initiated by (masked to user@example.com):
+
+![Activity log showing recent Function App operations](../assets/operations/activity-log/01-activity-log.png)
+
+[Inferred] The Activity log is the primary audit trail for control-plane operations. Filter by Timespan, Event severity, and Resource to investigate unauthorized changes. Export Activity Logs to Log Analytics for long-term retention and alerting.
+
+### Access Control (IAM) Blade
+
+[Observed] The **Access control (IAM)** blade provides RBAC management with Check access, Role assignments, Roles, and Deny assignments tabs:
+
+![Access control IAM blade](../assets/operations/access-control/01-access-control-iam.png)
+
+[Inferred] During security incidents, use Check access to verify who has permissions and View deny assignments for explicit blocks. Audit role assignments regularly for privilege drift.
+
 ## Procedure
 Operate controls in a fixed loop so key material, identities, and network boundaries are continuously validated.
 
