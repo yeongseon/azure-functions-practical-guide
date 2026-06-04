@@ -22,6 +22,16 @@ content_validation:
 
 # Managed Identity and RBAC Authentication Failure
 
+## Portal Walkthrough
+
+Key portal blades for managed identity RBAC failure investigation. Captures from a Consumption (Y1) Function App with PII masked.
+
+![Identity blade showing managed identity status](../../../assets/operations/security/01-identity.png)
+
+![Environment variables blade](../../../assets/operations/configuration/01-environment-variables.png)
+
+![Log stream for auth errors](../../../assets/operations/monitoring/02-log-stream.png)
+
 ## 1. Summary
 This playbook is for incidents where Azure Functions cannot authenticate to downstream services by using managed identity, and requests fail with `401`, `403`, or host listener startup errors. It covers both system-assigned and user-assigned managed identities, role assignment drift, stale token cache windows after RBAC changes, Key Vault authorization mode mismatch, and token audience or scope mistakes when `DefaultAzureCredential` is used.
 

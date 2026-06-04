@@ -21,6 +21,16 @@ content_validation:
 ---
 
 # Event Hub / Service Bus Trigger Lag
+## Portal Walkthrough
+
+Key portal blades for Event Hub/Service Bus lag investigation. Captures from a Consumption (Y1) Function App with PII masked.
+
+![Log stream for trigger processing traces](../../assets/operations/monitoring/02-log-stream.png)
+
+![Metrics explorer for lag analysis](../../assets/operations/monitoring/01-metrics-explorer.png)
+
+![Environment variables blade](../../assets/operations/configuration/01-environment-variables.png)
+
 ## 1. Summary
 Trigger lag incidents happen when ingestion rate outpaces effective processing throughput, causing Event Hub partition backlog or Service Bus queue/subscription depth to grow over time. Lag is not only a scale problem; it is often a checkpoint progression problem where functions pull messages but fail to complete fast enough, fail to settle messages, or repeatedly reprocess poison payloads.
 

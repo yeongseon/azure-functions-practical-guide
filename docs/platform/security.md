@@ -42,6 +42,30 @@ This section shows portal blades relevant to Function App security architecture 
 
 [Inferred] System-assigned managed identity is the foundational credential for Azure-to-Azure authentication. The Object ID is used when assigning RBAC roles. From this blade, use "Azure role assignments" to audit current permissions and verify least-privilege scoping.
 
+### Authentication (Easy Auth) Blade
+
+[Observed] The **Authentication** blade shows the current identity provider configuration. No provider is configured — the "Add identity provider" button is displayed:
+
+![Authentication blade showing no identity provider configured](../assets/operations/authentication/01-authentication.png)
+
+[Inferred] For HTTP-triggered functions requiring user authentication, configure an identity provider (Microsoft, Google, etc.) here. This enables App Service Authentication (Easy Auth) which validates tokens before function code executes.
+
+### App Keys Blade
+
+[Observed] The **App keys** blade shows **System keys** and **Host keys** sections. The `_master` key and `default` host key are listed with hidden values and "Renew key value" options:
+
+![App keys blade showing master and default host keys](../assets/operations/app-keys/01-app-keys.png)
+
+[Inferred] The `_master` key grants admin-level access to Functions Runtime APIs — never expose it publicly. The `default` host key is used for function-level authorization. Rotate keys regularly and prefer managed identity or Easy Auth over key-based authentication for production.
+
+### CORS Blade
+
+[Observed] The **CORS** blade shows the **Allowed Origins** configuration and **Request Credentials** (Access-Control-Allow-Credentials) checkbox:
+
+![CORS blade showing allowed origins configuration](../assets/operations/cors/01-cors.png)
+
+[Inferred] An empty Allowed Origins list means no CORS origins are explicitly permitted. For browser-based API consumers, add specific origins only — avoid wildcard `*` in production. CORS is not a substitute for authentication.
+
 ### Environment Variables Blade
 
 [Observed] The **Environment variables** blade lists app settings including `AzureWebJobsStorage`, `FUNCTIONS_EXTENSION_VERSION`, `FUNCTIONS_WORKER_RUNTIME`, and `APPINSIGHTS_INSTRUMENTATIONKEY`. Values are hidden by default:

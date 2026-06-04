@@ -25,6 +25,16 @@ content_validation:
 # Lab Guide: Cold Start on Azure Functions
 This Level 3 lab reproduces and analyzes Azure Functions cold-start behavior across hosting plans, with emphasis on FC1 Flex Consumption evidence. You will build a falsifiable timeline that separates worker provisioning delay from host startup time and request execution time.
 ---
+## Portal Walkthrough
+
+These portal blades help investigate cold-start issues. All captures from a Consumption (Y1) Function App with PII masked.
+
+![Metrics explorer for cold-start analysis](../../assets/operations/monitoring/01-metrics-explorer.png)
+
+![App Service plan showing Y1 with 0 instances](../../assets/operations/hosting/01-app-service-plan.png)
+
+![Log stream for startup trace](../../assets/operations/monitoring/02-log-stream.png)
+
 ## Lab Metadata
 | Field | Value |
 |---|---|

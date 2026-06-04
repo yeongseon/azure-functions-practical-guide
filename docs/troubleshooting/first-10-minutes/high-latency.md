@@ -20,6 +20,28 @@ content_validation:
 
 When function execution latency is elevated or users report slow responses, use this checklist to narrow down the cause within the first 10 minutes.
 
+## Portal Walkthrough
+
+These portal blades are the first places to check during high-latency triage. All captures from a Consumption (Y1) Function App with PII masked.
+
+### Metrics Explorer
+
+[Observed] The **Metrics** blade lets you chart `FunctionExecutionCount`, `FunctionExecutionUnits`, and HTTP latency percentiles to identify when latency began rising:
+
+![Metrics explorer for latency analysis](../../assets/operations/monitoring/01-metrics-explorer.png)
+
+### Log Stream
+
+[Observed] The **Log stream** blade shows real-time execution output, making it easy to spot slow invocations and dependency timeouts as they happen:
+
+![Log stream for real-time latency debugging](../../assets/operations/monitoring/02-log-stream.png)
+
+### App Service Plan
+
+[Observed] The **App Service plan** blade confirms the hosting plan (Y1/EP/FC1) and instance count, which directly affects cold-start behavior:
+
+![App Service plan blade showing plan type](../../assets/operations/hosting/01-app-service-plan.png)
+
 ## Prerequisites
 
 - Azure CLI access to the production subscription.

@@ -21,6 +21,16 @@ content_validation:
 ---
 
 # Deployment Failures
+## Portal Walkthrough
+
+Key portal blades for deployment failure investigation. Captures from a Consumption (Y1) Function App with PII masked.
+
+![Deployment Center blade](../../assets/operations/deployment/01-deployment-center.png)
+
+![Log stream for deployment errors](../../assets/operations/monitoring/02-log-stream.png)
+
+![Environment variables blade](../../assets/operations/configuration/01-environment-variables.png)
+
 ## 1. Summary
 Deployment failures in Azure Functions are often deployment-success-but-runtime-failure incidents.
 Transport success (artifact uploaded) does not guarantee host startup, trigger indexing, or invocation health.

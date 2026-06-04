@@ -19,6 +19,16 @@ content_validation:
 ---
 
 # High Latency / Slow Responses
+## Portal Walkthrough
+
+Key portal blades for high-latency investigation. Captures from a Consumption (Y1) Function App with PII masked.
+
+![Metrics explorer for latency trends](../../assets/operations/monitoring/01-metrics-explorer.png)
+
+![Log stream for slow invocation traces](../../assets/operations/monitoring/02-log-stream.png)
+
+![App Service plan blade](../../assets/operations/hosting/01-app-service-plan.png)
+
 ## 1. Summary
 This playbook handles incidents where Azure Functions shows slow responses, elevated p95/p99 latency, and intermittent timeout behavior.
 Use it when performance degradation is user-visible, even if failure rate is still low.

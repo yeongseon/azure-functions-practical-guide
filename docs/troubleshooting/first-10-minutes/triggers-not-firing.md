@@ -20,6 +20,28 @@ content_validation:
 
 When functions are not executing despite active trigger sources, use this checklist to narrow down the cause within the first 10 minutes.
 
+## Portal Walkthrough
+
+These portal blades help diagnose triggers not firing. All captures from a Consumption (Y1) Function App with PII masked.
+
+### Log Stream
+
+[Observed] The **Log stream** blade shows real-time host startup and trigger listener initialization. Look for binding errors or missing connection warnings:
+
+![Log stream for trigger debugging](../../assets/operations/monitoring/02-log-stream.png)
+
+### Diagnose and Solve Problems
+
+[Observed] The **Diagnose and solve problems** blade provides automated detection of trigger and execution issues:
+
+![Diagnose and solve problems blade](../../assets/operations/monitoring/03-diagnose-and-solve.png)
+
+### Environment Variables
+
+[Observed] The **Environment variables** blade shows connection strings and trigger configuration. Missing or incorrect values here are the most common cause of triggers not firing:
+
+![Environment variables blade](../../assets/operations/configuration/01-environment-variables.png)
+
 ## Prerequisites
 
 - Azure CLI access to the production subscription.

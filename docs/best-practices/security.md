@@ -70,6 +70,22 @@ This section shows the Identity blade for a live Function App (Consumption Y1, K
 
 [Inferred] With system-assigned managed identity enabled, this Function App can authenticate to Azure resources (Storage, Key Vault, Service Bus, etc.) without connection string secrets. Use the "Azure role assignments" button to verify least-privilege RBAC scopes. If the identity needs to access multiple distinct resource groups, consider whether a user-assigned identity provides better lifecycle management.
 
+### Authentication (Easy Auth) Blade
+
+[Observed] The **Authentication** blade shows no identity provider is configured. The "Add identity provider" button is available to enable App Service Authentication:
+
+![Authentication blade showing no provider configured](../assets/operations/authentication/01-authentication.png)
+
+[Inferred] For HTTP-triggered functions exposed to users, configure Easy Auth instead of relying solely on function keys. Easy Auth validates identity tokens before function code executes, providing per-user claims, conditional access, and audit attribution.
+
+### App Keys Blade
+
+[Observed] The **App keys** blade shows the `_master` and `default` host keys with hidden values. Each key has "Show value" and "Renew key value" options:
+
+![App keys blade showing host keys](../assets/operations/app-keys/01-app-keys.png)
+
+[Inferred] Function keys are shared secrets — treat them as credentials. The `_master` key should never be exposed publicly. Implement key rotation runbooks and prefer identity-based authentication patterns over keys for production workloads.
+
 ## Recommended Practices
 
 ### App settings vs Key Vault references vs environment values

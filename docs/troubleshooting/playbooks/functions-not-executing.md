@@ -21,6 +21,16 @@ content_validation:
 ---
 
 # Functions Not Executing
+## Portal Walkthrough
+
+Key portal blades for investigating non-executing functions. Captures from a Consumption (Y1) Function App with PII masked.
+
+![Log stream for execution traces](../../assets/operations/monitoring/02-log-stream.png)
+
+![Diagnose and solve problems blade](../../assets/operations/monitoring/03-diagnose-and-solve.png)
+
+![Environment variables blade](../../assets/operations/configuration/01-environment-variables.png)
+
 ## 1. Summary
 Use this playbook when trigger sources are active but one or more Azure Functions are not executing.
 Most incidents fall into one of six hypotheses: disabled function, listener startup failure, host restart loop, trigger misbinding, source-side delivery gap, or deployment/runtime regression.
