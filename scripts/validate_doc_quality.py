@@ -149,15 +149,19 @@ def iter_code_fences(text: str):
     in_fence = False
     start = 0
     lang = ""
+    indent = 0
     body: list[str] = []
     for number, line in enumerate(lines, 1):
-        if line.startswith("```"):
+        stripped = line.lstrip()
+        line_indent = len(line) - len(stripped)
+        if stripped.startswith("```"):
             if not in_fence:
                 in_fence = True
                 start = number
-                lang = line[3:].strip()
+                indent = line_indent
+                lang = stripped[3:].strip()
                 body = []
-            else:
+            elif line_indent == indent:
                 yield start, number, lang, "\n".join(body), lines
                 in_fence = False
         elif in_fence:
@@ -316,7 +320,7 @@ def validate_cli_blocks(findings: list[Finding], path: Path, text: str) -> None:
             continue
         if not has_table_near(lines, start, end):
             add(findings, path, start, "Azure CLI code block needs a nearby command explanation table")
-        for offset, line in enumerate(body.splitlines(), start):
+        for offset, line in enumerate(body.splitlines(), start + 1):
             az_index = line.find("az ")
             if az_index == -1:
                 continue
@@ -367,7 +371,7 @@ def validate_file_references(findings: list[Finding], path: Path, text: str) -> 
                     add(
                         findings,
                         path,
-                        start + body[: match.start()].count("\n"),
+                        start + 1 + body[: match.start()].count("\n"),
                         f"referenced local file or directory does not exist: {ref}",
                     )
 
