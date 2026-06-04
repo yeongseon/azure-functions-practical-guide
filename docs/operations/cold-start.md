@@ -53,6 +53,16 @@ Invest in cold start mitigation when at least one condition is true:
 - Deployment slots swap correctly, but first requests still spike.
 - Cost or platform constraints prevent immediate migration to a larger plan tier.
 
+## Portal Walkthrough
+
+### Function App Overview
+
+[Observed] The **Overview** blade shows the Function App status, hosting plan, and deployed functions. For a Consumption (Y1) plan, the App Service Plan field shows `KoreaCentralLinuxDynamicPlan (Y1: 0)` — the `0` indicates the app has scaled to zero instances, which is the normal idle state and the source of cold start latency:
+
+![Function App overview showing Y1 plan with 0 instances and 2 deployed functions](../assets/operations/overview/01-function-app-overview.png)
+
+[Inferred] The "Migrate your app to Flex Consumption" banner indicates Linux Consumption is approaching EOL (September 2028). Flex Consumption offers always-ready instances as a built-in cold start mitigation. If cold start is a production concern, evaluate migration to Flex or Premium.
+
 ## Procedure
 ### 1) Understand startup phases
 #### What causes cold start

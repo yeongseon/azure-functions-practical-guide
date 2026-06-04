@@ -107,6 +107,16 @@ az functionapp show \
 | `--query` | JMESPath query to filter specific properties |
 | `--output table` | Formats the output as a table |
 
+## Portal Walkthrough
+
+### Deployment Center
+
+[Observed] The **Deployment Center** blade provides a **Source** dropdown to connect the Function App to a CI/CD provider (GitHub, Azure Repos, Local Git, etc.). The banner warns "You are now in the production slot, which is not recommended for setting up CI/CD" — indicating slot-based deployment is preferred when available:
+
+![Deployment Center blade showing Source selector and production slot warning](../assets/operations/deployment/01-deployment-center.png)
+
+[Inferred] For Consumption plans, this is the expected view since Consumption supports only 2 slots (production + 1 staging, Windows only). For Flex Consumption, there are no slots at all, so direct production deployment is the only option. Premium and Dedicated plans should configure CI/CD against a staging slot instead.
+
 ## When to Use
 Choose deployment method by governance level, release frequency, and plan capability.
 

@@ -76,6 +76,24 @@ WORKSPACE_ID="/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RG/providers/Micro
 | `APP_RESOURCE_ID` | Fully qualified Azure resource ID for the function app |
 | `WORKSPACE_ID` | Fully qualified Azure resource ID for the workspace |
 
+## Portal Walkthrough
+
+### General Settings (TLS / HTTPS)
+
+[Observed] The **Configuration → General settings** blade shows platform security settings. For a new Consumption Function App: **HTTPS only** is unchecked, **Minimum Inbound TLS Version** is 1.2, **FTPS state** is FtpsOnly, and **Remote debugging** is off:
+
+![General settings blade showing TLS 1.2, FTPS Only, HTTPS unchecked, remote debugging off](../assets/operations/configuration/02-general-settings.png)
+
+[Inferred] Two items need attention for production hardening: (1) **HTTPS only** should be enabled to redirect all HTTP traffic to HTTPS, and (2) **FTPS state** should be set to `Disabled` if FTPS is not used, reducing the attack surface. These are the first two items in any security baseline checklist.
+
+### Environment Variables (Secrets Audit)
+
+[Observed] The **Environment variables** blade lists all app settings. The four core settings are visible with values hidden by default. The **Deployment slot setting** column is empty, meaning no settings are slot-sticky:
+
+![Environment variables blade with 4 app settings and hidden values](../assets/operations/configuration/01-environment-variables.png)
+
+[Inferred] For a security audit, check that sensitive values (connection strings, keys) are backed by Key Vault references (shown as `@Microsoft.KeyVault(...)` in the value column) rather than stored as plaintext. Use **Show values** to verify, and confirm that `AzureWebJobsStorage` uses identity-based connection for Flex Consumption deployments.
+
 ## When to Use
 Use this runbook in these cases:
 - New production deployment that needs baseline hardening.
