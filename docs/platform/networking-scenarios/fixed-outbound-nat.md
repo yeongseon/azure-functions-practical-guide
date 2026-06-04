@@ -43,6 +43,14 @@ content_validation:
 
 Stable outbound IP addresses for function app egress through NAT Gateway, enabling IP-based allowlisting on downstream services.
 
+## Portal Walkthrough
+
+The Networking blade shows the baseline outbound configuration before NAT Gateway is applied. PII is masked.
+
+![Networking blade showing outbound DNS and addresses](../../assets/operations/networking/01-networking.png)
+
+[Observed] Outbound addresses are "Dynamic" on Consumption (Y1). NAT Gateway integration requires Flex Consumption (FC1) or Premium (EP) plans with VNet integration enabled.
+
 ## When to Use
 
 - Downstream services require IP allowlisting (legacy firewalls, third-party APIs)

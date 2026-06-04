@@ -40,6 +40,16 @@ flowchart TD
     F -->|No| H[Consumption\nlegacy only]
 ```
 
+## Portal Walkthrough
+
+The App Service plan blade shows plan details for a live Consumption (Y1) deployment. PII is masked.
+
+![App Service plan showing Y1 pricing, 0 instances, zone redundancy disabled](../assets/operations/hosting/01-app-service-plan.png)
+
+![Scale out blade showing Dynamic Scale out with 200 max instances](../assets/operations/scaling/01-scale-out.png)
+
+[Observed] Consumption (Y1) has 0 instances at idle and a maximum scale-out of 200. Premium and Dedicated plans would show different controls here (pre-warmed instances, autoscale rules).
+
 ## Quick guidance
 
 - Start with **Flex Consumption** for most new serverless apps.

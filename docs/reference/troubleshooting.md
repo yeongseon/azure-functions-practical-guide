@@ -31,6 +31,16 @@ flowchart TD
     F --> G[Apply mitigation and verify]
 ```
 
+## Portal Walkthrough
+
+Key portal blades for common troubleshooting scenarios. PII is masked.
+
+![Log stream for real-time error diagnosis](../assets/operations/monitoring/02-log-stream.png)
+
+![Diagnose and solve problems blade](../assets/operations/monitoring/03-diagnose-and-solve.png)
+
+![Environment variables blade for configuration verification](../assets/operations/configuration/01-environment-variables.png)
+
 ## 1. Functions Not Found After Deploy
 
 **Problem:** After deploying to Azure, navigating to the function app shows no functions. The Functions list in the Azure Portal is empty, and hitting endpoints returns 404.

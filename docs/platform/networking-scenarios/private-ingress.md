@@ -37,6 +37,14 @@ content_validation:
 
 Full network isolation with private inbound access via site private endpoint and private outbound through VNet integration.
 
+## Portal Walkthrough
+
+The Networking blade shows the baseline state before private endpoint configuration. PII is masked.
+
+![Networking blade showing private endpoint status](../../assets/operations/networking/01-networking.png)
+
+[Observed] On Consumption (Y1), private endpoints are "Not supported". For private ingress, use Flex Consumption (FC1), Premium (EP), or Dedicated plans where the inbound section will show the private endpoint configuration.
+
 ## When to Use
 
 - Zero-trust architectures requiring no public exposure
