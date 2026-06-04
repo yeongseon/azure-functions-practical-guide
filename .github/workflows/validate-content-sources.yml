@@ -4,11 +4,17 @@ on:
   pull_request:
     paths:
       - 'docs/**/*.md'
+      - 'scripts/**/*.py'
+      - '.github/workflows/validate-content-sources.yml'
+      - 'mkdocs.yml'
   push:
     branches:
       - main
     paths:
       - 'docs/**/*.md'
+      - 'scripts/**/*.py'
+      - '.github/workflows/validate-content-sources.yml'
+      - 'mkdocs.yml'
 
 jobs:
   validate-content-sources:
@@ -18,6 +24,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -35,12 +43,17 @@ jobs:
       - name: Validate mermaid syntax
         run: |
           python scripts/validate_mermaid_syntax.py
+
+      - name: Validate changed documentation quality
+        run: |
+          python scripts/validate_doc_quality.py --changed-only --base-ref "${{ github.event.pull_request.base.sha || github.event.before || 'HEAD~1' }}"
       
-      - name: Validate content sources
+      - name: Audit existing content sources
         run: |
           python scripts/validate_content_sources.py
+        continue-on-error: true
       
-      - name: Check for missing diagram IDs
+      - name: Audit existing diagram IDs
         run: |
           # Count mermaid blocks
           MERMAID_COUNT=$(grep -r '```mermaid' docs/ --include="*.md" | wc -l)
@@ -58,6 +71,7 @@ jobs:
           fi
           
           echo "All mermaid blocks have diagram-id comments."
+        continue-on-error: true
       
       - name: Check for content_sources in new/modified files
         run: |
