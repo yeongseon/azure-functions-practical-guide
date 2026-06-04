@@ -58,6 +58,26 @@ flowchart TD
     D -->|No| J[Premium EP or Dedicated]
 ```
 
+## Portal Walkthrough
+
+This section shows key portal blades for evaluating hosting plan choice on a live Function App (Consumption Y1, Korea Central). PII is masked.
+
+### Function App Overview
+
+[Observed] The **Overview** blade shows the Function App essentials: **App Service Plan** is linked to `KoreaCentralLinuxDynamicPlan (Y1: 0)`, **Operating System** is Linux, and **Runtime version** is `4.1048.200.26180`. Two HTTP-triggered functions (`health`, `hello`) are listed with Enabled status:
+
+![Function App Overview showing plan, OS, runtime, and functions list](../assets/operations/overview/01-function-app-overview.png)
+
+[Inferred] The plan name `KoreaCentralLinuxDynamicPlan` with `Y1: 0` confirms this is a Consumption plan with 0 always-on instances. The `(Y1: 0)` suffix is the key indicator for Consumption tier. For workloads requiring VNet integration, always-ready instances, or deployment slots beyond 2, migration to Flex Consumption (FC1) or Premium (EP) is required.
+
+### App Service Plan Blade
+
+[Observed] The **App Service plan** blade shows the current plan details: **Pricing plan** is Y1, **Instance Count** is 0, **Operating System** is Linux, **Location** is Korea Central, and **Zone redundant** is Disabled. The **App(s) / Slots** field shows 1/0 (one app, no additional slots):
+
+![App Service plan blade showing Y1 pricing, 0 instances, zone redundancy disabled](../assets/operations/hosting/01-app-service-plan.png)
+
+[Inferred] Instance Count 0 confirms the Consumption plan scales to zero when idle. Zone redundancy is not available on Consumption plans. For production workloads requiring zone redundancy, use Premium (EP) or Dedicated plans with zone-redundant configuration. The 1/0 app-to-slot ratio means no staging slot is configured.
+
 ## Recommended Practices
 
 ### Workload characteristics that should drive plan choice

@@ -59,6 +59,18 @@ Any in-memory state can disappear or become inconsistent across instances.
 | Stateful local filesystem | Ephemeral local disk | Files may disappear on cold start or host move | High checkpoint/data loss risk | Use only for temporary non-critical artifacts |
 | Durable orchestration state | Durable Functions backend | Replay and checkpoint survive restarts | Medium (determinism discipline required) | Multi-step workflows with wait states/compensation |
 
+## Portal Walkthrough
+
+This section shows the Function App Overview blade for a live Function App (Consumption Y1, Korea Central). PII is masked.
+
+### Function App Overview
+
+[Observed] The **Overview** blade shows two HTTP-triggered functions (`health`, `hello`) with **Enabled** status. The App Service Plan link shows `KoreaCentralLinuxDynamicPlan (Y1: 0)` and a migration warning banner indicates Linux Consumption will reach EOL on September 30, 2028:
+
+![Function App Overview showing functions, plan, and migration warning](../assets/operations/overview/01-function-app-overview.png)
+
+[Inferred] The `(Y1: 0)` suffix indicates zero always-on instances, meaning every invocation after idle may incur cold start. For reliability-critical paths, consider Flex Consumption with always-ready instances or Premium with pre-warmed capacity. The EOL migration warning should be tracked in operational planning to migrate before the deadline.
+
 ### What breaks when a function is stateful
 
 - In-memory dedup caches miss duplicates after restart.

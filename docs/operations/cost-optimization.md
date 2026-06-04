@@ -60,6 +60,26 @@ graph TD
     E --> E2[VNet integration baseline]
 ```
 
+## Portal Walkthrough
+
+This section shows portal blades relevant to cost optimization for a live Function App (Consumption Y1, Korea Central). PII is masked.
+
+### App Service Plan Blade
+
+[Observed] The **App Service plan** blade shows **Pricing plan: Y1** (Consumption), **Instance Count: 0**, and **Zone redundant: Disabled**. The App(s)/Slots field shows 1/0:
+
+![App Service plan blade showing Y1 pricing and 0 instances](../assets/operations/hosting/01-app-service-plan.png)
+
+[Inferred] Instance Count 0 confirms scale-to-zero, meaning zero compute cost during idle. Monitor instance count trends to understand burst cost exposure. The single app with no additional slot means minimal plan overhead for this configuration.
+
+### Environment Variables Blade
+
+[Observed] The **Environment variables** blade lists app settings including `AzureWebJobsStorage`, `FUNCTIONS_EXTENSION_VERSION`, `FUNCTIONS_WORKER_RUNTIME`, and `APPINSIGHTS_INSTRUMENTATIONKEY`:
+
+![Environment variables blade showing app settings](../assets/operations/configuration/01-environment-variables.png)
+
+[Inferred] Application Insights sampling can be configured via app settings or host.json to control telemetry ingestion cost. Review whether `APPINSIGHTS_INSTRUMENTATIONKEY` is set to a production workspace with appropriate daily caps and sampling rates configured.
+
 ## Procedure
 
 ### Consumption Plan Pricing

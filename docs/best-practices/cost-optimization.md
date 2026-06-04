@@ -44,6 +44,26 @@ Pick plan economics that match workload shape, not assumptions.
 ??? info "Workload-first rule"
     Do not select Premium by default. First validate trigger volume, latency SLO, networking constraints, and runtime duration. Cost surprises usually come from plan mismatch, not per-invocation pricing math.
 
+## Portal Walkthrough
+
+This section shows portal blades relevant to cost optimization for a live Function App (Consumption Y1, Korea Central). PII is masked.
+
+### App Service Plan Blade
+
+[Observed] The **App Service plan** blade shows **Pricing plan: Y1** (Consumption) with **Instance Count: 0**, confirming scale-to-zero behavior when idle. The plan is not zone redundant:
+
+![App Service plan blade showing Y1 pricing and 0 instances](../assets/operations/hosting/01-app-service-plan.png)
+
+[Inferred] Scale-to-zero means zero compute cost during idle periods, leveraging the Consumption free grant. Monitor the Instance Count trend over time to understand burst patterns that could exceed the free tier. If always-ready instances are configured (Flex/Premium), baseline cost applies even at idle.
+
+### Scale Out Blade
+
+[Observed] The **Scale out** blade shows the **Maximum Scale Out Limit** set to **200** instances. The **Enforce Scale Out Limit** option is set to **Yes**:
+
+![Scale out blade showing maximum limit of 200](../assets/operations/scaling/01-scale-out.png)
+
+[Inferred] The default maximum of 200 instances can generate significant cost during burst events. Set this to a lower value based on dependency budgets and cost tolerance. For example, limiting to 30 instances caps the maximum concurrent GB-seconds billing rate at 30x the per-instance rate.
+
 ## Recommended Practices
 
 ### Use the Consumption free grant intentionally
