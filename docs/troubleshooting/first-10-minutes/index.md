@@ -30,6 +30,34 @@ graph TD
 | [High Latency](high-latency.md) | Slow responses, elevated P95, timeout errors |
 | [Scaling Issues](scaling-issues.md) | Queue backlog growing, executions flat, cold start spikes |
 
+## Portal Walkthrough
+
+Before diving into CLI and KQL, use these Portal blades to get a quick visual overview of the Function App state.
+
+### Function App Overview
+
+[Observed] The **Overview** blade shows the app status (**Running**), hosting plan (**KoreaCentralLinuxDynamicPlan (Y1: 0)**), runtime version (**4.1048.200.26180**), and the list of deployed functions with their trigger types and enabled status:
+
+![Function App overview blade showing 2 HTTP-triggered functions (health, hello) with Enabled status](../../assets/troubleshooting/first-10-minutes/01-overview.png)
+
+[Inferred] If the **Status** field shows anything other than `Running`, or if functions show `Disabled`, that is the first signal to investigate. The "Migrate your app to Flex Consumption" banner indicates this is a Linux Consumption plan approaching EOL.
+
+### Log Stream
+
+[Observed] The **Log stream** blade connects to the live output of the Function App host. The status **Connected!** confirms the host is running and reachable:
+
+![Log stream blade showing Connected status](../../assets/troubleshooting/first-10-minutes/02-log-stream.png)
+
+[Inferred] If Log stream fails to connect or shows no output for more than 30 seconds, the app may be scaled to zero (Consumption) or the host may be in a crash loop. Proceed to the [Triggers Not Firing](triggers-not-firing.md) checklist.
+
+### Diagnose and Solve Problems
+
+[Observed] The **Diagnose and solve problems** blade shows active risk alerts and categorized troubleshooting tools:
+
+![Diagnose and solve problems with Availability warning and 5 troubleshooting categories](../../assets/troubleshooting/first-10-minutes/03-diagnose-and-solve.png)
+
+[Inferred] The **Availability: 1 Warning** alert is a quick indicator that the platform has detected an issue. Click **View more details** to see the specific detector findings before running manual KQL queries.
+
 ## Common first actions
 
 Regardless of which checklist you follow, always start with these three checks:

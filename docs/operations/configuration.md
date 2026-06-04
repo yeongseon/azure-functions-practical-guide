@@ -42,6 +42,26 @@ It focuses on app settings, `host.json`, secret management, and safe rollout pat
 - Access to Application Insights logs for post-change verification.
 - Access to Key Vault and managed identity role assignments for secret-backed settings.
 - A deployment method that keeps `host.json` versioned with code.
+## Portal Walkthrough
+
+This section shows the key Azure Portal blades for Function App configuration. All captures are from a live Consumption (Y1) deployment with PII masked.
+
+### Environment Variables (App Settings)
+
+[Observed] The **Environment variables** blade lists all app settings with their source. The four core settings for a Consumption Function App are visible: `APPINSIGHTS_INSTRUMENTATIONKEY`, `AzureWebJobsStorage`, `FUNCTIONS_EXTENSION_VERSION`, and `FUNCTIONS_WORKER_RUNTIME`. Values are hidden by default and can be revealed with **Show values**:
+
+![Environment variables blade showing 4 app settings with hidden values](../assets/operations/configuration/01-environment-variables.png)
+
+[Inferred] The **Deployment slot setting** column is empty for all settings, meaning none are slot-sticky. For production deployments with slots, mark environment-specific settings (e.g., connection strings, feature flags) as slot-sticky to prevent them from swapping.
+
+### General Settings
+
+[Observed] The **Configuration → General settings** tab shows platform-level settings: **HTTP version** (2.0), **HTTPS only** (unchecked), **Minimum Inbound TLS Version** (1.2), **SCM Minimum Inbound TLS Version** (1.2), **FTPS** (FtpsOnly), **Remote debugging** (off), and **Client certificate mode** (Ignore):
+
+![General settings blade showing TLS, HTTP, FTPS, and client certificate configuration](../assets/operations/configuration/02-general-settings.png)
+
+[Inferred] The **HTTPS only** checkbox is unchecked — this should be enabled for production workloads. The TLS 1.2 minimum is correct. FTPS state `FtpsOnly` is acceptable but `Disabled` is preferred if FTPS is not used.
+
 ## When to Use
 Choose configuration layers by scope and change frequency:
 - **App settings** for environment-specific values, secrets, feature flags, and per-slot overrides.

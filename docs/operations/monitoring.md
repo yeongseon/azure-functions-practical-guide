@@ -316,6 +316,34 @@ Weekly:
 - Review dashboard trends and adjust alert sensitivity.
 - Validate telemetry cost and sampling strategy.
 
+## Portal Walkthrough
+
+This section shows the key Azure Portal blades for monitoring a Function App. All captures are from a live Consumption (Y1) deployment with PII masked per [AGENTS.md](https://github.com/yeongseon/azure-functions-practical-guide/blob/main/AGENTS.md#portal-screenshot-capture-pii-replacement-rules) rules.
+
+### Metrics Explorer
+
+[Observed] The **Metrics** blade provides a chart builder for Azure Monitor platform metrics. Select metrics such as `Function Execution Count`, `Function Execution Units`, or `Http5xx` to visualize trends. The time range selector in the top-right corner defaults to **Last 24 hours (Automatic)**:
+
+![Metrics Explorer blade with empty chart and metric selector](../assets/operations/monitoring/01-metrics-explorer.png)
+
+[Inferred] If the chart shows "Not configured", no metric has been selected yet. Click **Add metric** to begin building the chart. For incident triage, start with `Function Execution Count` and `Http5xx` in separate charts.
+
+### Log Stream
+
+[Observed] The **Log stream** blade shows real-time stdout/stderr output from the Function App host. When connected, the status bar reads **Connected!** and new log lines appear as they are emitted:
+
+![Log stream blade showing Connected status with dark console background](../assets/operations/monitoring/02-log-stream.png)
+
+[Inferred] Log stream is useful during deployments and incident triage to confirm the host is running and processing requests. If the stream shows no output, check that the app is not scaled to zero (Consumption plan) or that logging is not disabled in `host.json`.
+
+### Diagnose and Solve Problems
+
+[Observed] The **Diagnose and solve problems** blade provides built-in troubleshooting categories: **Availability and Performance**, **Configuration and Management**, **Deployment**, **Networking**, and **Diagnostic Tools**. A **Risk alerts** section surfaces active warnings (e.g., "Availability: 1 Warning"):
+
+![Diagnose and solve problems blade showing 5 troubleshooting categories and risk alerts](../assets/operations/monitoring/03-diagnose-and-solve.png)
+
+[Inferred] This blade is the Portal equivalent of the hypothesis-driven playbooks in this guide. Use it as a starting point when you do not yet know the failure category.
+
 ## Verification
 
 Validate that monitoring is working end-to-end after changes.
