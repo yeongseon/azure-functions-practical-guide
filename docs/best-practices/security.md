@@ -58,6 +58,34 @@ Why this matters operationally:
 !!! warning "Connection strings with secrets should be exception-only"
     If a secret-based connection string is unavoidable, isolate it to the minimum scope and define explicit rotation runbooks with cutover validation.
 
+## Portal Walkthrough
+
+This section shows the Identity blade for a live Function App (Consumption Y1, Korea Central). PII is masked.
+
+### Identity (Managed Identity) Blade
+
+[Observed] The **Identity** blade has **System assigned** and **User assigned** tabs. On the System assigned tab, the **Status** toggle is set to **On**, and an **Object (principal) ID** is displayed. The **Permissions** section provides an "Azure role assignments" button to review RBAC grants for this identity:
+
+![Identity blade showing system-assigned managed identity enabled with Object ID](../assets/operations/security/01-identity.png)
+
+[Inferred] With system-assigned managed identity enabled, this Function App can authenticate to Azure resources (Storage, Key Vault, Service Bus, etc.) without connection string secrets. Use the "Azure role assignments" button to verify least-privilege RBAC scopes. If the identity needs to access multiple distinct resource groups, consider whether a user-assigned identity provides better lifecycle management.
+
+### Authentication (Easy Auth) Blade
+
+[Observed] The **Authentication** blade shows no identity provider is configured. The "Add identity provider" button is available to enable App Service Authentication:
+
+![Authentication blade showing no provider configured](../assets/operations/authentication/01-authentication.png)
+
+[Inferred] For HTTP-triggered functions exposed to users, configure Easy Auth instead of relying solely on function keys. Easy Auth validates identity tokens before function code executes, providing per-user claims, conditional access, and audit attribution.
+
+### App Keys Blade
+
+[Observed] The **App keys** blade shows the `_master` and `default` host keys with hidden values. Each key has "Show value" and "Renew key value" options:
+
+![App keys blade showing host keys](../assets/operations/app-keys/01-app-keys.png)
+
+[Inferred] Function keys are shared secrets — treat them as credentials. The `_master` key should never be exposed publicly. Implement key rotation runbooks and prefer identity-based authentication patterns over keys for production workloads.
+
 ## Recommended Practices
 
 ### App settings vs Key Vault references vs environment values
@@ -307,14 +335,6 @@ az functionapp identity assign \
     --resource-group "$RG"
 ```
 
-| CLI element | Explanation |
-|---|---|
-| Command(s) | `az functionapp identity assign` |
-| Key flags | `--name`, `--resource-group` |
-| Variables | `$APP_NAME`, `$RG` |
-| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
-
-
 Set HTTPS-only and TLS minimum:
 
 ```bash
@@ -329,14 +349,6 @@ az functionapp config set \
     --min-tls-version "1.2"
 ```
 
-| CLI element | Explanation |
-|---|---|
-| Command(s) | `az functionapp update`, `az functionapp config set` |
-| Key flags | `--name`, `--resource-group`, `--https-only`, `--min-tls-version` |
-| Variables | `$APP_NAME`, `$RG` |
-| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
-
-
 Set Key Vault-backed app setting:
 
 ```bash
@@ -345,14 +357,6 @@ az functionapp config appsettings set \
     --resource-group "$RG" \
     --settings "DbPassword=@Microsoft.KeyVault(SecretUri=https://$KEYVAULT_NAME.vault.azure.net/secrets/DbPassword/)"
 ```
-
-| CLI element | Explanation |
-|---|---|
-| Command(s) | `az functionapp config appsettings set` |
-| Key flags | `--name`, `--resource-group`, `--settings` |
-| Variables | `$APP_NAME`, `$RG`, `$KEYVAULT_NAME` |
-| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
-
 
 Grant storage data role to managed identity principal:
 
@@ -363,14 +367,6 @@ az role assignment create \
     --role "Storage Blob Data Contributor" \
     --scope "/subscriptions/<subscription-id>/resourceGroups/$RG/providers/Microsoft.Storage/storageAccounts/$STORAGE_NAME"
 ```
-
-| CLI element | Explanation |
-|---|---|
-| Command(s) | `az role assignment create` |
-| Key flags | `--assignee-object-id`, `--assignee-principal-type`, `--role`, `--scope` |
-| Variables | `$RG`, `$STORAGE_NAME` |
-| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
-
 
 ## Validation Checklist
 

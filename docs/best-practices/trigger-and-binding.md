@@ -57,6 +57,18 @@ flowchart TD
 !!! tip "Trigger-first design"
     Choose trigger based on delivery semantics first, then optimize language/runtime implementation details.
 
+## Portal Walkthrough
+
+This section shows the Function App Overview blade for a live Function App (Consumption Y1, Korea Central). PII is masked.
+
+### Functions List (Overview Blade)
+
+[Observed] The **Overview** blade's **Functions** tab lists all deployed functions with their **Trigger** type and **Status**. Two functions are shown: `health` (HTTP trigger, Enabled) and `hello` (HTTP trigger, Enabled). The **Monitor** column provides an "Invocations and more" link to Application Insights:
+
+![Function App Overview showing functions list with trigger types and status](../assets/operations/overview/01-function-app-overview.png)
+
+[Inferred] The trigger type column helps verify the correct trigger is bound to each function. Use this view to confirm function status after deployment. The "Invocations and more" link leads directly to per-function monitoring in Application Insights — use it to verify trigger execution rates and error patterns after configuration changes.
+
 ## Recommended Practices
 
 ### Plan-trigger compatibility guidance
@@ -117,14 +129,6 @@ az functionapp cors add \
   --name "$APP_NAME" \
   --allowed-origins "https://portal.contoso.example"
 ```
-
-| CLI element | Explanation |
-|---|---|
-| Command(s) | `az functionapp cors add` |
-| Key flags | `--resource-group`, `--name`, `--allowed-origins` |
-| Variables | `$RG`, `$APP_NAME` |
-| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
-
 
 ### Queue trigger best practices
 
