@@ -24,6 +24,16 @@ content_validation:
 
 This lab reproduces missed Timer Trigger executions in a real Y1 Consumption deployment by intentionally stopping the app during active schedule windows. You will validate timer behavior with real evidence from 2026-04-07, including baseline fires, missed windows, and post-restart `isPastDue` recovery.
 
+## Portal Walkthrough
+
+Key portal blades for timer trigger investigation. Captures from a Consumption (Y1) Function App with PII masked.
+
+![Log stream for timer execution traces](../../assets/operations/monitoring/02-log-stream.png)
+
+![Environment variables blade](../../assets/operations/configuration/01-environment-variables.png)
+
+![App Service plan blade](../../assets/operations/hosting/01-app-service-plan.png)
+
 ## Lab Metadata
 
 | Field | Value |

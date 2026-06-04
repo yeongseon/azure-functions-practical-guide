@@ -22,6 +22,16 @@ content_validation:
 
 # Functions Failing with Errors
 
+## Portal Walkthrough
+
+Key portal blades for investigating function failures. Captures from a Consumption (Y1) Function App with PII masked.
+
+![Log stream for error traces](../../assets/operations/monitoring/02-log-stream.png)
+
+![Diagnose and solve problems blade](../../assets/operations/monitoring/03-diagnose-and-solve.png)
+
+![Metrics explorer for error rate analysis](../../assets/operations/monitoring/01-metrics-explorer.png)
+
 ## 1. Summary
 
 ### Symptom

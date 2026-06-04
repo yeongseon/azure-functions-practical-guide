@@ -22,6 +22,16 @@ content_validation:
 
 # Blob Trigger Not Firing
 
+## Portal Walkthrough
+
+Key portal blades for blob trigger investigation. Captures from a Consumption (Y1) Function App with PII masked.
+
+![Environment variables blade](../../assets/operations/configuration/01-environment-variables.png)
+
+![Log stream for trigger errors](../../assets/operations/monitoring/02-log-stream.png)
+
+![Networking blade](../../assets/operations/networking/01-networking.png)
+
 ## 1. Summary
 
 | Item | Detail |

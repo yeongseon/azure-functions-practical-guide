@@ -32,6 +32,16 @@ This Level 3 lab guide validates how Azure Functions stores and loads code acros
 
 ---
 
+## Portal Walkthrough
+
+Key portal blades for code/storage verification. Captures from a Consumption (Y1) Function App with PII masked.
+
+![Environment variables showing AzureWebJobsStorage](../../assets/operations/configuration/01-environment-variables.png)
+
+![Identity blade for storage RBAC](../../assets/operations/security/01-identity.png)
+
+![Log stream for storage errors](../../assets/operations/monitoring/02-log-stream.png)
+
 ## Lab Metadata
 
 | Field | Value |

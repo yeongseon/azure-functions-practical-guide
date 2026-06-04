@@ -24,6 +24,16 @@ content_validation:
 
 This lab reproduces a Python Azure Functions out-of-memory incident under sustained blob-trigger load. You will intentionally use a memory-inefficient buffering path, drive concurrency in phases, collect telemetry, and verify that a streaming fix plus concurrency controls removes crash-loop behavior.
 
+## Portal Walkthrough
+
+Key portal blades for OOM crash investigation. Captures from a Consumption (Y1) Function App with PII masked.
+
+![Metrics explorer for memory analysis](../../assets/operations/monitoring/01-metrics-explorer.png)
+
+![Log stream for crash traces](../../assets/operations/monitoring/02-log-stream.png)
+
+![App Service plan blade](../../assets/operations/hosting/01-app-service-plan.png)
+
 ## Lab Metadata
 
 | Field | Value |

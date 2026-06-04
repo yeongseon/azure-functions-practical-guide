@@ -23,6 +23,16 @@ content_validation:
 ---
 
 # Queue Messages Piling Up
+## Portal Walkthrough
+
+Key portal blades for queue backlog investigation. Captures from a Consumption (Y1) Function App with PII masked.
+
+![Scale out blade showing instance limit](../../assets/operations/scaling/01-scale-out.png)
+
+![Log stream for processing traces](../../assets/operations/monitoring/02-log-stream.png)
+
+![Metrics explorer for throughput analysis](../../assets/operations/monitoring/01-metrics-explorer.png)
+
 ## 1. Summary
 | Item | Details |
 |---|---|

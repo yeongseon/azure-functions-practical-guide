@@ -22,6 +22,16 @@ content_validation:
 
 # Flex Consumption Deployment Gotchas
 
+## Portal Walkthrough
+
+Key portal blades for Flex Consumption deployment investigation. Captures from a Consumption (Y1) Function App with PII masked.
+
+![Deployment Center blade](../../assets/operations/deployment/01-deployment-center.png)
+
+![Environment variables blade](../../assets/operations/configuration/01-environment-variables.png)
+
+![Log stream for deployment traces](../../assets/operations/monitoring/02-log-stream.png)
+
 ## 1. Summary
 
 Flex Consumption (FC1) introduces a fundamentally different provisioning and deployment model compared to Consumption (Y1), Premium (EP), and Dedicated plans. Operators who carry over assumptions from those plans routinely encounter provisioning failures, deployment auth errors, and incomplete network lockdown — even when following documentation that appears correct for other plan types.
