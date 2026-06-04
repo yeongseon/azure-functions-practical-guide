@@ -37,6 +37,14 @@ content_validation:
 
 Public inbound access with private outbound connectivity to backend services through VNet integration and private endpoints.
 
+## Portal Walkthrough
+
+The Networking blade shows the baseline state before VNet integration is configured. PII is masked.
+
+![Networking blade before VNet integration](../../assets/operations/networking/01-networking.png)
+
+[Observed] On Consumption (Y1), VNet integration is "Not supported". For private egress, use Flex Consumption (FC1) or Premium (EP) plans where the outbound section will show the VNet integration status after configuration.
+
 ## When to Use
 
 - Access databases, storage, or other services secured behind private endpoints

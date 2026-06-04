@@ -32,6 +32,14 @@ content_validation:
 
 The simplest deployment pattern with no VNet integration. All traffic flows over the public internet.
 
+## Portal Walkthrough
+
+This section shows the Networking blade for a Consumption (Y1) Function App — the default public-only scenario. PII is masked.
+
+![Networking blade showing public-only configuration with no VNet integration](../../assets/operations/networking/01-networking.png)
+
+[Observed] Public network access is enabled with no restrictions. VNet integration and private endpoints are not supported on Consumption (Y1). This is the baseline public-only networking posture.
+
 ## When to Use
 
 - Development and testing environments

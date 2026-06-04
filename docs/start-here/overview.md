@@ -50,6 +50,16 @@ flowchart TD
     F --> A[Function App]
 ```
 
+## Portal Walkthrough
+
+These portal blades show a live Azure Functions deployment. PII is masked.
+
+![Function App Overview showing serverless runtime and functions list](../assets/operations/overview/01-function-app-overview.png)
+
+![App Service plan blade showing Consumption Y1 with scale-to-zero behavior](../assets/operations/hosting/01-app-service-plan.png)
+
+[Observed] The Overview shows two HTTP-triggered functions with Enabled status. The App Service Plan confirms Consumption (Y1) with 0 instances at idle — the defining serverless characteristic.
+
 ## Core model: serverless + event-driven
 
 Azure Functions is designed for workloads where execution is initiated by events.

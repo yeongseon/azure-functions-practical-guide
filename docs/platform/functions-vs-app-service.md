@@ -33,6 +33,16 @@ content_validation:
 
 Azure Functions and Azure App Service are both built on the same underlying App Service platform infrastructure. This guide compares the two services, provides a decision framework for choosing between them, and covers migration and coexistence patterns.
 
+## Portal Walkthrough
+
+Key portal blades illustrating Function App characteristics compared to App Service. PII is masked.
+
+![Function App Overview showing serverless runtime, triggers, and plan info](../assets/operations/overview/01-function-app-overview.png)
+
+![App Service plan blade showing Consumption Y1 with scale-to-zero](../assets/operations/hosting/01-app-service-plan.png)
+
+[Observed] Unlike standard App Service, the Function App Overview shows a **Functions** tab with trigger types and the **App Service Plan** shows dynamic scaling (Y1). App Service uses fixed Always On plans without trigger-based execution.
+
 ## Main Content
 ### Why This Comparison Matters
 
