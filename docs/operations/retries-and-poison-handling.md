@@ -60,9 +60,9 @@ This section shows portal blades relevant to retry and poison handling for a liv
 
 [Inferred] Use the Log stream during active debugging to observe retry behavior in real time. Look for repeated execution attempts for the same message ID, which indicates retries in progress. When messages stop appearing for a specific ID, check the poison queue or dead-letter for exhausted retries.
 
-### Configuration (General Settings) Blade
+### Configuration General Settings Blade
 
-[Observed] The **Configuration > General settings** blade shows platform settings including HTTP version, TLS, and runtime configuration that affect trigger behavior:
+[Observed] The **Configuration** blade's **General settings** tab shows platform settings including HTTP version, TLS, and runtime configuration that affect trigger behavior:
 
 ![Configuration General settings blade](../assets/operations/configuration/02-general-settings.png)
 

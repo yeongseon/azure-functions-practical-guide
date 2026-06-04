@@ -56,7 +56,7 @@ This section shows the Deployment Center blade for a live Function App (Consumpt
 
 ![Deployment Center blade showing source selection](../assets/operations/deployment/01-deployment-center.png)
 
-[Inferred] For production workloads, configure a deployment source (GitHub Actions, Azure DevOps, etc.) and use deployment slots when available (Premium/Dedicated plans). On Consumption (Y1), only 2 slots total are supported. On Flex Consumption, deployment slots are not available — use CI/CD pipeline-based deployment with `func azure functionapp publish` instead.
+[Inferred] For production workloads, configure a deployment source (GitHub Actions, Azure DevOps, etc.) and use deployment slots when available (Premium/Dedicated plans). On Consumption (Y1), deployment slots (2 total including production) are available on Windows only — Linux Consumption does not support slots. On Flex Consumption, deployment slots are not available — use CI/CD pipeline-based deployment with `func azure functionapp publish` instead.
 
 ### Deployment Slots Blade
 
@@ -64,7 +64,7 @@ This section shows the Deployment Center blade for a live Function App (Consumpt
 
 ![Deployment slots blade showing no slots configured](../assets/operations/deployment-slots/01-deployment-slots.png)
 
-[Inferred] For Consumption (Y1), you can add 1 staging slot (2 total including production). For Premium/Dedicated, more slots are supported. Use slots for safe deployment with swap-based promotion. On Flex Consumption, this blade is not applicable — use CI/CD pipeline-based deployment instead.
+[Inferred] Deployment slot support on Consumption (Y1) is Windows-only (2 total including production). Linux Consumption does not support slots. For Premium/Dedicated, more slots are supported on both OS types. On Flex Consumption, this blade is not applicable — use CI/CD pipeline-based deployment instead.
 
 ## Recommended Practices
 

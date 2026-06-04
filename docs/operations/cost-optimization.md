@@ -74,11 +74,11 @@ This section shows portal blades relevant to cost optimization for a live Functi
 
 ### Environment Variables Blade
 
-[Observed] The **Environment variables** blade lists app settings including `AzureWebJobsStorage`, `FUNCTIONS_EXTENSION_VERSION`, `FUNCTIONS_WORKER_RUNTIME`, and `APPINSIGHTS_INSTRUMENTATIONKEY`:
+[Observed] The **Environment variables** blade lists app settings including `AzureWebJobsStorage`, `FUNCTIONS_EXTENSION_VERSION`, `FUNCTIONS_WORKER_RUNTIME`, and Application Insights connection settings:
 
 ![Environment variables blade showing app settings](../assets/operations/configuration/01-environment-variables.png)
 
-[Inferred] Application Insights sampling can be configured via app settings or host.json to control telemetry ingestion cost. Review whether `APPINSIGHTS_INSTRUMENTATIONKEY` is set to a production workspace with appropriate daily caps and sampling rates configured.
+[Inferred] Application Insights sampling can be configured via app settings or host.json to control telemetry ingestion cost. The recommended setting is `APPLICATIONINSIGHTS_CONNECTION_STRING` (connection string format). The older `APPINSIGHTS_INSTRUMENTATIONKEY` still works but is deprecated. Review daily caps and sampling rates to control monitoring costs.
 
 ## Procedure
 

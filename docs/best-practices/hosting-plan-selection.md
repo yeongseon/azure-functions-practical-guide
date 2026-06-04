@@ -68,7 +68,7 @@ This section shows key portal blades for evaluating hosting plan choice on a liv
 
 ![Function App Overview showing plan, OS, runtime, and functions list](../assets/operations/overview/01-function-app-overview.png)
 
-[Inferred] The plan name `KoreaCentralLinuxDynamicPlan` with `Y1: 0` confirms this is a Consumption plan with 0 always-on instances. The `(Y1: 0)` suffix is the key indicator for Consumption tier. For workloads requiring VNet integration, always-ready instances, or deployment slots beyond 2, migration to Flex Consumption (FC1) or Premium (EP) is required.
+[Inferred] The plan name `KoreaCentralLinuxDynamicPlan` with `Y1: 0` confirms this is a Consumption plan with 0 always-on instances. The `(Y1: 0)` suffix is the key indicator for Consumption tier. For workloads requiring VNet integration, always-ready instances, or deployment slots, migration to Flex Consumption (FC1) or Premium (EP) is required. Note that deployment slots on Consumption are Windows-only.
 
 ### App Service Plan Blade
 
