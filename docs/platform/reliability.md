@@ -39,6 +39,34 @@ Before you finalize reliability design decisions, verify these prerequisites:
 - You have access to Azure CLI (`az`) and monitoring telemetry (Application Insights, Metrics, Log Analytics).
 - You have ownership for poison/dead-letter triage and replay procedures.
 
+## Portal Walkthrough
+
+This section shows portal blades relevant to reliability design for a live Function App (Consumption Y1, Korea Central). PII is masked.
+
+### Metrics Explorer
+
+[Observed] The **Metrics** blade provides platform metrics for reliability analysis: execution counts, error rates, HTTP status codes, and duration percentiles:
+
+![Metrics explorer blade for reliability monitoring](../assets/operations/monitoring/01-metrics-explorer.png)
+
+[Inferred] Use these metrics to establish reliability baselines. Monitor `Http5xx` and `FunctionExecutionCount` trends to detect degradation. Set alerts on error rate thresholds before they breach SLO boundaries.
+
+### Log Stream
+
+[Observed] The **Log stream** blade shows real-time function execution output, including trigger processing, retries, and error messages:
+
+![Log stream blade showing real-time function logs](../assets/operations/monitoring/02-log-stream.png)
+
+[Inferred] Log stream is valuable for real-time debugging of retry behavior and trigger failures. Watch for repeated processing of the same message ID (indicating retries) and unhandled exceptions that may lead to poison queue routing.
+
+### Diagnose and Solve Problems
+
+[Observed] The **Diagnose and solve problems** blade provides built-in diagnostics for availability, performance, and function execution issues:
+
+![Diagnose and solve problems blade](../assets/operations/monitoring/03-diagnose-and-solve.png)
+
+[Inferred] Use this blade as a first-response tool for reliability incidents. It provides automated analysis of common failure patterns and can identify issues that may not be visible through metrics alone.
+
 ## Main Content
 ### Reliability layers
 Design for reliability across four layers:
