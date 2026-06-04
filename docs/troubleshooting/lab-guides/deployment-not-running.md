@@ -24,6 +24,16 @@ content_validation:
 
 This lab reproduces a deceptive production scenario: deployment transport succeeds, but Azure Functions cannot discover triggers, so no functions execute. You will validate failure evidence using Application Insights tables only (`traces`, `requests`, `dependencies`, `exceptions`), then recover by correcting runtime and package structure.
 
+## Portal Walkthrough
+
+These portal blades help investigate deployment failures. All captures from a Consumption (Y1) Function App with PII masked.
+
+![Log stream for deployment error traces](../../assets/operations/monitoring/02-log-stream.png)
+
+![Deployment Center blade](../../assets/operations/deployment/01-deployment-center.png)
+
+![Environment variables blade](../../assets/operations/configuration/01-environment-variables.png)
+
 ## Lab Metadata
 
 | Field | Value |

@@ -22,6 +22,16 @@ content_validation:
 
 # Out of Memory / Worker Crash Playbook
 
+## Portal Walkthrough
+
+Key portal blades for OOM crash investigation. Captures from a Consumption (Y1) Function App with PII masked.
+
+![Metrics explorer for memory/execution analysis](../../assets/operations/monitoring/01-metrics-explorer.png)
+
+![Log stream for crash traces](../../assets/operations/monitoring/02-log-stream.png)
+
+![App Service plan blade](../../assets/operations/hosting/01-app-service-plan.png)
+
 ## 1. Summary
 This playbook is for incidents where Azure Functions executions fail, restart, or disappear under load because worker memory is exhausted. It is most common in workloads that materialize large payloads in memory, read blobs fully instead of streaming, hold unbounded collections, or run CPU-heavy media operations that allocate large temporary buffers.
 

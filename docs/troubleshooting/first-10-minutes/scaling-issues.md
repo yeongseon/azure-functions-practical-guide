@@ -20,6 +20,28 @@ content_validation:
 
 When queue backlogs grow, executions remain flat despite demand, or cold start spikes degrade throughput, use this checklist to narrow down the cause within the first 10 minutes.
 
+## Portal Walkthrough
+
+These portal blades help diagnose scaling issues. All captures from a Consumption (Y1) Function App with PII masked.
+
+### Scale Out Blade
+
+[Observed] The **Scale out** blade shows the current **Maximum Scale Out Limit** (200 for Consumption). Verify this isn't set too low for the workload:
+
+![Scale out blade showing instance limit](../../assets/operations/scaling/01-scale-out.png)
+
+### Metrics Explorer
+
+[Observed] Use the **Metrics** blade to compare `FunctionExecutionCount` trend against trigger source backlog to determine if scale-out is keeping up:
+
+![Metrics explorer for scale analysis](../../assets/operations/monitoring/01-metrics-explorer.png)
+
+### App Service Plan
+
+[Observed] The **App Service plan** blade shows the current plan tier and instance count, helping confirm whether the plan supports the expected scale behavior:
+
+![App Service plan blade](../../assets/operations/hosting/01-app-service-plan.png)
+
 ## Prerequisites
 
 - Azure CLI access to the production subscription.

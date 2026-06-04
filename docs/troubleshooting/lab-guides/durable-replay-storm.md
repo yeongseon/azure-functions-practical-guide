@@ -26,6 +26,16 @@ content_validation:
 
 This lab guide documents a completed Azure Functions Premium EP1 experiment that captured a real Durable Functions replay storm. The objective is to prove, with reproducible evidence, that orchestration replay overhead can dominate end-to-end completion time even when activity execution remains stable.
 
+## Portal Walkthrough
+
+These portal blades help investigate Durable Functions replay storms. All captures from a Consumption (Y1) Function App with PII masked.
+
+![Durable Functions blade](../../assets/operations/durable/01-durable-functions.png)
+
+![Metrics explorer for execution analysis](../../assets/operations/monitoring/01-metrics-explorer.png)
+
+![Log stream for replay traces](../../assets/operations/monitoring/02-log-stream.png)
+
 ## Lab Metadata
 
 | Field | Value |

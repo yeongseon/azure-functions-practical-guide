@@ -28,6 +28,16 @@ This Level 3 lab guide reproduces a managed identity authorization failure in Az
 
 ---
 
+## Portal Walkthrough
+
+These portal blades help investigate managed identity authentication issues. All captures from a Consumption (Y1) Function App with PII masked.
+
+![Identity blade showing system-assigned managed identity](../../assets/operations/security/01-identity.png)
+
+![Environment variables blade](../../assets/operations/configuration/01-environment-variables.png)
+
+![Log stream for auth errors](../../assets/operations/monitoring/02-log-stream.png)
+
 ## Lab Metadata
 
 | Field | Value |

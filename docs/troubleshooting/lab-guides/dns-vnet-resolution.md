@@ -31,6 +31,16 @@ This lab reproduces a private DNS resolution failure on an Azure Functions Flex 
 
 ---
 
+## Portal Walkthrough
+
+These portal blades help investigate DNS and VNet resolution issues. All captures from a Consumption (Y1) Function App with PII masked.
+
+![Networking blade showing inbound/outbound configuration](../../assets/operations/networking/01-networking.png)
+
+![Log stream for DNS resolution errors](../../assets/operations/monitoring/02-log-stream.png)
+
+![Environment variables blade](../../assets/operations/configuration/01-environment-variables.png)
+
 ## Lab Metadata
 
 | Field | Value |

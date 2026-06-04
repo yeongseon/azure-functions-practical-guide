@@ -22,6 +22,16 @@ content_validation:
 
 # App Settings Misconfiguration
 
+## Portal Walkthrough
+
+Key portal blades for app settings misconfiguration investigation. Captures from a Consumption (Y1) Function App with PII masked.
+
+![Environment variables blade](../../../assets/operations/configuration/01-environment-variables.png)
+
+![General settings blade](../../../assets/operations/configuration/02-general-settings.png)
+
+![Log stream for configuration errors](../../../assets/operations/monitoring/02-log-stream.png)
+
 ## 1. Summary
 This playbook addresses Azure Functions incidents caused by missing, malformed, or incorrect application settings. Common failure modes include missing `AzureWebJobsStorage`, wrong `FUNCTIONS_WORKER_RUNTIME`, incorrect `FUNCTIONS_EXTENSION_VERSION`, invalid content share settings on Consumption or Premium plans, and broken Key Vault reference syntax.
 
