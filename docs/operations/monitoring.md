@@ -71,6 +71,30 @@ Use the signal that best answers the operational question.
 | Host recycle/cold start analysis | Traces | Runtime lifecycle evidence | Instance metrics |
 | Configuration change impact | Activity logs | Control-plane history | Logs + traces |
 
+### Application Insights Blade
+
+[Observed] The **Application Insights** blade shows the linked Application Insights resource with a **View Application Insights data** link for full telemetry access. The **Change your resource** section allows switching or disconnecting the monitoring resource:
+
+![Application Insights blade showing linked resource](../assets/operations/application-insights/01-application-insights.png)
+
+[Inferred] Verify the Application Insights link is active before troubleshooting telemetry gaps. If no resource is linked, function execution data will not appear in Application Insights queries.
+
+### Logs (Log Analytics) Blade
+
+[Observed] The **Logs** blade opens the KQL query editor with a **New Query** tab, table selector, and time range filter. The **Queries hub** provides pre-built query templates:
+
+![Logs blade showing KQL query editor](../assets/operations/logs/01-logs.png)
+
+[Inferred] Use this blade to run KQL queries directly against Function App logs. Select tables like `FunctionAppLogs`, `requests`, `traces`, and `exceptions` for troubleshooting. The time range filter defaults to 24 hours.
+
+### Diagnostic Settings Blade
+
+[Observed] The **Diagnostic settings** blade shows available log categories for streaming export: Function Application Logs, Access Audit Logs, IPSecurity Audit logs, App Service Authentication logs, and AllMetrics. No diagnostic settings are configured:
+
+![Diagnostic settings blade showing available log categories](../assets/operations/diagnostic-settings/01-diagnostic-settings.png)
+
+[Inferred] Configure diagnostic settings to stream platform logs to Log Analytics, Storage Account, or Event Hub for long-term retention and compliance. Without diagnostic settings, platform-level logs (not Application Insights telemetry) are not persisted.
+
 ## Procedure
 
 ### Monitoring architecture

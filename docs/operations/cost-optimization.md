@@ -80,6 +80,14 @@ This section shows portal blades relevant to cost optimization for a live Functi
 
 [Inferred] Application Insights sampling can be configured via app settings or host.json to control telemetry ingestion cost. The recommended setting is `APPLICATIONINSIGHTS_CONNECTION_STRING` (connection string format). The older `APPINSIGHTS_INSTRUMENTATIONKEY` still works but is deprecated. Review daily caps and sampling rates to control monitoring costs.
 
+### Application Insights Blade
+
+[Observed] The **Application Insights** blade shows the linked resource. Telemetry ingestion from this resource is a key cost driver:
+
+![Application Insights blade](../assets/operations/application-insights/01-application-insights.png)
+
+[Inferred] To control monitoring costs, configure sampling rates in the linked Application Insights resource and set daily caps.
+
 ## Procedure
 
 ### Consumption Plan Pricing
