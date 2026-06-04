@@ -25,11 +25,11 @@ content_validation:
 
 Key portal blades for timeout/execution limit investigation. Captures from a Consumption (Y1) Function App with PII masked.
 
-![Log stream for timeout traces](../../assets/operations/monitoring/02-log-stream.png)
+![Log stream for timeout traces](../../../assets/operations/monitoring/02-log-stream.png)
 
-![Metrics explorer for execution duration](../../assets/operations/monitoring/01-metrics-explorer.png)
+![Metrics explorer for execution duration](../../../assets/operations/monitoring/01-metrics-explorer.png)
 
-![General settings blade showing platform config](../../assets/operations/configuration/02-general-settings.png)
+![General settings blade showing platform config](../../../assets/operations/configuration/02-general-settings.png)
 
 ## 1. Summary
 Timeout incidents occur when function execution exceeds platform, host, or upstream gateway limits, leading to abrupt termination, retries, partial side effects, and backlog growth. In Azure Functions, the effective limit is the minimum across hosting plan limits, `host.json` `functionTimeout`, trigger protocol behavior, and any front-door/load-balancer idle timeout in front of HTTP triggers.
