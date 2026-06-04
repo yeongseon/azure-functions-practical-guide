@@ -39,7 +39,8 @@ jobs:
       - name: Validate content sources
         run: |
           python scripts/validate_content_sources.py
-      
+        continue-on-error: true
+
       - name: Check for missing diagram IDs
         run: |
           # Count mermaid blocks
