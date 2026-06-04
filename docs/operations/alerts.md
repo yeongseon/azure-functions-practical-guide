@@ -97,6 +97,12 @@ This section shows portal blades relevant to alerting for a live Function App (C
 
 [Inferred] Use this blade as a first-response tool during alert triage. Smart detection signals from Application Insights complement metric and log query alerts, but should not replace explicit alert rules for known failure patterns.
 
+### Application Insights Blade
+
+[Observed] The **Application Insights** blade confirms the linked monitoring resource. Alerts require an active Application Insights connection:
+
+![Application Insights blade](../assets/operations/application-insights/01-application-insights.png)
+
 ## Procedure
 ### Alerting principles
 Use alert rules that are:

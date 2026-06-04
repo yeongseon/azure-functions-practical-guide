@@ -42,6 +42,12 @@ These portal blades help diagnose triggers not firing. All captures from a Consu
 
 ![Environment variables blade](../../assets/operations/configuration/01-environment-variables.png)
 
+### Logs (KQL Query Editor)
+
+[Observed] The **Logs** blade provides direct KQL access to `FunctionAppLogs` and `traces` tables for diagnosing trigger listener failures:
+
+![Logs blade with KQL editor](../../assets/operations/logs/01-logs.png)
+
 ## Prerequisites
 
 - Azure CLI access to the production subscription.

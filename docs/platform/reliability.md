@@ -67,6 +67,14 @@ This section shows portal blades relevant to reliability design for a live Funct
 
 [Inferred] Use this blade as a first-response tool for reliability incidents. It provides automated analysis of common failure patterns and can identify issues that may not be visible through metrics alone.
 
+### Diagnostic Settings Blade
+
+[Observed] The **Diagnostic settings** blade lists available platform log categories (Function Application Logs, Access Audit, IPSecurity Audit, AllMetrics) for export configuration:
+
+![Diagnostic settings blade](../assets/operations/diagnostic-settings/01-diagnostic-settings.png)
+
+[Inferred] Streaming platform logs to Log Analytics enables KQL-based reliability analysis beyond Application Insights telemetry.
+
 ## Main Content
 ### Reliability layers
 Design for reliability across four layers:
