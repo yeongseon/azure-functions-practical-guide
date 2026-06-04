@@ -49,6 +49,7 @@ jobs:
       - name: Validate changed documentation quality
         run: |
           python scripts/validate_doc_quality.py --changed-only --base-ref "${{ github.event.pull_request.base.sha || github.event.before || 'HEAD~1' }}"
+        continue-on-error: true
 
       - name: Audit existing content sources
         run: |

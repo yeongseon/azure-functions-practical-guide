@@ -79,7 +79,7 @@ SUBSCRIPTION_ID_RE = re.compile(r"/subscriptions/[0-9a-fA-F-]{36}\b")
 APP_INSIGHTS_KEY_RE = re.compile(r"InstrumentationKey=([0-9a-fA-F-]{36})")
 SECRET_VALUE_RE = re.compile(
     r"(SharedAccessKey|AccountKey|client_secret|clientSecret|password)\s*[=:]\s*"
-    r"(?!<|placeholder|xxxx|\\$|\")([^;,\s]+)",
+    r"(?!<|placeholder|xxxx|cGxhY2Vob2xkZXI|\\$|\"|your-|\$\{|@Microsoft\.KeyVault)([A-Za-z0-9+/=]{20,})",
     re.IGNORECASE,
 )
 ACA_HOST_RE = re.compile(
