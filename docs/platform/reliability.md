@@ -39,6 +39,34 @@ Before you finalize reliability design decisions, verify these prerequisites:
 - You have access to Azure CLI (`az`) and monitoring telemetry (Application Insights, Metrics, Log Analytics).
 - You have ownership for poison/dead-letter triage and replay procedures.
 
+## Portal Walkthrough
+
+This section shows portal blades relevant to reliability design for a live Function App (Consumption Y1, Korea Central). PII is masked.
+
+### Metrics Explorer
+
+[Observed] The **Metrics** blade provides platform metrics for reliability analysis: execution counts, error rates, HTTP status codes, and duration percentiles:
+
+![Metrics explorer blade for reliability monitoring](../assets/operations/monitoring/01-metrics-explorer.png)
+
+[Inferred] Use these metrics to establish reliability baselines. Monitor `Http5xx` and `FunctionExecutionCount` trends to detect degradation. Set alerts on error rate thresholds before they breach SLO boundaries.
+
+### Log Stream
+
+[Observed] The **Log stream** blade shows real-time function execution output, including trigger processing, retries, and error messages:
+
+![Log stream blade showing real-time function logs](../assets/operations/monitoring/02-log-stream.png)
+
+[Inferred] Log stream is valuable for real-time debugging of retry behavior and trigger failures. Watch for repeated processing of the same message ID (indicating retries) and unhandled exceptions that may lead to poison queue routing.
+
+### Diagnose and Solve Problems
+
+[Observed] The **Diagnose and solve problems** blade provides built-in diagnostics for availability, performance, and function execution issues:
+
+![Diagnose and solve problems blade](../assets/operations/monitoring/03-diagnose-and-solve.png)
+
+[Inferred] Use this blade as a first-response tool for reliability incidents. It provides automated analysis of common failure patterns and can identify issues that may not be visible through metrics alone.
+
 ## Main Content
 ### Reliability layers
 Design for reliability across four layers:
@@ -335,38 +363,14 @@ Use CLI checks during reviews and incidents to confirm reliability-related confi
 az functionapp config show   --resource-group "rg-functions-prod"   --name "func-reliability-prod"   --query "{alwaysOn:alwaysOn,http20Enabled:http20Enabled,ftpsState:ftpsState,minTlsVersion:minTlsVersion}"   --output json
 ```
 
-| CLI element | Explanation |
-|---|---|
-| Command(s) | `az functionapp config show` |
-| Key flags | `--resource-group`, `--name`, `--query`, `--output` |
-| Variables | None |
-| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
-
-
 **Query failure and retry metrics**
 ```bash
 az monitor metrics list   --resource "/subscriptions/<subscription-id>/resourceGroups/rg-functions-prod/providers/Microsoft.Web/sites/func-reliability-prod"   --metric "FunctionExecutionCount,FunctionExecutionUnits,FunctionExecutionFailureCount"   --interval "PT5M"   --aggregation "Total"   --output table
 ```
 
-| CLI element | Explanation |
-|---|---|
-| Command(s) | `az monitor metrics list` |
-| Key flags | `--resource`, `--metric`, `--interval`, `--aggregation`, `--output` |
-| Variables | None |
-| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
-
-
 ```bash
 az monitor metrics list   --resource "/subscriptions/<subscription-id>/resourceGroups/rg-functions-prod/providers/Microsoft.ServiceBus/namespaces/sb-functions-prod"   --metric "DeadletteredMessages,IncomingMessages,SuccessfulRequests,ServerErrors"   --interval "PT5M"   --aggregation "Total"   --output table
 ```
-
-| CLI element | Explanation |
-|---|---|
-| Command(s) | `az monitor metrics list` |
-| Key flags | `--resource`, `--metric`, `--interval`, `--aggregation`, `--output` |
-| Variables | None |
-| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
-
 
 ### Troubleshooting matrix
 | Symptom | Likely Cause | Validation Path |

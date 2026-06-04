@@ -30,6 +30,50 @@ content_validation:
 # Security
 Security in Azure Functions is layered: endpoint authorization, user authentication, workload identity, API gateway policy, secret governance, and network isolation. This page focuses on **design decisions** so teams can choose the right security architecture before implementation.
 
+## Portal Walkthrough
+
+This section shows portal blades relevant to Function App security architecture (Consumption Y1, Korea Central). PII is masked.
+
+### Identity (Managed Identity) Blade
+
+[Observed] The **Identity** blade shows the **System assigned** managed identity with **Status: On**. An **Object (principal) ID** is displayed (masked), and the **Permissions** section provides an "Azure role assignments" button:
+
+![Identity blade showing system-assigned managed identity enabled](../assets/operations/security/01-identity.png)
+
+[Inferred] System-assigned managed identity is the foundational credential for Azure-to-Azure authentication. The Object ID is used when assigning RBAC roles. From this blade, use "Azure role assignments" to audit current permissions and verify least-privilege scoping.
+
+### Authentication (Easy Auth) Blade
+
+[Observed] The **Authentication** blade shows the current identity provider configuration. No provider is configured — the "Add identity provider" button is displayed:
+
+![Authentication blade showing no identity provider configured](../assets/operations/authentication/01-authentication.png)
+
+[Inferred] For HTTP-triggered functions requiring user authentication, configure an identity provider (Microsoft, Google, etc.) here. This enables App Service Authentication (Easy Auth) which validates tokens before function code executes.
+
+### App Keys Blade
+
+[Observed] The **App keys** blade shows **System keys** and **Host keys** sections. The `_master` key and `default` host key are listed with hidden values and "Renew key value" options:
+
+![App keys blade showing master and default host keys](../assets/operations/app-keys/01-app-keys.png)
+
+[Inferred] The `_master` key grants admin-level access to Functions Runtime APIs — never expose it publicly. The `default` host key is used for function-level authorization. Rotate keys regularly and prefer managed identity or Easy Auth over key-based authentication for production.
+
+### CORS Blade
+
+[Observed] The **CORS** blade shows the **Allowed Origins** configuration and **Request Credentials** (Access-Control-Allow-Credentials) checkbox:
+
+![CORS blade showing allowed origins configuration](../assets/operations/cors/01-cors.png)
+
+[Inferred] An empty Allowed Origins list means no CORS origins are explicitly permitted. For browser-based API consumers, add specific origins only — avoid wildcard `*` in production. CORS is not a substitute for authentication.
+
+### Environment Variables Blade
+
+[Observed] The **Environment variables** blade lists app settings including `AzureWebJobsStorage`, `FUNCTIONS_EXTENSION_VERSION`, `FUNCTIONS_WORKER_RUNTIME`, and `APPINSIGHTS_INSTRUMENTATIONKEY`. Values are hidden by default:
+
+![Environment variables blade showing app settings](../assets/operations/configuration/01-environment-variables.png)
+
+[Inferred] The `AzureWebJobsStorage` setting controls host storage authentication. When using identity-based connections, this would be replaced with `AzureWebJobsStorage__accountName` (no connection string). Review whether secret values are stored as plain app settings or as Key Vault references.
+
 ## Main Content
 
 ### Security model overview
@@ -207,14 +251,6 @@ az functionapp cors add \
   --allowed-origins "https://app.contoso.example"
 ```
 
-| CLI element | Explanation |
-|---|---|
-| Command(s) | `az functionapp cors add` |
-| Key flags | `--name`, `--resource-group`, `--allowed-origins` |
-| Variables | `$APP_NAME`, `$RG` |
-| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
-
-
 Wildcard origin risks:
 - `*` allows any origin.
 - Increases browser-side data exposure risk.
@@ -242,14 +278,6 @@ az functionapp function keys list \
   --function-name "HttpExample"
 ```
 
-| CLI element | Explanation |
-|---|---|
-| Command(s) | `az functionapp function keys list` |
-| Key flags | `--name`, `--resource-group`, `--function-name` |
-| Variables | `$APP_NAME`, `$RG` |
-| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
-
-
 ### Storing keys in Key Vault
 - Store shared keys in Key Vault.
 - Distribute through secure channels only.
@@ -273,28 +301,12 @@ az functionapp identity assign \
   --resource-group "$RG"
 ```
 
-| CLI element | Explanation |
-|---|---|
-| Command(s) | `az functionapp identity assign` |
-| Key flags | `--name`, `--resource-group` |
-| Variables | `$APP_NAME`, `$RG` |
-| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
-
-
 ```bash
 az role assignment create \
   --assignee "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" \
   --role "Storage Blob Data Contributor" \
   --scope "/subscriptions/<subscription-id>/resourceGroups/$RG/providers/Microsoft.Storage/storageAccounts/$STORAGE_NAME"
 ```
-
-| CLI element | Explanation |
-|---|---|
-| Command(s) | `az role assignment create` |
-| Key flags | `--assignee`, `--role`, `--scope` |
-| Variables | `$RG`, `$STORAGE_NAME` |
-| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
-
 
 Flex Consumption requires identity-based host storage configuration. Plan identity and RBAC early.
 

@@ -68,6 +68,34 @@ flowchart TD
     PRIVATE_EP -->|"Fixed capacity"| FIXED
 ```
 
+## Portal Walkthrough
+
+This section shows portal blades illustrating deployment configuration for a live Function App (Consumption Y1, Korea Central). PII is masked.
+
+### Deployment Center Blade
+
+[Observed] The **Deployment Center** blade shows the deployment source configuration with a **Source** dropdown set to "Select a code source". An info banner notes that the production slot is not recommended for CI/CD setup:
+
+![Deployment Center blade showing source selection](../assets/operations/deployment/01-deployment-center.png)
+
+[Inferred] The Deployment Center is the portal's primary interface for configuring CI/CD pipelines. For Consumption and Premium plans, it supports GitHub Actions, Azure DevOps, and other source providers. For Flex Consumption, deployment uses `func azure functionapp publish` or One Deploy instead of Kudu/SCM-based flows shown here.
+
+### Function App Overview
+
+[Observed] The **Overview** blade shows the Function App's current deployment state: **Status: Running**, **App Service Plan: Y1**, **Operating System: Linux**, and two deployed functions (`health`, `hello`) with Enabled status:
+
+![Function App Overview showing deployment state and functions](../assets/operations/overview/01-function-app-overview.png)
+
+[Inferred] After deployment, verify function status and count in the Overview blade. The plan type visible here determines which deployment scenarios from the matrix below are applicable. The runtime version confirms the Functions host version running in production.
+
+### Configuration (General Settings) Blade
+
+[Observed] The **General settings** blade shows platform settings including **HTTP version**, **HTTPS only**, **TLS versions**, **FTPS state**, **Remote debugging**, and **Client certificate mode**:
+
+![General settings blade showing platform configuration](../assets/operations/configuration/02-general-settings.png)
+
+[Inferred] These settings should be part of deployment validation. Verify HTTPS-only is enabled, TLS 1.2 minimum is set, and remote debugging is disabled after each deployment scenario change. FTPS state should be "Disabled" when not using FTP-based deployment.
+
 ## Matrix A — Networking and Security
 
 | Feature | Consumption (Y1) | Flex Consumption (FC1) | Premium (EP) | Dedicated (ASP) |

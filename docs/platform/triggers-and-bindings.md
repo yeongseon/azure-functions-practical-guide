@@ -58,13 +58,25 @@ If you validate configuration with Azure CLI, keep long flags for readability:
 az functionapp config appsettings list --resource-group $RG --name $APP_NAME
 az functionapp config show --resource-group $RG --name $APP_NAME
 ```
+## Portal Walkthrough
 
-| CLI element | Explanation |
-|---|---|
-| Command(s) | `az functionapp config appsettings list`, `az functionapp config show` |
-| Key flags | `--resource-group`, `--name` |
-| Variables | `$RG`, `$APP_NAME` |
-| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+This section shows portal blades relevant to trigger and binding configuration for a live Function App (Consumption Y1, Korea Central). PII is masked.
+
+### Function App Overview (Functions List)
+
+[Observed] The **Overview** blade lists deployed functions with their **Trigger** type and **Status**. Two HTTP-triggered functions are shown: `health` and `hello`, both Enabled. The **Monitor** column links to Application Insights invocation data:
+
+![Function App Overview showing functions list with trigger types](../assets/operations/overview/01-function-app-overview.png)
+
+[Inferred] The trigger type column confirms the binding configuration for each function. After deployment, verify that the expected trigger type appears for each function. Missing or incorrect triggers indicate a binding configuration error in `function.json` or code annotations.
+
+### Environment Variables Blade
+
+[Observed] The **Environment variables** blade shows app settings that provide connection references for bindings: `AzureWebJobsStorage` for host storage, `FUNCTIONS_WORKER_RUNTIME` for the language stack, and `APPINSIGHTS_INSTRUMENTATIONKEY` for monitoring:
+
+![Environment variables blade showing binding-related app settings](../assets/operations/configuration/01-environment-variables.png)
+
+[Inferred] Binding connections resolve from app settings at runtime. For identity-based connections, the setting name pattern changes (e.g., `AzureWebJobsStorage__accountName` instead of a connection string). Missing or misconfigured app settings are the most common cause of binding resolution failures at startup.
 
 ## Main Content
 ### Core model
@@ -343,14 +355,6 @@ az functionapp config appsettings list --resource-group $RG --name $APP_NAME
 az functionapp function show --resource-group $RG --name $APP_NAME --function-name $FUNCTION_NAME
 az monitor app-insights query --app <application-insights-name> --analytics-query "traces | take 20"
 ```
-
-| CLI element | Explanation |
-|---|---|
-| Command(s) | `az functionapp config appsettings list`, `az functionapp function show`, `az monitor app-insights query` |
-| Key flags | `--resource-group`, `--name`, `--function-name`, `--app`, `--analytics-query` |
-| Variables | `$RG`, `$APP_NAME`, `$FUNCTION_NAME` |
-| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
-
 !!! tip "Reliability Guide"
     For retry and poison-message design, see [Reliability](reliability.md).
 !!! tip "Language Guide"
