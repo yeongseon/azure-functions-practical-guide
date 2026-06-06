@@ -74,6 +74,7 @@ Use the alert type that matches the failure signal:
 | **Log query alerts** | Pattern-based failures requiring KQL context | 5-minute to 15-minute windows | Yes |
 | **Smart detection** | ML-based anomaly hints in Application Insights | Model-driven intervals | No (triage first) |
 Quick decision rule:
+
 - Choose **metric alerts** for immediate platform symptoms like 5xx bursts.
 - Choose **log query alerts** for scoped conditions like per-function failure ratio.
 - Choose **smart detection** as supplementary signal, not your only paging mechanism.
@@ -106,6 +107,7 @@ This section shows portal blades relevant to alerting for a live Function App (C
 ## Procedure
 ### Alerting principles
 Use alert rules that are:
+
 - **Actionable**: someone can do something immediately.
 - **Low-noise**: avoid alert fatigue from unstable thresholds.
 - **Correlated**: combine function metrics and dependency signals.
@@ -175,6 +177,7 @@ Example output (PII masked):
 ### Metric alerts
 Metric alerts are ideal for fast detection of high-level service degradation.
 Typical Azure Functions metric alert candidates:
+
 - HTTP 5xx response trend.
 - Function execution activity drop (throughput anomaly).
 - High execution duration percentile.
@@ -227,6 +230,7 @@ Example output (PII masked):
 ### Log query alerts
 Log alerts are better for nuanced failure patterns not represented by one metric.
 Common KQL-based alert scenarios:
+
 - Failure rate exceeds baseline for specific functions.
 - Repeated exception signature appears in short window.
 - Queue backlog age exceeds acceptable processing delay.

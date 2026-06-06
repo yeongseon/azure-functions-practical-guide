@@ -33,6 +33,7 @@ content_validation:
 Reliability in Azure Functions is a design concern, not only an operations concern. Your trigger model, hosting plan, retry policy, and network topology jointly determine failure behavior.
 ## Prerequisites
 Before you finalize reliability design decisions, verify these prerequisites:
+
 - You know the trigger semantics for each workload (at-most-once, at-least-once, checkpoint-driven).
 - You have a defined business SLO/SLA for latency, recovery time, and acceptable data loss.
 - You can map each critical dependency (storage, messaging, identity, database, DNS, network).
@@ -87,6 +88,7 @@ Design for reliability across four layers:
 ### Retry strategy
 Azure Functions supports built-in retry behavior for supported triggers.
 Common retry models:
+
 - Fixed delay retry
 - Exponential backoff retry
 Use retries for transient failures only. Non-transient failures should route to dead-letter/poison handling paths.
@@ -219,6 +221,7 @@ Use these examples as host-level reliability templates. Trigger-level retry decl
 ### Poison message handling
 For queue-based triggers, repeated failure eventually moves messages to poison/dead-letter paths (service-specific behavior).
 Design requirements:
+
 - preserve original payload and correlation metadata,
 - alert on poison queue growth,
 - provide replay workflow after remediation,
@@ -307,6 +310,7 @@ flowchart TD
 ### Idempotency is mandatory
 Because retries and duplicate deliveries are normal in distributed systems, handlers must be idempotent.
 Idempotency patterns:
+
 - deterministic operation keys,
 - upsert instead of blind insert,
 - de-duplication table/cache,
@@ -346,6 +350,7 @@ def process_order(msg: func.QueueMessage) -> None:
 
 ### Dependency resilience
 Protect downstream dependencies using:
+
 - timeout budgets per call,
 - transient retry with jitter,
 - circuit breaking,
@@ -423,6 +428,7 @@ Exactly-once transport is rarely available end-to-end; achieve exactly-once effe
 
 ### Multi-region failover
 Choose strategy based on workload criticality and recovery objectives:
+
 - **Active-passive**: lower cost, simpler operations, longer failover time.
 - **Active-active**: higher complexity, better regional fault tolerance.
 
@@ -433,6 +439,7 @@ Health endpoints and synthetic probes improve early detection of reliability reg
 
 ## Language-Specific Details
 Use language-specific guidance for runtime nuances, extension bundles, and host configuration details:
+
 - Python: [Python Guide](../language-guides/python/index.md), [host.json for Python](../language-guides/python/host-json.md), [Python troubleshooting](../language-guides/python/troubleshooting.md)
 - Node.js: [Node.js Guide](../language-guides/nodejs/index.md)
 - .NET: [.NET Guide](../language-guides/dotnet/index.md)

@@ -1,5 +1,6 @@
 ---
 content_sources:
+
 - type: mslearn-adapted
   url: https://learn.microsoft.com/azure/azure-functions/functions-event-grid-blob-trigger
 - type: mslearn-adapted

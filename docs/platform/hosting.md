@@ -33,6 +33,9 @@ content_validation:
 
 Choosing a hosting plan is the most important Azure Functions platform decision. It controls scale behavior, cold start profile, networking options, limits, and baseline cost.
 
+!!! info "Scope: classic hosting plans"
+    This guide covers Flex Consumption, Consumption, Premium, and Dedicated plans. Azure Container Apps hosting for Azure Functions is a separate hosting model not covered here.
+
 ## Prerequisites
 
 Before selecting a plan, align on these inputs with your application and platform teams:
@@ -90,6 +93,10 @@ Azure Functions supports four main hosting models:
 
 !!! tip "Decision rule"
     Start with Flex Consumption for most new serverless workloads, then choose Premium when you need permanently warm behavior and advanced App Service premium features.
+
+> **Last verified**: 2026-06-06 | **Primary source**: [Azure Functions hosting options](https://learn.microsoft.com/azure/azure-functions/functions-scale)
+>
+> Key values subject to change: Flex Consumption max instances, function timeout defaults/maximums, Linux Consumption retirement timeline, deployment slot support, Kudu/SCM availability, private endpoint and VNet integration support, scale behavior by trigger type.
 
 <!-- diagram-id: hosting-plans-at-a-glance -->
 ```mermaid

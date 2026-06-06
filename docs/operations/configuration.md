@@ -64,6 +64,7 @@ This section shows the key Azure Portal blades for Function App configuration. A
 
 ## When to Use
 Choose configuration layers by scope and change frequency:
+
 - **App settings** for environment-specific values, secrets, feature flags, and per-slot overrides.
 - **`host.json`** for host-wide runtime behavior such as logging, retries, extension tuning, and sampling.
 - **Extension-specific configuration** when tuning one binding type (for example Service Bus or Event Hubs) without changing business logic.
@@ -190,6 +191,7 @@ Use local settings only for local runtime execution.
 }
 ```
 Operational rules:
+
 - Do not commit production secrets.
 - Keep a sanitized `local.settings.json.example` in source control.
 - Inject secrets at deployment time via secure pipeline mechanisms.
@@ -365,6 +367,7 @@ Timestamp                    Message
 2026-04-05T09:20:42.017Z     2 functions loaded
 ```
 Success indicators:
+
 - Changed settings appear with expected values and expected slot scope.
 - Managed identity remains enabled and principal ID is unchanged unless intentionally rotated.
 - No startup failures related to binding initialization or secret resolution.
@@ -378,6 +381,7 @@ Config drift and incorrect settings playbook:
 3. Restart the app and verify host startup and trigger listener status.
 4. If only one slot is affected, swap back or redeploy the previous slot package.
 Targeted checks:
+
 - **`AzureWebJobsStorage` failures**: confirm identity settings, role assignments, and storage DNS reachability.
 - **Key Vault reference unresolved**: confirm vault access policy or RBAC and private endpoint routing.
 - **Unexpected throttling or backlog**: review `host.json` concurrency and extension settings.

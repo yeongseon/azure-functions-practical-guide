@@ -1,5 +1,6 @@
 ---
 content_sources:
+
 - type: mslearn-adapted
   url: https://learn.microsoft.com/azure/azure-functions/functions-reference-python
 - type: mslearn-adapted
@@ -385,6 +386,7 @@ app.register_functions(products_bp)
 ```
 
 This creates three endpoints:
+
 - `GET /api/products` — List all products
 - `GET /api/products/{product_id}` — Get a product by ID
 - `POST /api/products` — Create a new product

@@ -96,6 +96,7 @@ WORKSPACE_ID="/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RG/providers/Micro
 
 ## When to Use
 Use this runbook in these cases:
+
 - New production deployment that needs baseline hardening.
 - Recurring maintenance windows (daily, weekly, monthly).
 - Confirmed or suspected secret leakage, identity compromise, or abnormal access pattern.
@@ -413,6 +414,7 @@ az monitor scheduled-query create --name "func-auth-failures" --resource-group "
 
 ### Operational security routine
 Run this cadence and tighten by risk profile:
+
 - Daily: check 401/403 anomalies, confirm alert delivery, validate no emergency grant remains active.
 - Weekly: review RBAC changes, reconcile CORS allowlist, verify SCM restrictions match CI/CD egress ranges.
 - Monthly: rotate keys, validate Key Vault propagation and client cutover, re-check HTTPS/TLS baseline.

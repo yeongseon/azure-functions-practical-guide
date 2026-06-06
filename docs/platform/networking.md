@@ -26,12 +26,14 @@ content_validation:
 
 # Networking
 Azure Functions networking design has two separate concerns:
+
 - **Inbound**: who can call your function endpoints.
 - **Outbound**: what your functions can reach.
 Capabilities differ significantly by hosting plan, so networking must be chosen together with hosting.
 
 ## Prerequisites
 Prepare these items before applying networking controls:
+
 - Azure CLI authenticated to the target subscription.
 - Function App already deployed.
 - VNet and subnets planned for integration and private endpoints.
@@ -269,16 +271,19 @@ Planning baseline:
 2. Prefer pooled transport defaults unless measured otherwise.
 
 Observable symptoms:
+
 - Intermittent dependency timeouts at peak traffic.
 - Error bursts that recover after scale events or restarts.
 - Heavier impact on high fan-out destinations.
 
 Mitigation options:
+
 - Add NAT Gateway capacity for larger outbound concurrency.
 - Reduce avoidable parallel outbound operations.
 
 ### Subnet delegation requirements
 When configuring VNet integration, subnet delegation depends on plan:
+
 - Flex Consumption: `Microsoft.App/environments`
 - Premium and Dedicated: `Microsoft.Web/serverFarms`
 Plan this before deployment to avoid subnet redesign.
@@ -287,6 +292,7 @@ Plan this before deployment to avoid subnet redesign.
 Private endpoint architectures require private DNS resolution.
 
 Recommended baseline:
+
 - Use `privatelink.azurewebsites.net` naming for Function App private endpoint records.
 - Link private DNS zones to every VNet that must resolve private endpoints.
 - Configure conditional forwarding in hybrid DNS environments.
@@ -318,6 +324,7 @@ sequenceDiagram
 
 ### Hybrid connectivity
 For on-premises integration:
+
 - Premium and Dedicated support Hybrid Connections.
 - VNet integration with VPN/ExpressRoute supports broader private reachability.
 Use Hybrid Connections when simple TCP reachability is enough and full private routing is not required.
@@ -330,6 +337,7 @@ Use Hybrid Connections when simple TCP reachability is enough and full private r
 
 ### Security alignment
 Networking should align with identity and authorization controls:
+
 - Function authorization level for endpoint keys.
 - App Service Authentication for user/workload identity.
 - Managed identity for service-to-service access.
@@ -387,6 +395,7 @@ A practical zero-trust ingress model for Functions is:
 
 ### Multi-environment DNS governance
 For dev/test/prod environments:
+
 - Standardize zone naming and ownership.
 - Define zone-link conventions in infrastructure code.
 - Version control conditional forwarder rules.
@@ -419,6 +428,7 @@ Networking architecture is shared, but connection behavior differs by runtime.
 - [.NET guide index](../language-guides/dotnet/index.md)
 
 Runtime focus areas:
+
 - Python: process model and HTTP client reuse.
 - Node.js/.NET/Java: use pooled clients and tuned connection lifetime settings.
 

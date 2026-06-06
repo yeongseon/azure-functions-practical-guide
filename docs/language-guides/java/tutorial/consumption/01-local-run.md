@@ -9,6 +9,7 @@ validation:
     last_tested: null
     result: not_tested
 content_sources:
+
 - type: mslearn-adapted
   url: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
 - type: mslearn-adapted
@@ -196,3 +197,7 @@ Confirm that the Functions host starts, HTTP functions are listed in the endpoin
 - [Azure Functions Java developer guide (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-reference-java)
 - [Azure Functions hosting options (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-scale)
 - [Create a Java function with Azure Functions Core Tools (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-java)
+
+!!! warning "Legacy hosting path"
+    Consumption plan (Y1) content is provided for existing workloads and compatibility scenarios. For most new serverless applications, prefer [Flex Consumption](../flex-consumption/01-local-run.md).
+

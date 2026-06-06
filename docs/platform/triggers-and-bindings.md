@@ -36,6 +36,7 @@ Triggers and bindings are the core integration abstraction in Azure Functions. A
 
 ## Prerequisites
 Before designing trigger and binding architecture, align these baseline decisions:
+
 - Choose the hosting plan first (Consumption, Flex Consumption, Premium, or Dedicated).
 - Confirm trigger compatibility for the selected plan, especially Blob and Event Grid behavior.
 - Decide connection strategy per binding:
@@ -81,6 +82,7 @@ This section shows portal blades relevant to trigger and binding configuration f
 ## Main Content
 ### Core model
 Every function has:
+
 - exactly **one trigger**,
 - zero or more **input bindings**,
 - zero or more **output bindings**.
@@ -140,12 +142,14 @@ flowchart TB
 ```
 ### Binding behavior
 Bindings reduce plumbing code but still require you to model:
+
 - idempotency,
 - retries and duplicate delivery,
 - payload schema evolution,
 - destination latency and throttling.
 Bindings are not a replacement for domain-level error handling.
 Recommended behavior guardrails:
+
 - **Message contract**: include `schemaVersion` and enforce required fields.
 - **Idempotency key**: upsert by deterministic business key.
 - **Poison strategy**: route repeated failures to dead-letter destination.
@@ -196,6 +200,7 @@ App settings store a secret:
 OrdersStorage=DefaultEndpointsProtocol=https;AccountName=<storage-account>;AccountKey=<masked-key>;EndpointSuffix=core.windows.net
 ```
 Decision guidance:
+
 - Prefer identity-based config when supported by the binding extension.
 - Use connection strings only when identity is blocked or unavailable.
 - Avoid mixing identity and key-based access for the same service unless you are in controlled migration.
@@ -211,6 +216,7 @@ flowchart TD
     FN --> AI[(Application Insights Telemetry)]
 ```
 Design notes:
+
 - Keep one business responsibility per function.
 - If partial fan-out failure is unacceptable, use an outbox pattern.
 - Validate downstream idempotency before increasing parallelism.
@@ -324,6 +330,7 @@ Bindings and trigger extensions are controlled in `host.json`.
 }
 ```
 Tuning guidance:
+
 - Increase `queues.batchSize` only after confirming downstream write capacity.
 - Tune `eventHubs.maxEventBatchSize` with partition count and memory limits.
 - Change one concurrency lever at a time and compare telemetry windows.
@@ -367,6 +374,7 @@ Custom bindings are useful when no first-class extension exists and repeated SDK
 - Version custom binding contracts and publish migration notes.
 ### Durable Functions triggers
 Durable Functions adds orchestration-centric triggers:
+
 - **Orchestration trigger**: coordinates deterministic workflows.
 - **Activity trigger**: executes side-effecting units of work.
 - **Entity trigger**: provides serialized stateful operations.
@@ -388,20 +396,24 @@ Treat extension bundle upgrades like dependency upgrades with staged rollout:
 2. Compare failure rates, cold start behavior, and throughput.
 3. Promote gradually with rollback criteria.
 Recommended pattern:
+
 - Pin a compatible major range (for example, `[4.*, 5.0.0)`).
 - Avoid unbounded version ranges.
 - Revalidate trigger defaults when changing bundle ranges.
 ### Trigger-specific scaling signals deep dive
 Each trigger family scales from different pressure signals:
+
 - **Queue/Service Bus**: backlog, lock renewal pressure, dequeue latency.
 - **Event Hubs**: partition lag and ingest velocity.
 - **HTTP**: concurrent request pressure and latency percentiles.
 - **Timer**: schedule-driven execution, not demand-driven scale.
 Design implication:
+
 - Keep trigger-to-workload mapping explicit to preserve useful scale signals.
 - Avoid mixing unrelated high-variance workloads behind one trigger unless isolation is not required.
 ## Language-Specific Details
 Use language guides for runtime-specific syntax, decorators/attributes, and package setup:
+
 - [Python v2 Programming Model](../language-guides/python/v2-programming-model.md)
 - [Python Recipes: Queue](../language-guides/python/recipes/queue.md)
 - [Python Recipes: Blob Storage](../language-guides/python/recipes/blob-storage.md)

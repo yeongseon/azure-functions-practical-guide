@@ -214,6 +214,7 @@ In practice, Azure manages scale-controller policy as platform orchestration, wh
 
 ### Why architecture matters
 Architecture decisions in Azure Functions determine:
+
 - how events are received and dispatched,
 - where code executes,
 - how resources are connected,
@@ -237,6 +238,7 @@ flowchart TD
 
 ### Host process responsibilities
 The Functions host is the control plane and data-plane coordinator for your app instance. It is responsible for:
+
 - loading trigger and binding extensions,
 - maintaining trigger listeners,
 - routing invocation payloads,
@@ -297,6 +299,7 @@ sequenceDiagram
 
 ### Deployment unit and boundaries
 The **Function App** is the primary deployment and configuration boundary. It contains:
+
 - one or more functions,
 - app settings,
 - host settings,
@@ -336,6 +339,7 @@ Storage and identity are foundational runtime dependencies, not optional add-ons
 
 ### Flex Consumption architectural constraints
 When you choose Flex Consumption, account for these platform constraints early:
+
 - **No Kudu/SCM endpoint** for debugging/deployment workflows.
 - **Identity-based host storage is required** (for example, `AzureWebJobsStorage__accountName`).
 - **Blob trigger uses Event Grid source on Flex**; polling blob trigger mode is not supported.
@@ -441,6 +445,7 @@ Example output (sanitized):
 
 ### Operational domains vs platform domains
 Keep these concerns separate:
+
 - **Platform docs (this section):** what to design and why.
 - **Operations docs:** how to deploy, monitor, and recover.
 
@@ -506,6 +511,7 @@ flowchart TD
 ### Durable Functions orchestration architecture
 Durable Functions adds a workflow orchestration layer above standard trigger execution. The architecture introduces deterministic orchestration and checkpointed state transitions.
 Core components:
+
 - **Orchestrator function** defines workflow state machine.
 - **Activity functions** execute unit operations.
 - **Durable storage provider** persists orchestration history and checkpoints.
@@ -541,11 +547,13 @@ How it works:
 4. The host applies output binding and completion semantics.
 
 Best when:
+
 - you need a language/runtime not covered by built-in workers,
 - you need strict runtime control,
 - or you are wrapping an existing service binary into the Functions model.
 
 Trade-offs:
+
 - more ownership for startup behavior and diagnostics,
 - fewer language-specific developer conveniences,
 - and stricter validation required for contract compatibility.

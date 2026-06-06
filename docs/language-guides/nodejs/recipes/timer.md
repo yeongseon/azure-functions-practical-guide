@@ -1,5 +1,6 @@
 ---
 content_sources:
+
 - type: mslearn-adapted
   url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-timer
 - type: mslearn-adapted
@@ -61,6 +62,7 @@ az functionapp config appsettings set \
 
 
 `WEBSITE_TIME_ZONE` support:
+
 - Windows plans: supported
 - Linux Premium and Dedicated: supported
 - Linux Consumption and Flex Consumption: not supported

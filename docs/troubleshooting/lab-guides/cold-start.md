@@ -88,6 +88,7 @@ Design intent for this lab:
 3. Compare full idle cold, post-restart cold, and fully warm behavior.
 4. Cross-check timeline with host startup traces from `traces` table.
 The intentionally measured outcomes from this repository's recorded run:
+
 - Full-idle cold request: `30.485s` client-side.
 - Post-restart first request: `3.156s` client-side.
 - Warm requests: `0.067s-0.099s` client-side.
@@ -102,6 +103,7 @@ A single request timing value does not directly expose phase attribution.
 | Host startup traces | `traces` | Host lifecycle checkpoints | Network/TLS/client overhead | "Host started fast therefore no cold start happened" |
 | Scale-event trace + request correlation | `traces` + `requests` | Mid-flight elasticity behavior | Full idle-to-allocate phase certainty | "All spikes are dependency latency" |
 Interpretation rule for this lab:
+
 - Use at least two channels for attribution: `traces` lifecycle + `requests` duration bands.
 - Treat client-side first hit as symptom, not root cause.
 - Validate whether host startup is the bottleneck or merely one sub-phase.
@@ -145,10 +147,12 @@ Misclassification of cold-start signals creates expensive operational mistakes:
 3. Incorrect mitigation (dependency tuning) for a provisioning bottleneck.
 4. Under-investment in plan choice (Y1 vs FC1 vs EP) for latency-sensitive workloads.
 A high-quality triage process must identify:
+
 - Whether latency cluster is full idle provisioning, host startup, scale-out warm-up, or dependency delay.
 - Whether mitigation is architectural (plan and always-ready) or code-level (startup workload reduction).
 ### 1.8 MS Learn grounding
 This lab aligns to Microsoft Learn guidance on:
+
 - Azure Functions hosting plans and scale behavior.
 - Monitoring and diagnosing Azure Functions with Application Insights.
 - Cold-start mitigation strategies through plan capabilities and startup optimization.
@@ -180,6 +184,7 @@ All criteria below should be satisfied to support the hypothesis:
 5. Post-restart first hit is significantly lower than full-idle first hit (`3.156s` vs `30.485s`).
 ### 2.4 Disproof criteria
 Any condition below weakens or falsifies the hypothesis:
+
 - Host startup trace durations are consistently high and close to first-hit total latency.
 - Warm baseline remains elevated after startup window (persistent regression).
 - Dependency failures or timeouts explain most of the latency increase.
@@ -489,6 +494,7 @@ warm_after_restart 200 0.074
 #### Server-side duration band
 ```text
 health function:
+
 - warm: 3.63ms to 5.86ms
 - cold start or scale-out warm-up (attribution requires correlation with traces): 1719ms to 1842ms
 ```
@@ -603,6 +609,7 @@ Derived ratios:
 | Restart cold / warm mean | 41.0x |
 | Full idle cold / restart cold | 9.7x |
 Interpretation:
+
 - Full idle path has an additional high-latency phase absent in restart path.
 - Restart still incurs startup cost but much lower than full idle allocation path.
 - Warm requests remain tightly clustered under 100ms client-side.
@@ -659,6 +666,7 @@ Representative lines seen in this repository context:
 2026-04-04T11:30:50Z Worker process started and initialized.
 ```
 Interpretation:
+
 - Burst of worker-initialization messages may indicate scale-out, restart, or initial startup.
 - Intermediate latency (`~1.7s-1.8s`) is expected during such events.
 #### 4.6.4 Query 8 host startup/shutdown highlights
@@ -670,6 +678,7 @@ Expected healthy sequence:
 | Near start window | `Host started (Xms)` | Host readiness achieved |
 | Steady state | No frequent shutdown loop | Stable runtime |
 Abnormal pattern to watch:
+
 - Repeated `Host is shutting down` and `Host started` loops with concurrent request failures.
 ### 4.7 Comparative plan interpretation
 #### 4.7.1 FC1 (Flex Consumption)

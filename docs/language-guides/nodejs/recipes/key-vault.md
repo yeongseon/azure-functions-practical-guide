@@ -1,5 +1,6 @@
 ---
 content_sources:
+
 - type: mslearn-adapted
   url: https://learn.microsoft.com/azure/app-service/app-service-key-vault-references
 - type: mslearn-adapted

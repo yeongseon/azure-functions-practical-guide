@@ -9,6 +9,7 @@ validation:
     last_tested: 2026-04-10
     result: pass
 content_sources:
+
 - type: mslearn-adapted
   url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
 - type: mslearn-adapted
