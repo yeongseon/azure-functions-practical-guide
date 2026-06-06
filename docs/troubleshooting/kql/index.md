@@ -32,6 +32,22 @@ Queries target Azure Functions data in Application Insights with these core tabl
 - `dependencies`
 - `customMetrics`
 
+### Table Name Mapping
+
+Azure Functions telemetry can be queried from two contexts with different table names:
+
+| Application Insights (portal) | Log Analytics workspace | Data type |
+|---|---|---|
+| `requests` | `AppRequests` | HTTP and trigger invocations |
+| `traces` | `AppTraces` | Log messages and custom traces |
+| `exceptions` | `AppExceptions` | Unhandled and logged exceptions |
+| `dependencies` | `AppDependencies` | Outbound calls to services |
+| `customMetrics` | `AppMetrics` | Custom metric values |
+| `performanceCounters` | `AppPerformanceCounters` | Process-level counters |
+
+!!! note "Which table name to use"
+    When querying from the **Application Insights** portal blade, use lowercase names (`requests`, `traces`). When querying from the **Log Analytics workspace** blade (or `az monitor log-analytics query`), use PascalCase names (`AppRequests`, `AppTraces`). Queries in this library use Application Insights conventions.
+
 ## Usage notes
 
 1. Keep time range tight (`ago(30m)`, `ago(1h)`) during triage.

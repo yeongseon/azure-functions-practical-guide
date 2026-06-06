@@ -29,12 +29,34 @@ flowchart TD
     C --> D[Function behavior]
 ```
 
+### Core Settings
+
 | Variable | Purpose | Example |
 |----------|---------|---------|
 | `FUNCTIONS_WORKER_RUNTIME` | Language worker selection | `java` |
+| `FUNCTIONS_EXTENSION_VERSION` | Functions runtime version | `~4` |
 | `AzureWebJobsStorage` | Trigger/binding storage | `UseDevelopmentStorage=true` |
-| `JAVA_HOME` | Java runtime location | Managed by platform |
-| `JAVA_OPTS` | JVM tuning | `-Xmx512m` |
+| `APPLICATIONINSIGHTS_CONNECTION_STRING` | Telemetry destination | `InstrumentationKey=...` |
+
+### Java-Specific Settings
+
+| Variable | Purpose | Example | Notes |
+|----------|---------|---------|-------|
+| `JAVA_HOME` | Java runtime location | Managed by platform | Do not override on Azure |
+| `JAVA_OPTS` | JVM startup options | `-Xmx512m -XX:+UseG1GC` | Heap size, GC, and diagnostic flags |
+| `FUNCTIONS_WORKER_JAVA_LOAD_APP_LIBS` | Load app libraries before worker libs | `true` | Useful for dependency conflict resolution |
+| `WEBSITE_RUN_FROM_PACKAGE` | Run from immutable package | `1` | Recommended for production deployments |
+
+### JVM Tuning via JAVA_OPTS
+
+Common `JAVA_OPTS` configurations for Azure Functions:
+
+| Configuration | Value | Use case |
+|---|---|---|
+| Increase heap size | `-Xmx512m` | Memory-intensive processing |
+| Use G1 GC | `-XX:+UseG1GC` | Balanced throughput and latency |
+| Enable GC logging | `-Xlog:gc*` | Debug memory pressure (Java 11+) |
+| Set timezone | `-Duser.timezone=UTC` | Consistent timestamp behavior |
 
 ```bash
 az functionapp config appsettings set --name $APP_NAME --resource-group $RG --settings "FUNCTIONS_WORKER_RUNTIME=java" "JAVA_OPTS=-Xmx512m"

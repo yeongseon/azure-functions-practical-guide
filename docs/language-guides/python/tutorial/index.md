@@ -70,7 +70,9 @@ flowchart TD
 | **Max timeout** | 10 min | Unlimited | Unlimited | Unlimited |
 | **Instance memory** | 1.5 GB fixed | 512 / 2,048 / 4,096 MB | 3.5–14 GB | Plan-dependent |
 | **OS** | Windows / Linux | Linux only | Windows / Linux | Windows / Linux |
-| **Python versions** | 3.10–3.12 | 3.10–3.12 | 3.10–3.14 (Preview) | 3.10–3.14 (Preview) |
+| **Python versions** | 3.10–3.12 | 3.10–3.12 [^1] | 3.10–3.14 (Preview) | 3.10–3.14 (Preview) |
+
+[^1]: Flex Consumption remote build currently supports Python 3.10–3.12. Python 3.13+ may encounter build failures on Flex. Use 3.10–3.12 for Flex deployments.
 | **Storage backend** | File share | Blob container | File share | File share |
 | **Kudu / SCM** | ✅ (Windows only) | ❌ | ✅ | ✅ |
 | **Pricing model** | Per-execution | Per-execution | Pre-allocated | Pre-allocated |

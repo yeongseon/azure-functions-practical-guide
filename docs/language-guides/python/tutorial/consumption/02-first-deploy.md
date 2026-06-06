@@ -281,11 +281,12 @@ Health response:
     Please check if the storage account is accessible.
     ```
 
-    **Workarounds:**
+    **Workarounds (in order of preference):**
 
-    - Request a policy exemption from your Azure administrator
-    - Use Flex Consumption (FC1) which supports identity-based blob storage
-    - Use Dedicated (B1) which uses `WEBSITE_RUN_FROM_PACKAGE` without a content file share
+    1. **Use Flex Consumption (FC1)** — supports identity-based blob storage by default, no shared key needed. This is the recommended path for new workloads. See [Flex Consumption tutorial](../flex-consumption/02-first-deploy.md).
+    2. **Use Dedicated (B1+)** — uses `WEBSITE_RUN_FROM_PACKAGE` without a content file share. See [Dedicated tutorial](../dedicated/02-first-deploy.md).
+    3. **Request a policy exemption** — ask your Azure administrator to grant an exemption for the specific storage account used by the Function App.
+    4. **Deploy to a different subscription** — use a subscription without the `allowSharedKeyAccess` policy restriction.
 
 ## Next Steps
 
