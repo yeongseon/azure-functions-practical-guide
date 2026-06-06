@@ -29,13 +29,30 @@ flowchart TD
 
 ## Topic/Command Groups
 
+### Core Settings
+
 | Variable | Example | Purpose |
 |----------|---------|---------|
 | `FUNCTIONS_WORKER_RUNTIME` | `dotnet-isolated` | Select isolated worker runtime |
 | `FUNCTIONS_EXTENSION_VERSION` | `~4` | Pin major Functions runtime |
 | `AzureWebJobsStorage` | `DefaultEndpointsProtocol=...` | Host storage connection |
 | `APPLICATIONINSIGHTS_CONNECTION_STRING` | `InstrumentationKey=...` | Telemetry destination |
-| `DOTNET_ENVIRONMENT` | `Production` | .NET environment behavior |
+
+### .NET-Specific Settings
+
+| Variable | Example | Purpose | Notes |
+|----------|---------|---------|-------|
+| `DOTNET_ENVIRONMENT` | `Production` | .NET environment configuration | Maps to `IHostEnvironment.EnvironmentName` |
+| `AZURE_FUNCTIONS_ENVIRONMENT` | `Production` | Functions-specific environment | Overrides `DOTNET_ENVIRONMENT` when both are set |
+| `WEBSITE_RUN_FROM_PACKAGE` | `1` | Run from immutable deployment package | Recommended for production |
+| `DOTNET_CLI_TELEMETRY_OPTOUT` | `1` | Disable .NET CLI telemetry | Useful in build/CI environments |
+
+### Runtime Selection
+
+| `FUNCTIONS_WORKER_RUNTIME` value | Model | Notes |
+|---|---|---|
+| `dotnet-isolated` | Isolated worker (recommended) | Runs in a separate .NET process; supports .NET 8+ |
+| `dotnet` | In-process (legacy) | Shares process with Functions host; .NET 6 only, reaching end of support |
 
 ### Local settings example
 ```json

@@ -6,8 +6,8 @@ validation:
     core_tools_version: 4.8.0
     result: pass
   bicep:
-    last_tested: null
-    result: not_tested
+    last_tested: '2026-06-06'
+    result: syntax_validated
 content_sources:
 
 - type: mslearn-adapted
