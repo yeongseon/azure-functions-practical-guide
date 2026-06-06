@@ -9,6 +9,7 @@ validation:
     last_tested: null
     result: not_tested
 content_sources:
+
 - type: mslearn-adapted
   url: https://learn.microsoft.com/azure/azure-functions/functions-run-local
 - type: mslearn-adapted
@@ -155,3 +156,7 @@ You now have local parity and can deploy to Azure Consumption (Y1).
 - [Run Functions locally with Core Tools](https://learn.microsoft.com/azure/azure-functions/functions-run-local)
 - [Azure Functions Consumption plan](https://learn.microsoft.com/azure/azure-functions/consumption-plan)
 - [Python developer guide for Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-reference-python)
+
+!!! warning "Legacy hosting path"
+    Consumption plan (Y1) content is provided for existing workloads and compatibility scenarios. For most new serverless applications, prefer [Flex Consumption](../flex-consumption/01-local-run.md).
+

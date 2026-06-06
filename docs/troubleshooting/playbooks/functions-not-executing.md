@@ -297,6 +297,7 @@ Example output:
 |---|---|
 | 2026-04-04T12:15:42Z | Function 'QueueProcessor' is disabled via app setting 'AzureWebJobs.QueueProcessor.Disabled'. |
 Disproof condition:
+
 - No disable setting and no disable trace in incident window.
 
 ### H2: Listener startup failure due to auth/connection
@@ -326,6 +327,7 @@ Example output:
 | 2026-04-04T12:22:53Z | 3 | Process reporting unhealthy: azure.functions.webjobs.storage: Unhealthy (AuthorizationPermissionMismatch) |
 | 2026-04-04T12:16:06Z | 2 | The listener for function 'Functions.QueueProcessor' was unable to start. |
 Disproof condition:
+
 - Startup traces show healthy listener with no recurring auth/connectivity errors.
 
 ### H3: Host restart loop suppresses execution
@@ -354,6 +356,7 @@ Example output:
 | 2026-04-04T12:00:00Z | 9 | 8 |
 | 2026-04-04T11:00:00Z | 2 | 1 |
 Disproof condition:
+
 - Restart count is low and steady; no cycle evidence.
 
 ### H4: Trigger misbinding or extension mismatch
@@ -382,6 +385,7 @@ Example output:
 |---|---|
 | 2026-04-04T12:11:27Z | Error indexing method 'Functions.QueueProcessor'. Cannot bind parameter 'msg' to type ... |
 Disproof condition:
+
 - No binding/indexing failures and listener healthy.
 
 ### H5: Source-side delivery gap
@@ -409,6 +413,7 @@ Example output:
 |---|---|---|
 | 2026-04-04T12:15:00Z | Functions.health | 22 |
 Disproof condition:
+
 - Source activity confirmed while target function remains non-executing.
 
 ### H6: Deployment/runtime regression
@@ -441,6 +446,7 @@ timestamp                    message
 2026-04-04T12:30:03.000000Z  Host is shutting down.
 ```
 Disproof condition:
+
 - No startup/runtime errors and no timeline correlation.
 
 ## 7. Likely Root Cause Patterns
@@ -500,6 +506,7 @@ union isfuzzy=true
 | order by timestamp desc
 ```
 Recovery criteria:
+
 - `Listener started` appears with no new `unable to start` entries.
 - Target function invocation count rises within expected trigger interval.
 - Failures remain below team threshold for 30-60 minutes.

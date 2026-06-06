@@ -62,6 +62,8 @@ Use these expectations to set realistic SLOs before load testing.
 !!! warning "Do not promise linear scaling"
     Throughput increases can stall when downstream quotas, storage contention, or network limits become bottlenecks.
 
+> **Last verified**: 2026-06-06 | **Primary source**: [Azure Functions event-driven scaling](https://learn.microsoft.com/azure/azure-functions/event-driven-scaling)
+
 ## Portal Walkthrough
 
 This section shows the Scale out blade for a live Function App (Consumption Y1, Korea Central). PII is masked.

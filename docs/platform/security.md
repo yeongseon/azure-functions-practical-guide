@@ -124,6 +124,7 @@ Azure Functions supports three key-based authorization levels for HTTP triggers.
 | `admin` | Master key required | Runtime/admin operations only |
 
 Design guidance:
+
 - Use `anonymous` only with compensating controls (Easy Auth, APIM JWT policy, private network).
 - Use `function` for low-friction internal integrations.
 - Do not expose `admin` operations on untrusted networks.
@@ -156,6 +157,7 @@ Easy Auth mainly solves authentication and token validation. You still enforce a
 
 ### Token store and session management
 Easy Auth can maintain sign-in sessions and provider token context for web flows. For API architectures:
+
 - Prefer bearer-token patterns.
 - Design for token expiration and refresh policy.
 - Avoid browser-session assumptions for machine clients.
@@ -204,6 +206,7 @@ Use custom JWT validation (or APIM `validate-jwt`) when you need custom issuer r
 ### JWT and OAuth 2.0 patterns
 ### When to validate JWTs manually
 Manual validation is common when:
+
 - Issuer is custom or tenant-dependent.
 - API-to-API contracts require explicit token policy.
 - Validation is centralized in APIM or custom middleware.
@@ -260,6 +263,7 @@ az functionapp cors add \
 ```
 
 Wildcard origin risks:
+
 - `*` allows any origin.
 - Increases browser-side data exposure risk.
 - Avoid in production unless endpoint is intentionally public.
@@ -327,6 +331,7 @@ Preferred order:
 
 ### Network security controls
 Combine identity with network boundaries:
+
 - IP access restrictions
 - Private endpoints
 - VNet integration for private outbound
@@ -334,6 +339,7 @@ Combine identity with network boundaries:
 
 ### Threat model for serverless
 Common attack vectors in Functions workloads:
+
 - Injection through HTTP body/query/header input
 - Over-permissive triggers or exposed admin endpoints
 - Credential leakage in logs and telemetry

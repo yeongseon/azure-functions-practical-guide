@@ -344,6 +344,7 @@ RD281878D4A1C2       2026-04-05T04:00:00.000Z   1480589312   1559238656   160104
 If code changes (streaming, batching, disposal fixes) materially reduce peak memory below the same plan limit, a pure sizing issue is disproved and optimization is primary.
 
 Cross-check result interpretation:
+
 - If p95 is consistently within 5-10% of the plan ceiling, short bursts can trigger recurring crash loops.
 - If p95 remains far below the ceiling but isolated peaks crash workers, investigate single-operation allocation spikes.
 - If multiple instances show the same pattern at similar utilization, capacity is likely a structural bottleneck.

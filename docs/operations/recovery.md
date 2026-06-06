@@ -40,6 +40,7 @@ It focuses on practical runbook execution for minimizing downtime and data loss.
     For Python deployment specifics, see the [Python Tutorial](../language-guides/python/tutorial/index.md).
 ## Prerequisites
 Prepare these baseline capabilities before an incident:
+
 - Azure CLI installed and authenticated with rights to the target subscription.
 - Release artifacts stored in immutable storage with version identifiers.
 - Monitoring available in Application Insights or Log Analytics.
@@ -118,6 +119,7 @@ Rebuild is used when both deployment state and environment integrity are uncerta
 
 ### Recovery objectives
 Define service objectives before incidents occur:
+
 - **RTO** (Recovery Time Objective): target time to restore service.
 - **RPO** (Recovery Point Objective): acceptable data loss window.
 RTO and RPO determine architecture, replication, and operational tooling.
@@ -223,6 +225,7 @@ Example output:
 ```
 ### Artifact and configuration backup
 Maintain these backups for every release:
+
 - Immutable build artifact with version metadata.
 - Infrastructure templates and parameter sets.
 - Exported app settings baseline (with secret values protected).
@@ -232,6 +235,7 @@ Keep backup assets in secured, versioned storage.
 ### Data and state resilience
 Most Azure Functions apps depend on storage and messaging services for state.
 Recovery depends on those services' durability configuration:
+
 - Use geo-redundant options where business continuity requires cross-region resilience.
 - Align queue/topic retention and replay capability with RPO targets.
 - Protect durable workflow state with storage redundancy and backup policy.
@@ -269,6 +273,7 @@ flowchart TD
 ```
 
 Concrete failover patterns:
+
 - **Traffic Manager Priority Routing**
     - Configure endpoint priority: primary = `1`, secondary = `2`.
     - Use endpoint monitoring path aligned to app health endpoint.
@@ -334,6 +339,7 @@ az afd origin update \
 
 ### Health-based decision gates
 Before failover or rollback, validate:
+
 - Current incident scope (app-only or dependency-wide).
 - Secondary environment readiness.
 - Data consistency and queue lag status.
@@ -341,6 +347,7 @@ Before failover or rollback, validate:
 
 ## Verification
 After recovery action:
+
 - Confirm health endpoint and key user journeys.
 - Verify failure rate and latency return to baseline.
 - Validate message processing catch-up.

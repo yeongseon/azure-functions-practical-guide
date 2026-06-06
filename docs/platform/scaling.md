@@ -31,7 +31,9 @@ content_validation:
 # Scaling Behavior
 Azure Functions scaling is plan-dependent and trigger-dependent. You do not configure a single universal autoscaler; instead, the platform applies trigger-specific heuristics within plan limits.
 ## Prerequisites
+
 Before tuning scale behavior, make sure the following prerequisites are in place:
+
 - You know the selected hosting plan (`Consumption`, `Flex Consumption`, `Premium`, or `Dedicated`) and its operational limits.
 - You have access to Azure CLI, and your environment is authenticated with `az login`.
 - You have Reader or Contributor access to the Function App, plan, storage account, and Application Insights.
@@ -39,6 +41,7 @@ Before tuning scale behavior, make sure the following prerequisites are in place
 - You understand downstream service limits (database connections, API rate limits, NAT port limits).
 
 Optional but recommended:
+
 - A repeatable load test path to validate scale decisions before production rollout.
 - A rollback plan for host-level concurrency and timeout changes.
 - Baseline metrics from a known healthy period for comparison.
@@ -66,6 +69,7 @@ This section shows portal blades illustrating scale behavior for a live Function
 ### Scale controller fundamentals
 For serverless plans, Azure Functions scale controller evaluates event pressure and target throughput, then adds or removes instances.
 Primary signals include:
+
 - HTTP concurrency and request backlog,
 - queue/topic/event backlog,
 - partition lag (streaming sources),
@@ -80,6 +84,7 @@ flowchart TD
     SO --> R[Runtime host + workers on new instances]
 ```
 Notes:
+
 - Scale-out is not instant; host startup and binding initialization introduce delay.
 - The controller optimizes for throughput and reliability, not one-request-per-instance behavior.
 ### Plan-level scaling model
@@ -90,6 +95,7 @@ Notes:
 | Premium | Warm minimum instances | Elastic above warm floor | Bounded by Premium plan settings |
 | Dedicated | Fixed/Autoscale rules | App Service autoscale | Plan VM and rule dependent |
 Practical implications by plan:
+
 - **Consumption**: cost-first workloads where occasional cold start is acceptable.
 - **Flex/Premium**: stronger low-latency and burst handling with warm strategies.
 - **Dedicated**: deterministic capacity and App Service-aligned operations.
@@ -135,6 +141,7 @@ flowchart TD
     AR -.-> IB
 ```
 Operational guidance:
+
 - Assign always-ready instances to latency-sensitive paths first (usually HTTP).
 - Validate cost delta between always-ready floor and observed latency gain.
 - Keep trigger groups isolated if one workload has highly variable burst behavior.
@@ -149,11 +156,13 @@ Premium is designed for low-latency scale with warm capacity.
 Premium reduces startup latency by maintaining permanently warm capacity, suitable for strict response-time requirements.
 
 Typical fit:
+
 - Low-latency APIs with enterprise network controls.
 - Dependency chains sensitive to cold initialization.
 - Workloads prioritizing latency predictability over minimum idle cost.
 ### Dedicated scaling
 Dedicated follows App Service scaling rules:
+
 - manual instance count,
 - or autoscale based on CPU/memory/schedules,
 - no scale-to-zero behavior.
@@ -174,12 +183,14 @@ When to consider Dedicated: existing App Service governance, stable baseline dem
 - Schedule-driven; generally not throughput-scaled like backlog triggers.
 
 Design reminder:
+
 - Prefer queue decoupling when dependency latency can cascade into HTTP saturation.
 
 ### Concurrency and throughput design
 Throughput is a function of both instance count and per-instance concurrency.
 
 Design guidance:
+
 - keep handlers idempotent,
 - avoid long blocking calls on HTTP paths,
 - isolate heavy async processing from public API functions,
@@ -195,6 +206,7 @@ Concurrency tuning checklist:
 ### Scale and networking dependency
 Scaling faster than your network or backend quotas can increase failures.
 Check before raising scale ceilings:
+
 - subnet address capacity,
 - NAT or firewall throughput,
 - service throttling limits,
@@ -368,6 +380,7 @@ Recommended approach:
 3. Increase only when SLO gain justifies added baseline cost.
 
 Signals to watch:
+
 - First-request latency after idle periods.
 - Burst ramp-up duration before steady-state throughput.
 - Cost per successful request under mixed idle and burst traffic.
@@ -376,6 +389,7 @@ Signals to watch:
 Target-based scaling means the platform aims to keep each instance near a processing target derived from trigger type and workload shape.
 
 Practical consequences:
+
 - If per-message processing time rises, instance demand rises for the same arrival rate.
 - If concurrency increases safely, fewer additional instances may be required.
 - If target signals are noisy, short-term oscillation can occur during sudden traffic changes.
@@ -386,6 +400,7 @@ Operational practice: use stable test windows (10 to 30 minutes) and compare bef
 Host-level concurrency settings can improve throughput, but aggressive values can amplify retries and downstream throttling.
 
 Tuning guidance:
+
 - Increase one dimension at a time (batch size, concurrency, or downstream connection pool).
 - Keep idempotency and poison-message handling robust before increasing throughput targets.
 - Revalidate alert thresholds after concurrency changes because baseline metric ranges shift.
@@ -394,11 +409,13 @@ Tuning guidance:
 Durable Functions adds orchestrator and activity behavior that changes scaling characteristics.
 
 Key points:
+
 - Orchestrators replay state and should remain deterministic.
 - Activity functions carry heavy work and are primary throughput drivers.
 - Storage and task-hub throughput become part of scale constraints.
 
 Design recommendations:
+
 - Keep orchestrator logic lightweight and deterministic.
 - Move external calls and CPU-heavy work into activity functions.
 - Validate storage account and task-hub throughput under projected fan-out patterns.
@@ -412,6 +429,7 @@ Scaling principles are platform-level, but runtime behavior and tuning levers di
 - .NET guide: [.NET language guides](../language-guides/dotnet/index.md)
 
 Cross-reference for implementation decisions:
+
 - Trigger model and binding behavior: [Triggers and bindings](triggers-and-bindings.md)
 - Hosting trade-offs and limits: [Hosting](hosting.md)
 - Reliability and resiliency patterns: [Reliability](reliability.md)

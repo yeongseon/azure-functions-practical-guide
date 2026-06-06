@@ -1,5 +1,6 @@
 ---
 content_sources:
+
 - type: mslearn-adapted
   url: https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/overview
 - type: mslearn-adapted

@@ -9,6 +9,7 @@ validation:
     last_tested: null
     result: not_tested
 content_sources:
+
 - type: mslearn-adapted
   url: https://learn.microsoft.com/azure/azure-functions/monitor-functions
 - type: mslearn-adapted

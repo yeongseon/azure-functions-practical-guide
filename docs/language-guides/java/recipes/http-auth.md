@@ -1,5 +1,6 @@
 ---
 content_sources:
+
 - type: mslearn-adapted
   url: https://learn.microsoft.com/azure/app-service/overview-authentication-authorization
 - type: mslearn-adapted

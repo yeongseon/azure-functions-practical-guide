@@ -131,6 +131,7 @@ az functionapp show \
 | Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
 
 Expected read:
+
 - `state` should settle at `Running`.
 - `linuxFxVersion` should match intended runtime.
 - Linux app should report `reserved: true`.

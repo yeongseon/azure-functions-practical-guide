@@ -105,14 +105,17 @@ Host initialized (Xms)
 ```
 
 What it means:
+
 - Host acquired storage lease and completed startup sequence.
 - Trigger listeners can initialize normally.
 
 Normal vs abnormal:
+
 - Normal: sequence appears once on cold start or planned recycle.
 - Abnormal: repeated startup cycles in short intervals with no stable execution window.
 
 Next step:
+
 - If healthy, move focus to function code or dependencies.
 - If startup loops, correlate with Activity Log changes and container health events.
 
@@ -127,14 +130,17 @@ The operation was canceled.
 ```
 
 What it means:
+
 - Worker failed to initialize or function execution exceeded configured timeout.
 - Can indicate runtime mismatch, blocking startup code, or downstream stall.
 
 Normal vs abnormal:
+
 - Normal: occasional timeout under rare dependency spikes.
 - Abnormal: repeated timeout messages across many invocations or immediately after deploy.
 
 Next step:
+
 - Check deployment/runtime compatibility and recent config changes.
 - Query `dependencies` for latency spike and validate timeout policy.
 
@@ -149,14 +155,17 @@ Unable to connect to the remote server
 ```
 
 What it means:
+
 - Connection target is unreachable, blocked, or not listening.
 - Storage auth or network path is broken for trigger/binding operations.
 
 Normal vs abnormal:
+
 - Normal: brief transient bursts with automatic retry recovery.
 - Abnormal: sustained failures causing trigger silence, retry storms, or poison growth.
 
 Next step:
+
 - Validate storage identity/RBAC and firewall/network rules.
 - Confirm connection strings or identity-based settings are present and correct.
 
@@ -171,14 +180,17 @@ Sending SIGTERM to container
 ```
 
 What it means:
+
 - Platform health probe marked instance unhealthy and initiated recycle.
 - Usually associated with startup deadlock, severe resource pressure, or port binding failure.
 
 Normal vs abnormal:
+
 - Normal: isolated occurrence during planned restart.
 - Abnormal: repeated probe failures with short-lived containers and rising `503`.
 
 Next step:
+
 - Review host startup sequence and memory/CPU pressure.
 - Correlate with deployment changes and warm-up behavior.
 
@@ -194,14 +206,17 @@ Request timed out after 230000ms
 ```
 
 What it means:
+
 - Requests hit transition window between old and new host states.
 - Can indicate cold-start amplification or unhealthy rollout.
 
 Normal vs abnormal:
+
 - Normal: brief `503` blip during controlled swap/restart.
 - Abnormal: prolonged timeout window and repeated shutdown/start loops.
 
 Next step:
+
 - Check if restart reason is platform, deployment, or configuration.
 - Validate slot health before swap and ensure dependency readiness.
 
@@ -216,14 +231,17 @@ A connection attempt failed because the connected party did not properly respond
 ```
 
 What it means:
+
 - Name resolution failed or resolved endpoint is unreachable from current network route.
 - Common with private endpoint DNS zone linkage or route misconfiguration.
 
 Normal vs abnormal:
+
 - Normal: short-lived resolver transient with fast retry recovery.
 - Abnormal: persistent `ENOTFOUND` against private endpoints across instances.
 
 Next step:
+
 - Verify VNet integration, private DNS zone link, and route table intent.
 - Cross-check dependency failures by target in `dependencies`.
 

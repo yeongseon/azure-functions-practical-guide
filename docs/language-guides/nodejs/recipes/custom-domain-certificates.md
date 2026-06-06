@@ -1,5 +1,6 @@
 ---
 content_sources:
+
 - type: mslearn-adapted
   url: https://learn.microsoft.com/azure/app-service/app-service-web-tutorial-custom-domain
 - type: mslearn-adapted
@@ -119,6 +120,7 @@ az functionapp update \
 
 
 Important hosting plan note:
+
 - Flex Consumption does not support App Service managed/platform certificates.
 - For Flex Consumption, use uploaded certificates or external TLS termination.
 

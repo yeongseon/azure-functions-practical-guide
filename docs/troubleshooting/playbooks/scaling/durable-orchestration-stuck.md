@@ -262,6 +262,7 @@ timestamp                   functionName             instanceId                 
 If no deterministic violation traces appear and code review confirms orchestrator uses deterministic APIs (`context.CurrentUtcDateTime`, `context.NewGuid`), deprioritize this hypothesis.
 
 Code-level anti-pattern checklist:
+
 - Direct calls to current clock APIs inside orchestrator logic.
 - Direct GUID generation inside orchestrator logic.
 - Random number generation or unordered dictionary iteration used to branch.
@@ -323,6 +324,7 @@ xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx    ShipmentAssigned       187         0    
 If corresponding `RaiseEvent` messages are present with matched instance IDs and event names before timeout, missing event delivery is unlikely.
 
 Event contract validation checklist:
+
 - Event name matches exact casing expected by orchestrator.
 - Instance ID used by publisher matches orchestrator instance ID.
 - Event source confirms publish acknowledgment in the same window.
@@ -380,6 +382,7 @@ RequestsInQueue         2026-04-05T03:10:00.000Z   1150       1390
 If queue age and backlog remain low with healthy execution throughput, starvation is not primary; investigate code-level deterministic/replay/event issues.
 
 Capacity tuning hints:
+
 - Raise worker count only after confirming replay storm is not primary.
 - Prefer reducing per-instance contention before broad scale-out.
 - Validate task hub storage latency before concurrency increases.

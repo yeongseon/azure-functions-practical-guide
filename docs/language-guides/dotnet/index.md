@@ -1,5 +1,6 @@
 ---
 content_sources:
+
 - type: mslearn-adapted
   url: https://learn.microsoft.com/azure/azure-functions/functions-dotnet-class-library
 - type: mslearn-adapted

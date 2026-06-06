@@ -298,6 +298,7 @@ NAT Gateway has specific capacity limits:
 | Connections per second | 50,000 |
 
 For high-scale workloads:
+
 - Add more public IPs or use IP prefix
 - Distribute across multiple NAT Gateways with different subnets
 

@@ -38,6 +38,7 @@ Cold start is startup latency after an app has no warm instance available.
     For Python deployment specifics, see the [Python Tutorial](../language-guides/python/tutorial/index.md).
 ## Prerequisites
 Before tuning cold start in production, prepare these inputs and permissions:
+
 - Azure CLI 2.60.0 or later with `functionapp`, `monitor`, and `resource` commands.
 - A Function App running in Consumption, Flex Consumption, Premium, or Dedicated.
 - Application Insights enabled for the Function App.
@@ -47,6 +48,7 @@ Use long-form CLI flags and keep sensitive values masked in runbooks.
 
 ## When to Use
 Invest in cold start mitigation when at least one condition is true:
+
 - Interactive HTTP APIs show first-hit latency that violates your SLO.
 - Burst traffic patterns trigger repeated scale-out and startup penalties.
 - Background trigger latency affects queue drain targets or downstream SLAs.
@@ -242,6 +244,7 @@ true
 ### 3) Optimize startup path
 #### Startup optimization techniques
 Apply these regardless of hosting plan:
+
 - Keep deployment artifact small.
 - Remove unused dependencies.
 - Delay expensive initialization until first use where safe.
@@ -251,6 +254,7 @@ Apply these regardless of hosting plan:
 #### Dependency and package optimization
 Operationally, dependency volume and native package loading often dominate startup time.
 Recommended practices:
+
 - Audit dependencies quarterly and remove unused packages.
 - Prefer lighter libraries for common operations.
 - Use run-from-package deployment for immutable and consistent startup files.
@@ -258,6 +262,7 @@ Recommended practices:
 
 #### Warmup and traffic shaping
 For plans without strong always-ready guarantees, use conservative warmup patterns:
+
 - Scheduled health ping to keep app active where appropriate.
 - Gradual traffic ramp during deployments.
 - Pre-deployment synthetic checks before traffic cutover.
@@ -371,6 +376,7 @@ If mitigation does not improve latency, run this sequence:
 4. Compare before/after KQL evidence across a 24-hour window.
 
 Common checks and rollback commands:
+
 - Dedicated Always On not effective: confirm plan type and rollback if required.
 ```bash
 az functionapp config set \

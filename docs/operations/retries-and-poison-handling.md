@@ -76,6 +76,7 @@ Azure Functions reliability for triggers is a combination of trigger-level deliv
 ### Built-in retry support
 Azure Functions supports retry behavior for selected triggers.
 Common trigger categories with retry support include:
+
 - Azure Storage Queue trigger.
 - Azure Service Bus trigger.
 - Azure Event Hubs trigger.
@@ -149,6 +150,7 @@ Concrete Event Hubs extension retry example:
 For Storage Queue triggers, messages that exceed `maxDequeueCount` are moved to a poison queue.
 
 Operational pattern:
+
 - Main queue: `orders`.
 - Poison queue: `orders-poison`.
 - Build a dedicated poison-message processor for triage and replay.
@@ -171,6 +173,7 @@ Service Bus uses dead-lettering semantics.
 Messages can be moved to the dead-letter subqueue after max delivery attempts or explicit dead-letter action.
 
 Operational responsibilities:
+
 - Monitor dead-letter message count.
 - Capture reason and error metadata.
 - Provide controlled replay tools or manual remediation workflow.
@@ -189,6 +192,7 @@ Avoid duplicate retry layering: if trigger-level retries are already active, exc
 
 ### Idempotency requirements
 Because retries and at-least-once delivery are common, handlers should be idempotent:
+
 - Use deterministic operation keys.
 - Record processed message identifiers where required.
 - Make writes safe for duplicate delivery.
@@ -227,6 +231,7 @@ def process_order(msg: func.QueueMessage) -> None:
 
 ### Monitoring retry and poison health
 Track these operational signals:
+
 - Retry attempt trend by function.
 - Poison queue message count growth.
 - Dead-letter count and age.
@@ -365,6 +370,7 @@ traces
 ```
 
 Verification checklist:
+
 - Retry event frequency declines after policy update.
 - Poison/dead-letter growth is non-monotonic or decreasing.
 
@@ -386,6 +392,7 @@ Troubleshooting sequence:
 4. Resume replay in controlled batches and monitor duplication signals.
 
 Common anti-patterns:
+
 - Raising retry counts without reducing concurrency.
 - Replaying poison queues before fixing schema/business-rule defects.
 - Combining trigger-level and in-code retries without total budget limits.
