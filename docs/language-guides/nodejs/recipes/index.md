@@ -3,14 +3,6 @@ content_sources:
 
   - type: mslearn-adapted
     url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
-content_validation:
-  status: verified
-  last_reviewed: '2026-05-23'
-  reviewer: agent
-  core_claims:
-    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
-      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
-      verified: true
 ---
 # Node.js Recipes
 

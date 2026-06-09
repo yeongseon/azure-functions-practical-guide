@@ -12,16 +12,7 @@ content_sources:
     url: https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model
   - type: mslearn-adapted
     url: https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
-content_validation:
-  status: verified
-  last_reviewed: 2026-04-12
-  reviewer: agent
-  core_claims:
-    - claim: "Lab Guide: Storage Access Failure (AzureWebJobsStorage) 관련 핵심 진단 절차와 운영 판단 기준"
-      source: https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
-      verified: true
 ---
-
 # Lab Guide: Storage Access Failure (AzureWebJobsStorage)
 
 This Level 3 lab guide reproduces a storage authorization failure in Azure Functions and shows how to prove a full failure cascade from `AzureWebJobsStorage` access loss to listener startup failure, host unhealthy state, and zero trigger execution. The experiment uses the lab assets in `labs/storage-access-failure/` and captures evidence with KQL, CLI, and runtime logs.

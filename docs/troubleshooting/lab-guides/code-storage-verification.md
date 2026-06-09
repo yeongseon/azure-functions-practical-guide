@@ -16,16 +16,7 @@ content_sources:
     url: https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model
   - type: mslearn-adapted
     url: https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
-content_validation:
-  status: verified
-  last_reviewed: 2026-04-12
-  reviewer: agent
-  core_claims:
-    - claim: "Lab Guide: Code Storage Verification (All Hosting Plans) 관련 핵심 진단 절차와 운영 판단 기준"
-      source: https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
-      verified: true
 ---
-
 # Lab Guide: Code Storage Verification (All Hosting Plans)
 
 This Level 3 lab guide validates how Azure Functions stores and loads code across all four hosting plans used in this repository: Consumption (Y1), Flex Consumption (FC1), Premium (EP), and Dedicated (ASP). The lab proves the deployment-storage model, required app settings, identity and RBAC dependencies, and the failure signatures you should expect when one plan is misconfigured. It also gives deterministic recovery procedures and evidence standards for production-grade triage.

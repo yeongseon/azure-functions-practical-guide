@@ -8,16 +8,7 @@ content_sources:
     url: https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints
   - type: mslearn-adapted
     url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
-content_validation:
-  status: verified
-  last_reviewed: 2026-04-12
-  reviewer: agent
-  core_claims:
-    - claim: "Hosting Plan Security Comparison Matrix 관련 핵심 진단 절차와 운영 판단 기준"
-      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
-      verified: true
 ---
-
 # Hosting Plan Security Comparison Matrix
 
 Quick-reference comparison of Azure Functions hosting plan behavior under identity and networking fault conditions. Data collected from real Azure deployments across all four hosting plans.
