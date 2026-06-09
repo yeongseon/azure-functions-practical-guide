@@ -150,6 +150,29 @@ def generate_dashboard(tutorials: list[dict[str, Any]], today: date) -> str:
         by_language.setdefault(lang, []).append(t)
 
     lines: list[str] = []
+    # Canonical content_sources frontmatter (PR 2d.2b3 migration shape).
+    # Must stay in sync with the migrated frontmatter on
+    # docs/reference/validation-status.md; regeneration MUST NOT wipe the
+    # references/diagrams metadata. See AGENTS.md "Frontmatter YAML Style".
+    lines.append("---")
+    lines.append("content_sources:")
+    lines.append("  references:")
+    lines.append("    - type: mslearn-adapted")
+    lines.append(
+        "      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview"
+    )
+    lines.append("  diagrams:")
+    lines.append("    - id: tutorial-validation-status-pie")
+    lines.append("      type: pie")
+    lines.append("      source: self-generated")
+    lines.append(
+        "      justification: Auto-generated dashboard chart from repository validation metadata."
+    )
+    lines.append("      based_on:")
+    lines.append(
+        "        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview"
+    )
+    lines.append("---")
     lines.append("# Tutorial Validation Status")
     lines.append("")
     lines.append(
@@ -168,7 +191,9 @@ def generate_dashboard(tutorials: list[dict[str, Any]], today: date) -> str:
     lines.append("")
     lines.append("Out of scope for this dashboard:")
     lines.append("")
-    lines.append("- Tutorial `index.md` chooser pages, which explain plan selection but are not executable deployment runbooks.")
+    lines.append(
+        "- Tutorial `index.md` chooser pages, which explain plan selection but are not executable deployment runbooks."
+    )
     lines.append(
         "- Troubleshooting lab guides under `docs/troubleshooting/lab-guides/`, which are experiment reports tracked by "
         "`content_validation`, `Lab Metadata`, `Experiment Log`, and `Expected Evidence` sections instead of tutorial execution status."
@@ -190,8 +215,9 @@ def generate_dashboard(tutorials: list[dict[str, Any]], today: date) -> str:
     lines.append("")
 
     # Mermaid pie chart
+    lines.append("<!-- diagram-id: tutorial-validation-status-pie -->")
     lines.append("```mermaid")
-    lines.append('pie title Tutorial Validation Status')
+    lines.append("pie title Tutorial Validation Status")
     if validated > 0:
         lines.append(f'    "Validated" : {validated}')
     if stale > 0:
@@ -219,7 +245,9 @@ def generate_dashboard(tutorials: list[dict[str, Any]], today: date) -> str:
 
         lines.append(f"### {lang_display}")
         lines.append("")
-        lines.append("| Tutorial | Hosting Plan | az-cli | Bicep | Last Tested | Status |")
+        lines.append(
+            "| Tutorial | Hosting Plan | az-cli | Bicep | Last Tested | Status |"
+        )
         lines.append("|---|---|---|---|---|---|")
 
         # Sort by plan order, then filename
@@ -293,20 +321,32 @@ def generate_dashboard(tutorials: list[dict[str, Any]], today: date) -> str:
     lines.append("python3 scripts/generate_validation_status.py")
     lines.append("```")
     lines.append("")
-    lines.append("!!! info \"Validation fields\"")
+    lines.append('!!! info "Validation fields"')
     lines.append("    - `result`: `pass`, `fail`, or `not_tested`")
     lines.append("    - `last_tested`: ISO date (YYYY-MM-DD) or `null`")
     lines.append("    - `cli_version`: Azure CLI version used")
     lines.append("    - `core_tools_version`: Azure Functions Core Tools version used")
-    lines.append(f"    - Tutorials older than {STALENESS_DAYS} days are flagged as **stale**")
+    lines.append(
+        f"    - Tutorials older than {STALENESS_DAYS} days are flagged as **stale**"
+    )
     lines.append("")
 
     # See Also
     lines.append("## See Also")
     lines.append("")
-    lines.append("- [Tutorial Overview & Plan Chooser](../language-guides/python/tutorial/index.md)")
+    lines.append(
+        "- [Tutorial Overview & Plan Chooser](../language-guides/python/tutorial/index.md)"
+    )
     lines.append("- [CLI Cheatsheet](cli-cheatsheet.md)")
     lines.append("- [Platform Limits](platform-limits.md)")
+    lines.append("")
+
+    # Sources
+    lines.append("## Sources")
+    lines.append("")
+    lines.append(
+        "- [Microsoft Learn overview](https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview)"
+    )
     lines.append("")
 
     return "\n".join(lines).rstrip() + "\n"

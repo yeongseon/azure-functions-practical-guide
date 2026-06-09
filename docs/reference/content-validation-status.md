@@ -1,7 +1,8 @@
 ---
 content_sources:
-  - type: self-generated
-    justification: Auto-generated dashboard tracking content validation status
+  references:
+    - type: self-generated
+      justification: Auto-generated dashboard tracking content validation status
 ---
 
 # Content Validation Status
@@ -134,8 +135,9 @@ For an in-scope page, add a `content_validation` block to its frontmatter:
 ```yaml
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/...
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/...
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

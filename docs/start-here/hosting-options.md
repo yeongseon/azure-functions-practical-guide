@@ -1,16 +1,17 @@
 ---
 content_sources:
 
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan
 ---
 # Hosting Options
 
