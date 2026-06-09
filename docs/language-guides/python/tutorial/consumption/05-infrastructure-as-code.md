@@ -10,12 +10,13 @@ validation:
     result: syntax_validated
 content_sources:
 
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-infrastructure-as-code
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-infrastructure-as-code
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan
 ---
 # 05 - Infrastructure as Code (Consumption)
 

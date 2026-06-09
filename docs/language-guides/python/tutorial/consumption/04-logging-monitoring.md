@@ -10,12 +10,13 @@ validation:
     result: not_tested
 content_sources:
 
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/cli/azure/monitor/app-insights?view=azure-cli-latest
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/cli/azure/webapp/log
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/cli/azure/monitor/app-insights?view=azure-cli-latest
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/cli/azure/webapp/log
 ---
 # 04 - Logging and Monitoring (Consumption)
 
