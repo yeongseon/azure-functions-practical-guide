@@ -1,15 +1,16 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-create-vnet
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options#private-endpoints
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-dns
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-create-vnet
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options#private-endpoints
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-dns
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

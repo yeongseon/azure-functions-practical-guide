@@ -1,15 +1,16 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/app-service/overview
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/architecture/guide/technology-choices/compute-decision-tree
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-compare-logic-apps-ms-flow-webjobs
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/app-service/overview
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/architecture/guide/technology-choices/compute-decision-tree
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-compare-logic-apps-ms-flow-webjobs
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

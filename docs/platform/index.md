@@ -1,16 +1,17 @@
 ---
 content_sources:
 
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/reliability/reliability-functions
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/reliability/reliability-functions
 ---
 # Platform
 

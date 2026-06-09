@@ -1,15 +1,16 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/action-groups
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/alerts-metric
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/alerts-log
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/alerts-create-log-alert-rule
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/proactive-diagnostics
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/action-groups
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/alerts-metric
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/alerts-log
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/alerts-create-log-alert-rule
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/proactive-diagnostics
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

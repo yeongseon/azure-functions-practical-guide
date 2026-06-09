@@ -1,21 +1,22 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/security-concepts
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/function-keys-how-to
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/role-based-access-control/overview
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/app-service/app-service-web-tutorial-rest-api#app-service-cors-versus-your-cors
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/app-service/configure-ssl-bindings
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/app-service/app-service-ip-restrictions
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/platform-logs-overview
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/security-concepts
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/function-keys-how-to
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/role-based-access-control/overview
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/app-service/app-service-web-tutorial-rest-api#app-service-cors-versus-your-cors
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/app-service/configure-ssl-bindings
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/app-service/app-service-ip-restrictions
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/platform-logs-overview
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

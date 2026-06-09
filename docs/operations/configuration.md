@@ -1,15 +1,16 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/app-service/app-service-key-vault-references
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-use-azure-function-app-settings
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/app-service/app-service-key-vault-references
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-use-azure-function-app-settings
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

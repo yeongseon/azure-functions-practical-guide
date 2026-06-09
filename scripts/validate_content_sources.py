@@ -125,16 +125,79 @@ def find_diagram_id_comments(content: str) -> Dict[int, str]:
 
 def get_diagram_sources(content_sources: Any) -> Tuple[List[dict], bool]:
     """
-    Return diagram-level source metadata from content_sources.
+    Return ``(diagrams, legacy_escape)`` from ``content_sources``.
 
-    Older pages in this repository use list-form content_sources for document-level
-    Microsoft Learn attribution. Keep those pages actionable by validating their
-    diagram-id comments without treating the legacy shape as a Python error.
+    The validator gates strict diagram-level validation on the Mermaid blocks
+    present in a file. ``legacy_escape=True`` activates the legacy-permissive
+    code path: a page is allowed to have Mermaid blocks without per-diagram
+    provenance, as a transition aid while data is migrated to the canonical
+    ``{diagrams: [...]}`` shape.
+
+    Two legacy shapes activate the escape:
+
+    1. List-form ``content_sources``: ``[{type, url}, ...]`` — the oldest
+       shape, document-level provenance only.
+    2. Dict-form with ``references:`` present and no ``diagrams:`` key:
+       ``{references: [...]}`` — semantically identical to (1) after the Phase
+       2d.2b-prep migration to dict-form. The document still has Microsoft
+       Learn attribution but has not yet declared per-diagram provenance.
+
+    Cases that intentionally do NOT activate the escape:
+
+    - ``{diagrams: []}`` — someone added the key but failed to populate it.
+      Surface as ``content_sources.diagrams is empty`` so the gap is visible.
+    - ``{diagrams: <non-list>}`` — malformed; surface explicitly.
+    - ``{}`` or dicts with neither ``references`` nor ``diagrams`` — no
+      document-level provenance to fall back on; not legacy data, just broken.
+
+    Doctests (regression for Phase 2d.2b1-functions):
+
+    >>> # Legacy list-form -> escape
+    >>> get_diagram_sources([{'type': 'mslearn', 'url': 'https://example'}])
+    ([], True)
+
+    >>> # Dict-form {references} without diagrams -> escape
+    >>> get_diagram_sources({'references': [{'type': 'mslearn', 'url': 'https://example'}]})
+    ([], True)
+
+    >>> # Explicit empty diagrams -> NO escape (surface as error)
+    >>> get_diagram_sources({'diagrams': []})
+    ([], False)
+
+    >>> # Explicit empty diagrams alongside references -> NO escape
+    >>> get_diagram_sources({'references': [{'url': 'https://example'}], 'diagrams': []})
+    ([], False)
+
+    >>> # Populated diagrams -> canonical path, no escape
+    >>> result, legacy = get_diagram_sources({'diagrams': [{'id': 'foo', 'source': 'mslearn'}]})
+    >>> legacy
+    False
+    >>> [d['id'] for d in result]
+    ['foo']
+
+    >>> # Empty dict -> NO escape (broken, not legacy)
+    >>> get_diagram_sources({})
+    ([], False)
+
+    >>> # Malformed diagrams (non-list) -> NO escape
+    >>> get_diagram_sources({'diagrams': 'not-a-list'})
+    ([], False)
+
+    >>> # None -> NO escape
+    >>> get_diagram_sources(None)
+    ([], False)
     """
     if isinstance(content_sources, dict):
-        diagrams = content_sources.get("diagrams", [])
-        if isinstance(diagrams, list):
-            return diagrams, False
+        if "diagrams" in content_sources:
+            diagrams = content_sources["diagrams"]
+            if isinstance(diagrams, list):
+                return diagrams, False
+            return [], False
+        # ``diagrams`` key absent; permit the legacy escape only when
+        # ``references`` is present (i.e., the document still has document-level
+        # provenance, just not per-diagram).
+        if "references" in content_sources:
+            return [], True
         return [], False
 
     if isinstance(content_sources, list):

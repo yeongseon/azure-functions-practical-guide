@@ -1,9 +1,10 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
