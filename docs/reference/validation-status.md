@@ -1,6 +1,6 @@
 ---
 content_sources:
-  sources:
+  references:
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
   diagrams:

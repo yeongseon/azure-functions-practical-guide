@@ -1,18 +1,19 @@
 ---
 content_sources:
 
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
 ---
 # Learning Paths
 
