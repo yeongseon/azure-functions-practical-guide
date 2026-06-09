@@ -1,10 +1,11 @@
 ---
 content_sources:
 
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale#service-limits
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/storage/common/scalability-targets-standard-account
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale#service-limits
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/storage/common/scalability-targets-standard-account
 ---
 # Platform Limits
 

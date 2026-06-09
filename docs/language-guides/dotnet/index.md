@@ -1,10 +1,11 @@
 ---
 content_sources:
 
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-dotnet-class-library
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-dotnet-class-library
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide
 ---
 # .NET Language Guide
 
