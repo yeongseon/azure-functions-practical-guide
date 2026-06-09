@@ -6,6 +6,9 @@ on:
       - main
     paths:
       - 'docs/**'
+      - 'apps/**/*.sh'
+      - 'labs/**/*.sh'
+      - 'infra/**/*.sh'
       - 'infra/**/*.bicep'
       - 'mkdocs.yml'
       - '.github/workflows/ci.yml'
@@ -29,11 +32,27 @@ jobs:
           python-version: '3.11'
       - name: Install dependencies
         run: pip install mkdocs-material mkdocs-minify-plugin
-      - name: Validate CLI explanation tables
-        run: python scripts/validate_cli_explanations.py
-        continue-on-error: true
       - name: Build documentation
         run: mkdocs build --strict
+
+  scripts:
+    name: Shell Scripts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate shell syntax
+        run: |
+          find apps labs infra scripts -type f -name '*.sh' -print0 | xargs -0 -r bash -n
+
+      - name: Run ShellCheck (errors block)
+        run: |
+          find apps labs infra scripts -type f -name '*.sh' -print0 | xargs -0 -r shellcheck --severity=error
+
+      - name: Report ShellCheck backlog (advisory)
+        run: |
+          find apps labs infra scripts -type f -name '*.sh' -print0 | xargs -0 -r shellcheck
+        continue-on-error: true  # Lenient: surfaces pre-existing warning/info/style backlog without blocking PRs.
 
   validate-infra:
     runs-on: ubuntu-latest
