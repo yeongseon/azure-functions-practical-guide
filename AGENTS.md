@@ -169,7 +169,9 @@ As of Phase 2d, approximately 295 Functions Mermaid pages still rely on the dict
 
 #### Validator alignment with sibling repositories
 
-The sibling Azure Container Apps and Azure App Service guides also accept the dict-form `{references: [...]}` escape via the same `get_diagram_sources()` helper, even though the backlog in those repositories is much smaller (1 path-skipped dashboard page each). The shared shape keeps the three repositories' validators aligned so a contributor reading one `AGENTS.md` does not encounter surprise enforcement in another.
+The sibling Azure Container Apps and Azure App Service guides do NOT accept the dict-form `{references: [...]}` escape: their `scripts/validate_content_sources.py` rejects any Mermaid page without a populated `diagrams:` list (with `content-validation-status.md` and `validation-status.md` as the only two filename-level skips, since those are generator-owned dashboards). Both sibling repositories migrated all Mermaid pages to the canonical `content_sources.diagrams[…]` shape during Phase 2d, so they have no legacy backlog that requires an escape. This Functions repository keeps the `references` escape because the ~295-page backlog here is not yet migrated; the escape is the only thing preventing those pages from becoming hard validation errors.
+
+A contributor moving a Mermaid page from this guide into Container Apps or App Service MUST populate the canonical `diagrams:` list on the destination side; copying a `references`-only page across will fail validation in the destination repository. This is the intended cross-repo contract, not a misalignment.
 
 #### Deferred to Phase 2e (no committed timeline)
 
