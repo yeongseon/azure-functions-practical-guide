@@ -1,32 +1,31 @@
 ---
 validation:
   az_cli:
-    last_tested: null
+    last_tested:
     cli_version: 2.83.0
     core_tools_version: 4.8.0
     result: not_tested
   bicep:
-    last_tested: null
+    last_tested:
     result: not_tested
 content_sources:
 
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-premium-plan
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/app-service/configure-vnet-integration-enable
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/app-service/networking/private-endpoint
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/app-service/configure-vnet-integration-enable
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint
 content_validation:
   status: verified
   last_reviewed: '2026-05-23'
   reviewer: agent
   core_claims:
-  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
-      guidance.
-    source: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
-    verified: true
+    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
+      verified: true
 ---
 # 02A - First Deploy (Private Egress)
 
@@ -785,6 +784,6 @@ flowchart TD
 
 ## Sources
 
-- [Azure Functions Premium plan](https://learn.microsoft.com/azure/azure-functions/functions-premium-plan)
-- [Integrate your app with an Azure virtual network](https://learn.microsoft.com/azure/app-service/configure-vnet-integration-enable)
-- [Use private endpoints for Azure App Service apps](https://learn.microsoft.com/azure/app-service/networking/private-endpoint)
+- [Azure Functions Premium plan](https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan)
+- [Integrate your app with an Azure virtual network](https://learn.microsoft.com/en-us/azure/app-service/configure-vnet-integration-enable)
+- [Use private endpoints for Azure App Service apps](https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint)

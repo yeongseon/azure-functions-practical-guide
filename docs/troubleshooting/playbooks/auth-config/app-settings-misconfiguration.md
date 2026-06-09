@@ -1,22 +1,22 @@
 ---
 content_sources:
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-app-settings
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-best-practices
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/app-service/app-service-key-vault-references
+    url: https://learn.microsoft.com/en-us/azure/app-service/app-service-key-vault-references
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/analyze-telemetry-data
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-versions
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-versions
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
   reviewer: agent
   core_claims:
     - claim: "App Settings Misconfiguration 관련 핵심 진단 절차와 운영 판단 기준"
-      source: https://learn.microsoft.com/azure/azure-functions/functions-app-settings
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
       verified: true
 ---
 
@@ -509,8 +509,8 @@ timestamp                    message
 - [Storage Access Failure Lab](../../lab-guides/storage-access-failure.md)
 
 ## Sources
-- [Azure Functions app settings reference](https://learn.microsoft.com/azure/azure-functions/functions-app-settings)
-- [Azure Functions best practices for performance and reliability](https://learn.microsoft.com/azure/azure-functions/functions-best-practices)
-- [Key Vault references for App Service and Azure Functions](https://learn.microsoft.com/azure/app-service/app-service-key-vault-references)
-- [Monitor Azure Functions with Application Insights](https://learn.microsoft.com/azure/azure-functions/analyze-telemetry-data)
-- [Azure Functions host versions and runtime support](https://learn.microsoft.com/azure/azure-functions/functions-versions)
+- [Azure Functions app settings reference](https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings)
+- [Azure Functions best practices for performance and reliability](https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices)
+- [Key Vault references for App Service and Azure Functions](https://learn.microsoft.com/en-us/azure/app-service/app-service-key-vault-references)
+- [Monitor Azure Functions with Application Insights](https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data)
+- [Azure Functions host versions and runtime support](https://learn.microsoft.com/en-us/azure/azure-functions/functions-versions)

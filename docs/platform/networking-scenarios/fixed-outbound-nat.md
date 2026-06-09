@@ -2,40 +2,40 @@
 content_sources:
   sources:
     - type: mslearn-adapted
-      url: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
     - type: mslearn-adapted
-      url: https://learn.microsoft.com/azure/app-service/overview-nat-gateway-integration
+      url: https://learn.microsoft.com/en-us/azure/app-service/overview-nat-gateway-integration
     - type: mslearn-adapted
-      url: https://learn.microsoft.com/azure/app-service/networking/private-endpoint
+      url: https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint
     - type: mslearn-adapted
-      url: https://learn.microsoft.com/azure/nat-gateway/nat-overview
+      url: https://learn.microsoft.com/en-us/azure/nat-gateway/nat-overview
   diagrams:
     - id: nat-gateway-architecture
       type: flowchart
       source: self-generated
       justification: "NAT Gateway integration pattern from MSLearn documentation"
       based_on:
-        - https://learn.microsoft.com/azure/app-service/overview-nat-gateway-integration
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-nat-gateway-integration
     - id: full-isolation-with-nat
       type: flowchart
       source: self-generated
       justification: "Full private ingress and NAT egress pattern synthesized from MSLearn networking documentation"
       based_on:
-        - https://learn.microsoft.com/azure/app-service/networking/private-endpoint
-        - https://learn.microsoft.com/azure/app-service/overview-nat-gateway-integration
+        - https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-nat-gateway-integration
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
   reviewer: agent
   core_claims:
     - claim: "Azure Functions plans without VNet integration cannot use NAT Gateway for outbound egress control"
-      source: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
       verified: true
     - claim: "App Service VNet integration can route outbound traffic through a NAT Gateway attached to the integration subnet"
-      source: https://learn.microsoft.com/azure/app-service/overview-nat-gateway-integration
+      source: https://learn.microsoft.com/en-us/azure/app-service/overview-nat-gateway-integration
       verified: true
     - claim: "NAT Gateway provides stable outbound public IP addresses for internet egress"
-      source: https://learn.microsoft.com/azure/nat-gateway/nat-overview
+      source: https://learn.microsoft.com/en-us/azure/nat-gateway/nat-overview
       verified: true
 ---
 
@@ -358,7 +358,7 @@ flowchart TD
 
 ## Sources
 
-- [Azure Functions networking options (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-networking-options)
-- [NAT Gateway integration with App Service (Microsoft Learn)](https://learn.microsoft.com/azure/app-service/overview-nat-gateway-integration)
-- [Use private endpoints for Azure App Service (Microsoft Learn)](https://learn.microsoft.com/azure/app-service/networking/private-endpoint)
-- [What is Azure NAT Gateway? (Microsoft Learn)](https://learn.microsoft.com/azure/nat-gateway/nat-overview)
+- [Azure Functions networking options (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)
+- [NAT Gateway integration with App Service (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/app-service/overview-nat-gateway-integration)
+- [Use private endpoints for Azure App Service (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint)
+- [What is Azure NAT Gateway? (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/nat-gateway/nat-overview)

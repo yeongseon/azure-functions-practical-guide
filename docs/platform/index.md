@@ -1,25 +1,24 @@
 ---
 content_sources:
 
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/en-us/azure/reliability/reliability-functions
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/reliability/reliability-functions
 content_validation:
   status: verified
   last_reviewed: '2026-05-23'
   reviewer: agent
   core_claims:
-  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
-      guidance.
-    source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
-    verified: true
+    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
+      verified: true
 ---
 # Platform
 

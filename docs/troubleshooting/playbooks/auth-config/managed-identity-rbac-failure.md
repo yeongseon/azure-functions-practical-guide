@@ -1,22 +1,22 @@
 ---
 content_sources:
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-reference#configure-an-identity-based-connection
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/app-service/overview-managed-identity
+    url: https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/role-based-access-control/role-assignments-cli
+    url: https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/key-vault/general/rbac-guide
+    url: https://learn.microsoft.com/en-us/azure/key-vault/general/rbac-guide
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/dotnet/api/azure.identity.defaultazurecredential
+    url: https://learn.microsoft.com/en-us/dotnet/api/azure.identity.defaultazurecredential
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
   reviewer: agent
   core_claims:
     - claim: "Managed Identity and RBAC Authentication Failure 관련 핵심 진단 절차와 운영 판단 기준"
-      source: https://learn.microsoft.com/azure/azure-functions/functions-reference#configure-an-identity-based-connection
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
       verified: true
 ---
 
@@ -508,8 +508,8 @@ timeline
 - [App Settings Misconfiguration Playbook](./app-settings-misconfiguration.md)
 
 ## Sources
-- [Azure Functions identity-based connections](https://learn.microsoft.com/azure/azure-functions/functions-reference#configure-an-identity-based-connection)
-- [Use managed identities for App Service and Azure Functions](https://learn.microsoft.com/azure/app-service/overview-managed-identity)
-- [Assign Azure roles using Azure CLI](https://learn.microsoft.com/azure/role-based-access-control/role-assignments-cli)
-- [Authorize access to Key Vault secrets](https://learn.microsoft.com/azure/key-vault/general/rbac-guide)
-- [DefaultAzureCredential authentication flow](https://learn.microsoft.com/dotnet/api/azure.identity.defaultazurecredential)
+- [Azure Functions identity-based connections](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection)
+- [Use managed identities for App Service and Azure Functions](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)
+- [Assign Azure roles using Azure CLI](https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli)
+- [Authorize access to Key Vault secrets](https://learn.microsoft.com/en-us/azure/key-vault/general/rbac-guide)
+- [DefaultAzureCredential authentication flow](https://learn.microsoft.com/en-us/dotnet/api/azure.identity.defaultazurecredential)

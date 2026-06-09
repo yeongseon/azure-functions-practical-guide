@@ -1,19 +1,18 @@
 ---
 content_sources:
 
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/supported-languages
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide
 content_validation:
   status: verified
   last_reviewed: '2026-05-23'
   reviewer: agent
   core_claims:
-  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
-      guidance.
-    source: https://learn.microsoft.com/azure/azure-functions/supported-languages
-    verified: true
+    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages
+      verified: true
 ---
 # .NET Runtime
 
@@ -118,5 +117,5 @@ az functionapp create   --name "$APP_NAME"   --resource-group "$RG"   --storage-
 - [Troubleshooting](troubleshooting.md)
 
 ## Sources
-- [Azure Functions supported languages](https://learn.microsoft.com/azure/azure-functions/supported-languages)
-- [Guide for running C# Azure Functions in the isolated worker model](https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide)
+- [Azure Functions supported languages](https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages)
+- [Guide for running C# Azure Functions in the isolated worker model](https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide)

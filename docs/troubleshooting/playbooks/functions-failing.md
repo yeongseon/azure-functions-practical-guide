@@ -1,22 +1,22 @@
 ---
 content_sources:
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/analyze-telemetry-data
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-host-json
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/role-based-access-control/overview
+    url: https://learn.microsoft.com/en-us/azure/role-based-access-control/overview
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/data-explorer/kusto/query/
+    url: https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
   reviewer: agent
   core_claims:
     - claim: "Functions Failing with Errors 관련 핵심 진단 절차와 운영 판단 기준"
-      source: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
       verified: true
 ---
 
@@ -570,8 +570,8 @@ az functionapp restart --resource-group "$RG" --name "$APP_NAME"
 
 ## Sources
 
-- [Monitor Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-monitoring)
-- [Investigate Azure Functions errors with Application Insights](https://learn.microsoft.com/azure/azure-functions/analyze-telemetry-data)
-- [Azure Functions host.json reference](https://learn.microsoft.com/azure/azure-functions/functions-host-json)
-- [Azure RBAC documentation](https://learn.microsoft.com/azure/role-based-access-control/overview)
-- [Kusto Query Language overview](https://learn.microsoft.com/azure/data-explorer/kusto/query/)
+- [Monitor Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)
+- [Investigate Azure Functions errors with Application Insights](https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data)
+- [Azure Functions host.json reference](https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json)
+- [Azure RBAC documentation](https://learn.microsoft.com/en-us/azure/role-based-access-control/overview)
+- [Kusto Query Language overview](https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/)

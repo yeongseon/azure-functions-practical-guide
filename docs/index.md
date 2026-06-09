@@ -1,17 +1,16 @@
 ---
 content_sources:
 
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/
 content_validation:
   status: verified
   last_reviewed: '2026-05-23'
   reviewer: agent
   core_claims:
-  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
-      guidance.
-    source: https://learn.microsoft.com/azure/azure-functions/
-    verified: true
+    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/
+      verified: true
 ---
 # Azure Functions Practical Guide
 
@@ -88,7 +87,7 @@ flowchart TD
 
 This is an independent community project. Not affiliated with or endorsed by Microsoft.
 
-Primary product reference: [Azure Functions documentation (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/)
+Primary product reference: [Azure Functions documentation (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/)
 
 ## See Also
 
@@ -102,4 +101,4 @@ Primary product reference: [Azure Functions documentation (Microsoft Learn)](htt
 
 ## Sources
 
-- [Azure Functions documentation (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/)
+- [Azure Functions documentation (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/)

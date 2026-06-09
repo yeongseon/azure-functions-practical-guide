@@ -1,31 +1,31 @@
 ---
 content_sources:
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-overview
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/app-service/overview
+    url: https://learn.microsoft.com/en-us/azure/app-service/overview
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/architecture/guide/technology-choices/compute-decision-tree
+    url: https://learn.microsoft.com/en-us/azure/architecture/guide/technology-choices/compute-decision-tree
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-compare-logic-apps-ms-flow-webjobs
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-compare-logic-apps-ms-flow-webjobs
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
   reviewer: agent
   core_claims:
     - claim: "Azure Functions and Azure App Service both run on the underlying App Service platform infrastructure"
-      source: https://learn.microsoft.com/azure/azure-functions/functions-overview
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
       verified: true
     - claim: "Azure Functions supports scale-to-zero on Consumption and Flex Consumption plans, while App Service does not"
-      source: https://learn.microsoft.com/azure/azure-functions/functions-scale
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
       verified: true
     - claim: "Azure Functions provides trigger and binding-based event-driven execution, while App Service is centered on web app hosting"
-      source: https://learn.microsoft.com/azure/azure-functions/functions-overview
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
       verified: true
     - claim: "App Service supports native WebSocket hosting, unlike Azure Functions"
-      source: https://learn.microsoft.com/azure/app-service/overview
+      source: https://learn.microsoft.com/en-us/azure/app-service/overview
       verified: true
 ---
 
@@ -332,8 +332,8 @@ During migration from one service to the other, run both side by side with traff
 
 ## Sources
 
-- [Azure Functions overview — Microsoft Learn](https://learn.microsoft.com/azure/azure-functions/functions-overview)
-- [Azure App Service overview — Microsoft Learn](https://learn.microsoft.com/azure/app-service/overview)
-- [Azure Functions hosting options — Microsoft Learn](https://learn.microsoft.com/azure/azure-functions/functions-scale)
-- [Choose an Azure compute service — Microsoft Learn](https://learn.microsoft.com/azure/architecture/guide/technology-choices/compute-decision-tree)
-- [App Service, Functions, and Logic Apps comparison — Microsoft Learn](https://learn.microsoft.com/azure/azure-functions/functions-compare-logic-apps-ms-flow-webjobs)
+- [Azure Functions overview — Microsoft Learn](https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview)
+- [Azure App Service overview — Microsoft Learn](https://learn.microsoft.com/en-us/azure/app-service/overview)
+- [Azure Functions hosting options — Microsoft Learn](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
+- [Choose an Azure compute service — Microsoft Learn](https://learn.microsoft.com/en-us/azure/architecture/guide/technology-choices/compute-decision-tree)
+- [App Service, Functions, and Logic Apps comparison — Microsoft Learn](https://learn.microsoft.com/en-us/azure/azure-functions/functions-compare-logic-apps-ms-flow-webjobs)

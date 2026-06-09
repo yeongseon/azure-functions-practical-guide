@@ -1,19 +1,18 @@
 ---
 content_sources:
 
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/security-concepts
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/app-service/overview-authentication-authorization
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/security-concepts
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/app-service/overview-authentication-authorization
 content_validation:
   status: verified
   last_reviewed: '2026-05-23'
   reviewer: agent
   core_claims:
-  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
-      guidance.
-    source: https://learn.microsoft.com/azure/azure-functions/security-concepts
-    verified: true
+    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/security-concepts
+      verified: true
 ---
 # HTTP Authentication
 
@@ -324,5 +323,5 @@ curl --header "Authorization: Bearer $TOKEN" \
 - [Security Operations](../../../operations/security.md) — key rotation, RBAC audit, CORS, TLS enforcement
 
 ## Sources
-- [Azure Functions Security Concepts (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/security-concepts)
-- [Easy Auth Overview (Microsoft Learn)](https://learn.microsoft.com/azure/app-service/overview-authentication-authorization)
+- [Azure Functions Security Concepts (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/security-concepts)
+- [Easy Auth Overview (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/app-service/overview-authentication-authorization)

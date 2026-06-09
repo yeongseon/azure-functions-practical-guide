@@ -1,19 +1,18 @@
 ---
 content_sources:
 
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-overview
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-bindings
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-bindings
 content_validation:
   status: verified
   last_reviewed: '2026-05-23'
   reviewer: agent
   core_claims:
-  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
-      guidance.
-    source: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-overview
-    verified: true
+    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
+      verified: true
 ---
 # Durable Orchestration
 
@@ -140,5 +139,5 @@ public class DurableFunctions {
 
 ## Sources
 
-- [Durable Functions overview (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-overview)
-- [Durable Functions bindings (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-bindings)
+- [Durable Functions overview (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview)
+- [Durable Functions bindings (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-bindings)

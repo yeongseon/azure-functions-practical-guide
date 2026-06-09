@@ -1,13 +1,13 @@
 ---
 content_sources:
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-diagnostics
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-diagnostics
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-host-json
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
@@ -230,7 +230,7 @@ az monitor activity-log list \
 
 ## Sources
 
-- [Azure Functions diagnostics overview](https://learn.microsoft.com/azure/azure-functions/functions-diagnostics)
-- [Monitor Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-monitoring)
-- [Troubleshoot Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-diagnostics)
-- [Azure Functions host.json reference](https://learn.microsoft.com/azure/azure-functions/functions-host-json)
+- [Azure Functions diagnostics overview](https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics)
+- [Monitor Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)
+- [Troubleshoot Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics)
+- [Azure Functions host.json reference](https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json)

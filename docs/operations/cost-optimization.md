@@ -1,31 +1,31 @@
 ---
 content_sources:
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/consumption-plan
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-premium-plan
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-monitor/logs/cost-logs
+    url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/cost-logs
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
   reviewer: agent
   core_claims:
     - claim: "The Consumption plan billing model charges for executions and GB-seconds of resource consumption."
-      source: https://learn.microsoft.com/azure/azure-functions/consumption-plan
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan
       verified: true
     - claim: "The legacy Consumption plan includes a monthly free grant for executions and GB-seconds at the subscription level."
-      source: https://learn.microsoft.com/azure/azure-functions/consumption-plan
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan
       verified: true
     - claim: "Flex Consumption adds optional always-ready baseline cost behavior in addition to consumption-based execution billing."
-      source: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
       verified: true
     - claim: "Application Insights and Log Analytics ingestion and retention can materially affect overall Azure Functions operating cost."
-      source: https://learn.microsoft.com/azure/azure-monitor/logs/cost-logs
+      source: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/cost-logs
       verified: true
 ---
 
@@ -369,8 +369,8 @@ union requests, traces, exceptions, dependencies
 
 ## Sources
 
-- [Consumption Plan (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/consumption-plan)
-- [Premium Plan (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-premium-plan)
-- [Azure Functions Scaling (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-scale)
-- [Flex Consumption Plan (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan)
-- [Application Insights pricing (Microsoft Learn)](https://learn.microsoft.com/azure/azure-monitor/logs/cost-logs)
+- [Consumption Plan (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan)
+- [Premium Plan (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan)
+- [Azure Functions Scaling (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
+- [Flex Consumption Plan (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan)
+- [Application Insights pricing (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/cost-logs)

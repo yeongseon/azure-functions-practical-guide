@@ -10,25 +10,24 @@ validation:
     result: syntax_validated
 content_sources:
 
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-resource-manager/bicep/
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/templates/microsoft.web/serverfarms
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/templates/microsoft.web/sites
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/app-service/overview-vnet-integration
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/app-service/networking/private-endpoint
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/templates/microsoft.web/serverfarms
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/templates/microsoft.web/sites
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/app-service/overview-vnet-integration
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint
 content_validation:
   status: verified
   last_reviewed: '2026-05-23'
   reviewer: agent
   core_claims:
-  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
-      guidance.
-    source: https://learn.microsoft.com/azure/azure-resource-manager/bicep/
-    verified: true
+    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
+      source: https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/
+      verified: true
 ---
 # 05 - Infrastructure as Code (Dedicated)
 
@@ -693,6 +692,6 @@ You now have reproducible Dedicated infrastructure in Bicep. Next you will autom
 
 ## Sources
 
-- [Bicep documentation](https://learn.microsoft.com/azure/azure-resource-manager/bicep/)
-- [Microsoft.Web/serverfarms resource reference](https://learn.microsoft.com/azure/templates/microsoft.web/serverfarms)
-- [Microsoft.Web/sites resource reference](https://learn.microsoft.com/azure/templates/microsoft.web/sites)
+- [Bicep documentation](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/)
+- [Microsoft.Web/serverfarms resource reference](https://learn.microsoft.com/en-us/azure/templates/microsoft.web/serverfarms)
+- [Microsoft.Web/sites resource reference](https://learn.microsoft.com/en-us/azure/templates/microsoft.web/sites)

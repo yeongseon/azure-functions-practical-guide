@@ -1,33 +1,33 @@
 ---
 content_sources:
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-best-practices
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/architecture/framework/resiliency/disaster-recovery
+    url: https://learn.microsoft.com/en-us/azure/architecture/framework/resiliency/disaster-recovery
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/storage/common/storage-redundancy
+    url: https://learn.microsoft.com/en-us/azure/storage/common/storage-redundancy
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-deployment-slots
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/traffic-manager/traffic-manager-monitoring
+    url: https://learn.microsoft.com/en-us/azure/traffic-manager/traffic-manager-monitoring
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/frontdoor/health-probes
+    url: https://learn.microsoft.com/en-us/azure/frontdoor/health-probes
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
   reviewer: agent
   core_claims:
     - claim: "Azure Functions recovery planning should define RTO and RPO before incidents occur."
-      source: https://learn.microsoft.com/azure/architecture/framework/resiliency/disaster-recovery
+      source: https://learn.microsoft.com/en-us/azure/architecture/framework/resiliency/disaster-recovery
       verified: true
     - claim: "Deployment slots provide a fast rollback path for supported Azure Functions hosting plans."
-      source: https://learn.microsoft.com/azure/azure-functions/functions-deployment-slots
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots
       verified: true
     - claim: "Regional recovery design depends on storage redundancy and multi-region resiliency planning."
-      source: https://learn.microsoft.com/azure/storage/common/storage-redundancy
+      source: https://learn.microsoft.com/en-us/azure/storage/common/storage-redundancy
       verified: true
     - claim: "Traffic Manager and Front Door health probes can be used to monitor and steer traffic during failover."
-      source: https://learn.microsoft.com/azure/frontdoor/health-probes
+      source: https://learn.microsoft.com/en-us/azure/frontdoor/health-probes
       verified: true
 ---
 
@@ -403,9 +403,9 @@ If recovery does not stabilize service, apply these controls.
 - [Troubleshooting Methodology](../troubleshooting/methodology.md)
 
 ## Sources
-- [Reliability in Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-best-practices)
-- [Business continuity and disaster recovery for Azure applications](https://learn.microsoft.com/azure/architecture/framework/resiliency/disaster-recovery)
-- [Azure Storage redundancy options](https://learn.microsoft.com/azure/storage/common/storage-redundancy)
-- [Deployment slots in Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-deployment-slots)
-- [Azure Traffic Manager endpoint monitoring](https://learn.microsoft.com/azure/traffic-manager/traffic-manager-monitoring)
-- [Azure Front Door health probes](https://learn.microsoft.com/azure/frontdoor/health-probes)
+- [Reliability in Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices)
+- [Business continuity and disaster recovery for Azure applications](https://learn.microsoft.com/en-us/azure/architecture/framework/resiliency/disaster-recovery)
+- [Azure Storage redundancy options](https://learn.microsoft.com/en-us/azure/storage/common/storage-redundancy)
+- [Deployment slots in Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots)
+- [Azure Traffic Manager endpoint monitoring](https://learn.microsoft.com/en-us/azure/traffic-manager/traffic-manager-monitoring)
+- [Azure Front Door health probes](https://learn.microsoft.com/en-us/azure/frontdoor/health-probes)

@@ -1,19 +1,18 @@
 ---
 content_sources:
 
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-node-model-upgrade
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-overview
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-node-model-upgrade
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
 content_validation:
   status: verified
   last_reviewed: '2026-05-23'
   reviewer: agent
   core_claims:
-  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
-      guidance.
-    source: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-node-model-upgrade
-    verified: true
+    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-node-model-upgrade
+      verified: true
 ---
 # Durable Orchestration
 
@@ -135,5 +134,5 @@ df.app.activity("emitConfirmation", {
 - [Node.js v4 Programming Model](../v4-programming-model.md)
 
 ## Sources
-- [Migrate Durable Functions app to Node.js v4 model (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-node-model-upgrade)
-- [Durable Functions overview (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-overview)
+- [Migrate Durable Functions app to Node.js v4 model (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-node-model-upgrade)
+- [Durable Functions overview (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview)

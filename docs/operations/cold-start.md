@@ -1,31 +1,31 @@
 ---
 content_sources:
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-premium-plan
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/performance-reliability
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/analyze-telemetry-data
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
   reviewer: agent
   core_claims:
     - claim: "Cold start includes worker allocation, host startup, language worker startup, and application initialization phases."
-      source: https://learn.microsoft.com/azure/azure-functions/performance-reliability
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
       verified: true
     - claim: "Flex Consumption supports always-ready instances to reduce cold-start frequency for selected functions or app behavior."
-      source: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
       verified: true
     - claim: "Premium plan provides always-ready and pre-warmed instances to reduce startup latency."
-      source: https://learn.microsoft.com/azure/azure-functions/functions-premium-plan
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
       verified: true
     - claim: "Dedicated plans use Always On to keep workers active and reduce cold-start effects."
-      source: https://learn.microsoft.com/azure/azure-functions/functions-scale
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
       verified: true
 ---
 
@@ -431,8 +431,8 @@ Escalate to platform diagnostics if startup remains unstable after rollback and 
 - [Platform Hosting](../platform/hosting.md)
 
 ## Sources
-- [Azure Functions hosting options and scaling](https://learn.microsoft.com/azure/azure-functions/functions-scale)
-- [Flex Consumption plan for Azure Functions](https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan)
-- [Azure Functions Premium plan](https://learn.microsoft.com/azure/azure-functions/functions-premium-plan)
-- [Improve performance and reliability of Azure Functions](https://learn.microsoft.com/azure/azure-functions/performance-reliability)
-- [Monitor Azure Functions](https://learn.microsoft.com/azure/azure-functions/analyze-telemetry-data)
+- [Azure Functions hosting options and scaling](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
+- [Flex Consumption plan for Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan)
+- [Azure Functions Premium plan](https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan)
+- [Improve performance and reliability of Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability)
+- [Monitor Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data)

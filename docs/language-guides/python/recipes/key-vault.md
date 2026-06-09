@@ -1,19 +1,18 @@
 ---
 content_sources:
 
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/app-service/app-service-key-vault-references
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/app-service/app-service-key-vault-references
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
 content_validation:
   status: verified
   last_reviewed: '2026-05-23'
   reviewer: agent
   core_claims:
-  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
-      guidance.
-    source: https://learn.microsoft.com/azure/app-service/app-service-key-vault-references
-    verified: true
+    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
+      source: https://learn.microsoft.com/en-us/azure/app-service/app-service-key-vault-references
+      verified: true
 ---
 # Key Vault Integration
 
@@ -303,5 +302,5 @@ resource functionApp 'Microsoft.Web/sites@2023-01-01' = {
 - [Security Operations](../../../operations/security.md) — key rotation, RBAC audit, CORS, TLS enforcement
 
 ## Sources
-- [Key Vault References in App Service (Microsoft Learn)](https://learn.microsoft.com/azure/app-service/app-service-key-vault-references)
-- [Managed Identity Tutorial (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial)
+- [Key Vault References in App Service (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/app-service/app-service-key-vault-references)
+- [Managed Identity Tutorial (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial)

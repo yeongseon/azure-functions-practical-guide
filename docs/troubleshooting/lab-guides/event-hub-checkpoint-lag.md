@@ -1,13 +1,13 @@
 ---
 content_sources:
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-event-hubs
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-host-json
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-best-practices
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/event-hubs/event-hubs-scalability
+    url: https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-scalability
   - type: mslearn-adapted
     url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
 content_validation:
@@ -16,7 +16,7 @@ content_validation:
   reviewer: agent
   core_claims:
     - claim: "Lab Guide: Event Hub Checkpoint Lag on Azure Functions Premium EP1 관련 핵심 진단 절차와 운영 판단 기준"
-      source: https://learn.microsoft.com/azure/azure-functions/functions-bindings-event-hubs
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs
       verified: true
 ---
 
@@ -969,8 +969,8 @@ If this is a shared troubleshooting environment, keep resources and only disable
 
 ## Sources
 
-- https://learn.microsoft.com/azure/azure-functions/functions-bindings-event-hubs
-- https://learn.microsoft.com/azure/azure-functions/functions-host-json
-- https://learn.microsoft.com/azure/azure-functions/functions-best-practices
-- https://learn.microsoft.com/azure/event-hubs/event-hubs-scalability
+- https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs
+- https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
+- https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
+- https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-scalability
 - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview

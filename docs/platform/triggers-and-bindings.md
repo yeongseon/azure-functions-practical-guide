@@ -1,33 +1,33 @@
 ---
 content_sources:
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-blob-trigger
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-event-grid-blob-trigger
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-event-grid-blob-trigger
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-host-json
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-reference#configure-an-identity-based-connection
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/event-driven-scaling
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
   reviewer: agent
   core_claims:
     - claim: "Each Azure Function has exactly one trigger and can also use input and output bindings"
-      source: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
       verified: true
     - claim: "Flex Consumption uses the Event Grid-based blob trigger model instead of polling"
-      source: https://learn.microsoft.com/azure/azure-functions/functions-event-grid-blob-trigger
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-event-grid-blob-trigger
       verified: true
     - claim: "Bindings can use identity-based connections configured with service URIs and managed identity settings"
-      source: https://learn.microsoft.com/azure/azure-functions/functions-reference#configure-an-identity-based-connection
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
       verified: true
     - claim: "Azure Functions scaling is driven by the trigger type and workload signal"
-      source: https://learn.microsoft.com/azure/azure-functions/event-driven-scaling
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
       verified: true
 ---
 
@@ -428,9 +428,9 @@ Use language guides for runtime-specific syntax, decorators/attributes, and pack
 - [Hosting Plans](hosting.md)
 - [Networking](networking.md)
 ## Sources
-- [Microsoft Learn: Azure Functions triggers and bindings concepts](https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings)
-- [Microsoft Learn: Azure Functions Blob storage trigger](https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-blob-trigger)
-- [Microsoft Learn: Azure Functions Event Grid Blob trigger](https://learn.microsoft.com/azure/azure-functions/functions-event-grid-blob-trigger)
-- [Microsoft Learn: host.json reference for Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-host-json)
-- [Microsoft Learn: Azure Functions identity-based connections](https://learn.microsoft.com/azure/azure-functions/functions-reference#configure-an-identity-based-connection)
-- [Microsoft Learn: Azure Functions scale and hosting behavior](https://learn.microsoft.com/azure/azure-functions/event-driven-scaling)
+- [Microsoft Learn: Azure Functions triggers and bindings concepts](https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings)
+- [Microsoft Learn: Azure Functions Blob storage trigger](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger)
+- [Microsoft Learn: Azure Functions Event Grid Blob trigger](https://learn.microsoft.com/en-us/azure/azure-functions/functions-event-grid-blob-trigger)
+- [Microsoft Learn: host.json reference for Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json)
+- [Microsoft Learn: Azure Functions identity-based connections](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection)
+- [Microsoft Learn: Azure Functions scale and hosting behavior](https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling)

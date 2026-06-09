@@ -1,19 +1,19 @@
 ---
 content_sources:
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-diagnostics
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/configure-monitoring
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-host-json
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-recover-storage-account
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-recover-storage-account
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
@@ -468,10 +468,10 @@ exceptions
 
 ## Sources
 
-- [Azure Functions diagnostics](https://learn.microsoft.com/azure/azure-functions/functions-diagnostics)
-- [Monitor Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-monitoring)
-- [Configure monitoring for Azure Functions](https://learn.microsoft.com/azure/azure-functions/configure-monitoring)
-- [Azure Functions scale and hosting options](https://learn.microsoft.com/azure/azure-functions/functions-scale)
-- [Azure Functions triggers and bindings concepts](https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings)
-- [Azure Functions host.json reference](https://learn.microsoft.com/azure/azure-functions/functions-host-json)
-- [Recover Azure Functions from errors related to an inaccessible storage account](https://learn.microsoft.com/azure/azure-functions/functions-recover-storage-account)
+- [Azure Functions diagnostics](https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics)
+- [Monitor Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)
+- [Configure monitoring for Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring)
+- [Azure Functions scale and hosting options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
+- [Azure Functions triggers and bindings concepts](https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings)
+- [Azure Functions host.json reference](https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json)
+- [Recover Azure Functions from errors related to an inaccessible storage account](https://learn.microsoft.com/en-us/azure/azure-functions/functions-recover-storage-account)

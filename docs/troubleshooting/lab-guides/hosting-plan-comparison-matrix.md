@@ -1,20 +1,20 @@
 ---
 content_sources:
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/storage/common/storage-private-endpoints
+    url: https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
   reviewer: agent
   core_claims:
     - claim: "Hosting Plan Security Comparison Matrix 관련 핵심 진단 절차와 운영 판단 기준"
-      source: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
       verified: true
 ---
 
@@ -239,7 +239,7 @@ flowchart TD
 
 ## Sources
 
-- [Microsoft Learn: Azure Functions networking](https://learn.microsoft.com/azure/azure-functions/functions-networking-options)
-- [Microsoft Learn: Azure Functions managed identity](https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial)
-- [Microsoft Learn: Private endpoints for Azure Storage](https://learn.microsoft.com/azure/storage/common/storage-private-endpoints)
-- [Microsoft Learn: Azure Functions hosting plans](https://learn.microsoft.com/azure/azure-functions/functions-scale)
+- [Microsoft Learn: Azure Functions networking](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)
+- [Microsoft Learn: Azure Functions managed identity](https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial)
+- [Microsoft Learn: Private endpoints for Azure Storage](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints)
+- [Microsoft Learn: Azure Functions hosting plans](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)

@@ -1,19 +1,18 @@
 ---
 content_sources:
 
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-event-grid-trigger
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/cli/azure/eventgrid/event-subscription?view=azure-cli-latest
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-grid-trigger
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/cli/azure/eventgrid/event-subscription?view=azure-cli-latest
 content_validation:
   status: verified
   last_reviewed: '2026-05-23'
   reviewer: agent
   core_claims:
-  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
-      guidance.
-    source: https://learn.microsoft.com/azure/azure-functions/functions-bindings-event-grid-trigger
-    verified: true
+    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-grid-trigger
+      verified: true
 ---
 # Event Grid Trigger
 
@@ -100,5 +99,5 @@ public class EventGridFunctions {
 
 ## Sources
 
-- [Event Grid trigger for Azure Functions (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-bindings-event-grid-trigger)
-- [Create event subscriptions with Azure CLI (Microsoft Learn)](https://learn.microsoft.com/cli/azure/eventgrid/event-subscription?view=azure-cli-latest)
+- [Event Grid trigger for Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-grid-trigger)
+- [Create event subscriptions with Azure CLI (Microsoft Learn)](https://learn.microsoft.com/en-us/cli/azure/eventgrid/event-subscription?view=azure-cli-latest)

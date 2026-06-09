@@ -1,23 +1,22 @@
 ---
 content_sources:
 
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-reference-python
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-dotnet-class-library
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-dotnet-class-library
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
 content_validation:
   status: verified
   last_reviewed: '2026-05-23'
   reviewer: agent
   core_claims:
-  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
-      guidance.
-    source: https://learn.microsoft.com/azure/azure-functions/functions-reference-python
-    verified: true
+    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+      verified: true
 ---
 # Language Guides
 
@@ -113,7 +112,7 @@ This table aligns with Microsoft Learn references for each language runtime.
 
 ## Sources
 
-- [Python developer guide](https://learn.microsoft.com/azure/azure-functions/functions-reference-python)
-- [Node.js developer guide](https://learn.microsoft.com/azure/azure-functions/functions-reference-node)
-- [.NET class library guide](https://learn.microsoft.com/azure/azure-functions/functions-dotnet-class-library)
-- [Java developer guide](https://learn.microsoft.com/azure/azure-functions/functions-reference-java)
+- [Python developer guide](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python)
+- [Node.js developer guide](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node)
+- [.NET class library guide](https://learn.microsoft.com/en-us/azure/azure-functions/functions-dotnet-class-library)
+- [Java developer guide](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java)

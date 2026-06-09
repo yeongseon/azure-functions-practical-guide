@@ -2,33 +2,33 @@
 content_sources:
   sources:
     - type: mslearn-adapted
-      url: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
     - type: mslearn-adapted
-      url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
     - type: mslearn-adapted
-      url: https://learn.microsoft.com/azure/azure-functions/functions-premium-plan
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
     - type: mslearn-adapted
-      url: https://learn.microsoft.com/azure/app-service/overview-vnet-integration
+      url: https://learn.microsoft.com/en-us/azure/app-service/overview-vnet-integration
   diagrams:
     - id: network-scenario-decision-tree
       type: flowchart
       source: self-generated
       justification: "Decision tree synthesized from MSLearn networking options documentation"
       based_on:
-        - https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
 content_validation:
   status: verified
   last_reviewed: 2026-05-21
   reviewer: agent
   core_claims:
     - claim: "Azure Functions supports different networking capabilities depending on the hosting plan."
-      source: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
       verified: true
     - claim: "Flex Consumption has plan-specific networking behavior documented separately from classic Consumption and Dedicated plans."
-      source: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
       verified: true
     - claim: "App Service VNet integration is available on Basic and higher dedicated compute tiers."
-      source: https://learn.microsoft.com/azure/app-service/overview-vnet-integration
+      source: https://learn.microsoft.com/en-us/azure/app-service/overview-vnet-integration
       verified: true
 ---
 
@@ -134,7 +134,7 @@ Each scenario guide provides:
 
 ## Sources
 
-- [Azure Functions networking options (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-networking-options)
-- [Azure Functions Flex Consumption plan (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan)
-- [Azure Functions Premium plan (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-premium-plan)
-- [Integrate your app with an Azure virtual network (Microsoft Learn)](https://learn.microsoft.com/azure/app-service/overview-vnet-integration)
+- [Azure Functions networking options (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)
+- [Azure Functions Flex Consumption plan (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan)
+- [Azure Functions Premium plan (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan)
+- [Integrate your app with an Azure virtual network (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/app-service/overview-vnet-integration)

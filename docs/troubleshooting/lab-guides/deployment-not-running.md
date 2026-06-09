@@ -1,13 +1,13 @@
 ---
 content_sources:
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-deployment-technologies
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-python
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/configure-monitoring
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/monitor-functions
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
   - type: mslearn-adapted
     url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
 content_validation:
@@ -16,7 +16,7 @@ content_validation:
   reviewer: agent
   core_claims:
     - claim: "Lab Guide: Deployment Succeeded but Function Not Running 관련 핵심 진단 절차와 운영 판단 기준"
-      source: https://learn.microsoft.com/azure/azure-functions/functions-deployment-technologies
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
       verified: true
 ---
 
@@ -627,8 +627,8 @@ az group delete --name "$RG" --yes --no-wait --output table
 
 ## Sources
 
-- https://learn.microsoft.com/azure/azure-functions/functions-deployment-technologies
-- https://learn.microsoft.com/azure/azure-functions/functions-reference-python
-- https://learn.microsoft.com/azure/azure-functions/configure-monitoring
-- https://learn.microsoft.com/azure/azure-functions/monitor-functions
+- https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
+- https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+- https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring
+- https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
 - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview

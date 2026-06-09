@@ -6,29 +6,28 @@ validation:
     core_tools_version: 4.8.0
     result: pass
   bicep:
-    last_tested: null
+    last_tested:
     result: not_tested
 content_sources:
 
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring#application-insights
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/app-service/overview-vnet-integration
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/app-service/networking/private-endpoint
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-monitor/alerts/alerts-metric-overview
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring#application-insights
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/app-service/overview-vnet-integration
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/alerts-metric-overview
 content_validation:
   status: verified
   last_reviewed: '2026-05-23'
   reviewer: agent
   core_claims:
-  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
-      guidance.
-    source: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
-    verified: true
+    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+      verified: true
 ---
 # 04 - Logging & Monitoring (Dedicated)
 
@@ -315,6 +314,6 @@ Monitoring is now in place with logs, queries, and alerts. Next you will codify 
 
 ## Sources
 
-- [Monitor Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-monitoring)
-- [Application Insights for Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-monitoring#application-insights)
-- [Azure Monitor metrics alerts](https://learn.microsoft.com/azure/azure-monitor/alerts/alerts-metric-overview)
+- [Monitor Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)
+- [Application Insights for Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring#application-insights)
+- [Azure Monitor metrics alerts](https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/alerts-metric-overview)

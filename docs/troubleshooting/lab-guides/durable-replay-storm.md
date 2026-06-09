@@ -1,15 +1,15 @@
 ---
 content_sources:
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-orchestrations
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-orchestrations
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-best-practice-reference
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-best-practice-reference
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-eternal-orchestrations
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-eternal-orchestrations
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-python
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/storage-considerations
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
   - type: mslearn-adapted
     url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
 content_validation:
@@ -18,7 +18,7 @@ content_validation:
   reviewer: agent
   core_claims:
     - claim: "Lab Guide: Durable Functions Replay Storm on Azure Functions Premium EP1 관련 핵심 진단 절차와 운영 판단 기준"
-      source: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-orchestrations
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-orchestrations
       verified: true
 ---
 
@@ -884,9 +884,9 @@ If this is a shared EP1 lab environment, skip deletion and only stop test traffi
 
 ## Sources
 
-- https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-orchestrations
-- https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-best-practice-reference
-- https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-eternal-orchestrations
-- https://learn.microsoft.com/azure/azure-functions/functions-reference-python
-- https://learn.microsoft.com/azure/azure-functions/storage-considerations
+- https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-orchestrations
+- https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-best-practice-reference
+- https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-eternal-orchestrations
+- https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+- https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
 - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview

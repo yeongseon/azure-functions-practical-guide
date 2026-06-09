@@ -1,11 +1,11 @@
 ---
 content_sources:
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-diagnostics
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-monitor/essentials/data-platform-metrics
+    url: https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/data-platform-metrics
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
@@ -161,6 +161,6 @@ az monitor metrics list \
 
 ## Sources
 
-- [Azure Functions diagnostics overview](https://learn.microsoft.com/azure/azure-functions/functions-diagnostics)
-- [Monitor Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-monitoring)
-- [Azure Monitor metrics overview](https://learn.microsoft.com/azure/azure-monitor/essentials/data-platform-metrics)
+- [Azure Functions diagnostics overview](https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics)
+- [Monitor Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)
+- [Azure Monitor metrics overview](https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/data-platform-metrics)

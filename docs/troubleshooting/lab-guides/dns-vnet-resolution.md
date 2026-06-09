@@ -1,24 +1,24 @@
 ---
 content_sources:
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/private-link/private-endpoint-dns
+    url: https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-dns
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/storage-considerations
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/dns/private-dns-overview
+    url: https://learn.microsoft.com/en-us/azure/dns/private-dns-overview
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/cli/azure/network/private-dns
+    url: https://learn.microsoft.com/en-us/cli/azure/network/private-dns
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
   reviewer: agent
   core_claims:
     - claim: "Lab Guide: DNS and VNet Resolution Failure 관련 핵심 진단 절차와 운영 판단 기준"
-      source: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
       verified: true
 ---
 
@@ -854,9 +854,9 @@ az group delete \
 
 ## Sources
 
-- [Azure Functions networking options](https://learn.microsoft.com/azure/azure-functions/functions-networking-options)
-- [Azure private endpoint DNS configuration](https://learn.microsoft.com/azure/private-link/private-endpoint-dns)
-- [Azure Functions storage considerations](https://learn.microsoft.com/azure/azure-functions/storage-considerations)
-- [Azure Private DNS overview](https://learn.microsoft.com/azure/dns/private-dns-overview)
-- [Monitor Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-monitoring)
-- [Azure DNS private zones CLI reference](https://learn.microsoft.com/cli/azure/network/private-dns)
+- [Azure Functions networking options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)
+- [Azure private endpoint DNS configuration](https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-dns)
+- [Azure Functions storage considerations](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations)
+- [Azure Private DNS overview](https://learn.microsoft.com/en-us/azure/dns/private-dns-overview)
+- [Monitor Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)
+- [Azure DNS private zones CLI reference](https://learn.microsoft.com/en-us/cli/azure/network/private-dns)

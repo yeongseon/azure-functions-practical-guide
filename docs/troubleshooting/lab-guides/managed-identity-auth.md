@@ -1,24 +1,24 @@
 ---
 content_sources:
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-reference#configure-an-identity-based-connection
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/role-based-access-control/role-assignments-cli
+    url: https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/storage/blobs/authorize-access-azure-active-directory
+    url: https://learn.microsoft.com/en-us/azure/storage/blobs/authorize-access-azure-active-directory
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-monitor/essentials/activity-log
+    url: https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/activity-log
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
   reviewer: agent
   core_claims:
     - claim: "Lab Guide: Managed Identity Authentication Failure 관련 핵심 진단 절차와 운영 판단 기준"
-      source: https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
       verified: true
 ---
 
@@ -891,9 +891,9 @@ If recovery occurs before role restoration, the hypothesis is falsified for that
 
 ## Sources
 
-- [Use managed identities in Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial)
-- [Configure identity-based connections in Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-reference#configure-an-identity-based-connection)
-- [Assign Azure roles using Azure CLI](https://learn.microsoft.com/azure/role-based-access-control/role-assignments-cli)
-- [Azure Blob Storage authorization with Microsoft Entra ID](https://learn.microsoft.com/azure/storage/blobs/authorize-access-azure-active-directory)
-- [Monitor Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-monitoring)
-- [Azure Monitor activity log](https://learn.microsoft.com/azure/azure-monitor/essentials/activity-log)
+- [Use managed identities in Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial)
+- [Configure identity-based connections in Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection)
+- [Assign Azure roles using Azure CLI](https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli)
+- [Azure Blob Storage authorization with Microsoft Entra ID](https://learn.microsoft.com/en-us/azure/storage/blobs/authorize-access-azure-active-directory)
+- [Monitor Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)
+- [Azure Monitor activity log](https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/activity-log)

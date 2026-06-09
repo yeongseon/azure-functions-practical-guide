@@ -1,22 +1,22 @@
 ---
 content_sources:
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/storage/common/storage-private-endpoints
+    url: https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/configure-networking-how-to
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/configure-networking-how-to
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
   reviewer: agent
   core_claims:
     - claim: "Lab Guide: Hosting Plan Security Matrix — Private Endpoint + Managed Identity Fault Injection 관련 핵심 진단 절차와 운영 판단 기준"
-      source: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
       verified: true
 ---
 
@@ -1380,8 +1380,8 @@ az group delete --name "$RG_S1" --yes --no-wait
 
 ## Sources
 
-- [Azure Functions networking options](https://learn.microsoft.com/azure/azure-functions/functions-networking-options)
-- [How to use managed identities in Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial)
-- [Private endpoints for Azure Storage](https://learn.microsoft.com/azure/storage/common/storage-private-endpoints)
-- [Azure Functions hosting options](https://learn.microsoft.com/azure/azure-functions/functions-scale)
-- [Secure storage account access from Azure Functions](https://learn.microsoft.com/azure/azure-functions/configure-networking-how-to)
+- [Azure Functions networking options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)
+- [How to use managed identities in Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial)
+- [Private endpoints for Azure Storage](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints)
+- [Azure Functions hosting options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
+- [Secure storage account access from Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/configure-networking-how-to)

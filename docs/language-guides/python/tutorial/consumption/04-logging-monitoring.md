@@ -6,25 +6,24 @@ validation:
     core_tools_version: 4.8.0
     result: pass
   bicep:
-    last_tested: null
+    last_tested:
     result: not_tested
 content_sources:
 
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/monitor-functions
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/cli/azure/monitor/app-insights?view=azure-cli-latest
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/cli/azure/webapp/log
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/cli/azure/monitor/app-insights?view=azure-cli-latest
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/cli/azure/webapp/log
 content_validation:
   status: verified
   last_reviewed: '2026-05-23'
   reviewer: agent
   core_claims:
-  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
-      guidance.
-    source: https://learn.microsoft.com/azure/azure-functions/monitor-functions
-    verified: true
+    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
+      verified: true
 ---
 # 04 - Logging and Monitoring (Consumption)
 
@@ -215,6 +214,6 @@ Use Infrastructure as Code to make this setup repeatable.
 
 ## Sources
 
-- [Monitor Azure Functions](https://learn.microsoft.com/azure/azure-functions/monitor-functions)
-- [Application Insights query with Azure CLI](https://learn.microsoft.com/cli/azure/monitor/app-insights?view=azure-cli-latest)
-- [Stream logs with Azure CLI](https://learn.microsoft.com/cli/azure/webapp/log)
+- [Monitor Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions)
+- [Application Insights query with Azure CLI](https://learn.microsoft.com/en-us/cli/azure/monitor/app-insights?view=azure-cli-latest)
+- [Stream logs with Azure CLI](https://learn.microsoft.com/en-us/cli/azure/webapp/log)

@@ -1,13 +1,13 @@
 ---
 content_sources:
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-reference-python
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-monitor/app/data-model-complete
+    url: https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model-complete
   - type: mslearn-adapted
     url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
 content_validation:
@@ -16,7 +16,7 @@ content_validation:
   reviewer: agent
   core_claims:
     - claim: "Lab Guide: Out of Memory Crash Under Blob Processing Load 관련 핵심 진단 절차와 운영 판단 기준"
-      source: https://learn.microsoft.com/azure/azure-functions/functions-scale
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
       verified: true
 ---
 
@@ -678,8 +678,8 @@ az group delete --name "$RG" --yes --no-wait
 
 ## Sources
 
-- https://learn.microsoft.com/azure/azure-functions/functions-scale
-- https://learn.microsoft.com/azure/azure-functions/functions-reference-python
-- https://learn.microsoft.com/azure/azure-functions/functions-monitoring
-- https://learn.microsoft.com/azure/azure-monitor/app/data-model-complete
+- https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+- https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+- https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+- https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model-complete
 - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview

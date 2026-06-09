@@ -1,25 +1,24 @@
 ---
 content_sources:
 
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-scale
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/consumption-plan
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-premium-plan
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/dedicated-plan
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan
 content_validation:
   status: verified
   last_reviewed: '2026-05-23'
   reviewer: agent
   core_claims:
-  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
-      guidance.
-    source: https://learn.microsoft.com/azure/azure-functions/functions-scale
-    verified: true
+    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+      verified: true
 ---
 # Hosting Options
 
@@ -60,7 +59,7 @@ The App Service plan blade shows plan details for a live Consumption (Y1) deploy
 
 Reference:
 
-- [Azure Functions scale and hosting options](https://learn.microsoft.com/azure/azure-functions/functions-scale)
+- [Azure Functions scale and hosting options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
 
 ## Decision matrix
 
@@ -90,7 +89,7 @@ Important Microsoft Learn notes:
 
 Reference:
 
-- [Consumption plan (legacy)](https://learn.microsoft.com/azure/azure-functions/consumption-plan)
+- [Consumption plan (legacy)](https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan)
 
 ### Flex Consumption (FC1)
 
@@ -106,7 +105,7 @@ Strengths:
 
 Reference:
 
-- [Flex Consumption plan](https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan)
+- [Flex Consumption plan](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan)
 
 ### Premium (EP)
 
@@ -121,7 +120,7 @@ Strengths:
 
 Reference:
 
-- [Premium plan](https://learn.microsoft.com/azure/azure-functions/functions-premium-plan)
+- [Premium plan](https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan)
 
 ### Dedicated (App Service Plan)
 
@@ -135,7 +134,7 @@ Strengths:
 
 Reference:
 
-- [Dedicated plan](https://learn.microsoft.com/azure/azure-functions/dedicated-plan)
+- [Dedicated plan](https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan)
 
 ## Decision flow
 
@@ -230,8 +229,8 @@ Use official pricing tools:
 
 ## Sources
 
-- [Azure Functions scale and hosting options](https://learn.microsoft.com/azure/azure-functions/functions-scale)
-- [Consumption plan (legacy)](https://learn.microsoft.com/azure/azure-functions/consumption-plan)
-- [Flex Consumption plan](https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan)
-- [Premium plan](https://learn.microsoft.com/azure/azure-functions/functions-premium-plan)
-- [Dedicated plan](https://learn.microsoft.com/azure/azure-functions/dedicated-plan)
+- [Azure Functions scale and hosting options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
+- [Consumption plan (legacy)](https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan)
+- [Flex Consumption plan](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan)
+- [Premium plan](https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan)
+- [Dedicated plan](https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan)

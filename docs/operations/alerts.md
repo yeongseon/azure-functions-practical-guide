@@ -1,31 +1,31 @@
 ---
 content_sources:
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-monitor/alerts/action-groups
+    url: https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/action-groups
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-monitor/alerts/alerts-metric
+    url: https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/alerts-metric
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-monitor/alerts/alerts-log
+    url: https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/alerts-log
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-monitor/alerts/alerts-create-log-alert-rule
+    url: https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/alerts-create-log-alert-rule
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-monitor/alerts/proactive-diagnostics
+    url: https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/proactive-diagnostics
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
   reviewer: agent
   core_claims:
     - claim: "Action groups should be created before alert rules so alerts route consistently to the right receivers."
-      source: https://learn.microsoft.com/azure/azure-monitor/alerts/action-groups
+      source: https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/action-groups
       verified: true
     - claim: "Metric alerts are best suited for fast platform symptoms such as 5xx bursts and short evaluation windows."
-      source: https://learn.microsoft.com/azure/azure-monitor/alerts/alerts-metric
+      source: https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/alerts-metric
       verified: true
     - claim: "Log query alerts are appropriate when the alert condition depends on KQL-based context or scoped failure patterns."
-      source: https://learn.microsoft.com/azure/azure-monitor/alerts/alerts-log
+      source: https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/alerts-log
       verified: true
     - claim: "Smart detection and proactive diagnostics should be treated as supplemental anomaly signals rather than the only paging mechanism."
-      source: https://learn.microsoft.com/azure/azure-monitor/alerts/proactive-diagnostics
+      source: https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/proactive-diagnostics
       verified: true
 ---
 
@@ -492,8 +492,8 @@ az monitor metrics alert update \
 - [Recovery](recovery.md)
 - [Troubleshooting Playbooks](../troubleshooting/playbooks/index.md)
 ## Sources
-- [Create and manage action groups](https://learn.microsoft.com/azure/azure-monitor/alerts/action-groups)
-- [Create metric alerts in Azure Monitor](https://learn.microsoft.com/azure/azure-monitor/alerts/alerts-metric)
-- [Create log search alerts in Azure Monitor](https://learn.microsoft.com/azure/azure-monitor/alerts/alerts-log)
-- [Manage scheduled query rules with Azure CLI](https://learn.microsoft.com/azure/azure-monitor/alerts/alerts-create-log-alert-rule)
-- [Smart detection in Application Insights](https://learn.microsoft.com/azure/azure-monitor/alerts/proactive-diagnostics)
+- [Create and manage action groups](https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/action-groups)
+- [Create metric alerts in Azure Monitor](https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/alerts-metric)
+- [Create log search alerts in Azure Monitor](https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/alerts-log)
+- [Manage scheduled query rules with Azure CLI](https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/alerts-create-log-alert-rule)
+- [Smart detection in Application Insights](https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/proactive-diagnostics)

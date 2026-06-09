@@ -145,23 +145,56 @@ Every Mermaid diagram must have source metadata in frontmatter.
 
 ### Text Content Validation
 
-Every non-tutorial document should include a `content_validation` block in frontmatter to track the verification status of its core claims.
+Factual-claim documents include a `content_validation` block in frontmatter to track the verification status of their core technical assertions.
+
+The single source of truth for "is this page in scope?" is [`scripts/lib/content_scope.py`](scripts/lib/content_scope.py) — specifically the `is_in_scope(rel_path)` function. The out-of-scope cleanup tool (`scripts/remove_out_of_scope_validation.py`) imports this helper. The dashboard generator (`scripts/generate_content_validation_status.py`) still uses its legacy local `SCAN_SECTIONS` list and `index.md` skip heuristic, and will be migrated to `content_scope.is_in_scope` in the strict-validator sync follow-up PR; until then the dashboard may surface a few out-of-scope pages (notably lab guides under `troubleshooting/lab-guides/`) that pre-date this scope policy. If you change the scope policy, update both `scripts/lib/content_scope.py` AND this section in the same commit.
+
+#### Scope
+
+The `content_validation` block is **required** on factual-claim pages under these sections:
+
+| Section | Required? | Examples |
+|---|---|---|
+| `docs/platform/` | Required (including factual subsection landing pages such as `platform/architecture/index.md` and `platform/networking-scenarios/index.md`) | Hosting plans, scaling, networking, security, observability |
+| `docs/best-practices/` | Required | Hosting selection, triggers, scaling, reliability, security, deployment |
+| `docs/operations/` | Required | Deployment, monitoring, alerts, cost optimization, recovery |
+| `docs/troubleshooting/` | Required, except for the `EXCLUDED_SUBPATHS` and `NAVIGATION_INDEXES` listed below | Playbooks, methodology pages, first-10-minutes runbooks |
+
+The block is **out of scope** on these pages — the cleanup tool does not require them, and new pages added in these locations should not introduce a `content_validation` block (the dashboard generator will be aligned with this policy in the strict-validator sync follow-up PR):
+
+- **Out-of-scope sections** — any path that does not start with `platform/`, `best-practices/`, `operations/`, or `troubleshooting/`. This covers `docs/start-here/`, `docs/reference/`, `docs/contributing/`, `docs/language-guides/` (tutorials and recipes), and `docs/index.md`.
+- **`EXCLUDED_SUBPATHS`** under `troubleshooting/`:
+    - `troubleshooting/kql/` — KQL query packs make no factual assertions of their own
+    - `troubleshooting/lab-guides/` — labs use the evidence-integrity model (Falsification step) instead
+- **`NAVIGATION_INDEXES`** — section landing pages that only introduce a section and make no factual claims:
+    - `platform/index.md`
+    - `best-practices/index.md`
+    - `operations/index.md`
+    - `troubleshooting/index.md`
+    - `troubleshooting/first-10-minutes/index.md`
+    - `troubleshooting/playbooks/index.md`
+
+Subsection landing pages that DO make factual claims (for example `platform/architecture/index.md` and `platform/networking-scenarios/index.md`) are intentionally NOT in `NAVIGATION_INDEXES` — they are treated like any other factual-claim page.
+
+Legacy `content_validation` blocks may still exist on a number of out-of-scope pages (notably under `docs/reference/`, `docs/start-here/`, `docs/troubleshooting/kql/`, and `docs/troubleshooting/lab-guides/`) from before this scope policy was formalized. These blocks are accepted today and may still appear in the dashboard while the generator uses its legacy scan; they will be reviewed in a follow-up editorial pass and can be removed with `python3 scripts/remove_out_of_scope_validation.py --apply`.
+
+#### Schema
 
 ```yaml
 ---
 content_sources:
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/...
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/...
 content_validation:
   status: verified  # verified | pending_review | unverified
   last_reviewed: 2026-04-12
   reviewer: agent  # agent | human
   core_claims:
     - claim: "Flex Consumption supports VNet integration"
-      source: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
       verified: true
     - claim: "Premium plan requires Azure Files content share"
-      source: https://learn.microsoft.com/azure/azure-functions/storage-considerations
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
       verified: true
 ---
 ```
@@ -176,11 +209,12 @@ content_validation:
 
 #### Agent Rules for Content Validation
 
-1. When creating or modifying Platform, Best Practices, or Operations documents, add `content_validation` frontmatter.
-2. List 2-5 core claims that are factual assertions (not opinions or procedures).
-3. Each claim must have a Microsoft Learn source URL.
-4. Set `status: verified` only when ALL core claims have verified sources.
-5. Run `python3 scripts/generate_content_validation_status.py` after updates.
+1. Add `content_validation` only when the page is in scope per `scripts/lib/content_scope.is_in_scope`. Do NOT add it to out-of-scope pages (tutorials, recipes, reference look-ups, KQL packs, lab guides, navigation indexes).
+2. If you create a new in-scope page, you MUST add `content_validation` to it.
+3. Each `core_claim` MUST be a verifiable factual assertion about Azure behavior (a quoted limit, a documented feature behavior, a configuration default). Meta-statements such as "this page uses Microsoft Learn as the primary source basis" are tautological and forbidden.
+4. List 2-5 core claims per page; each MUST cite a Microsoft Learn URL.
+5. Set `status: verified` only when ALL core claims have verified sources.
+6. Run `python3 scripts/generate_content_validation_status.py` after updates to regenerate `docs/reference/content-validation-status.md`.
 
 ### PII Removal (Quality Gate)
 
@@ -203,6 +237,51 @@ content_validation:
 - Sample resource names used consistently in docs
 
 The goal is to prevent leaking **real Azure account information**, not to mask obviously-fake example values that aid readability.
+
+### Frontmatter YAML Style
+
+Every Markdown file in `docs/` begins with a YAML frontmatter block delimited by `---`. The serialization style is **enforced by CI** and centralized in [`scripts/lib/yaml_style.py`](scripts/lib/yaml_style.py). Any script that mutates frontmatter MUST import `dump_frontmatter()` (preferred single-call API) or `build_yaml()` (for tools that need to call `load()` and `dump()` on the same instance) from that module — direct use of PyYAML's `yaml.dump()` is forbidden because it silently reformats files on every run (quoting dates, flattening nested sequences, folding multi-line strings), producing noisy diffs and unstable history.
+
+#### Canonical style
+
+| Setting | Value | Why |
+|---|---|---|
+| Library | `ruamel.yaml` (`typ='rt'`, round-trip mode) | Preserves comments, quoting, and key order across load/dump cycles. PyYAML cannot. |
+| `indent(mapping=2, sequence=4, offset=2)` | `mapping=2`, `sequence=4`, `offset=2` | Matches the historical repository layout: list hyphens sit at column 4 under their parent key, list-item content at column 6. |
+| `preserve_quotes` | `True` | Existing files are normalized for *structure* only; intentionally quoted dates and strings are kept as-is to avoid surprising semantic changes (e.g., `"2026-04-12"` becoming a `datetime.date` object). |
+| `width` | `4096` | Practically disables line folding so long `claim`, `summary`, and `justification` strings stay on one line. Folding produces fragile diffs and harms grep-ability. |
+| `explicit_end` | `False` | Frontmatter is delimited by a single closing `---` (no `...` document terminator). |
+
+Example of correct style (matches the canonical output):
+
+```yaml
+---
+content_sources:
+  diagrams:
+    - id: flex-consumption-scaling
+      type: flowchart
+      source: mslearn-adapted
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
+---
+```
+
+#### Workflow
+
+1. **Never write frontmatter with PyYAML.** Any new generator or mutation tool MUST import `build_yaml()` (or the higher-level `dump_frontmatter()` helper) from `scripts/lib/yaml_style.py`. `dump_frontmatter()` is the public single-call API used by `scripts/normalize_yaml_frontmatter.py` itself; prefer it over instantiating `build_yaml()` and managing a `StringIO` buffer manually.
+2. **Bulk normalize when needed:**
+
+    ```bash
+    python3 scripts/normalize_yaml_frontmatter.py --apply
+    ```
+
+3. **CI enforces drift:** the `Validate Content Sources` workflow runs `python scripts/normalize_yaml_frontmatter.py --check` and fails if any frontmatter would change. The workflow triggers on changes to `docs/**`, `scripts/**`, `apps/**`, `labs/**`, `infra/**`, the repo-root markdown files (`AGENTS.md`, `README*.md`, `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`), or the workflow itself, so that updates to the shared library or the normalizer always re-run the check. The trigger surface intentionally mirrors the `EXTENSIONS` scan set in `scripts/normalize_mslearn_locale.py` (`.md`, `.py`, `.yml`, `.yaml`, `.json`, `.bicep`, `.tf`, `.txt`) so a PR touching only `.json`/`.bicep`/`.tf` files under those paths cannot bypass the locale check. `ruamel.yaml` is pinned to a specific version in CI so the canonical bytes are reproducible across runs.
+4. **Body is preserved byte-exact for the repo invariant (UTF-8, no BOM, LF line endings).** The normalizer only rewrites the YAML region between the two `---` delimiters; the blank line (or its absence) between the closing `---` and the first body line is preserved as-is. Files with a UTF-8 BOM are silently skipped (the regex won't match), and files with CRLF line endings would be converted to LF on `--apply` -- no such files exist in this repo today, but if that ever changes, update this policy first.
+
+#### When to update this section
+
+If [`scripts/lib/yaml_style.py`](scripts/lib/yaml_style.py) changes (different indent, width, or quoting policy), the table above MUST be updated in the same commit. The shared library is the source of truth; this section is the human-readable mirror.
 
 ### Admonition Indentation Rule
 

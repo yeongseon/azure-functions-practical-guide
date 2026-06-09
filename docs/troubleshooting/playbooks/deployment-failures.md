@@ -1,22 +1,22 @@
 ---
 content_sources:
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-diagnostics
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-deployment-technologies
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/run-functions-from-deployment-package
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-app-settings
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
   reviewer: agent
   core_claims:
     - claim: "Deployment Failures 관련 핵심 진단 절차와 운영 판단 기준"
-      source: https://learn.microsoft.com/azure/azure-functions/functions-diagnostics
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics
       verified: true
 ---
 
@@ -573,8 +573,8 @@ az functionapp restart \
 - [Deployment and release patterns](../../best-practices/deployment.md)
 - Related Labs: [Cold Start Lab](../lab-guides/cold-start.md)
 ## Sources
-- [Troubleshoot Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-diagnostics)
-- [Deployment technologies in Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-deployment-technologies)
-- [Run your functions from a package file](https://learn.microsoft.com/azure/azure-functions/run-functions-from-deployment-package)
-- [Azure Functions app settings reference](https://learn.microsoft.com/azure/azure-functions/functions-app-settings)
-- [Azure Functions hosting options](https://learn.microsoft.com/azure/azure-functions/functions-scale)
+- [Troubleshoot Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics)
+- [Deployment technologies in Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies)
+- [Run your functions from a package file](https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package)
+- [Azure Functions app settings reference](https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings)
+- [Azure Functions hosting options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)

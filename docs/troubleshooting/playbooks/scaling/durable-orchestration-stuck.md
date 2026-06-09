@@ -1,22 +1,22 @@
 ---
 content_sources:
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-overview
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-code-constraints
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-code-constraints
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-http-api
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-http-api
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-troubleshooting-guide
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-troubleshooting-guide
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
   reviewer: agent
   core_claims:
     - claim: "Durable Functions Orchestration Stuck Playbook 관련 핵심 진단 절차와 운영 판단 기준"
-      source: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-overview
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
       verified: true
 ---
 
@@ -499,8 +499,8 @@ flowchart TD
 - [Out of memory / worker crash playbook](./out-of-memory-worker-crash.md)
 
 ## Sources
-- [Durable Functions overview](https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-overview)
-- [Durable orchestrations and deterministic code constraints](https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-code-constraints)
-- [Durable Functions instance management APIs](https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-http-api)
-- [Diagnose and troubleshoot Durable Functions](https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-troubleshooting-guide)
-- [Azure Functions scale and hosting guidance](https://learn.microsoft.com/azure/azure-functions/functions-scale)
+- [Durable Functions overview](https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview)
+- [Durable orchestrations and deterministic code constraints](https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-code-constraints)
+- [Durable Functions instance management APIs](https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-http-api)
+- [Diagnose and troubleshoot Durable Functions](https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-troubleshooting-guide)
+- [Azure Functions scale and hosting guidance](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)

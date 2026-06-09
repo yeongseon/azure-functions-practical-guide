@@ -1,17 +1,16 @@
 ---
 content_sources:
 
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-timer
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-timer
 content_validation:
   status: verified
   last_reviewed: '2026-05-23'
   reviewer: agent
   core_claims:
-  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
-      guidance.
-    source: https://learn.microsoft.com/azure/azure-functions/functions-bindings-timer
-    verified: true
+    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-timer
+      verified: true
 ---
 # Timer Trigger
 
@@ -195,4 +194,4 @@ Timer triggers require Azure Storage (`AzureWebJobsStorage`) to maintain schedul
 - [Scaling](../../../platform/scaling.md)
 
 ## Sources
-- [Azure Functions Timer Trigger (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-bindings-timer)
+- [Azure Functions Timer Trigger (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-timer)

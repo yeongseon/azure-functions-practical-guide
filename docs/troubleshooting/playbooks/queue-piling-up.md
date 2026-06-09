@@ -1,24 +1,24 @@
 ---
 content_sources:
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue-trigger
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/performance-reliability
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/storage/common/monitor-storage
+    url: https://learn.microsoft.com/en-us/azure/storage/common/monitor-storage
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-monitor/app/analytics
+    url: https://learn.microsoft.com/en-us/azure/azure-monitor/app/analytics
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
   reviewer: agent
   core_claims:
     - claim: "Queue Messages Piling Up 관련 핵심 진단 절차와 운영 판단 기준"
-      source: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue-trigger
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
       verified: true
 ---
 
@@ -497,9 +497,9 @@ az monitor log-analytics query \
 - [Queue Backlog Scaling Lab](../lab-guides/queue-backlog-scaling.md)
 
 ## Sources
-- [Azure Functions queue trigger](https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue-trigger)
-- [Azure Functions scaling and hosting](https://learn.microsoft.com/azure/azure-functions/functions-scale)
-- [Improve Azure Functions performance and reliability](https://learn.microsoft.com/azure/azure-functions/performance-reliability)
-- [Monitor Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-monitoring)
-- [Monitor Azure Storage with Azure Monitor metrics](https://learn.microsoft.com/azure/storage/common/monitor-storage)
-- [Analyze telemetry in Application Insights](https://learn.microsoft.com/azure/azure-monitor/app/analytics)
+- [Azure Functions queue trigger](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger)
+- [Azure Functions scaling and hosting](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
+- [Improve Azure Functions performance and reliability](https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability)
+- [Monitor Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)
+- [Monitor Azure Storage with Azure Monitor metrics](https://learn.microsoft.com/en-us/azure/storage/common/monitor-storage)
+- [Analyze telemetry in Application Insights](https://learn.microsoft.com/en-us/azure/azure-monitor/app/analytics)

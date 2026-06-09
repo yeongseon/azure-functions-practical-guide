@@ -1,13 +1,13 @@
 ---
 content_sources:
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-timer
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-timer
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-host-json
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-reference
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/monitor-functions
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
   - type: mslearn-adapted
     url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
 content_validation:
@@ -16,7 +16,7 @@ content_validation:
   reviewer: agent
   core_claims:
     - claim: "Lab Guide: Timer Trigger Missed Schedules 관련 핵심 진단 절차와 운영 판단 기준"
-      source: https://learn.microsoft.com/azure/azure-functions/functions-bindings-timer
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-timer
       verified: true
 ---
 
@@ -455,8 +455,8 @@ az group delete --name "$RG" --yes --no-wait
 
 ## Sources
 
-- https://learn.microsoft.com/azure/azure-functions/functions-bindings-timer
-- https://learn.microsoft.com/azure/azure-functions/functions-host-json
-- https://learn.microsoft.com/azure/azure-functions/functions-reference
-- https://learn.microsoft.com/azure/azure-functions/monitor-functions
+- https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-timer
+- https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
+- https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference
+- https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
 - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
