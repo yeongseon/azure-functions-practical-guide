@@ -10,10 +10,11 @@ validation:
     result: not_tested
 content_sources:
 
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/cli/azure/monitor/app-insights?view=azure-cli-latest
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/cli/azure/monitor/app-insights?view=azure-cli-latest
 ---
 # 04 - Logging and Monitoring (Premium)
 
