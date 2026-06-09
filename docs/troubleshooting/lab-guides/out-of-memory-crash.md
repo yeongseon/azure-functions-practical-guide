@@ -10,16 +10,7 @@ content_sources:
     url: https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model-complete
   - type: mslearn-adapted
     url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
-content_validation:
-  status: verified
-  last_reviewed: 2026-04-12
-  reviewer: agent
-  core_claims:
-    - claim: "Lab Guide: Out of Memory Crash Under Blob Processing Load 관련 핵심 진단 절차와 운영 판단 기준"
-      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
-      verified: true
 ---
-
 # Lab Guide: Out of Memory Crash Under Blob Processing Load
 
 This lab reproduces a Python Azure Functions out-of-memory incident under sustained blob-trigger load. You will intentionally use a memory-inefficient buffering path, drive concurrency in phases, collect telemetry, and verify that a streaming fix plus concurrency controls removes crash-loop behavior.

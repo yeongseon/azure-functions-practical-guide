@@ -12,16 +12,7 @@ content_sources:
     url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
   - type: mslearn-adapted
     url: https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/activity-log
-content_validation:
-  status: verified
-  last_reviewed: 2026-04-12
-  reviewer: agent
-  core_claims:
-    - claim: "Lab Guide: Managed Identity Authentication Failure 관련 핵심 진단 절차와 운영 판단 기준"
-      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
-      verified: true
 ---
-
 # Lab Guide: Managed Identity Authentication Failure
 
 This Level 3 lab guide reproduces a managed identity authorization failure in Azure Functions and demonstrates a complete, evidence-driven chain from RBAC drift to host storage unhealthy state, listener startup failure, and trigger interruption. The scenario uses Python v2 on Flex Consumption (`FC1`) with a system-assigned identity that reads and writes blob containers.

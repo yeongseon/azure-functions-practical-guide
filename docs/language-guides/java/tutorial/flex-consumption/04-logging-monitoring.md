@@ -16,14 +16,6 @@ content_sources:
     url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
   - type: mslearn-adapted
     url: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
-content_validation:
-  status: verified
-  last_reviewed: '2026-05-23'
-  reviewer: agent
-  core_claims:
-    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
-      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
-      verified: true
 ---
 # 04 - Logging and Monitoring (Flex Consumption)
 

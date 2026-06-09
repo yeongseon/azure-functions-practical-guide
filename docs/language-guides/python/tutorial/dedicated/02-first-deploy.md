@@ -18,14 +18,6 @@ content_sources:
     url: https://learn.microsoft.com/en-us/azure/app-service/overview-vnet-integration
   - type: mslearn-adapted
     url: https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint
-content_validation:
-  status: verified
-  last_reviewed: '2026-05-23'
-  reviewer: agent
-  core_claims:
-    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
-      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-use-azure-function-app-settings
-      verified: true
 ---
 # 02 - First Deploy (Dedicated)
 

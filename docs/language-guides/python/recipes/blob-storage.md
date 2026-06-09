@@ -9,14 +9,6 @@ content_sources:
     url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob
   - type: mslearn-adapted
     url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
-content_validation:
-  status: verified
-  last_reviewed: '2026-05-23'
-  reviewer: agent
-  core_claims:
-    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
-      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-event-grid-blob-trigger
-      verified: true
 ---
 # Blob Storage
 

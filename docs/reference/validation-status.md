@@ -10,14 +10,6 @@ content_sources:
       justification: Auto-generated dashboard chart from repository validation metadata.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
-content_validation:
-  status: verified
-  last_reviewed: '2026-05-23'
-  reviewer: agent
-  core_claims:
-    - claim: This generated dashboard summarizes repository validation metadata and links back to Microsoft Learn as the source basis for Azure content checks.
-      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
-      verified: true
 ---
 # Tutorial Validation Status
 

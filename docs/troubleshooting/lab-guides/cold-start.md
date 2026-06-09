@@ -12,16 +12,7 @@ content_sources:
     url: https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model-complete
   - type: mslearn-adapted
     url: https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/
-content_validation:
-  status: verified
-  last_reviewed: 2026-04-12
-  reviewer: agent
-  core_claims:
-    - claim: "Lab Guide: Cold Start on Azure Functions 관련 핵심 진단 절차와 운영 판단 기준"
-      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
-      verified: true
 ---
-
 # Lab Guide: Cold Start on Azure Functions
 This Level 3 lab reproduces and analyzes Azure Functions cold-start behavior across hosting plans, with emphasis on FC1 Flex Consumption evidence. You will build a falsifiable timeline that separates worker provisioning delay from host startup time and request execution time.
 ---

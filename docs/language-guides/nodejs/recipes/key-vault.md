@@ -5,14 +5,6 @@ content_sources:
     url: https://learn.microsoft.com/en-us/azure/app-service/app-service-key-vault-references
   - type: mslearn-adapted
     url: https://learn.microsoft.com/en-us/javascript/api/overview/azure/keyvault-secrets-readme
-content_validation:
-  status: verified
-  last_reviewed: '2026-05-23'
-  reviewer: agent
-  core_claims:
-    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
-      source: https://learn.microsoft.com/en-us/azure/app-service/app-service-key-vault-references
-      verified: true
 ---
 # Key Vault Access
 

@@ -12,16 +12,7 @@ content_sources:
     url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
   - type: mslearn-adapted
     url: https://learn.microsoft.com/en-us/cli/azure/network/private-dns
-content_validation:
-  status: verified
-  last_reviewed: 2026-04-12
-  reviewer: agent
-  core_claims:
-    - claim: "Lab Guide: DNS and VNet Resolution Failure 관련 핵심 진단 절차와 운영 판단 기준"
-      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
-      verified: true
 ---
-
 # Lab Guide: DNS and VNet Resolution Failure
 
 This lab reproduces a private DNS resolution failure on an Azure Functions Flex Consumption (FC1) app with private endpoints. By removing the blob storage Private DNS zone VNet link, the function app loses private DNS resolution for blob storage, causing storage operations to route to the public endpoint and fail with `AuthorizationFailure`. Restoring the link restores private resolution and storage access.

@@ -10,16 +10,7 @@ content_sources:
     url: https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-scalability
   - type: mslearn-adapted
     url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
-content_validation:
-  status: verified
-  last_reviewed: 2026-04-12
-  reviewer: agent
-  core_claims:
-    - claim: "Lab Guide: Event Hub Checkpoint Lag on Azure Functions Premium EP1 관련 핵심 진단 절차와 운영 판단 기준"
-      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs
-      verified: true
 ---
-
 # Lab Guide: Event Hub Checkpoint Lag on Azure Functions Premium EP1
 
 This lab guide documents a completed Event Hub checkpoint lag experiment on Azure Functions Premium EP1. Every metric in this document comes from a real telemetry window (`2026-04-07 13:12:00` to `13:36:00` UTC) captured from the production-like lab deployment.

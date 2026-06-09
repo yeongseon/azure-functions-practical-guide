@@ -10,16 +10,7 @@ content_sources:
     url: https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
   - type: mslearn-adapted
     url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
-content_validation:
-  status: verified
-  last_reviewed: 2026-04-12
-  reviewer: agent
-  core_claims:
-    - claim: "Lab Guide: Timer Trigger Missed Schedules 관련 핵심 진단 절차와 운영 판단 기준"
-      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-timer
-      verified: true
 ---
-
 # Lab Guide: Timer Trigger Missed Schedules
 
 This lab reproduces missed Timer Trigger executions in a real Y1 Consumption deployment by intentionally stopping the app during active schedule windows. You will validate timer behavior with real evidence from 2026-04-07, including baseline fires, missed windows, and post-restart `isPastDue` recovery.

@@ -10,16 +10,7 @@ content_sources:
     url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
   - type: mslearn-adapted
     url: https://learn.microsoft.com/en-us/azure/azure-functions/configure-networking-how-to
-content_validation:
-  status: verified
-  last_reviewed: 2026-04-12
-  reviewer: agent
-  core_claims:
-    - claim: "Lab Guide: Hosting Plan Security Matrix — Private Endpoint + Managed Identity Fault Injection 관련 핵심 진단 절차와 운영 판단 기준"
-      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
-      verified: true
 ---
-
 # Lab Guide: Hosting Plan Security Matrix — Private Endpoint + Managed Identity Fault Injection
 
 This Level 4 lab guide reproduces the same four security and access faults across four Azure Functions hosting plans and documents how each plan fails differently. The goal is to build evidence-driven, plan-specific troubleshooting muscle so operators can stop using one-size-fits-all runbooks for fundamentally different runtime architectures.

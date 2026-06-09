@@ -12,16 +12,7 @@ content_sources:
     url: https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
   - type: mslearn-adapted
     url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
-content_validation:
-  status: verified
-  last_reviewed: 2026-04-12
-  reviewer: agent
-  core_claims:
-    - claim: "Lab Guide: Durable Functions Replay Storm on Azure Functions Premium EP1 관련 핵심 진단 절차와 운영 판단 기준"
-      source: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-orchestrations
-      verified: true
 ---
-
 # Lab Guide: Durable Functions Replay Storm on Azure Functions Premium EP1
 
 This lab guide documents a completed Azure Functions Premium EP1 experiment that captured a real Durable Functions replay storm. The objective is to prove, with reproducible evidence, that orchestration replay overhead can dominate end-to-end completion time even when activity execution remains stable.
