@@ -1,17 +1,18 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/architecture/framework/resiliency/disaster-recovery
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/storage/common/storage-redundancy
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/traffic-manager/traffic-manager-monitoring
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/frontdoor/health-probes
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/architecture/framework/resiliency/disaster-recovery
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/storage/common/storage-redundancy
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/traffic-manager/traffic-manager-monitoring
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/frontdoor/health-probes
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

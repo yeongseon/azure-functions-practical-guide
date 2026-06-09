@@ -1,9 +1,10 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-consumption-costs
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/pricing
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-consumption-costs
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/pricing
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
