@@ -1,10 +1,11 @@
 ---
 content_sources:
 
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-node-model-upgrade
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-node-model-upgrade
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
 ---
 # Durable Orchestration
 

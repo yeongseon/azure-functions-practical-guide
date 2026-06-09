@@ -1,14 +1,15 @@
 ---
 content_sources:
 
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-event-grid-blob-trigger
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan#trigger-support
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-event-grid-blob-trigger
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan#trigger-support
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
 ---
 # Blob Storage
 

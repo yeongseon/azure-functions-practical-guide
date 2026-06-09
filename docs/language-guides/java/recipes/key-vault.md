@@ -1,10 +1,11 @@
 ---
 content_sources:
 
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/app-service/app-service-key-vault-references
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/key-vault/secrets/quick-create-java
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/app-service/app-service-key-vault-references
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/key-vault/secrets/quick-create-java
 ---
 # Key Vault Integration
 

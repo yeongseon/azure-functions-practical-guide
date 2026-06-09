@@ -1,10 +1,11 @@
 ---
 content_sources:
 
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/app-service/overview-authentication-authorization
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-http-webhook-trigger
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/app-service/overview-authentication-authorization
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-http-webhook-trigger
 ---
 # HTTP Authentication
 
