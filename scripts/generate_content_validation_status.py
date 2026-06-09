@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
 """Generate content validation status dashboard from frontmatter metadata.
 
-Scans all non-tutorial markdown files for content_validation frontmatter and
-generates a dashboard page showing verification status of core claims.
+Scans in-scope factual-claim markdown files (per ``scripts/lib/content_scope``)
+for ``content_validation`` frontmatter and generates a dashboard page showing
+verification status of core claims.
+
+Fails fast when any in-scope page contains a tautological placeholder claim
+(see ``scripts/lib/content_scope.TAUTOLOGICAL_CLAIM_MARKER``).
 
 Usage:
     python3 scripts/generate_content_validation_status.py
@@ -12,22 +16,24 @@ from __future__ import annotations
 
 import argparse
 import re
+import sys
 from datetime import date
 from pathlib import Path
 from typing import Any
 
 import yaml
 
-# Sections to scan (excludes language-guides tutorials and reference)
-SCAN_SECTIONS = [
-    "platform",
-    "best-practices",
-    "operations",
-    "troubleshooting",
-    "networking-scenarios",
-]
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-# Status icons
+from lib.content_scope import (  # noqa: E402
+    EXCLUDED_SUBPATHS,
+    NAVIGATION_INDEXES,
+    SCANNED_SECTIONS,
+    TAUTOLOGICAL_CLAIM_MARKER,
+    is_in_scope,
+    is_tautological_text,
+)
+
 ICON_VERIFIED = "✅ Verified"
 ICON_PENDING = "⚠️ Pending Review"
 ICON_UNVERIFIED = "➖ Unverified"
@@ -35,7 +41,6 @@ ICON_NO_META = "❓ No Metadata"
 
 
 def parse_frontmatter(filepath: Path) -> dict[str, Any] | None:
-    """Extract YAML frontmatter from a markdown file."""
     text = filepath.read_text(encoding="utf-8")
     match = re.match(r"^---\s*\n(.*?)\n---", text, re.DOTALL)
     if not match:
@@ -47,7 +52,6 @@ def parse_frontmatter(filepath: Path) -> dict[str, Any] | None:
 
 
 def get_section_from_path(filepath: Path, docs_dir: Path) -> str:
-    """Extract section name from file path."""
     rel = filepath.relative_to(docs_dir)
     parts = rel.parts
     if len(parts) > 0:
@@ -56,24 +60,25 @@ def get_section_from_path(filepath: Path, docs_dir: Path) -> str:
 
 
 def scan_documents(docs_dir: Path) -> list[dict[str, Any]]:
-    """Scan all documents and extract validation metadata."""
+    """Return one record per in-scope factual-claim page.
+
+    Scope is defined by ``scripts/lib/content_scope.is_in_scope``. Pages
+    outside scope (navigation indexes, KQL packs, lab guides, tutorials,
+    reference look-ups) are intentionally excluded from the dashboard.
+    """
     documents = []
 
-    for section in SCAN_SECTIONS:
+    for section in sorted(SCANNED_SECTIONS):
         section_dir = docs_dir / section
         if not section_dir.exists():
-            # Check nested path (e.g., platform/networking-scenarios)
-            if "/" in section:
-                section_dir = docs_dir / section.replace("/", "/")
-            if not section_dir.exists():
-                continue
+            continue
 
         for md_file in section_dir.rglob("*.md"):
-            if md_file.name == "index.md":
+            rel_path = md_file.relative_to(docs_dir)
+            if not is_in_scope(rel_path):
                 continue
 
             frontmatter = parse_frontmatter(md_file)
-            rel_path = md_file.relative_to(docs_dir)
 
             doc_info = {
                 "filepath": md_file,
@@ -86,15 +91,14 @@ def scan_documents(docs_dir: Path) -> list[dict[str, Any]]:
                 "validation_status": "no_metadata",
                 "core_claims_count": 0,
                 "verified_claims_count": 0,
+                "tautological_claims_count": 0,
                 "last_reviewed": None,
             }
 
             if frontmatter and isinstance(frontmatter, dict):
-                # Check content_sources
                 if "content_sources" in frontmatter:
                     doc_info["has_content_sources"] = True
 
-                # Check content_validation
                 cv = frontmatter.get("content_validation", {})
                 if cv and isinstance(cv, dict):
                     doc_info["has_content_validation"] = True
@@ -109,6 +113,12 @@ def scan_documents(docs_dir: Path) -> list[dict[str, Any]]:
                             for c in claims
                             if isinstance(c, dict) and c.get("verified", False)
                         )
+                        doc_info["tautological_claims_count"] = sum(
+                            1
+                            for c in claims
+                            if isinstance(c, dict)
+                            and is_tautological_text(c.get("claim"))
+                        )
 
             documents.append(doc_info)
 
@@ -116,7 +126,6 @@ def scan_documents(docs_dir: Path) -> list[dict[str, Any]]:
 
 
 def get_status_icon(status: str) -> str:
-    """Return icon for validation status."""
     mapping = {
         "verified": ICON_VERIFIED,
         "pending_review": ICON_PENDING,
@@ -126,18 +135,49 @@ def get_status_icon(status: str) -> str:
     return mapping.get(status, ICON_NO_META)
 
 
-def generate_dashboard(documents: list[dict[str, Any]], today: date) -> str:
-    """Generate the markdown dashboard content."""
-    # Compute stats
+def count_mermaid_diagrams(docs_dir: Path) -> int:
+    count = 0
+    for md_file in docs_dir.rglob("*.md"):
+        rel_path = md_file.relative_to(docs_dir)
+        if any(part.startswith("_") or part.startswith(".") for part in rel_path.parts):
+            continue
+
+        text = md_file.read_text(encoding="utf-8")
+        count += len(re.findall(r"^```mermaid\s*$", text, re.MULTILINE))
+    return count
+
+
+def _scope_summary_lines() -> list[str]:
+    sections = ", ".join(f"`docs/{s}/`" for s in sorted(SCANNED_SECTIONS))
+    excluded = ", ".join(f"`docs/{p}`" for p in EXCLUDED_SUBPATHS)
+    nav_examples = ", ".join(
+        f"`docs/{p}`" for p in sorted(NAVIGATION_INDEXES) if "/" in p
+    )
+    return [
+        "This page tracks `content_validation` metadata for **in-scope "
+        "factual-claim documents** under "
+        f"{sections}. Pages outside this scope — navigation indexes "
+        f"({nav_examples}), reference-lookup KQL packs and lab guides "
+        f"({excluded}), tutorials, language guides, and start-here "
+        "landing pages — are not counted here, even when legacy "
+        "`content_validation` blocks exist on them (the cleanup tool "
+        "removes those blocks; see "
+        "`scripts/remove_out_of_scope_validation.py`). See `AGENTS.md` "
+        "§Text Content Validation for the full policy and "
+        "`scripts/lib/content_scope.py` for the executable scope definition.",
+    ]
+
+
+def generate_dashboard(
+    documents: list[dict[str, Any]], docs_dir: Path, today: date
+) -> str:
     total = len(documents)
     verified = sum(1 for d in documents if d["validation_status"] == "verified")
     pending = sum(1 for d in documents if d["validation_status"] == "pending_review")
     unverified = sum(1 for d in documents if d["validation_status"] == "unverified")
     no_meta = sum(1 for d in documents if d["validation_status"] == "no_metadata")
-    has_sources = sum(1 for d in documents if d["has_content_sources"])
 
-    # Count diagrams (from existing system - placeholder)
-    diagram_count = 475  # From existing validation
+    diagram_count = count_mermaid_diagrams(docs_dir)
 
     lines: list[str] = []
     lines.append("---")
@@ -150,13 +190,9 @@ def generate_dashboard(documents: list[dict[str, Any]], today: date) -> str:
     lines.append("")
     lines.append("# Content Validation Status")
     lines.append("")
-    lines.append(
-        "This page tracks the source validation status of all documentation content. "
-        "All content must be traceable to official Microsoft Learn documentation."
-    )
+    lines.extend(_scope_summary_lines())
     lines.append("")
 
-    # Summary section
     lines.append("## Summary")
     lines.append("")
     lines.append(f"*Generated: {today.isoformat()}*")
@@ -169,26 +205,28 @@ def generate_dashboard(documents: list[dict[str, Any]], today: date) -> str:
         f"| Mermaid Diagrams | {diagram_count} | {diagram_count} | 0 | 0 | 0 |"
     )
     lines.append(
-        f"| Text Documents | {total} | {verified} | {pending} | {unverified} | {no_meta} |"
+        "| In-Scope Factual-Claim Documents "
+        f"| {total} | {verified} | {pending} | {unverified} | {no_meta} |"
     )
     lines.append("")
 
-    # Status explanation
     if verified == total and total > 0:
-        lines.append('!!! success "All Content Verified"')
+        lines.append('!!! success "All In-Scope Documents Verified"')
         lines.append(
-            "    All text documents have verified Microsoft Learn sources for core claims."
+            "    Every in-scope factual-claim document has verified "
+            "Microsoft Learn sources for its core claims."
         )
     elif no_meta > 0:
         lines.append('!!! warning "Validation In Progress"')
         lines.append(
-            f"    {no_meta} documents need `content_validation` metadata added."
+            f"    {no_meta} in-scope document(s) need `content_validation` "
+            "metadata added."
         )
     lines.append("")
 
-    # Mermaid pie chart
+    lines.append("<!-- diagram-id: content-validation-status-pie -->")
     lines.append("```mermaid")
-    lines.append("pie title Document Validation Status")
+    lines.append("pie title In-Scope Document Validation Status")
     if verified > 0:
         lines.append(f'    "Verified" : {verified}')
     if pending > 0:
@@ -200,7 +238,6 @@ def generate_dashboard(documents: list[dict[str, Any]], today: date) -> str:
     lines.append("```")
     lines.append("")
 
-    # Group by section
     by_section: dict[str, list[dict[str, Any]]] = {}
     for d in documents:
         section = d["section"]
@@ -243,7 +280,6 @@ def generate_dashboard(documents: list[dict[str, Any]], today: date) -> str:
 
         lines.append("")
 
-    # Validation categories
     lines.append("## Validation Categories")
     lines.append("")
     lines.append("### Source Types")
@@ -274,10 +310,20 @@ def generate_dashboard(documents: list[dict[str, Any]], today: date) -> str:
     lines.append("| `unverified` | New document, no validation performed |")
     lines.append("")
 
-    # How to add validation
     lines.append("## How to Add Validation")
     lines.append("")
-    lines.append("Add a `content_validation` block to your document's frontmatter:")
+    lines.append(
+        "Before adding metadata, confirm the page is in scope. The block is "
+        "required ONLY for factual-claim pages under `docs/platform/`, "
+        "`docs/best-practices/`, `docs/operations/`, and `docs/troubleshooting/` "
+        "(excluding `troubleshooting/kql/`, `troubleshooting/lab-guides/`, and "
+        "navigation landing pages listed in "
+        "`scripts/lib/content_scope.NAVIGATION_INDEXES`)."
+    )
+    lines.append("")
+    lines.append(
+        "For an in-scope page, add a `content_validation` block to its frontmatter:"
+    )
     lines.append("")
     lines.append("```yaml")
     lines.append("---")
@@ -289,13 +335,24 @@ def generate_dashboard(documents: list[dict[str, Any]], today: date) -> str:
     lines.append("  last_reviewed: 2026-04-12")
     lines.append("  reviewer: agent")
     lines.append("  core_claims:")
-    lines.append('    - claim: "Flex Consumption supports VNet integration"')
+    lines.append(
+        '    - claim: "Flex Consumption supports VNet integration with regional VNet."'
+    )
     lines.append(
         "      source: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan"
     )
     lines.append("      verified: true")
     lines.append("---")
     lines.append("```")
+    lines.append("")
+    lines.append(
+        "Each `core_claim` MUST be a verifiable factual assertion about Azure "
+        "Functions behavior (a documented limit, default, or feature). "
+        'Meta-statements such as "this page uses Microsoft Learn as the '
+        f'primary source basis" are tautological and rejected — the marker '
+        f"text `{TAUTOLOGICAL_CLAIM_MARKER}` triggers a fail-fast in this "
+        "generator."
+    )
     lines.append("")
     lines.append("Then regenerate this page:")
     lines.append("")
@@ -304,14 +361,13 @@ def generate_dashboard(documents: list[dict[str, Any]], today: date) -> str:
     lines.append("```")
     lines.append("")
 
-    # See Also
     lines.append("## See Also")
     lines.append("")
     lines.append("- [Tutorial Validation Status](validation-status.md)")
     lines.append("- [CLI Cheatsheet](cli-cheatsheet.md)")
     lines.append("")
 
-    return "\n".join(lines).rstrip() + "\n"
+    return "\n".join(lines) + "\n"
 
 
 def main() -> None:
@@ -341,16 +397,41 @@ def main() -> None:
         raise SystemExit(1)
 
     documents = scan_documents(docs_dir)
+
+    tautological_docs = [d for d in documents if d["tautological_claims_count"] > 0]
+    if tautological_docs:
+        print(
+            f"ERROR: {len(tautological_docs)} in-scope document(s) contain "
+            f"tautological placeholder claims (text containing "
+            f"'{TAUTOLOGICAL_CLAIM_MARKER}').",
+            file=sys.stderr,
+        )
+        print(
+            "Tautological claims are forbidden by AGENTS.md \u00a7Text Content "
+            "Validation (Agent Rule 3). Edit each offending file to replace the "
+            "placeholder claim with a verifiable factual assertion about Azure "
+            "Functions behavior, or — if the page does not actually contain "
+            "factual claims — remove the `content_validation` block entirely.",
+            file=sys.stderr,
+        )
+        print("Offending files:", file=sys.stderr)
+        for d in tautological_docs:
+            print(
+                f"  - {d['rel_path']} "
+                f"({d['tautological_claims_count']}/{d['core_claims_count']} claims)",
+                file=sys.stderr,
+            )
+        raise SystemExit(1)
+
     today = date.today()
-    dashboard = generate_dashboard(documents, today)
+    dashboard = generate_dashboard(documents, docs_dir, today)
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(dashboard, encoding="utf-8")
 
-    # Stats
     verified = sum(1 for d in documents if d["validation_status"] == "verified")
     print(
-        f"Scanned {len(documents)} documents, "
+        f"Scanned {len(documents)} in-scope documents, "
         f"{verified} verified, "
         f"generated {output_path}"
     )
