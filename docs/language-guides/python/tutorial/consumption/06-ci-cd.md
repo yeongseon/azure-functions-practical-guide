@@ -10,12 +10,13 @@ validation:
     result: not_tested
 content_sources:
 
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions#download-your-publish-profile
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions#download-your-publish-profile
 ---
 # 06 - CI/CD (Consumption)
 

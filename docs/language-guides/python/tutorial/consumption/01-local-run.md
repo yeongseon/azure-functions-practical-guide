@@ -10,12 +10,13 @@ validation:
     result: not_tested
 content_sources:
 
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
 ---
 # 01 - Run Locally (Consumption)
 
