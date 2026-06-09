@@ -39,7 +39,7 @@ The audit also surveyed the six generators that emit Markdown into `docs/referen
 | Functions | `generate_content_validation_status.py` | `{references: [self-generated]}` | Path-skipped — OK |
 | Functions | `generate_validation_status.py` | `{references: [mslearn], diagrams: [tutorial-validation-status-pie]}` | Canonical + references — OK |
 
-The single hygiene gap was App Service's `generate_validation_service.py` emitting no frontmatter at all. App Service PR #102 brought it in line with the canonical pattern used by its peer dashboard `content-validation-status.md`.
+The single hygiene gap was App Service's `generate_validation_status.py` emitting no frontmatter at all. App Service PR #102 brought it in line with the canonical pattern used by its peer dashboard `content-validation-status.md`.
 
 ## Decision
 
@@ -54,7 +54,7 @@ The closure scope did NOT include any validator tightening. It included only:
 1. **Doctests wired into CI** — `python -m doctest scripts/lib/content_scope.py` and `python -m doctest scripts/validate_content_sources.py` are now strict gates in `validate-content-sources.yml`. This freezes the current `get_diagram_sources()` behavior; any future change to legacy-escape activation MUST update the doctests in the same commit.
 2. **Removal of an obsolete helper** — `scripts/update_mermaid_metadata.py`, which had zero in-repo references after the migration batches completed, was removed with `git rm`. The migration batches superseded the helper's purpose.
 3. **App Service hygiene fix** — App Service PR #102 brought its `validation-status.md` dashboard generator in line with the canonical frontmatter pattern.
-4. **Container Apps symmetry PR** — Container Apps received a small PR adding the same doctest CI gate, so the three repositories' validators are operationally identical.
+4. **Container Apps symmetry PR** — Container Apps received a small PR adding the same doctest CI gate, so the three repositories' CI/doctest gating is aligned. The underlying validator semantics intentionally diverge: Functions accepts the `{references: [...]}` legacy escape on Mermaid pages (the focus of this audit), while Container Apps and App Service reject any Mermaid page without a populated `diagrams:` list.
 5. **AGENTS.md documentation** — The `### Diagram Source Documentation` section was expanded from a one-line stub into a full description of the canonical shape, the accepted legacy escapes, what is NOT accepted, and the Phase 2e deferral.
 6. **This audit artifact** — checked in so the audit data survives PR garbage collection.
 
