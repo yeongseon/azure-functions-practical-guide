@@ -10,14 +10,15 @@ validation:
     result: not_tested
 content_sources:
 
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/app-service/configure-vnet-integration-enable
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/app-service/configure-vnet-integration-enable
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint
 ---
 # 02A - First Deploy (Private Egress)
 

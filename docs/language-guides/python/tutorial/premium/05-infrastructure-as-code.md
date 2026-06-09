@@ -10,12 +10,13 @@ validation:
     result: syntax_validated
 content_sources:
 
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-infrastructure-as-code
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-overview
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-infrastructure-as-code
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-overview
 ---
 # 05 - Infrastructure as Code (Premium)
 
