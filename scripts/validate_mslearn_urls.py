@@ -70,38 +70,117 @@ def add_mslearn_urls(urls: set, values: Any) -> None:
             add_mslearn_url(urls, value)
 
 
-def extract_mslearn_urls(frontmatter: dict) -> List[str]:
-    """Extract all MSLearn URLs from content_sources in frontmatter."""
-    urls = set()
+# Reference-list sub-keys in dict-form content_sources. All semantically equivalent;
+# 'references' is the canonical key (see Phase 2d schema normalization plan).
+# Legacy aliases (sources, text, documents) are accepted during the migration window.
+REFERENCE_SUBKEYS = ("references", "sources", "text", "documents")
 
-    content_sources = frontmatter.get("content_sources", {})
 
-    source_items = []
+def iter_reference_items(content_sources: Any) -> Iterable[dict]:
+    """
+    Yield reference-list dict items from content_sources frontmatter.
+
+    Supports both list-form content_sources (legacy) and dict-form with any of
+    the known reference sub-key aliases. Items under unknown sub-keys are
+    skipped.
+
+    >>> list(iter_reference_items({'references': [{'url': 'a'}]}))
+    [{'url': 'a'}]
+    >>> list(iter_reference_items({'sources': [{'url': 'b'}]}))
+    [{'url': 'b'}]
+    >>> list(iter_reference_items({'text': [{'url': 'c'}]}))
+    [{'url': 'c'}]
+    >>> list(iter_reference_items({'documents': [{'url': 'd'}]}))
+    [{'url': 'd'}]
+    >>> list(iter_reference_items([{'url': 'e'}, {'url': 'f'}]))
+    [{'url': 'e'}, {'url': 'f'}]
+    >>> list(iter_reference_items({'unknown_key': [{'url': 'z'}]}))
+    []
+    >>> list(iter_reference_items({}))
+    []
+    >>> list(iter_reference_items(None))
+    []
+    >>> sorted(item['url'] for item in iter_reference_items({'references': [{'url': 'a'}], 'sources': [{'url': 'b'}]}))
+    ['a', 'b']
+    """
+    if isinstance(content_sources, list):
+        for item in content_sources:
+            if isinstance(item, dict):
+                yield item
+    elif isinstance(content_sources, dict):
+        for key in REFERENCE_SUBKEYS:
+            items = content_sources.get(key)
+            if isinstance(items, list):
+                for item in items:
+                    if isinstance(item, dict):
+                        yield item
+
+
+def iter_diagram_items(content_sources: Any) -> Iterable[dict]:
+    """
+    Yield diagram dict items from content_sources frontmatter.
+
+    Diagrams only appear under dict-form content_sources.diagrams.
+
+    >>> list(iter_diagram_items({'diagrams': [{'id': 'foo'}]}))
+    [{'id': 'foo'}]
+    >>> list(iter_diagram_items({'references': [{'url': 'a'}]}))
+    []
+    >>> list(iter_diagram_items([{'url': 'a'}]))
+    []
+    >>> list(iter_diagram_items(None))
+    []
+    >>> list(iter_diagram_items({}))
+    []
+    """
     if isinstance(content_sources, dict):
-        nested_sources = content_sources.get("sources", [])
-        if isinstance(nested_sources, list):
-            source_items.extend(nested_sources)
-        source_items.extend(content_sources.get("diagrams", []))
-        source_items.append(content_sources)
-    elif isinstance(content_sources, list):
-        source_items.extend(content_sources)
-    else:
-        source_items = []
+        diagrams = content_sources.get("diagrams")
+        if isinstance(diagrams, list):
+            for item in diagrams:
+                if isinstance(item, dict):
+                    yield item
 
-    for source in source_items:
-        if isinstance(source, dict):
-            add_mslearn_url(urls, source.get("url"))
-            add_mslearn_url(urls, source.get("mslearn_url"))
-            add_mslearn_urls(urls, source.get("based_on", []))
 
-            nested_diagrams = source.get("diagrams", [])
-            if isinstance(nested_diagrams, list):
-                for diagram in nested_diagrams:
-                    if isinstance(diagram, dict):
-                        add_mslearn_url(urls, diagram.get("mslearn_url"))
-                        add_mslearn_urls(urls, diagram.get("based_on", []))
+def extract_mslearn_urls(frontmatter: dict) -> List[str]:
+    """Extract all MSLearn URLs from content_sources in frontmatter.
 
-    return list(urls)
+    Deduplicates URLs and returns deterministic sorted order.
+    Supports list-form and dict-form content_sources. All four reference
+    sub-key aliases (references, sources, text, documents) are accepted
+    during the Phase 2d schema migration window.
+
+    >>> extract_mslearn_urls({'content_sources': {'references': [{'url': 'https://learn.microsoft.com/a'}]}})
+    ['https://learn.microsoft.com/a']
+    >>> extract_mslearn_urls({'content_sources': {'sources': [{'url': 'https://learn.microsoft.com/b'}]}})
+    ['https://learn.microsoft.com/b']
+    >>> extract_mslearn_urls({'content_sources': {'text': [{'url': 'https://learn.microsoft.com/c'}]}})
+    ['https://learn.microsoft.com/c']
+    >>> extract_mslearn_urls({'content_sources': {'documents': [{'url': 'https://learn.microsoft.com/d'}]}})
+    ['https://learn.microsoft.com/d']
+    >>> extract_mslearn_urls({'content_sources': [{'url': 'https://learn.microsoft.com/e'}]})
+    ['https://learn.microsoft.com/e']
+    >>> extract_mslearn_urls({'content_sources': {'diagrams': [{'based_on': ['https://learn.microsoft.com/f']}]}})
+    ['https://learn.microsoft.com/f']
+    >>> extract_mslearn_urls({'content_sources': {'references': [{'url': 'https://example.com/skip-non-mslearn'}]}})
+    []
+    >>> extract_mslearn_urls({})
+    []
+    >>> extract_mslearn_urls({'content_sources': {'references': [{'url': 'https://learn.microsoft.com/g'}], 'diagrams': [{'based_on': ['https://learn.microsoft.com/g']}]}})
+    ['https://learn.microsoft.com/g']
+    """
+    urls = set()
+    content_sources = frontmatter.get("content_sources")
+
+    for item in iter_reference_items(content_sources):
+        add_mslearn_url(urls, item.get("url"))
+        add_mslearn_url(urls, item.get("mslearn_url"))
+        add_mslearn_urls(urls, item.get("based_on", []))
+
+    for diagram in iter_diagram_items(content_sources):
+        add_mslearn_url(urls, diagram.get("mslearn_url"))
+        add_mslearn_urls(urls, diagram.get("based_on", []))
+
+    return sorted(urls)
 
 
 def extract_source_section_urls(content: str) -> List[str]:
@@ -150,7 +229,11 @@ def check_url(
             if response.status_code == 429:
                 retry_after = response.headers.get("Retry-After")
                 if attempt < MAX_RETRIES:
-                    delay = float(retry_after) if retry_after and retry_after.isdigit() else 2**attempt
+                    delay = (
+                        float(retry_after)
+                        if retry_after and retry_after.isdigit()
+                        else 2**attempt
+                    )
                     time.sleep(delay)
                     continue
                 return (url, response.status_code, "rate_limited", None)
@@ -372,7 +455,9 @@ def main():
         print("\nBroken URLs require manual fixing!")
         sys.exit(1)
     elif total_rate_limited > 0:
-        print("\nSome URLs were rate limited after retries; rerun later for full coverage.")
+        print(
+            "\nSome URLs were rate limited after retries; rerun later for full coverage."
+        )
         sys.exit(0)
     elif total_redirects > 0:
         print("\nRedirected URLs should be updated to canonical versions.")
