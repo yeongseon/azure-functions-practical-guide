@@ -1,15 +1,16 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/key-vault/general/rbac-guide
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/dotnet/api/azure.identity.defaultazurecredential
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/key-vault/general/rbac-guide
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/dotnet/api/azure.identity.defaultazurecredential
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

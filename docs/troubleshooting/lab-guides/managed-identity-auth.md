@@ -1,17 +1,18 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/storage/blobs/authorize-access-azure-active-directory
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/activity-log
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/storage/blobs/authorize-access-azure-active-directory
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/activity-log
 ---
 # Lab Guide: Managed Identity Authentication Failure
 
