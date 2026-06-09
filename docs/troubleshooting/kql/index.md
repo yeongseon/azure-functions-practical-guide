@@ -1,16 +1,17 @@
 ---
 content_sources:
 
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model-complete
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model-complete
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
 ---
 # KQL Query Library for Azure Functions
 

@@ -1,17 +1,18 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-dns
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/dns/private-dns-overview
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/cli/azure/network/private-dns
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-dns
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/dns/private-dns-overview
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/cli/azure/network/private-dns
 ---
 # Lab Guide: DNS and VNet Resolution Failure
 

@@ -1,15 +1,16 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/storage/common/storage-network-security
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/storage/common/storage-network-security
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

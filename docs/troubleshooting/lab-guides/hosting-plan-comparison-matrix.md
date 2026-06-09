@@ -1,13 +1,14 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
 ---
 # Hosting Plan Security Comparison Matrix
 

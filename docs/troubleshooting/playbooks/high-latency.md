@@ -1,13 +1,14 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model-complete
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model-complete
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

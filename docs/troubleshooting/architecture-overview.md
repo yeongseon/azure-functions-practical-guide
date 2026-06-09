@@ -1,29 +1,30 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-diagnostics
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-cosmosdb-v2-trigger
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs-trigger
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-diagnostics
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-cosmosdb-v2-trigger
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs-trigger
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

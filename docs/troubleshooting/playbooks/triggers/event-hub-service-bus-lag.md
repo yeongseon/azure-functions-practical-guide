@@ -1,15 +1,16 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-features
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-messaging-exceptions
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-features
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-messaging-exceptions
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

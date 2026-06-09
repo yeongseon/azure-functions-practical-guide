@@ -1,17 +1,18 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
 ---
 # Lab Guide: Storage Access Failure (AzureWebJobsStorage)
 

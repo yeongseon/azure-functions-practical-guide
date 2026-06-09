@@ -1,15 +1,16 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-http-webhook-trigger
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-http-webhook-trigger
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

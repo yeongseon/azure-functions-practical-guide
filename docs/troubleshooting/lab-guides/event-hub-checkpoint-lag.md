@@ -1,15 +1,16 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-scalability
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-scalability
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
 ---
 # Lab Guide: Event Hub Checkpoint Lag on Azure Functions Premium EP1
 

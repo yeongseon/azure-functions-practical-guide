@@ -1,15 +1,16 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-code-constraints
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-http-api
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-troubleshooting-guide
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-code-constraints
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-http-api
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-troubleshooting-guide
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

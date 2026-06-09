@@ -1,17 +1,18 @@
 ---
 content_sources:
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-orchestrations
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-best-practice-reference
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-eternal-orchestrations
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-orchestrations
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-best-practice-reference
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-eternal-orchestrations
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
 ---
 # Lab Guide: Durable Functions Replay Storm on Azure Functions Premium EP1
 
