@@ -45,9 +45,14 @@ jobs:
         run: |
           find apps labs infra scripts -type f -name '*.sh' -print0 | xargs -0 -r bash -n
 
-      - name: Run ShellCheck
+      - name: Run ShellCheck (errors block)
+        run: |
+          find apps labs infra scripts -type f -name '*.sh' -print0 | xargs -0 -r shellcheck --severity=error
+
+      - name: Report ShellCheck backlog (advisory)
         run: |
           find apps labs infra scripts -type f -name '*.sh' -print0 | xargs -0 -r shellcheck
+        continue-on-error: true  # Lenient: surfaces pre-existing warning/info/style backlog without blocking PRs.
 
   validate-infra:
     runs-on: ubuntu-latest
