@@ -10,14 +10,15 @@ validation:
     result: syntax_validated
 content_sources:
 
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-java
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/templates/microsoft.web/sites
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-java
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/templates/microsoft.web/sites
 ---
 # 05 - Infrastructure as Code (Dedicated)
 

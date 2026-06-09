@@ -10,16 +10,17 @@ validation:
     result: not_tested
 content_sources:
 
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring#application-insights
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/app-service/overview-vnet-integration
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/alerts-metric-overview
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring#application-insights
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/app-service/overview-vnet-integration
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/alerts-metric-overview
 ---
 # 04 - Logging & Monitoring (Dedicated)
 
