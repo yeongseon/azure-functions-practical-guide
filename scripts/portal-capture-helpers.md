@@ -70,6 +70,7 @@ async (page) => {
       { re: /\\b[A-Za-z0-9-]+\\.onmicrosoft\\.com(?![A-Za-z0-9.-])/gi, val: 'contoso.onmicrosoft.com' },
       { re: /\\bychoe\\b/gi, val: 'demouser' },
       { re: /Yeongseon\\s+Choe/g, val: 'Demo User' },
+      { re: /\\byeongseon\\b/gi, val: 'demouser' },
       { re: /\\b[0-9A-F]{32,}\\b/g, val: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' },
     ];
     let count = 0;
