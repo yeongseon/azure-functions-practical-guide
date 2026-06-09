@@ -10,12 +10,13 @@ validation:
     result: not_tested
 content_sources:
 
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure-openid-connect
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure-openid-connect
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
 ---
 # 06 - CI/CD (Flex Consumption)
 
