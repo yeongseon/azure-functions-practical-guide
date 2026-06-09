@@ -1,10 +1,11 @@
 ---
 content_sources:
 
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/security-concepts
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/app-service/overview-authentication-authorization
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/security-concepts
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/app-service/overview-authentication-authorization
 ---
 # HTTP Authentication
 

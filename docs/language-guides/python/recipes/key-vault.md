@@ -1,10 +1,11 @@
 ---
 content_sources:
 
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/app-service/app-service-key-vault-references
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/app-service/app-service-key-vault-references
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
 ---
 # Key Vault Integration
 

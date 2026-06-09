@@ -1,10 +1,11 @@
 ---
 content_sources:
 
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/java/api/overview/azure/identity-readme
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/java/api/overview/azure/identity-readme
 ---
 # Managed Identity
 

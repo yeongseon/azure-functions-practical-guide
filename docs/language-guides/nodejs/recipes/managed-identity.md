@@ -1,10 +1,11 @@
 ---
 content_sources:
 
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/entra/identity/managed-identities-azure-resources/overview
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/entra/identity/managed-identities-azure-resources/overview
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
 ---
 # Managed Identity
 

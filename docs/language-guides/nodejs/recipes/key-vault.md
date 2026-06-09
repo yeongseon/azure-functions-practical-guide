@@ -1,10 +1,11 @@
 ---
 content_sources:
 
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/app-service/app-service-key-vault-references
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/javascript/api/overview/azure/keyvault-secrets-readme
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/app-service/app-service-key-vault-references
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/javascript/api/overview/azure/keyvault-secrets-readme
 ---
 # Key Vault Access
 

@@ -1,10 +1,11 @@
 ---
 content_sources:
 
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/app-service/app-service-web-tutorial-custom-domain
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/app-service/configure-ssl-bindings
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/app-service/app-service-web-tutorial-custom-domain
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/app-service/configure-ssl-bindings
 ---
 # Custom Domains and Certificates
 
