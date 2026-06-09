@@ -10,16 +10,17 @@ validation:
     result: not_tested
 content_sources:
 
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/app-service/configure-common
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/app-service/overview-vnet-integration
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/app-service/configure-common
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/app-service/overview-vnet-integration
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
 ---
 # 03 - Configuration (Dedicated)
 

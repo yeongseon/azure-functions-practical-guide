@@ -10,16 +10,17 @@ validation:
     result: syntax_validated
 content_sources:
 
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/templates/microsoft.web/serverfarms
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/templates/microsoft.web/sites
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/app-service/overview-vnet-integration
-  - type: mslearn-adapted
-    url: https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint
+  references:
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/templates/microsoft.web/serverfarms
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/templates/microsoft.web/sites
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/app-service/overview-vnet-integration
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint
 ---
 # 05 - Infrastructure as Code (Dedicated)
 
