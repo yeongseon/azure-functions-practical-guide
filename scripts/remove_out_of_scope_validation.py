@@ -12,8 +12,8 @@ This script:
 
 1. Walks ``docs/`` and selects files whose path is out-of-scope.
 2. Surgically strips the ``content_validation:`` block from frontmatter using
-   the same anchored regex as :mod:`remove_tautological_validation` so that
-   all other keys, ordering, and quoting are preserved.
+   an anchored regex so that all other keys, ordering, and quoting are
+   preserved.
 
 The scope policy lives in :mod:`lib.content_scope`; this script is the
 canonical tool for one-time cleanup of legacy out-of-scope
@@ -37,10 +37,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from lib.content_scope import is_in_scope  # noqa: E402
 
-# Regex shared semantics with ``remove_tautological_validation``: anchored to a
-# top-level ``content_validation:`` key and consumes its indented YAML body
-# until the next top-level key. Duplicated literally (not imported) so each
-# script remains self-contained and easy to audit in isolation.
+# Regex anchored to a top-level ``content_validation:`` key that consumes its
+# indented YAML body until the next top-level key. Kept inline (no shared
+# helper) so this script stays self-contained and auditable in isolation.
 CONTENT_VALIDATION_BLOCK = re.compile(
     r"^content_validation:[ \t]*\n"
     r"(?:[ \t]+[^\n]*\n|[ \t]*\n)*",

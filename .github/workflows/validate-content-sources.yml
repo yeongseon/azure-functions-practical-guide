@@ -57,6 +57,13 @@ jobs:
         run: |
           pip install pyyaml 'ruamel.yaml==0.19.1'
 
+      # ---------------------------------------------------------------------
+      # STRICT checks run first so canonical-drift failures are surfaced
+      # before any advisory/lenient audits. Each step below MUST keep its
+      # current exit semantics (no `continue-on-error`). Re-ordering or
+      # weakening these blocks lets non-canonical content land on main.
+      # ---------------------------------------------------------------------
+
       - name: Validate mermaid format
         run: |
           python scripts/validate_mermaid_format.py
@@ -65,16 +72,6 @@ jobs:
         run: |
           python scripts/validate_mermaid_syntax.py
 
-      - name: Validate changed documentation quality
-        run: |
-          python scripts/validate_doc_quality.py --changed-only --base-ref "${{ github.event.pull_request.base.sha || github.event.before || 'HEAD~1' }}"
-        continue-on-error: true
-
-      - name: Audit existing content sources
-        run: |
-          python scripts/validate_content_sources.py
-        continue-on-error: true
-
       - name: Check frontmatter YAML style (canonical ruamel.yaml format)
         run: |
           python scripts/normalize_yaml_frontmatter.py --check
@@ -82,35 +79,6 @@ jobs:
       - name: Check Microsoft Learn URL locale (en-us prefix required)
         run: |
           python scripts/normalize_mslearn_locale.py --check
-
-      - name: Validate CLI explanation tables
-        run: |
-          python scripts/validate_cli_explanations.py
-        continue-on-error: true
-
-      - name: Audit existing diagram IDs
-        run: |
-          # Count mermaid blocks
-          MERMAID_COUNT=$(grep -r '```mermaid' docs/ --include="*.md" \
-            --exclude="content-validation-status.md" \
-            --exclude="validation-status.md" | wc -l)
-
-          # Count diagram-id comments
-          DIAGRAM_ID_COUNT=$(grep -r '<!-- diagram-id:' docs/ --include="*.md" \
-            --exclude="content-validation-status.md" \
-            --exclude="validation-status.md" | wc -l)
-
-          echo "Mermaid blocks: $MERMAID_COUNT"
-          echo "Diagram IDs: $DIAGRAM_ID_COUNT"
-
-          if [ "$MERMAID_COUNT" -ne "$DIAGRAM_ID_COUNT" ]; then
-            echo "::error::Mismatch! Some mermaid blocks are missing diagram-id comments."
-            echo "Missing: $((MERMAID_COUNT - DIAGRAM_ID_COUNT)) diagram IDs"
-            exit 1
-          fi
-
-          echo "All mermaid blocks have diagram-id comments."
-        continue-on-error: true
 
       - name: Check for content_sources in new/modified files
         run: |
@@ -143,6 +111,53 @@ jobs:
           fi
 
           echo "All changed files with mermaid diagrams have content_sources metadata."
+
+      # ---------------------------------------------------------------------
+      # LENIENT (advisory) checks run after all strict checks. Each step
+      # below intentionally sets `continue-on-error: true` so it surfaces
+      # gaps in older Functions content without blocking PRs while the
+      # incremental cleanup is in progress. Promote a step to strict only
+      # after the underlying backlog has been closed.
+      # ---------------------------------------------------------------------
+
+      - name: Validate changed documentation quality
+        run: |
+          python scripts/validate_doc_quality.py --changed-only --base-ref "${{ github.event.pull_request.base.sha || github.event.before || 'HEAD~1' }}"
+        continue-on-error: true
+
+      - name: Audit existing content sources
+        run: |
+          python scripts/validate_content_sources.py
+        continue-on-error: true
+
+      - name: Validate CLI explanation tables
+        run: |
+          python scripts/validate_cli_explanations.py
+        continue-on-error: true
+
+      - name: Audit existing diagram IDs
+        run: |
+          # Count mermaid blocks
+          MERMAID_COUNT=$(grep -r '```mermaid' docs/ --include="*.md" \
+            --exclude="content-validation-status.md" \
+            --exclude="validation-status.md" | wc -l)
+
+          # Count diagram-id comments
+          DIAGRAM_ID_COUNT=$(grep -r '<!-- diagram-id:' docs/ --include="*.md" \
+            --exclude="content-validation-status.md" \
+            --exclude="validation-status.md" | wc -l)
+
+          echo "Mermaid blocks: $MERMAID_COUNT"
+          echo "Diagram IDs: $DIAGRAM_ID_COUNT"
+
+          if [ "$MERMAID_COUNT" -ne "$DIAGRAM_ID_COUNT" ]; then
+            echo "::error::Mismatch! Some mermaid blocks are missing diagram-id comments."
+            echo "Missing: $((MERMAID_COUNT - DIAGRAM_ID_COUNT)) diagram IDs"
+            exit 1
+          fi
+
+          echo "All mermaid blocks have diagram-id comments."
+        continue-on-error: true
 
   validate-mslearn-urls:
     name: Validate MSLearn URLs
