@@ -27,9 +27,26 @@ def has_az_command(block: list[str]) -> bool:
 def fence_language(line: str) -> str:
     """Return the language token from a fence opener like '```bash {.copy}'.
 
-    Returns an empty string for closing fences ('```') or unlabeled fences.
+    Handles fences of arbitrary length (```, ````, `````, ...) by
+    stripping all leading backticks before parsing the language token.
+    Returns an empty string for closing fences or unlabeled fences.
+
+    >>> fence_language("```bash")
+    'bash'
+    >>> fence_language("```bash {.copy}")
+    'bash'
+    >>> fence_language("    ```python")
+    'python'
+    >>> fence_language("````bash")
+    'bash'
+    >>> fence_language("`````bash")
+    'bash'
+    >>> fence_language("```")
+    ''
+    >>> fence_language("````")
+    ''
     """
-    info = line.strip()[3:].strip()
+    info = line.strip().lstrip("`").strip()
     return info.split(maxsplit=1)[0] if info else ""
 
 
