@@ -147,7 +147,7 @@ Every Mermaid diagram must have source metadata in frontmatter.
 
 Factual-claim documents include a `content_validation` block in frontmatter to track the verification status of their core technical assertions.
 
-The single source of truth for "is this page in scope?" is [`scripts/lib/content_scope.py`](scripts/lib/content_scope.py) — specifically the `is_in_scope(rel_path)` function. The out-of-scope cleanup tool (`scripts/remove_out_of_scope_validation.py`) imports this helper. The dashboard generator (`scripts/generate_content_validation_status.py`) still uses its legacy local `SCAN_SECTIONS` list and `index.md` skip heuristic, and will be migrated to `content_scope.is_in_scope` in the strict-validator sync follow-up PR; until then the dashboard may surface a few out-of-scope pages (notably lab guides under `troubleshooting/lab-guides/`) that pre-date this scope policy. If you change the scope policy, update both `scripts/lib/content_scope.py` AND this section in the same commit.
+The single source of truth for "is this page in scope?" is [`scripts/lib/content_scope.py`](scripts/lib/content_scope.py) — specifically the `is_in_scope(rel_path)` function. Both the dashboard generator (`scripts/generate_content_validation_status.py`) and the out-of-scope cleanup tool (`scripts/remove_out_of_scope_validation.py`) import this helper, so the dashboard and the cleanup tool are guaranteed to agree on scope. If you change the scope policy, update both `scripts/lib/content_scope.py` AND this section in the same commit.
 
 #### Scope
 
@@ -160,7 +160,7 @@ The `content_validation` block is **required** on factual-claim pages under thes
 | `docs/operations/` | Required | Deployment, monitoring, alerts, cost optimization, recovery |
 | `docs/troubleshooting/` | Required, except for the `EXCLUDED_SUBPATHS` and `NAVIGATION_INDEXES` listed below | Playbooks, methodology pages, first-10-minutes runbooks |
 
-The block is **out of scope** on these pages — the cleanup tool does not require them, and new pages added in these locations should not introduce a `content_validation` block (the dashboard generator will be aligned with this policy in the strict-validator sync follow-up PR):
+The block is **out of scope** on these pages — the dashboard does not count them, the cleanup tool does not require them, and new pages added in these locations should not introduce a `content_validation` block:
 
 - **Out-of-scope sections** — any path that does not start with `platform/`, `best-practices/`, `operations/`, or `troubleshooting/`. This covers `docs/start-here/`, `docs/reference/`, `docs/contributing/`, `docs/language-guides/` (tutorials and recipes), and `docs/index.md`.
 - **`EXCLUDED_SUBPATHS`** under `troubleshooting/`:
@@ -176,7 +176,7 @@ The block is **out of scope** on these pages — the cleanup tool does not requi
 
 Subsection landing pages that DO make factual claims (for example `platform/architecture/index.md` and `platform/networking-scenarios/index.md`) are intentionally NOT in `NAVIGATION_INDEXES` — they are treated like any other factual-claim page.
 
-Legacy `content_validation` blocks may still exist on a number of out-of-scope pages (notably under `docs/reference/`, `docs/start-here/`, `docs/troubleshooting/kql/`, and `docs/troubleshooting/lab-guides/`) from before this scope policy was formalized. These blocks are accepted today and may still appear in the dashboard while the generator uses its legacy scan; they will be reviewed in a follow-up editorial pass and can be removed with `python3 scripts/remove_out_of_scope_validation.py --apply`.
+Legacy `content_validation` blocks may still exist on a number of out-of-scope pages (notably under `docs/reference/`, `docs/start-here/`, `docs/troubleshooting/kql/`, and `docs/troubleshooting/lab-guides/`) from before this scope policy was formalized. These blocks are accepted but are not counted by the dashboard; they will be reviewed in a follow-up editorial pass and can be removed with `python3 scripts/remove_out_of_scope_validation.py --apply`.
 
 #### Schema
 

@@ -2,25 +2,22 @@
 
 Defines which markdown files in ``docs/`` are required to carry the
 ``content_validation:`` frontmatter block (factual-claim pages) versus those
-that are out of scope (navigation indexes, KQL packs, lab guides, tutorials,
-reference look-ups, and other non-claim content).
+that are out of scope for the dashboard and cleanup tool (navigation indexes,
+KQL packs, lab guides, tutorials, reference look-ups, and other non-claim
+content).
 
-Out-of-scope pages are not required to carry a ``content_validation`` block.
-Legacy blocks may still exist on some out-of-scope pages from before this
-scope policy was formalized; they are accepted, and a follow-up editorial
-pass will remove them. New out-of-scope pages should not add the block.
+Out-of-scope pages are not counted by
+``scripts/generate_content_validation_status.py`` and are not required to
+carry a ``content_validation`` block. Legacy blocks may still exist on some
+out-of-scope pages from before this scope policy was formalized; they are
+accepted but not tracked, and can be removed with
+``scripts/remove_out_of_scope_validation.py --apply``. New out-of-scope pages
+should not add the block.
 
 Imported by:
 
+- ``scripts/generate_content_validation_status.py``
 - ``scripts/remove_out_of_scope_validation.py``
-
-The dashboard generator (``scripts/generate_content_validation_status.py``)
-still uses its legacy local ``SCAN_SECTIONS`` list and ``index.md`` skip
-heuristic, so the current dashboard may still surface a few out-of-scope
-pages (notably lab guides under ``troubleshooting/lab-guides/``). Migrating
-the generator to ``is_in_scope`` is the strict-validator sync planned for a
-follow-up PR; until then this module is the *authoritative* scope policy and
-the dashboard's behavior is *aspirational*.
 
 The policy MUST stay in sync with ``AGENTS.md`` §Text Content Validation.
 If you change the rules here, update ``AGENTS.md`` in the same commit.
