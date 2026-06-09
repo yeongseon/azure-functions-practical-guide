@@ -138,6 +138,47 @@ All content must be traceable to official Microsoft Learn documentation.
 
 Every Mermaid diagram must have source metadata in frontmatter.
 
+#### Canonical shape
+
+New pages MUST use the canonical `content_sources.diagrams[…]` shape, with one entry per Mermaid block whose `id` matches the `<!-- diagram-id: … -->` HTML comment that precedes the fence:
+
+```yaml
+content_sources:
+  diagrams:
+    - id: flex-consumption-scaling
+      type: flowchart
+      source: mslearn-adapted
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+```
+
+#### Legacy escape (Functions-specific, accepted)
+
+The validator (`scripts/validate_content_sources.py`, `get_diagram_sources()`) accepts two legacy shapes that do NOT populate per-diagram entries. When either of these shapes is present, the validator skips per-diagram provenance enforcement for that file:
+
+1. **List-form** `content_sources: [{type, url}, ...]` — the oldest shape, document-level provenance only.
+2. **Dict-form** `content_sources: {references: [...]}` with no `diagrams:` key — semantically identical to list-form after the Phase 2d.2b-prep schema migration.
+
+As of Phase 2d, approximately 295 Functions Mermaid pages still rely on the dict-form legacy escape. Promoting these pages to the canonical shape requires populating per-diagram entries on each page (manual editorial work, scoped to a future Phase 2e). The legacy escape is intentionally retained as accepted state until that backlog is closed.
+
+#### What is NOT accepted
+
+- `content_sources: {diagrams: []}` — explicit empty list. Surfaces as `content_sources.diagrams is empty` so the gap is visible.
+- `content_sources: {diagrams: <non-list>}` — malformed.
+- `content_sources: {}` or dicts with neither `references` nor `diagrams` — no document-level provenance to fall back on; not legacy, just broken.
+
+#### Validator alignment with sibling repositories
+
+The sibling Azure Container Apps and Azure App Service guides do NOT accept the dict-form `{references: [...]}` escape: their `scripts/validate_content_sources.py` rejects any Mermaid page without a populated `diagrams:` list (with `content-validation-status.md` and `validation-status.md` as the only two filename-level skips, since those are generator-owned dashboards). Both sibling repositories migrated all Mermaid pages to the canonical `content_sources.diagrams[…]` shape during Phase 2d, so they have no legacy backlog that requires an escape. This Functions repository keeps the `references` escape because the ~295-page backlog here is not yet migrated; the escape is the only thing preventing those pages from becoming hard validation errors.
+
+A contributor moving a Mermaid page from this guide into Container Apps or App Service MUST populate the canonical `diagrams:` list on the destination side; copying a `references`-only page across will fail validation in the destination repository. This is the intended cross-repo contract, not a misalignment.
+
+#### Deferred to Phase 2e (no committed timeline)
+
+Tightening the validator to require per-diagram provenance on all Mermaid pages — which would expose the ~295-page Functions backlog as hard errors — is intentionally deferred. There is no committed timeline. Phase 2e opens only when the repository owner explicitly decides per-diagram provenance is now required policy.
+
+Doctests covering all activation/non-activation cases of `get_diagram_sources()` live in [`scripts/validate_content_sources.py`](scripts/validate_content_sources.py) and are wired into the `validate-content-sources.yml` workflow as a strict gate. If the legacy escape is ever tightened or removed, those doctests MUST be updated in the same commit.
+
 ### Content Validation Tracking
 
 - See [Content Validation Status](docs/reference/content-validation-status.md) for current status.
