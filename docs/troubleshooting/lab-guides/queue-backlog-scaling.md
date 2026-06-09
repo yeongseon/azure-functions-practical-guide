@@ -1,13 +1,13 @@
 ---
 content_sources:
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue-trigger
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-host-json
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/monitor-functions
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
   - type: mslearn-adapted
     url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
 content_validation:
@@ -16,7 +16,7 @@ content_validation:
   reviewer: agent
   core_claims:
     - claim: "Lab Guide: Queue Backlog Scaling on Y1 Consumption (Real Evidence) 관련 핵심 진단 절차와 운영 판단 기준"
-      source: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue-trigger
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
       verified: true
 ---
 
@@ -597,8 +597,8 @@ If using shared resources (`rg-lab-y1-shared`), skip deletion and only clear tes
 
 ## Sources
 
-- https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue-trigger
-- https://learn.microsoft.com/azure/azure-functions/functions-host-json
-- https://learn.microsoft.com/azure/azure-functions/functions-scale
-- https://learn.microsoft.com/azure/azure-functions/monitor-functions
+- https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
+- https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
+- https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+- https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
 - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview

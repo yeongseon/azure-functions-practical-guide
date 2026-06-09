@@ -1,21 +1,20 @@
 ---
 content_sources:
 
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-reference-python
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-best-practices
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
 content_validation:
   status: verified
   last_reviewed: '2026-05-23'
   reviewer: agent
   core_claims:
-  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
-      guidance.
-    source: https://learn.microsoft.com/azure/azure-functions/functions-reference-python
-    verified: true
+    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+      verified: true
 ---
 # Python Recipes
 
@@ -84,6 +83,6 @@ graph TD
 
 ## Sources
 
-- [Python developer guide](https://learn.microsoft.com/azure/azure-functions/functions-reference-python)
-- [Azure Functions trigger and binding concepts](https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings)
-- [Azure Functions best practices](https://learn.microsoft.com/azure/azure-functions/functions-best-practices)
+- [Python developer guide](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python)
+- [Azure Functions trigger and binding concepts](https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings)
+- [Azure Functions best practices](https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices)

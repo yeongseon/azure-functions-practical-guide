@@ -10,21 +10,20 @@ validation:
     result: syntax_validated
 content_sources:
 
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-infrastructure-as-code
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-resource-manager/bicep/
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/consumption-plan
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-infrastructure-as-code
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan
 content_validation:
   status: verified
   last_reviewed: '2026-05-23'
   reviewer: agent
   core_claims:
-  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
-      guidance.
-    source: https://learn.microsoft.com/azure/azure-functions/functions-infrastructure-as-code
-    verified: true
+    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-infrastructure-as-code
+      verified: true
 ---
 # 05 - Infrastructure as Code (Consumption)
 
@@ -246,6 +245,6 @@ Automate deployments in CI/CD with GitHub Actions.
 
 ## Sources
 
-- [Bicep for Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-infrastructure-as-code)
-- [Bicep language reference](https://learn.microsoft.com/azure/azure-resource-manager/bicep/)
-- [Azure Functions Consumption plan](https://learn.microsoft.com/azure/azure-functions/consumption-plan)
+- [Bicep for Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-infrastructure-as-code)
+- [Bicep language reference](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/)
+- [Azure Functions Consumption plan](https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan)

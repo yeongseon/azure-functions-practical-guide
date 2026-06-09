@@ -1,23 +1,22 @@
 ---
 content_sources:
 
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-reference-python
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-overview
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-http-webhook
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-python
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-http-webhook
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-python
 content_validation:
   status: verified
   last_reviewed: '2026-05-23'
   reviewer: agent
   core_claims:
-  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
-      guidance.
-    source: https://learn.microsoft.com/azure/azure-functions/functions-reference-python
-    verified: true
+    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+      verified: true
 ---
 # Python v2 Programming Model
 
@@ -399,7 +398,7 @@ This creates three endpoints:
 - [Recipes Index](recipes/index.md)
 
 ## Sources
-- [Python v2 Programming Model (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-reference-python)
-- [Azure Functions Overview (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-overview)
-- [HTTP Trigger Reference (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-bindings-http-webhook)
-- [Create Your First Function with CLI (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-python)
+- [Python v2 Programming Model (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python)
+- [Azure Functions Overview (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview)
+- [HTTP Trigger Reference (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-http-webhook)
+- [Create Your First Function with CLI (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-python)

@@ -6,25 +6,24 @@ validation:
     core_tools_version: 4.8.0
     result: pass
   bicep:
-    last_tested: null
+    last_tested:
     result: not_tested
 content_sources:
 
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-how-to-github-actions
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-deployment-slots
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-deployment-slots#swap-slots
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots#swap-slots
 content_validation:
   status: verified
   last_reviewed: '2026-05-23'
   reviewer: agent
   core_claims:
-  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
-      guidance.
-    source: https://learn.microsoft.com/azure/azure-functions/functions-how-to-github-actions
-    verified: true
+    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions
+      verified: true
 ---
 # 06 - CI/CD (Premium)
 
@@ -352,6 +351,6 @@ Syncing triggers...
 
 ## Sources
 
-- [Deploy to Azure Functions using GitHub Actions](https://learn.microsoft.com/azure/azure-functions/functions-how-to-github-actions)
-- [Deployment slots for Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-deployment-slots)
-- [Swap deployment slots](https://learn.microsoft.com/azure/azure-functions/functions-deployment-slots#swap-slots)
+- [Deploy to Azure Functions using GitHub Actions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions)
+- [Deployment slots for Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots)
+- [Swap deployment slots](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots#swap-slots)

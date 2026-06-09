@@ -1,21 +1,20 @@
 ---
 content_sources:
 
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-diagnostics
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics
 content_validation:
   status: verified
   last_reviewed: '2026-05-23'
   reviewer: agent
   core_claims:
-  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
-      guidance.
-    source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
-    verified: true
+    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
+      verified: true
 ---
 # Operations
 
@@ -74,4 +73,4 @@ flowchart TD
 
 - [Microsoft Learn source 1](https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices)
 - [Microsoft Learn source 2](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)
-- [Microsoft Learn source 3](https://learn.microsoft.com/azure/azure-functions/functions-diagnostics)
+- [Microsoft Learn source 3](https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics)

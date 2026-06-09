@@ -1,33 +1,33 @@
 ---
 content_sources:
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/security-concepts
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/security-concepts
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-reference#configure-an-identity-based-connection
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-app-settings
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/app-service/app-service-key-vault-references
+    url: https://learn.microsoft.com/en-us/azure/app-service/app-service-key-vault-references
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/function-keys-how-to
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/function-keys-how-to
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
   reviewer: agent
   core_claims:
     - claim: "Azure Functions는 임베디드 비밀보다 관리형 ID와 identity-based connection 구성을 우선해야 한다."
-      source: https://learn.microsoft.com/azure/azure-functions/functions-reference#configure-an-identity-based-connection
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
       verified: true
     - claim: "Key Vault 참조는 app settings에서 비밀 값을 직접 저장하지 않고 사용할 수 있게 해준다."
-      source: https://learn.microsoft.com/azure/app-service/app-service-key-vault-references
+      source: https://learn.microsoft.com/en-us/azure/app-service/app-service-key-vault-references
       verified: true
     - claim: "Function key는 호출 제어용 공유 비밀이지 완전한 사용자 인증/권한 부여 모델이 아니다."
-      source: https://learn.microsoft.com/azure/azure-functions/function-keys-how-to
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/function-keys-how-to
       verified: true
     - claim: "HTTPS-only와 최소 TLS 1.2 같은 전송 보안 기준을 강제해야 한다."
-      source: https://learn.microsoft.com/azure/azure-functions/security-concepts
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/security-concepts
       verified: true
 ---
 
@@ -398,9 +398,9 @@ az role assignment create \
 
 ## Sources
 
-- [Azure Functions security concepts](https://learn.microsoft.com/azure/azure-functions/security-concepts)
-- [Tutorial: Create a function app that connects to Azure services using identities](https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial)
-- [Identity-based connections in Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-reference#configure-an-identity-based-connection)
-- [App settings reference for Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-app-settings)
-- [Use Key Vault references for App Service and Functions](https://learn.microsoft.com/azure/app-service/app-service-key-vault-references)
-- [Function keys in Azure Functions](https://learn.microsoft.com/azure/azure-functions/function-keys-how-to)
+- [Azure Functions security concepts](https://learn.microsoft.com/en-us/azure/azure-functions/security-concepts)
+- [Tutorial: Create a function app that connects to Azure services using identities](https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial)
+- [Identity-based connections in Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection)
+- [App settings reference for Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings)
+- [Use Key Vault references for App Service and Functions](https://learn.microsoft.com/en-us/azure/app-service/app-service-key-vault-references)
+- [Function keys in Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/function-keys-how-to)

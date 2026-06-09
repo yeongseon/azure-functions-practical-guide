@@ -3,20 +3,39 @@ name: Validate Content Sources
 on:
   pull_request:
     paths:
-      - 'docs/**/*.md'
-      - 'scripts/**/*.py'
+      # These path filters MUST stay at least as broad as the EXTENSIONS set
+      # in scripts/normalize_mslearn_locale.py (.md, .py, .yml, .yaml, .json,
+      # .bicep, .tf, .txt). Narrowing 'docs/**' to 'docs/**/*.md' or
+      # 'scripts/**' to 'scripts/**/*.py' lets a PR touching only .json files
+      # under those paths bypass the MSLearn locale check entirely.
+      - 'docs/**'
       - 'scripts/**'
-      - '.github/workflows/validate-content-sources.yml'
+      - 'apps/**'
+      - 'labs/**'
+      - 'infra/**'
+      - 'AGENTS.md'
+      - 'README*.md'
+      - 'CONTRIBUTING.md'
+      - 'SECURITY.md'
+      - 'CODE_OF_CONDUCT.md'
       - 'mkdocs.yml'
+      - '.github/workflows/**'
   push:
     branches:
       - main
     paths:
-      - 'docs/**/*.md'
-      - 'scripts/**/*.py'
+      - 'docs/**'
       - 'scripts/**'
-      - '.github/workflows/validate-content-sources.yml'
+      - 'apps/**'
+      - 'labs/**'
+      - 'infra/**'
+      - 'AGENTS.md'
+      - 'README*.md'
+      - 'CONTRIBUTING.md'
+      - 'SECURITY.md'
+      - 'CODE_OF_CONDUCT.md'
       - 'mkdocs.yml'
+      - '.github/workflows/**'
 
 jobs:
   validate-content-sources:
@@ -36,7 +55,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install pyyaml
+          pip install pyyaml 'ruamel.yaml==0.19.1'
 
       - name: Validate mermaid format
         run: |
@@ -55,6 +74,14 @@ jobs:
         run: |
           python scripts/validate_content_sources.py
         continue-on-error: true
+
+      - name: Check frontmatter YAML style (canonical ruamel.yaml format)
+        run: |
+          python scripts/normalize_yaml_frontmatter.py --check
+
+      - name: Check Microsoft Learn URL locale (en-us prefix required)
+        run: |
+          python scripts/normalize_mslearn_locale.py --check
 
       - name: Validate CLI explanation tables
         run: |

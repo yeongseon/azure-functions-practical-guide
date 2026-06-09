@@ -1,37 +1,37 @@
 ---
 content_sources:
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/security-concepts
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/security-concepts
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/function-keys-how-to
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/function-keys-how-to
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/role-based-access-control/overview
+    url: https://learn.microsoft.com/en-us/azure/role-based-access-control/overview
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/app-service/app-service-web-tutorial-rest-api#app-service-cors-versus-your-cors
+    url: https://learn.microsoft.com/en-us/azure/app-service/app-service-web-tutorial-rest-api#app-service-cors-versus-your-cors
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/app-service/configure-ssl-bindings
+    url: https://learn.microsoft.com/en-us/azure/app-service/configure-ssl-bindings
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/app-service/app-service-ip-restrictions
+    url: https://learn.microsoft.com/en-us/azure/app-service/app-service-ip-restrictions
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-monitor/essentials/platform-logs-overview
+    url: https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/platform-logs-overview
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
   reviewer: agent
   core_claims:
     - claim: "Azure Functions security operations include rotating function and host keys when secrets are exposed or on a scheduled basis."
-      source: https://learn.microsoft.com/azure/azure-functions/function-keys-how-to
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/function-keys-how-to
       verified: true
     - claim: "RBAC should be used to audit and control access to Azure resources instead of relying only on shared secrets."
-      source: https://learn.microsoft.com/azure/role-based-access-control/overview
+      source: https://learn.microsoft.com/en-us/azure/role-based-access-control/overview
       verified: true
     - claim: "Identity-based connections are supported for Azure Functions so apps can access services without storing connection secrets in configuration."
-      source: https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
       verified: true
     - claim: "IP restrictions, TLS/HTTPS configuration, and platform logs are core operational controls for securing Function Apps."
-      source: https://learn.microsoft.com/azure/app-service/app-service-ip-restrictions
+      source: https://learn.microsoft.com/en-us/azure/app-service/app-service-ip-restrictions
       verified: true
 ---
 
@@ -565,11 +565,11 @@ Use this minimum operating cadence and tighten based on risk and regulation.
 - [Troubleshooting Methodology](../troubleshooting/methodology.md)
 
 ## Sources
-- [Azure Functions security concepts](https://learn.microsoft.com/azure/azure-functions/security-concepts)
-- [Work with access keys in Azure Functions](https://learn.microsoft.com/azure/azure-functions/function-keys-how-to)
-- [Azure role-based access control overview](https://learn.microsoft.com/azure/role-based-access-control/overview)
-- [Use managed identities with Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial)
-- [Configure CORS for App Service](https://learn.microsoft.com/azure/app-service/app-service-web-tutorial-rest-api#app-service-cors-versus-your-cors)
-- [Configure TLS/SSL bindings in App Service](https://learn.microsoft.com/azure/app-service/configure-ssl-bindings)
-- [Set up access restrictions for App Service](https://learn.microsoft.com/azure/app-service/app-service-ip-restrictions)
-- [Azure Monitor platform logs overview](https://learn.microsoft.com/azure/azure-monitor/essentials/platform-logs-overview)
+- [Azure Functions security concepts](https://learn.microsoft.com/en-us/azure/azure-functions/security-concepts)
+- [Work with access keys in Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/function-keys-how-to)
+- [Azure role-based access control overview](https://learn.microsoft.com/en-us/azure/role-based-access-control/overview)
+- [Use managed identities with Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial)
+- [Configure CORS for App Service](https://learn.microsoft.com/en-us/azure/app-service/app-service-web-tutorial-rest-api#app-service-cors-versus-your-cors)
+- [Configure TLS/SSL bindings in App Service](https://learn.microsoft.com/en-us/azure/app-service/configure-ssl-bindings)
+- [Set up access restrictions for App Service](https://learn.microsoft.com/en-us/azure/app-service/app-service-ip-restrictions)
+- [Azure Monitor platform logs overview](https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/platform-logs-overview)

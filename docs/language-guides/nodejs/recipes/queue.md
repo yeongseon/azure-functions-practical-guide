@@ -1,19 +1,18 @@
 ---
 content_sources:
 
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-error-pages
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages
 content_validation:
   status: verified
   last_reviewed: '2026-05-23'
   reviewer: agent
   core_claims:
-  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
-      guidance.
-    source: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue
-    verified: true
+    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue
+      verified: true
 ---
 # Queue Processing
 
@@ -117,5 +116,5 @@ When the handler keeps failing for the same message, Azure Functions moves the m
 - [Troubleshooting Guide](../troubleshooting.md)
 
 ## Sources
-- [Azure Queue Storage bindings for Azure Functions (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue)
-- [Azure Functions error handling and retries (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-bindings-error-pages)
+- [Azure Queue Storage bindings for Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue)
+- [Azure Functions error handling and retries (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages)

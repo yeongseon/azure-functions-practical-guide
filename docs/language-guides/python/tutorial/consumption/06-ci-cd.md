@@ -6,25 +6,24 @@ validation:
     core_tools_version: 4.8.0
     result: pass
   bicep:
-    last_tested: null
+    last_tested:
     result: not_tested
 content_sources:
 
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-how-to-github-actions
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/deployment-zip-push
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-how-to-github-actions#download-your-publish-profile
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions#download-your-publish-profile
 content_validation:
   status: verified
   last_reviewed: '2026-05-23'
   reviewer: agent
   core_claims:
-  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
-      guidance.
-    source: https://learn.microsoft.com/azure/azure-functions/functions-how-to-github-actions
-    verified: true
+    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions
+      verified: true
 ---
 # 06 - CI/CD (Consumption)
 
@@ -195,6 +194,6 @@ Add non-HTTP triggers and verify scaling behavior for Consumption.
 
 ## Sources
 
-- [Use GitHub Actions to deploy a function app](https://learn.microsoft.com/azure/azure-functions/functions-how-to-github-actions)
-- [Deploy Azure Functions with Zip Deploy](https://learn.microsoft.com/azure/azure-functions/deployment-zip-push)
-- [Manage app-level deployment credentials in Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-how-to-github-actions#download-your-publish-profile)
+- [Use GitHub Actions to deploy a function app](https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions)
+- [Deploy Azure Functions with Zip Deploy](https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push)
+- [Manage app-level deployment credentials in Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions#download-your-publish-profile)

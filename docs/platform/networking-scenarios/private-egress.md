@@ -2,34 +2,34 @@
 content_sources:
   sources:
     - type: mslearn-adapted
-      url: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
     - type: mslearn-adapted
-      url: https://learn.microsoft.com/azure/azure-functions/functions-create-vnet
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-create-vnet
     - type: mslearn-adapted
-      url: https://learn.microsoft.com/azure/app-service/overview-vnet-integration
+      url: https://learn.microsoft.com/en-us/azure/app-service/overview-vnet-integration
   diagrams:
     - id: private-egress-architecture
       type: flowchart
       source: self-generated
       justification: "VNet integration pattern from MSLearn networking documentation"
       based_on:
-        - https://learn.microsoft.com/azure/azure-functions/functions-create-vnet
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-create-vnet
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
   reviewer: agent
   core_claims:
     - claim: "Consumption plan does not support VNet integration for Azure Functions"
-      source: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
       verified: true
     - claim: "Flex Consumption requires Microsoft.App/environments subnet delegation for VNet integration"
-      source: https://learn.microsoft.com/azure/azure-functions/functions-create-vnet
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-create-vnet
       verified: true
     - claim: "Premium and Dedicated plans use Microsoft.Web/serverFarms subnet delegation for VNet integration"
-      source: https://learn.microsoft.com/azure/app-service/overview-vnet-integration
+      source: https://learn.microsoft.com/en-us/azure/app-service/overview-vnet-integration
       verified: true
     - claim: "Private endpoints let a function app reach storage over private network paths instead of public endpoints"
-      source: https://learn.microsoft.com/azure/azure-functions/functions-create-vnet
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-create-vnet
       verified: true
 ---
 
@@ -555,6 +555,6 @@ curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
 
 ## Sources
 
-- [Azure Functions networking options (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-networking-options)
-- [Create a function with VNet integration (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-create-vnet)
-- [Integrate your app with an Azure virtual network (Microsoft Learn)](https://learn.microsoft.com/azure/app-service/overview-vnet-integration)
+- [Azure Functions networking options (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)
+- [Create a function with VNet integration (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-create-vnet)
+- [Integrate your app with an Azure virtual network (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/app-service/overview-vnet-integration)

@@ -1,29 +1,29 @@
 ---
 content_sources:
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-error-pages
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue-trigger
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-service-bus-trigger
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus-trigger
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-event-hubs-trigger
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs-trigger
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
   reviewer: agent
   core_claims:
     - claim: "Azure Functions reliability for event triggers depends on trigger delivery semantics, retry behavior, and poison or dead-letter handling after retries are exhausted."
-      source: https://learn.microsoft.com/azure/azure-functions/functions-bindings-error-pages
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages
       verified: true
     - claim: "For Storage Queue triggers, maxDequeueCount determines when a message is treated as poison and moved to the poison queue."
-      source: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue-trigger
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
       verified: true
     - claim: "Service Bus triggers expose extension and client retry settings that affect transport and message-processing behavior."
-      source: https://learn.microsoft.com/azure/azure-functions/functions-bindings-service-bus-trigger
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus-trigger
       verified: true
     - claim: "Event Hubs trigger clientRetryOptions control SDK transport retries and are distinct from Azure Functions invocation retry policy."
-      source: https://learn.microsoft.com/azure/azure-functions/functions-bindings-event-hubs-trigger
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs-trigger
       verified: true
 ---
 
@@ -403,7 +403,7 @@ Common anti-patterns:
 - [Platform Reliability](../platform/reliability.md)
 
 ## Sources
-- [Azure Functions error handling and retries](https://learn.microsoft.com/azure/azure-functions/functions-bindings-error-pages)
-- [Azure Queue Storage trigger for Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue-trigger)
-- [Azure Service Bus trigger for Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-bindings-service-bus-trigger)
-- [Azure Event Hubs trigger for Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-bindings-event-hubs-trigger)
+- [Azure Functions error handling and retries](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages)
+- [Azure Queue Storage trigger for Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger)
+- [Azure Service Bus trigger for Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus-trigger)
+- [Azure Event Hubs trigger for Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs-trigger)

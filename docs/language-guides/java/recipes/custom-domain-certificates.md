@@ -1,19 +1,18 @@
 ---
 content_sources:
 
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/app-service/app-service-web-tutorial-custom-domain
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/app-service/configure-ssl-certificate
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/app-service/app-service-web-tutorial-custom-domain
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/app-service/configure-ssl-certificate
 content_validation:
   status: verified
   last_reviewed: '2026-05-23'
   reviewer: agent
   core_claims:
-  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
-      guidance.
-    source: https://learn.microsoft.com/azure/app-service/app-service-web-tutorial-custom-domain
-    verified: true
+    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
+      source: https://learn.microsoft.com/en-us/azure/app-service/app-service-web-tutorial-custom-domain
+      verified: true
 ---
 # Custom Domain and Certificates
 
@@ -111,5 +110,5 @@ az functionapp config ssl bind \
 
 ## Sources
 
-- [Map an existing custom DNS name to Azure App Service (Microsoft Learn)](https://learn.microsoft.com/azure/app-service/app-service-web-tutorial-custom-domain)
-- [Add and manage TLS/SSL certificates in Azure App Service (Microsoft Learn)](https://learn.microsoft.com/azure/app-service/configure-ssl-certificate)
+- [Map an existing custom DNS name to Azure App Service (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/app-service/app-service-web-tutorial-custom-domain)
+- [Add and manage TLS/SSL certificates in Azure App Service (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/app-service/configure-ssl-certificate)

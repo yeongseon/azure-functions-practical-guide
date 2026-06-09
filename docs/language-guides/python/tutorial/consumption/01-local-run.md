@@ -6,25 +6,24 @@ validation:
     core_tools_version: 4.8.0
     result: pass
   bicep:
-    last_tested: null
+    last_tested:
     result: not_tested
 content_sources:
 
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-run-local
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/consumption-plan
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-reference-python
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
 content_validation:
   status: verified
   last_reviewed: '2026-05-23'
   reviewer: agent
   core_claims:
-  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
-      guidance.
-    source: https://learn.microsoft.com/azure/azure-functions/functions-run-local
-    verified: true
+    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local
+      verified: true
 ---
 # 01 - Run Locally (Consumption)
 
@@ -153,9 +152,9 @@ You now have local parity and can deploy to Azure Consumption (Y1).
 
 ## Sources
 
-- [Run Functions locally with Core Tools](https://learn.microsoft.com/azure/azure-functions/functions-run-local)
-- [Azure Functions Consumption plan](https://learn.microsoft.com/azure/azure-functions/consumption-plan)
-- [Python developer guide for Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-reference-python)
+- [Run Functions locally with Core Tools](https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local)
+- [Azure Functions Consumption plan](https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan)
+- [Python developer guide for Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python)
 
 !!! warning "Legacy hosting path"
     Consumption plan (Y1) content is provided for existing workloads and compatibility scenarios. For most new serverless applications, prefer [Flex Consumption](../flex-consumption/01-local-run.md).

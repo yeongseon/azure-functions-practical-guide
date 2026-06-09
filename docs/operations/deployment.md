@@ -1,29 +1,29 @@
 ---
 content_sources:
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/run-functions-from-deployment-package
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-how-to-github-actions
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-deployment-slots
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-run-local
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
   reviewer: agent
   core_claims:
     - claim: "Running a function app from a deployment package supports immutable artifact deployment behavior."
-      source: https://learn.microsoft.com/azure/azure-functions/run-functions-from-deployment-package
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package
       verified: true
     - claim: "GitHub Actions is a supported CI/CD deployment method for Azure Functions."
-      source: https://learn.microsoft.com/azure/azure-functions/functions-how-to-github-actions
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions
       verified: true
     - claim: "Deployment slots are used for safer releases and rollback on supported Azure Functions hosting plans."
-      source: https://learn.microsoft.com/azure/azure-functions/functions-deployment-slots
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots
       verified: true
     - claim: "Local validation with Azure Functions Core Tools is part of the supported deployment workflow before publishing."
-      source: https://learn.microsoft.com/azure/azure-functions/functions-run-local
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local
       verified: true
 ---
 
@@ -520,7 +520,7 @@ verify runtime compatibility, and validate trigger dependency identity/access.
 - [Recovery](recovery.md)
 
 ## Sources
-- [Deploy Azure Functions from package files](https://learn.microsoft.com/azure/azure-functions/run-functions-from-deployment-package)
-- [Deploy Azure Functions with GitHub Actions](https://learn.microsoft.com/azure/azure-functions/functions-how-to-github-actions)
-- [Deployment slots in Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-deployment-slots)
-- [Functions Core Tools reference](https://learn.microsoft.com/azure/azure-functions/functions-run-local)
+- [Deploy Azure Functions from package files](https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package)
+- [Deploy Azure Functions with GitHub Actions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions)
+- [Deployment slots in Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots)
+- [Functions Core Tools reference](https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local)

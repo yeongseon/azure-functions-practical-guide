@@ -1,33 +1,33 @@
 ---
 content_sources:
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-create-vnet
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-create-vnet
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-deployment-technologies
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-reference?tabs=blob#configure-an-identity-based-connection
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference?tabs=blob#configure-an-identity-based-connection
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
   reviewer: agent
   core_claims:
     - claim: "Consumption plan does not support VNet integration, while Flex Consumption, Premium, and Dedicated do"
-      source: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
       verified: true
     - claim: "Flex Consumption uses blob-container deployment through functionAppConfig instead of Kudu/SCM"
-      source: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
       verified: true
     - claim: "Premium and Dedicated plans can host multiple apps per plan"
-      source: https://learn.microsoft.com/azure/azure-functions/functions-scale
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
       verified: true
     - claim: "Identity-based binding connections use app settings with service URIs instead of a single connection string secret"
-      source: https://learn.microsoft.com/azure/azure-functions/functions-reference?tabs=blob#configure-an-identity-based-connection
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference?tabs=blob#configure-an-identity-based-connection
       verified: true
 ---
 
@@ -290,9 +290,9 @@ Before deploying any scenario, verify:
 
 ## Sources
 
-- [Azure Functions hosting options (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-scale)
-- [Azure Functions networking options (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-networking-options)
-- [Azure Functions Flex Consumption plan (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan)
-- [Secure Azure Functions with virtual networks (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-create-vnet)
-- [Azure Functions deployment technologies (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-deployment-technologies)
-- [Identity-based connections for Azure Functions (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-reference?tabs=blob#configure-an-identity-based-connection)
+- [Azure Functions hosting options (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
+- [Azure Functions networking options (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)
+- [Azure Functions Flex Consumption plan (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan)
+- [Secure Azure Functions with virtual networks (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-create-vnet)
+- [Azure Functions deployment technologies (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies)
+- [Identity-based connections for Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference?tabs=blob#configure-an-identity-based-connection)

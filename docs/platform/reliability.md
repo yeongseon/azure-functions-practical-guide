@@ -1,31 +1,31 @@
 ---
 content_sources:
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/performance-reliability
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/reliability/reliability-functions
+    url: https://learn.microsoft.com/en-us/azure/reliability/reliability-functions
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-host-json
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-service-bus
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
   reviewer: agent
   core_claims:
     - claim: "Reliable Azure Functions designs depend on trigger semantics, function behavior, platform behavior, and dependency behavior"
-      source: https://learn.microsoft.com/azure/azure-functions/performance-reliability
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
       verified: true
     - claim: "Azure Functions supports built-in retries for supported triggers and retries should target transient failures"
-      source: https://learn.microsoft.com/azure/azure-functions/performance-reliability
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
       verified: true
     - claim: "Storage Queue triggers move messages to a poison queue after maxDequeueCount is exceeded"
-      source: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue
       verified: true
     - claim: "Service Bus trigger reliability behavior includes dead-letter handling after delivery failures"
-      source: https://learn.microsoft.com/azure/azure-functions/functions-bindings-service-bus
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus
       verified: true
 ---
 
@@ -453,8 +453,8 @@ Use language-specific guidance for runtime nuances, extension bundles, and host 
 - [Troubleshooting methodology](../troubleshooting/methodology.md)
 
 ## Sources
-- [Microsoft Learn: Design reliable Azure Functions applications](https://learn.microsoft.com/azure/azure-functions/performance-reliability)
-- [Microsoft Learn: Azure Functions reliability in Azure Well-Architected Framework](https://learn.microsoft.com/azure/reliability/reliability-functions)
-- [Microsoft Learn: Azure Functions host.json reference](https://learn.microsoft.com/azure/azure-functions/functions-host-json)
-- [Microsoft Learn: Azure Queue Storage trigger and bindings](https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue)
-- [Microsoft Learn: Azure Service Bus trigger and bindings](https://learn.microsoft.com/azure/azure-functions/functions-bindings-service-bus)
+- [Microsoft Learn: Design reliable Azure Functions applications](https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability)
+- [Microsoft Learn: Azure Functions reliability in Azure Well-Architected Framework](https://learn.microsoft.com/en-us/azure/reliability/reliability-functions)
+- [Microsoft Learn: Azure Functions host.json reference](https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json)
+- [Microsoft Learn: Azure Queue Storage trigger and bindings](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue)
+- [Microsoft Learn: Azure Service Bus trigger and bindings](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus)

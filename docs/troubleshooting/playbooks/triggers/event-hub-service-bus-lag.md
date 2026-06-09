@@ -1,22 +1,22 @@
 ---
 content_sources:
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-event-hubs
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-service-bus
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/analyze-telemetry-data
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/event-hubs/event-hubs-features
+    url: https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-features
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/service-bus-messaging/service-bus-messaging-exceptions
+    url: https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-messaging-exceptions
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
   reviewer: agent
   core_claims:
     - claim: "Event Hub / Service Bus Trigger Lag 관련 핵심 진단 절차와 운영 판단 기준"
-      source: https://learn.microsoft.com/azure/azure-functions/functions-bindings-event-hubs
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs
       verified: true
 ---
 
@@ -498,8 +498,8 @@ az functionapp deployment source config-zip --name <app-name> --resource-group <
 - [Timeout / Execution Time Limit Exceeded](./timeout-execution-limit.md)
 
 ## Sources
-- [Azure Functions Event Hubs trigger and bindings](https://learn.microsoft.com/azure/azure-functions/functions-bindings-event-hubs)
-- [Azure Functions Service Bus trigger and bindings](https://learn.microsoft.com/azure/azure-functions/functions-bindings-service-bus)
-- [Monitor Azure Functions](https://learn.microsoft.com/azure/azure-functions/analyze-telemetry-data)
-- [Azure Event Hubs features and performance](https://learn.microsoft.com/azure/event-hubs/event-hubs-features)
-- [Azure Service Bus messaging exceptions and handling](https://learn.microsoft.com/azure/service-bus-messaging/service-bus-messaging-exceptions)
+- [Azure Functions Event Hubs trigger and bindings](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs)
+- [Azure Functions Service Bus trigger and bindings](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus)
+- [Monitor Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data)
+- [Azure Event Hubs features and performance](https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-features)
+- [Azure Service Bus messaging exceptions and handling](https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-messaging-exceptions)

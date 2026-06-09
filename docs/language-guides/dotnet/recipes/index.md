@@ -1,17 +1,16 @@
 ---
 content_sources:
 
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-dotnet-class-library
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-dotnet-class-library
 content_validation:
   status: verified
   last_reviewed: '2026-05-23'
   reviewer: agent
   core_claims:
-  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
-      guidance.
-    source: https://learn.microsoft.com/azure/azure-functions/functions-dotnet-class-library
-    verified: true
+    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-dotnet-class-library
+      verified: true
 ---
 # .NET Recipes
 
@@ -60,4 +59,4 @@ flowchart TD
 - [Troubleshooting](../troubleshooting.md)
 
 ## Sources
-- [Azure Functions .NET developer guide](https://learn.microsoft.com/azure/azure-functions/functions-dotnet-class-library)
+- [Azure Functions .NET developer guide](https://learn.microsoft.com/en-us/azure/azure-functions/functions-dotnet-class-library)

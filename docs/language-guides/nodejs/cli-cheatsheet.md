@@ -1,19 +1,18 @@
 ---
 content_sources:
 
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-run-local
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/cli/azure/functionapp
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/cli/azure/functionapp
 content_validation:
   status: verified
   last_reviewed: '2026-05-23'
   reviewer: agent
   core_claims:
-  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
-      guidance.
-    source: https://learn.microsoft.com/azure/azure-functions/functions-run-local
-    verified: true
+    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local
+      verified: true
 ---
 # CLI Cheatsheet
 
@@ -80,5 +79,5 @@ az deployment group create --resource-group $RG --template-file infra/main.bicep
 - [Operations: Deployment](../../operations/deployment.md)
 
 ## Sources
-- [Azure Functions Core Tools (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-run-local)
-- [Azure CLI functionapp reference (Microsoft Learn)](https://learn.microsoft.com/cli/azure/functionapp)
+- [Azure Functions Core Tools (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local)
+- [Azure CLI functionapp reference (Microsoft Learn)](https://learn.microsoft.com/en-us/cli/azure/functionapp)

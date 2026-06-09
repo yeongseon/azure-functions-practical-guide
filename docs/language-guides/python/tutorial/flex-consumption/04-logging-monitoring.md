@@ -6,25 +6,24 @@ validation:
     core_tools_version: 4.8.0
     result: pass
   bicep:
-    last_tested: null
+    last_tested:
     result: not_tested
 content_sources:
 
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/monitor-functions
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-monitor/app/app-insights-overview
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview
 content_validation:
   status: verified
   last_reviewed: '2026-05-23'
   reviewer: agent
   core_claims:
-  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
-      guidance.
-    source: https://learn.microsoft.com/azure/azure-functions/monitor-functions
-    verified: true
+    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
+      verified: true
 ---
 # 04 - Logging and Monitoring (Flex Consumption)
 
@@ -304,6 +303,6 @@ Expected output:
 
 ## Sources
 
-- [Monitor Azure Functions](https://learn.microsoft.com/azure/azure-functions/monitor-functions)
+- [Monitor Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions)
 - [Azure Monitor Logs query overview](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview)
-- [Application Insights overview](https://learn.microsoft.com/azure/azure-monitor/app/app-insights-overview)
+- [Application Insights overview](https://learn.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview)

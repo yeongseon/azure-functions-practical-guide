@@ -1,23 +1,22 @@
 ---
 content_sources:
 
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-event-grid-blob-trigger
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan#trigger-support
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-blob
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-event-grid-blob-trigger
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan#trigger-support
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
 content_validation:
   status: verified
   last_reviewed: '2026-05-23'
   reviewer: agent
   core_claims:
-  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
-      guidance.
-    source: https://learn.microsoft.com/azure/azure-functions/functions-event-grid-blob-trigger
-    verified: true
+    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-event-grid-blob-trigger
+      verified: true
 ---
 # Blob Storage
 
@@ -298,9 +297,9 @@ cat /tmp/result.txt   # Expected: HELLO WORLD
 | Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
 
 
-> **Polling vs. Event Grid:** The default blob trigger uses a polling mechanism, which can have delays of up to several minutes in production depending on storage activity. For low-latency, event-driven processing use the [Event Grid-based blob trigger (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-event-grid-blob-trigger) instead.
+> **Polling vs. Event Grid:** The default blob trigger uses a polling mechanism, which can have delays of up to several minutes in production depending on storage activity. For low-latency, event-driven processing use the [Event Grid-based blob trigger (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-event-grid-blob-trigger) instead.
 >
-> **Flex Consumption:** The default polling blob trigger is **not supported** on the Flex Consumption plan. Flex Consumption requires the Event Grid-based blob trigger. See [Supported triggers on Flex Consumption (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan#trigger-support) for details.
+> **Flex Consumption:** The default polling blob trigger is **not supported** on the Flex Consumption plan. Flex Consumption requires the Event Grid-based blob trigger. See [Supported triggers on Flex Consumption (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan#trigger-support) for details.
 
 ## SDK Approach: azure-storage-blob
 
@@ -421,5 +420,5 @@ See the [Managed Identity recipe](managed-identity.md) for a full walkthrough.
 - [HTTP API Patterns](http-api.md)
 
 ## Sources
-- [Azure Functions Blob Storage Bindings (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-blob)
-- [Managed Identity Tutorial (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial)
+- [Azure Functions Blob Storage Bindings (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob)
+- [Managed Identity Tutorial (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial)

@@ -6,25 +6,24 @@ validation:
     core_tools_version: 4.8.0
     result: pass
   bicep:
-    last_tested: null
+    last_tested:
     result: not_tested
 content_sources:
 
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-how-to-github-actions
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/developer/github/connect-from-azure-openid-connect
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-deployment-technologies
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure-openid-connect
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
 content_validation:
   status: verified
   last_reviewed: '2026-05-23'
   reviewer: agent
   core_claims:
-  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
-      guidance.
-    source: https://learn.microsoft.com/azure/azure-functions/functions-how-to-github-actions
-    verified: true
+    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions
+      verified: true
 ---
 # 06 - CI/CD (Flex Consumption)
 
@@ -310,6 +309,6 @@ Expected output:
 
 ## Sources
 
-- [Deploy Azure Functions with GitHub Actions](https://learn.microsoft.com/azure/azure-functions/functions-how-to-github-actions)
-- [Use OIDC with GitHub Actions and Azure](https://learn.microsoft.com/azure/developer/github/connect-from-azure-openid-connect)
-- [Azure Functions deployment technologies](https://learn.microsoft.com/azure/azure-functions/functions-deployment-technologies)
+- [Deploy Azure Functions with GitHub Actions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions)
+- [Use OIDC with GitHub Actions and Azure](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure-openid-connect)
+- [Azure Functions deployment technologies](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies)

@@ -1,19 +1,18 @@
 ---
 content_sources:
 
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-diagnostics
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics
 content_validation:
   status: verified
   last_reviewed: '2026-05-23'
   reviewer: agent
   core_claims:
-  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
-      guidance.
-    source: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
-    verified: true
+    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node
+      verified: true
 ---
 # Troubleshooting
 
@@ -80,5 +79,5 @@ az functionapp config show --name $APP_NAME --resource-group $RG --query "linuxF
 - [Operations: Monitoring](../../operations/monitoring.md)
 
 ## Sources
-- [Azure Functions Node.js developer guide (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-reference-node)
-- [Azure Functions diagnostics (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-diagnostics)
+- [Azure Functions Node.js developer guide (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node)
+- [Azure Functions diagnostics (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics)

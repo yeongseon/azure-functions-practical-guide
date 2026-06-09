@@ -1,30 +1,30 @@
 ---
 content_sources:
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/event-driven-scaling
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-premium-plan
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-concurrency
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-concurrency
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-perf-and-scale
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-perf-and-scale
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
   reviewer: agent
   core_claims:
     - claim: "Scaling is trigger-specific with plan-dependent limits"
-      source: https://learn.microsoft.com/azure/azure-functions/event-driven-scaling
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
       verified: true
     - claim: "Consumption plan can scale to 200 instances (Linux) or 100 (Windows)"
-      source: https://learn.microsoft.com/azure/azure-functions/functions-scale
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
       verified: true
     - claim: "HTTP triggers scale based on concurrent request rate"
-      source: https://learn.microsoft.com/azure/azure-functions/event-driven-scaling
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
       verified: true
 ---
 
@@ -443,9 +443,9 @@ Cross-reference for implementation decisions:
 - [Troubleshooting: Playbooks](../troubleshooting/playbooks/index.md)
 
 ## Sources
-- [Microsoft Learn: Azure Functions hosting options](https://learn.microsoft.com/azure/azure-functions/functions-scale)
-- [Microsoft Learn: Event-driven scaling in Azure Functions](https://learn.microsoft.com/azure/azure-functions/event-driven-scaling)
-- [Microsoft Learn: Azure Functions Flex Consumption plan](https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan)
-- [Microsoft Learn: Azure Functions Premium plan](https://learn.microsoft.com/azure/azure-functions/functions-premium-plan)
-- [Microsoft Learn: Concurrency in Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-concurrency)
-- [Microsoft Learn: Durable Functions performance and scale](https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-perf-and-scale)
+- [Microsoft Learn: Azure Functions hosting options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
+- [Microsoft Learn: Event-driven scaling in Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling)
+- [Microsoft Learn: Azure Functions Flex Consumption plan](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan)
+- [Microsoft Learn: Azure Functions Premium plan](https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan)
+- [Microsoft Learn: Concurrency in Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-concurrency)
+- [Microsoft Learn: Durable Functions performance and scale](https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-perf-and-scale)

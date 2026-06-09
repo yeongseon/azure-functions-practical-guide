@@ -6,25 +6,24 @@ validation:
     core_tools_version: 4.6.0
     result: fail
   bicep:
-    last_tested: null
+    last_tested:
     result: not_tested
 content_sources:
 
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-python
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-deployment-technologies
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-deployment-slots
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-python
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots
 content_validation:
   status: verified
   last_reviewed: '2026-05-23'
   reviewer: agent
   core_claims:
-  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
-      guidance.
-    source: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-python
-    verified: true
+    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-python
+      verified: true
 ---
 # 02 - First Deploy (Consumption)
 
@@ -304,6 +303,6 @@ Next, configure settings and behavior specific to Consumption using classic app 
 
 ## Sources
 
-- [Create a function app in Azure using CLI](https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-python)
-- [Azure Functions deployment technologies](https://learn.microsoft.com/azure/azure-functions/functions-deployment-technologies)
-- [Deployment slots in Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-deployment-slots)
+- [Create a function app in Azure using CLI](https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-python)
+- [Azure Functions deployment technologies](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies)
+- [Deployment slots in Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots)

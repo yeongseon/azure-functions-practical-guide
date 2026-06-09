@@ -1,37 +1,36 @@
 ---
 content_sources:
 
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-overview
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-scale
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/consumption-plan
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-scenarios
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-compare-logic-apps-ms-flow-webjobs
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/architecture/guide/technology-choices/compute-comparison
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-reference-python
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-reference-node
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-dotnet-class-library
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scenarios
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-compare-logic-apps-ms-flow-webjobs
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/architecture/guide/technology-choices/compute-comparison
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-dotnet-class-library
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
 content_validation:
   status: verified
   last_reviewed: '2026-05-23'
   reviewer: agent
   core_claims:
-  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
-      guidance.
-    source: https://learn.microsoft.com/azure/azure-functions/functions-overview
-    verified: true
+    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
+      verified: true
 ---
 # Overview: What is Azure Functions
 
@@ -74,8 +73,8 @@ At a high level:
 
 Microsoft Learn references:
 
-- [Azure Functions overview](https://learn.microsoft.com/azure/azure-functions/functions-overview)
-- [Triggers and bindings](https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings)
+- [Azure Functions overview](https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview)
+- [Triggers and bindings](https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings)
 
 ## Triggers and bindings in practice
 
@@ -107,7 +106,7 @@ Microsoft Learn also documents **Container Apps** hosting for containerized func
 
 Primary comparison:
 
-- [Azure Functions scale and hosting options](https://learn.microsoft.com/azure/azure-functions/functions-scale)
+- [Azure Functions scale and hosting options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
 
 Important lifecycle note from Learn:
 
@@ -117,7 +116,7 @@ Important lifecycle note from Learn:
 
 Reference:
 
-- [Consumption plan (legacy)](https://learn.microsoft.com/azure/azure-functions/consumption-plan)
+- [Consumption plan (legacy)](https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan)
 
 ## What Azure Functions is best at
 
@@ -131,7 +130,7 @@ From Microsoft Learn scenarios, Functions is a strong fit for:
 
 Scenario reference:
 
-- [Azure Functions scenarios](https://learn.microsoft.com/azure/azure-functions/functions-scenarios)
+- [Azure Functions scenarios](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scenarios)
 
 ## When to choose Functions vs other Azure options
 
@@ -150,11 +149,11 @@ Consider **App Service WebJobs** only in narrower cases where existing App Servi
 
 Comparison reference:
 
-- [Integration and automation platform options](https://learn.microsoft.com/azure/azure-functions/functions-compare-logic-apps-ms-flow-webjobs)
+- [Integration and automation platform options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-compare-logic-apps-ms-flow-webjobs)
 
 For broader compute trade-offs:
 
-- [Choose an Azure compute service](https://learn.microsoft.com/azure/architecture/guide/technology-choices/compute-comparison)
+- [Choose an Azure compute service](https://learn.microsoft.com/en-us/azure/architecture/guide/technology-choices/compute-comparison)
 
 ## Language and development model
 
@@ -169,10 +168,10 @@ Each language has a programming model and runtime-specific guidance on Microsoft
 
 Start here:
 
-- [Python developer guide](https://learn.microsoft.com/azure/azure-functions/functions-reference-python)
-- [Node.js developer guide](https://learn.microsoft.com/azure/azure-functions/functions-reference-node)
-- [.NET developer guide](https://learn.microsoft.com/azure/azure-functions/functions-dotnet-class-library)
-- [Java developer guide](https://learn.microsoft.com/azure/azure-functions/functions-reference-java)
+- [Python developer guide](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python)
+- [Node.js developer guide](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node)
+- [.NET developer guide](https://learn.microsoft.com/en-us/azure/azure-functions/functions-dotnet-class-library)
+- [Java developer guide](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java)
 
 !!! tip "Language Guide"
     For guide-specific implementation flow, see [Language Guides](../language-guides/index.md).
@@ -213,14 +212,14 @@ Those decisions influence architecture, cost profile, cold-start behavior, and o
 
 ## Sources
 
-- [Azure Functions overview](https://learn.microsoft.com/azure/azure-functions/functions-overview)
-- [Triggers and bindings](https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings)
-- [Azure Functions scale and hosting options](https://learn.microsoft.com/azure/azure-functions/functions-scale)
-- [Consumption plan (legacy)](https://learn.microsoft.com/azure/azure-functions/consumption-plan)
-- [Azure Functions scenarios](https://learn.microsoft.com/azure/azure-functions/functions-scenarios)
-- [Integration and automation platform options](https://learn.microsoft.com/azure/azure-functions/functions-compare-logic-apps-ms-flow-webjobs)
-- [Choose an Azure compute service](https://learn.microsoft.com/azure/architecture/guide/technology-choices/compute-comparison)
-- [Python developer guide](https://learn.microsoft.com/azure/azure-functions/functions-reference-python)
-- [Node.js developer guide](https://learn.microsoft.com/azure/azure-functions/functions-reference-node)
-- [.NET developer guide](https://learn.microsoft.com/azure/azure-functions/functions-dotnet-class-library)
-- [Java developer guide](https://learn.microsoft.com/azure/azure-functions/functions-reference-java)
+- [Azure Functions overview](https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview)
+- [Triggers and bindings](https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings)
+- [Azure Functions scale and hosting options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
+- [Consumption plan (legacy)](https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan)
+- [Azure Functions scenarios](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scenarios)
+- [Integration and automation platform options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-compare-logic-apps-ms-flow-webjobs)
+- [Choose an Azure compute service](https://learn.microsoft.com/en-us/azure/architecture/guide/technology-choices/compute-comparison)
+- [Python developer guide](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python)
+- [Node.js developer guide](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node)
+- [.NET developer guide](https://learn.microsoft.com/en-us/azure/azure-functions/functions-dotnet-class-library)
+- [Java developer guide](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java)

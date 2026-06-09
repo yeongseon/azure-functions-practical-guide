@@ -1,25 +1,24 @@
 ---
 content_sources:
 
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/migration/migrate-plan-consumption-to-flex
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-scale
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-premium-plan
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/pricing
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/migration/migrate-plan-consumption-to-flex
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/pricing
 content_validation:
   status: verified
   last_reviewed: '2026-05-23'
   reviewer: agent
   core_claims:
-  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
-      guidance.
-    source: https://learn.microsoft.com/azure/azure-functions/migration/migrate-plan-consumption-to-flex
-    verified: true
+    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/migration/migrate-plan-consumption-to-flex
+      verified: true
 ---
 # Tutorial — Choose Your Hosting Plan
 
@@ -55,7 +54,7 @@ flowchart TD
     style DEDI fill:#5c2d91,color:#fff
 ```
 
-> **Not sure yet?** Start with **Flex Consumption** — it offers the broadest feature set (VNet, scale-to-zero, configurable memory) and is Microsoft's recommended default for new projects. You can migrate between plans later, though some migrations have limitations — see [Migrate apps from Consumption to Flex Consumption](https://learn.microsoft.com/azure/azure-functions/migration/migrate-plan-consumption-to-flex).
+> **Not sure yet?** Start with **Flex Consumption** — it offers the broadest feature set (VNet, scale-to-zero, configurable memory) and is Microsoft's recommended default for new projects. You can migrate between plans later, though some migrations have limitations — see [Migrate apps from Consumption to Flex Consumption](https://learn.microsoft.com/en-us/azure/azure-functions/migration/migrate-plan-consumption-to-flex).
 
 ## Plan Comparison at a Glance
 
@@ -338,7 +337,7 @@ Traditional App Service hosting with predictable pricing. Best when you already 
 
 ## Sources
 
-- [Azure Functions hosting options (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-scale)
-- [Flex Consumption plan (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan)
-- [Azure Functions Premium plan (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-premium-plan)
-- [Azure Functions pricing (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/pricing)
+- [Azure Functions hosting options (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
+- [Flex Consumption plan (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan)
+- [Azure Functions Premium plan (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan)
+- [Azure Functions pricing (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/pricing)

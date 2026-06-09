@@ -1,28 +1,28 @@
 ---
 content_sources:
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/storage-considerations
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-reference#configure-an-identity-based-connection
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/run-functions-from-deployment-package
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-monitor/app/data-model
+    url: https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/role-based-access-control/role-assignments-cli
+    url: https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
   reviewer: agent
   core_claims:
     - claim: "Lab Guide: Code Storage Verification (All Hosting Plans) 관련 핵심 진단 절차와 운영 판단 기준"
-      source: https://learn.microsoft.com/azure/azure-functions/storage-considerations
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
       verified: true
 ---
 
@@ -2772,11 +2772,11 @@ graph TD
 
 ## Sources
 
-- [Azure Functions storage considerations](https://learn.microsoft.com/azure/azure-functions/storage-considerations)
-- [How to use identity-based connections in Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-reference#configure-an-identity-based-connection)
-- [Azure Functions networking options](https://learn.microsoft.com/azure/azure-functions/functions-networking-options)
-- [Azure Functions Flex Consumption plan](https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan)
-- [Run your functions from a package file in Azure](https://learn.microsoft.com/azure/azure-functions/run-functions-from-deployment-package)
-- [Monitor Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-monitoring)
-- [Application Insights telemetry data model](https://learn.microsoft.com/azure/azure-monitor/app/data-model)
-- [Assign Azure roles using Azure CLI](https://learn.microsoft.com/azure/role-based-access-control/role-assignments-cli)
+- [Azure Functions storage considerations](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations)
+- [How to use identity-based connections in Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection)
+- [Azure Functions networking options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)
+- [Azure Functions Flex Consumption plan](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan)
+- [Run your functions from a package file in Azure](https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package)
+- [Monitor Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)
+- [Application Insights telemetry data model](https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model)
+- [Assign Azure roles using Azure CLI](https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli)

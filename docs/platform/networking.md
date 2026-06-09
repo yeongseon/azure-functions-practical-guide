@@ -1,26 +1,26 @@
 ---
 content_sources:
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/app-service/configure-vnet-integration-enable
+    url: https://learn.microsoft.com/en-us/azure/app-service/configure-vnet-integration-enable
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/app-service/networking/private-endpoint
+    url: https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/app-service/overview-nat-gateway-integration
+    url: https://learn.microsoft.com/en-us/azure/app-service/overview-nat-gateway-integration
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
   reviewer: agent
   core_claims:
     - claim: "VNet integration controls outbound traffic routing"
-      source: https://learn.microsoft.com/azure/app-service/configure-vnet-integration-enable
+      source: https://learn.microsoft.com/en-us/azure/app-service/configure-vnet-integration-enable
       verified: true
     - claim: "Private endpoints control inbound access"
-      source: https://learn.microsoft.com/azure/app-service/networking/private-endpoint
+      source: https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint
       verified: true
     - claim: "Consumption plan does not support VNet integration"
-      source: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
       verified: true
 ---
 
@@ -441,7 +441,7 @@ Runtime focus areas:
 - [Deployment Scenarios](deployment-scenarios.md) — Cross-plan comparison of VNet, PE, identity, and deployment patterns
 
 ## Sources
-- [Microsoft Learn: Networking options in Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-networking-options)
-- [Microsoft Learn: Integrate your app with an Azure virtual network](https://learn.microsoft.com/azure/app-service/configure-vnet-integration-enable)
-- [Microsoft Learn: Use private endpoints for Azure App Service apps](https://learn.microsoft.com/azure/app-service/networking/private-endpoint)
-- [Microsoft Learn: NAT Gateway integration with App Service](https://learn.microsoft.com/azure/app-service/overview-nat-gateway-integration)
+- [Microsoft Learn: Networking options in Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)
+- [Microsoft Learn: Integrate your app with an Azure virtual network](https://learn.microsoft.com/en-us/azure/app-service/configure-vnet-integration-enable)
+- [Microsoft Learn: Use private endpoints for Azure App Service apps](https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint)
+- [Microsoft Learn: NAT Gateway integration with App Service](https://learn.microsoft.com/en-us/azure/app-service/overview-nat-gateway-integration)

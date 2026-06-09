@@ -1,13 +1,13 @@
 ---
 content_sources:
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-blob-trigger
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/event-grid/concepts
+    url: https://learn.microsoft.com/en-us/azure/event-grid/concepts
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
   - type: mslearn-adapted
     url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
 content_validation:
@@ -16,7 +16,7 @@ content_validation:
   reviewer: agent
   core_claims:
     - claim: "Blob Trigger Not Firing 관련 핵심 진단 절차와 운영 판단 기준"
-      source: https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-blob-trigger
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
       verified: true
 ---
 
@@ -556,8 +556,8 @@ az monitor log-analytics query \
 
 ## Sources
 
-- [Azure Functions Blob trigger](https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-blob-trigger)
-- [Azure Functions Flex Consumption plan](https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan)
-- [Azure Event Grid concepts](https://learn.microsoft.com/azure/event-grid/concepts)
-- [Monitor Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-monitoring)
+- [Azure Functions Blob trigger](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger)
+- [Azure Functions Flex Consumption plan](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan)
+- [Azure Event Grid concepts](https://learn.microsoft.com/en-us/azure/event-grid/concepts)
+- [Monitor Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)
 - [Azure Monitor log query overview](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview)

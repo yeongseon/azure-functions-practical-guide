@@ -6,29 +6,28 @@ validation:
     core_tools_version: 4.8.0
     result: pass
   bicep:
-    last_tested: null
+    last_tested:
     result: not_tested
 content_sources:
 
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-app-settings
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/app-service/configure-common
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/app-service/overview-vnet-integration
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/app-service/networking/private-endpoint
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/app-service/configure-common
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/app-service/overview-vnet-integration
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
 content_validation:
   status: verified
   last_reviewed: '2026-05-23'
   reviewer: agent
   core_claims:
-  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
-      guidance.
-    source: https://learn.microsoft.com/azure/azure-functions/functions-app-settings
-    verified: true
+    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
+      verified: true
 ---
 # 03 - Configuration (Dedicated)
 
@@ -291,6 +290,6 @@ You now have a correctly configured Dedicated app with explicit runtime settings
 
 ## Sources
 
-- [App settings reference for Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-app-settings)
-- [Configure App Service app settings](https://learn.microsoft.com/azure/app-service/configure-common)
-- [Functions scale and hosting behavior](https://learn.microsoft.com/azure/azure-functions/functions-scale)
+- [App settings reference for Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings)
+- [Configure App Service app settings](https://learn.microsoft.com/en-us/azure/app-service/configure-common)
+- [Functions scale and hosting behavior](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)

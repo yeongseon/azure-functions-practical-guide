@@ -1,19 +1,18 @@
 ---
 content_sources:
 
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-java
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-java
 content_validation:
   status: verified
   last_reviewed: '2026-05-23'
   reviewer: agent
   core_claims:
-  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
-      guidance.
-    source: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
-    verified: true
+    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
+      verified: true
 ---
 # Java Language Guide
 
@@ -124,5 +123,5 @@ The following content is planned for the Java track:
 
 ## Sources
 
-- [Azure Functions Java developer guide](https://learn.microsoft.com/azure/azure-functions/functions-reference-java)
-- [Quickstart: Create a Java function in Azure Functions](https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-java)
+- [Azure Functions Java developer guide](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java)
+- [Quickstart: Create a Java function in Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-java)

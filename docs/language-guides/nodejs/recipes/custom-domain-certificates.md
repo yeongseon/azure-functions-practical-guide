@@ -1,19 +1,18 @@
 ---
 content_sources:
 
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/app-service/app-service-web-tutorial-custom-domain
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/app-service/configure-ssl-bindings
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/app-service/app-service-web-tutorial-custom-domain
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/app-service/configure-ssl-bindings
 content_validation:
   status: verified
   last_reviewed: '2026-05-23'
   reviewer: agent
   core_claims:
-  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
-      guidance.
-    source: https://learn.microsoft.com/azure/app-service/app-service-web-tutorial-custom-domain
-    verified: true
+    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
+      source: https://learn.microsoft.com/en-us/azure/app-service/app-service-web-tutorial-custom-domain
+      verified: true
 ---
 # Custom Domains and Certificates
 
@@ -163,5 +162,5 @@ app.http("healthz", {
 - [HTTP Authentication](http-auth.md)
 
 ## Sources
-- [Tutorial: Map an existing custom DNS name to Azure App Service (Microsoft Learn)](https://learn.microsoft.com/azure/app-service/app-service-web-tutorial-custom-domain)
-- [Secure a custom DNS name with TLS/SSL binding in App Service (Microsoft Learn)](https://learn.microsoft.com/azure/app-service/configure-ssl-bindings)
+- [Tutorial: Map an existing custom DNS name to Azure App Service (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/app-service/app-service-web-tutorial-custom-domain)
+- [Secure a custom DNS name with TLS/SSL binding in App Service (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/app-service/configure-ssl-bindings)

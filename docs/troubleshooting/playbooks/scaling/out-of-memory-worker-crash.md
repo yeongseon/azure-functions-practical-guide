@@ -1,22 +1,22 @@
 ---
 content_sources:
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-best-practices
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/analyze-telemetry-data
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
   - type: mslearn-adapted
     url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/performance-reliability
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
   reviewer: agent
   core_claims:
     - claim: "Out of Memory / Worker Crash Playbook 관련 핵심 진단 절차와 운영 판단 기준"
-      source: https://learn.microsoft.com/azure/azure-functions/functions-scale
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
       verified: true
 ---
 
@@ -484,8 +484,8 @@ Plan memory guidance for escalation decisions:
 - [Durable orchestration stuck playbook](./durable-orchestration-stuck.md)
 
 ## Sources
-- [Azure Functions hosting options](https://learn.microsoft.com/azure/azure-functions/functions-scale)
-- [Azure Functions best practices](https://learn.microsoft.com/azure/azure-functions/functions-best-practices)
-- [Monitor Azure Functions](https://learn.microsoft.com/azure/azure-functions/analyze-telemetry-data)
+- [Azure Functions hosting options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
+- [Azure Functions best practices](https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices)
+- [Monitor Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data)
 - [Azure Monitor Logs query in Application Insights](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview)
-- [Performance and reliability for Azure Functions](https://learn.microsoft.com/azure/azure-functions/performance-reliability)
+- [Performance and reliability for Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability)

@@ -1,19 +1,18 @@
 ---
 content_sources:
 
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/storage-considerations
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
 content_validation:
   status: verified
   last_reviewed: '2026-05-23'
   reviewer: agent
   core_claims:
-  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
-      guidance.
-    source: https://learn.microsoft.com/azure/azure-functions/storage-considerations
-    verified: true
+    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+      verified: true
 ---
 # Dependency Queries
 
@@ -156,5 +155,5 @@ Storage is critical infrastructure for Azure Functions (leases, triggers, Durabl
 
 ## Sources
 
-- [Azure Functions storage considerations](https://learn.microsoft.com/azure/azure-functions/storage-considerations)
-- [Monitor Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-monitoring)
+- [Azure Functions storage considerations](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations)
+- [Monitor Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)

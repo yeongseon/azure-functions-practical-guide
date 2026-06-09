@@ -1,23 +1,22 @@
 ---
 content_sources:
 
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/supported-languages
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-how-to
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-reference-python
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-overview
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
 content_validation:
   status: verified
   last_reviewed: '2026-05-23'
   reviewer: agent
   core_claims:
-  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
-      guidance.
-    source: https://learn.microsoft.com/azure/azure-functions/supported-languages
-    verified: true
+    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages
+      verified: true
 ---
 # Python Runtime
 
@@ -45,7 +44,7 @@ Azure Functions v4 runtime supports the following Python versions:
 | **3.11** | ✅ GA | October 2027 |
 | **3.10** | ✅ GA | October 2026 |
 
-The reference application uses **Python 3.11**, which benefits from CPython's specializing adaptive interpreter introduced in that release. For the latest supported versions and plan-specific availability, check the [Azure Functions supported languages](https://learn.microsoft.com/azure/azure-functions/supported-languages) page.
+The reference application uses **Python 3.11**, which benefits from CPython's specializing adaptive interpreter introduced in that release. For the latest supported versions and plan-specific availability, check the [Azure Functions supported languages](https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages) page.
 
 > **Note:** Linux Consumption supports Python 3.10–3.12. Flex Consumption, Premium, and Dedicated support Python 3.10–3.13 (GA) and 3.14 (Preview). Remote build support for Python 3.14 is not yet available on the Flex Consumption plan. Python 3.8 and 3.9 have reached end of support and are no longer available.
 
@@ -73,7 +72,7 @@ az functionapp create \
 | Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
 
 
-> **Flex Consumption:** The `--consumption-plan-location` flag creates a classic Consumption plan. To create a Flex Consumption app, use `az functionapp create` with a pre-created Flex Consumption plan (`--plan`), or use the Bicep template in `infra/main.bicep`. See [Flex Consumption plan](https://learn.microsoft.com/azure/azure-functions/flex-consumption-how-to) for CLI details.
+> **Flex Consumption:** The `--consumption-plan-location` flag creates a classic Consumption plan. To create a Flex Consumption app, use `az functionapp create` with a pre-created Flex Consumption plan (`--plan`), or use the Bicep template in `infra/main.bicep`. See [Flex Consumption plan](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to) for CLI details.
 
 > **Important:** Azure Functions for Python only runs on Linux. The `--os-type linux` flag is required.
 
@@ -293,5 +292,5 @@ If your function app uses large packages (ML libraries like `scikit-learn`, `ten
 - [Scaling](../../platform/scaling.md)
 
 ## Sources
-- [Python v2 Programming Model (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-reference-python)
-- [Azure Functions Overview (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-overview)
+- [Python v2 Programming Model (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python)
+- [Azure Functions Overview (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview)

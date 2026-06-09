@@ -1,27 +1,26 @@
 ---
 content_sources:
 
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-overview
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-scale
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/supported-languages
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/performance-reliability
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
 content_validation:
   status: verified
   last_reviewed: '2026-05-23'
   reviewer: agent
   core_claims:
-  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
-      guidance.
-    source: https://learn.microsoft.com/azure/azure-functions/functions-overview
-    verified: true
+    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
+      verified: true
 ---
 # Learning Paths
 
@@ -68,9 +67,9 @@ Choose the track that matches your immediate goal:
 
 ### Microsoft Learn references
 
-- [Azure Functions overview](https://learn.microsoft.com/azure/azure-functions/functions-overview)
-- [Triggers and bindings](https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings)
-- [Functions scale and hosting](https://learn.microsoft.com/azure/azure-functions/functions-scale)
+- [Azure Functions overview](https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview)
+- [Triggers and bindings](https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings)
+- [Functions scale and hosting](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
 
 ## Track 2: Core Path (2-3 hrs)
 
@@ -98,9 +97,9 @@ Choose the track that matches your immediate goal:
 
 ### Microsoft Learn references
 
-- [Azure Functions developer guides](https://learn.microsoft.com/azure/azure-functions/)
-- [Supported languages](https://learn.microsoft.com/azure/azure-functions/supported-languages)
-- [Performance and reliability guidance](https://learn.microsoft.com/azure/azure-functions/performance-reliability)
+- [Azure Functions developer guides](https://learn.microsoft.com/en-us/azure/azure-functions/)
+- [Supported languages](https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages)
+- [Performance and reliability guidance](https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability)
 
 ## Track 3: Production Path (4-6 hrs)
 
@@ -182,9 +181,9 @@ Choose the track that matches your immediate goal:
 
 ## Sources
 
-- [Azure Functions overview](https://learn.microsoft.com/azure/azure-functions/functions-overview)
-- [Triggers and bindings](https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings)
-- [Functions scale and hosting](https://learn.microsoft.com/azure/azure-functions/functions-scale)
-- [Azure Functions developer guides](https://learn.microsoft.com/azure/azure-functions/)
-- [Supported languages](https://learn.microsoft.com/azure/azure-functions/supported-languages)
-- [Performance and reliability guidance](https://learn.microsoft.com/azure/azure-functions/performance-reliability)
+- [Azure Functions overview](https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview)
+- [Triggers and bindings](https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings)
+- [Functions scale and hosting](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
+- [Azure Functions developer guides](https://learn.microsoft.com/en-us/azure/azure-functions/)
+- [Supported languages](https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages)
+- [Performance and reliability guidance](https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability)

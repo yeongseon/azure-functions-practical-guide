@@ -1,31 +1,31 @@
 ---
 content_sources:
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-premium-plan
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/app-service/overview-hosting-plans
+    url: https://learn.microsoft.com/en-us/azure/app-service/overview-hosting-plans
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
   reviewer: agent
   core_claims:
     - claim: "Consumption plan scales to zero and bills per execution"
-      source: https://learn.microsoft.com/azure/azure-functions/consumption-plan
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan
       verified: true
     - claim: "Flex Consumption supports VNet integration with identity-based storage"
-      source: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
       verified: true
     - claim: "Premium plan provides pre-warmed instances to avoid cold starts"
-      source: https://learn.microsoft.com/azure/azure-functions/functions-premium-plan
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
       verified: true
     - claim: "Dedicated plan runs on App Service infrastructure with always-on support"
-      source: https://learn.microsoft.com/azure/app-service/overview-hosting-plans
+      source: https://learn.microsoft.com/en-us/azure/app-service/overview-hosting-plans
       verified: true
 ---
 
@@ -94,7 +94,7 @@ Azure Functions supports four main hosting models:
 !!! tip "Decision rule"
     Start with Flex Consumption for most new serverless workloads, then choose Premium when you need permanently warm behavior and advanced App Service premium features.
 
-> **Last verified**: 2026-06-06 | **Primary source**: [Azure Functions hosting options](https://learn.microsoft.com/azure/azure-functions/functions-scale)
+> **Last verified**: 2026-06-06 | **Primary source**: [Azure Functions hosting options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
 >
 > Key values subject to change: Flex Consumption max instances, function timeout defaults/maximums, Linux Consumption retirement timeline, deployment slot support, Kudu/SCM availability, private endpoint and VNet integration support, scale behavior by trigger type.
 
@@ -426,8 +426,8 @@ Use conceptual formulas to compare plan behavior before detailed calculator mode
 
 ## Sources
 
-- [Microsoft Learn: Azure Functions hosting options](https://learn.microsoft.com/azure/azure-functions/functions-scale)
-- [Microsoft Learn: Flex Consumption plan](https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan)
-- [Microsoft Learn: Premium plan](https://learn.microsoft.com/azure/azure-functions/functions-premium-plan)
-- [Microsoft Learn: App Service plan](https://learn.microsoft.com/azure/app-service/overview-hosting-plans)
-- [Microsoft Learn: Azure Functions networking options](https://learn.microsoft.com/azure/azure-functions/functions-networking-options)
+- [Microsoft Learn: Azure Functions hosting options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
+- [Microsoft Learn: Flex Consumption plan](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan)
+- [Microsoft Learn: Premium plan](https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan)
+- [Microsoft Learn: App Service plan](https://learn.microsoft.com/en-us/azure/app-service/overview-hosting-plans)
+- [Microsoft Learn: Azure Functions networking options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)

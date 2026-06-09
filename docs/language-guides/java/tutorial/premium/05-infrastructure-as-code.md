@@ -10,23 +10,22 @@ validation:
     result: syntax_validated
 content_sources:
 
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-scale
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-java
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/templates/microsoft.web/sites
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-java
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/templates/microsoft.web/sites
 content_validation:
   status: verified
   last_reviewed: '2026-05-23'
   reviewer: agent
   core_claims:
-  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
-      guidance.
-    source: https://learn.microsoft.com/azure/azure-functions/functions-reference-java
-    verified: true
+    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
+      verified: true
 ---
 # 05 - Infrastructure as Code (Premium)
 
@@ -247,7 +246,7 @@ log-jprem-demo          Microsoft.OperationalInsights/workspaces  koreacentral
 
 ## Sources
 
-- [Azure Functions Java developer guide (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-reference-java)
-- [Azure Functions hosting options (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-scale)
-- [Create a Java function with Azure Functions Core Tools (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-java)
-- [Bicep reference for Microsoft.Web/sites (Microsoft Learn)](https://learn.microsoft.com/azure/templates/microsoft.web/sites)
+- [Azure Functions Java developer guide (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java)
+- [Azure Functions hosting options (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
+- [Create a Java function with Azure Functions Core Tools (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-java)
+- [Bicep reference for Microsoft.Web/sites (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/templates/microsoft.web/sites)

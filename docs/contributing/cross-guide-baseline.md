@@ -1,11 +1,11 @@
 ---
 content_sources:
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/supported-languages
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-reference
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-best-practices
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
 ---
 
 # Cross-Guide Shared Structure Baseline
@@ -408,6 +408,6 @@ Use this checklist when adding or reviewing a language guide:
 
 ## Sources
 
-- [Azure Functions supported languages and runtimes (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/supported-languages)
-- [Azure Functions developer guide (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-reference)
-- [Azure Functions best practices (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-best-practices)
+- [Azure Functions supported languages and runtimes (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages)
+- [Azure Functions developer guide (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference)
+- [Azure Functions best practices (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices)

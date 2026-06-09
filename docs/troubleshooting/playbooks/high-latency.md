@@ -1,20 +1,20 @@
 ---
 content_sources:
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-monitor/app/data-model-complete
+    url: https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model-complete
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/data-explorer/kusto/query/
+    url: https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
   reviewer: agent
   core_claims:
     - claim: "High Latency / Slow Responses 관련 핵심 진단 절차와 운영 판단 기준"
-      source: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
       verified: true
 ---
 
@@ -517,7 +517,7 @@ union isfuzzy=true
 - [KQL Query Library](../kql/index.md)
 - [Troubleshooting Playbooks](../playbooks/index.md)
 ## Sources
-- [Monitor Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-monitoring)
-- [Application Insights telemetry data model](https://learn.microsoft.com/azure/azure-monitor/app/data-model-complete)
-- [Kusto Query Language overview](https://learn.microsoft.com/azure/data-explorer/kusto/query/)
-- [Azure Functions hosting options](https://learn.microsoft.com/azure/azure-functions/functions-scale)
+- [Monitor Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)
+- [Application Insights telemetry data model](https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model-complete)
+- [Kusto Query Language overview](https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/)
+- [Azure Functions hosting options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)

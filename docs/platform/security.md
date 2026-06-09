@@ -1,29 +1,29 @@
 ---
 content_sources:
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/security-concepts
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/security-concepts
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/app-service/overview-authentication-authorization
+    url: https://learn.microsoft.com/en-us/azure/app-service/overview-authentication-authorization
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/api-management/api-management-howto-protect-backend-with-aad
+    url: https://learn.microsoft.com/en-us/azure/api-management/api-management-howto-protect-backend-with-aad
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
   reviewer: agent
   core_claims:
     - claim: "Azure Functions HTTP triggers support anonymous, function, and admin authorization levels"
-      source: https://learn.microsoft.com/azure/azure-functions/security-concepts
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/security-concepts
       verified: true
     - claim: "App Service Authentication runs before function code and can validate identity-provider tokens"
-      source: https://learn.microsoft.com/azure/app-service/overview-authentication-authorization
+      source: https://learn.microsoft.com/en-us/azure/app-service/overview-authentication-authorization
       verified: true
     - claim: "Managed identity is the preferred pattern for Azure-to-Azure service authentication"
-      source: https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
       verified: true
     - claim: "API Management can protect backend functions with Microsoft Entra ID token validation"
-      source: https://learn.microsoft.com/azure/api-management/api-management-howto-protect-backend-with-aad
+      source: https://learn.microsoft.com/en-us/azure/api-management/api-management-howto-protect-backend-with-aad
       verified: true
 ---
 
@@ -394,7 +394,7 @@ Defense-in-depth baseline:
 - [Architecture](architecture/index.md)
 
 ## Sources
-- [Microsoft Learn: Security concepts](https://learn.microsoft.com/azure/azure-functions/security-concepts)
-- [Microsoft Learn: App Service authentication and authorization](https://learn.microsoft.com/azure/app-service/overview-authentication-authorization)
-- [Microsoft Learn: Identity-based connections tutorial](https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial)
-- [Microsoft Learn: Protect API backend with OAuth in API Management](https://learn.microsoft.com/azure/api-management/api-management-howto-protect-backend-with-aad)
+- [Microsoft Learn: Security concepts](https://learn.microsoft.com/en-us/azure/azure-functions/security-concepts)
+- [Microsoft Learn: App Service authentication and authorization](https://learn.microsoft.com/en-us/azure/app-service/overview-authentication-authorization)
+- [Microsoft Learn: Identity-based connections tutorial](https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial)
+- [Microsoft Learn: Protect API backend with OAuth in API Management](https://learn.microsoft.com/en-us/azure/api-management/api-management-howto-protect-backend-with-aad)

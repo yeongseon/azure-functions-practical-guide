@@ -10,21 +10,20 @@ validation:
     result: syntax_validated
 content_sources:
 
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-infrastructure-as-code
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-premium-plan
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/private-link/private-endpoint-overview
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-infrastructure-as-code
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-overview
 content_validation:
   status: verified
   last_reviewed: '2026-05-23'
   reviewer: agent
   core_claims:
-  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
-      guidance.
-    source: https://learn.microsoft.com/azure/azure-functions/functions-infrastructure-as-code
-    verified: true
+    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-infrastructure-as-code
+      verified: true
 ---
 # 05 - Infrastructure as Code (Premium)
 
@@ -777,6 +776,6 @@ pe-func-premium-demo              Microsoft.Network/privateEndpoints
 
 ## Sources
 
-- [Azure Functions infrastructure as code](https://learn.microsoft.com/azure/azure-functions/functions-infrastructure-as-code)
-- [Azure Functions Premium plan](https://learn.microsoft.com/azure/azure-functions/functions-premium-plan)
-- [Azure private endpoints](https://learn.microsoft.com/azure/private-link/private-endpoint-overview)
+- [Azure Functions infrastructure as code](https://learn.microsoft.com/en-us/azure/azure-functions/functions-infrastructure-as-code)
+- [Azure Functions Premium plan](https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan)
+- [Azure private endpoints](https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-overview)

@@ -1,27 +1,26 @@
 ---
 content_sources:
 
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring#application-insights
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-scale
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-diagnostics
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/configure-monitoring
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring#application-insights
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring
 content_validation:
   status: verified
   last_reviewed: '2026-05-23'
   reviewer: agent
   core_claims:
-  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
-      guidance.
-    source: https://learn.microsoft.com/azure/azure-functions/
-    verified: true
+    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/
+      verified: true
 ---
 # Troubleshooting
 
@@ -136,10 +135,10 @@ If you also operate App Service or Container Apps with container-based continuou
 
 ## Sources
 
-- [Azure Functions documentation](https://learn.microsoft.com/azure/azure-functions/)
-- [Azure Functions diagnostics](https://learn.microsoft.com/azure/azure-functions/functions-monitoring)
-- [Application Insights for Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-monitoring#application-insights)
-- [Scale and hosting options](https://learn.microsoft.com/azure/azure-functions/functions-scale)
-- [Monitor Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-monitoring)
-- [Troubleshoot Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-diagnostics)
-- [Application Insights for Azure Functions](https://learn.microsoft.com/azure/azure-functions/configure-monitoring)
+- [Azure Functions documentation](https://learn.microsoft.com/en-us/azure/azure-functions/)
+- [Azure Functions diagnostics](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)
+- [Application Insights for Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring#application-insights)
+- [Scale and hosting options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
+- [Monitor Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)
+- [Troubleshoot Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics)
+- [Application Insights for Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring)

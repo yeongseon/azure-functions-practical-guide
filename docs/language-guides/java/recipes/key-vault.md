@@ -1,19 +1,18 @@
 ---
 content_sources:
 
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/app-service/app-service-key-vault-references
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/key-vault/secrets/quick-create-java
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/app-service/app-service-key-vault-references
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/key-vault/secrets/quick-create-java
 content_validation:
   status: verified
   last_reviewed: '2026-05-23'
   reviewer: agent
   core_claims:
-  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
-      guidance.
-    source: https://learn.microsoft.com/azure/app-service/app-service-key-vault-references
-    verified: true
+    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
+      source: https://learn.microsoft.com/en-us/azure/app-service/app-service-key-vault-references
+      verified: true
 ---
 # Key Vault Integration
 
@@ -145,5 +144,5 @@ public class KeyVaultFunctions {
 
 ## Sources
 
-- [Use Key Vault references for App Service and Azure Functions (Microsoft Learn)](https://learn.microsoft.com/azure/app-service/app-service-key-vault-references)
-- [Quickstart: Azure Key Vault secrets client library for Java (Microsoft Learn)](https://learn.microsoft.com/azure/key-vault/secrets/quick-create-java)
+- [Use Key Vault references for App Service and Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/app-service/app-service-key-vault-references)
+- [Quickstart: Azure Key Vault secrets client library for Java (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/key-vault/secrets/quick-create-java)

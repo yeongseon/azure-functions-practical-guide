@@ -1,22 +1,22 @@
 ---
 content_sources:
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/flex-consumption-how-to
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-deployment-technologies
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/storage/common/storage-network-security
+    url: https://learn.microsoft.com/en-us/azure/storage/common/storage-network-security
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-app-settings
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
   reviewer: agent
   core_claims:
     - claim: "Flex Consumption Deployment Gotchas 관련 핵심 진단 절차와 운영 판단 기준"
-      source: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
       verified: true
 ---
 
@@ -607,8 +607,8 @@ az functionapp config appsettings list \
 
 ## Sources
 
-- [Flex Consumption plan hosting](https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan)
-- [Create and manage Flex Consumption apps](https://learn.microsoft.com/azure/azure-functions/flex-consumption-how-to)
-- [Azure Functions deployment technologies](https://learn.microsoft.com/azure/azure-functions/functions-deployment-technologies)
-- [Azure Storage firewalls and virtual networks](https://learn.microsoft.com/azure/storage/common/storage-network-security)
-- [Azure Functions app settings reference](https://learn.microsoft.com/azure/azure-functions/functions-app-settings)
+- [Flex Consumption plan hosting](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan)
+- [Create and manage Flex Consumption apps](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to)
+- [Azure Functions deployment technologies](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies)
+- [Azure Storage firewalls and virtual networks](https://learn.microsoft.com/en-us/azure/storage/common/storage-network-security)
+- [Azure Functions app settings reference](https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings)

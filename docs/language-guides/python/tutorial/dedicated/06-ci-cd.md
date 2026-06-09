@@ -6,29 +6,28 @@ validation:
     core_tools_version: 4.8.0
     result: pass
   bicep:
-    last_tested: null
+    last_tested:
     result: not_tested
 content_sources:
 
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/deployment-zip-push
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-how-to-github-actions
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-deployment-slots
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/app-service/overview-vnet-integration
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/app-service/networking/private-endpoint
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/app-service/overview-vnet-integration
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint
 content_validation:
   status: verified
   last_reviewed: '2026-05-23'
   reviewer: agent
   core_claims:
-  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
-      guidance.
-    source: https://learn.microsoft.com/azure/azure-functions/deployment-zip-push
-    verified: true
+    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
+      verified: true
 ---
 # 06 - CI/CD (Dedicated)
 
@@ -293,6 +292,6 @@ You now have a repeatable Dedicated deployment pipeline with optional slot-based
 
 ## Sources
 
-- [Zip deployment for Azure Functions](https://learn.microsoft.com/azure/azure-functions/deployment-zip-push)
-- [Deploy Azure Functions with GitHub Actions](https://learn.microsoft.com/azure/azure-functions/functions-how-to-github-actions)
-- [Deployment slots in Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-deployment-slots)
+- [Zip deployment for Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push)
+- [Deploy Azure Functions with GitHub Actions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions)
+- [Deployment slots in Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots)

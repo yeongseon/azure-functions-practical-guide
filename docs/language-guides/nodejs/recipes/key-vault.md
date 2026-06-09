@@ -1,19 +1,18 @@
 ---
 content_sources:
 
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/app-service/app-service-key-vault-references
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/javascript/api/overview/azure/keyvault-secrets-readme
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/app-service/app-service-key-vault-references
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/javascript/api/overview/azure/keyvault-secrets-readme
 content_validation:
   status: verified
   last_reviewed: '2026-05-23'
   reviewer: agent
   core_claims:
-  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
-      guidance.
-    source: https://learn.microsoft.com/azure/app-service/app-service-key-vault-references
-    verified: true
+    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
+      source: https://learn.microsoft.com/en-us/azure/app-service/app-service-key-vault-references
+      verified: true
 ---
 # Key Vault Access
 
@@ -158,5 +157,5 @@ app.http("secretsHealth", {
 - [HTTP Authentication](http-auth.md)
 
 ## Sources
-- [Use Key Vault references for App Service and Azure Functions (Microsoft Learn)](https://learn.microsoft.com/azure/app-service/app-service-key-vault-references)
-- [Azure Key Vault Secrets client library for JavaScript (Microsoft Learn)](https://learn.microsoft.com/javascript/api/overview/azure/keyvault-secrets-readme)
+- [Use Key Vault references for App Service and Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/app-service/app-service-key-vault-references)
+- [Azure Key Vault Secrets client library for JavaScript (Microsoft Learn)](https://learn.microsoft.com/en-us/javascript/api/overview/azure/keyvault-secrets-readme)

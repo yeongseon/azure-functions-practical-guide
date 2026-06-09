@@ -1,17 +1,16 @@
 ---
 content_sources:
 
-- type: mslearn-adapted
-  url: https://learn.microsoft.com/azure/azure-functions/functions-scale#service-limits
+  - type: mslearn-adapted
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale#service-limits
 content_validation:
   status: verified
   last_reviewed: '2026-05-23'
   reviewer: agent
   core_claims:
-  - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific
-      guidance.
-    source: https://learn.microsoft.com/azure/azure-functions/functions-scale#service-limits
-    verified: true
+    - claim: This page uses Microsoft Learn as the primary source basis for its Azure-specific guidance.
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale#service-limits
+      verified: true
 ---
 # Platform Limits
 
@@ -228,4 +227,4 @@ For high-throughput scenarios, consider using a dedicated storage account for `A
 - [host.json Reference](host-json.md)
 
 ## Sources
-- [Azure Functions Scale and Service Limits (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-scale#service-limits)
+- [Azure Functions Scale and Service Limits (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale#service-limits)

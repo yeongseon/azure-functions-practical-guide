@@ -1,15 +1,15 @@
 ---
 content_sources:
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-monitoring
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-monitor/app/data-model
+    url: https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model
   - type: mslearn-adapted
-    url: https://learn.microsoft.com/azure/azure-monitor/essentials/activity-log
+    url: https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/activity-log
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
@@ -282,8 +282,8 @@ flowchart TD
 
 ## Sources
 
-- [Azure Functions monitoring](https://learn.microsoft.com/azure/azure-functions/functions-monitoring)
-- [Azure Functions networking options](https://learn.microsoft.com/azure/azure-functions/functions-networking-options)
-- [Azure Functions scale and hosting](https://learn.microsoft.com/azure/azure-functions/functions-scale)
-- [Application Insights data model](https://learn.microsoft.com/azure/azure-monitor/app/data-model)
-- [Azure Monitor Activity Log](https://learn.microsoft.com/azure/azure-monitor/essentials/activity-log)
+- [Azure Functions monitoring](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)
+- [Azure Functions networking options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)
+- [Azure Functions scale and hosting](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
+- [Application Insights data model](https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model)
+- [Azure Monitor Activity Log](https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/activity-log)

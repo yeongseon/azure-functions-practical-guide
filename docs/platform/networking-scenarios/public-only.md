@@ -2,29 +2,29 @@
 content_sources:
   sources:
     - type: mslearn-adapted
-      url: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
     - type: mslearn-adapted
-      url: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-python
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-python
   diagrams:
     - id: public-only-architecture
       type: flowchart
       source: self-generated
       justification: "Standard public deployment pattern from MSLearn quickstarts"
       based_on:
-        - https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-python
+        - https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-python
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
   reviewer: agent
   core_claims:
     - claim: "Classic Consumption is the default serverless public deployment option and does not provide VNet integration"
-      source: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
       verified: true
     - claim: "Flex Consumption, Premium, and Dedicated plans can be deployed without VNet integration"
-      source: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
       verified: true
     - claim: "A basic Azure Functions deployment can be created publicly with Azure CLI without extra networking resources"
-      source: https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-python
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-python
       verified: true
 ---
 
@@ -265,5 +265,5 @@ To add VNet integration later, see:
 
 ## Sources
 
-- [Azure Functions networking options (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/functions-networking-options)
-- [Create a function app using Azure CLI (Microsoft Learn)](https://learn.microsoft.com/azure/azure-functions/create-first-function-cli-python)
+- [Azure Functions networking options (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)
+- [Create a function app using Azure CLI (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-python)

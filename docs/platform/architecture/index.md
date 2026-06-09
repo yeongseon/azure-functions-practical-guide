@@ -2,92 +2,92 @@
 content_sources:
   references:
     - type: mslearn-adapted
-      url: https://learn.microsoft.com/azure/azure-functions/functions-overview
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
     - type: mslearn-adapted
-      url: https://learn.microsoft.com/azure/azure-functions/functions-scale
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
     - type: mslearn-adapted
-      url: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
     - type: mslearn-adapted
-      url: https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
     - type: mslearn-adapted
-      url: https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-overview
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
     - type: mslearn-adapted
-      url: https://learn.microsoft.com/azure/azure-functions/functions-custom-handlers
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-custom-handlers
   diagrams:
     - id: functions-architecture-overview
       type: flowchart
       source: self-generated
       justification: "Synthesized end-to-end runtime view from Azure Functions overview, hosting, and networking documentation"
       based_on:
-        - https://learn.microsoft.com/azure/azure-functions/functions-overview
-        - https://learn.microsoft.com/azure/azure-functions/functions-scale
-        - https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
     - id: control-data-plane
       type: flowchart
       source: self-generated
       justification: "Synthesized control plane versus runtime execution model from Azure Functions management, scale, and networking documentation"
       based_on:
-        - https://learn.microsoft.com/azure/azure-functions/functions-overview
-        - https://learn.microsoft.com/azure/azure-functions/functions-scale
-        - https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
     - id: runtime-execution-path
       type: flowchart
       source: self-generated
       justification: "Summarizes the documented trigger-to-host-to-worker execution model"
       based_on:
-        - https://learn.microsoft.com/azure/azure-functions/functions-overview
-        - https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
     - id: detailed-host-worker-communication-sequence
       type: sequenceDiagram
       source: self-generated
       justification: "Expanded invocation sequence based on Functions host, worker, and binding concepts"
       based_on:
-        - https://learn.microsoft.com/azure/azure-functions/functions-overview
-        - https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
     - id: core-resource-relationships
       type: flowchart
       source: self-generated
       justification: "Synthesizes core Function App dependencies around hosting, storage, identity, and monitoring"
       based_on:
-        - https://learn.microsoft.com/azure/azure-functions/functions-overview
-        - https://learn.microsoft.com/azure/azure-functions/functions-scale
-        - https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
     - id: configuration-layers-diagram
       type: flowchart
       source: self-generated
       justification: "Shows the configuration hierarchy described across hosting, app settings, host.json, and bindings documentation"
       based_on:
-        - https://learn.microsoft.com/azure/azure-functions/functions-overview
-        - https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
     - id: pattern-b-active-active-with-regional-affinity
       type: flowchart
       source: self-generated
       justification: "Adapted multi-region pattern based on Azure traffic management and replicated dependency guidance"
       based_on:
-        - https://learn.microsoft.com/azure/azure-functions/functions-overview
-        - https://learn.microsoft.com/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
     - id: durable-functions-orchestration-architecture
       type: flowchart
       source: self-generated
       justification: "Summarizes Durable Functions orchestration, activities, timers, and state persistence"
       based_on:
-        - https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
   reviewer: agent
   core_claims:
     - claim: "Azure Functions uses a host/worker architecture so multiple languages can run on one platform"
-      source: https://learn.microsoft.com/azure/azure-functions/functions-overview
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
       verified: true
     - claim: "The Function App is the primary deployment and configuration boundary in Azure Functions"
-      source: https://learn.microsoft.com/azure/azure-functions/functions-overview
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
       verified: true
     - claim: "Flex Consumption supports VNet integration and inbound private endpoints"
-      source: https://learn.microsoft.com/azure/azure-functions/functions-networking-options
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
       verified: true
     - claim: "Flex Consumption requires identity-based host storage and uses Event Grid for blob triggers"
-      source: https://learn.microsoft.com/azure/azure-functions/functions-scale
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
       verified: true
 ---
 
@@ -588,9 +588,9 @@ Platform architecture is consistent, but implementation details vary by language
 - [Language Guides Home](../../language-guides/index.md)
 
 ## Sources
-- [Microsoft Learn: Azure Functions overview](https://learn.microsoft.com/azure/azure-functions/functions-overview)
-- [Microsoft Learn: Azure Functions hosting options](https://learn.microsoft.com/azure/azure-functions/functions-scale)
-- [Microsoft Learn: Azure Functions networking options](https://learn.microsoft.com/azure/azure-functions/functions-networking-options)
-- [Microsoft Learn: Azure Functions triggers and bindings concepts](https://learn.microsoft.com/azure/azure-functions/functions-triggers-bindings)
-- [Microsoft Learn: Durable Functions overview](https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-overview)
-- [Microsoft Learn: Azure Functions custom handlers](https://learn.microsoft.com/azure/azure-functions/functions-custom-handlers)
+- [Microsoft Learn: Azure Functions overview](https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview)
+- [Microsoft Learn: Azure Functions hosting options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
+- [Microsoft Learn: Azure Functions networking options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)
+- [Microsoft Learn: Azure Functions triggers and bindings concepts](https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings)
+- [Microsoft Learn: Durable Functions overview](https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview)
+- [Microsoft Learn: Azure Functions custom handlers](https://learn.microsoft.com/en-us/azure/azure-functions/functions-custom-handlers)

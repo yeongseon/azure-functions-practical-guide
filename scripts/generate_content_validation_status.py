@@ -283,7 +283,7 @@ def generate_dashboard(documents: list[dict[str, Any]], today: date) -> str:
     lines.append("---")
     lines.append("content_sources:")
     lines.append("  - type: mslearn-adapted")
-    lines.append("    url: https://learn.microsoft.com/azure/azure-functions/...")
+    lines.append("    url: https://learn.microsoft.com/en-us/azure/azure-functions/...")
     lines.append("content_validation:")
     lines.append("  status: verified")
     lines.append("  last_reviewed: 2026-04-12")
@@ -291,7 +291,7 @@ def generate_dashboard(documents: list[dict[str, Any]], today: date) -> str:
     lines.append("  core_claims:")
     lines.append('    - claim: "Flex Consumption supports VNet integration"')
     lines.append(
-        "      source: https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan"
+        "      source: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan"
     )
     lines.append("      verified: true")
     lines.append("---")
