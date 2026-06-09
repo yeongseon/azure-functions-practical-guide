@@ -106,6 +106,13 @@ az functionapp create -g $RG -n $APP_NAME  # ❌ Don't do this
 | `$LOCATION` | Azure region | `koreacentral` |
 | `$SUBSCRIPTION_ID` | Subscription identifier placeholder | `<subscription-id>` |
 
+### Language Usage
+
+- **Shell**: Use `bash` for all CLI examples.
+- **Python**: Use `python` for all script examples.
+- **KQL**: Use `kusto` for all Kusto Query Language blocks.
+- **Mermaid**: Use `mermaid` for all architecture and flow diagrams.
+
 ## Content Source Requirements
 
 ### Microsoft Learn First Policy
