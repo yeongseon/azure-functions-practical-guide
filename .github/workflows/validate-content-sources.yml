@@ -64,6 +64,11 @@ jobs:
       # weakening these blocks lets non-canonical content land on main.
       # ---------------------------------------------------------------------
 
+      - name: Run doctests for content_scope and validate_content_sources
+        run: |
+          python -m doctest scripts/lib/content_scope.py -v
+          python -m doctest scripts/validate_content_sources.py -v
+
       - name: Validate mermaid format
         run: |
           python scripts/validate_mermaid_format.py

@@ -439,6 +439,7 @@ nav:
     - reference/troubleshooting.md
     - reference/content-validation-status.md
     - reference/validation-status.md
+    - reference/phase-2d-final-audit.md
   - Contributing:
     - contributing/index.md
     - contributing/cross-guide-baseline.md
