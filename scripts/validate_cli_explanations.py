@@ -24,6 +24,15 @@ def has_az_command(block: list[str]) -> bool:
     return any(AZ_PATTERN.search(line) for line in block)
 
 
+def fence_language(line: str) -> str:
+    """Return the language token from a fence opener like '```bash {.copy}'.
+
+    Returns an empty string for closing fences ('```') or unlabeled fences.
+    """
+    info = line.strip()[3:].strip()
+    return info.split(maxsplit=1)[0] if info else ""
+
+
 def has_following_table(lines: list[str], start_index: int) -> bool:
     """Return True when a Markdown table appears shortly after a fence."""
     checked = 0
@@ -55,6 +64,13 @@ def validate_file(path: Path) -> list[Finding]:
     for index, line in enumerate(lines):
         fence = FENCE_PATTERN.match(line)
         if not in_fence and fence:
+            # Only track ```bash fences. Other languages (mermaid, text, json,
+            # kusto, etc.) may legitimately contain `az ...` text in diagram
+            # labels or console-output transcripts, and do not need an
+            # explanation table per AGENTS.md ("Shell: Use bash for all CLI
+            # examples").
+            if fence_language(line) != "bash":
+                continue
             in_fence = True
             fence_indent = fence.group(1)
             block_start = index + 1
@@ -62,7 +78,9 @@ def validate_file(path: Path) -> list[Finding]:
             continue
 
         if in_fence and fence and len(fence.group(1)) <= len(fence_indent):
-            if has_az_command(block_lines) and not has_following_table(lines, index + 1):
+            if has_az_command(block_lines) and not has_following_table(
+                lines, index + 1
+            ):
                 findings.append(
                     Finding(
                         path=path,
@@ -97,7 +115,9 @@ def main() -> None:
     if findings:
         for finding in findings:
             print(f"{finding.path}:{finding.line}: {finding.message}")
-        raise SystemExit(f"{len(findings)} Azure CLI code fence(s) need explanation tables.")
+        raise SystemExit(
+            f"{len(findings)} Azure CLI code fence(s) need explanation tables."
+        )
 
     print("All Azure CLI code fences have following explanation tables.")
 
