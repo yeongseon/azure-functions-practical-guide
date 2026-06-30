@@ -98,3 +98,13 @@
   opacity: 0.5;
   pointer-events: none;
 }
+
+/* === Fluid layout for wide viewports === */
+@media screen and (min-width: 76.25em) {
+  :root {
+    --md-grid-max-width: min(95vw, 130rem);
+  }
+  .md-grid {
+    max-width: min(95vw, 130rem);
+  }
+}
