@@ -438,6 +438,12 @@ nav:
     - reference/host-json.md
     - reference/environment-variables.md
     - reference/platform-limits.md
+    - Metrics:
+      - reference/metrics/index.md
+      - reference/metrics/function-execution-metrics.md
+      - reference/metrics/flex-consumption-metrics.md
+      - reference/metrics/scaling-and-instances.md
+      - reference/metrics/application-insights-telemetry.md
     - reference/troubleshooting.md
     - reference/content-validation-status.md
     - reference/validation-status.md
