@@ -85,6 +85,10 @@ jobs:
         run: |
           python scripts/normalize_mslearn_locale.py --check
 
+      - name: Scan lab artifacts for PII (real UUIDs, emails, hostnames, public IPs)
+        run: |
+          python scripts/scan_lab_pii.py
+
       - name: Check for content_sources in new/modified files
         run: |
           # Get list of changed markdown files with mermaid
