@@ -6,6 +6,14 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-develop-local
+  diagrams:
+    - id: troubleshooting
+      type: flowchart
+      source: self-generated
+      justification: Flow view of troubleshooting, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-develop-local
 ---
 # Troubleshooting
 

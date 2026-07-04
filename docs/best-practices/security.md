@@ -13,6 +13,29 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/app-service/app-service-key-vault-references
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/function-keys-how-to
+  diagrams:
+    - id: common-mistakes-anti-patterns
+      type: flowchart
+      source: self-generated
+      justification: Flow view of common mistakes anti patterns, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/security-concepts
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
+        - https://learn.microsoft.com/en-us/azure/app-service/app-service-key-vault-references
+        - https://learn.microsoft.com/en-us/azure/azure-functions/function-keys-how-to
+    - id: security-boundary-and-identity-flow
+      type: flowchart
+      source: self-generated
+      justification: Security boundary and identity flow, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/security-concepts
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
+        - https://learn.microsoft.com/en-us/azure/app-service/app-service-key-vault-references
+        - https://learn.microsoft.com/en-us/azure/azure-functions/function-keys-how-to
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

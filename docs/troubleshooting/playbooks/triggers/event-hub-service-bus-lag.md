@@ -11,6 +11,37 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-features
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-messaging-exceptions
+  diagrams:
+    - id: decision-flow
+      type: flowchart
+      source: self-generated
+      justification: Decision flow, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus
+        - https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
+        - https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-features
+        - https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-messaging-exceptions
+    - id: failure-progression-timeline
+      type: flowchart
+      source: self-generated
+      justification: Flow view of failure progression timeline, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus
+        - https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
+        - https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-features
+        - https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-messaging-exceptions
+    - id: broker-to-function-bottleneck-map
+      type: flowchart
+      source: self-generated
+      justification: Flow view of broker to function bottleneck map, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus
+        - https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
+        - https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-features
+        - https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-messaging-exceptions
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

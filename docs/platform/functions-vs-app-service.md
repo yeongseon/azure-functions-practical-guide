@@ -11,6 +11,27 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/architecture/guide/technology-choices/compute-decision-tree
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-compare-logic-apps-ms-flow-webjobs
+  diagrams:
+    - id: decision-framework
+      type: flowchart
+      source: self-generated
+      justification: Flow view of decision framework, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
+        - https://learn.microsoft.com/en-us/azure/app-service/overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/architecture/guide/technology-choices/compute-decision-tree
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-compare-logic-apps-ms-flow-webjobs
+    - id: architecture-comparison
+      type: graph
+      source: self-generated
+      justification: Flow view of architecture comparison, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
+        - https://learn.microsoft.com/en-us/azure/app-service/overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/architecture/guide/technology-choices/compute-decision-tree
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-compare-logic-apps-ms-flow-webjobs
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

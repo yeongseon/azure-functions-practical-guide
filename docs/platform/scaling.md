@@ -13,6 +13,51 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-concurrency
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-perf-and-scale
+  diagrams:
+    - id: scale-controller-fundamentals
+      type: flowchart
+      source: self-generated
+      justification: Flow view of scale controller fundamentals, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-concurrency
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-perf-and-scale
+    - id: flex-specific-operational-constraints-affecting-scale
+      type: flowchart
+      source: self-generated
+      justification: Flow view of flex specific operational constraints affecting scale, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-concurrency
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-perf-and-scale
+    - id: autoscale-decision-flow
+      type: flowchart
+      source: self-generated
+      justification: Autoscale decision flow, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-concurrency
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-perf-and-scale
+    - id: cold-start-versus-warm-path-comparison
+      type: sequenceDiagram
+      source: self-generated
+      justification: Interaction sequence for cold start versus warm path comparison, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-concurrency
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-perf-and-scale
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

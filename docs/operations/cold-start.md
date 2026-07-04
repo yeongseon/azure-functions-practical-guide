@@ -11,6 +11,27 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
+  diagrams:
+    - id: cold-start-phase-timeline
+      type: sequenceDiagram
+      source: self-generated
+      justification: Interaction sequence for cold start phase timeline, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
+        - https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
+    - id: operational-decision-flow
+      type: flowchart
+      source: self-generated
+      justification: Operational decision flow, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
+        - https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

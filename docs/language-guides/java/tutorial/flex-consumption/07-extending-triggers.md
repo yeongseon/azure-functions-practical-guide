@@ -17,6 +17,23 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+  diagrams:
+    - id: what-you-ll-build
+      type: flowchart
+      source: self-generated
+      justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+    - id: what-you-ll-build-2
+      type: flowchart
+      source: self-generated
+      justification: Flow view of what you ll build 2, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
 ---
 # 07 - Extending with Triggers (Flex Consumption)
 

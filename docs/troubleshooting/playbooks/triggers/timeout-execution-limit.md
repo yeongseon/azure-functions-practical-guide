@@ -11,6 +11,37 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-http-webhook-trigger
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
+  diagrams:
+    - id: decision-flow
+      type: flowchart
+      source: self-generated
+      justification: Decision flow, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
+        - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-http-webhook-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
+    - id: failure-progression-timeline
+      type: flowchart
+      source: self-generated
+      justification: Flow view of failure progression timeline, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
+        - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-http-webhook-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
+    - id: timeout-boundary-map
+      type: flowchart
+      source: self-generated
+      justification: Flow view of timeout boundary map, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
+        - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-http-webhook-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

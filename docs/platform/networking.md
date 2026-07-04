@@ -9,6 +9,52 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/app-service/overview-nat-gateway-integration
+  diagrams:
+    - id: reference-architecture
+      type: flowchart
+      source: self-generated
+      justification: Flow view of reference architecture, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/app-service/configure-vnet-integration-enable
+        - https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-nat-gateway-integration
+    - id: 3-zero-trust-ingress-architecture-pattern
+      type: flowchart
+      source: self-generated
+      justification: Flow view of zero trust ingress architecture pattern, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/app-service/configure-vnet-integration-enable
+        - https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-nat-gateway-integration
+    - id: 3-nat-gateway-for-stable-outbound-ip
+      type: flowchart
+      source: self-generated
+      justification: Flow view of nat gateway for stable outbound ip, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/app-service/configure-vnet-integration-enable
+        - https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-nat-gateway-integration
+    - id: dns-design-for-private-endpoints
+      type: flowchart
+      source: self-generated
+      justification: Flow view of dns design for private endpoints, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/app-service/configure-vnet-integration-enable
+        - https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-nat-gateway-integration
+    - id: dns-design-for-private-endpoints-2
+      type: sequenceDiagram
+      source: self-generated
+      justification: Interaction sequence for dns design for private endpoints 2, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/app-service/configure-vnet-integration-enable
+        - https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-nat-gateway-integration
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

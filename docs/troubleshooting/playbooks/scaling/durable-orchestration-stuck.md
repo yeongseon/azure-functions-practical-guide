@@ -11,6 +11,47 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-troubleshooting-guide
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+  diagrams:
+    - id: decision-flow
+      type: flowchart
+      source: self-generated
+      justification: Decision flow, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-code-constraints
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-http-api
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-troubleshooting-guide
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+    - id: signal-snapshot
+      type: flowchart
+      source: self-generated
+      justification: Flow view of signal snapshot, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-code-constraints
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-http-api
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-troubleshooting-guide
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+    - id: signal-snapshot-2
+      type: sequenceDiagram
+      source: self-generated
+      justification: Interaction sequence for signal snapshot 2, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-code-constraints
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-http-api
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-troubleshooting-guide
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+    - id: 7-likely-root-cause-patterns
+      type: flowchart
+      source: self-generated
+      justification: Flow view of likely root cause patterns, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-code-constraints
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-http-api
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-troubleshooting-guide
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

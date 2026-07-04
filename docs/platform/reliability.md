@@ -11,6 +11,47 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus
+  diagrams:
+    - id: retry-flow-with-exponential-backoff-timing
+      type: sequenceDiagram
+      source: self-generated
+      justification: Interaction sequence for retry flow with exponential backoff timing, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
+        - https://learn.microsoft.com/en-us/azure/reliability/reliability-functions
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus
+    - id: queue-specific-poison-behaviors
+      type: flowchart
+      source: self-generated
+      justification: Flow view of queue specific poison behaviors, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
+        - https://learn.microsoft.com/en-us/azure/reliability/reliability-functions
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus
+    - id: availability-zones-and-high-availability
+      type: flowchart
+      source: self-generated
+      justification: Flow view of availability zones and high availability, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
+        - https://learn.microsoft.com/en-us/azure/reliability/reliability-functions
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus
+    - id: reliability-architecture-pattern
+      type: flowchart
+      source: self-generated
+      justification: Flow view of reliability architecture pattern, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
+        - https://learn.microsoft.com/en-us/azure/reliability/reliability-functions
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

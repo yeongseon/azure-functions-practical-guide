@@ -9,6 +9,25 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+  diagrams:
+    - id: scaling-best-practices
+      type: flowchart
+      source: self-generated
+      justification: Flow view of scaling best practices, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-concurrency
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+    - id: phase-4-recovery
+      type: flowchart
+      source: self-generated
+      justification: Flow view of phase 4 recovery, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-concurrency
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

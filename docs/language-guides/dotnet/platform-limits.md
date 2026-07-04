@@ -10,6 +10,16 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan
+  diagrams:
+    - id: platform-limits
+      type: flowchart
+      source: self-generated
+      justification: Flow view of platform limits, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan
 ---
 # Platform Limits
 

@@ -17,6 +17,23 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview
+  diagrams:
+    - id: what-you-ll-build
+      type: flowchart
+      source: self-generated
+      justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview
+    - id: what-you-ll-build-2
+      type: flowchart
+      source: self-generated
+      justification: Flow view of what you ll build 2, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview
 ---
 # 04 - Logging and Monitoring (Flex Consumption)
 

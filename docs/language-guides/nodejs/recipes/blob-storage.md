@@ -6,6 +6,14 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node
+  diagrams:
+    - id: architecture
+      type: flowchart
+      source: self-generated
+      justification: Flow view of architecture, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node
 ---
 # Blob Storage Patterns
 

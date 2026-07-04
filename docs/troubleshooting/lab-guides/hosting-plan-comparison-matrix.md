@@ -9,6 +9,25 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+  diagrams:
+    - id: 5-diagnostic-decision-tree
+      type: flowchart
+      source: self-generated
+      justification: Flow view of diagnostic decision tree, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
+        - https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+    - id: 11-recovery-decision-tree
+      type: flowchart
+      source: self-generated
+      justification: Flow view of recovery decision tree, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
+        - https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
 ---
 # Hosting Plan Security Comparison Matrix
 

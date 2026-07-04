@@ -6,6 +6,14 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/app-service/overview-authentication-authorization
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-http-webhook-trigger#working-with-client-identities
+  diagrams:
+    - id: architecture
+      type: flowchart
+      source: self-generated
+      justification: Flow view of architecture, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-authentication-authorization
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-http-webhook-trigger#working-with-client-identities
 ---
 # HTTP Authentication
 

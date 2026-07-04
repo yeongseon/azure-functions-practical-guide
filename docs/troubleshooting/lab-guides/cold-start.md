@@ -13,6 +13,62 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model-complete
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/
+  diagrams:
+    - id: 1-1-cold-start-phase-model
+      type: flowchart
+      source: self-generated
+      justification: Flow view of cold start phase model, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model-complete
+        - https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/
+    - id: 1-5-timeline-diagram
+      type: sequenceDiagram
+      source: self-generated
+      justification: Interaction sequence for timeline diagram, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model-complete
+        - https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/
+    - id: 2-2-causal-chain
+      type: flowchart
+      source: self-generated
+      justification: Flow view of causal chain, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model-complete
+        - https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/
+    - id: 3-10-decision-logic-during-triage
+      type: flowchart
+      source: self-generated
+      justification: Flow view of decision logic during triage, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model-complete
+        - https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/
+    - id: evidence-timeline
+      type: graph
+      source: self-generated
+      justification: Flow view of evidence timeline, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model-complete
+        - https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/
 ---
 # Lab Guide: Cold Start on Azure Functions
 This Level 3 lab reproduces and analyzes Azure Functions cold-start behavior across hosting plans, with emphasis on FC1 Flex Consumption evidence. You will build a falsifiable timeline that separates worker provisioning delay from host startup time and request execution time.

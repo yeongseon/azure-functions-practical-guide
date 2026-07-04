@@ -17,6 +17,23 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots
+  diagrams:
+    - id: what-you-ll-build
+      type: flowchart
+      source: self-generated
+      justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-python
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots
+    - id: step-5-verify-deployment
+      type: flowchart
+      source: self-generated
+      justification: Flow view of step 5 verify deployment, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-python
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots
 ---
 # 02 - First Deploy (Consumption)
 

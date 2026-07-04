@@ -7,6 +7,15 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-event-grid-blob-trigger
+  diagrams:
+    - id: trigger-and-binding-best-practices
+      type: flowchart
+      source: self-generated
+      justification: Flow view of trigger and binding best practices, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-event-grid-blob-trigger
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

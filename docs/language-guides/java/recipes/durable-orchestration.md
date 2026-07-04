@@ -6,6 +6,14 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-bindings
+  diagrams:
+    - id: architecture
+      type: flowchart
+      source: self-generated
+      justification: Flow view of architecture, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-bindings
 ---
 # Durable Orchestration
 

@@ -12,6 +12,17 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model-complete
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+  diagrams:
+    - id: kql-tables-quick-reference
+      type: graph
+      source: self-generated
+      justification: Flow view of kql tables quick reference, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model
+        - https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model-complete
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
 ---
 # KQL Query Library for Azure Functions
 

@@ -6,6 +6,14 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-monitor/app/correlation
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+  diagrams:
+    - id: correlation-queries
+      type: flowchart
+      source: self-generated
+      justification: Flow view of correlation queries, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/app/correlation
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
 ---
 # Correlation Queries
 

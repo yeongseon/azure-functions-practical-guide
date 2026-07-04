@@ -8,6 +8,23 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
+  diagrams:
+    - id: best-practices
+      type: flowchart
+      source: self-generated
+      justification: Flow view of best practices, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
+    - id: reading-order-recommendation
+      type: flowchart
+      source: self-generated
+      justification: Flow view of reading order recommendation, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
 ---
 # Best Practices
 

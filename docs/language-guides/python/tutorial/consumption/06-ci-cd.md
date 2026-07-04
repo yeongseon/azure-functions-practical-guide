@@ -17,6 +17,23 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions#download-your-publish-profile
+  diagrams:
+    - id: what-you-ll-build
+      type: flowchart
+      source: self-generated
+      justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions
+        - https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions#download-your-publish-profile
+    - id: what-you-ll-build-2
+      type: flowchart
+      source: self-generated
+      justification: Flow view of what you ll build 2, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions
+        - https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions#download-your-publish-profile
 ---
 # 06 - CI/CD (Consumption)
 

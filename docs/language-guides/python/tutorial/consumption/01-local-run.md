@@ -17,6 +17,23 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+  diagrams:
+    - id: what-you-ll-build
+      type: flowchart
+      source: self-generated
+      justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local
+        - https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+    - id: what-you-ll-build-2
+      type: flowchart
+      source: self-generated
+      justification: Flow view of what you ll build 2, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local
+        - https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
 ---
 # 01 - Run Locally (Consumption)
 

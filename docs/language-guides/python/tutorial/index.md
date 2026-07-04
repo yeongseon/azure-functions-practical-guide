@@ -12,6 +12,57 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/pricing
+  diagrams:
+    - id: which-plan-should-i-start-with
+      type: flowchart
+      source: self-generated
+      justification: Flow view of which plan should i start with, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/migration/migrate-plan-consumption-to-flex
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/pricing
+    - id: consumption-y1-public-network
+      type: flowchart
+      source: self-generated
+      justification: Flow view of consumption y1 public network, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/migration/migrate-plan-consumption-to-flex
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/pricing
+    - id: flex-consumption-fc1-full-private-network
+      type: flowchart
+      source: self-generated
+      justification: Flow view of flex consumption fc1 full private network, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/migration/migrate-plan-consumption-to-flex
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/pricing
+    - id: premium-ep-private-network-with-warm-instances
+      type: flowchart
+      source: self-generated
+      justification: Flow view of premium ep private network with warm instances, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/migration/migrate-plan-consumption-to-flex
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/pricing
+    - id: dedicated-app-service-plan-fixed-capacity-with-vnet
+      type: flowchart
+      source: self-generated
+      justification: Flow view of dedicated app service plan fixed capacity with vnet, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/migration/migrate-plan-consumption-to-flex
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/pricing
 ---
 # Tutorial — Choose Your Hosting Plan
 

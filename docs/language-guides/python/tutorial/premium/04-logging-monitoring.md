@@ -15,6 +15,21 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/cli/azure/monitor/app-insights?view=azure-cli-latest
+  diagrams:
+    - id: what-you-ll-build
+      type: flowchart
+      source: self-generated
+      justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
+        - https://learn.microsoft.com/en-us/cli/azure/monitor/app-insights?view=azure-cli-latest
+    - id: what-you-ll-build-2
+      type: flowchart
+      source: self-generated
+      justification: Flow view of what you ll build 2, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
+        - https://learn.microsoft.com/en-us/cli/azure/monitor/app-insights?view=azure-cli-latest
 ---
 # 04 - Logging and Monitoring (Premium)
 

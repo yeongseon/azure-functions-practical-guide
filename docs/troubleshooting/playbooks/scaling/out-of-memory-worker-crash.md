@@ -11,6 +11,47 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
+  diagrams:
+    - id: decision-flow
+      type: flowchart
+      source: self-generated
+      justification: Decision flow, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
+        - https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
+    - id: signal-snapshot
+      type: flowchart
+      source: self-generated
+      justification: Flow view of signal snapshot, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
+        - https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
+    - id: signal-snapshot-2
+      type: sequenceDiagram
+      source: self-generated
+      justification: Interaction sequence for signal snapshot 2, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
+        - https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
+    - id: 7-likely-root-cause-patterns
+      type: flowchart
+      source: self-generated
+      justification: Flow view of likely root cause patterns, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
+        - https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

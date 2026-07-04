@@ -11,6 +11,47 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-versions
+  diagrams:
+    - id: decision-flow
+      type: flowchart
+      source: self-generated
+      justification: Decision flow, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
+        - https://learn.microsoft.com/en-us/azure/app-service/app-service-key-vault-references
+        - https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-versions
+    - id: startup-failure-progression
+      type: sequenceDiagram
+      source: self-generated
+      justification: Interaction sequence for startup failure progression, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
+        - https://learn.microsoft.com/en-us/azure/app-service/app-service-key-vault-references
+        - https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-versions
+    - id: settings-dependency-map
+      type: flowchart
+      source: self-generated
+      justification: Flow view of settings dependency map, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
+        - https://learn.microsoft.com/en-us/azure/app-service/app-service-key-vault-references
+        - https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-versions
+    - id: function-discovery-timeline
+      type: timeline
+      source: self-generated
+      justification: Function discovery timeline, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
+        - https://learn.microsoft.com/en-us/azure/app-service/app-service-key-vault-references
+        - https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-versions
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

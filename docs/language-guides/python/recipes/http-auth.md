@@ -6,6 +6,14 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/security-concepts
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/app-service/overview-authentication-authorization
+  diagrams:
+    - id: authentication-flow
+      type: flowchart
+      source: self-generated
+      justification: Authentication flow, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/security-concepts
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-authentication-authorization
 ---
 # HTTP Authentication
 

@@ -11,6 +11,17 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/service-health/overview
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+  diagrams:
+    - id: evidence-path-overview
+      type: flowchart
+      source: self-generated
+      justification: Flow view of evidence path overview, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+        - https://learn.microsoft.com/en-us/azure/service-health/overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

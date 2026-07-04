@@ -17,6 +17,33 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale#timeout
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
+  diagrams:
+    - id: retry-safe-processing-design
+      type: flowchart
+      source: self-generated
+      justification: Flow view of retry safe processing design, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-idempotent
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reliable-event-processing
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale#timeout
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
+    - id: message-processing-lifecycle-retry-and-poison-path
+      type: flowchart
+      source: self-generated
+      justification: Flow view of message processing lifecycle retry and poison path, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-idempotent
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reliable-event-processing
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale#timeout
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

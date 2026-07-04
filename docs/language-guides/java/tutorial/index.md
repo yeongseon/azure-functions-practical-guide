@@ -6,6 +6,14 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
+  diagrams:
+    - id: which-plan-should-i-start-with
+      type: flowchart
+      source: self-generated
+      justification: Flow view of which plan should i start with, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
 ---
 # Tutorial — Choose Your Hosting Plan
 

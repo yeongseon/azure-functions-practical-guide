@@ -21,6 +21,27 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/app-service/overview-vnet-integration
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint
+  diagrams:
+    - id: what-you-ll-build
+      type: flowchart
+      source: self-generated
+      justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-vnet-integration
+        - https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint
+    - id: what-you-ll-build-2
+      type: flowchart
+      source: self-generated
+      justification: Flow view of what you ll build 2, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-vnet-integration
+        - https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint
 ---
 # 06 - CI/CD (Dedicated)
 

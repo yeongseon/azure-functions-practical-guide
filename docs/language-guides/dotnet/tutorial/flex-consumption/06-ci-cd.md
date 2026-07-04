@@ -17,6 +17,15 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions
+  diagrams:
+    - id: what-you-ll-build
+      type: flowchart
+      source: self-generated
+      justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions
 ---
 # 06 - CI/CD (Flex Consumption)
 

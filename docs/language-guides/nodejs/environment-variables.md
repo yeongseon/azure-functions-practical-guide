@@ -4,6 +4,13 @@ content_sources:
   references:
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
+  diagrams:
+    - id: topic-command-groups
+      type: flowchart
+      source: self-generated
+      justification: Flow view of topic command groups, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
 ---
 # Environment Variables
 

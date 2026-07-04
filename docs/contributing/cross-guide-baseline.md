@@ -7,6 +7,15 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
+  diagrams:
+    - id: why-this-baseline-exists
+      type: flowchart
+      source: self-generated
+      justification: Flow view of why this baseline exists, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
 ---
 
 # Cross-Guide Shared Structure Baseline

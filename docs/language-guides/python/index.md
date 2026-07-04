@@ -8,6 +8,15 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+  diagrams:
+    - id: python-language-guide
+      type: flowchart
+      source: self-generated
+      justification: Flow view of python language guide, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
 ---
 # Python Language Guide
 

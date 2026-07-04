@@ -17,6 +17,72 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
+  diagrams:
+    - id: 1-1-code-storage-model-per-hosting-plan
+      type: flowchart
+      source: self-generated
+      justification: Flow view of code storage model per hosting plan, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model
+        - https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
+    - id: 1-5-failure-progression-model
+      type: sequenceDiagram
+      source: self-generated
+      justification: Interaction sequence for failure progression model, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model
+        - https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
+    - id: 2-2-causal-chain-mermaid-flowchart
+      type: flowchart
+      source: self-generated
+      justification: Causal chain mermaid flowchart, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model
+        - https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
+    - id: 3-11-triage-decision-logic-mermaid-flowchart
+      type: flowchart
+      source: self-generated
+      justification: Triage decision logic mermaid flowchart, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model
+        - https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
+    - id: evidence-timeline-mermaid
+      type: graph
+      source: self-generated
+      justification: Flow view of evidence timeline mermaid, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model
+        - https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
 ---
 # Lab Guide: Code Storage Verification (All Hosting Plans)
 

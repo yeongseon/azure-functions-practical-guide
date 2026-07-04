@@ -6,6 +6,14 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
+  diagrams:
+    - id: host-json-reference
+      type: flowchart
+      source: self-generated
+      justification: Flow view of host json reference, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
 ---
 # host.json Reference
 

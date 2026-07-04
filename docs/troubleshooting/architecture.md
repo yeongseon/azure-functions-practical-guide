@@ -11,6 +11,67 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/activity-log
+  diagrams:
+    - id: request-path-architecture-where-user-facing-failures-surface
+      type: flowchart
+      source: self-generated
+      justification: Flow view of request path architecture where user facing failures surface, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/activity-log
+    - id: runtime-and-worker-model-where-execution-failures-originate
+      type: flowchart
+      source: self-generated
+      justification: Flow view of runtime and worker model where execution failures originate, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/activity-log
+    - id: deployment-path-where-release-regressions-appear
+      type: flowchart
+      source: self-generated
+      justification: Flow view of deployment path where release regressions appear, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/activity-log
+    - id: network-and-outbound-path-where-external-connectivity-fails
+      type: flowchart
+      source: self-generated
+      justification: Flow view of network and outbound path where external connectivity fails, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/activity-log
+    - id: observability-map-where-evidence-is-collected
+      type: flowchart
+      source: self-generated
+      justification: Flow view of observability map where evidence is collected, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/activity-log
+    - id: suggested-incident-flow-through-architecture-layers
+      type: flowchart
+      source: self-generated
+      justification: Suggested incident flow through architecture layers, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/activity-log
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

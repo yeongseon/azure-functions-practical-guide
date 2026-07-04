@@ -11,6 +11,37 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model-complete
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+  diagrams:
+    - id: failure-progression-model
+      type: flowchart
+      source: self-generated
+      justification: Flow view of failure progression model, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model-complete
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+    - id: causal-chain
+      type: flowchart
+      source: self-generated
+      justification: Flow view of causal chain, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model-complete
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+    - id: evidence-timeline
+      type: gantt
+      source: self-generated
+      justification: Evidence timeline, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model-complete
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
 ---
 # Lab Guide: Out of Memory Crash Under Blob Processing Load
 

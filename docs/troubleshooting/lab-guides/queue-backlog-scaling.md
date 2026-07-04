@@ -11,6 +11,57 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+  diagrams:
+    - id: failure-progression-model-for-this-incident
+      type: flowchart
+      source: self-generated
+      justification: Flow view of failure progression model for this incident, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+    - id: timeline-view
+      type: gantt
+      source: self-generated
+      justification: Timeline view, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+    - id: hypothesis-decision-flow
+      type: flowchart
+      source: self-generated
+      justification: Hypothesis decision flow, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+    - id: evidence-timeline
+      type: sequenceDiagram
+      source: self-generated
+      justification: Interaction sequence for evidence timeline, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+    - id: evidence-timeline-2
+      type: sequenceDiagram
+      source: self-generated
+      justification: Interaction sequence for evidence timeline 2, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
 ---
 # Lab Guide: Queue Backlog Scaling on Y1 Consumption (Real Evidence)
 

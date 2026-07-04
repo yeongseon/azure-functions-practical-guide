@@ -12,6 +12,17 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan
+  diagrams:
+    - id: hosting-options
+      type: flowchart
+      source: self-generated
+      justification: Flow view of hosting options, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan
 ---
 # Hosting Options
 

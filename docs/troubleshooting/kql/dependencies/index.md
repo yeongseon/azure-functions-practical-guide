@@ -6,6 +6,14 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+  diagrams:
+    - id: dependency-queries
+      type: flowchart
+      source: self-generated
+      justification: Flow view of dependency queries, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
 ---
 # Dependency Queries
 

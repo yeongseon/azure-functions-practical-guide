@@ -13,6 +13,29 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/traffic-manager/traffic-manager-monitoring
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/frontdoor/health-probes
+  diagrams:
+    - id: recovery-decision-flow
+      type: flowchart
+      source: self-generated
+      justification: Recovery decision flow, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
+        - https://learn.microsoft.com/en-us/azure/architecture/framework/resiliency/disaster-recovery
+        - https://learn.microsoft.com/en-us/azure/storage/common/storage-redundancy
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots
+        - https://learn.microsoft.com/en-us/azure/traffic-manager/traffic-manager-monitoring
+        - https://learn.microsoft.com/en-us/azure/frontdoor/health-probes
+    - id: regional-recovery-planning
+      type: flowchart
+      source: self-generated
+      justification: Flow view of regional recovery planning, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
+        - https://learn.microsoft.com/en-us/azure/architecture/framework/resiliency/disaster-recovery
+        - https://learn.microsoft.com/en-us/azure/storage/common/storage-redundancy
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots
+        - https://learn.microsoft.com/en-us/azure/traffic-manager/traffic-manager-monitoring
+        - https://learn.microsoft.com/en-us/azure/frontdoor/health-probes
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

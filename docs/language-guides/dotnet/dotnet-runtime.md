@@ -6,6 +6,14 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide
+  diagrams:
+    - id: supported-runtimes-and-models
+      type: flowchart
+      source: self-generated
+      justification: Flow view of supported runtimes and models, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages
+        - https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide
 ---
 # .NET Runtime
 

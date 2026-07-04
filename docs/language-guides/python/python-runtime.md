@@ -10,6 +10,16 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
+  diagrams:
+    - id: python-runtime
+      type: flowchart
+      source: self-generated
+      justification: Flow view of python runtime, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
 ---
 # Python Runtime
 

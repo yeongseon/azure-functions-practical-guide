@@ -9,6 +9,25 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus-trigger
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs-trigger
+  diagrams:
+    - id: poison-queue-behavior-storage-queue
+      type: flowchart
+      source: self-generated
+      justification: Flow view of poison queue behavior storage queue, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs-trigger
+    - id: operational-triage-workflow
+      type: flowchart
+      source: self-generated
+      justification: Operational triage workflow, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs-trigger
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

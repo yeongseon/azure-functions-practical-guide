@@ -13,6 +13,62 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/activity-log
+  diagrams:
+    - id: 1-1-managed-identity-authentication-flow
+      type: sequenceDiagram
+      source: self-generated
+      justification: Interaction sequence for managed identity authentication flow, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
+        - https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
+        - https://learn.microsoft.com/en-us/azure/storage/blobs/authorize-access-azure-active-directory
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/activity-log
+    - id: 1-3-rbac-propagation-timeline
+      type: gantt
+      source: self-generated
+      justification: Rbac propagation timeline, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
+        - https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
+        - https://learn.microsoft.com/en-us/azure/storage/blobs/authorize-access-azure-active-directory
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/activity-log
+    - id: 2-2-causal-chain
+      type: flowchart
+      source: self-generated
+      justification: Flow view of causal chain, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
+        - https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
+        - https://learn.microsoft.com/en-us/azure/storage/blobs/authorize-access-azure-active-directory
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/activity-log
+    - id: 3-7-triage-decision-flow
+      type: flowchart
+      source: self-generated
+      justification: Triage decision flow, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
+        - https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
+        - https://learn.microsoft.com/en-us/azure/storage/blobs/authorize-access-azure-active-directory
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/activity-log
+    - id: evidence-timeline
+      type: gantt
+      source: self-generated
+      justification: Evidence timeline, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
+        - https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
+        - https://learn.microsoft.com/en-us/azure/storage/blobs/authorize-access-azure-active-directory
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/activity-log
 ---
 # Lab Guide: Managed Identity Authentication Failure
 

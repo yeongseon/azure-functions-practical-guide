@@ -6,6 +6,14 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-grid
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
+  diagrams:
+    - id: architecture
+      type: flowchart
+      source: self-generated
+      justification: Flow view of architecture, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-grid
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
 ---
 # Event Grid Trigger
 

@@ -13,6 +13,62 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/cli/azure/network/private-dns
+  diagrams:
+    - id: 1-1-private-endpoint-dns-architecture
+      type: flowchart
+      source: self-generated
+      justification: Flow view of private endpoint dns architecture, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-dns
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/dns/private-dns-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/cli/azure/network/private-dns
+    - id: 1-4-failure-progression-model
+      type: sequenceDiagram
+      source: self-generated
+      justification: Interaction sequence for failure progression model, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-dns
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/dns/private-dns-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/cli/azure/network/private-dns
+    - id: 2-2-causal-chain
+      type: flowchart
+      source: self-generated
+      justification: Flow view of causal chain, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-dns
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/dns/private-dns-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/cli/azure/network/private-dns
+    - id: 3-7-triage-decision-flow
+      type: flowchart
+      source: self-generated
+      justification: Triage decision flow, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-dns
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/dns/private-dns-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/cli/azure/network/private-dns
+    - id: evidence-timeline
+      type: gantt
+      source: self-generated
+      justification: Evidence timeline, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-dns
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/dns/private-dns-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/cli/azure/network/private-dns
 ---
 # Lab Guide: DNS and VNet Resolution Failure
 

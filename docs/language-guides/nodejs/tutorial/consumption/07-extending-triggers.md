@@ -19,6 +19,25 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
+  diagrams:
+    - id: what-you-ll-build
+      type: flowchart
+      source: self-generated
+      justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
+    - id: what-you-ll-build-2
+      type: flowchart
+      source: self-generated
+      justification: Flow view of what you ll build 2, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
 ---
 # 07 - Extending Triggers (Consumption)
 

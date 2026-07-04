@@ -11,6 +11,37 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-dns
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
+  diagrams:
+    - id: the-dns-confusion-trap
+      type: flowchart
+      source: self-generated
+      justification: Flow view of the dns confusion trap, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-create-vnet
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options#private-endpoints
+        - https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-dns
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
+    - id: hybrid
+      type: flowchart
+      source: self-generated
+      justification: Flow view of hybrid, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-create-vnet
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options#private-endpoints
+        - https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-dns
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
+    - id: networking-decision-flowchart
+      type: flowchart
+      source: self-generated
+      justification: Networking decision flowchart, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-create-vnet
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options#private-endpoints
+        - https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-dns
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

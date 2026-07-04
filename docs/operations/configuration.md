@@ -11,6 +11,27 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-use-azure-function-app-settings
+  diagrams:
+    - id: when-to-use
+      type: flowchart
+      source: self-generated
+      justification: Flow view of when to use, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
+        - https://learn.microsoft.com/en-us/azure/app-service/app-service-key-vault-references
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-use-azure-function-app-settings
+    - id: configuration-change-management-workflow
+      type: flowchart
+      source: self-generated
+      justification: Configuration change management workflow, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
+        - https://learn.microsoft.com/en-us/azure/app-service/app-service-key-vault-references
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-use-azure-function-app-settings
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

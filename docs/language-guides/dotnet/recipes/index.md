@@ -4,6 +4,13 @@ content_sources:
   references:
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-dotnet-class-library
+  diagrams:
+    - id: recipe-categories
+      type: flowchart
+      source: self-generated
+      justification: Flow view of recipe categories, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-dotnet-class-library
 ---
 # .NET Recipes
 

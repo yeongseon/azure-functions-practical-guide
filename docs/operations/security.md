@@ -17,6 +17,20 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/app-service/app-service-ip-restrictions
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/platform-logs-overview
+  diagrams:
+    - id: procedure
+      type: flowchart
+      source: self-generated
+      justification: Flow view of procedure, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/security-concepts
+        - https://learn.microsoft.com/en-us/azure/azure-functions/function-keys-how-to
+        - https://learn.microsoft.com/en-us/azure/role-based-access-control/overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
+        - https://learn.microsoft.com/en-us/azure/app-service/app-service-web-tutorial-rest-api#app-service-cors-versus-your-cors
+        - https://learn.microsoft.com/en-us/azure/app-service/configure-ssl-bindings
+        - https://learn.microsoft.com/en-us/azure/app-service/app-service-ip-restrictions
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/platform-logs-overview
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

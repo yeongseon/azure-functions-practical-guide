@@ -9,6 +9,34 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/api-management/api-management-howto-protect-backend-with-aad
+  diagrams:
+    - id: security-model-overview
+      type: flowchart
+      source: self-generated
+      justification: Flow view of security model overview, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/security-concepts
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-authentication-authorization
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
+        - https://learn.microsoft.com/en-us/azure/api-management/api-management-howto-protect-backend-with-aad
+    - id: authentication-architecture-decision-tree
+      type: flowchart
+      source: self-generated
+      justification: Flow view of authentication architecture decision tree, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/security-concepts
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-authentication-authorization
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
+        - https://learn.microsoft.com/en-us/azure/api-management/api-management-howto-protect-backend-with-aad
+    - id: apim-as-a-security-gateway
+      type: flowchart
+      source: self-generated
+      justification: Flow view of apim as a security gateway, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/security-concepts
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-authentication-authorization
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
+        - https://learn.microsoft.com/en-us/azure/api-management/api-management-howto-protect-backend-with-aad
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

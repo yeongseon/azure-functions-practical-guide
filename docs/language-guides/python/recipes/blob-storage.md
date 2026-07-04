@@ -10,6 +10,16 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
+  diagrams:
+    - id: architecture
+      type: flowchart
+      source: self-generated
+      justification: Flow view of architecture, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-event-grid-blob-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan#trigger-support
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
 ---
 # Blob Storage
 

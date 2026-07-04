@@ -11,6 +11,17 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+  diagrams:
+    - id: 1-summary
+      type: flowchart
+      source: self-generated
+      justification: Flow view of summary, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
+        - https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

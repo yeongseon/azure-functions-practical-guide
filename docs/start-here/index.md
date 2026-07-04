@@ -6,6 +6,14 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+  diagrams:
+    - id: start-here
+      type: flowchart
+      source: self-generated
+      justification: Flow view of start here, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
 ---
 # Start Here
 

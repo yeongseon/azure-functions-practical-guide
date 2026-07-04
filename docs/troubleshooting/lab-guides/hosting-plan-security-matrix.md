@@ -11,6 +11,37 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/configure-networking-how-to
+  diagrams:
+    - id: 1-2-cross-plan-architecture-map
+      type: flowchart
+      source: self-generated
+      justification: Flow view of cross plan architecture map, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
+        - https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/configure-networking-how-to
+    - id: 2-2-causal-chain
+      type: flowchart
+      source: self-generated
+      justification: Flow view of causal chain, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
+        - https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/configure-networking-how-to
+    - id: evidence-timeline
+      type: gantt
+      source: self-generated
+      justification: Evidence timeline, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
+        - https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/configure-networking-how-to
 ---
 # Lab Guide: Hosting Plan Security Matrix — Private Endpoint + Managed Identity Fault Injection
 

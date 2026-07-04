@@ -11,6 +11,27 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/cost-logs
+  diagrams:
+    - id: when-to-use
+      type: graph
+      source: self-generated
+      justification: Flow view of when to use, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/cost-logs
+    - id: break-even-analysis
+      type: graph
+      source: self-generated
+      justification: Flow view of break even analysis, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/cost-logs
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

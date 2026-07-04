@@ -7,6 +7,15 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
+  diagrams:
+    - id: why-this-matters
+      type: flowchart
+      source: self-generated
+      justification: Flow view of why this matters, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

@@ -6,6 +6,14 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/service-health/overview
+  diagrams:
+    - id: checklists
+      type: graph
+      source: self-generated
+      justification: Flow view of checklists, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/service-health/overview
 ---
 # Checklists
 

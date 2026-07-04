@@ -11,6 +11,57 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-scalability
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+  diagrams:
+    - id: failure-progression-model
+      type: flowchart
+      source: self-generated
+      justification: Flow view of failure progression model, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
+        - https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-scalability
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+    - id: end-to-end-telemetry-sequence
+      type: sequenceDiagram
+      source: self-generated
+      justification: End to end telemetry sequence, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
+        - https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-scalability
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+    - id: causal-chain
+      type: flowchart
+      source: self-generated
+      justification: Flow view of causal chain, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
+        - https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-scalability
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+    - id: 3-6-triage-decision-flow-used-during-live-response
+      type: flowchart
+      source: self-generated
+      justification: Triage decision flow used during live response, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
+        - https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-scalability
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+    - id: evidence-timeline
+      type: gantt
+      source: self-generated
+      justification: Evidence timeline, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
+        - https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-scalability
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
 ---
 # Lab Guide: Event Hub Checkpoint Lag on Azure Functions Premium EP1
 

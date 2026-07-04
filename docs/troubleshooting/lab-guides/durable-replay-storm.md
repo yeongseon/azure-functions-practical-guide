@@ -13,6 +13,73 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+  diagrams:
+    - id: replay-growth-model-used-in-this-lab
+      type: flowchart
+      source: self-generated
+      justification: Flow view of replay growth model used in this lab, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-orchestrations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-best-practice-reference
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-eternal-orchestrations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+    - id: test-topology-and-evidence-channels
+      type: sequenceDiagram
+      source: self-generated
+      justification: Interaction sequence for test topology and evidence channels, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-orchestrations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-best-practice-reference
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-eternal-orchestrations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+    - id: time-compression-view-of-the-run
+      type: gantt
+      source: self-generated
+      justification: Timeline view of time compression view of the run, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-orchestrations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-best-practice-reference
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-eternal-orchestrations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+    - id: causal-chain
+      type: flowchart
+      source: self-generated
+      justification: Flow view of causal chain, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-orchestrations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-best-practice-reference
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-eternal-orchestrations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+    - id: 3-9-decision-flow-during-live-troubleshooting
+      type: flowchart
+      source: self-generated
+      justification: Decision flow during live troubleshooting, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-orchestrations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-best-practice-reference
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-eternal-orchestrations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+    - id: evidence-timeline
+      type: gantt
+      source: self-generated
+      justification: Evidence timeline, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-orchestrations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-best-practice-reference
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-eternal-orchestrations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
 ---
 # Lab Guide: Durable Functions Replay Storm on Azure Functions Premium EP1
 

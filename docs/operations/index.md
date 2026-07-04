@@ -8,6 +8,15 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics
+  diagrams:
+    - id: scope
+      type: flowchart
+      source: self-generated
+      justification: Flow view of scope, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics
 ---
 # Operations
 

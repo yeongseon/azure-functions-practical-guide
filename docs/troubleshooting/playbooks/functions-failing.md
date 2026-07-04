@@ -11,6 +11,17 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/role-based-access-control/overview
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/
+  diagrams:
+    - id: troubleshooting-decision-flow
+      type: flowchart
+      source: self-generated
+      justification: Troubleshooting decision flow, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
+        - https://learn.microsoft.com/en-us/azure/role-based-access-control/overview
+        - https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

@@ -10,6 +10,16 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-http-webhook
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-python
+  diagrams:
+    - id: python-v2-programming-model
+      type: flowchart
+      source: self-generated
+      justification: Flow view of python v2 programming model, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-http-webhook
+        - https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-python
 ---
 # Python v2 Programming Model
 

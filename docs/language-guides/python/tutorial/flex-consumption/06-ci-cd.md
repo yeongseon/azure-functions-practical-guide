@@ -17,6 +17,23 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure-openid-connect
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
+  diagrams:
+    - id: what-you-ll-build
+      type: flowchart
+      source: self-generated
+      justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions
+        - https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure-openid-connect
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
+    - id: what-you-ll-build-2
+      type: flowchart
+      source: self-generated
+      justification: Flow view of what you ll build 2, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions
+        - https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure-openid-connect
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
 ---
 # 06 - CI/CD (Flex Consumption)
 

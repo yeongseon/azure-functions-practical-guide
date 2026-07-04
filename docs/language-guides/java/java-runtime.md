@@ -6,6 +6,21 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
+  diagrams:
+    - id: supported-java-versions
+      type: timeline
+      source: self-generated
+      justification: Timeline view of supported java versions, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
+    - id: maven-build-and-deployment
+      type: flowchart
+      source: self-generated
+      justification: Flow view of maven build and deployment, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
 ---
 # Java Runtime
 

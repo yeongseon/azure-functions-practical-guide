@@ -13,6 +13,62 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference?tabs=blob#configure-an-identity-based-connection
+  diagrams:
+    - id: scenario-overview
+      type: flowchart
+      source: self-generated
+      justification: Flow view of scenario overview, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-create-vnet
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference?tabs=blob#configure-an-identity-based-connection
+    - id: scenario-a-public-serverless-consumption-y1
+      type: flowchart
+      source: self-generated
+      justification: Flow view of scenario a public serverless consumption y1, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-create-vnet
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference?tabs=blob#configure-an-identity-based-connection
+    - id: scenario-b-private-serverless-flex-consumption-fc1
+      type: flowchart
+      source: self-generated
+      justification: Flow view of scenario b private serverless flex consumption fc1, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-create-vnet
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference?tabs=blob#configure-an-identity-based-connection
+    - id: scenario-c-private-enterprise-premium-ep
+      type: flowchart
+      source: self-generated
+      justification: Flow view of scenario c private enterprise premium ep, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-create-vnet
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference?tabs=blob#configure-an-identity-based-connection
+    - id: scenario-d-fixed-capacity-dedicated-asp
+      type: flowchart
+      source: self-generated
+      justification: Flow view of scenario d fixed capacity dedicated asp, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-create-vnet
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference?tabs=blob#configure-an-identity-based-connection
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

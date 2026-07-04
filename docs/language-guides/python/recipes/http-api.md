@@ -6,6 +6,14 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-http-webhook
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+  diagrams:
+    - id: request-flow
+      type: flowchart
+      source: self-generated
+      justification: Request flow, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-http-webhook
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
 ---
 # HTTP API Patterns
 

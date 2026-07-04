@@ -11,6 +11,27 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+  diagrams:
+    - id: failure-progression-model
+      type: flowchart
+      source: self-generated
+      justification: Flow view of failure progression model, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-timer
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference
+        - https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+    - id: evidence-timeline
+      type: gantt
+      source: self-generated
+      justification: Evidence timeline, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-timer
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference
+        - https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
 ---
 # Lab Guide: Timer Trigger Missed Schedules
 

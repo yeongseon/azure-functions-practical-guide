@@ -12,6 +12,17 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/reliability/reliability-functions
+  diagrams:
+    - id: what-this-section-covers
+      type: flowchart
+      source: self-generated
+      justification: Flow view of what this section covers, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/reliability/reliability-functions
 ---
 # Platform
 

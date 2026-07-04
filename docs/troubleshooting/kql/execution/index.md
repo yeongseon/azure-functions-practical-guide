@@ -6,6 +6,14 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+  diagrams:
+    - id: execution-queries
+      type: graph
+      source: self-generated
+      justification: Flow view of execution queries, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
 ---
 # Execution Queries
 

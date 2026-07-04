@@ -5,6 +5,21 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-consumption-costs
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/pricing
+  diagrams:
+    - id: alert-policy-examples
+      type: flowchart
+      source: self-generated
+      justification: Flow view of alert policy examples, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-consumption-costs
+        - https://learn.microsoft.com/en-us/azure/azure-functions/pricing
+    - id: governance
+      type: flowchart
+      source: self-generated
+      justification: Flow view of governance, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-consumption-costs
+        - https://learn.microsoft.com/en-us/azure/azure-functions/pricing
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

@@ -6,6 +6,14 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/app-service/app-service-web-tutorial-custom-domain
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/app-service/configure-ssl-bindings
+  diagrams:
+    - id: architecture
+      type: flowchart
+      source: self-generated
+      justification: Flow view of architecture, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/app-service/app-service-web-tutorial-custom-domain
+        - https://learn.microsoft.com/en-us/azure/app-service/configure-ssl-bindings
 ---
 # Custom Domains and Certificates
 

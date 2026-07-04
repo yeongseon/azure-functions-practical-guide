@@ -13,6 +13,62 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
+  diagrams:
+    - id: core-model
+      type: flowchart
+      source: self-generated
+      justification: Flow view of core model, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-event-grid-blob-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
+        - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
+    - id: event-grid-vs-polling-blob-trigger-model
+      type: flowchart
+      source: self-generated
+      justification: Flow view of event grid vs polling blob trigger model, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-event-grid-blob-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
+        - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
+    - id: input-output-binding-data-flow-multi-service
+      type: flowchart
+      source: self-generated
+      justification: Input output binding data flow multi service, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-event-grid-blob-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
+        - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
+    - id: queue-trigger-output-pattern-architectural
+      type: flowchart
+      source: self-generated
+      justification: Flow view of queue trigger output pattern architectural, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-event-grid-blob-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
+        - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
+    - id: durable-functions-triggers
+      type: flowchart
+      source: self-generated
+      justification: Flow view of durable functions triggers, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-event-grid-blob-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
+        - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

@@ -11,6 +11,47 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/key-vault/general/rbac-guide
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/dotnet/api/azure.identity.defaultazurecredential
+  diagrams:
+    - id: decision-flow
+      type: flowchart
+      source: self-generated
+      justification: Decision flow, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
+        - https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
+        - https://learn.microsoft.com/en-us/azure/key-vault/general/rbac-guide
+        - https://learn.microsoft.com/en-us/dotnet/api/azure.identity.defaultazurecredential
+    - id: failure-progression-model
+      type: sequenceDiagram
+      source: self-generated
+      justification: Interaction sequence for failure progression model, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
+        - https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
+        - https://learn.microsoft.com/en-us/azure/key-vault/general/rbac-guide
+        - https://learn.microsoft.com/en-us/dotnet/api/azure.identity.defaultazurecredential
+    - id: identity-authorization-map
+      type: flowchart
+      source: self-generated
+      justification: Flow view of identity authorization map, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
+        - https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
+        - https://learn.microsoft.com/en-us/azure/key-vault/general/rbac-guide
+        - https://learn.microsoft.com/en-us/dotnet/api/azure.identity.defaultazurecredential
+    - id: host-startup-correlation
+      type: timeline
+      source: self-generated
+      justification: Timeline view of host startup correlation, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
+        - https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
+        - https://learn.microsoft.com/en-us/azure/key-vault/general/rbac-guide
+        - https://learn.microsoft.com/en-us/dotnet/api/azure.identity.defaultazurecredential
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

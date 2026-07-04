@@ -13,6 +13,62 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
+  diagrams:
+    - id: 1-1-storage-dependency-model-for-azure-functions
+      type: flowchart
+      source: self-generated
+      justification: Flow view of storage dependency model for azure functions, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model
+        - https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
+    - id: 1-5-failure-progression-model
+      type: sequenceDiagram
+      source: self-generated
+      justification: Interaction sequence for failure progression model, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model
+        - https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
+    - id: 2-2-causal-chain
+      type: flowchart
+      source: self-generated
+      justification: Flow view of causal chain, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model
+        - https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
+    - id: 3-10-triage-decision-logic
+      type: flowchart
+      source: self-generated
+      justification: Flow view of triage decision logic, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model
+        - https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
+    - id: evidence-timeline
+      type: graph
+      source: self-generated
+      justification: Flow view of evidence timeline, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model
+        - https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
 ---
 # Lab Guide: Storage Access Failure (AzureWebJobsStorage)
 

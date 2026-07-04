@@ -10,6 +10,16 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-dotnet-class-library
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
+  diagrams:
+    - id: language-guides
+      type: flowchart
+      source: self-generated
+      justification: Flow view of language guides, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-dotnet-class-library
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
 ---
 # Language Guides
 

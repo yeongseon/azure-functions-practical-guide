@@ -5,6 +5,21 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
+  diagrams:
+    - id: why-this-matters
+      type: flowchart
+      source: self-generated
+      justification: Flow view of why this matters, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
+    - id: recommended-practices
+      type: flowchart
+      source: self-generated
+      justification: Flow view of recommended practices, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

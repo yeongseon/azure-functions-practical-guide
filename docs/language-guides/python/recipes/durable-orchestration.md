@@ -6,6 +6,21 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+  diagrams:
+    - id: overview
+      type: flowchart
+      source: self-generated
+      justification: Flow view of overview, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+    - id: fan-out-fan-in-pattern
+      type: sequenceDiagram
+      source: self-generated
+      justification: Interaction sequence for fan out fan in pattern, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
 ---
 # Durable Functions
 

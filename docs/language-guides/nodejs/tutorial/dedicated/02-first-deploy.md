@@ -17,6 +17,15 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-node
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+  diagrams:
+    - id: what-you-ll-build
+      type: flowchart
+      source: self-generated
+      justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node
+        - https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-node
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
 ---
 # 02 - First Deploy (Dedicated)
 

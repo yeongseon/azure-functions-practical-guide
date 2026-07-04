@@ -14,6 +14,18 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring
+  diagrams:
+    - id: decision-tree
+      type: flowchart
+      source: self-generated
+      justification: Flow view of decision tree, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring#application-insights
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics
+        - https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring
 ---
 # Troubleshooting
 

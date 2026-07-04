@@ -11,6 +11,27 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/app-service/overview-hosting-plans
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+  diagrams:
+    - id: hosting-plans-at-a-glance
+      type: flowchart
+      source: self-generated
+      justification: Flow view of hosting plans at a glance, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-hosting-plans
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+    - id: workflow-flowchart
+      type: flowchart
+      source: self-generated
+      justification: Workflow flowchart, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-hosting-plans
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

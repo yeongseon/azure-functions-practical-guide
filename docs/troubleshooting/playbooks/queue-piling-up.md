@@ -13,6 +13,18 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/storage/common/monitor-storage
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-monitor/app/analytics
+  diagrams:
+    - id: 1-summary
+      type: flowchart
+      source: self-generated
+      justification: Flow view of summary, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/storage/common/monitor-storage
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/app/analytics
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

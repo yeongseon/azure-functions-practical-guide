@@ -6,6 +6,14 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-java
+  diagrams:
+    - id: main-content
+      type: flowchart
+      source: self-generated
+      justification: Flow view of main content, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
+        - https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-java
 ---
 # Java Language Guide
 

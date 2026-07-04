@@ -4,6 +4,13 @@ content_sources:
   references:
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/
+  diagrams:
+    - id: top-level-navigation-model
+      type: flowchart
+      source: self-generated
+      justification: Flow view of top level navigation model, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/
 ---
 # Repository Map
 

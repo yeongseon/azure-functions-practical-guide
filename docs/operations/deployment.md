@@ -9,6 +9,16 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local
+  diagrams:
+    - id: deployment-workflow
+      type: flowchart
+      source: self-generated
+      justification: Deployment workflow, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

@@ -6,6 +6,14 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/app-service/app-service-key-vault-references
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/javascript/api/overview/azure/keyvault-secrets-readme
+  diagrams:
+    - id: architecture
+      type: flowchart
+      source: self-generated
+      justification: Flow view of architecture, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/app-service/app-service-key-vault-references
+        - https://learn.microsoft.com/en-us/javascript/api/overview/azure/keyvault-secrets-readme
 ---
 # Key Vault Access
 

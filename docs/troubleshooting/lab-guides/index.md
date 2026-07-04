@@ -8,6 +8,15 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics
+  diagrams:
+    - id: hands-on-labs
+      type: graph
+      source: self-generated
+      justification: Flow view of hands on labs, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics
 ---
 # Hands-on Labs
 

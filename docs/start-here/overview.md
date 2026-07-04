@@ -24,6 +24,23 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-dotnet-class-library
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
+  diagrams:
+    - id: overview-what-is-azure-functions
+      type: flowchart
+      source: self-generated
+      justification: Flow view of overview what is azure functions, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scenarios
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-compare-logic-apps-ms-flow-webjobs
+        - https://learn.microsoft.com/en-us/azure/architecture/guide/technology-choices/compute-comparison
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-dotnet-class-library
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
 ---
 # Overview: What is Azure Functions
 

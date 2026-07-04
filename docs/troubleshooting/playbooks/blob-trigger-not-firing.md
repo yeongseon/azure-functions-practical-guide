@@ -11,6 +11,17 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+  diagrams:
+    - id: 1-summary
+      type: flowchart
+      source: self-generated
+      justification: Flow view of summary, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+        - https://learn.microsoft.com/en-us/azure/event-grid/concepts
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

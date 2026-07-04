@@ -25,6 +25,177 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs-trigger
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus
+  diagrams:
+    - id: 1-hosting-plan-architecture-where-startup-and-scale-behavior-change
+      type: flowchart
+      source: self-generated
+      justification: Flow view of hosting plan architecture where startup and scale behavior change, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-diagnostics
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-cosmosdb-v2-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus
+    - id: 2-trigger-and-binding-architecture-where-invocations-begin-or-stall
+      type: flowchart
+      source: self-generated
+      justification: Flow view of trigger and binding architecture where invocations begin or stall, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-diagnostics
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-cosmosdb-v2-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus
+    - id: request-flow-examples-by-trigger-type
+      type: flowchart
+      source: self-generated
+      justification: Request flow examples by trigger type, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-diagnostics
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-cosmosdb-v2-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus
+    - id: 3-scale-controller-and-instance-management-where-backlog-and-burst-failures-originate
+      type: flowchart
+      source: self-generated
+      justification: Flow view of scale controller and instance management where backlog and burst failures originate, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-diagnostics
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-cosmosdb-v2-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus
+    - id: scale-out-decision-flow
+      type: flowchart
+      source: self-generated
+      justification: Scale out decision flow, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-diagnostics
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-cosmosdb-v2-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus
+    - id: 4-cold-start-flow-where-first-execution-latency-appears
+      type: sequenceDiagram
+      source: self-generated
+      justification: Interaction sequence for cold start flow where first execution latency appears, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-diagnostics
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-cosmosdb-v2-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus
+    - id: 5-durable-functions-orchestration-architecture-where-replay-and-state-coordination-confuse-diagnosis
+      type: flowchart
+      source: self-generated
+      justification: Flow view of durable functions orchestration architecture where replay and state coordination confuse diagnosis, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-diagnostics
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-cosmosdb-v2-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus
+    - id: durable-state-machine-view
+      type: stateDiagram-v2
+      source: self-generated
+      justification: Durable state machine view, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-diagnostics
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-cosmosdb-v2-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus
+    - id: 6-azure-service-integration-path-where-dependencies-amplify-failure
+      type: flowchart
+      source: self-generated
+      justification: Flow view of azure service integration path where dependencies amplify failure, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-diagnostics
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-cosmosdb-v2-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus
+    - id: 7-observability-coverage-and-fast-evidence-commands
+      type: flowchart
+      source: self-generated
+      justification: Flow view of observability coverage and fast evidence commands, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-diagnostics
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-cosmosdb-v2-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus
 content_validation:
   status: verified
   last_reviewed: 2026-04-12

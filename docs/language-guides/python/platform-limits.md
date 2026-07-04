@@ -6,6 +6,14 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale#service-limits
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/storage/common/scalability-targets-standard-account
+  diagrams:
+    - id: platform-limits
+      type: flowchart
+      source: self-generated
+      justification: Flow view of platform limits, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale#service-limits
+        - https://learn.microsoft.com/en-us/azure/storage/common/scalability-targets-standard-account
 ---
 # Platform Limits
 
