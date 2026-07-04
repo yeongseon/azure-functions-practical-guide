@@ -10,7 +10,7 @@ content_sources:
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model-complete
     - type: mslearn-adapted
-      url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+      url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-query-overview
   diagrams:
     - id: failure-progression-model
       type: flowchart
@@ -21,7 +21,7 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
         - https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model-complete
-        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-query-overview
     - id: causal-chain
       type: flowchart
       source: self-generated
@@ -31,7 +31,7 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
         - https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model-complete
-        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-query-overview
     - id: evidence-timeline
       type: gantt
       source: self-generated
@@ -41,7 +41,7 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
         - https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model-complete
-        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-query-overview
 ---
 # Lab Guide: Out of Memory Crash Under Blob Processing Load
 
@@ -705,4 +705,4 @@ az group delete --name "$RG" --yes --no-wait
 - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
 - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
 - https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model-complete
-- https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+- https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-query-overview

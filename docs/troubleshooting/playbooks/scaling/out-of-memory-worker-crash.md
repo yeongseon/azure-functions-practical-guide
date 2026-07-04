@@ -8,7 +8,7 @@ content_sources:
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
     - type: mslearn-adapted
-      url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+      url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-query-overview
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
   diagrams:
@@ -20,7 +20,7 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
         - https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
-        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-query-overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
     - id: signal-snapshot
       type: flowchart
@@ -30,7 +30,7 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
         - https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
-        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-query-overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
     - id: signal-snapshot-2
       type: sequenceDiagram
@@ -40,7 +40,7 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
         - https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
-        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-query-overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
     - id: 7-likely-root-cause-patterns
       type: flowchart
@@ -50,7 +50,7 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
         - https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
-        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-query-overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
 content_validation:
   status: verified
@@ -529,5 +529,5 @@ Plan memory guidance for escalation decisions:
 - [Azure Functions hosting options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
 - [Azure Functions best practices](https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices)
 - [Monitor Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data)
-- [Azure Monitor Logs query in Application Insights](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview)
+- [Azure Monitor Logs query in Application Insights](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-query-overview)
 - [Performance and reliability for Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability)

@@ -6,7 +6,7 @@ content_sources:
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
     - type: mslearn-adapted
-      url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+      url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-query-overview
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/service-health/overview
     - type: mslearn-adapted
@@ -19,7 +19,7 @@ content_sources:
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
         - https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
-        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-query-overview
         - https://learn.microsoft.com/en-us/azure/service-health/overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
 content_validation:
@@ -293,6 +293,6 @@ dependencies
 
 - [Azure Functions monitoring](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)
 - [Monitor Azure Functions with Application Insights](https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data)
-- [Azure Monitor Logs query overview](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview)
+- [Azure Monitor Logs query overview](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-query-overview)
 - [Azure Service Health overview](https://learn.microsoft.com/en-us/azure/service-health/overview)
 - [Azure Functions networking options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)

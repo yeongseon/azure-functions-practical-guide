@@ -3,7 +3,7 @@ content_sources:
 
   references:
     - type: mslearn-adapted
-      url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+      url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-query-overview
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model
     - type: mslearn-adapted
@@ -18,7 +18,7 @@ content_sources:
       source: self-generated
       justification: Flow view of kql tables quick reference, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
-        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-query-overview
         - https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model
         - https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/
         - https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model-complete
@@ -112,7 +112,7 @@ graph TD
 
 ## Sources
 
-- [Azure Monitor Logs query overview](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview)
+- [Azure Monitor Logs query overview](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-query-overview)
 - [Application Insights data model](https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model)
 - [Kusto Query Language overview](https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/)
 - [Application Insights telemetry data model](https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model-complete)

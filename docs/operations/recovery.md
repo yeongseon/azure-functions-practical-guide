@@ -4,7 +4,7 @@ content_sources:
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
     - type: mslearn-adapted
-      url: https://learn.microsoft.com/en-us/azure/architecture/framework/resiliency/disaster-recovery
+      url: https://learn.microsoft.com/en-us/azure/well-architected/reliability/disaster-recovery
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/storage/common/storage-redundancy
     - type: mslearn-adapted
@@ -20,7 +20,7 @@ content_sources:
       justification: Recovery decision flow, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
-        - https://learn.microsoft.com/en-us/azure/architecture/framework/resiliency/disaster-recovery
+        - https://learn.microsoft.com/en-us/azure/well-architected/reliability/disaster-recovery
         - https://learn.microsoft.com/en-us/azure/storage/common/storage-redundancy
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots
         - https://learn.microsoft.com/en-us/azure/traffic-manager/traffic-manager-monitoring
@@ -31,7 +31,7 @@ content_sources:
       justification: Flow view of regional recovery planning, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
-        - https://learn.microsoft.com/en-us/azure/architecture/framework/resiliency/disaster-recovery
+        - https://learn.microsoft.com/en-us/azure/well-architected/reliability/disaster-recovery
         - https://learn.microsoft.com/en-us/azure/storage/common/storage-redundancy
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots
         - https://learn.microsoft.com/en-us/azure/traffic-manager/traffic-manager-monitoring
@@ -42,7 +42,7 @@ content_validation:
   reviewer: agent
   core_claims:
     - claim: "Azure Functions recovery planning should define RTO and RPO before incidents occur."
-      source: https://learn.microsoft.com/en-us/azure/architecture/framework/resiliency/disaster-recovery
+      source: https://learn.microsoft.com/en-us/azure/well-architected/reliability/disaster-recovery
       verified: true
     - claim: "Deployment slots provide a fast rollback path for supported Azure Functions hosting plans."
       source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots
@@ -428,7 +428,7 @@ If recovery does not stabilize service, apply these controls.
 
 ## Sources
 - [Reliability in Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices)
-- [Business continuity and disaster recovery for Azure applications](https://learn.microsoft.com/en-us/azure/architecture/framework/resiliency/disaster-recovery)
+- [Business continuity and disaster recovery for Azure applications](https://learn.microsoft.com/en-us/azure/well-architected/reliability/disaster-recovery)
 - [Azure Storage redundancy options](https://learn.microsoft.com/en-us/azure/storage/common/storage-redundancy)
 - [Deployment slots in Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots)
 - [Azure Traffic Manager endpoint monitoring](https://learn.microsoft.com/en-us/azure/traffic-manager/traffic-manager-monitoring)

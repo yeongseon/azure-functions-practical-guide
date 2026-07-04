@@ -10,7 +10,7 @@ content_sources:
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
     - type: mslearn-adapted
-      url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+      url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-query-overview
   diagrams:
     - id: failure-progression-model-for-this-incident
       type: flowchart
@@ -21,7 +21,7 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
-        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-query-overview
     - id: timeline-view
       type: gantt
       source: self-generated
@@ -31,7 +31,7 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
-        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-query-overview
     - id: hypothesis-decision-flow
       type: flowchart
       source: self-generated
@@ -41,7 +41,7 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
-        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-query-overview
     - id: evidence-timeline
       type: sequenceDiagram
       source: self-generated
@@ -51,7 +51,7 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
-        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-query-overview
     - id: evidence-timeline-2
       type: sequenceDiagram
       source: self-generated
@@ -61,7 +61,7 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
-        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-query-overview
 ---
 # Lab Guide: Queue Backlog Scaling on Y1 Consumption (Real Evidence)
 
@@ -644,4 +644,4 @@ If using shared resources (`rg-lab-y1-shared`), skip deletion and only clear tes
 - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
 - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
 - https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
-- https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overviewlog-query-overview
+- https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-query-overview
