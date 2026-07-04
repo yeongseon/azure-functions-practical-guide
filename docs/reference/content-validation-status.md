@@ -11,12 +11,12 @@ This page tracks `content_validation` metadata for **in-scope factual-claim docu
 
 ## Summary
 
-*Generated: 2026-06-09*
+*Generated: 2026-07-05*
 
 | Content Type | Total | Verified | Pending | Unverified | No Metadata |
 |---|---:|---:|---:|---:|---:|
-| Mermaid Diagrams | 498 | 498 | 0 | 0 | 0 |
-| In-Scope Factual-Claim Documents | 57 | 57 | 0 | 0 | 0 |
+| Mermaid Diagrams | 513 | 513 | 0 | 0 | 0 |
+| In-Scope Factual-Claim Documents | 58 | 58 | 0 | 0 | 0 |
 
 !!! success "All In-Scope Documents Verified"
     Every in-scope factual-claim document has verified Microsoft Learn sources for its core claims.
@@ -24,7 +24,7 @@ This page tracks `content_validation` metadata for **in-scope factual-claim docu
 <!-- diagram-id: content-validation-status-pie -->
 ```mermaid
 pie title In-Scope Document Validation Status
-    "Verified" : 57
+    "Verified" : 58
 ```
 
 ## By Section
@@ -34,11 +34,12 @@ pie title In-Scope Document Validation Status
 | Document | Has Sources | Status | Claims | Last Reviewed |
 |---|---|---|---|---|
 | [Deployment Scenarios](../platform/deployment-scenarios.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
+| [Durable Functions](../platform/durable-functions.md) | ✅ | ✅ Verified | 5/5 | 2026-07-05 |
 | [Fixed Outbound Nat](../platform/networking-scenarios/fixed-outbound-nat.md) | ✅ | ✅ Verified | 3/3 | 2026-04-12 |
 | [Functions Vs App Service](../platform/functions-vs-app-service.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
 | [Hosting](../platform/hosting.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
-| [Index](../platform/networking-scenarios/index.md) | ✅ | ✅ Verified | 3/3 | 2026-05-21 |
 | [Index](../platform/architecture/index.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
+| [Index](../platform/networking-scenarios/index.md) | ✅ | ✅ Verified | 3/3 | 2026-05-21 |
 | [Networking](../platform/networking.md) | ✅ | ✅ Verified | 3/3 | 2026-04-12 |
 | [Private Egress](../platform/networking-scenarios/private-egress.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
 | [Private Ingress](../platform/networking-scenarios/private-ingress.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |

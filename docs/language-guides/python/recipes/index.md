@@ -67,6 +67,7 @@ graph TD
 |--------|-------------|
 | [Timer Trigger](timer.md) | Scheduled jobs, cron semantics, and idempotent batch execution patterns. |
 | [Durable Functions](durable-orchestration.md) | Orchestration, fan-out/fan-in, and stateful workflow coordination. |
+| [Durable Entities](durable-entities.md) | Stateful entity (actor-style) model for aggregation and per-key state coordination. |
 | [Event Grid](event-grid.md) | Event-driven designs and event routing patterns for reactive systems. |
 
 ## How to consume recipes effectively

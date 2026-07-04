@@ -6,6 +6,10 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-eternal-orchestrations
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-http-features
   diagrams:
     - id: overview
       type: flowchart
@@ -21,6 +25,20 @@ content_sources:
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+    - id: monitor-pattern
+      type: flowchart
+      source: self-generated
+      justification: Flow view of the monitor pattern, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-eternal-orchestrations
+    - id: human-interaction-pattern
+      type: sequenceDiagram
+      source: self-generated
+      justification: Interaction sequence for the human interaction pattern, synthesized from Microsoft Learn documentation cited on this page.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-http-features
 ---
 # Durable Functions
 
@@ -270,6 +288,119 @@ def process_item(item: dict) -> dict:
     return {"item": item, "status": "success"}
 ```
 
+## Monitor Pattern
+
+Poll a long-running job on a durable timer until it finishes or a deadline passes. `create_timer` is a durable sleep — no compute is billed while the orchestration waits, and the timer survives host restarts.
+
+<!-- diagram-id: monitor-pattern -->
+```mermaid
+flowchart TD
+    START["Start\nget job_id + deadline"] --> CHECK["call_activity\ncheck_job_status"]
+    CHECK --> COND{"Done or expired?"}
+    COND -->|"still running"| TIMER["create_timer\nsleep interval"]
+    TIMER --> CHECK
+    COND -->|"done / timeout"| RET["Return final status"]
+    style CHECK fill:#0078d4,color:#fff
+    style RET fill:#107c10,color:#fff
+```
+
+```python
+from datetime import timedelta
+
+
+@bp.orchestration_trigger(context_name="context")
+def monitor_job(context: df.DurableOrchestrationContext):
+    """Poll a job until it completes or the deadline passes."""
+    job = context.get_input()
+    job_id = job["job_id"]
+    polling_seconds = job.get("polling_seconds", 30)
+
+    # Use the deterministic orchestration clock, never datetime.now().
+    deadline = context.current_utc_datetime + timedelta(hours=2)
+
+    while context.current_utc_datetime < deadline:
+        status = yield context.call_activity("check_job_status", job_id)
+        if status["state"] in ("completed", "failed"):
+            return {"job_id": job_id, "state": status["state"], "result": status.get("result")}
+
+        # Durable sleep: schedule the next check, then yield until the timer fires.
+        next_check = context.current_utc_datetime + timedelta(seconds=polling_seconds)
+        yield context.create_timer(next_check)
+
+    return {"job_id": job_id, "state": "timeout"}
+```
+
+Key points:
+
+- Use `context.current_utc_datetime` for all time math — `datetime.now()` breaks determinism.
+- `create_timer` schedules a durable timer; the orchestration is unloaded while it waits and costs no compute.
+- For an open-ended monitor, call `context.continue_as_new(...)` instead of a `while` loop so the history stays small.
+
+## Human Interaction Pattern
+
+Pause a workflow until an external decision arrives — an approval, a signature, a callback — with a timeout so the workflow never blocks forever. The orchestrator waits on an external event and a durable timer at the same time and acts on whichever resolves first.
+
+<!-- diagram-id: human-interaction-pattern -->
+```mermaid
+sequenceDiagram
+    participant Cli as Client (HTTP)
+    participant Orc as Orchestrator
+    participant Act as Activity
+    Orc->>Act: request_approval
+    Note over Orc: wait_for_external_event + create_timer (timeout)
+    alt approval arrives first
+        Cli->>Orc: raise_event ApprovalEvent
+        Orc->>Act: apply approved / rejected
+    else timeout fires first
+        Orc->>Orc: escalate (default action)
+    end
+```
+
+```python
+from datetime import timedelta
+
+
+@bp.orchestration_trigger(context_name="context")
+def approval_workflow(context: df.DurableOrchestrationContext):
+    """Wait up to 72 hours for an approval decision, then act or escalate."""
+    request = context.get_input()
+    yield context.call_activity("request_approval", request)
+
+    # Race the external event against a durable timeout.
+    deadline = context.current_utc_datetime + timedelta(hours=72)
+    approval_task = context.wait_for_external_event("ApprovalEvent")
+    timeout_task = context.create_timer(deadline)
+
+    winner = yield context.task_any([approval_task, timeout_task])
+
+    if winner == approval_task:
+        if not timeout_task.is_completed:
+            timeout_task.cancel()  # release the pending durable timer
+        decision = approval_task.result
+        if decision.get("approved"):
+            yield context.call_activity("apply_approval", request)
+            return {"status": "approved", "approver": decision.get("approver")}
+        return {"status": "rejected", "approver": decision.get("approver")}
+
+    return {"status": "escalated", "reason": "approval timed out"}
+```
+
+Deliver the decision from any client function with `raise_event`, using the same event name the orchestrator waits on:
+
+```python
+@bp.route(route="orchestrations/{instance_id}/approve", methods=["POST"])
+@bp.durable_client_input(client_name="client")
+async def approve(req: func.HttpRequest, client: df.DurableOrchestrationClient) -> func.HttpResponse:
+    """Deliver an approval decision to a waiting orchestration."""
+    instance_id = req.route_params.get("instance_id")
+    decision = req.get_json()  # e.g. {"approved": true, "approver": "alice"}
+
+    await client.raise_event(instance_id, "ApprovalEvent", decision)
+    return func.HttpResponse(status_code=202)
+```
+
+The `sendEventPostUri` from the starter response points at this same raise-event webhook, so external systems can resume the workflow without a custom endpoint.
+
 ## Check Orchestration Status
 
 Use the status query URL from the starter response, or query programmatically:
@@ -305,7 +436,11 @@ async def get_status(req: func.HttpRequest, client: df.DurableOrchestrationClien
 ## See Also
 - [HTTP API Patterns](http-api.md)
 - [Queue Recipe](queue.md)
+- [Durable Entities](durable-entities.md)
+- [Platform: Durable Functions](../../../platform/durable-functions.md)
 
 ## Sources
 - [Durable Functions Overview (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview)
 - [Python v2 Programming Model (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python)
+- [HTTP features: raise event webhooks (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-http-features)
+- [Eternal orchestrations (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-eternal-orchestrations)

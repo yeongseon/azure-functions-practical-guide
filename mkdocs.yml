@@ -104,6 +104,7 @@ nav:
       - Overview: platform/architecture/index.md
     - Hosting: platform/hosting.md
     - Triggers and Bindings: platform/triggers-and-bindings.md
+    - Durable Functions: platform/durable-functions.md
     - Scaling: platform/scaling.md
     - Networking: platform/networking.md
     - Reliability: platform/reliability.md
@@ -180,6 +181,7 @@ nav:
         - language-guides/python/recipes/managed-identity.md
         - language-guides/python/recipes/timer.md
         - language-guides/python/recipes/durable-orchestration.md
+        - language-guides/python/recipes/durable-entities.md
         - language-guides/python/recipes/event-grid.md
         - language-guides/python/recipes/custom-domain-certificates.md
       - Python Reference:
