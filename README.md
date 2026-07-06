@@ -1,5 +1,7 @@
 # Azure Functions Practical Guide
 
+📘 **Documentation site:** <https://yeongseon.github.io/azure-functions-practical-guide/>
+
 [English](README.md) | [한국어](README.ko.md) | [日本語](README.ja.md) | [简体中文](README.zh-CN.md)
 
 ![Docs](https://github.com/yeongseon/azure-functions-practical-guide/actions/workflows/docs.yml/badge.svg)
