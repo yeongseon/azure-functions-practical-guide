@@ -12,6 +12,12 @@ content_sources:
 
 # Cross-Guide Shared Structure Baseline
 
+!!! info "Series-wide canonical version"
+    The canonical series-wide language-guide baseline lives in the Azure Architecture Practical Guide:
+    [Language Guide Baseline](https://yeongseon.github.io/azure-architecture-practical-guide/contributing/language-guide-baseline/).
+
+    This Functions page remains as the local worked example and adaptation surface for Azure Functions.
+
 This document defines the canonical file tree, heading skeletons, navigation conventions, and quality gates that every language guide in this repository must follow. The Python guide (`docs/language-guides/python/`) is the reference implementation — all other languages replicate its structure with language-specific content.
 
 ## Why This Baseline Exists
@@ -462,6 +468,7 @@ Use this checklist when adding or reviewing a language guide:
 - [.NET Language Guide](../language-guides/dotnet/index.md)
 - [Platform: Architecture](../platform/architecture/index.md)
 - [Start Here: Repository Map](../start-here/repository-map.md)
+- [Language Guide Baseline (series-wide canonical version)](https://yeongseon.github.io/azure-architecture-practical-guide/contributing/language-guide-baseline/)
 
 ## Sources
 
