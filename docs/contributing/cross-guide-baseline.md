@@ -1,21 +1,13 @@
 ---
 content_sources:
   references:
-    - type: mslearn-adapted
-      url: https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages
-    - type: mslearn-adapted
-      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference
-    - type: mslearn-adapted
-      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
+    - type: self-generated
+      justification: Series-wide language-guide baseline. No direct Microsoft Learn source; synthesized from repeated language-guide practice across Functions, Container Apps, and App Service sibling repos.
   diagrams:
     - id: why-this-baseline-exists
       type: flowchart
       source: self-generated
-      justification: Flow view of why this baseline exists, synthesized from Microsoft Learn documentation cited on this page.
-      based_on:
-        - https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
+      justification: Flow view of why this baseline exists, synthesized from repeated language-guide practice across Functions, Container Apps, and App Service sibling repos.
 ---
 
 # Cross-Guide Shared Structure Baseline
@@ -30,49 +22,46 @@ Multiple language guides (Python, Node.js, Java, .NET) share the same tutorial s
 ```mermaid
 flowchart TD
     Baseline["Cross-Guide Baseline<br/>(this document)"]
-    Baseline --> Python["Python Guide<br/>reference implementation"]
-    Baseline --> NodeJS["Node.js Guide"]
-    Baseline --> Java["Java Guide"]
-    Baseline --> DotNet[".NET Guide"]
+    Baseline --> ReferenceLanguage["Reference Language<br/>reference implementation"]
+    Baseline --> LanguageB["Language B"]
+    Baseline --> LanguageC["Language C"]
+    Baseline --> LanguageD["Language D"]
 
-    Python -.->|template for| NodeJS
-    Python -.->|template for| Java
-    Python -.->|template for| DotNet
+    ReferenceLanguage -.->|template for| LanguageB
+    ReferenceLanguage -.->|template for| LanguageC
+    ReferenceLanguage -.->|template for| LanguageD
 
     style Baseline fill:#0078d4,color:#fff
-    style Python fill:#107c10,color:#fff
-    style NodeJS fill:#ff8c00,color:#fff
-    style Java fill:#5c2d91,color:#fff
-    style DotNet fill:#d83b01,color:#fff
+    style ReferenceLanguage fill:#107c10,color:#fff
+    style LanguageB fill:#ff8c00,color:#fff
+    style LanguageC fill:#5c2d91,color:#fff
+    style LanguageD fill:#d83b01,color:#fff
 ```
+
+Reference Language is a per-repo choice. Functions and Container Apps currently use Python as the reference implementation; a future TypeScript-centric repo could choose Node.js instead.
 
 ## Canonical File Tree
 
-Every language guide (`docs/language-guides/{lang}/`) MUST contain the following files:
+Every language guide (`docs/language-guides/{lang}/`) SHOULD contain the following files. Individual repos MAY omit or extend based on service-specific needs.
 
 ```text
 docs/language-guides/{lang}/
+├── Core shared files
 ├── index.md                              # Language overview page
 ├── {model}.md                           # Programming model deep dive
-├── {lang}-runtime.md                     # Runtime versions, worker settings, dependencies
+├── {lang}-runtime.md                    # Runtime versions, worker settings, dependencies
 ├── tutorial/
-│   ├── index.md                          # Plan chooser (mermaid flowchart + comparison table)
-│   ├── consumption/
-│   │   ├── 01-local-run.md
-│   │   ├── 02-first-deploy.md
-│   │   ├── 03-configuration.md
-│   │   ├── 04-logging-monitoring.md
-│   │   ├── 05-infrastructure-as-code.md
-│   │   ├── 06-ci-cd.md
-│   │   └── 07-extending-triggers.md
-│   ├── flex-consumption/
-│   │   └── (same 01–07 structure)
-│   ├── premium/
-│   │   └── (same 01–07 structure)
-│   └── dedicated/
-│       └── (same 01–07 structure)
+│   ├── index.md                         # Deployment-option chooser (flowchart + comparison table)
+│   └── {option}/                        # One directory per deployment option / tier / SKU
+│       ├── 01-local-run.md
+│       ├── 02-first-deploy.md
+│       ├── 03-configuration.md
+│       ├── 04-logging-monitoring.md
+│       ├── 05-infrastructure-as-code.md
+│       ├── 06-ci-cd.md
+│       └── 07-service-extension.md
 ├── recipes/
-│   ├── index.md                          # Recipe category overview
+│   ├── index.md                         # Recipe category overview
 │   ├── http-api.md
 │   ├── http-auth.md
 │   ├── cosmosdb.md
@@ -84,16 +73,33 @@ docs/language-guides/{lang}/
 │   ├── durable-orchestration.md
 │   ├── event-grid.md
 │   └── custom-domain-certificates.md
-├── cli-cheatsheet.md                     # Language-specific CLI quick reference
-├── environment-variables.md              # App settings and environment variables
-├── host-json.md                          # host.json configuration reference
-├── platform-limits.md                    # Quotas, timeouts, instance limits
-└── troubleshooting.md                    # Common issues and resolutions
+├── cli-cheatsheet.md                    # Language-specific CLI quick reference
+├── environment-variables.md             # App settings and environment variables
+├── service-limits.md                    # Service quotas, timeouts, instance limits
+└── troubleshooting.md                   # Common issues and resolutions
+
+Service-specific files
+├── service-config-reference.md          # Service-native configuration reference
+└── service-concept-reference.md         # Service-native operational or packaging concept
 ```
 
-**Total: 48 files per language guide.**
+**Baseline: ~40 shared files per language guide + service-specific files at the repo owner's discretion.**
 
-### Programming Model File Naming
+Interpret the tree in two layers:
+
+- **Core shared files** are the cross-repo baseline that most service-focused practical guides should converge on.
+- **Service-specific files** document concepts unique to the service's deployment model, runtime contract, or configuration surface.
+- Repo owners MAY add more recipe files, more tutorial steps, or extra reference pages when the service has materially different reader needs.
+
+### Example — Functions service-specific reference files
+
+`host-json.md` documents the host configuration contract.
+
+Container Apps sibling example: a comparable slot is better used for a container-image or startup-conventions reference page.
+
+### Example — Functions programming-model file naming
+
+The programming-model file captures the language's currently recommended way of authoring code in the service. Each repo picks the file name; the table below is the Functions example.
 
 | Language | File Name | Model |
 |----------|-----------|-------|
@@ -102,7 +108,11 @@ docs/language-guides/{lang}/
 | Java | `annotation-programming-model.md` | Annotation-based model |
 | .NET | `isolated-worker-model.md` | Isolated worker model |
 
-### Runtime File Naming
+Container Apps sibling example: use a service-specific concept document such as `container-startup.md` or `entrypoint-conventions.md` when there is no framework-imposed programming model.
+
+### Example — Functions runtime file naming
+
+The runtime file captures version support, runtime selection, and local/runtime-specific operational details. The table below is the Functions example.
 
 | Language | File Name |
 |----------|-----------|
@@ -111,14 +121,16 @@ docs/language-guides/{lang}/
 | Java | `java-runtime.md` |
 | .NET | `dotnet-runtime.md` |
 
+Container Apps sibling example: because the runtime is whatever the container image provides, a repo MAY omit this file or replace it with an image/runtime contract page.
+
 ## Heading Skeletons
 
-### Tutorial (01–07)
+### Tutorial Step Files
 
 Every tutorial file MUST follow this heading skeleton:
 
 ```markdown
-# NN - Title (Plan Name)
+# NN - Title (Deployment Option Name)
 
 Brief introduction (1–2 sentences).
 
@@ -127,12 +139,13 @@ Brief introduction (1–2 sentences).
 | Tool | Version | Purpose |
 |------|---------|---------|
 | {Language runtime} | {version}+ | Local runtime |
-| Azure Functions Core Tools | v4 | Local host and deployment |
 | Azure CLI | 2.61+ | Provision and configure resources |
+
+Repos SHOULD add service-specific tooling rows as needed (for example, a service-native local host/deployment tool or an ingress/tunnel helper).
 
 ## What You'll Build
 
-Brief description of the function, trigger, and expected local validation result.
+Brief description of the code artifact (function, endpoint, worker, job — whatever the service unit of deployment is), the interaction pattern (HTTP, trigger, message, schedule), and the expected local validation result.
 
 ## Steps
 
@@ -151,16 +164,16 @@ Show the command output, host output, or HTTP/trigger result that proves the ste
 ## Sources
 ```
 
-!!! tip "Plan-specific admonition"
-    Each tutorial's Prerequisites section should include a plan-specific `!!! info` admonition summarizing the plan's key characteristics (scale-to-zero, memory, timeout, VNet support).
+!!! tip "Deployment-option-specific admonition"
+    Each tutorial's Prerequisites section should include a deployment-option-specific `!!! info` admonition summarizing the option's key characteristics (scale-to-zero, memory, timeout, VNet support).
 
 ### Tutorial Plan Chooser (tutorial/index.md)
 
 The plan chooser page MUST contain:
 
 1. **Mermaid flowchart** — decision tree routing readers to the right plan
-2. **Plan comparison table** — features (scale-to-zero, VNet, slots, instances, timeout, memory, OS, pricing) across all four plans
-3. **Tutorial track tables** — one table per plan listing all 7 steps with links
+2. **Plan / SKU / tier comparison table** — features across the deployment options the service exposes. For Functions this is the four plans. For Container Apps this is the serverless versus workload-profile decision surface. For App Service this is App Service Plan tiers.
+3. **Tutorial track tables** — one table per deployment option, listing tutorial step files with links. The number of steps is service-dependent.
 4. **"What Each Step Covers"** — summary table mapping step numbers to topics and learning outcomes
 
 ### Programming Model Document
@@ -257,7 +270,7 @@ Brief introduction.
 ## Sources (optional — omit only when there are no external references)
 ```
 
-### Reference Documents (cli-cheatsheet, environment-variables, host-json, platform-limits, troubleshooting)
+### Reference Documents (cli-cheatsheet, environment-variables, service-limits, troubleshooting)
 
 ```markdown
 # {Title}
@@ -277,14 +290,14 @@ Brief introduction.
 
 ### Tutorials
 
-Every tutorial (01–07) MUST include these See Also links:
+Every tutorial step file MUST include these See Also links:
 
 ```markdown
 ## See Also
 
 - [Tutorial Overview & Plan Chooser](../index.md)
 - [{Language} Language Guide](../../index.md)
-- [Platform: Hosting Plans](../../../../platform/hosting.md)
+- [Platform: Hosting Model / Deployment Model](../../../../platform/hosting.md)
 - [Operations: Deployment](../../../../operations/deployment.md)
 - [Recipes Index](../../recipes/index.md)
 ```
@@ -322,12 +335,16 @@ Every tutorial (01–07) MUST include these See Also links:
 
 - [{Language} Recipes Index](index.md)
 - [{Language} Language Guide](../index.md)
-- [Platform: Triggers and Bindings](../../../platform/triggers-and-bindings.md)
+- [Platform: Integration Patterns](../../../platform/integration-patterns.md)
 ```
+
+Services with distinct trigger/binding vocabulary MAY substitute the service-specific platform page title and path.
 
 ## Navigation Naming Conventions
 
-Every language guide MUST be registered in `mkdocs.yml` following this pattern:
+Every language guide MUST be registered in `mkdocs.yml` following a pattern that matches the repo's deployment-option structure.
+
+### Example — Functions nav pattern
 
 ```yaml
 - {Language Name}:
@@ -374,10 +391,38 @@ Every language guide MUST be registered in `mkdocs.yml` following this pattern:
         - language-guides/{lang}/troubleshooting.md
 ```
 
+Container Apps sibling example: replace the four Functions plan groups with only the deployment-option groups that repo exposes, while preserving the same Tutorial → step-file nesting shape.
+
+### Example — Container Apps nav pattern
+
+```yaml
+- {Language Name}:
+    - language-guides/{lang}/index.md
+    - Tutorial:
+        - Overview: language-guides/{lang}/tutorial/index.md
+        - Consumption:
+            - language-guides/{lang}/tutorial/consumption/01-local-run.md
+            - language-guides/{lang}/tutorial/consumption/02-first-deploy.md
+            # ... additional service-defined steps
+        - Dedicated:
+            - language-guides/{lang}/tutorial/dedicated/01-local-run.md
+            - language-guides/{lang}/tutorial/dedicated/02-first-deploy.md
+            # ... additional service-defined steps
+    - {Language} Recipes:
+        - language-guides/{lang}/recipes/index.md
+    - {Language} Reference:
+        - language-guides/{lang}/cli-cheatsheet.md
+        - language-guides/{lang}/environment-variables.md
+        - language-guides/{lang}/service-limits.md
+        - language-guides/{lang}/troubleshooting.md
+```
+
+App Service sibling example: the same pattern can expand or collapse depending on how many deployment options the repo documents, but the nav hierarchy should stay consistent within a repo.
+
 !!! warning "Indentation"
     All `mkdocs.yml` nav entries use 4-space indentation. Inconsistent indentation causes silent build failures.
 
-### Language-Specific Values
+### Example — Functions placeholder values
 
 | Placeholder | Python | Node.js | Java | .NET |
 |-------------|--------|---------|------|------|
@@ -387,11 +432,13 @@ Every language guide MUST be registered in `mkdocs.yml` following this pattern:
 | `{Language} Recipes` | Python Recipes | Node.js Recipes | Java Recipes | .NET Recipes |
 | `{Language} Reference` | Python Reference | Node.js Reference | Java Reference | .NET Reference |
 
+Container Apps sibling example: keep `{Language Name}`, `{lang}`, and `{Language} Recipes`, but substitute whatever concept-doc filename the repo uses instead of the Functions-specific `{model}` values.
+
 ## Consistency Review Checklist
 
 Use this checklist when adding or reviewing a language guide:
 
-1. All 48 files present per the canonical file tree
+1. All baseline files present per the canonical file tree (service-specific extensions per repo)
 2. Every file has `## See Also` as the second-to-last section
 3. Every file with external references has `## Sources` as the last section
 4. `## See Also` always appears before `## Sources` (never reversed)
