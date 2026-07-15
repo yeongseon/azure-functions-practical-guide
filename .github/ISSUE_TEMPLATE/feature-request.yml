@@ -1,0 +1,37 @@
+name: Feature or Content Request
+description: Suggest a new section, guide, lab, workflow, or improvement.
+title: "[Request]: "
+labels: []
+body:
+  - type: input
+    id: summary
+    attributes:
+      label: Summary
+      description: Provide a short summary of the request.
+      placeholder: Add troubleshooting guidance for Durable Functions.
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: Explain the problem, goal, or gap this request would address.
+      placeholder: Readers need...
+    validations:
+      required: true
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: Proposed solution or content
+      description: Describe the change you would like to see.
+      placeholder: A new page or section covering...
+    validations:
+      required: false
+  - type: textarea
+    id: audience
+    attributes:
+      label: Intended audience or scenario
+      description: Describe who would benefit and in what situation.
+      placeholder: Developers and operators troubleshooting...
+    validations:
+      required: false

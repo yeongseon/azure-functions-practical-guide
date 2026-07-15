@@ -4,9 +4,9 @@
 
 [English](README.md) | [한국어](README.ko.md) | [日本語](README.ja.md) | [简体中文](README.zh-CN.md)
 
-![Docs](https://github.com/yeongseon/azure-functions-practical-guide/actions/workflows/docs.yml/badge.svg)
-![CI](https://github.com/yeongseon/azure-functions-practical-guide/actions/workflows/ci.yml/badge.svg)
-![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
+[![Docs](https://github.com/yeongseon/azure-functions-practical-guide/actions/workflows/docs.yml/badge.svg)](https://github.com/yeongseon/azure-functions-practical-guide/actions/workflows/docs.yml)
+[![CI](https://github.com/yeongseon/azure-functions-practical-guide/actions/workflows/ci.yml/badge.svg)](https://github.com/yeongseon/azure-functions-practical-guide/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 Comprehensive guide for running serverless applications on Azure Functions — from first deployment to production troubleshooting.
 
