@@ -7,6 +7,10 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
 content_validation:
   status: verified
   last_reviewed: 2026-07-16
@@ -15,7 +19,7 @@ content_validation:
     - claim: "Azure Functions requires an associated storage account (AzureWebJobsStorage) used for host operations such as trigger management, leases, timers, and default key storage; losing access can make the host unhealthy."
       source: https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
       verified: true
-    - claim: "Premium and Consumption plans use an Azure Files content share (WEBSITE_CONTENTAZUREFILECONNECTIONSTRING / WEBSITE_CONTENTSHARE), and WEBSITE_CONTENTOVERVNET routes that content share over the virtual network."
+    - claim: "Consumption and Premium plans use an Azure Files content share (WEBSITE_CONTENTAZUREFILECONNECTIONSTRING / WEBSITE_CONTENTSHARE); WEBSITE_CONTENTOVERVNET routes that content share over the virtual network and applies only to Premium, which supports VNet integration (Consumption does not)."
       source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
       verified: true
     - claim: "Setting a storage firewall defaultAction to Deny keeps the public endpoint enabled while blocking unlisted sources, which is a different control from disabling public network access entirely."
