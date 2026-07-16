@@ -48,6 +48,7 @@ flowchart TD
 - [Scaling](scaling.md) — how scale decisions differ by trigger type and hosting plan.
 - [Networking](networking.md) — VNet integration, private endpoints, and hybrid connectivity.
 - [Networking Scenarios](networking-scenarios/index.md) — practical deployment patterns for public, private egress, private ingress, and fixed outbound IP.
+- [Storage Connectivity](storage-connectivity.md) — storage roles, public/service/private endpoint postures, and the storage network settings matrix.
 - [Reliability](reliability.md) — retries, poison message handling, and high-availability choices.
 - [Security](security.md) — auth models, managed identity, and network isolation.
 

@@ -111,10 +111,12 @@ nav:
     - Security: platform/security.md
     - Functions vs App Service: platform/functions-vs-app-service.md
     - Deployment Scenarios: platform/deployment-scenarios.md
+    - Storage Connectivity: platform/storage-connectivity.md
     - Networking Scenarios:
       - platform/networking-scenarios/index.md
       - platform/networking-scenarios/public-only.md
       - platform/networking-scenarios/private-egress.md
+      - platform/networking-scenarios/storage-service-endpoint.md
       - platform/networking-scenarios/private-ingress.md
       - platform/networking-scenarios/fixed-outbound-nat.md
   - Best Practices:

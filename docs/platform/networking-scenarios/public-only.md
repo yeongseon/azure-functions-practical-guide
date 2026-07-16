@@ -30,7 +30,7 @@ content_validation:
 
 # Scenario 1: Public Only
 
-The simplest deployment pattern with no VNet integration. All traffic flows over the public internet.
+The simplest deployment pattern with no VNet integration. The Function App and its dependencies are accessed through their **public endpoints**. Public endpoint usage does not necessarily mean traffic leaves the Microsoft backbone or traverses the general public internet — Azure-to-Azure traffic between resources in supported regions can stay on the Microsoft network. What defines this scenario is the *absence of VNet integration and private endpoints*, not the physical path every packet takes.
 
 ## Portal Walkthrough
 
@@ -223,7 +223,7 @@ Expected response:
 ## Security Considerations
 
 !!! warning "Public Exposure"
-    Without VNet integration, your function app and its dependencies are accessible over the public internet. Consider:
+    Without VNet integration, your function app and its dependencies are reachable through their public endpoints, and inbound requests can originate from the public internet. Public endpoint exposure is the risk here regardless of whether a given hop stays on the Microsoft backbone. Consider:
     
     - **Function-level authorization keys** for HTTP triggers
     - **IP access restrictions** to limit source networks

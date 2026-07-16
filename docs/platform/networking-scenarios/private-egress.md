@@ -255,19 +255,35 @@ done
 
 ### Step 7: Lock Down Storage (Optional)
 
-After private endpoints are configured, disable public access:
+After private endpoints are configured, restrict the storage account's public reachability. Two settings are involved and they are **not** the same thing:
+
+| Setting | What it does | Resulting posture |
+|---------|--------------|-------------------|
+| `publicNetworkAccess = Enabled` + `defaultAction = Deny` | Keeps the public endpoint, but the storage **firewall** denies by default. Selected-network VNet rules and IP rules can still pass. | Firewall-restricted (Selected networks) |
+| `publicNetworkAccess = Disabled` | Disables the public endpoint entirely. Only private endpoints can reach the account. | Private-only |
+
+For a fully private posture, apply **both**: set the firewall default action to `Deny` (so no IP/VNet rule accidentally re-opens access) and disable public network access.
 
 ```bash
+# Firewall default -> Deny (public endpoint still Enabled at this point)
 az storage account update \
   --name "$STORAGE_NAME" \
   --resource-group "$RG" \
   --default-action Deny \
   --allow-blob-public-access false
+
+# Private-only: disable the public endpoint entirely
+az storage account update \
+  --name "$STORAGE_NAME" \
+  --resource-group "$RG" \
+  --public-network-access Disabled
 ```
 
 | Command/Parameter | Purpose |
 |-------------------|---------|
-| `--default-action Deny` | Blocks all public network access |
+| `--default-action Deny` | Sets the storage **firewall** default to Deny. Public endpoint stays Enabled; Selected-network VNet rules and IP rules still apply. Does **not** by itself disable the public endpoint. |
+| `--allow-blob-public-access false` | Disables anonymous public blob/container access (a separate control from network firewall) |
+| `--public-network-access Disabled` | Disables the storage account's public endpoint entirely (private-only). This is the setting that truly "blocks all public network access". |
 
 !!! warning "Order Matters"
     Disable public access **after** private endpoints and DNS zones are configured. Otherwise, your function app will lose storage connectivity.
