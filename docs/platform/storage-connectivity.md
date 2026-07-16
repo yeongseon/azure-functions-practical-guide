@@ -99,8 +99,8 @@ See [Private Egress](networking-scenarios/private-egress.md).
 |------|-------------------|---------------|------------------|
 | Consumption (Y1) | Connection string (shared key) | Azure Files content share required | Cannot use VNet integration |
 | Flex Consumption (FC1) | **Managed identity** supported | No classic content share; uses deployment container | `AzureWebJobsStorage__accountName`, `AzureWebJobsStorage__credential=managedidentity` |
-| Premium (EP) | Managed identity supported for host storage | Azure Files content share to consider | `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING`, `WEBSITE_CONTENTSHARE`, `WEBSITE_CONTENTOVERVNET=1` |
-| Dedicated (ASP) | Connection string or identity | Reduce Azure Files dependency | `WEBSITE_RUN_FROM_PACKAGE=1` pattern |
+| Premium (EP) | Managed identity supported for host storage | Azure Files content share **required** | `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING`, `WEBSITE_CONTENTSHARE`, `WEBSITE_CONTENTOVERVNET=1` |
+| Dedicated (ASP) | Connection string or identity | Required by default (can avoid with `WEBSITE_RUN_FROM_PACKAGE=1`) | `WEBSITE_RUN_FROM_PACKAGE=1` pattern |
 
 !!! warning "Enterprise policy: allowSharedKeyAccess=false"
     Subscriptions that enforce `allowSharedKeyAccess: false` block plans that require an Azure Files content share with shared key (Y1, EP content share). Prefer FC1 (identity-based blob storage) or ASP with `WEBSITE_RUN_FROM_PACKAGE=1`.
@@ -114,7 +114,7 @@ This is the central table. It separates the **storage setting**, the **Function 
 | All networks | No VNet integration | Public IP | Public endpoint | Works |
 | All networks | VNet integration | Public IP | Public endpoint | Works — VNet integration alone does **not** make storage private |
 | All networks | VNet integration + Route All | Public IP | Public endpoint | Traffic can traverse the VNet, but the storage endpoint is still public |
-| Selected networks + IP rule | Allow function outbound IP | Public IP | Public endpoint | Plan/region dependent — outbound IP must be stable and allowlisted |
+| Selected networks + IP rule | Allow function outbound IP | Public IP | Public endpoint | Plan/region dependent — outbound IP must be stable and allowlisted. **Consumption (Y1) outbound IPs are shared and can change; Flex Consumption IPs are not stable without a NAT Gateway**, making IP-rule access unreliable |
 | Selected networks + Service Endpoint | Integration subnet allowed | Public IP | Public endpoint + service endpoint | Works — subnet identity grants access |
 | Private Endpoint + All networks | Private DNS correct | Private IP | Private endpoint | Function uses private path; other clients can still reach the public endpoint |
 | Private Endpoint + All networks | Private DNS **missing** | Public IP | Public endpoint | Connection may still succeed publicly, **masking** the DNS misconfiguration |
