@@ -68,9 +68,8 @@ In CI, fail the build on any failing test and publish the results:
 
 ```powershell
 Invoke-Pester -Configuration (New-PesterConfiguration -Hashtable @{
-    Run    = @{ Path = "." }
+    Run    = @{ Path = "."; Exit = $true }
     Output = @{ Verbosity = "Detailed" }
-    Run    = @{ Exit = $true }
 })
 ```
 

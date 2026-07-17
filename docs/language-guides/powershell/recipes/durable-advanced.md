@@ -23,12 +23,12 @@ $parallelTasks = foreach ($item in $items) {
     Invoke-DurableActivity -FunctionName 'ProcessItem' -Input $item -NoWait
 }
 
-$results = Wait-ActivityFunction -Task $parallelTasks
+$results = Wait-DurableTask -Task $parallelTasks
 
 return ($results | Measure-Object -Sum).Sum
 ```
 
-`Wait-ActivityFunction` blocks until all scheduled tasks complete and returns their results in order.
+`Wait-DurableTask` blocks until all scheduled tasks complete and returns their results in order. (`Wait-ActivityFunction` is a backward-compatible alias for the same cmdlet.)
 
 ## Durable Timers
 

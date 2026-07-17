@@ -12,13 +12,20 @@ Recover from transient failures with retry policies and defensive error handling
 
 ## Retry Policies
 
-Configure a retry policy in `host.json`. It applies to trigger types that support it (such as Timer, Event Hubs, and Service Bus). The policy re-runs the whole function on an unhandled exception.
+Configure a retry policy per-function in `function.json`, as a sibling of `bindings`. It applies to trigger types that support runtime-enforced retries (such as Timer, Event Hubs, and Azure Cosmos DB). The policy re-runs the whole function on an unhandled exception.
 
-`host.json`:
+`function.json`:
 
 ```json
 {
-  "version": "2.0",
+  "bindings": [
+    {
+      "name": "Timer",
+      "type": "timerTrigger",
+      "direction": "in",
+      "schedule": "0 */5 * * * *"
+    }
+  ],
   "retry": {
     "strategy": "exponentialBackoff",
     "maxRetryCount": 5,
