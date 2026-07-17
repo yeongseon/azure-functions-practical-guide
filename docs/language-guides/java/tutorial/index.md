@@ -68,7 +68,7 @@ Always-ready instances and advanced deployment patterns for low-latency systems.
 
 Fixed-capacity hosting for teams already operating App Service footprints.
 
-## Seven-Step Learning Sequence
+## Learning Sequence
 
 | Step | Focus | Outcome |
 |------|-------|---------|
@@ -79,6 +79,8 @@ Fixed-capacity hosting for teams already operating App Service footprints.
 | 05 | Infrastructure as Code | Reproduce platform with Bicep templates |
 | 06 | CI/CD | Automate build, test, and deployment |
 | 07 | Extending Triggers | Add queue, blob, timer, and event-driven patterns |
+| 08 | Testing and Debugging | Unit test logic, mock bindings, integration test with Azurite, attach a debugger (Flex track) |
+| 09 | Container Deployment | Package as a Linux container, push to ACR, deploy with managed-identity pull (Premium track) |
 
 ## See Also
 
