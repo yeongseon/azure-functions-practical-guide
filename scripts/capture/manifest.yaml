@@ -1,0 +1,38 @@
+# Screenshot manifest — single source of truth for Portal captures.
+#
+# Each entry is an immutable stable ID. Markdown references screenshots by ID
+# via the `shot()` macro (see scripts/capture/mkdocs_macros.py), never by path,
+# so re-capturing a blade NEVER requires editing docs.
+#
+# Fields
+#   id             Stable identifier. Equals the file stem. Referenced from docs
+#                  as [[[ shot("id") ]]]. NEVER rename — renaming breaks docs.
+#   file           Path under docs/assets/ (the rendered image, always .webp).
+#   alt            Alt text / accessibility caption. MUST accurately describe
+#                  what the image shows (AGENTS.md visual-verification contract).
+#   page           Portal blade / scene the capture depicts (human-readable).
+#   captured       Date the current image bytes were produced (YYYY-MM-DD).
+#   verified       Date the capture was last confirmed still accurate. Bumped by
+#                  the diff gate even when the image bytes are unchanged.
+#   diff_threshold Fraction (0..1) of changed pixels above which a re-capture is
+#                  treated as a real UI change worth committing. Below it, only
+#                  `verified` is bumped and the image bytes are left untouched.
+#   prereq         Optional. Path to the provisioning script that creates the
+#                  Azure resources needed to reproduce this blade.
+#
+# The diff gate (scripts/capture/diff_gate.py) and the WebP optimizer
+# (scripts/capture/optimize_webp.py) both read/write this file. The mkdocs
+# `shot()` macro reads it at build time.
+#
+# No screenshots are registered yet in this repository. Add entries here as
+# Portal captures are produced; reference them from docs with
+# [[[ shot("<id>") ]]].
+
+meta:
+  version: 1
+  # Target render width in pixels. Captures are 1600px-wide Portal blades;
+  # the optimizer downscales to this width and encodes WebP.
+  target_width: 1440
+  webp_quality: 82
+
+screenshots: []

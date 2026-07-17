@@ -207,7 +207,7 @@ jobs:
 
       - name: Install MkDocs
         run: |
-          pip install mkdocs-material mkdocs-minify-plugin
+          pip install -r requirements-docs.txt
 
       - name: Build with strict mode
         run: |

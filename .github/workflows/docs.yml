@@ -27,7 +27,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Install dependencies
-        run: pip install mkdocs-material mkdocs-minify-plugin
+        run: pip install -r requirements-docs.txt
       - name: Build documentation
         run: mkdocs build --strict
       - name: Upload artifact
