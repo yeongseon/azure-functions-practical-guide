@@ -471,6 +471,17 @@ nav:
         - language-guides/powershell/recipes/key-vault.md
         - language-guides/powershell/recipes/managed-identity.md
         - language-guides/powershell/recipes/timer.md
+        - language-guides/powershell/recipes/openapi.md
+        - language-guides/powershell/recipes/cosmosdb.md
+        - language-guides/powershell/recipes/table-storage.md
+        - language-guides/powershell/recipes/event-grid.md
+        - language-guides/powershell/recipes/event-hub.md
+        - language-guides/powershell/recipes/signalr.md
+        - language-guides/powershell/recipes/durable-orchestration.md
+        - language-guides/powershell/recipes/durable-advanced.md
+        - language-guides/powershell/recipes/retry.md
+        - language-guides/powershell/recipes/testing.md
+        - language-guides/powershell/recipes/custom-domain-certificates.md
       - PowerShell Reference:
         - language-guides/powershell/cli-cheatsheet.md
         - language-guides/powershell/environment-variables.md
