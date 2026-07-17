@@ -1,7 +1,8 @@
 # Screenshot manifest — single source of truth for Portal captures.
 #
 # Each entry is an immutable stable ID. Markdown references screenshots by ID
-# via the `shot()` macro (see scripts/capture/mkdocs_macros.py), never by path,
+# via the `shot()` macro (from the azure-guide-capture-toolkit package), never by
+# path,
 # so re-capturing a blade NEVER requires editing docs.
 #
 # Fields
@@ -20,9 +21,9 @@
 #   prereq         Optional. Path to the provisioning script that creates the
 #                  Azure resources needed to reproduce this blade.
 #
-# The diff gate (scripts/capture/diff_gate.py) and the WebP optimizer
-# (scripts/capture/optimize_webp.py) both read/write this file. The mkdocs
-# `shot()` macro reads it at build time.
+# The diff gate (capture-diff-gate) and the WebP optimizer (capture-optimize-webp),
+# both provided by the azure-guide-capture-toolkit package, read/write this file.
+# The mkdocs `shot()` macro reads it at build time.
 #
 # No screenshots are registered yet in this repository. Add entries here as
 # Portal captures are produced; reference them from docs with

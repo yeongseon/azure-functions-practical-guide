@@ -306,7 +306,7 @@ Portal screenshots are managed as **build artifacts driven by a manifest** (`scr
 
 - Register every capture in `scripts/capture/manifest.yaml` with a stable `id` (equal to the file stem), `file` path under `docs/assets/`, and accurate `alt` text.
 - Reference it in markdown with `[[[ shot("<id>") ]]]` (custom Jinja delimiters `[[[ ]]]` / `[[% %]]` / `[[# #]]`, configured in `mkdocs.yml`, avoid collisions with `{{ }}`).
-- Encode/downscale raw PNGs to WebP with `scripts/capture/optimize_webp.py`; refresh existing captures through `scripts/capture/diff_gate.py` (below `diff_threshold` only `verified` is bumped, image bytes untouched).
+- Encode/downscale raw PNGs to WebP with the `capture-optimize-webp` CLI; refresh existing captures through the `capture-diff-gate` CLI (both provided by the `azure-guide-capture-toolkit` package; below `diff_threshold` only `verified` is bumped, image bytes untouched).
 - Screenshots may be committed as WebP produced by this pipeline. When a capture is optimized to WebP, the **final rendered `.webp`** — not only the raw PNG — MUST be visually verified for PII and caption accuracy before merge. A PII or caption defect introduced or hidden by re-encoding is treated the same as one in a raw PNG.
 - See `scripts/capture/README.md` for the full workflow.
 
