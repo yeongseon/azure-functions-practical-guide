@@ -45,12 +45,16 @@ flowchart TD
 - [Architecture](architecture/index.md) — host/worker runtime model, deployment unit, and resource relationships.
 - [Hosting](hosting.md) — Consumption, Flex Consumption, Premium, and Dedicated plan behavior.
 - [Triggers and bindings](triggers-and-bindings.md) — eventing patterns and integration contracts.
+- [Durable Functions](durable-functions.md) — stateful orchestrations, entities, and workflow patterns on the Durable extension.
 - [Scaling](scaling.md) — how scale decisions differ by trigger type and hosting plan.
 - [Networking](networking.md) — VNet integration, private endpoints, and hybrid connectivity.
 - [Networking Scenarios](networking-scenarios/index.md) — practical deployment patterns for public, private egress, private ingress, and fixed outbound IP.
 - [Storage Connectivity](storage-connectivity.md) — storage roles, public/service/private endpoint postures, and the storage network settings matrix.
 - [Reliability](reliability.md) — retries, poison message handling, and high-availability choices.
 - [Security](security.md) — auth models, managed identity, and network isolation.
+- [Functions vs App Service](functions-vs-app-service.md) — when to choose Functions over App Service and how the models compare.
+- [Deployment Scenarios](deployment-scenarios.md) — end-to-end deployment topologies by hosting plan and network posture.
+- [Custom Handlers](custom-handlers.md) — running unsupported languages and runtimes through a lightweight web server.
 
 ## Start with the design sequence
 
