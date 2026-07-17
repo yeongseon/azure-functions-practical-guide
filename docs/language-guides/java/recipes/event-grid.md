@@ -92,6 +92,54 @@ public class EventGridFunctions {
 - Keep handlers idempotent because duplicate event delivery can occur.
 - Route by `eventType` and `subject` to isolate processing paths.
 
+## Event Grid Output: Publish to a Custom Topic
+
+Use the `@EventGridOutput` annotation to publish events to a custom topic. The annotation reads the topic endpoint and access key from app settings, so never hard-code the topic URI in the annotation properties. You can output a JSON string or a POJO.
+
+```java
+public class PublishFunction {
+    @FunctionName("publishEvent")
+    public void run(
+            @TimerTrigger(name = "timer", schedule = "0 */5 * * * *") String timerInfo,
+            @EventGridOutput(
+                name = "outputEvent",
+                topicEndpointUri = "MyEventGridTopicUriSetting",
+                topicKeySetting = "MyEventGridTopicKeySetting")
+                OutputBinding<EventGridEvent> outputEvent,
+            final ExecutionContext context) {
+        EventGridEvent event = new EventGridEvent();
+        event.setId("1807");
+        event.setEventType("Contoso.Order.Created");
+        event.setSubject("orders/created");
+        event.setEventTime("2026-01-01T00:00:00+00:00");
+        event.setDataVersion("1.0");
+        event.setData("{ orderId: 12345 }");
+        outputEvent.setValue(event);
+    }
+}
+```
+
+Here `EventGridEvent` is a plain POJO with `id`, `eventType`, `subject`, `eventTime`, `dataVersion`, and `data` fields and their getters/setters.
+
+Configure the two app settings the annotation references:
+
+```bash
+az functionapp config appsettings set \
+  --name $APP_NAME \
+  --resource-group $RG \
+  --settings "MyEventGridTopicUriSetting=$TOPIC_ENDPOINT" "MyEventGridTopicKeySetting=$TOPIC_KEY"
+```
+
+| CLI element | Explanation |
+|---|---|
+| Command(s) | `az functionapp config appsettings set` |
+| Key flags | `--name`, `--resource-group`, `--settings` |
+| Variables | `$APP_NAME`, `$RG`, `$TOPIC_ENDPOINT`, `$TOPIC_KEY` |
+| Expected result | Azure CLI returns the updated app settings as JSON; confirm both settings are present before continuing. |
+
+!!! note "CloudEvents schema"
+    The output binding emits the Event Grid schema. To publish in the **CloudEvents 1.0** schema, create the custom topic with `--input-schema cloudeventschemav1.0` and produce the payload in CloudEvents shape (`specversion`, `type`, `source`, `id`, `data`).
+
 ## See Also
 
 - [Queue Storage Integration](queue.md)
@@ -101,4 +149,5 @@ public class EventGridFunctions {
 ## Sources
 
 - [Event Grid trigger for Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-grid-trigger)
+- [Event Grid output binding for Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-grid-output)
 - [Create event subscriptions with Azure CLI (Microsoft Learn)](https://learn.microsoft.com/en-us/cli/azure/eventgrid/event-subscription?view=azure-cli-latest)

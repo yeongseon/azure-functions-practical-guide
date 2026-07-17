@@ -31,6 +31,7 @@ flowchart TD
 |--------|-------------|
 | [HTTP API Patterns](http-api.md) | Route, request, response, and validation patterns. |
 | [HTTP Authentication](http-auth.md) | Function keys, platform auth, and token validation. |
+| [OpenAPI and Swagger](openapi.md) | Auto-generating OpenAPI docs and Swagger UI with the isolated worker OpenAPI extension. |
 
 ### Storage
 | Recipe | Description |
@@ -38,6 +39,7 @@ flowchart TD
 | [Cosmos DB](cosmosdb.md) | Input and output binding usage in isolated worker. |
 | [Blob Storage](blob-storage.md) | Blob trigger and blob output handling. |
 | [Queue](queue.md) | Queue trigger, poison message, and output binding pattern. |
+| [Table Storage](table-storage.md) | Table input and output binding usage in isolated worker. |
 
 ### Security
 | Recipe | Description |
@@ -51,7 +53,17 @@ flowchart TD
 |--------|-------------|
 | [Timer](timer.md) | Cron schedules and idempotent scheduled jobs. |
 | [Durable Orchestration](durable-orchestration.md) | Stateful workflows and fan-out/fan-in. |
+| [Durable Entities](durable-entities.md) | Stateful, addressable per-key state (actor-style) with serialized operations. |
+| [Durable Advanced](durable-advanced.md) | Sub-orchestrations, eternal orchestrations, activity retries, and versioning. |
 | [Event Grid](event-grid.md) | Event-driven integration patterns. |
+| [Event Hubs](event-hub.md) | High-throughput event stream consumption with batch trigger and output binding. |
+| [Service Bus](service-bus.md) | Enterprise messaging with queue/topic triggers, dead-lettering, and output binding. |
+| [SignalR Service](signalr.md) | Real-time messaging via the negotiate endpoint and output binding. |
+| [Dependency Injection](dependency-injection.md) | Registering services and constructor injection in the isolated worker container. |
+| [Retry Policies](retry.md) | Runtime retry policies (fixed delay, exponential backoff) for Timer, Event Hubs, and Cosmos DB triggers. |
+| [Middleware](middleware.md) | Cross-cutting behavior with the isolated worker `IFunctionsWorkerMiddleware` pipeline. |
+| [Unit Testing](testing.md) | Host-free unit testing with xUnit, constructor injection, and Moq. |
+| [Migrate to Isolated](migrate-to-isolated.md) | Migrating a .NET in-process app to the isolated worker model before the in-process retirement. |
 
 ## See Also
 - [.NET Language Guide](../index.md)

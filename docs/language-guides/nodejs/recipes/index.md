@@ -29,10 +29,11 @@ flowchart TD
 
 | Category | Recipes |
 |---|---|
-| HTTP | [HTTP API](http-api.md), [HTTP Auth](http-auth.md) |
-| Data | [Cosmos DB](cosmosdb.md), [Blob Storage](blob-storage.md), [Queue](queue.md) |
+| HTTP | [HTTP API](http-api.md), [HTTP Auth](http-auth.md), [OpenAPI and Swagger](openapi.md) |
+| Data | [Cosmos DB](cosmosdb.md), [Blob Storage](blob-storage.md), [Queue](queue.md), [Table Storage](table-storage.md) |
 | Security | [Key Vault](key-vault.md), [Managed Identity](managed-identity.md), [Custom Domains and Certificates](custom-domain-certificates.md) |
-| Eventing | [Timer](timer.md), [Durable Orchestration](durable-orchestration.md), [Event Grid](event-grid.md) |
+| Eventing | [Timer](timer.md), [Durable Orchestration](durable-orchestration.md), [Durable Entities](durable-entities.md), [Durable Advanced](durable-advanced.md), [Event Grid](event-grid.md), [Event Hubs](event-hub.md), [Service Bus](service-bus.md), [SignalR Service](signalr.md) |
+| Patterns | [Dependency Injection](dependency-injection.md), [Retry Policies](retry.md), [Middleware](middleware.md), [Unit Testing](testing.md) |
 
 ## See Also
 - [Node.js Language Guide](../index.md)

@@ -44,6 +44,7 @@ graph TD
 |--------|-------------|
 | [HTTP API Patterns](http-api.md) | Route design, request/response patterns, and API-friendly function composition. |
 | [HTTP Authentication](http-auth.md) | Function auth levels, app-level auth, and token validation integration patterns. |
+| [OpenAPI and Swagger](openapi.md) | Documenting HTTP APIs via API Management import or a hand-authored spec plus Swagger UI. |
 
 ### Storage
 
@@ -52,6 +53,7 @@ graph TD
 | [Cosmos DB](cosmosdb.md) | Input/output patterns for Cosmos DB-backed APIs and event processing workloads. |
 | [Blob Storage](blob-storage.md) | Blob trigger and blob binding patterns, including production-oriented processing flow. |
 | [Queue Storage](queue.md) | Queue trigger consumer patterns, retries, and output binding usage. |
+| [Table Storage](table-storage.md) | Table (NoSQL key-value) input/output binding patterns for entity storage and lookups. |
 
 ### Security
 
@@ -68,7 +70,15 @@ graph TD
 | [Timer Trigger](timer.md) | Scheduled jobs, cron semantics, and idempotent batch execution patterns. |
 | [Durable Functions](durable-orchestration.md) | Orchestration, fan-out/fan-in, and stateful workflow coordination. |
 | [Durable Entities](durable-entities.md) | Stateful entity (actor-style) model for aggregation and per-key state coordination. |
+| [Durable Advanced](durable-advanced.md) | Sub-orchestrations, eternal orchestrations, activity retries, and versioning. |
 | [Event Grid](event-grid.md) | Event-driven designs and event routing patterns for reactive systems. |
+| [Event Hubs](event-hub.md) | High-throughput event stream consumption with batch trigger, metadata, and output binding. |
+| [Service Bus](service-bus.md) | Enterprise messaging with queue/topic triggers, dead-lettering, sessions, and output binding. |
+| [SignalR Service](signalr.md) | Real-time messaging to connected clients via the negotiate endpoint and output binding. |
+| [Dependency Injection](dependency-injection.md) | Sharing clients across invocations via module-level singletons (no built-in DI container). |
+| [Retry Policies](retry.md) | Runtime retry policies (fixed delay, exponential backoff) for Timer, Event Hubs, and Cosmos DB triggers. |
+| [Middleware](middleware.md) | Cross-cutting behavior via wrapper decorators (no built-in middleware pipeline). |
+| [Unit Testing](testing.md) | Host-free unit testing of handlers with pytest and mocked bindings. |
 
 ## How to consume recipes effectively
 
