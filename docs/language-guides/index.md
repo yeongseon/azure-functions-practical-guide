@@ -10,6 +10,8 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-dotnet-class-library
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-powershell
   diagrams:
     - id: language-guides
       type: flowchart
@@ -20,10 +22,11 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-dotnet-class-library
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-powershell
 ---
 # Language Guides
 
-The Language Guides section maps Azure Functions platform concepts to language-specific implementation models for **Python**, **Node.js**, **.NET**, and **Java**.
+The Language Guides section maps Azure Functions platform concepts to language-specific implementation models for **Python**, **Node.js**, **.NET**, **Java**, and **PowerShell**.
 
 Use this section after reading platform fundamentals so you can apply the same architecture and operations decisions in the language stack your team ships.
 
@@ -34,6 +37,7 @@ flowchart TD
     LG --> N[Node.js]
     LG --> D[.NET]
     LG --> J[Java]
+    LG --> PS[PowerShell]
 ```
 
 !!! tip "Platform-first, then language"
@@ -48,6 +52,7 @@ flowchart TD
 | Node.js | [Node.js guide](nodejs/index.md) | Roadmap + starter content | [Node.js quick start](nodejs/index.md#quick-start-http-trigger-nodejs-v4-model) |
 | .NET | [.NET guide](dotnet/index.md) | Roadmap + starter content | [.NET isolated quick start](dotnet/index.md#quick-start-http-trigger-net-isolated) |
 | Java | [Java guide](java/index.md) | Roadmap + starter content | [Java quick start](java/index.md#quick-start-http-trigger-java) |
+| PowerShell | [PowerShell guide](powershell/index.md) | Full track (4 hosting plans) | [Tutorial plan chooser](powershell/tutorial/index.md) |
 
 ## Worker and programming model comparison
 
@@ -59,6 +64,7 @@ This table aligns with Microsoft Learn references for each language runtime.
 | Node.js | Out-of-process language worker (gRPC) | v4 code-first model (`app.http()`, `app.timer()`, `app.storageQueue()`) | Node.js 18, 20, 22 | Node.js developer guide |
 | .NET | In-process **or** isolated worker (recommended: isolated) | Attribute-based triggers and bindings | .NET 8 (LTS) for isolated worker in this guide baseline | .NET class library guide |
 | Java | Out-of-process language worker (JVM) | Annotation-based model (`@FunctionName`, trigger/binding annotations) | Java 8, 11, 17, 21 | Java developer guide |
+| PowerShell | Out-of-process language worker (PowerShell host) | Classic `function.json` model (`param` + `Push-OutputBinding`) | PowerShell 7.4 (7.6 preview) | PowerShell developer reference |
 
 ## How to use this section
 
@@ -100,6 +106,19 @@ This table aligns with Microsoft Learn references for each language runtime.
 - Covers annotation-based function model and runtime targeting.
 - Includes baseline HTTP trigger example and roadmap.
 
+### PowerShell
+
+- [PowerShell guide index](powershell/index.md)
+- [Tutorial](powershell/tutorial/index.md) — 4 hosting plan tracks × 7 tutorials each.
+- [Recipes](powershell/recipes/index.md) — practical integration patterns.
+- [PowerShell Programming Model](powershell/powershell-programming-model.md)
+- [PowerShell Runtime](powershell/powershell-runtime.md)
+- [CLI Cheatsheet](powershell/cli-cheatsheet.md)
+- [host.json Reference](powershell/host-json.md)
+- [Environment Variables](powershell/environment-variables.md)
+- [Platform Limits](powershell/platform-limits.md)
+- [Troubleshooting](powershell/troubleshooting.md)
+
 ## Design boundaries
 
 - **Platform docs** explain *why* to choose plan/network/reliability patterns.
@@ -119,3 +138,4 @@ This table aligns with Microsoft Learn references for each language runtime.
 - [Node.js developer guide](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node)
 - [.NET class library guide](https://learn.microsoft.com/en-us/azure/azure-functions/functions-dotnet-class-library)
 - [Java developer guide](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java)
+- [PowerShell developer reference](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-powershell)

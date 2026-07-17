@@ -1,0 +1,38 @@
+name: Auto-request Copilot review
+
+on:
+  pull_request:
+    types: [opened, reopened, ready_for_review]
+
+permissions:
+  pull-requests: write
+
+jobs:
+  request-copilot-review:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Request Copilot review via GraphQL
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NODE_ID: ${{ github.event.pull_request.node_id }}
+        run: |
+          set -euo pipefail
+
+          # Resolve the Copilot reviewer bot's node_id at runtime.
+          # REST /users/copilot-pull-request-reviewer[bot] returns the current
+          # instance-specific node_id (works on GitHub.com and GHES).
+          BOT_NODE_ID=$(gh api "/users/copilot-pull-request-reviewer[bot]" --jq '.node_id' 2>/dev/null || true)
+          if [ -z "${BOT_NODE_ID:-}" ]; then
+            # Fallback constant for GitHub.com if the users API call fails.
+            BOT_NODE_ID="BOT_kgDOCnlnWA"
+          fi
+
+          # Copilot is a Bot, not a User. REST /pulls/{n}/requested_reviewers
+          # silently no-ops for bots, so we must use the GraphQL requestReviews
+          # mutation with botIds (see github/gh-aw#35283 for background).
+          gh api graphql \
+            -f query='mutation($pr:ID!,$bots:[ID!]!){ requestReviews(input:{pullRequestId:$pr,botIds:$bots,union:true}){ pullRequest{ id } } }' \
+            -f pr="$PR_NODE_ID" \
+            -f "bots[]=$BOT_NODE_ID" \
+            || echo "::warning::Could not request Copilot review. Ensure Copilot code review is enabled for this repository."
