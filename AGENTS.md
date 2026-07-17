@@ -280,6 +280,16 @@ Portal screenshots:
 - Use black-box masking only for unavoidable avatar/profile pixels and only with the repository-approved mask color.
 - If a screenshot cannot be visually verified, remove the Markdown reference or disclose the debt explicitly in the PR.
 
+### Manifest-driven capture pipeline
+
+Portal screenshots are managed as **build artifacts driven by a manifest** (`scripts/capture/`), not hand-placed files. Docs reference a screenshot by a **stable ID** via the `shot()` macro, so re-capturing a blade overwrites the same `.webp` and never requires editing markdown.
+
+- Register every capture in `scripts/capture/manifest.yaml` with a stable `id` (equal to the file stem), `file` path under `docs/assets/`, and accurate `alt` text.
+- Reference it in markdown with `[[[ shot("<id>") ]]]` (custom Jinja delimiters `[[[ ]]]` / `[[% %]]` / `[[# #]]`, configured in `mkdocs.yml`, avoid collisions with `{{ }}`).
+- Encode/downscale raw PNGs to WebP with `scripts/capture/optimize_webp.py`; refresh existing captures through `scripts/capture/diff_gate.py` (below `diff_threshold` only `verified` is bumped, image bytes untouched).
+- Screenshots may be committed as WebP produced by this pipeline. When a capture is optimized to WebP, the **final rendered `.webp`** — not only the raw PNG — MUST be visually verified for PII and caption accuracy before merge. A PII or caption defect introduced or hidden by re-encoding is treated the same as one in a raw PNG.
+- See `scripts/capture/README.md` for the full workflow.
+
 ## Microsoft Learn URL Locale
 
 All `learn.microsoft.com` URLs SHOULD use the `en-us` locale prefix.
@@ -853,4 +863,37 @@ type: short description
 
 Allowed types: `feat`, `fix`, `docs`, `chore`, `refactor`
 
+## Merge Policy (AI Agent Rule)
+
+AI agents MAY merge their own pull requests **autonomously**, but ONLY after ALL of the mandatory gates below pass. There is no separate human approval step — passing every gate IS the approval. If any gate cannot be satisfied, the agent MUST stop and hand the PR to the user instead of merging.
+
+### Mandatory merge gates (ALL required)
+
+| # | Gate | How it is verified |
+|---|---|---|
+| 1 | **Oracle review ≥ 90/100** | Submit the final diff to Oracle for quality review. Score must be **90 or higher with no merge-blocking issues**. Any must-fix item is a blocker even at ≥ 90. |
+| 2 | **CI fully green** | Every required GitHub Actions check on the PR head SHA passes. Verify with `gh pr checks <pr> --watch`; do not merge on `pending` or `failure`. |
+| 3 | **Caption ↔ image match** | For every added/changed image referenced from markdown, the caption/alt text MUST accurately describe the actual rendered image. |
+| 4 | **Final-image PII verification** | Every added/changed `.png`/`.webp` referenced from markdown MUST be visually verified (Read/`look_at`) for PII on the **final committed bytes** — zeroed subscription/tenant IDs, no employee identifiers, no black-box masks. WebP re-encodes are re-verified, not assumed from the raw PNG. |
+
+### Merge procedure
+
+1. Confirm gates 1-4 above, in order. Record the Oracle score and the visual-verification result in the PR thread or the final summary.
+2. Merge with **squash-and-merge** only:
+
+    ```bash
+    gh pr merge <pr> --squash --delete-branch
+    ```
+
+3. Never use merge-commit or rebase-merge; squash keeps `main` history linear and collapses fixup commits.
+4. Never bypass a failing or pending gate. Never merge with `--admin` to skip checks.
+
+### When to stop instead of merging
+
+- Oracle score < 90, or any unresolved must-fix.
+- Any CI check failing or still pending.
+- Any referenced image that cannot be visually verified.
+- The PR touches something outside the agent's stated scope.
+
+In these cases, report the blocking gate and hand off to the user instead of merging.
 
