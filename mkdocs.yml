@@ -105,6 +105,7 @@ nav:
     - Hosting: platform/hosting.md
     - Triggers and Bindings: platform/triggers-and-bindings.md
     - Durable Functions: platform/durable-functions.md
+    - Custom Handlers: platform/custom-handlers.md
     - Scaling: platform/scaling.md
     - Networking: platform/networking.md
     - Reliability: platform/reliability.md
@@ -176,15 +177,25 @@ nav:
         - language-guides/python/recipes/index.md
         - language-guides/python/recipes/http-api.md
         - language-guides/python/recipes/http-auth.md
+        - language-guides/python/recipes/openapi.md
         - language-guides/python/recipes/cosmosdb.md
         - language-guides/python/recipes/blob-storage.md
         - language-guides/python/recipes/queue.md
+        - language-guides/python/recipes/table-storage.md
         - language-guides/python/recipes/key-vault.md
         - language-guides/python/recipes/managed-identity.md
         - language-guides/python/recipes/timer.md
         - language-guides/python/recipes/durable-orchestration.md
         - language-guides/python/recipes/durable-entities.md
+        - language-guides/python/recipes/durable-advanced.md
         - language-guides/python/recipes/event-grid.md
+        - language-guides/python/recipes/event-hub.md
+        - language-guides/python/recipes/service-bus.md
+        - language-guides/python/recipes/signalr.md
+        - language-guides/python/recipes/dependency-injection.md
+        - language-guides/python/recipes/retry.md
+        - language-guides/python/recipes/middleware.md
+        - language-guides/python/recipes/testing.md
         - language-guides/python/recipes/custom-domain-certificates.md
       - Python Reference:
         - language-guides/python/cli-cheatsheet.md
@@ -236,14 +247,25 @@ nav:
         - language-guides/nodejs/recipes/index.md
         - language-guides/nodejs/recipes/http-api.md
         - language-guides/nodejs/recipes/http-auth.md
+        - language-guides/nodejs/recipes/openapi.md
         - language-guides/nodejs/recipes/cosmosdb.md
         - language-guides/nodejs/recipes/blob-storage.md
         - language-guides/nodejs/recipes/queue.md
+        - language-guides/nodejs/recipes/table-storage.md
         - language-guides/nodejs/recipes/key-vault.md
         - language-guides/nodejs/recipes/managed-identity.md
         - language-guides/nodejs/recipes/timer.md
         - language-guides/nodejs/recipes/durable-orchestration.md
+        - language-guides/nodejs/recipes/durable-entities.md
+        - language-guides/nodejs/recipes/durable-advanced.md
         - language-guides/nodejs/recipes/event-grid.md
+        - language-guides/nodejs/recipes/event-hub.md
+        - language-guides/nodejs/recipes/service-bus.md
+        - language-guides/nodejs/recipes/signalr.md
+        - language-guides/nodejs/recipes/dependency-injection.md
+        - language-guides/nodejs/recipes/retry.md
+        - language-guides/nodejs/recipes/middleware.md
+        - language-guides/nodejs/recipes/testing.md
         - language-guides/nodejs/recipes/custom-domain-certificates.md
       - Node.js Reference:
         - language-guides/nodejs/cli-cheatsheet.md
@@ -295,14 +317,26 @@ nav:
         - language-guides/dotnet/recipes/index.md
         - language-guides/dotnet/recipes/http-api.md
         - language-guides/dotnet/recipes/http-auth.md
+        - language-guides/dotnet/recipes/openapi.md
         - language-guides/dotnet/recipes/cosmosdb.md
         - language-guides/dotnet/recipes/blob-storage.md
         - language-guides/dotnet/recipes/queue.md
+        - language-guides/dotnet/recipes/table-storage.md
         - language-guides/dotnet/recipes/key-vault.md
         - language-guides/dotnet/recipes/managed-identity.md
         - language-guides/dotnet/recipes/timer.md
         - language-guides/dotnet/recipes/durable-orchestration.md
+        - language-guides/dotnet/recipes/durable-entities.md
+        - language-guides/dotnet/recipes/durable-advanced.md
         - language-guides/dotnet/recipes/event-grid.md
+        - language-guides/dotnet/recipes/event-hub.md
+        - language-guides/dotnet/recipes/service-bus.md
+        - language-guides/dotnet/recipes/signalr.md
+        - language-guides/dotnet/recipes/dependency-injection.md
+        - language-guides/dotnet/recipes/retry.md
+        - language-guides/dotnet/recipes/middleware.md
+        - language-guides/dotnet/recipes/testing.md
+        - language-guides/dotnet/recipes/migrate-to-isolated.md
         - language-guides/dotnet/recipes/custom-domain-certificates.md
       - .NET Reference:
         - language-guides/dotnet/cli-cheatsheet.md
@@ -354,14 +388,25 @@ nav:
         - language-guides/java/recipes/index.md
         - language-guides/java/recipes/http-api.md
         - language-guides/java/recipes/http-auth.md
+        - language-guides/java/recipes/openapi.md
         - language-guides/java/recipes/cosmosdb.md
         - language-guides/java/recipes/blob-storage.md
         - language-guides/java/recipes/queue.md
+        - language-guides/java/recipes/table-storage.md
         - language-guides/java/recipes/key-vault.md
         - language-guides/java/recipes/managed-identity.md
         - language-guides/java/recipes/timer.md
         - language-guides/java/recipes/durable-orchestration.md
+        - language-guides/java/recipes/durable-entities.md
+        - language-guides/java/recipes/durable-advanced.md
         - language-guides/java/recipes/event-grid.md
+        - language-guides/java/recipes/event-hub.md
+        - language-guides/java/recipes/service-bus.md
+        - language-guides/java/recipes/signalr.md
+        - language-guides/java/recipes/dependency-injection.md
+        - language-guides/java/recipes/retry.md
+        - language-guides/java/recipes/middleware.md
+        - language-guides/java/recipes/testing.md
         - language-guides/java/recipes/custom-domain-certificates.md
       - Java Reference:
         - language-guides/java/cli-cheatsheet.md
@@ -369,11 +414,66 @@ nav:
         - language-guides/java/host-json.md
         - language-guides/java/platform-limits.md
         - language-guides/java/troubleshooting.md
+    - PowerShell:
+      - language-guides/powershell/index.md
+      - language-guides/powershell/powershell-programming-model.md
+      - language-guides/powershell/powershell-runtime.md
+      - Tutorial:
+        - Overview & Plan Chooser: language-guides/powershell/tutorial/index.md
+        - Consumption (Y1):
+          - language-guides/powershell/tutorial/consumption/01-local-run.md
+          - language-guides/powershell/tutorial/consumption/02-first-deploy.md
+          - language-guides/powershell/tutorial/consumption/03-configuration.md
+          - language-guides/powershell/tutorial/consumption/04-logging-monitoring.md
+          - language-guides/powershell/tutorial/consumption/05-infrastructure-as-code.md
+          - language-guides/powershell/tutorial/consumption/06-ci-cd.md
+          - language-guides/powershell/tutorial/consumption/07-extending-triggers.md
+        - Flex Consumption (FC1):
+          - language-guides/powershell/tutorial/flex-consumption/01-local-run.md
+          - language-guides/powershell/tutorial/flex-consumption/02-first-deploy.md
+          - language-guides/powershell/tutorial/flex-consumption/03-configuration.md
+          - language-guides/powershell/tutorial/flex-consumption/04-logging-monitoring.md
+          - language-guides/powershell/tutorial/flex-consumption/05-infrastructure-as-code.md
+          - language-guides/powershell/tutorial/flex-consumption/06-ci-cd.md
+          - language-guides/powershell/tutorial/flex-consumption/07-extending-triggers.md
+        - Premium (EP):
+          - language-guides/powershell/tutorial/premium/01-local-run.md
+          - language-guides/powershell/tutorial/premium/02-first-deploy.md
+          - language-guides/powershell/tutorial/premium/03-configuration.md
+          - language-guides/powershell/tutorial/premium/04-logging-monitoring.md
+          - language-guides/powershell/tutorial/premium/05-infrastructure-as-code.md
+          - language-guides/powershell/tutorial/premium/06-ci-cd.md
+          - language-guides/powershell/tutorial/premium/07-extending-triggers.md
+        - Dedicated (App Service Plan):
+          - language-guides/powershell/tutorial/dedicated/01-local-run.md
+          - language-guides/powershell/tutorial/dedicated/02-first-deploy.md
+          - language-guides/powershell/tutorial/dedicated/03-configuration.md
+          - language-guides/powershell/tutorial/dedicated/04-logging-monitoring.md
+          - language-guides/powershell/tutorial/dedicated/05-infrastructure-as-code.md
+          - language-guides/powershell/tutorial/dedicated/06-ci-cd.md
+          - language-guides/powershell/tutorial/dedicated/07-extending-triggers.md
+      - PowerShell Recipes:
+        - language-guides/powershell/recipes/index.md
+        - language-guides/powershell/recipes/http-api.md
+        - language-guides/powershell/recipes/http-auth.md
+        - language-guides/powershell/recipes/blob-storage.md
+        - language-guides/powershell/recipes/queue.md
+        - language-guides/powershell/recipes/service-bus.md
+        - language-guides/powershell/recipes/key-vault.md
+        - language-guides/powershell/recipes/managed-identity.md
+        - language-guides/powershell/recipes/timer.md
+      - PowerShell Reference:
+        - language-guides/powershell/cli-cheatsheet.md
+        - language-guides/powershell/environment-variables.md
+        - language-guides/powershell/host-json.md
+        - language-guides/powershell/platform-limits.md
+        - language-guides/powershell/troubleshooting.md
   - Operations:
     - operations/index.md
     - operations/deployment.md
     - operations/configuration.md
     - operations/monitoring.md
+    - operations/opentelemetry.md
     - operations/alerts.md
     - operations/cold-start.md
     - operations/retries-and-poison-handling.md
@@ -442,6 +542,7 @@ nav:
     - reference/host-json.md
     - reference/environment-variables.md
     - reference/platform-limits.md
+    - reference/glossary.md
     - Metrics:
       - reference/metrics/index.md
       - reference/metrics/function-execution-metrics.md
