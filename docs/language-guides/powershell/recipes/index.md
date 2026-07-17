@@ -23,6 +23,8 @@ graph TD
     A --> C[Storage & Messaging]
     A --> D[Security]
     A --> E[Scheduling]
+    A --> F[Orchestration]
+    A --> G[API & Quality]
 ```
 
 !!! tip "Pair recipes with platform guidance"
@@ -44,6 +46,11 @@ graph TD
 | [Blob Storage](blob-storage.md) | Blob trigger and blob binding patterns for file processing. |
 | [Queue Storage](queue.md) | Queue trigger consumer patterns and output bindings. |
 | [Service Bus](service-bus.md) | Enterprise messaging with queue/topic triggers and dead-lettering. |
+| [Event Hubs](event-hub.md) | High-throughput stream ingestion with batch triggers. |
+| [Event Grid](event-grid.md) | Reactive handling of discrete events and custom topics. |
+| [Cosmos DB](cosmosdb.md) | Change feed trigger and item input/output bindings. |
+| [Table Storage](table-storage.md) | Structured NoSQL entity read/write bindings. |
+| [SignalR Service](signalr.md) | Real-time messaging with negotiate and broadcast bindings. |
 
 ### Security
 
@@ -57,6 +64,29 @@ graph TD
 | Recipe | Description |
 |--------|-------------|
 | [Timer Trigger](timer.md) | Scheduled jobs, cron semantics, and idempotent batch execution. |
+
+### Orchestration
+
+| Recipe | Description |
+|--------|-------------|
+| [Durable Orchestration](durable-orchestration.md) | Client, orchestrator, and activity functions for long-running workflows. |
+| [Durable Advanced Patterns](durable-advanced.md) | Fan-out/fan-in, external events, durable timers, and eternal orchestrations. |
+
+### API & Quality
+
+| Recipe | Description |
+|--------|-------------|
+| [Retries and Error Handling](retry.md) | Retry policies, defensive error handling, and idempotency. |
+| [OpenAPI Documentation](openapi.md) | Serve an API contract from a dedicated HTTP endpoint. |
+| [Testing](testing.md) | Unit-test function logic with Pester. |
+| [Custom Domain and Certificates](custom-domain-certificates.md) | HTTPS custom domains and TLS certificate binding. |
+
+!!! note "Not applicable in the PowerShell model"
+    Some recipes available for other languages have no idiomatic PowerShell equivalent:
+
+    - **Dependency injection** — PowerShell has no DI container. Share initialized state (clients, config) through `profile.ps1` and module-scoped variables instead.
+    - **Middleware** — PowerShell has no invocation pipeline. Put cross-cutting logic (logging, auth checks) in `profile.ps1` or shared helper modules imported by each function.
+    - **Durable entities** — Entity triggers and clients are not supported for PowerShell. Use orchestrations with external storage for stateful coordination. See [Durable Advanced Patterns](durable-advanced.md).
 
 ## How to consume recipes effectively
 
