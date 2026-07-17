@@ -52,9 +52,12 @@ flowchart TD
 - [Deployment](deployment.md)
 - [Configuration](configuration.md)
 - [Monitoring](monitoring.md)
+- [OpenTelemetry Export](opentelemetry.md)
 - [Alerts](alerts.md)
 - [Cold Start](cold-start.md)
 - [Retries and Poison Handling](retries-and-poison-handling.md)
+- [Security](security.md)
+- [Cost Optimization](cost-optimization.md)
 - [Recovery](recovery.md)
 
 ## Review Matrix

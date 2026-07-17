@@ -74,6 +74,7 @@ Choose your network scenario based on requirements, then select a compatible hos
 |----------|-------------|:--:|:---:|:--:|:------:|:-------:|
 | [**1. Public Only**](public-only.md) | Internet ingress, public egress | :material-check: | :material-check: | :material-check: | :material-check: | :material-check: |
 | [**2. Private Egress**](private-egress.md) | Internet ingress, VNet egress to private backends | :material-close: | :material-check: | :material-check: | :material-minus:[^1] | :material-check: |
+| [**2b. Storage Service Endpoint**](storage-service-endpoint.md) | Subnet-scoped storage access, public DNS retained | :material-close: | :material-check: | :material-check: | :material-minus:[^1] | :material-check: |
 | [**3. Private Ingress**](private-ingress.md) | Private endpoint ingress, VNet egress | :material-close: | :material-check: | :material-check: | :material-minus:[^1] | :material-check: |
 | [**4. Fixed Outbound IP**](fixed-outbound-nat.md) | NAT Gateway for stable egress IP | :material-close: | :material-check: | :material-check: | :material-minus:[^1] | :material-check: |
 
@@ -128,6 +129,7 @@ Each scenario guide provides:
 ## See Also
 
 - [Platform: Networking](../networking.md) — Detailed networking concepts
+- [Platform: Storage Connectivity](../storage-connectivity.md) — Storage roles and network settings matrix
 - [Platform: Deployment Scenarios](../deployment-scenarios.md) — Plan-centric deployment comparison
 - [Best Practices: Networking](../../best-practices/networking.md) — Production networking patterns
 - [Troubleshooting: DNS VNet Resolution](../../troubleshooting/lab-guides/dns-vnet-resolution.md) — Common DNS issues

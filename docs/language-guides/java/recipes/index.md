@@ -29,11 +29,12 @@ flowchart TD
 
 | Area | Recipe |
 |------|--------|
-| HTTP | [HTTP API Patterns](http-api.md), [HTTP Authentication](http-auth.md) |
-| Data | [Cosmos DB Integration](cosmosdb.md), [Blob Storage Integration](blob-storage.md), [Queue Storage Integration](queue.md) |
+| HTTP | [HTTP API Patterns](http-api.md), [HTTP Authentication](http-auth.md), [OpenAPI and Swagger](openapi.md) |
+| Data | [Cosmos DB Integration](cosmosdb.md), [Blob Storage Integration](blob-storage.md), [Queue Storage Integration](queue.md), [Table Storage Integration](table-storage.md) |
 | Security | [Key Vault Integration](key-vault.md), [Managed Identity](managed-identity.md) |
-| Eventing | [Timer Trigger](timer.md), [Event Grid Trigger](event-grid.md), [Durable Orchestration](durable-orchestration.md) |
+| Eventing | [Timer Trigger](timer.md), [Event Grid Trigger](event-grid.md), [Event Hubs Integration](event-hub.md), [Service Bus Integration](service-bus.md), [SignalR Service](signalr.md), [Durable Orchestration](durable-orchestration.md), [Durable Entities](durable-entities.md), [Durable Advanced](durable-advanced.md) |
 | Platform edge | [Custom Domain and Certificates](custom-domain-certificates.md) |
+| Patterns | [Dependency Injection](dependency-injection.md), [Retry Policies](retry.md), [Middleware](middleware.md), [Unit Testing](testing.md) |
 
 ## See Also
 

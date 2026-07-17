@@ -44,6 +44,7 @@ graph TD
 | [Environment Variables](environment-variables.md) | System and application environment variables |
 | [Platform Limits](platform-limits.md) | Timeouts, payload sizes, concurrency limits per hosting plan |
 | [Troubleshooting](troubleshooting.md) | Common issues and debugging for Python function apps |
+| [Glossary](glossary.md) | Definitions of core Azure Functions terms used across this guide |
 
 ## Quick Links
 

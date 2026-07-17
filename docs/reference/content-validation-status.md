@@ -11,12 +11,12 @@ This page tracks `content_validation` metadata for **in-scope factual-claim docu
 
 ## Summary
 
-*Generated: 2026-07-05*
+*Generated: 2026-07-17*
 
 | Content Type | Total | Verified | Pending | Unverified | No Metadata |
 |---|---:|---:|---:|---:|---:|
-| Mermaid Diagrams | 513 | 513 | 0 | 0 | 0 |
-| In-Scope Factual-Claim Documents | 58 | 58 | 0 | 0 | 0 |
+| Mermaid Diagrams | 556 | 556 | 0 | 0 | 0 |
+| In-Scope Factual-Claim Documents | 62 | 62 | 0 | 0 | 0 |
 
 !!! success "All In-Scope Documents Verified"
     Every in-scope factual-claim document has verified Microsoft Learn sources for its core claims.
@@ -24,7 +24,7 @@ This page tracks `content_validation` metadata for **in-scope factual-claim docu
 <!-- diagram-id: content-validation-status-pie -->
 ```mermaid
 pie title In-Scope Document Validation Status
-    "Verified" : 58
+    "Verified" : 62
 ```
 
 ## By Section
@@ -33,6 +33,7 @@ pie title In-Scope Document Validation Status
 
 | Document | Has Sources | Status | Claims | Last Reviewed |
 |---|---|---|---|---|
+| [Custom Handlers](../platform/custom-handlers.md) | ✅ | ✅ Verified | 4/4 | 2026-07-17 |
 | [Deployment Scenarios](../platform/deployment-scenarios.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
 | [Durable Functions](../platform/durable-functions.md) | ✅ | ✅ Verified | 5/5 | 2026-07-05 |
 | [Fixed Outbound Nat](../platform/networking-scenarios/fixed-outbound-nat.md) | ✅ | ✅ Verified | 3/3 | 2026-04-12 |
@@ -47,6 +48,8 @@ pie title In-Scope Document Validation Status
 | [Reliability](../platform/reliability.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
 | [Scaling](../platform/scaling.md) | ✅ | ✅ Verified | 3/3 | 2026-04-12 |
 | [Security](../platform/security.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
+| [Storage Connectivity](../platform/storage-connectivity.md) | ✅ | ✅ Verified | 5/5 | 2026-07-16 |
+| [Storage Service Endpoint](../platform/networking-scenarios/storage-service-endpoint.md) | ✅ | ✅ Verified | 4/4 | 2026-07-16 |
 | [Triggers And Bindings](../platform/triggers-and-bindings.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
 
 ### Best Practices
@@ -73,6 +76,7 @@ pie title In-Scope Document Validation Status
 | [Cost Optimization](../operations/cost-optimization.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
 | [Deployment](../operations/deployment.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
 | [Monitoring](../operations/monitoring.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
+| [Opentelemetry](../operations/opentelemetry.md) | ✅ | ✅ Verified | 4/4 | 2026-07-17 |
 | [Recovery](../operations/recovery.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
 | [Retries And Poison Handling](../operations/retries-and-poison-handling.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
 | [Security](../operations/security.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
