@@ -35,7 +35,7 @@ return ($results | Measure-Object -Sum).Sum
 Use durable timers for reliable delays and timeouts instead of `Start-Sleep`:
 
 ```powershell
-$expiry = $Context.CurrentUtcDateTime.AddHours(1)
+# Suspend the orchestration for one hour, then resume deterministically
 Start-DurableTimer -Duration (New-TimeSpan -Hours 1)
 ```
 

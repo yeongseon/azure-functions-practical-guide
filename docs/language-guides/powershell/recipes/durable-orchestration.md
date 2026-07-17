@@ -33,6 +33,32 @@ Durable Functions require the extension bundle and the managed dependency to ins
 
 An HTTP-triggered client starts the orchestration and returns status URLs. It uses an `httpTrigger`, an `http` output, and a `durableClient` input binding.
 
+`function.json`:
+
+```json
+{
+  "bindings": [
+    {
+      "name": "Request",
+      "type": "httpTrigger",
+      "direction": "in",
+      "methods": ["post"],
+      "route": "orders"
+    },
+    {
+      "name": "Response",
+      "type": "http",
+      "direction": "out"
+    },
+    {
+      "name": "starter",
+      "type": "durableClient",
+      "direction": "in"
+    }
+  ]
+}
+```
+
 `run.ps1`:
 
 ```powershell
