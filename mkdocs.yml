@@ -48,7 +48,7 @@ extra_javascript:
 plugins:
   - search
   - macros:
-      module_name: scripts/capture/mkdocs_macros
+      modules: ['azure_guide_capture_toolkit.mkdocs_macros']
       j2_variable_start_string: "[[["
       j2_variable_end_string: "]]]"
       j2_block_start_string: "[[%"
