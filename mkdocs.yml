@@ -140,6 +140,7 @@ nav:
     - best-practices/deployment.md
     - best-practices/cost-optimization.md
     - best-practices/common-anti-patterns.md
+    - best-practices/testing.md
   - Language Guides:
     - language-guides/index.md
     - Python:
@@ -510,6 +511,7 @@ nav:
     - operations/security.md
     - operations/cost-optimization.md
     - operations/recovery.md
+    - operations/migration.md
   - Troubleshooting:
     - troubleshooting/index.md
     - troubleshooting/architecture-overview.md

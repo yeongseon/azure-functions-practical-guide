@@ -59,6 +59,7 @@ flowchart TD
 - [Security](security.md)
 - [Cost Optimization](cost-optimization.md)
 - [Recovery](recovery.md)
+- [Migration Guide](migration.md)
 
 ## Review Matrix
 

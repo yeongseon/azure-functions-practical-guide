@@ -80,6 +80,7 @@ The Best Practices tab is organized into nine practical sub-pages.
 | `deployment.md` | Safe rollout, rollback, and slot strategy by plan | Lowers release failure blast radius |
 | `cost-optimization.md` | Cost guardrails with scale and telemetry controls | Keeps spend predictable during bursts |
 | `common-anti-patterns.md` | Frequent Functions-specific mistakes and alternatives | Speeds architecture and code reviews |
+| `testing.md` | Test pyramid, local emulation, and CI integration strategy | Prevents binding-configuration and retry-path defects reaching production |
 
 !!! note "Current publishing state"
     This landing page includes the full planned map so teams can align review checklists and ownership early.
