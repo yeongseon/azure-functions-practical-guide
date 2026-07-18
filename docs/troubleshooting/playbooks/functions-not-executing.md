@@ -545,7 +545,7 @@ Recovery criteria:
 | Incident drill | Monthly | Incident commander | End-to-end triage < 15 minutes |
 
 ## See Also
-- [Troubleshooting Architecture](../architecture.md)
+- [Request flow for incident response](../request-flow-for-incident-response.md)
 - [First 10 Minutes](../first-10-minutes/index.md)
 - [KQL Query Library](../kql/index.md)
 - [Troubleshooting Methodology](../methodology.md)

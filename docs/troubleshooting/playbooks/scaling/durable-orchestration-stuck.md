@@ -534,7 +534,7 @@ flowchart TD
 5. Add proactive alerts for long-running instance age, replay volume, and activity failure ratio.
 
 ## See Also
-- [Troubleshooting architecture](../../architecture.md)
+- [Request flow for incident response](../../request-flow-for-incident-response.md)
 - [Troubleshooting methodology](../../methodology.md)
 - [Troubleshooting KQL guide](../../kql/index.md)
 - [Durable replay storm lab guide](../../lab-guides/durable-replay-storm.md)

@@ -519,7 +519,7 @@ Plan memory guidance for escalation decisions:
 5. Load test with production-like payload distributions before release, then validate no monotonic memory growth.
 
 ## See Also
-- [Troubleshooting architecture](../../architecture.md)
+- [Request flow for incident response](../../request-flow-for-incident-response.md)
 - [Troubleshooting methodology](../../methodology.md)
 - [Troubleshooting KQL guide](../../kql/index.md)
 - [Out of memory crash lab guide](../../lab-guides/out-of-memory-crash.md)

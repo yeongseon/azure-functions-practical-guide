@@ -501,7 +501,7 @@ az functionapp deployment source config-zip --name <app-name> --resource-group <
 5. Validate `host.json` timeout values per environment and plan type during CI/CD policy checks.
 
 ## See Also
-- [Troubleshooting Architecture](../../architecture.md)
+- [Request flow for incident response](../../request-flow-for-incident-response.md)
 - [Troubleshooting Methodology](../../methodology.md)
 - [Troubleshooting KQL Guide](../../kql/index.md)
 - [Troubleshooting Lab Guides](../../lab-guides/index.md)

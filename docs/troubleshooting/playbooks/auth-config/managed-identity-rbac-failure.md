@@ -542,7 +542,7 @@ timeline
 6. Run quarterly access reviews to remove stale assignments without breaking trigger identities.
 
 ## See Also
-- [Troubleshooting Architecture](../../architecture.md)
+- [Request flow for incident response](../../request-flow-for-incident-response.md)
 - [Troubleshooting Methodology](../../methodology.md)
 - [KQL Query Guide](../../kql/index.md)
 - [Troubleshooting Lab Guides](../../lab-guides/index.md)

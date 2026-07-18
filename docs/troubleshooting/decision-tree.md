@@ -241,7 +241,7 @@ az monitor activity-log list \
 
 - [Troubleshooting Method](methodology/troubleshooting-method.md)
 - [Detector Map](methodology/detector-map.md)
-- [Architecture](architecture.md)
+- [Request flow for incident response](request-flow-for-incident-response.md)
 - [Evidence Map](evidence-map.md)
 - [Mental Model](mental-model.md)
 - [First 10 Minutes: Triggers Not Firing](first-10-minutes/triggers-not-firing.md)

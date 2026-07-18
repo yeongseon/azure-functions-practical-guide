@@ -39,7 +39,8 @@ Thank you for your interest in contributing to Azure Functions Practical Guide!
 │   ├── start-here/             # Overview, learning paths, repository map
 │   ├── stylesheets/            # Custom CSS
 │   └── troubleshooting/        # Troubleshooting hub
-│       ├── architecture.md
+│       ├── architecture-components-reference.md
+│       ├── request-flow-for-incident-response.md
 │       ├── evidence-map.md
 │       ├── first-10-minutes/   # First-10-minutes guides
 │       ├── kql/                # KQL query packs

@@ -88,8 +88,7 @@ pie title In-Scope Document Validation Status
 | Document | Has Sources | Status | Claims | Last Reviewed |
 |---|---|---|---|---|
 | [App Settings Misconfiguration](../troubleshooting/playbooks/auth-config/app-settings-misconfiguration.md) | ✅ | ✅ Verified | 1/1 | 2026-04-12 |
-| [Architecture](../troubleshooting/architecture.md) | ✅ | ✅ Verified | 1/1 | 2026-04-12 |
-| [Architecture Overview](../troubleshooting/architecture-overview.md) | ✅ | ✅ Verified | 1/1 | 2026-04-12 |
+| [Architecture Components Reference](../troubleshooting/architecture-components-reference.md) | ✅ | ✅ Verified | 1/1 | 2026-04-12 |
 | [Blob Trigger Not Firing](../troubleshooting/playbooks/blob-trigger-not-firing.md) | ✅ | ✅ Verified | 1/1 | 2026-04-12 |
 | [Decision Tree](../troubleshooting/decision-tree.md) | ✅ | ✅ Verified | 1/1 | 2026-04-12 |
 | [Deployment Failures](../troubleshooting/playbooks/deployment-failures.md) | ✅ | ✅ Verified | 1/1 | 2026-04-12 |
@@ -108,6 +107,7 @@ pie title In-Scope Document Validation Status
 | [Out Of Memory Worker Crash](../troubleshooting/playbooks/scaling/out-of-memory-worker-crash.md) | ✅ | ✅ Verified | 1/1 | 2026-04-12 |
 | [Queue Piling Up](../troubleshooting/playbooks/queue-piling-up.md) | ✅ | ✅ Verified | 1/1 | 2026-04-12 |
 | [Quick Diagnosis Cards](../troubleshooting/quick-diagnosis-cards.md) | ✅ | ✅ Verified | 1/1 | 2026-04-12 |
+| [Request Flow For Incident Response](../troubleshooting/request-flow-for-incident-response.md) | ✅ | ✅ Verified | 1/1 | 2026-04-12 |
 | [Scaling Issues](../troubleshooting/first-10-minutes/scaling-issues.md) | ✅ | ✅ Verified | 1/1 | 2026-04-12 |
 | [Timeout Execution Limit](../troubleshooting/playbooks/triggers/timeout-execution-limit.md) | ✅ | ✅ Verified | 1/1 | 2026-04-12 |
 | [Triggers Not Firing](../troubleshooting/first-10-minutes/triggers-not-firing.md) | ✅ | ✅ Verified | 1/1 | 2026-04-12 |
