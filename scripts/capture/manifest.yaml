@@ -25,9 +25,17 @@
 # both provided by the azure-guide-capture-toolkit package, read/write this file.
 # The mkdocs `shot()` macro reads it at build time.
 #
-# No screenshots are registered yet in this repository. Add entries here as
-# Portal captures are produced; reference them from docs with
-# [[[ shot("<id>") ]]].
+# Capture status is tracked per entry: an entry with no `captured` date is a
+# PLANNED shot whose image bytes do not exist yet. Register the entry here first
+# (id, file, alt, page), then a human runs the authenticated Portal capture and
+# `capture-optimize-webp` stamps `captured`/`verified`. Docs must NOT reference a
+# shot via [[[ shot("<id>") ]]] until its image exists, or `mkdocs build
+# --strict` fails on the missing media file.
+#
+# Proof-of-concept track (Python / Flex Consumption) is scaffolded below. See
+# scripts/capture/plans/python-flex-consumption.md for the per-step capture plan,
+# alt text, and the Purpose/Look for/Expected/Next caption to place under each
+# image once captured.
 
 meta:
   version: 1
@@ -36,4 +44,105 @@ meta:
   target_width: 1440
   webp_quality: 82
 
-screenshots: []
+# --- Proof-of-concept: Python / Flex Consumption track (PLANNED, not yet captured) ---
+# Entries below are valid and build-safe; they carry no `captured`/`verified`
+# date because the image bytes do not exist yet. Do not add [[[ shot() ]]]
+# references in docs until each .webp is produced.
+screenshots:
+- id: py-flex-01-core-tools-local-start
+  file: language-guides/python/flex-consumption/py-flex-01-core-tools-local-start.webp
+  alt: Local terminal running func start, showing the Azure Functions Core Tools host discovering the Python v2 functions (helloHttp, health) and printing their http://localhost:7071/api endpoints
+  page: Local terminal — func start (Core Tools host)
+  status: planned
+  diff_threshold: 0.02
+
+- id: py-flex-02-function-app-overview-running
+  file: language-guides/python/flex-consumption/py-flex-02-function-app-overview-running.webp
+  alt: Azure Portal Function App Overview blade showing Status Running, an App Service Plan of type Flex Consumption (FC1), Linux OS, and the Python 3.11 runtime
+  page: Function App → Overview
+  status: planned
+  diff_threshold: 0.02
+
+- id: py-flex-02-functions-list
+  file: language-guides/python/flex-consumption/py-flex-02-functions-list.webp
+  alt: Azure Portal Function App Functions blade listing the deployed functions helloHttp and health with Enabled status and HTTP trigger type
+  page: Function App → Functions
+  status: planned
+  diff_threshold: 0.02
+
+- id: py-flex-02-deployment-storage-container
+  file: language-guides/python/flex-consumption/py-flex-02-deployment-storage-container.webp
+  alt: Azure Portal Storage account Containers blade showing the app-package container holding the uploaded deployment zip blob used by Flex Consumption
+  page: Storage account → Containers → app-package
+  status: planned
+  diff_threshold: 0.02
+
+- id: py-flex-03-environment-variables
+  file: language-guides/python/flex-consumption/py-flex-03-environment-variables.webp
+  alt: Azure Portal Function App Environment variables blade (App settings tab) showing QueueStorage, TIMER_LAB_SCHEDULE, and APPLICATIONINSIGHTS_CONNECTION_STRING entries with values hidden
+  page: Function App → Settings → Environment variables
+  status: planned
+  diff_threshold: 0.02
+
+- id: py-flex-03-identity-system-assigned
+  file: language-guides/python/flex-consumption/py-flex-03-identity-system-assigned.webp
+  alt: Azure Portal Function App Identity blade with the System assigned tab showing Status set to On and an Object (principal) ID for the managed identity
+  page: Function App → Settings → Identity → System assigned
+  status: planned
+  diff_threshold: 0.02
+
+- id: py-flex-04-app-insights-logs-requests
+  file: language-guides/python/flex-consumption/py-flex-04-app-insights-logs-requests.webp
+  alt: Azure Portal Application Insights Logs blade showing a KQL requests query result grid with GET /api/health and GET /api/info rows and resultCode 200
+  page: Application Insights → Logs (requests query)
+  status: planned
+  diff_threshold: 0.02
+
+- id: py-flex-04-live-metrics
+  file: language-guides/python/flex-consumption/py-flex-04-live-metrics.webp
+  alt: Azure Portal Application Insights Live Metrics blade showing incoming request rate, request duration, and server health while traffic is generated
+  page: Application Insights → Live Metrics
+  status: planned
+  diff_threshold: 0.02
+
+- id: py-flex-04-transaction-search-exception
+  file: language-guides/python/flex-consumption/py-flex-04-transaction-search-exception.webp
+  alt: Azure Portal Application Insights Transaction search blade showing the handled ValueError exception raised by the GET /api/exceptions/test-error request
+  page: Application Insights → Transaction search
+  status: planned
+  diff_threshold: 0.02
+
+- id: py-flex-05-deployment-history
+  file: language-guides/python/flex-consumption/py-flex-05-deployment-history.webp
+  alt: Azure Portal resource group Deployments blade showing a Succeeded Bicep deployment that provisioned the Flex Consumption Function App and its dependencies
+  page: Resource group → Settings → Deployments
+  status: planned
+  diff_threshold: 0.02
+
+- id: py-flex-06-github-actions-run
+  file: language-guides/python/flex-consumption/py-flex-06-github-actions-run.webp
+  alt: GitHub Actions workflow run summary showing a successful (green) build and deploy job for the Flex Consumption Function App using OIDC federated credentials
+  page: GitHub → Actions → workflow run
+  status: planned
+  diff_threshold: 0.02
+
+- id: py-flex-06-deployment-center
+  file: language-guides/python/flex-consumption/py-flex-06-deployment-center.webp
+  alt: Azure Portal Function App Deployment Center blade showing the GitHub source, repository and branch, and a successful deployment log entry
+  page: Function App → Deployment → Deployment Center
+  status: planned
+  diff_threshold: 0.02
+
+- id: py-flex-07-functions-list-multi-trigger
+  file: language-guides/python/flex-consumption/py-flex-07-functions-list-multi-trigger.webp
+  alt: Azure Portal Function App Functions blade after extending triggers, listing HTTP, Timer, Queue, and Blob triggered functions all with Enabled status
+  page: Function App → Functions (multiple trigger types)
+  status: planned
+  diff_threshold: 0.02
+
+- id: py-flex-07-event-grid-subscription
+  file: language-guides/python/flex-consumption/py-flex-07-event-grid-subscription.webp
+  alt: Azure Portal Event Grid System Topic Event Subscriptions blade showing the blob-created subscription pointing to the Function App blob extension webhook endpoint
+  page: Storage account → Events → Event Subscriptions
+  status: planned
+  diff_threshold: 0.02
