@@ -40,7 +40,7 @@ Migrating an Azure Functions workload — whether across hosting plans or across
 ## Prerequisites
 
 - An existing function app on the source plan or programming model.
-- Azure CLI 2.60 or later with the current `functionapp` commands available.
+- A current Azure CLI with the `functionapp` command group, including the Flex Consumption options used below. Upgrade with `az upgrade` if plan or SKU commands are missing.
 - A staging slot or a secondary function app to enable a safe cutover (blue-green) rather than an in-place change.
 - Application Insights enabled on both source and target so migration can be verified with telemetry.
 - Source control access to the app code, so a redeploy of the previous version is always possible.
@@ -63,7 +63,7 @@ Migrating an Azure Functions workload — whether across hosting plans or across
 | Y1 → FC1 | Yes (create new FC1 app) | Cutover only (DNS/slot swap) | High — keep old app until validated |
 | In-process → isolated | No (same app, code change) | Deploy window | Medium — redeploy previous package |
 | Python v1 → v2 | No (same app, code change) | Deploy window | Medium — redeploy previous package |
-| Premium ↔ Dedicated | No (change plan SKU) | Brief restart | High — change SKU back |
+| Premium ↔ Dedicated | Usually no (SKU change); new app in some cases | Brief restart | High — change SKU back |
 
 ### Path 1: Consumption (Y1) → Flex Consumption (FC1)
 
@@ -112,7 +112,7 @@ Migrating an Azure Functions workload — whether across hosting plans or across
 ### Path 4: Premium ↔ Dedicated
 
 - **When to move.** Choose Dedicated to reuse an existing App Service estate or to run on fixed, predictable capacity; choose Premium to keep event-driven dynamic scale with pre-warmed instances and enterprise networking.
-- **Configuration deltas.** Moving to Dedicated changes the plan SKU and removes event-driven dynamic scaling — you manage instance count and rely on "Always On" instead of pre-warmed instances. Moving to Premium restores dynamic scale-out and always-ready instances. Re-validate VNet integration and cold-start expectations after the change, as they differ between the two plans.
+- **Configuration deltas.** Moving to Dedicated changes the plan SKU and removes event-driven dynamic scaling — you manage instance count and rely on "Always On" instead of pre-warmed instances. Moving to Premium restores dynamic scale-out and always-ready instances. A same-app plan change is the common path, but some direction or region changes require creating a new app on the target plan and redeploying rather than an in-place SKU switch — confirm the app can move before scheduling downtime. Re-validate VNet integration and cold-start expectations after the change, as they differ between the two plans.
 
 ## Verification
 

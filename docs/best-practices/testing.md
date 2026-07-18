@@ -61,7 +61,7 @@ Bias toward many fast, isolated tests and few slow, deployed ones:
 
 - Use [Azurite](https://learn.microsoft.com/en-us/azure/storage/common/storage-use-azurite) as the local Azure Storage emulator to exercise Queue, Blob, and Table triggers and bindings without provisioning cloud resources.
 - Set `AzureWebJobsStorage` to `UseDevelopmentStorage=true` in `local.settings.json` so both the host and Storage bindings target Azurite.
-- Azurite covers Storage bindings only. Cosmos DB, Event Hubs, and Service Bus have no first-party emulator in this repository's scope — mock their clients in unit tests, or test against a dedicated non-production namespace when a real contract must be validated.
+- Azurite covers Storage bindings only. Cosmos DB, Service Bus, and Event Hubs each have their own local emulators ([Cosmos DB emulator](https://learn.microsoft.com/en-us/azure/cosmos-db/emulator), [Service Bus emulator](https://learn.microsoft.com/en-us/azure/service-bus-messaging/test-locally-with-service-bus-emulator), [Event Hubs emulator](https://learn.microsoft.com/en-us/azure/event-hubs/test-locally-with-event-hub-emulator)); use them when a real binding contract must be validated, and otherwise mock the clients in unit tests.
 
 ### Integrate Tests into CI
 
@@ -101,4 +101,6 @@ Bias toward many fast, isolated tests and few slow, deployed ones:
 - [Strategies for testing your code in Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-test-a-function)
 - [Use the Azurite emulator for local Azure Storage development (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/storage/common/storage-use-azurite)
 - [Develop Azure Functions locally using Core Tools (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local)
+- [Azure Service Bus emulator for local testing (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/service-bus-messaging/test-locally-with-service-bus-emulator)
+- [Azure Event Hubs emulator for local testing (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/event-hubs/test-locally-with-event-hub-emulator)
 - [Use dependency injection in .NET Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-dotnet-dependency-injection)
