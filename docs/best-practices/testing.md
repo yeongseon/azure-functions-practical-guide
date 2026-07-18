@@ -103,4 +103,5 @@ Bias toward many fast, isolated tests and few slow, deployed ones:
 - [Develop Azure Functions locally using Core Tools (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local)
 - [Azure Service Bus emulator for local testing (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/service-bus-messaging/test-locally-with-service-bus-emulator)
 - [Azure Event Hubs emulator for local testing (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/event-hubs/test-locally-with-event-hub-emulator)
+- [Azure Cosmos DB emulator for local development (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/cosmos-db/emulator)
 - [Use dependency injection in .NET Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-dotnet-dependency-injection)
