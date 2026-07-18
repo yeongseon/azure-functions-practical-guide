@@ -58,6 +58,10 @@ plugins:
       on_error_fail: true
   - minify:
       minify_html: true
+  - redirects:
+      redirect_maps:
+        troubleshooting/architecture-overview.md: troubleshooting/architecture-components-reference.md
+        troubleshooting/architecture.md: troubleshooting/request-flow-for-incident-response.md
 
 markdown_extensions:
   - admonition
@@ -514,8 +518,8 @@ nav:
     - operations/migration.md
   - Troubleshooting:
     - troubleshooting/index.md
-    - troubleshooting/architecture-overview.md
-    - troubleshooting/architecture.md
+    - troubleshooting/architecture-components-reference.md
+    - troubleshooting/request-flow-for-incident-response.md
     - troubleshooting/evidence-map.md
     - troubleshooting/decision-tree.md
     - troubleshooting/mental-model.md

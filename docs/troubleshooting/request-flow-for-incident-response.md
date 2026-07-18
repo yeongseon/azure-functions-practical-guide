@@ -82,11 +82,15 @@ content_validation:
       verified: true
 ---
 
-# Troubleshooting Architecture Map for Azure Functions
+# Request Flow for Incident Response
 
 This guide is a diagnostic architecture reference for incident response.
 It is intentionally failure-oriented so you can locate where symptoms originate and what evidence source to check first.
 Use it as a fast index from symptom category to architecture layer ownership.
+
+!!! info "When to use this page"
+    Use this page when you need a **request-flow and incident-flow view**: trace a symptom left-to-right through architecture layers to the evidence source that confirms it.
+    For a **component-by-component reference** (hosting, triggers, scale controller, cold start, Durable), see [Architecture components reference](architecture-components-reference.md) instead.
 
 !!! warning "How to use this document"
     This is not a design poster.
@@ -334,6 +338,7 @@ flowchart TD
 ## See Also
 
 - [First 10 Minutes](first-10-minutes/index.md)
+- [Architecture components reference](architecture-components-reference.md)
 - [Systematic Troubleshooting Methodology](methodology.md)
 - [KQL Query Library](kql/index.md)
 - [Functions not executing playbook](playbooks/functions-not-executing.md)

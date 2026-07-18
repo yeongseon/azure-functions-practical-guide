@@ -206,11 +206,15 @@ content_validation:
       verified: true
 ---
 
-# Troubleshooting Architecture Overview
+# Architecture Components Reference
 
 This page answers the first practical question during an Azure Functions incident: **which platform segment is failing?**
 
 Before opening a deep playbook, map the symptom to the correct layer: hosting plan behavior, trigger delivery, scale controller decisions, worker startup, Durable Functions state coordination, or downstream service integration. That classification tells you which telemetry to query first and which mitigation is realistic.
+
+!!! info "When to use this page"
+    Use this page as a **component-by-component reference** when you need to identify *which platform segment* is failing (hosting plan, trigger/binding delivery, scale controller, cold start, Durable state, service integration).
+    For a **request-flow and incident-flow view** that traces symptoms through architecture layers, see [Request flow for incident response](request-flow-for-incident-response.md) instead.
 
 ## Why this page exists
 
@@ -622,7 +626,7 @@ az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "Ap
 ## See Also
 
 - [Troubleshooting](index.md)
-- [Troubleshooting Architecture](architecture.md)
+- [Request flow for incident response](request-flow-for-incident-response.md)
 - [Evidence Map](evidence-map.md)
 - [Decision Tree](decision-tree.md)
 - [Troubleshooting Mental Model](mental-model.md)

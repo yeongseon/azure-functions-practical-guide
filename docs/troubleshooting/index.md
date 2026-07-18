@@ -100,7 +100,7 @@ flowchart TD
 
 ## Quick investigation flow
 
-- For architecture context, see [Troubleshooting Architecture](architecture.md).
+- For a symptom-to-layer request and incident-flow view, see [Request flow for incident response](request-flow-for-incident-response.md); for a component-by-component reference, see [Architecture components reference](architecture-components-reference.md).
 - For "where do I look first?", see [Evidence Map](evidence-map.md).
 - For fast triage sequence, start at [First 10 Minutes](first-10-minutes/index.md).
 
@@ -114,7 +114,8 @@ flowchart TD
 | [Playbooks](playbooks/index.md) | Scenario-based diagnostics and mitigations |
 | [Methodology](methodology.md) | Reproducible Observe → Hypothesize → Test → Fix → Verify workflow |
 | [KQL Query Library](kql/index.md) | Reusable telemetry and evidence queries |
-| [Troubleshooting Architecture](architecture.md) | Component boundaries and failure-domain context |
+| [Request flow for incident response](request-flow-for-incident-response.md) | Request/incident-flow view mapping symptoms to architecture layers |
+| [Architecture components reference](architecture-components-reference.md) | Component-by-component reference: hosting, triggers, scale controller, cold start, Durable |
 | [Evidence Map](evidence-map.md) | Symptom-to-evidence lookup for first-query selection |
 | [Lab Guides](lab-guides/index.md) | Failure drills for response readiness |
 

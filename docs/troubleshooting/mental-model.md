@@ -314,7 +314,7 @@ sequenceDiagram
 - [Decision Tree](decision-tree.md)
 - [Troubleshooting Method](methodology/troubleshooting-method.md)
 - [Detector Map](methodology/detector-map.md)
-- [Architecture](architecture.md)
+- [Request flow for incident response](request-flow-for-incident-response.md)
 - [Evidence Map](evidence-map.md)
 - [First 10 Minutes](first-10-minutes/index.md)
 

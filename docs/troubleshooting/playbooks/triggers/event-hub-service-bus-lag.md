@@ -523,7 +523,7 @@ az functionapp deployment source config-zip --name <app-name> --resource-group <
 5. Validate `host.json` extension tuning in load tests for realistic producer bursts before release.
 
 ## See Also
-- [Troubleshooting Architecture](../../architecture.md)
+- [Request flow for incident response](../../request-flow-for-incident-response.md)
 - [Troubleshooting Methodology](../../methodology.md)
 - [Troubleshooting KQL Guide](../../kql/index.md)
 - [Event Hub checkpoint lag lab guide](../../lab-guides/event-hub-checkpoint-lag.md)

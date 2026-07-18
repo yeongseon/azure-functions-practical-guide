@@ -1004,7 +1004,7 @@ If this is a shared troubleshooting environment, keep resources and only disable
 
 ## See Also
 
-- [Troubleshooting architecture](../architecture.md)
+- [Request flow for incident response](../request-flow-for-incident-response.md)
 - [Troubleshooting evidence map](../evidence-map.md)
 - [Troubleshooting methodology](../methodology.md)
 - [KQL quick reference](../kql/index.md)
