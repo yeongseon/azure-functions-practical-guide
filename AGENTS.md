@@ -369,6 +369,105 @@ The documentation is organized by intent and lifecycle stage:
     - **Best Practices** = Apply practical patterns and avoid common mistakes.
     - **Operations** = Execute day-2 tasks in production.
 
+### Evidence Levels
+
+When documenting troubleshooting steps or analysis, use these tags to specify the strength of the evidence:
+
+- `[Observed]`: Directly seen in logs, metrics, or UI (e.g., 503 errors in Log Analytics).
+- `[Measured]`: Quantified data (e.g., 99th percentile latency is 4.5s).
+- `[Correlated]`: Two events happening together without proven causation.
+- `[Inferred]`: Conclusion based on logic and multiple pieces of evidence.
+- `[Strongly Suggested]`: High confidence inference but missing the "smoking gun".
+- `[Not Proven]`: Hypothesis that has not yet been validated.
+- `[Unknown]`: Missing data or ambiguous behavior.
+
+### Evidence Annotation Policy
+
+The evidence-tag pattern above is a differentiator for this series, but it is an **evidence-annotation tool, not a global writing style**. Applying tags to every image, paragraph, and orientation page causes *annotation fatigue* (readers stop reading them) and invites the `[Observed]`-as-OCR-dump anti-pattern (dumping the full Portal UI text instead of task-relevant values). Scope the tags by document type.
+
+**Where evidence tags are required:**
+
+- Troubleshooting lab guides
+- Experiment logs
+- KQL result interpretation
+- Portal evidence sections
+- Incident-style diagnostic walkthroughs
+
+**Where evidence tags are optional:**
+
+- Troubleshooting playbooks (decision points only)
+- Platform deep dives (only where documented facts and observed behavior diverge)
+- Operations verification sections
+- Advanced diagnostic tutorials
+
+**Where evidence tags should usually be avoided:**
+
+- `Start Here`, `Learning Paths`, repository maps
+- README files
+- Glossary pages and CLI cheatsheets
+- Simple tutorial steps
+- Navigation-only index pages
+
+**Writing rules — Do:**
+
+- Keep `[Observed]` short and limited to task-relevant facts.
+- Use `[Measured]` for numeric query or metric results.
+- Use `[Inferred]` only when the reasoning depends on observations.
+- Use `[Not Proven]` when a screenshot or query does not fully prove the claim.
+- Put long evidence details in collapsible `??? note "Evidence notes"` blocks.
+
+**Writing rules — Do not:**
+
+- Use `[Observed]` as an OCR dump of the entire screen.
+- Put long Portal UI text in image alt text.
+- Use evidence tags to make normal prose look more rigorous.
+- Treat `[Inferred]` as a substitute for Microsoft Learn sourcing.
+- Force evidence tags into Start Here or Learning Paths pages.
+
+Document-type matrix:
+
+| Document type | Usage |
+|---|---|
+| Troubleshooting lab guide | Required |
+| Incident-style experiment log | Required |
+| KQL result interpretation | Strongly recommended (`[Measured]` / `[Observed]` / `[Inferred]`) |
+| Portal evidence screenshot | Strongly recommended, kept short |
+| Troubleshooting playbook | Recommended (decision points only) |
+| Platform deep-dive | Optional (only where docs and observations diverge) |
+| Language tutorial | Limited ("Verify" step only, short) |
+| Start Here / Overview / Learning Paths | Nearly forbidden |
+| Reference / CLI cheatsheet / glossary | Nearly forbidden (metric-capture reference pages excepted) |
+| README / landing page | Effectively forbidden |
+
+This policy is tracked series-wide in [issue #296](https://github.com/yeongseon/azure-container-apps-practical-guide/issues/296).
+
+### Screenshot Evidence Pattern
+
+For tutorial and Portal screenshots, prefer this structure over inline OCR dumps:
+
+```markdown
+![Short descriptive alt text](../assets/example.png)
+
+Purpose: Explain why this screenshot is included.
+Look for: List the 2-4 values the reader should verify.
+Expected result: State the healthy or expected condition.
+Next step: Point to the next action.
+
+??? note "Evidence notes"
+    [Observed] Short task-relevant observation.
+
+    [Inferred] Interpretation based on the observation.
+
+    [Not Proven] What this screenshot alone does not prove.
+```
+
+Rules:
+
+- Alt text describes the image, not every visible UI value.
+- `[Observed]` includes only values relevant to the task.
+- Long raw observations move into the collapsible block.
+- Never include real public IPs, subscription names, tenant IDs, object IDs, emails, secrets, or connection strings in alt text or evidence notes.
+
 ## Documentation Conventions
 
 ### File Naming
