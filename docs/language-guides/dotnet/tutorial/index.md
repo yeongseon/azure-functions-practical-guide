@@ -68,6 +68,7 @@ flowchart TD
 - 05 [Infrastructure as Code](flex-consumption/05-infrastructure-as-code.md)
 - 06 [CI/CD](flex-consumption/06-ci-cd.md)
 - 07 [Extending Triggers](flex-consumption/07-extending-triggers.md)
+- 08 [Testing and Debugging](flex-consumption/08-testing-and-debugging.md)
 
 ### [Premium](premium/01-local-run.md)
 - 01 [Run Locally](premium/01-local-run.md)
@@ -77,6 +78,7 @@ flowchart TD
 - 05 [Infrastructure as Code](premium/05-infrastructure-as-code.md)
 - 06 [CI/CD](premium/06-ci-cd.md)
 - 07 [Extending Triggers](premium/07-extending-triggers.md)
+- 09 [Container Deployment](premium/09-container-deployment.md)
 
 ### [Dedicated](dedicated/01-local-run.md)
 - 01 [Run Locally](dedicated/01-local-run.md)

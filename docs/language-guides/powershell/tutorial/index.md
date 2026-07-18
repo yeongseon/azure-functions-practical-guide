@@ -105,6 +105,7 @@ Next-generation serverless — scale-to-zero with VNet integration. Microsoft's 
 | 05 | [Infrastructure as Code](flex-consumption/05-infrastructure-as-code.md) |
 | 06 | [CI/CD](flex-consumption/06-ci-cd.md) |
 | 07 | [Extending with Triggers](flex-consumption/07-extending-triggers.md) |
+| 08 | [Testing & Debugging](flex-consumption/08-testing-and-debugging.md) |
 
 ### 🚀 [Premium (EP)](premium/01-local-run.md)
 
@@ -119,6 +120,7 @@ Always-warm instances with VNet support and deployment slots. Best for latency-s
 | 05 | [Infrastructure as Code](premium/05-infrastructure-as-code.md) |
 | 06 | [CI/CD](premium/06-ci-cd.md) |
 | 07 | [Extending with Triggers](premium/07-extending-triggers.md) |
+| 09 | [Container Deployment](premium/09-container-deployment.md) |
 
 ### 🖥️ [Dedicated (App Service Plan)](dedicated/01-local-run.md)
 
@@ -145,6 +147,8 @@ Traditional App Service hosting with predictable pricing. Best when you already 
 | 05 | **Infrastructure as Code** | Define all resources in Bicep, deploy reproducibly |
 | 06 | **CI/CD** | Automate build and deploy with GitHub Actions |
 | 07 | **Extending with Triggers** | Add Timer, Queue, and Blob triggers beyond HTTP |
+| 08 | **Testing & Debugging** | Unit test logic, mock triggers/bindings, integration test with Azurite, attach a debugger (Flex track) |
+| 09 | **Container Deployment** | Package as a Linux container, push to ACR, deploy with managed-identity pull (Premium track) |
 
 ## See Also
 

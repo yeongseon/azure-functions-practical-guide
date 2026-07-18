@@ -17,7 +17,7 @@ content_sources:
 ---
 # Tutorial - Choose Your Hosting Plan
 
-This section provides four independent Node.js tutorial tracks. Each track follows the same seven steps from local development to production operations.
+This section provides four independent Node.js tutorial tracks. Each track follows the same core steps from local development to production operations, with additional steps on some tracks.
 
 ## Which Plan Should I Start With?
 
@@ -61,6 +61,8 @@ flowchart TD
 | 05 | Infrastructure as code |
 | 06 | CI/CD |
 | 07 | Extending triggers |
+| 08 | Testing and debugging (Flex track) |
+| 09 | Container deployment (Premium track) |
 
 ## See Also
 - [Node.js Language Guide](../index.md)
