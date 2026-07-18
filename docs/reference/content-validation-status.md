@@ -11,12 +11,12 @@ This page tracks `content_validation` metadata for **in-scope factual-claim docu
 
 ## Summary
 
-*Generated: 2026-07-17*
+*Generated: 2026-07-18*
 
 | Content Type | Total | Verified | Pending | Unverified | No Metadata |
 |---|---:|---:|---:|---:|---:|
-| Mermaid Diagrams | 556 | 556 | 0 | 0 | 0 |
-| In-Scope Factual-Claim Documents | 62 | 62 | 0 | 0 | 0 |
+| Mermaid Diagrams | 566 | 566 | 0 | 0 | 0 |
+| In-Scope Factual-Claim Documents | 64 | 64 | 0 | 0 | 0 |
 
 !!! success "All In-Scope Documents Verified"
     Every in-scope factual-claim document has verified Microsoft Learn sources for its core claims.
@@ -24,7 +24,7 @@ This page tracks `content_validation` metadata for **in-scope factual-claim docu
 <!-- diagram-id: content-validation-status-pie -->
 ```mermaid
 pie title In-Scope Document Validation Status
-    "Verified" : 62
+    "Verified" : 64
 ```
 
 ## By Section
@@ -64,6 +64,7 @@ pie title In-Scope Document Validation Status
 | [Reliability](../best-practices/reliability.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
 | [Scaling](../best-practices/scaling.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
 | [Security](../best-practices/security.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
+| [Testing](../best-practices/testing.md) | ✅ | ✅ Verified | 4/4 | 2026-07-18 |
 | [Trigger And Binding](../best-practices/trigger-and-binding.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
 
 ### Operations
@@ -75,6 +76,7 @@ pie title In-Scope Document Validation Status
 | [Configuration](../operations/configuration.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
 | [Cost Optimization](../operations/cost-optimization.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
 | [Deployment](../operations/deployment.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
+| [Migration](../operations/migration.md) | ✅ | ✅ Verified | 5/5 | 2026-07-18 |
 | [Monitoring](../operations/monitoring.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
 | [Opentelemetry](../operations/opentelemetry.md) | ✅ | ✅ Verified | 4/4 | 2026-07-17 |
 | [Recovery](../operations/recovery.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
