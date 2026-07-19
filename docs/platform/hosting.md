@@ -265,6 +265,15 @@ az functionapp create \
   --runtime node \
   --functions-version 4
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az functionapp create` | Create the function app. |
+| `--resource-group` | Resource group that contains the resource. |
+| `--name` | Name of the target resource. |
+| `--storage-account` | Storage account backing the function app. |
+| `--consumption-plan-location` | Region for the Consumption plan. |
+| `--runtime` | Language runtime stack. |
+| `--functions-version` | Azure Functions runtime major version. |
 
 ```bash
 # Flex Consumption Function App
@@ -276,6 +285,15 @@ az functionapp create \
   --runtime python \
   --runtime-version 3.12
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az functionapp create` | Create the function app. |
+| `--resource-group` | Resource group that contains the resource. |
+| `--name` | Name of the target resource. |
+| `--storage-account` | Storage account backing the function app. |
+| `--flexconsumption-location` | Region for the Flex Consumption plan. |
+| `--runtime` | Language runtime stack. |
+| `--runtime-version` | Runtime language version. |
 
 ```bash
 # Premium plan + Function App
@@ -294,6 +312,21 @@ az functionapp create \
   --runtime dotnet-isolated \
   --functions-version 4
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az functionapp plan create` | Create the hosting plan for the function app. |
+| `--resource-group` | Resource group that contains the resource. |
+| `--name` | Name of the target resource. |
+| `--location` | Azure region. |
+| `--sku` | Pricing/SKU tier. |
+| `--is-linux` | Create the plan on Linux. |
+| `az functionapp create` | Create the function app. |
+| `--resource-group` | Resource group that contains the resource. |
+| `--name` | Name of the target resource. |
+| `--plan` | Hosting plan for the app. |
+| `--storage-account` | Storage account backing the function app. |
+| `--runtime` | Language runtime stack. |
+| `--functions-version` | Azure Functions runtime major version. |
 
 #### CLI inspection examples with output
 
@@ -304,6 +337,12 @@ az functionapp plan show \
   --name "$PLAN_NAME" \
   --output json
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az functionapp plan show` | Show details of a function app hosting plan. |
+| `--resource-group` | Resource group that contains the resource. |
+| `--name` | Name of the target resource. |
+| `--output` | Output format. |
 
 Example output (PII masked):
 
@@ -332,6 +371,11 @@ az functionapp list \
   --resource-group "$RG" \
   --output table
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az functionapp list` | List function apps in a resource group. |
+| `--resource-group` | Resource group that contains the resource. |
+| `--output` | Output format. |
 
 Example output (PII masked):
 

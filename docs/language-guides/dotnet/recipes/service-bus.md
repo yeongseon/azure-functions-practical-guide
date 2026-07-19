@@ -75,6 +75,12 @@ az functionapp config appsettings set \
   --resource-group $RG \
   --settings "ServiceBusConnection__fullyQualifiedNamespace=$NAMESPACE.servicebus.windows.net"
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az functionapp config appsettings set` | Add or update application settings on the function app. |
+| `--name` | Name of the target resource. |
+| `--resource-group` | Resource group that contains the resource. |
+| `--settings` | Key=value application settings to apply. |
 
 Grant the managed identity the **Azure Service Bus Data Receiver** (and **Data Sender** for output) role.
 

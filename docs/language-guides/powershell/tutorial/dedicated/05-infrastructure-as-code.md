@@ -59,12 +59,24 @@ az deployment group create \
   --template-file infra/main.bicep \
   --parameters appName=$APP_NAME storageName=$STORAGE_NAME
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az deployment group create` | Deploy the Bicep template to the resource group. |
+| `--resource-group` | Target resource group for the deployment. |
+| `--template-file` | Path to the Bicep template. |
+| `--parameters` | Template parameter values. |
 
 ## Verification
 
 ```bash
 az deployment group show --resource-group $RG --name main --query properties.provisioningState
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az deployment group show` | Show the status of a completed deployment. |
+| `--resource-group` | Resource group that contains the deployment. |
+| `--name` | Name of the deployment. |
+| `--query` | JMESPath query selecting the provisioning state. |
 
 Returns `Succeeded`.
 

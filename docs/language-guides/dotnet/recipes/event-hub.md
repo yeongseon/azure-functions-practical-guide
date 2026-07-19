@@ -62,6 +62,12 @@ az functionapp config appsettings set \
   --resource-group $RG \
   --settings "EventHubConnection__fullyQualifiedNamespace=$NAMESPACE.servicebus.windows.net"
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az functionapp config appsettings set` | Add or update application settings on the function app. |
+| `--name` | Name of the target resource. |
+| `--resource-group` | Resource group that contains the resource. |
+| `--settings` | Key=value application settings to apply. |
 
 ### Host settings and checkpointing
 

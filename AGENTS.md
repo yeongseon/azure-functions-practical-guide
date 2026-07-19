@@ -485,6 +485,42 @@ az functionapp create --resource-group $RG --name $APP_NAME --plan $PLAN_NAME --
 az functionapp create -g $RG -n $APP_NAME  # ❌ Don't do this
 ```
 
+### CLI Explanation Table Rule (Quality Gate)
+
+Every `bash` code fence that contains an `az ...` command MUST be immediately followed by a command explanation table — typically `| Command/Parameter | Purpose |` (this repository's established variant), or another series variant such as `| Command | Purpose |` — listing the base command plus every long flag used, one row each. This is enforced by `scripts/validate_cli_explanations.py` (wired into the `Validate CLI Explanation Tables` CI job).
+
+**MANDATORY: the explanation table MUST be terminated by a blank line** (or end-of-file). A table that directly abuts the following line — `Example output:`, a `` ``` `` code fence, or any prose — is a **rendering defect**, not a cosmetic one.
+
+Why this is mandatory, and why generic gates miss it:
+
+- Python-Markdown's `tables` extension is block-level: it requires a blank line **after** the table. Without it, the first following non-blank line is silently absorbed **into the table as a phantom row** (e.g. `Example output:` renders as `<td>Example output:</td><td></td>`), corrupting both the table and the following block.
+- **`mkdocs build --strict` does NOT catch this.** Strict mode fails only on broken links and nav warnings; a malformed-but-parseable table still "builds" clean. A green strict build is therefore **not** evidence that tables render correctly.
+- **Source-only review (including Oracle text review) does NOT catch this.** Reviewing the Markdown source (which looks fine line-by-line) cannot reveal a rendering-level absorption bug. Rendered-HTML verification is required.
+- A table-existence check is insufficient: a validator that only asserts "a table follows the fence" will pass a table missing its trailing blank line. The validator MUST also assert table **termination** (blank line or EOF). `find_unterminated_tables()` in `scripts/validate_cli_explanations.py` enforces this, and its doctests are the executable spec.
+
+Correct:
+
+```markdown
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az functionapp create` | Create the function app. |
+| `--name` | Name of the function app. |
+
+Example output:
+```
+
+Broken (no blank line — `Example output:` is absorbed as a phantom table row):
+
+```markdown
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az functionapp create` | Create the function app. |
+| `--name` | Name of the function app. |
+Example output:
+```
+
+When generating or inserting explanation tables in bulk, always re-verify with the validator **and** spot-check the rendered HTML. Any scanner MUST skip fenced code regions, because KQL blocks use line-leading `|` (`| where`, `| summarize`) that would otherwise be miscounted as table rows — causing both false positives and missed real defects.
+
 ### Variable Naming Convention
 
 | Variable | Description | Example |

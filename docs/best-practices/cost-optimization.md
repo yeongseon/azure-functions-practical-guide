@@ -180,6 +180,13 @@ az resource update \
     --resource-type "Microsoft.Web/sites" \
     --set properties.siteConfig.functionAppScaleLimit=20
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az resource update` | Update a resource property through the generic resource provider. |
+| `--resource-group` | Resource group that contains the resource. |
+| `--name` | Name of the target resource. |
+| `--resource-type` | Azure resource type to target. |
+| `--set` | Property path and value to set. |
 
 For Flex Consumption, set `scaleAndConcurrency.maximumInstanceCount` (or equivalent portal setting) aligned to dependency capacity.
 

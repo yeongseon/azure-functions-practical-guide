@@ -115,6 +115,7 @@ Common settings:
 | `APPLICATIONINSIGHTS_CONNECTION_STRING` | Monitoring destination |
 | `WEBSITE_RUN_FROM_PACKAGE` | Immutable package deployment behavior |
 | Custom settings | Feature flags and endpoints |
+
 Set values:
 ```bash
 az functionapp config appsettings set \
@@ -192,6 +193,7 @@ az functionapp config appsettings list \
 | `az functionapp config appsettings list` | Lists application settings |
 | `--query` | Filters for settings prefixed with `AzureFunctionsJobHost__` |
 | `--output table` | Formats the output as a table |
+
 Example output:
 ```text
 Name                                                                  Value
@@ -381,6 +383,7 @@ az monitor app-insights query \
 | `az monitor app-insights query` | Runs a KQL query against Application Insights |
 | `--analytics-query` | Checks the trace log for recent host startup success |
 | `--output table` | Formats results as a table |
+
 Example output:
 ```text
 Timestamp                    Message

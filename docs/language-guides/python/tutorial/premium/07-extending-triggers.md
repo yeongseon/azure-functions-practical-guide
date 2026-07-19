@@ -182,18 +182,21 @@ flowchart TD
       --file "/tmp/sample.txt" \
       --account-name "$STORAGE_NAME" \
       --auth-mode login
+    ```
+
+    | Command/Parameter | Purpose |
+    | --- | --- |
+    | `az storage container create` | Create a blob container in the storage account. |
+    | `az storage blob upload` | Upload a local file to a blob container. |
+    | `--name` | Name of the target resource (container or blob). |
+    | `--account-name` | Storage account that hosts the container. |
+    | `--auth-mode` | Authentication mode; `login` uses your Microsoft Entra identity. |
+    | `--container-name` | Container to upload the blob into. |
+    | `--file` | Local file path to upload. |
 
 5. Publish updated code to Premium.
 
     ```bash
-
-    | CLI element | Explanation |
-    |---|---|
-    | Command(s) | `az storage container create`, `az storage blob upload` |
-    | Key flags | `--name`, `--account-name`, `--auth-mode`, `--container-name`, `--file` |
-    | Variables | `$STORAGE_NAME` |
-    | Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
-
     cd apps/python
     func azure functionapp publish "$APP_NAME" --python
     ```
@@ -205,6 +208,12 @@ flowchart TD
       --name "$APP_NAME" \
       --resource-group "$RG"
     ```
+
+    | Command/Parameter | Purpose |
+    | --- | --- |
+    | `az webapp log tail` | Stream live log output from the app. |
+    | `--name` | Name of the target resource. |
+    | `--resource-group` | Resource group that contains the resource. |
 
 7. Validate Premium trigger behavior.
 

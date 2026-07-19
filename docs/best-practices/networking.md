@@ -359,6 +359,11 @@ az functionapp vnet-integration list \
     --name "$APP_NAME" \
     --resource-group "$RG"
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az functionapp vnet-integration list` | List the app's regional virtual-network integration. |
+| `--name` | Name of the target resource. |
+| `--resource-group` | Resource group that contains the resource. |
 
 ### Verify subnet delegation
 
@@ -369,6 +374,13 @@ az network vnet subnet show \
     --vnet-name "$VNET_NAME" \
     --query "delegations[].serviceName"
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az network vnet subnet show` | Show details of a virtual-network subnet. |
+| `--name` | Name of the target resource. |
+| `--resource-group` | Resource group that contains the resource. |
+| `--vnet-name` | Name of the virtual network. |
+| `--query` | JMESPath query selecting fields from the response. |
 
 ### Verify private endpoint status
 
@@ -378,6 +390,12 @@ az network private-endpoint show \
     --resource-group "$RG" \
     --query "{provisioningState:provisioningState,networkInterfaces:networkInterfaces[].id}"
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az network private-endpoint show` | Show details of a private endpoint. |
+| `--name` | Name of the target resource. |
+| `--resource-group` | Resource group that contains the resource. |
+| `--query` | JMESPath query selecting fields from the response. |
 
 ### Verify private DNS zone links
 
@@ -386,6 +404,11 @@ az network private-dns link vnet list \
     --resource-group "$DNS_RG" \
     --zone-name "privatelink.azurewebsites.net"
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az network private-dns link vnet list` | List virtual-network links on a private DNS zone. |
+| `--resource-group` | Resource group that contains the resource. |
+| `--zone-name` | Private DNS zone name. |
 
 ### Verify app access restrictions
 
@@ -394,6 +417,11 @@ az functionapp config access-restriction show \
     --name "$APP_NAME" \
     --resource-group "$RG"
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az functionapp config access-restriction show` | Show inbound access-restriction rules for the app. |
+| `--name` | Name of the target resource. |
+| `--resource-group` | Resource group that contains the resource. |
 
 ??? tip "Cross-check with security controls"
     Networking isolation does not replace identity and secret hygiene. Apply [Security Best Practices](./security.md) together with these network controls.

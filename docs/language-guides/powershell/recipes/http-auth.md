@@ -44,6 +44,12 @@ az functionapp function keys list \
   --resource-group $RG \
   --function-name secure
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az functionapp function keys list` | List the access keys for a function. |
+| `--name` | Name of the target resource. |
+| `--resource-group` | Resource group that contains the resource. |
+| `--function-name` | Name of the function. |
 
 ## Validating a Bearer Token
 

@@ -116,6 +116,15 @@ If you validate configuration with Azure CLI, keep long flags for readability:
 az functionapp config appsettings list --resource-group $RG --name $APP_NAME
 az functionapp config show --resource-group $RG --name $APP_NAME
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az functionapp config appsettings list` | List the application settings on the function app. |
+| `--resource-group` | Resource group that contains the resource. |
+| `--name` | Name of the target resource. |
+| `az functionapp config show` | Show the function app's site configuration. |
+| `--resource-group` | Resource group that contains the resource. |
+| `--name` | Name of the target resource. |
+
 ## Portal Walkthrough
 
 This section shows portal blades relevant to trigger and binding configuration for a live Function App (Consumption Y1, Korea Central). PII is masked.
@@ -419,6 +428,19 @@ az functionapp config appsettings list --resource-group $RG --name $APP_NAME
 az functionapp function show --resource-group $RG --name $APP_NAME --function-name $FUNCTION_NAME
 az monitor app-insights query --app <application-insights-name> --analytics-query "traces | take 20"
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az functionapp config appsettings list` | List the application settings on the function app. |
+| `--resource-group` | Resource group that contains the resource. |
+| `--name` | Name of the target resource. |
+| `az functionapp function show` | Show details of a function. |
+| `--resource-group` | Resource group that contains the resource. |
+| `--name` | Name of the target resource. |
+| `--function-name` | Name of the function. |
+| `az monitor app-insights query` | Run a KQL query against Application Insights. |
+| `--app` | Application Insights component name. |
+| `--analytics-query` | KQL query to run. |
+
 !!! tip "Reliability Guide"
     For retry and poison-message design, see [Reliability](reliability.md).
 !!! tip "Language Guide"

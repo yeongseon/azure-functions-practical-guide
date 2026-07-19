@@ -165,6 +165,12 @@ az storage account update \
   --resource-group "$RG" \
   --default-action Allow
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az storage account update` | Update the storage account's network rules. |
+| `--name` | Name of the target resource. |
+| `--resource-group` | Resource group that contains the resource. |
+| `--default-action` | Default network access action. |
 
 ## See Also
 

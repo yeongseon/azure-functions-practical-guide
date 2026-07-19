@@ -20,6 +20,12 @@ az functionapp config appsettings set \
   --resource-group $RG \
   --settings "DbPassword=@Microsoft.KeyVault(SecretUri=https://my-vault.vault.azure.net/secrets/db-password/)"
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az functionapp config appsettings set` | Add or update application settings on the function app. |
+| `--name` | Name of the target resource. |
+| `--resource-group` | Resource group that contains the resource. |
+| `--settings` | Key=value application settings to apply. |
 
 The function reads it as a normal environment variable:
 
@@ -57,6 +63,12 @@ az role assignment create \
   --role "Key Vault Secrets User" \
   --scope <key-vault-resource-id>
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az role assignment create` | Assign an Azure RBAC role to an identity. |
+| `--assignee` | Identity (object ID) receiving the role. |
+| `--role` | Azure RBAC role to assign. |
+| `--scope` | Scope at which the role applies. |
 
 !!! warning "Never log secrets"
     Do not pass secret values to `Write-Information`/`Write-Host` — they flow to Application Insights.

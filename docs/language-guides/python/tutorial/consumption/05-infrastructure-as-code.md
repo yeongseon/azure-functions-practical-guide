@@ -186,6 +186,12 @@ az deployment group create \
   --template-file "infra/consumption/main.bicep" \
   --parameters baseName="func-consumption-demo"
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az deployment group create` | Deploy a Bicep/ARM template to a resource group. |
+| `--resource-group` | Resource group that contains the resource. |
+| `--template-file` | Path to the Bicep/ARM template. |
+| `--parameters` | Template parameter values. |
 
 ### Step 4 - Deploy the Bicep template
 
@@ -195,6 +201,12 @@ az deployment group create \
   --template-file "infra/consumption/main.bicep" \
   --parameters baseName="func-consumption-demo"
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az deployment group create` | Deploy a Bicep/ARM template to a resource group. |
+| `--resource-group` | Resource group that contains the resource. |
+| `--template-file` | Path to the Bicep/ARM template. |
+| `--parameters` | Template parameter values. |
 
 !!! tip "Parameter names"
     The simplified template above uses `appName` and `storageName` parameters. The production template at `infra/consumption/main.bicep` uses a single `baseName` parameter that derives all resource names automatically.
@@ -208,6 +220,13 @@ az functionapp show \
   --query "{kind:kind,state:state,defaultHostName:defaultHostName}" \
   --output json
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az functionapp show` | Show details of the function app. |
+| `--name` | Name of the target resource. |
+| `--resource-group` | Resource group that contains the resource. |
+| `--query` | JMESPath query selecting fields from the response. |
+| `--output` | Output format. |
 
 !!! info "Not available on Consumption"
     VNet integration requires Flex Consumption, Premium, or Dedicated plan.

@@ -81,6 +81,12 @@ az functionapp config appsettings set \
   --resource-group $RG \
   --settings "TableConnection__tableServiceUri=https://$STORAGE_NAME.table.core.windows.net"
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az functionapp config appsettings set` | Add or update application settings on the function app. |
+| `--name` | Name of the target resource. |
+| `--resource-group` | Resource group that contains the resource. |
+| `--settings` | Key=value application settings to apply. |
 
 Grant the managed identity **Storage Table Data Reader** (input) and **Storage Table Data Contributor** (output).
 
