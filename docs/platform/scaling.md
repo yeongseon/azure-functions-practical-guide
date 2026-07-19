@@ -339,13 +339,13 @@ Example output (PII masked):
 
 Inspect scale profile details:
 ```bash
-az functionapp scale show \
+az functionapp scale config show \
     --resource-group $RG \
     --name $APP_NAME
 ```
 | Command/Parameter | Purpose |
 | --- | --- |
-| `az functionapp scale show` | Show the scale configuration of the function app. |
+| `az functionapp scale config show` | Show the scale configuration of the function app. |
 | `--resource-group` | Resource group that contains the resource. |
 | `--name` | Name of the target resource. |
 
