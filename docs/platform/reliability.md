@@ -417,15 +417,38 @@ Use CLI checks during reviews and incidents to confirm reliability-related confi
 ```bash
 az functionapp config show   --resource-group "rg-functions-prod"   --name "func-reliability-prod"   --query "{alwaysOn:alwaysOn,http20Enabled:http20Enabled,ftpsState:ftpsState,minTlsVersion:minTlsVersion}"   --output json
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az functionapp config show` | Show the function app's site configuration. |
+| `--resource-group` | Resource group that contains the resource. |
+| `--name` | Name of the target resource. |
+| `--query` | JMESPath query selecting fields from the response. |
+| `--output` | Output format. |
 
 **Query failure and retry metrics**
 ```bash
 az monitor metrics list   --resource "/subscriptions/<subscription-id>/resourceGroups/rg-functions-prod/providers/Microsoft.Web/sites/func-reliability-prod"   --metric "FunctionExecutionCount,FunctionExecutionUnits,FunctionExecutionFailureCount"   --interval "PT5M"   --aggregation "Total"   --output table
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az monitor metrics list` | List platform metrics for a resource. |
+| `--resource` | Resource ID to query metrics for. |
+| `--metric` | Metric(s) to retrieve. |
+| `--interval` | Aggregation interval. |
+| `--aggregation` | Aggregation type. |
+| `--output` | Output format. |
 
 ```bash
 az monitor metrics list   --resource "/subscriptions/<subscription-id>/resourceGroups/rg-functions-prod/providers/Microsoft.ServiceBus/namespaces/sb-functions-prod"   --metric "DeadletteredMessages,IncomingMessages,SuccessfulRequests,ServerErrors"   --interval "PT5M"   --aggregation "Total"   --output table
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az monitor metrics list` | List platform metrics for a resource. |
+| `--resource` | Resource ID to query metrics for. |
+| `--metric` | Metric(s) to retrieve. |
+| `--interval` | Aggregation interval. |
+| `--aggregation` | Aggregation type. |
+| `--output` | Output format. |
 
 ### Troubleshooting matrix
 | Symptom | Likely Cause | Validation Path |

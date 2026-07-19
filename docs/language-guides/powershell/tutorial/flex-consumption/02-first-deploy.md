@@ -49,6 +49,16 @@ az storage account create \
   --location $LOCATION \
   --sku Standard_LRS
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az group create` | Create the resource group that holds the tutorial resources. |
+| `--name` | Name of the resource group. |
+| `--location` | Azure region for the resource group. |
+| `az storage account create` | Create the storage account the function app requires. |
+| `--name` | Name of the storage account. |
+| `--resource-group` | Resource group that contains the storage account. |
+| `--location` | Azure region for the storage account. |
+| `--sku` | Storage replication SKU (`Standard_LRS` = locally redundant). |
 
 
 ### Step 3 - Create the function app
@@ -63,6 +73,16 @@ az functionapp create \
   --runtime-version 7.4 \
   --functions-version 4
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az functionapp create` | Create the function app on a Flex Consumption plan. |
+| `--name` | Name of the function app. |
+| `--resource-group` | Resource group that contains the function app. |
+| `--storage-account` | Storage account backing the function app. |
+| `--flexconsumption-location` | Region for the Flex Consumption plan. |
+| `--runtime` | Language runtime stack (`powershell`). |
+| `--runtime-version` | PowerShell runtime version. |
+| `--functions-version` | Azure Functions runtime major version. |
 
 ### Step 4 - Deploy the code
 

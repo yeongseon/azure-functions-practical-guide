@@ -49,6 +49,16 @@ az storage account create \
   --location $LOCATION \
   --sku Standard_LRS
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az group create` | Create the resource group that holds the tutorial resources. |
+| `--name` | Name of the resource group. |
+| `--location` | Azure region for the resource group. |
+| `az storage account create` | Create the storage account the function app requires. |
+| `--name` | Name of the storage account. |
+| `--resource-group` | Resource group that contains the storage account. |
+| `--location` | Azure region for the storage account. |
+| `--sku` | Storage replication SKU (`Standard_LRS` = locally redundant). |
 
 ### Step 2b - Create the hosting plan
 
@@ -60,6 +70,14 @@ az appservice plan create \
   --sku B1 \
   --is-linux
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az appservice plan create` | Create the App Service (Dedicated) plan that hosts the function app. |
+| `--name` | Name of the App Service plan. |
+| `--resource-group` | Resource group that contains the plan. |
+| `--location` | Azure region for the plan. |
+| `--sku` | Pricing tier for the plan (`B1`). |
+| `--is-linux` | Create the plan on Linux. |
 
 ### Step 3 - Create the function app
 
@@ -73,6 +91,16 @@ az functionapp create \
   --runtime-version 7.4 \
   --functions-version 4
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az functionapp create` | Create the function app on the pre-created plan. |
+| `--name` | Name of the function app. |
+| `--resource-group` | Resource group that contains the function app. |
+| `--storage-account` | Storage account backing the function app. |
+| `--plan` | Existing plan that hosts the function app. |
+| `--runtime` | Language runtime stack (`powershell`). |
+| `--runtime-version` | PowerShell runtime version. |
+| `--functions-version` | Azure Functions runtime major version. |
 
 ### Step 4 - Deploy the code
 

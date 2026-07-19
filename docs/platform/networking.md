@@ -89,6 +89,10 @@ Prepare these items before applying networking controls:
 ```bash
 az account show --output table
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az account show` | Show the active Azure subscription. |
+| `--output` | Output format. |
 
 Example output (sanitized):
 
@@ -160,6 +164,15 @@ az functionapp config access-restriction add \
   --action Allow \
   --ip-address "203.0.113.0/24"
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az functionapp config access-restriction add` | Add an inbound access-restriction rule to the app. |
+| `--name` | Name of the target resource. |
+| `--resource-group` | Resource group that contains the resource. |
+| `--rule-name` | Name of the access-restriction rule. |
+| `--priority` | Rule priority (lower value = higher precedence). |
+| `--action` | Allow or Deny the matched traffic. |
+| `--ip-address` | CIDR range the rule matches. |
 
 List current restrictions:
 
@@ -169,6 +182,12 @@ az webapp config access-restriction show \
   --resource-group "$RG" \
   --output json
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az webapp config access-restriction show` | Show inbound access-restriction rules for the app. |
+| `--name` | Name of the target resource. |
+| `--resource-group` | Resource group that contains the resource. |
+| `--output` | Output format. |
 
 Example output (sanitized):
 
@@ -205,6 +224,16 @@ az network private-endpoint create \
   --group-id "sites" \
   --connection-name "pe-conn-$APP_NAME"
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az network private-endpoint create` | Create a private endpoint for the function app. |
+| `--name` | Name of the target resource. |
+| `--resource-group` | Resource group that contains the resource. |
+| `--vnet-name` | Name of the virtual network. |
+| `--subnet` | Subnet to use. |
+| `--private-connection-resource-id` | Resource ID the private endpoint connects to. |
+| `--group-id` | Sub-resource (group ID) to target. |
+| `--connection-name` | Name of the private-link connection. |
 
 Inspect private endpoint status:
 
@@ -214,6 +243,12 @@ az network private-endpoint show \
   --resource-group "$RG" \
   --output json
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az network private-endpoint show` | Show details of a private endpoint. |
+| `--name` | Name of the target resource. |
+| `--resource-group` | Resource group that contains the resource. |
+| `--output` | Output format. |
 
 Example output (sanitized):
 
@@ -262,6 +297,13 @@ az functionapp vnet-integration add \
   --vnet "$VNET_NAME" \
   --subnet "$INTEGRATION_SUBNET"
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az functionapp vnet-integration add` | Add regional virtual-network integration to the app. |
+| `--name` | Name of the target resource. |
+| `--resource-group` | Resource group that contains the resource. |
+| `--vnet` | Virtual network to integrate with. |
+| `--subnet` | Subnet to use. |
 
 Validate integration:
 
@@ -271,6 +313,12 @@ az functionapp vnet-integration list \
   --resource-group "$RG" \
   --output json
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az functionapp vnet-integration list` | List the app's regional virtual-network integration. |
+| `--name` | Name of the target resource. |
+| `--resource-group` | Resource group that contains the resource. |
+| `--output` | Output format. |
 
 Example output (sanitized):
 
@@ -294,6 +342,12 @@ az functionapp config appsettings set \
   --resource-group "$RG" \
   --settings "WEBSITE_VNET_ROUTE_ALL=1"
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az functionapp config appsettings set` | Add or update application settings on the function app. |
+| `--name` | Name of the target resource. |
+| `--resource-group` | Resource group that contains the resource. |
+| `--settings` | Key=value application settings to apply. |
 
 Flex Consumption already routes outbound traffic through the integrated VNet path, so `WEBSITE_VNET_ROUTE_ALL=1` is not required on Flex.
 

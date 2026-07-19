@@ -205,6 +205,11 @@ flowchart TD
       --name "$APP_NAME" \
       --resource-group "$RG"
     ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az webapp log tail` | Stream live log output from the app. |
+| `--name` | Name of the target resource. |
+| `--resource-group` | Resource group that contains the resource. |
 
 7. Validate Premium trigger behavior.
 

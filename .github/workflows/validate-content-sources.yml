@@ -139,11 +139,6 @@ jobs:
           python scripts/validate_content_sources.py
         continue-on-error: true
 
-      - name: Validate CLI explanation tables
-        run: |
-          python scripts/validate_cli_explanations.py
-        continue-on-error: true
-
       - name: Audit existing diagram IDs
         run: |
           # Count mermaid blocks
@@ -167,6 +162,27 @@ jobs:
 
           echo "All mermaid blocks have diagram-id comments."
         continue-on-error: true
+
+  validate-cli-explanations:
+    name: Validate CLI Explanation Tables
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.11'
+
+      - name: Run CLI explanation doctests
+        run: |
+          python -m doctest scripts/validate_cli_explanations.py -v
+
+      - name: Validate CLI explanation tables
+        run: |
+          python scripts/validate_cli_explanations.py
 
   validate-mslearn-urls:
     name: Validate MSLearn URLs

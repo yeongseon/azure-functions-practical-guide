@@ -366,6 +366,11 @@ az functionapp identity assign \
     --name "$APP_NAME" \
     --resource-group "$RG"
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az functionapp identity assign` | Enable a managed identity on the function app. |
+| `--name` | Name of the target resource. |
+| `--resource-group` | Resource group that contains the resource. |
 
 Set HTTPS-only and TLS minimum:
 
@@ -380,6 +385,16 @@ az functionapp config set \
     --resource-group "$RG" \
     --min-tls-version "1.2"
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az functionapp update` | Update top-level function app properties. |
+| `--name` | Name of the target resource. |
+| `--resource-group` | Resource group that contains the resource. |
+| `--https-only` | Require HTTPS for all traffic. |
+| `az functionapp config set` | Update the function app's site configuration. |
+| `--name` | Name of the target resource. |
+| `--resource-group` | Resource group that contains the resource. |
+| `--min-tls-version` | Minimum TLS version accepted. |
 
 Set Key Vault-backed app setting:
 
@@ -389,6 +404,12 @@ az functionapp config appsettings set \
     --resource-group "$RG" \
     --settings "DbPassword=@Microsoft.KeyVault(SecretUri=https://$KEYVAULT_NAME.vault.azure.net/secrets/DbPassword/)"
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az functionapp config appsettings set` | Add or update application settings on the function app. |
+| `--name` | Name of the target resource. |
+| `--resource-group` | Resource group that contains the resource. |
+| `--settings` | Key=value application settings to apply. |
 
 Grant storage data role to managed identity principal:
 
@@ -399,6 +420,13 @@ az role assignment create \
     --role "Storage Blob Data Contributor" \
     --scope "/subscriptions/<subscription-id>/resourceGroups/$RG/providers/Microsoft.Storage/storageAccounts/$STORAGE_NAME"
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az role assignment create` | Assign an Azure RBAC role to an identity. |
+| `--assignee-object-id` | Object ID of the identity receiving the role. |
+| `--assignee-principal-type` | Principal type of the assignee. |
+| `--role` | Azure RBAC role to assign. |
+| `--scope` | Scope at which the role applies. |
 
 ## Validation Checklist
 

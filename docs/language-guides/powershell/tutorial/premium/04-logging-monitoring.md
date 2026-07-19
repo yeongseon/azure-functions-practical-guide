@@ -34,6 +34,16 @@ az functionapp config appsettings set \
   --resource-group $RG \
   --settings "APPLICATIONINSIGHTS_CONNECTION_STRING=<connection-string>"
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az monitor app-insights component create` | Create the Application Insights component for telemetry. |
+| `--app` | Name of the Application Insights component. |
+| `--location` | Azure region for the component. |
+| `--resource-group` | Resource group that contains the component. |
+| `az functionapp config appsettings set` | Point the function app at Application Insights. |
+| `--name` | Name of the function app. |
+| `--resource-group` | Resource group that contains the function app. |
+| `--settings` | Set the Application Insights connection string setting. |
 
 ## Logging in PowerShell
 
@@ -58,6 +68,11 @@ Write-Error "Downstream call failed"
 ```bash
 az functionapp log tail --name $APP_NAME --resource-group $RG
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az functionapp log tail` | Stream live log output from the function app. |
+| `--name` | Name of the function app. |
+| `--resource-group` | Resource group that contains the function app. |
 
 ## Verification
 

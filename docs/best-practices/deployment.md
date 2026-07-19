@@ -108,6 +108,12 @@ az functionapp config appsettings set \
     --name "<app-name>" \
     --settings WEBSITE_RUN_FROM_PACKAGE=1
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az functionapp config appsettings set` | Add or update application settings on the function app. |
+| `--resource-group` | Resource group that contains the resource. |
+| `--name` | Name of the target resource. |
+| `--settings` | Key=value application settings to apply. |
 
 !!! warning "Mutable deployment anti-pattern"
     Deploying without run-from-package can produce inconsistent behavior when trigger listeners restart while files are changing. For event-driven apps, this can surface as duplicate or missed processing windows.
@@ -157,6 +163,13 @@ az functionapp config appsettings set \
     --slot "staging" \
     --slot-settings AZURE_FUNCTIONS_ENVIRONMENT=Staging
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az functionapp config appsettings set` | Add or update application settings on the function app. |
+| `--resource-group` | Resource group that contains the resource. |
+| `--name` | Name of the target resource. |
+| `--slot` | Deployment slot name. |
+| `--slot-settings` | Slot-specific (sticky) application settings. |
 
 ### CI/CD pipeline design for Functions
 

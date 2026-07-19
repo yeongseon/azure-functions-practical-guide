@@ -319,6 +319,12 @@ az functionapp show \
     --name $APP_NAME \
     --query siteConfig
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az functionapp show` | Show details of the function app. |
+| `--resource-group` | Resource group that contains the resource. |
+| `--name` | Name of the target resource. |
+| `--query` | JMESPath query selecting fields from the response. |
 
 Example output (PII masked):
 ```json
@@ -337,6 +343,11 @@ az functionapp scale show \
     --resource-group $RG \
     --name $APP_NAME
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az functionapp scale show` | Show the scale configuration of the function app. |
+| `--resource-group` | Resource group that contains the resource. |
+| `--name` | Name of the target resource. |
 
 Example output (PII masked):
 ```json
@@ -359,6 +370,15 @@ az monitor metrics list \
     --start-time 2026-01-10T09:00:00Z \
     --end-time 2026-01-10T10:00:00Z
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az monitor metrics list` | List platform metrics for a resource. |
+| `--resource` | Resource ID to query metrics for. |
+| `--metric` | Metric(s) to retrieve. |
+| `--interval` | Aggregation interval. |
+| `--aggregation` | Aggregation type. |
+| `--start-time` | Start of the time range. |
+| `--end-time` | End of the time range. |
 
 Example output (PII masked):
 ```json

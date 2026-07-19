@@ -17,6 +17,11 @@ az functionapp identity assign \
   --name $APP_NAME \
   --resource-group $RG
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az functionapp identity assign` | Enable a managed identity on the function app. |
+| `--name` | Name of the target resource. |
+| `--resource-group` | Resource group that contains the resource. |
 
 This injects `MSI_SECRET` and `IDENTITY_HEADER` into the app environment.
 
@@ -52,6 +57,12 @@ az functionapp config appsettings set \
   --resource-group $RG \
   --settings "AzureWebJobsStorage__accountName=$STORAGE_NAME"
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az functionapp config appsettings set` | Add or update application settings on the function app. |
+| `--name` | Name of the target resource. |
+| `--resource-group` | Resource group that contains the resource. |
+| `--settings` | Key=value application settings to apply. |
 
 ## Grant RBAC
 
@@ -61,6 +72,12 @@ az role assignment create \
   --role "Storage Blob Data Contributor" \
   --scope <storage-account-resource-id>
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az role assignment create` | Assign an Azure RBAC role to an identity. |
+| `--assignee` | Identity (object ID) receiving the role. |
+| `--role` | Azure RBAC role to assign. |
+| `--scope` | Scope at which the role applies. |
 
 !!! warning "Concurrency and Az context"
     Azure PowerShell context is process-scoped. When in-process concurrency is enabled, call `Disable-AzContextAutosave -Scope Process` and validate for race conditions. See [PowerShell Runtime](../powershell-runtime.md#concurrency).

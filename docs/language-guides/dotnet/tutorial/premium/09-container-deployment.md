@@ -76,6 +76,16 @@ az acr create --resource-group $RG --name $REGISTRY_NAME --sku Basic
 az acr build --registry $REGISTRY_NAME --image functions/dotnet-app:v1.0.0 .
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az acr create` | Creates an Azure Container Registry to store the function image. |
+| `--resource-group` | Resource group that will contain the registry. |
+| `--name` | Globally unique registry name. |
+| `--sku` | Registry pricing tier (`Basic`). |
+| `az acr build` | Builds the container image remotely in ACR (no local Docker). |
+| `--registry` | Target registry that runs the build. |
+| `--image` | Image name and tag to produce. |
+
 ## 3. Create the Premium Plan and Function App
 
 ```bash
@@ -89,6 +99,22 @@ az functionapp create --resource-group $RG --name $APP_NAME \
   --assign-identity "[system]"
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp plan create` | Creates the Elastic Premium hosting plan. |
+| `--resource-group` | Resource group for the plan. |
+| `--name` | Name of the Premium plan. |
+| `--location` | Azure region for the plan. |
+| `--sku` | Premium plan SKU (`EP1`). |
+| `--is-linux` | Creates a Linux plan required for container images. |
+| `az functionapp create` | Creates the function app on the Premium plan. |
+| `--storage-account` | Storage account backing the function app. |
+| `--plan` | Premium plan that hosts the app. |
+| `--functions-version` | Functions runtime major version (`4`). |
+| `--runtime` | Language runtime (`dotnet-isolated`). |
+| `--image` | Container image the app runs. |
+| `--assign-identity "[system]"` | Enables a system-assigned managed identity. |
+
 ## 4. Grant Managed-Identity Registry Pull
 
 ```bash
@@ -100,6 +126,21 @@ az resource update --ids "$(az functionapp show --resource-group $RG --name $APP
   --set properties.acrUseManagedIdentityCreds=true
 ```
 
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az functionapp identity show` | Reads the app's managed-identity principal ID. |
+| `--query principalId` | Projects only the principal ID. |
+| `--output tsv` | Emits a raw value for shell capture. |
+| `az acr show` | Reads the registry resource ID. |
+| `--query id` | Projects only the registry resource ID. |
+| `az role assignment create` | Grants the identity pull access to the registry. |
+| `--assignee` | Principal that receives the role. |
+| `--role AcrPull` | Least-privilege role for pulling images. |
+| `--scope` | Registry resource the role applies to. |
+| `az resource update` | Enables managed-identity credentials for the container config. |
+| `--ids` | Target `config/web` resource of the function app. |
+| `--set properties.acrUseManagedIdentityCreds=true` | Turns on identity-based registry pulls. |
+
 ## 5. Update the Image
 
 ```bash
@@ -107,6 +148,16 @@ az acr build --registry $REGISTRY_NAME --image functions/dotnet-app:v1.0.1 .
 az functionapp config container set --resource-group $RG --name $APP_NAME \
   --image $REGISTRY_NAME.azurecr.io/functions/dotnet-app:v1.0.1
 ```
+
+| Command/Parameter | Purpose |
+|-------------------|---------|
+| `az acr build` | Builds and pushes the new image tag in ACR. |
+| `--registry` | Target registry that runs the build. |
+| `--image` | New image name and tag to produce. |
+| `az functionapp config container set` | Points the app at the new image. |
+| `--resource-group` | Resource group of the function app. |
+| `--name` | Name of the function app. |
+| `--image` | Container image the app should run. |
 
 !!! info "Continuous deployment on Premium"
     Webhook-based container CD is **not** supported on the Elastic Premium plan. Either restart the app after pushing a new image, or deploy on a **Dedicated (App Service) plan** if you need webhook auto-redeploy. If the container listens on a non-default port, set the `WEBSITES_PORT` app setting.

@@ -119,6 +119,13 @@ az resource update \
   --resource-type "Microsoft.Web/sites" \
   --set properties.siteConfig.functionAppScaleLimit=30
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az resource update` | Update a resource property through the generic resource provider. |
+| `--resource-group` | Resource group that contains the resource. |
+| `--name` | Name of the target resource. |
+| `--resource-type` | Azure resource type to target. |
+| `--set` | Property path and value to set. |
 
 ```bash
 # Per-instance HTTP concurrency (Flex Consumption ONLY)
@@ -127,6 +134,12 @@ az functionapp config appsettings set \
   --name "$APP_NAME" \
   --settings "FUNCTIONS_MAX_HTTP_TRIGGER_CONCURRENCY=50"
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az functionapp config appsettings set` | Add or update application settings on the function app. |
+| `--resource-group` | Resource group that contains the resource. |
+| `--name` | Name of the target resource. |
+| `--settings` | Key=value application settings to apply. |
 
 !!! warning "Plan-specific concurrency controls"
     For **Consumption and Premium** plans, per-function concurrency is controlled through `host.json` settings (`maxConcurrentRequests` for HTTP, `batchSize` for queues, etc.) — not through the `FUNCTIONS_MAX_HTTP_TRIGGER_CONCURRENCY` app setting.

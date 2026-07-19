@@ -290,6 +290,12 @@ az functionapp cors add \
   --resource-group "$RG" \
   --allowed-origins "https://app.contoso.example"
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az functionapp cors add` | Add an allowed CORS origin to the function app. |
+| `--name` | Name of the target resource. |
+| `--resource-group` | Resource group that contains the resource. |
+| `--allowed-origins` | Origin(s) permitted by CORS. |
 
 Wildcard origin risks:
 
@@ -318,6 +324,12 @@ az functionapp function keys list \
   --resource-group "$RG" \
   --function-name "HttpExample"
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az functionapp function keys list` | List the access keys for a function. |
+| `--name` | Name of the target resource. |
+| `--resource-group` | Resource group that contains the resource. |
+| `--function-name` | Name of the function. |
 
 ### Storing keys in Key Vault
 - Store shared keys in Key Vault.
@@ -341,6 +353,11 @@ az functionapp identity assign \
   --name "$APP_NAME" \
   --resource-group "$RG"
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az functionapp identity assign` | Enable a managed identity on the function app. |
+| `--name` | Name of the target resource. |
+| `--resource-group` | Resource group that contains the resource. |
 
 ```bash
 az role assignment create \
@@ -348,6 +365,12 @@ az role assignment create \
   --role "Storage Blob Data Contributor" \
   --scope "/subscriptions/<subscription-id>/resourceGroups/$RG/providers/Microsoft.Storage/storageAccounts/$STORAGE_NAME"
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az role assignment create` | Assign an Azure RBAC role to an identity. |
+| `--assignee` | Identity (object ID) receiving the role. |
+| `--role` | Azure RBAC role to assign. |
+| `--scope` | Scope at which the role applies. |
 
 Flex Consumption requires identity-based host storage configuration. Plan identity and RBAC early.
 

@@ -139,6 +139,12 @@ az functionapp cors add \
   --name "$APP_NAME" \
   --allowed-origins "https://portal.contoso.example"
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az functionapp cors add` | Add an allowed CORS origin to the function app. |
+| `--resource-group` | Resource group that contains the resource. |
+| `--name` | Name of the target resource. |
+| `--allowed-origins` | Origin(s) permitted by CORS. |
 
 ### Queue trigger best practices
 

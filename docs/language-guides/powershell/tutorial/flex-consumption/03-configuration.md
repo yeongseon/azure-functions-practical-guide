@@ -29,6 +29,12 @@ az functionapp config appsettings set \
   --resource-group $RG \
   --settings "GreetingPrefix=Hello" "FUNCTIONS_WORKER_RUNTIME_VERSION=7.4"
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az functionapp config appsettings set` | Add or update application settings on the function app. |
+| `--name` | Name of the function app. |
+| `--resource-group` | Resource group that contains the function app. |
+| `--settings` | Key=value application settings to apply. |
 
 Read settings in PowerShell with `$env:GreetingPrefix`.
 
@@ -50,6 +56,12 @@ az functionapp config appsettings list \
   --resource-group $RG \
   --output table
 ```
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az functionapp config appsettings list` | List the application settings on the function app. |
+| `--name` | Name of the function app. |
+| `--resource-group` | Resource group that contains the function app. |
+| `--output` | Output format (`table`). |
 
 Confirm `GreetingPrefix` appears with the expected value.
 
