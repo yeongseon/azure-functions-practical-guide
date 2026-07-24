@@ -1,0 +1,41 @@
+name: Validate Documentation Repetition
+
+on:
+  pull_request:
+    paths:
+      - 'docs/**'
+      - 'scripts/detect_repetition.py'
+      - 'scripts/repetition-markers.txt'
+      - 'scripts/repetition-allowlist.txt'
+      - '.github/workflows/validate-repetition.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'docs/**'
+      - 'scripts/detect_repetition.py'
+      - 'scripts/repetition-markers.txt'
+      - 'scripts/repetition-allowlist.txt'
+      - '.github/workflows/validate-repetition.yml'
+
+jobs:
+  validate-repetition:
+    name: Validate Documentation Repetition
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run detector doctests
+        run: |
+          python -m doctest scripts/detect_repetition.py -v
+
+      - name: Detect generator boilerplate repetition
+        run: |
+          python scripts/detect_repetition.py docs

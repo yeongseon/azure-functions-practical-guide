@@ -1,0 +1,9 @@
+# Known boilerplate marker substrings (case-insensitive, one per line).
+# A repeated line containing any of these fails CI (ERROR). These are
+# generator-produced scaffold phrases that must never survive remediation.
+# Lines beginning with '#' and blank lines are ignored.
+#
+# Derived from the boilerplate-audit epic (VM #47, Storage #40, AKS #77).
+This practice should be interpreted through the lens of
+Reviewers should ask whether the chosen implementation strengthens or weakens
+primary source basis
