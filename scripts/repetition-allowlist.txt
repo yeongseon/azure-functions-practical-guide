@@ -1,0 +1,7 @@
+# Repetition allowlist: exact stripped lines that are legitimately repeated
+# within a page and must NOT be flagged (guardrail #6). One line per entry;
+# blank lines and lines beginning with '#' are ignored. Match is exact against
+# the stripped text of a source line.
+#
+# Keep this list small and justify each entry in review. Prefer removing
+# boilerplate over allowlisting it.
