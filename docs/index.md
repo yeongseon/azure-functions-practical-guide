@@ -1,4 +1,5 @@
 ---
+description: A practical guide to building, deploying, and operating serverless applications on Azure Functions with Python — patterns, configuration, and troubleshooting.
 content_sources:
 
   references:
