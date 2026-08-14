@@ -1,6 +1,6 @@
 # Azure Functions 실무 가이드
 
-📘 **문서 사이트:** <https://yeongseon.github.io/azure-functions-practical-guide/>
+📘 **문서 사이트:** <https://yeongseon.dev/azure-functions-python/practical-guide/>
 
 [English](README.md) | [한국어](README.ko.md) | [日本語](README.ja.md) | [简体中文](README.zh-CN.md)
 
@@ -21,23 +21,23 @@
 
 | 시나리오 | 권장 플랜 | 시작하기 |
 |---|---|---|
-| 새로운 서버리스 앱 | **Flex Consumption** | [Flex Consumption 튜토리얼](https://yeongseon.github.io/azure-functions-practical-guide/language-guides/) |
-| 기존 Consumption 워크로드 | Consumption (기존) | [Consumption 튜토리얼](https://yeongseon.github.io/azure-functions-practical-guide/language-guides/) |
-| 상시 대기 인스턴스 또는 VNet 집중형 | Premium | [Premium 튜토리얼](https://yeongseon.github.io/azure-functions-practical-guide/language-guides/) |
-| 기존 App Service 플랜 자산 | Dedicated | [Dedicated 튜토리얼](https://yeongseon.github.io/azure-functions-practical-guide/language-guides/) |
+| 새로운 서버리스 앱 | **Flex Consumption** | [Flex Consumption 튜토리얼](https://yeongseon.dev/azure-functions-python/practical-guide/language-guides/) |
+| 기존 Consumption 워크로드 | Consumption (기존) | [Consumption 튜토리얼](https://yeongseon.dev/azure-functions-python/practical-guide/language-guides/) |
+| 상시 대기 인스턴스 또는 VNet 집중형 | Premium | [Premium 튜토리얼](https://yeongseon.dev/azure-functions-python/practical-guide/language-guides/) |
+| 기존 App Service 플랜 자산 | Dedicated | [Dedicated 튜토리얼](https://yeongseon.dev/azure-functions-python/practical-guide/language-guides/) |
 | 컨테이너 네이티브 호스팅 | Container Apps | 계획됨 — [호스팅 범위](#hosting-scope) 참조 |
 
 ## 주요 내용
 
 | 섹션 | 설명 | 상태 |
 |---------|-------------|--------|
-| [시작하기](https://yeongseon.github.io/azure-functions-practical-guide/) | 개요, 학습 경로 및 저장소 맵 | 포괄적임 |
-| [플랫폼](https://yeongseon.github.io/azure-functions-practical-guide/platform/) | 아키텍처, 호스팅 플랜, 스케일링, 네트워킹, 보안 | 포괄적임 |
-| [베스트 프랙티스](https://yeongseon.github.io/azure-functions-practical-guide/best-practices/) | 호스팅 선택, 트리거, 스케일링, 안정성, 보안, 배포 | 포괄적임 |
-| [언어별 가이드](https://yeongseon.github.io/azure-functions-practical-guide/language-guides/) | Python, Node.js, Java 및 .NET을 위한 단계별 튜토리얼 | 포괄적임 |
-| [운영](https://yeongseon.github.io/azure-functions-practical-guide/operations/) | 배포, 모니터링, 알림, 비용 최적화, 복구 | 포괄적임 |
-| [트러블슈팅](https://yeongseon.github.io/azure-functions-practical-guide/troubleshooting/) | 플레이북, KQL 쿼리, 방법론 및 실습 랩 | 랩 검증됨 |
-| [참조](https://yeongseon.github.io/azure-functions-practical-guide/reference/) | CLI 치트시트, host.json, 플랫폼 제한 사항 | 포괄적임 |
+| [시작하기](https://yeongseon.dev/azure-functions-python/practical-guide/) | 개요, 학습 경로 및 저장소 맵 | 포괄적임 |
+| [플랫폼](https://yeongseon.dev/azure-functions-python/practical-guide/platform/) | 아키텍처, 호스팅 플랜, 스케일링, 네트워킹, 보안 | 포괄적임 |
+| [베스트 프랙티스](https://yeongseon.dev/azure-functions-python/practical-guide/best-practices/) | 호스팅 선택, 트리거, 스케일링, 안정성, 보안, 배포 | 포괄적임 |
+| [언어별 가이드](https://yeongseon.dev/azure-functions-python/practical-guide/language-guides/) | Python, Node.js, Java 및 .NET을 위한 단계별 튜토리얼 | 포괄적임 |
+| [운영](https://yeongseon.dev/azure-functions-python/practical-guide/operations/) | 배포, 모니터링, 알림, 비용 최적화, 복구 | 포괄적임 |
+| [트러블슈팅](https://yeongseon.dev/azure-functions-python/practical-guide/troubleshooting/) | 플레이북, KQL 쿼리, 방법론 및 실습 랩 | 랩 검증됨 |
+| [참조](https://yeongseon.dev/azure-functions-python/practical-guide/reference/) | CLI 치트시트, host.json, 플랫폼 제한 사항 | 포괄적임 |
 
 **상태 범례**: **랩 검증됨** = 포괄적임 + 재현 가능한 실습 랩을 통한 가이드 입증 · **포괄적임** = 전체 섹션 완료, MSLearn 검증됨, 운영 환경 준비 완료 · **게시됨** = 핵심 콘텐츠 준비됨, 계속 확장 중 · **진행 중** = 콘텐츠 일부 작성됨, 활발히 개발 중 · **계획됨** = 자리 표시자, 콘텐츠 아직 시작되지 않음
 
@@ -101,7 +101,7 @@ Azure Functions 패턴을 보여주는 최소한의 참조 애플리케이션들
 
 ## 기여하기
 
-기여는 언제나 환영합니다! 다음 사항은 [기여 가이드](https://yeongseon.github.io/azure-functions-practical-guide/contributing/)를 참조하세요:
+기여는 언제나 환영합니다! 다음 사항은 [기여 가이드](https://yeongseon.dev/azure-functions-python/practical-guide/contributing/)를 참조하세요:
 
 - 저장소 구조 및 콘텐츠 구성
 - 문서 템플릿 및 작성 표준

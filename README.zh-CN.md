@@ -1,6 +1,6 @@
 # Azure Functions 实操指南
 
-📘 **文档网站：** <https://yeongseon.github.io/azure-functions-practical-guide/>
+📘 **文档网站：** <https://yeongseon.dev/azure-functions-python/practical-guide/>
 
 [English](README.md) | [한국어](README.ko.md) | [日本語](README.ja.md) | [简体中文](README.zh-CN.md)
 
@@ -21,23 +21,23 @@
 
 | 场景 | 推荐计划 | 从这里开始 |
 |---|---|---|
-| 新的无服务器应用 | **Flex Consumption** | [Flex Consumption 教程](https://yeongseon.github.io/azure-functions-practical-guide/language-guides/) |
-| 现有 Consumption 工作负载 | Consumption (旧版) | [Consumption 教程](https://yeongseon.github.io/azure-functions-practical-guide/language-guides/) |
-| 常备实例或重度使用 VNet | Premium | [Premium 教程](https://yeongseon.github.io/azure-functions-practical-guide/language-guides/) |
-| 现有 App Service 计划资产 | Dedicated | [Dedicated 教程](https://yeongseon.github.io/azure-functions-practical-guide/language-guides/) |
+| 新的无服务器应用 | **Flex Consumption** | [Flex Consumption 教程](https://yeongseon.dev/azure-functions-python/practical-guide/language-guides/) |
+| 现有 Consumption 工作负载 | Consumption (旧版) | [Consumption 教程](https://yeongseon.dev/azure-functions-python/practical-guide/language-guides/) |
+| 常备实例或重度使用 VNet | Premium | [Premium 教程](https://yeongseon.dev/azure-functions-python/practical-guide/language-guides/) |
+| 现有 App Service 计划资产 | Dedicated | [Dedicated 教程](https://yeongseon.dev/azure-functions-python/practical-guide/language-guides/) |
 | 容器原生托管 | Container Apps | 已计划 — 参见 [托管范围](#hosting-scope) |
 
 ## 主要内容
 
 | 章节 | 描述 | 状态 |
 |---------|-------------|--------|
-| [从这里开始](https://yeongseon.github.io/azure-functions-practical-guide/) | 概述、学习路径和仓库地图 | 全面 |
-| [平台](https://yeongseon.github.io/azure-functions-practical-guide/platform/) | 架构、托管计划、扩展、网络、安全 | 全面 |
-| [最佳实践](https://yeongseon.github.io/azure-functions-practical-guide/best-practices/) | 托管选择、触发器、扩展、可靠性、安全、部署 | 全面 |
-| [语言指南](https://yeongseon.github.io/azure-functions-practical-guide/language-guides/) | Python、Node.js、Java 和 .NET 的分步教程 | 全面 |
-| [运营](https://yeongseon.github.io/azure-functions-practical-guide/operations/) | 部署、监控、告警、成本优化、恢复 | 全面 |
-| [故障排除](https://yeongseon.github.io/azure-functions-practical-guide/troubleshooting/) | 实战手册、KQL 查询、方法论和动手实验 | 实验已验证 |
-| [参考](https://yeongseon.github.io/azure-functions-practical-guide/reference/) | CLI 速查表、host.json、平台限制 | 全面 |
+| [从这里开始](https://yeongseon.dev/azure-functions-python/practical-guide/) | 概述、学习路径和仓库地图 | 全面 |
+| [平台](https://yeongseon.dev/azure-functions-python/practical-guide/platform/) | 架构、托管计划、扩展、网络、安全 | 全面 |
+| [最佳实践](https://yeongseon.dev/azure-functions-python/practical-guide/best-practices/) | 托管选择、触发器、扩展、可靠性、安全、部署 | 全面 |
+| [语言指南](https://yeongseon.dev/azure-functions-python/practical-guide/language-guides/) | Python、Node.js、Java 和 .NET 的分步教程 | 全面 |
+| [运营](https://yeongseon.dev/azure-functions-python/practical-guide/operations/) | 部署、监控、告警、成本优化、恢复 | 全面 |
+| [故障排除](https://yeongseon.dev/azure-functions-python/practical-guide/troubleshooting/) | 实战手册、KQL 查询、方法论和动手实验 | 实验已验证 |
+| [参考](https://yeongseon.dev/azure-functions-python/practical-guide/reference/) | CLI 速查表、host.json、平台限制 | 全面 |
 
 **状态图例**：**实验已验证** = 全面 + 可重现的实验证明了指南的可行性 · **全面** = 完整章节，经过 MSLearn 验证，生产就绪 · **已发布** = 核心内容已就绪，仍持续扩展中 · **进行中** = 部分内容已完成，处于活跃开发中 · **已计划** = 占位符，内容尚未开始
 
@@ -101,7 +101,7 @@ mkdocs serve
 
 ## 贡献
 
-欢迎贡献！有关以下内容，请参阅我们的 [贡献指南](https://yeongseon.github.io/azure-functions-practical-guide/contributing/)：
+欢迎贡献！有关以下内容，请参阅我们的 [贡献指南](https://yeongseon.dev/azure-functions-python/practical-guide/contributing/)：
 
 - 仓库结构和内容组织
 - 文档模板和编写标准

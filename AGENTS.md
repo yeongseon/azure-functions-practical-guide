@@ -6,7 +6,7 @@ Guidance for AI agents working in this repository.
 
 **Azure Functions Practical Guide** — a unified documentation hub, reference applications, and hands-on troubleshooting labs for building and operating serverless applications on Azure Functions.
 
-- **Live site**: <https://yeongseon.github.io/azure-functions-practical-guide/>
+- **Live site**: <https://yeongseon.dev/azure-functions-python/practical-guide/>
 - **Repository**: <https://github.com/yeongseon/azure-functions-practical-guide>
 
 ## Series-Wide Documentation Contract
