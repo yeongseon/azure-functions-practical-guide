@@ -4,7 +4,7 @@ Thank you for your interest in contributing!
 
 To ensure consistency and quality across this guide, please refer to our full contributing documentation:
 
-**[Contributing Guide](https://yeongseon.github.io/azure-functions-practical-guide/contributing/)**
+**[Contributing Guide](https://yeongseon.dev/azure-functions-python/practical-guide/contributing/)**
 
 This guide covers:
 
