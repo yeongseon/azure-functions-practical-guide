@@ -1,6 +1,6 @@
 # Azure Functions Practical Guide
 
-📘 **Documentation site:** <https://yeongseon.github.io/azure-functions-practical-guide/>
+📘 **Documentation site:** <https://yeongseon.dev/azure-functions-python/practical-guide/>
 
 [English](README.md) | [한국어](README.ko.md) | [日本語](README.ja.md) | [简体中文](README.zh-CN.md)
 
@@ -21,23 +21,23 @@ Comprehensive guide for running serverless applications on Azure Functions — f
 
 | Scenario | Recommended plan | Start here |
 |---|---|---|
-| New serverless app | **Flex Consumption** | [Flex Consumption tutorial](https://yeongseon.github.io/azure-functions-practical-guide/language-guides/) |
-| Existing Consumption workload | Consumption (legacy) | [Consumption tutorial](https://yeongseon.github.io/azure-functions-practical-guide/language-guides/) |
-| Always-ready instances or VNet-heavy | Premium | [Premium tutorial](https://yeongseon.github.io/azure-functions-practical-guide/language-guides/) |
-| Existing App Service Plan estate | Dedicated | [Dedicated tutorial](https://yeongseon.github.io/azure-functions-practical-guide/language-guides/) |
+| New serverless app | **Flex Consumption** | [Flex Consumption tutorial](https://yeongseon.dev/azure-functions-python/practical-guide/language-guides/) |
+| Existing Consumption workload | Consumption (legacy) | [Consumption tutorial](https://yeongseon.dev/azure-functions-python/practical-guide/language-guides/) |
+| Always-ready instances or VNet-heavy | Premium | [Premium tutorial](https://yeongseon.dev/azure-functions-python/practical-guide/language-guides/) |
+| Existing App Service Plan estate | Dedicated | [Dedicated tutorial](https://yeongseon.dev/azure-functions-python/practical-guide/language-guides/) |
 | Container-native hosting | Container Apps | Planned — see [Hosting Scope](#hosting-scope) |
 
 ## What's Inside
 
 | Section | Description | Status |
 |---------|-------------|--------|
-| [Start Here](https://yeongseon.github.io/azure-functions-practical-guide/) | Overview, learning paths, and repository map | Comprehensive |
-| [Platform](https://yeongseon.github.io/azure-functions-practical-guide/platform/) | Architecture, hosting plans, scaling, networking, security | Comprehensive |
-| [Best Practices](https://yeongseon.github.io/azure-functions-practical-guide/best-practices/) | Hosting selection, triggers, scaling, reliability, security, deployment | Comprehensive |
-| [Language Guides](https://yeongseon.github.io/azure-functions-practical-guide/language-guides/) | Step-by-step tutorials for Python, Node.js, Java, and .NET | Comprehensive |
-| [Operations](https://yeongseon.github.io/azure-functions-practical-guide/operations/) | Deployment, monitoring, alerts, cost optimization, recovery | Comprehensive |
-| [Troubleshooting](https://yeongseon.github.io/azure-functions-practical-guide/troubleshooting/) | Playbooks, KQL queries, methodology, and hands-on labs | Lab-validated |
-| [Reference](https://yeongseon.github.io/azure-functions-practical-guide/reference/) | CLI cheatsheet, host.json, platform limits | Comprehensive |
+| [Start Here](https://yeongseon.dev/azure-functions-python/practical-guide/) | Overview, learning paths, and repository map | Comprehensive |
+| [Platform](https://yeongseon.dev/azure-functions-python/practical-guide/platform/) | Architecture, hosting plans, scaling, networking, security | Comprehensive |
+| [Best Practices](https://yeongseon.dev/azure-functions-python/practical-guide/best-practices/) | Hosting selection, triggers, scaling, reliability, security, deployment | Comprehensive |
+| [Language Guides](https://yeongseon.dev/azure-functions-python/practical-guide/language-guides/) | Step-by-step tutorials for Python, Node.js, Java, and .NET | Comprehensive |
+| [Operations](https://yeongseon.dev/azure-functions-python/practical-guide/operations/) | Deployment, monitoring, alerts, cost optimization, recovery | Comprehensive |
+| [Troubleshooting](https://yeongseon.dev/azure-functions-python/practical-guide/troubleshooting/) | Playbooks, KQL queries, methodology, and hands-on labs | Lab-validated |
+| [Reference](https://yeongseon.dev/azure-functions-python/practical-guide/reference/) | CLI cheatsheet, host.json, platform limits | Comprehensive |
 
 **Status legend**: **Lab-validated** = Comprehensive + reproducible labs prove the guidance · **Comprehensive** = Full section, MSLearn-verified, production-ready · **Published** = Core content in place, still expanding · **In progress** = Partial content, active development · **Planned** = Placeholder, content not yet started
 
@@ -101,7 +101,7 @@ Hands-on labs in `labs/` that reproduce real-world Azure Functions issues.
 
 ## Contributing
 
-Contributions welcome! Please see our [Contributing Guide](https://yeongseon.github.io/azure-functions-practical-guide/contributing/) for:
+Contributions welcome! Please see our [Contributing Guide](https://yeongseon.dev/azure-functions-python/practical-guide/contributing/) for:
 
 - Repository structure and content organization
 - Document templates and writing standards
