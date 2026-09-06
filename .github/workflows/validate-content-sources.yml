@@ -184,6 +184,63 @@ jobs:
         run: |
           python scripts/validate_cli_explanations.py
 
+  validate-pii:
+    name: Validate PII
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.11'
+
+      - name: Run doctests for scripts/validate_pii.py
+        run: |
+          python -m doctest scripts/validate_pii.py -v
+
+      - name: Detect leaked identifiers in changed Markdown (blocking)
+        run: |
+          if [ -n "${{ github.event.pull_request.base.sha }}" ]; then
+            BASE="${{ github.event.pull_request.base.sha }}"
+          elif [ -n "${{ github.event.before }}" ] && \
+               git cat-file -e "${{ github.event.before }}^{commit}" 2>/dev/null; then
+            BASE="${{ github.event.before }}"
+          else
+            BASE="HEAD~1"
+          fi
+          CHANGED=$(git diff --name-only --diff-filter=d "$BASE" HEAD -- 'docs/**/*.md' 2>/dev/null || echo "")
+          if [ -z "$CHANGED" ]; then
+            echo "No changed Markdown files to scan."
+            exit 0
+          fi
+          echo "Scanning changed Markdown files:"
+          echo "$CHANGED"
+          MISSING=""
+          while IFS= read -r f; do
+            [ -z "$f" ] && continue
+            if [ ! -f "$f" ]; then
+              MISSING="$MISSING $f"
+            fi
+          done <<< "$CHANGED"
+          if [ -n "$MISSING" ]; then
+            echo "::error::Expected changed Markdown file(s) missing from checkout:$MISSING"
+            exit 1
+          fi
+          if ! python scripts/validate_pii.py --files $CHANGED; then
+            echo "::error::PII validation failed on changed files. Remove real subscription/tenant/object IDs or real email addresses, or allowlist confirmed-safe example values in scripts/pii-allowlist.txt."
+            exit 1
+          fi
+
+      - name: Full advisory PII scan (non-blocking)
+        continue-on-error: true
+        run: |
+          python scripts/validate_pii.py
+
   validate-mslearn-urls:
     name: Validate MSLearn URLs
     runs-on: ubuntu-latest
