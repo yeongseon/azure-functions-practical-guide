@@ -4,6 +4,19 @@
 # Lines beginning with '#' and blank lines are ignored.
 #
 # Derived from the boilerplate-audit epic (VM #47, Storage #40, AKS #77).
+# These are SHARED, series-wide boilerplate markers vendored identically into
+# every repo — they are not specific to any single guide.
+
+# --- Shared best-practices scaffold (all repos) ---
 This practice should be interpreted through the lens of
 Reviewers should ask whether the chosen implementation strengthens or weakens
 primary source basis
+
+# --- VM best-practices boilerplate (VM #47) ---
+start with mismatched expectations
+hides the real bottleneck or expands risk
+
+# --- Storage lab-guide step boilerplate (Storage #40 / #51) ---
+Record the output and any IDs you will reuse in later steps
+If the command creates security-sensitive settings, confirm they match policy
+Capture screenshots or JSON output for your lab notes
