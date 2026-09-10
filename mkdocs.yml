@@ -115,36 +115,43 @@ nav:
     - platform/index.md
     - Architecture:
       - Overview: platform/architecture/index.md
-    - Hosting: platform/hosting.md
-    - Triggers and Bindings: platform/triggers-and-bindings.md
-    - Durable Functions: platform/durable-functions.md
-    - Custom Handlers: platform/custom-handlers.md
-    - Scaling: platform/scaling.md
-    - Networking: platform/networking.md
-    - Reliability: platform/reliability.md
+    - Hosting and App Models:
+      - Hosting: platform/hosting.md
+      - Triggers and Bindings: platform/triggers-and-bindings.md
+      - Durable Functions: platform/durable-functions.md
+      - Custom Handlers: platform/custom-handlers.md
+    - Scaling and Reliability:
+      - Scaling: platform/scaling.md
+      - Reliability: platform/reliability.md
+    - Networking:
+      - Networking: platform/networking.md
+      - Networking Scenarios:
+        - platform/networking-scenarios/index.md
+        - platform/networking-scenarios/public-only.md
+        - platform/networking-scenarios/private-egress.md
+        - platform/networking-scenarios/storage-service-endpoint.md
+        - platform/networking-scenarios/private-ingress.md
+        - platform/networking-scenarios/fixed-outbound-nat.md
+      - Storage Connectivity: platform/storage-connectivity.md
     - Security: platform/security.md
-    - Functions vs App Service: platform/functions-vs-app-service.md
-    - Deployment Scenarios: platform/deployment-scenarios.md
-    - Storage Connectivity: platform/storage-connectivity.md
-    - Networking Scenarios:
-      - platform/networking-scenarios/index.md
-      - platform/networking-scenarios/public-only.md
-      - platform/networking-scenarios/private-egress.md
-      - platform/networking-scenarios/storage-service-endpoint.md
-      - platform/networking-scenarios/private-ingress.md
-      - platform/networking-scenarios/fixed-outbound-nat.md
+    - Positioning:
+      - Functions vs App Service: platform/functions-vs-app-service.md
+      - Deployment Scenarios: platform/deployment-scenarios.md
   - Best Practices:
     - best-practices/index.md
-    - best-practices/hosting-plan-selection.md
-    - best-practices/trigger-and-binding.md
-    - best-practices/scaling.md
-    - best-practices/reliability.md
-    - best-practices/networking.md
-    - best-practices/security.md
-    - best-practices/deployment.md
-    - best-practices/cost-optimization.md
-    - best-practices/common-anti-patterns.md
-    - best-practices/testing.md
+    - Design:
+      - Hosting Plan Selection: best-practices/hosting-plan-selection.md
+      - Trigger and Binding: best-practices/trigger-and-binding.md
+    - Runtime Qualities:
+      - Scaling: best-practices/scaling.md
+      - Reliability: best-practices/reliability.md
+      - Networking: best-practices/networking.md
+      - Security: best-practices/security.md
+    - Delivery and Cost:
+      - Deployment: best-practices/deployment.md
+      - Testing: best-practices/testing.md
+      - Cost Optimization: best-practices/cost-optimization.md
+    - Common Anti-Patterns: best-practices/common-anti-patterns.md
   - Language Guides:
     - language-guides/index.md
     - Python:
@@ -505,25 +512,31 @@ nav:
         - language-guides/powershell/troubleshooting.md
   - Operations:
     - operations/index.md
-    - operations/deployment.md
-    - operations/configuration.md
-    - operations/monitoring.md
-    - operations/opentelemetry.md
-    - operations/alerts.md
-    - operations/cold-start.md
-    - operations/retries-and-poison-handling.md
-    - operations/security.md
-    - operations/cost-optimization.md
-    - operations/recovery.md
-    - operations/migration.md
+    - Deploy and Configure:
+      - Deployment: operations/deployment.md
+      - Configuration: operations/configuration.md
+    - Observability:
+      - Monitoring: operations/monitoring.md
+      - OpenTelemetry: operations/opentelemetry.md
+      - Alerts: operations/alerts.md
+    - Runtime Operations:
+      - Cold Start: operations/cold-start.md
+      - Retries and Poison Handling: operations/retries-and-poison-handling.md
+      - Recovery: operations/recovery.md
+    - Guardrails:
+      - Security: operations/security.md
+      - Cost Optimization: operations/cost-optimization.md
+    - Migration: operations/migration.md
   - Troubleshooting:
     - troubleshooting/index.md
-    - troubleshooting/architecture-components-reference.md
-    - troubleshooting/request-flow-for-incident-response.md
-    - troubleshooting/evidence-map.md
-    - troubleshooting/decision-tree.md
-    - troubleshooting/mental-model.md
-    - Quick Diagnosis Cards: troubleshooting/quick-diagnosis-cards.md
+    - Orientation:
+      - Architecture Components Reference: troubleshooting/architecture-components-reference.md
+      - Request Flow for Incident Response: troubleshooting/request-flow-for-incident-response.md
+      - Mental Model: troubleshooting/mental-model.md
+    - Diagnosis:
+      - Quick Diagnosis Cards: troubleshooting/quick-diagnosis-cards.md
+      - Decision Tree: troubleshooting/decision-tree.md
+      - Evidence Map: troubleshooting/evidence-map.md
     - First 10 Minutes:
       - troubleshooting/first-10-minutes/index.md
       - troubleshooting/first-10-minutes/triggers-not-firing.md
@@ -574,20 +587,22 @@ nav:
       - troubleshooting/lab-guides/hosting-plan-comparison-matrix.md
   - Reference:
     - reference/index.md
-    - reference/cli-cheatsheet.md
-    - reference/host-json.md
-    - reference/environment-variables.md
-    - reference/platform-limits.md
-    - reference/glossary.md
+    - Configuration:
+      - host.json: reference/host-json.md
+      - Environment Variables: reference/environment-variables.md
+      - Platform Limits: reference/platform-limits.md
+    - CLI Cheatsheet: reference/cli-cheatsheet.md
+    - Glossary: reference/glossary.md
     - Metrics:
       - reference/metrics/index.md
       - reference/metrics/function-execution-metrics.md
       - reference/metrics/flex-consumption-metrics.md
       - reference/metrics/scaling-and-instances.md
       - reference/metrics/application-insights-telemetry.md
-    - reference/troubleshooting.md
-    - reference/content-validation-status.md
-    - reference/validation-status.md
+    - Troubleshooting: reference/troubleshooting.md
+    - Validation Dashboards:
+      - Content Validation Status: reference/content-validation-status.md
+      - Validation Status: reference/validation-status.md
   - Contributing:
     - contributing/index.md
     - contributing/cross-guide-baseline.md
