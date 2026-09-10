@@ -1,0 +1,43 @@
+name: Validate Visual Content
+
+on:
+  pull_request:
+    paths:
+      - 'docs/**'
+      - 'scripts/validate_visual_content.py'
+      - 'scripts/lib/content_scope.py'
+      - 'AGENTS.md'
+      - '.github/workflows/validate-visual-content.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'docs/**'
+      - 'scripts/validate_visual_content.py'
+      - 'scripts/lib/content_scope.py'
+      - 'AGENTS.md'
+      - '.github/workflows/validate-visual-content.yml'
+
+jobs:
+  validate-visual-content:
+    name: Validate Visual Content (advisory)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run gate doctests
+        run: |
+          python -m doctest scripts/validate_visual_content.py -v
+
+      - name: Report visual coverage (advisory, exit 0)
+        run: |
+          python scripts/validate_visual_content.py --all
