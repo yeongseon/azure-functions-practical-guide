@@ -1,5 +1,12 @@
 ---
+
 content_sources:
+  diagrams:
+    - id: ops-migration-paths
+      type: flowchart
+      source: mslearn-adapted
+      mslearn_url: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/migrate-dotnet-to-isolated-model
   references:
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
@@ -36,6 +43,23 @@ content_validation:
 # Migration Guide
 
 Migrating an Azure Functions workload — whether across hosting plans or across programming models — is a day-2 operation performed against a running app. This guide provides the decision matrix, breaking-change tables, verification steps, and rollback procedures for each supported path, and links to the language-specific recipes for step-by-step code changes.
+
+Migration paths at a glance:
+
+<!-- diagram-id: ops-migration-paths -->
+```mermaid
+flowchart TD
+    S["Current hosting model"] --> M{"Migration Decision Matrix"}
+    M --> PA1["Path 1: Consumption Y1 to Flex Consumption FC1"]
+    M --> PA2["Path 2: .NET In-Process to Isolated Worker"]
+    M --> PA3["Path 3: Python v1 to v2"]
+    M --> PA4["Path 4: Premium and Dedicated swap"]
+    PA1 --> V["Verification"]
+    PA2 --> V
+    PA3 --> V
+    PA4 --> V
+    V --> RB["Rollback / Troubleshooting"]
+```
 
 ## Prerequisites
 

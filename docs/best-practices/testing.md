@@ -1,5 +1,12 @@
 ---
+
 content_sources:
+  diagrams:
+    - id: bp-testing-overview
+      type: flowchart
+      source: mslearn-adapted
+      mslearn_url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-test-a-function
+        - https://learn.microsoft.com/en-us/azure/storage/common/storage-use-azurite
   references:
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-test-a-function
@@ -31,6 +38,27 @@ content_validation:
 # Testing Best Practices
 
 Azure Functions couple business logic to an event-driven host through triggers and bindings, which makes naive testing brittle. This page defines a cross-language testing strategy — the test pyramid, local emulation, and CI integration — and points to the per-language recipes for concrete implementation.
+
+This page's baseline at a glance — the recommended practices and the validation gate:
+
+<!-- diagram-id: bp-testing-overview -->
+```mermaid
+flowchart TD
+    T["Testing Azure Functions"]
+    P1["Adopt a Test Pyramid for Functions"]
+    P2["Design for Testability"]
+    P3["Emulate Locally with Azurite"]
+    P4["Integrate Tests into CI"]
+    V["Validation Checklist"]
+    T --> P1
+    T --> P2
+    T --> P3
+    T --> P4
+    P1 --> V
+    P2 --> V
+    P3 --> V
+    P4 --> V
+```
 
 ## Why This Matters
 
