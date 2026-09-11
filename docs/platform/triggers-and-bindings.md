@@ -71,7 +71,7 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
 content_validation:
   status: verified
-  last_reviewed: 2026-04-12
+  last_reviewed: 2026-09-11
   reviewer: agent
   core_claims:
     - claim: "Each Azure Function has exactly one trigger and can also use input and output bindings"

@@ -34,7 +34,7 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
 content_validation:
   status: verified
-  last_reviewed: 2026-04-12
+  last_reviewed: 2026-09-11
   reviewer: agent
   core_claims:
     - claim: "Cold start includes worker allocation, host startup, language worker startup, and application initialization phases."

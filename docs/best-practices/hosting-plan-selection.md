@@ -18,7 +18,7 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
 content_validation:
   status: verified
-  last_reviewed: 2026-04-12
+  last_reviewed: 2026-09-11
   reviewer: agent
   core_claims:
     - claim: "Sporadic workload에는 scale-to-zero가 가능한 Consumption 또는 Flex Consumption이 유리할 수 있다."

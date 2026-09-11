@@ -30,7 +30,7 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs-trigger
 content_validation:
   status: verified
-  last_reviewed: 2026-04-12
+  last_reviewed: 2026-09-11
   reviewer: agent
   core_claims:
     - claim: "Azure Functions reliability for event triggers depends on trigger delivery semantics, retry behavior, and poison or dead-letter handling after retries are exhausted."

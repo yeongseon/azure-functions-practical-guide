@@ -46,7 +46,7 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
 content_validation:
   status: verified
-  last_reviewed: 2026-04-12
+  last_reviewed: 2026-09-11
   reviewer: agent
   core_claims:
     - claim: "이벤트 기반 Azure Functions 처리는 중복 전달 가능성을 전제로 멱등하게 설계해야 한다."

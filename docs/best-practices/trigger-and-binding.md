@@ -18,7 +18,7 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-event-grid-blob-trigger
 content_validation:
   status: verified
-  last_reviewed: 2026-04-12
+  last_reviewed: 2026-09-11
   reviewer: agent
   core_claims:
     - claim: "트리거와 바인딩 선택은 워크로드의 전달 의미와 실패 처리 방식에 맞춰야 한다."

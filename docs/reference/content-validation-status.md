@@ -147,7 +147,7 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/...
 content_validation:
   status: verified
-  last_reviewed: 2026-04-12
+  last_reviewed: 2026-09-11
   reviewer: agent
   core_claims:
     - claim: "Flex Consumption supports VNet integration with regional VNet."
