@@ -1,5 +1,10 @@
 ---
 content_sources:
+  diagrams:
+    - id: platform-storage-connectivity-axes
+      type: flowchart
+      source: mslearn-adapted
+      mslearn_url: https://learn.microsoft.com/en-us/azure/storage/common/storage-network-security
   references:
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/storage/common/storage-network-security
@@ -42,6 +47,24 @@ Use the scenario pages for step-by-step procedures:
 - [Public Only](networking-scenarios/public-only.md)
 - [Storage Service Endpoint](networking-scenarios/storage-service-endpoint.md)
 - [Private Egress (Private Endpoint)](networking-scenarios/private-egress.md)
+
+The two independent axes of Functions-to-Storage connectivity:
+
+<!-- diagram-id: platform-storage-connectivity-axes -->
+```mermaid
+flowchart TD
+    FA["Function App host"] --> AX1["Authentication axis: key or managed identity"]
+    FA --> AX2["Network axis: endpoint choice"]
+    AX1 --> CM["Combination Matrix: plan x endpoint"]
+    AX2 --> PE1["Public Endpoint"]
+    AX2 --> PE2["Service Endpoint"]
+    AX2 --> PE3["Private Endpoint"]
+    PE1 --> CM["Combination Matrix: plan x endpoint"]
+    PE2 --> CM
+    PE3 --> CM
+    CM --> HS["Host Startup Impact"]
+    HS --> DNS["DNS and Connectivity Verification"]
+```
 
 ## 1. Storage Roles in Azure Functions
 
