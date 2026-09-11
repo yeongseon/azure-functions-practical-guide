@@ -71,7 +71,7 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference?tabs=blob#configure-an-identity-based-connection
 content_validation:
   status: verified
-  last_reviewed: 2026-04-12
+  last_reviewed: 2026-09-11
   reviewer: agent
   core_claims:
     - claim: "Consumption plan does not support VNet integration, while Flex Consumption, Premium, and Dedicated do"

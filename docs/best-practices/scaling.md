@@ -30,7 +30,7 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
 content_validation:
   status: verified
-  last_reviewed: 2026-04-12
+  last_reviewed: 2026-09-11
   reviewer: agent
   core_claims:
     - claim: "Azure Functions 스케일링은 이벤트 기반이며 다운스트림 한계 때문에 선형 확장을 보장하지 않는다."

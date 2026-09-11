@@ -38,7 +38,7 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/function-keys-how-to
 content_validation:
   status: verified
-  last_reviewed: 2026-04-12
+  last_reviewed: 2026-09-11
   reviewer: agent
   core_claims:
     - claim: "Azure Functions는 임베디드 비밀보다 관리형 ID와 identity-based connection 구성을 우선해야 한다."

@@ -22,7 +22,7 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
 content_validation:
   status: verified
-  last_reviewed: 2026-04-12
+  last_reviewed: 2026-09-11
   reviewer: agent
   core_claims:
     - claim: "Azure Functions 핸들러는 재시작과 스케일 아웃에 대비해 상태 비저장으로 설계해야 한다."

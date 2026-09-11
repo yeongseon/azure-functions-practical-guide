@@ -34,7 +34,7 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-use-azure-function-app-settings
 content_validation:
   status: verified
-  last_reviewed: 2026-04-12
+  last_reviewed: 2026-09-11
   reviewer: agent
   core_claims:
     - claim: "App settings are the correct layer for environment-specific values, secrets, and feature flags in Azure Functions."

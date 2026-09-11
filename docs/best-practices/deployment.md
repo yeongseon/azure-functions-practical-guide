@@ -29,7 +29,7 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package
 content_validation:
   status: verified
-  last_reviewed: 2026-04-12
+  last_reviewed: 2026-09-11
   reviewer: agent
   core_claims:
     - claim: "Run-from-package 배포는 패키지를 읽기 전용으로 마운트해 배포 중 파일 변이를 줄인다."

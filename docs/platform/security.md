@@ -39,7 +39,7 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/api-management/api-management-howto-protect-backend-with-aad
 content_validation:
   status: verified
-  last_reviewed: 2026-04-12
+  last_reviewed: 2026-09-11
   reviewer: agent
   core_claims:
     - claim: "Azure Functions HTTP triggers support anonymous, function, and admin authorization levels"

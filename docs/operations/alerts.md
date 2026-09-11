@@ -24,7 +24,7 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/proactive-diagnostics
 content_validation:
   status: verified
-  last_reviewed: 2026-04-12
+  last_reviewed: 2026-09-11
   reviewer: agent
   core_claims:
     - claim: "Action groups should be created before alert rules so alerts route consistently to the right receivers."
