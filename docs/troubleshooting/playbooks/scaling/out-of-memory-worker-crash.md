@@ -54,7 +54,7 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
 content_validation:
   status: verified
-  last_reviewed: 2026-09-11
+  last_reviewed: 2026-04-12
   reviewer: agent
   core_claims:
     - claim: "Out of Memory / Worker Crash Playbook 관련 핵심 진단 절차와 운영 판단 기준"

@@ -30,7 +30,7 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
 content_validation:
   status: verified
-  last_reviewed: 2026-09-11
+  last_reviewed: 2026-04-12
   reviewer: agent
   core_claims:
     - claim: "진단 방법론 기반 접근"
