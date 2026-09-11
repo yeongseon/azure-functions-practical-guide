@@ -1,12 +1,10 @@
 ---
-
 content_sources:
   diagrams:
     - id: platform-storage-connectivity-axes
       type: flowchart
       source: mslearn-adapted
       mslearn_url: https://learn.microsoft.com/en-us/azure/storage/common/storage-network-security
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
   references:
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/storage/common/storage-network-security
@@ -57,6 +55,7 @@ The two independent axes of Functions-to-Storage connectivity:
 flowchart TD
     FA["Function App host"] --> AX1["Authentication axis: key or managed identity"]
     FA --> AX2["Network axis: endpoint choice"]
+    AX1 --> CM["Combination Matrix: plan x endpoint"]
     AX2 --> PE1["Public Endpoint"]
     AX2 --> PE2["Service Endpoint"]
     AX2 --> PE3["Private Endpoint"]

@@ -1,12 +1,10 @@
 ---
-
 content_sources:
   diagrams:
     - id: bp-testing-overview
       type: flowchart
       source: mslearn-adapted
       mslearn_url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-test-a-function
-        - https://learn.microsoft.com/en-us/azure/storage/common/storage-use-azurite
   references:
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-test-a-function

@@ -1,12 +1,10 @@
 ---
-
 content_sources:
   diagrams:
     - id: ops-migration-paths
       type: flowchart
       source: mslearn-adapted
       mslearn_url: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
-        - https://learn.microsoft.com/en-us/azure/azure-functions/migrate-dotnet-to-isolated-model
   references:
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
