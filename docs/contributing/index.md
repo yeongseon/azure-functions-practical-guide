@@ -272,11 +272,7 @@ Only add or update tutorial `validation` frontmatter after actually executing th
 
 ## Git Commit Style
 
-```
-type: short description
-```
-
-Allowed types: `feat`, `fix`, `docs`, `chore`, `refactor`
+Titles for issues, pull requests, and commits follow the **Title Convention** in [`CONTRIBUTING.md`](https://github.com/yeongseon/azure-functions-practical-guide/blob/main/CONTRIBUTING.md#title-convention), the single source of truth for the format and the allowed types.
 
 ## Review Process
 

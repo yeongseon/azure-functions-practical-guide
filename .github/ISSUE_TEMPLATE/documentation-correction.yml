@@ -1,6 +1,6 @@
 name: Documentation Correction
 description: Report incorrect, outdated, or unclear documentation.
-title: "[Docs]: "
+title: "docs: "
 labels: []
 body:
   - type: input
