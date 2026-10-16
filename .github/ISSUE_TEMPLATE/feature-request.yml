@@ -1,6 +1,6 @@
 name: Feature or Content Request
 description: Suggest a new section, guide, lab, workflow, or improvement.
-title: "[Request]: "
+title: "docs: "
 labels: []
 body:
   - type: input

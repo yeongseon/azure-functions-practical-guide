@@ -1,6 +1,6 @@
 name: Bug Report
 description: Report a repository bug, broken workflow, or incorrect behavior.
-title: "[Bug]: "
+title: "fix: "
 labels: []
 body:
   - type: input
