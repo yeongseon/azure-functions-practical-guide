@@ -29,6 +29,13 @@ documentation and publishing protections; do not authorize autonomous
 merges based only on AI scores or green CI. CI runner hosting is
 independent of this review policy.
 
+## Issue Scope
+
+Follow the [issue-scope guidance in AGENTS.md](AGENTS.md#issue-scope) when
+opening or editing an issue. Use this guide's pages, scripts, workflows, and
+reader needs to explain the problem and completion criteria, and state why
+any external project reference is relevant.
+
 ## Title Convention
 
 This section is the single source of truth for issue, pull request, and commit titles in this repository. `AGENTS.md`, the pull request template, the issue forms, and the documentation site point here instead of restating the rules.
@@ -68,14 +75,14 @@ A breaking change adds `!` before the colon: `type!: description` or `type(scope
 Examples:
 
 ```text
-fix: decode nonempty NULL-only collection results
-feat(cli): add a JSON output option
+docs: correct the hosting-plan comparison
+docs(labs): explain storage access failure evidence
 docs(readme): clarify the local setup steps
-refactor!: rename the public configuration keys
+refactor(labs)!: rename the storage verification script arguments
 ```
 
 Not accepted: `[Bug] crash on save` (bracket prefix, no type), `Fix: crash on save` (uppercase type), `feature: add export` (type not in the table), `fix: crash on save.` (trailing period).
 
-Pull requests are squash-merged and the pull request title becomes the final commit title. GitHub appends the pull request number, for example `fix: decode nonempty NULL-only collection results (#503)`. The **PR title** check validates the format whenever a pull request is opened, edited, reopened, or updated. Individual commits on a branch are not checked.
+Pull requests are squash-merged and the pull request title becomes the final commit title. GitHub appends the pull request number, for example `docs: correct the hosting-plan comparison (#503)`. The **PR title** check validates the format whenever a pull request is opened, edited, reopened, or updated. Individual commits on a branch are not checked.
 
 Issue titles are not enforced. Anyone can open an issue without knowing this convention; maintainers adjust the title during triage.

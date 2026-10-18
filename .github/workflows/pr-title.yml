@@ -40,11 +40,11 @@ jobs:
             - type is one of: feat fix docs test perf refactor ci build chore style revert
             - lowercase type and scope, one space after the colon
             - a non-empty description with no trailing period
-            - add "!" before the colon for a breaking change: "feat(api)!: drop the v1 endpoints"
+            - add "!" before the colon for a breaking change: "refactor(labs)!: rename the storage verification script arguments"
 
           Examples:
-            fix: decode nonempty NULL-only collection results
-            feat(cli): add a JSON output option
+            docs: correct the hosting-plan comparison
+            docs(labs): explain storage access failure evidence
             docs(readme): clarify the local setup steps
 
           See "Title Convention" in CONTRIBUTING.md. Edit the title; the check re-runs automatically.

@@ -1022,6 +1022,24 @@ mkdocs build --strict
 mkdocs serve
 ```
 
+## Issue Scope
+
+- Describe the problem, evidence, proposed work, priority, and completion criteria
+  using this repository's own responsibilities and user impact.
+- Adapt reusable ideas to the actual files and conventions here. Another
+  project's policy, observations, or release plan do not establish this
+  repository's requirements.
+- Keep relevant technical evidence and source attribution, including actual
+  dependencies, integrations, upstream defects, and official documentation.
+  Explain the relationship and the work owned by this repository. Apply the
+  same local-evidence requirement to explicitly requested comparisons.
+- Before creating or editing an issue, search for duplicates and review every
+  project name and repository link in the title and body. Remove unrelated
+  copied context; the work must be understandable without an unrelated issue.
+- After saving, fetch the issue again and verify its title, body, and labels
+  before reporting completion. This applies to API and CLI authoring as well
+  as the issue templates.
+
 ## Git Commit Style
 
 Titles for issues, pull requests, and commits follow the **Title Convention** in [`CONTRIBUTING.md`](CONTRIBUTING.md#title-convention), the single source of truth for the format and the allowed types.
