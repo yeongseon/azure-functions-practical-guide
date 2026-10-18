@@ -3,6 +3,12 @@ description: Report a repository bug, broken workflow, or incorrect behavior.
 title: "fix: "
 labels: []
 body:
+  - type: markdown
+    attributes:
+      value: |
+        Describe the issue in this guide and explain why any external project
+        or source is relevant. Use this repository's evidence and completion criteria.
+        See [Issue Scope](https://github.com/yeongseon/azure-functions-practical-guide/blob/main/AGENTS.md#issue-scope).
   - type: input
     id: summary
     attributes:
