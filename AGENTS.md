@@ -1026,36 +1026,52 @@ mkdocs serve
 
 Titles for issues, pull requests, and commits follow the **Title Convention** in [`CONTRIBUTING.md`](CONTRIBUTING.md#title-convention), the single source of truth for the format and the allowed types.
 
-## Merge Policy (AI Agent Rule)
+## Merge Policy (Tool-Neutral Review)
 
-AI agents MAY merge their own pull requests **autonomously**, but ONLY after ALL of the mandatory gates below pass. There is no separate human approval step — passing every gate IS the approval. If any gate cannot be satisfied, the agent MUST stop and hand the PR to the user instead of merging.
+The same PR review and merge criteria apply to human-written changes
+and changes made with OpenCode, Codex, Claude Code, ChatGPT, Copilot
+or any other coding agent. Oracle scoring and other AI reviews are
+optional **advisory** feedback, not mandatory approval gates.
 
-### Mandatory merge gates (ALL required)
+### Required validation for every PR
 
-| # | Gate | How it is verified |
-|---|---|---|
-| 1 | **Oracle review ≥ 90/100** | Submit the final diff to Oracle for quality review. Score must be **90 or higher with no merge-blocking issues**. Any must-fix item is a blocker even at ≥ 90. |
-| 2 | **CI fully green** | Every required GitHub Actions check on the PR head SHA passes. Verify with `gh pr checks <pr> --watch`; do not merge on `pending` or `failure`. |
-| 3 | **Caption ↔ image match** | For every added/changed image referenced from markdown, the caption/alt text MUST accurately describe the actual rendered image. |
-| 4 | **Final-image PII verification** | Every added/changed `.png`/`.webp` referenced from markdown MUST be visually verified (Read/`look_at`) for PII on the **final committed bytes** — zeroed subscription/tenant IDs, no employee identifiers, no black-box masks. WebP re-encodes are re-verified, not assumed from the raw PNG. |
+1. **GitHub CI:** all required status checks on the final PR head must
+   pass. CI is authoritative; local preview and source checks are
+   recommended but not a separate merge prerequisite. This policy
+   makes no assumption about CI runner hosting.
+2. **Caption and image accuracy:** every added/changed referenced image
+   must accurately match its Markdown caption and alt text.
+3. **Final-image PII verification:** visually inspect the **final committed
+   bytes** of every added/changed referenced PNG/WebP for subscription
+   or tenant identifiers, employee data or misleading redactions.
+   Re-encoded WebP must be rechecked; do not infer it from a PNG.
+4. **Security and content:** preserve existing documentation, PII,
+   repetition, screenshot integrity and publishing checks; no
+   unresolved critical/security issues or unreviewed sensitive assets.
+5. **Maintainer decision:** the responsible maintainer reviews final
+   code/content, required CI results, image checks and outstanding
+   findings, then decides whether to merge. For high-risk publishing
+   or permissions changes, obtain independent scrutiny.
 
 ### Merge procedure
 
-1. Confirm gates 1-4 above, in order. Record the Oracle score and the visual-verification result in the PR thread or the final summary.
-2. Merge with **squash-and-merge** only:
+1. Record required GitHub CI links and the final-image/PII verification
+   results in the PR. AI review comments are optional and not test
+   evidence or approval.
+2. Only after the responsible maintainer's decision, use squash merge:
+   `gh pr merge <pr> --squash --delete-branch`.
+3. Never use `--admin` to bypass required checks. Do not silently
+   downgrade visual verification, security or documentation policy.
+4. An autonomous agent may prepare the PR and evidence but must not
+   treat a passing score or green CI as permission to merge without
+   the maintainer's decision.
 
-    ```bash
-    gh pr merge <pr> --squash --delete-branch
-    ```
+### Stop conditions
 
-3. Never use merge-commit or rebase-merge; squash keeps `main` history linear and collapses fixup commits.
-4. Never bypass a failing or pending gate. Never merge with `--admin` to skip checks.
+- Any required CI check is pending or failing.
+- A referenced image cannot be verified against the final committed
+  bytes or contains unaddressed PII.
+- Blocking security, scope or factual accuracy findings remain.
+- The responsible maintainer has not authorized the merge.
 
-### When to stop instead of merging
-
-- Oracle score < 90, or any unresolved must-fix.
-- Any CI check failing or still pending.
-- Any referenced image that cannot be visually verified.
-- The PR touches something outside the agent's stated scope.
-
-In these cases, report the blocking gate and hand off to the user instead of merging.
+Report remaining blockers instead of merging.
