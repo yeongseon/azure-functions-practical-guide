@@ -252,7 +252,7 @@ NEVER include real Azure identifiers in documentation or examples:
 # Install dependencies
 pip install mkdocs-material mkdocs-minify-plugin
 
-# Validate (must pass before submitting PR)
+# Recommended local validation (required GitHub CI validates final PR head)
 mkdocs build --strict
 
 # Local preview
