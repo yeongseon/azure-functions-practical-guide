@@ -13,6 +13,22 @@ This guide covers:
 - Local development setup and build validation
 - Pull request process and review standards
 
+## Tool-Neutral PR Review and Merge
+
+Every contribution follows one process, whether human-authored or created
+with OpenCode, Codex, Claude Code, ChatGPT, Copilot or another tool.
+No Oracle score or particular AI review is required for approval.
+AI feedback is optional advisory material.
+
+Required **GitHub CI** results on the final head are authoritative.
+Local documentation builds are encouraged, not an additional merge gate.
+A maintainer verifies relevant Markdown rendering, screenshot/caption
+accuracy, final-image PII safety, outstanding findings and publication
+impact before deciding whether to squash merge. Keep all existing PII,
+documentation and publishing protections; do not authorize autonomous
+merges based only on AI scores or green CI. CI runner hosting is
+independent of this review policy.
+
 ## Title Convention
 
 This section is the single source of truth for issue, pull request, and commit titles in this repository. `AGENTS.md`, the pull request template, the issue forms, and the documentation site point here instead of restating the rules.
