@@ -11,6 +11,8 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/durable-task/durable-functions/durable-functions-azure-storage-provider
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/role-based-access-control/troubleshooting
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-infrastructure-as-code
   diagrams:
     - id: private-egress-architecture
       type: flowchart
@@ -309,7 +311,7 @@ az storage account update \
     | Premium | Registered; Table role required | System identity: app → storage RBAC → host app settings |
     | Dedicated | Registered; Table role required | System identity: app → storage RBAC → host app settings |
 
-    All four assign the Table role on the host storage account. Existing Blob/Queue and host/content roles are unchanged; no broader role is added. The system-assigned app must exist to obtain its principal ID, so its host settings are a separate resource that depends on RBAC rather than creating an app/role dependency cycle. This ordering controls provisioning, not runtime readiness, especially on updates to an already-running app.
+    All four assign the Table role on the host storage account. Existing Blob/Queue and host/content roles are unchanged; no broader role is added. The system-assigned app must exist to obtain its principal ID, so identity-based host storage activation uses a separate appsettings resource that depends on RBAC rather than creating an app/role dependency cycle. Consumption and Premium retain runtime, content-share, and monitoring settings on the creating site resource. The post-RBAC resource includes the complete intended settings because `config/appsettings` replaces the collection rather than merging it. This ordering controls provisioning, not runtime readiness, especially on updates to an already-running app.
 
 !!! warning "RBAC propagation is eventual"
     A successful role assignment or Bicep deployment does not prove immediate data-plane access. Allow time for propagation and retry; before replay/load testing, confirm healthy Durable indexing and a small orchestration start, state/history update, and completion. Do not work around a transient authorization failure by granting Owner or blanket storage permissions. See [RBAC propagation troubleshooting](https://learn.microsoft.com/en-us/azure/role-based-access-control/troubleshooting#symptom---role-assignment-changes-are-not-being-detected) and the [Durable lab prerequisite check](../../troubleshooting/lab-guides/durable-replay-storm.md#32-validate-durable-storage-rbac-for-managed-identity).
@@ -594,3 +596,4 @@ curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
 - [Integrate your app with an Azure virtual network (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/app-service/overview-vnet-integration)
 - [Durable Functions Azure Storage provider: identity permissions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/durable-task/durable-functions/durable-functions-azure-storage-provider#grant-permission-to-the-identity)
 - [Troubleshoot Azure RBAC (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/role-based-access-control/troubleshooting)
+- [Azure Functions infrastructure as code (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-infrastructure-as-code)
