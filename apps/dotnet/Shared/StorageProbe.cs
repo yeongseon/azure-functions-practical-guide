@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using System.Xml;
 using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
@@ -19,6 +20,8 @@ public sealed record StorageProbeResult(
 public sealed class StorageProbe
 {
     public static readonly TimeSpan Timeout = TimeSpan.FromSeconds(3);
+    private static readonly HttpPipelineTransport DefaultTransport = new HttpClientTransport(
+        new HttpClient(new HttpClientHandler { AllowAutoRedirect = false }));
     private readonly IConfiguration _configuration;
     private readonly HttpPipelineTransport? _transport;
     private readonly TokenCredential? _credential;
@@ -45,8 +48,7 @@ public sealed class StorageProbe
         options.Retry.MaxRetries = 0;
         options.Retry.NetworkTimeout = Timeout;
         options.Diagnostics.IsLoggingEnabled = false;
-        if (_transport is not null)
-            options.Transport = _transport;
+        options.Transport = new SingleRequestTransport(_transport ?? DefaultTransport);
 
         BlobServiceClient client;
         try
@@ -135,6 +137,39 @@ public sealed class StorageProbe
         catch (HttpRequestException)
         {
             return new("configured", connectionType, "endpointUnavailable", 502);
+        }
+        catch (Exception ex) when (ex is XmlException or FormatException or InvalidOperationException
+                                   or OverflowException or System.Text.Json.JsonException)
+        {
+            return new("configured", connectionType, "invalidResponse", 502);
+        }
+    }
+
+    private sealed class SingleRequestTransport(HttpPipelineTransport inner) : HttpPipelineTransport
+    {
+        private int _calls;
+        private int _status;
+        public override Request CreateRequest() => inner.CreateRequest();
+
+        private void GuardRequest()
+        {
+            // Retry settings do not bound authentication-challenge replay; guard the final transport.
+            if (Interlocked.Increment(ref _calls) != 1)
+                throw new RequestFailedException(_status, "Storage probe request replay blocked.");
+        }
+
+        public override void Process(HttpMessage message)
+        {
+            GuardRequest();
+            inner.Process(message);
+            _status = message.Response.Status;
+        }
+
+        public override async ValueTask ProcessAsync(HttpMessage message)
+        {
+            GuardRequest();
+            await inner.ProcessAsync(message).ConfigureAwait(false);
+            _status = message.Response.Status;
         }
     }
 }

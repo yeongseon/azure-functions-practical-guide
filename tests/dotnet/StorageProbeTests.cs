@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Logging;
 using Xunit;
 
 namespace AzureFunctionsGuide.Tests;
@@ -160,6 +161,55 @@ public sealed class StorageProbeTests
         new(new ConfigurationBuilder().AddInMemoryCollection(settings).Build(),
             new HttpClientTransport(new HttpClient(handler)), new TestCredential());
 
+    [Theory]
+    [InlineData("<EnumerationResults><sensitive-sentinel>")]
+    [InlineData("<EnumerationResults><Containers><Container><Name>sensitive-sentinel</Name><Properties><Last-Modified>sensitive-sentinel</Last-Modified></Properties></Container></Containers></EnumerationResults>")]
+    public async Task MalformedSuccessResponseIsSanitizedInResponseAndCapturedLogs(string body)
+    {
+        using var handler = new StorageHandler { Body = body };
+        var logger = new CapturingLogger();
+        var function = new StorageProbeFunction(logger,
+            Create(new() { ["AzureWebJobsStorage"] = SharedKey }, handler));
+
+        var response = Assert.IsType<ObjectResult>(await function.Run(new DefaultHttpContext().Request));
+
+        Assert.Equal(502, response.StatusCode);
+        var result = Assert.IsType<StorageProbeResult>(response.Value);
+        Assert.Equal("invalidResponse", result.Verification);
+        Assert.DoesNotContain("sensitive-sentinel", JsonSerializer.Serialize(result));
+        Assert.Single(logger.Messages);
+        Assert.Contains("invalidResponse", logger.Messages[0]);
+        Assert.DoesNotContain("sensitive-sentinel", string.Join("\n", logger.Messages));
+        Assert.All(logger.Exceptions, exception => Assert.Null(exception));
+        Assert.Equal(1, handler.Calls);
+    }
+
+    [Fact]
+    public async Task IdentityChallengeCannotReplayTheBlobRequest()
+    {
+        using var handler = new StorageHandler { Status = HttpStatusCode.Unauthorized, Challenge = true };
+        var result = await Create(new() { ["AzureWebJobsStorage:accountName"] = "examplestorage" }, handler)
+            .RunAsync();
+
+        Assert.Equal("authenticationFailed", result.Verification);
+        Assert.Equal(502, result.StatusCode);
+        Assert.Equal(1, handler.Calls);
+    }
+
+    private sealed class CapturingLogger : ILogger<StorageProbeFunction>
+    {
+        public List<string> Messages { get; } = [];
+        public List<Exception?> Exceptions { get; } = [];
+        public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
+        public bool IsEnabled(LogLevel logLevel) => true;
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception,
+            Func<TState, Exception?, string> formatter)
+        {
+            Messages.Add(formatter(state, exception));
+            Exceptions.Add(exception);
+        }
+    }
+
     private sealed class TestCredential(bool fail = false) : TokenCredential
     {
         public override AccessToken GetToken(TokenRequestContext requestContext, CancellationToken cancellationToken) =>
@@ -179,6 +229,8 @@ public sealed class StorageProbeTests
         public HttpStatusCode Status { get; init; } = HttpStatusCode.OK;
         public bool Refuse { get; init; }
         public bool Stall { get; init; }
+        public string? Body { get; init; }
+        public bool Challenge { get; init; }
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
             CancellationToken cancellationToken)
@@ -191,13 +243,17 @@ public sealed class StorageProbeTests
                 throw new HttpRequestException("local simulated refusal", new SocketException((int)SocketError.ConnectionRefused));
             if (Stall)
                 await Task.Delay(System.Threading.Timeout.InfiniteTimeSpan, cancellationToken);
-            return new HttpResponseMessage(Status)
+            var response = new HttpResponseMessage(Status)
             {
-                Content = new StringContent(Status == HttpStatusCode.OK
+                Content = new StringContent(Body ?? (Status == HttpStatusCode.OK
                     ? "<EnumerationResults><Containers><Container><Name>private-container</Name><Properties /></Container></Containers><NextMarker>more</NextMarker></EnumerationResults>"
-                    : "<Error><Code>LocalTestFailure</Code><Message>secret-details</Message></Error>",
+                    : "<Error><Code>LocalTestFailure</Code><Message>secret-details</Message></Error>"),
                     Encoding.UTF8, "application/xml")
             };
+            if (Challenge)
+                response.Headers.TryAddWithoutValidation("WWW-Authenticate",
+                    "Bearer authorization_uri=\"https://login.microsoftonline.com/example/oauth2/authorize\", resource_id=\"https://storage.azure.com\"");
+            return response;
         }
     }
 }
