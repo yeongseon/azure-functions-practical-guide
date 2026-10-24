@@ -72,7 +72,7 @@ curl http://localhost:7071/api/info
 - A nonblank `AzureWebJobsStorage` connection string takes precedence, including `UseDevelopmentStorage=true` for Azurite. A malformed value returns `configuration: invalid`; it is never reclassified as identity authentication.
 - Without a connection string, `AzureWebJobsStorage__accountName` selects `https://<account-name>.blob.core.windows.net`. `AzureWebJobsStorage__blobServiceUri` supports an explicit HTTPS Blob endpoint. The worker configuration provider maps double underscores to colons.
 - `AzureWebJobsStorage__credential=managedidentity` selects managed identity, optionally with `__clientId` or `__managedIdentityResourceId` (not both). Without `__credential`, the SDK default credential chain can use local developer credentials. Setting only `__credential` without an account or Blob endpoint is not sufficient.
-- The Blob request has **zero retries**, a **3-second network timeout**, and a **3-second cancellation budget** covering credential acquisition and the service call. Credential discovery may involve identity-provider requests in addition to the single Blob service request. No storage resources are created, changed or deleted.
+- The Blob request has **zero retries**, a **3-second network timeout**, and a **3-second cancellation budget** covering credential acquisition and the service call. A per-invocation transport guard permits only one Blob transport call, including when authentication challenges would otherwise replay the request; the default HTTP transport also disables redirects. A blocked challenge replay reports the original 401 as `authenticationFailed`. Credential discovery may involve identity-provider requests in addition to the single Blob service request. No storage resources are created, changed or deleted.
 - Responses and endpoint logs contain only fixed state labels, never connection strings, keys, tokens, account/container names, tenant details, SDK exception messages or raw service errors. The endpoint remains anonymous like the other sample diagnostics; protect it with access restrictions or authentication before exposing a deployed sample publicly.
 
 | HTTP status | `configuration` | `verification` | Interpretation |
@@ -85,6 +85,7 @@ curl http://localhost:7071/api/info
 | 502 | `configured` | `accessDenied` | Service returned HTTP 403; RBAC, firewall or another access policy is not distinguished |
 | 502 | `configured` | `endpointUnavailable` | Transport failure or HTTP 408/5xx; the underlying network/DNS/service cause is not established |
 | 502 | `configured` | `requestFailed` | Another unsuccessful service response was received |
+| 502 | `configured` | `invalidResponse` | A response could not be parsed/deserialized; response content and exception text are not returned or logged |
 | 504 | `configured` | `timedOut` / `cancelled` | The probe budget expired or the caller cancelled; no success is claimed |
 
 `connectionType` is `connectionString`, `identity`, or `none`. `configured` means settings were present and the client was constructed, not that authentication or connectivity succeeded. Use `verification` and the HTTP status together.
@@ -98,7 +99,7 @@ dotnet build tests/dotnet/AzureFunctionsGuide.Tests.csproj
 dotnet test tests/dotnet/AzureFunctionsGuide.Tests.csproj --no-build
 ```
 
-The tests use an in-memory HTTP transport and synthetic credentials for shared-key, identity, refused requests, missing settings, service failures, secret-safe responses and timeout behavior. They do not contact Azure or prove deployed managed identity, Storage RBAC, network paths or host lock health. This change has source/local-test verification only; no live Azure validation is claimed and no tutorial validation dates are updated.
+The tests use an in-memory HTTP transport and synthetic credentials for shared-key, identity, refused requests, missing settings, service failures, secret-safe responses and timeout behavior. Regression cases assert a 401 challenge makes exactly one transport call and malformed XML/typed values return sanitized failures with captured endpoint logs containing no sensitive sentinel or exception. The targeted `.NET Tests` workflow builds and runs these tests on PR changes to the .NET app, tests or workflow. They do not contact Azure or prove deployed managed identity, Storage RBAC, network paths or host lock health. This change has source/local-test verification only; no live Azure validation is claimed and no tutorial validation dates are updated.
 
 ## Deploy to Azure
 
