@@ -1,0 +1,1 @@
+Read root AGENTS.md and CONTRIBUTING.md. Follow the same issue triage, smallest-change development, current-head GitHub CI and maintainer-authorized PR review as Codex, Claude and OpenCode. Do not copy or invent independent agent rules, and never claim unrun Azure validation.
