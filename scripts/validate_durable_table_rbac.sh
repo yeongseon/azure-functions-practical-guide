@@ -28,6 +28,27 @@ for plan in consumption flex-consumption premium dedicated; do
     else
       "[reference(" + $app_id[1:-1] + ", \u00272024-04-01\u0027, \u0027full\u0027).identity.principalId]"
     end) as $principal |
+    ("[reference(" + $identity_id[1:-1] + ", \u00272023-01-31\u0027).clientId]") as $client_id |
+    ("[reference(" + $storage[1:-1] + ", \u00272025-04-01\u0027).outputs.name.value]") as $storage_name |
+    ("[reference(resourceId(\u0027Microsoft.Resources/deployments\u0027, \u0027appInsightsModule\u0027), \u00272025-04-01\u0027).outputs.") as $insights |
+    {APPLICATIONINSIGHTS_CONNECTION_STRING: ($insights + "connectionString.value]"),
+     APPINSIGHTS_INSTRUMENTATIONKEY: ($insights + "instrumentationKey.value]")} as $monitoring |
+    ($monitoring + {FUNCTIONS_EXTENSION_VERSION: "~4", FUNCTIONS_WORKER_RUNTIME: "python"} +
+     (if ($plan == "consumption" or $plan == "premium") then
+       {WEBSITE_CONTENTSHARE: "[variables(\u0027contentShareName\u0027)]",
+        WEBSITE_CONTENTAZUREFILECONNECTIONSTRING:
+          "[format(\u0027DefaultEndpointsProtocol=https;AccountName={0};AccountKey={1};EndpointSuffix={2}\u0027, variables(\u0027storageAccountName\u0027), listKeys(resourceId(\u0027Microsoft.Storage/storageAccounts\u0027, variables(\u0027storageAccountName\u0027)), \u00272023-05-01\u0027).keys[0].value, environment().suffixes.storage)]"}
+      else {} end) +
+     (if ($plan == "consumption" or $plan == "dedicated") then
+       {WEBSITE_RUN_FROM_PACKAGE: "1"} else {} end)) as $creation_settings |
+    (if $plan == "flex-consumption" then
+       $monitoring + {AZURE_FUNCTIONS_ENVIRONMENT: "production", TELEMETRY_MODE: "basic", LOG_LEVEL: "INFO",
+         AzureWebJobsStorage__accountName: $storage_name, AzureWebJobsStorage__credential: "managedidentity",
+         AzureWebJobsStorage__clientId: $client_id}
+     else
+       $creation_settings + {AzureWebJobsStorage__accountName: "[variables(\u0027storageAccountName\u0027)]",
+         AzureWebJobsStorage__credential: "managedidentity"}
+     end) as $complete_settings |
     (["storageBlobDataOwnerRoleId", "storageAccountContributorRoleId",
      "storageQueueDataContributorRoleId", "storageTableDataContributorRoleId"] +
     (if ($plan == "consumption" or $plan == "premium") then
@@ -48,23 +69,25 @@ for plan in consumption flex-consumption premium dedicated; do
       (.dependsOn | index($storage) != null) and
       (.dependsOn | index(if $plan == "flex-consumption" then $identity_id else $app_id end) != null))) and
     ($settings != null) and
-    ($settings.properties.AzureWebJobsStorage__credential == "managedidentity") and
-    ($settings.properties.AzureWebJobsStorage__accountName != null) and
+    ($settings.properties == $complete_settings) and
     # UAMI allows RBAC before app creation. System identity requires app first,
     # then RBAC, then host settings; never add a cyclic app -> RBAC dependency.
     (if $plan == "flex-consumption" then
       $app.identity.type == "UserAssigned" and
-      ($settings.properties.AzureWebJobsStorage__clientId != null) and
+      ($app.identity.userAssignedIdentities | keys ==
+        ["[format(\u0027{0}\u0027, " + $identity_id[1:-1] + ")]"]) and
       (all($roles[]; assignment_id as $id | $app.dependsOn | index($id) != null))
     else
       $app.identity.type == "SystemAssigned" and
-      ($app.properties.siteConfig.appSettings == null) and
+      (if ($plan == "consumption" or $plan == "premium") then
+        ($app.properties.siteConfig.appSettings // [] | map({key: .name, value: .value}) | from_entries) == $creation_settings
+       else $app.properties.siteConfig.appSettings == null end) and
       ($settings.dependsOn | index($app_id) != null) and
       (all($roles[]; assignment_id as $id | $settings.dependsOn | index($id) != null))
     end)
   ' "$BUILD_DIR/$plan.json" >/dev/null || {
-    printf 'FAIL: %s Durable Table RBAC or readiness ordering\n' "$plan" >&2
+    printf 'FAIL: %s Durable Table RBAC or provisioning ordering\n' "$plan" >&2
     exit 1
   }
-  printf 'PASS: %s compiled; storage-scoped roles, identity and readiness ordering\n' "$plan"
+  printf 'PASS: %s compiled; storage-scoped roles, identity and provisioning ordering\n' "$plan"
 done

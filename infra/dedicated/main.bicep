@@ -11,7 +11,7 @@
 // - alwaysOn enabled for Dedicated hosting
 // - Integration subnet delegated to Microsoft.Web/serverFarms
 // - Uses AzureWebJobsStorage__accountName (identity-based, no connection string)
-// - Uses classic siteConfig.appSettings (not functionAppConfig)
+// - Uses a separate post-RBAC config/appsettings resource (not functionAppConfig)
 // - WEBSITE_RUN_FROM_PACKAGE=1 for zip-based deployment (no Azure Files/content share)
 //
 // Deploy:

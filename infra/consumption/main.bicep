@@ -9,7 +9,8 @@
 // - Equivalent to CLI --consumption-plan-location behavior
 // - No VNet integration, no private endpoints
 // - Uses AzureWebJobsStorage__accountName (identity-based, no connection string)
-// - Uses classic siteConfig.appSettings (not functionAppConfig)
+// - Runtime/content settings at site creation; complete appsettings reapplied after RBAC
+// - Identity-based host storage is activated only by the post-RBAC appsettings resource
 //
 // Deploy:
 // az deployment group create --template-file infra/consumption/main.bicep --parameters baseName=myapp
@@ -108,6 +109,36 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
       linuxFxVersion: 'Python|${pythonVersion}'
       minTlsVersion: '1.2'
       ftpsState: 'Disabled'
+      appSettings: [
+        {
+          name: 'FUNCTIONS_EXTENSION_VERSION'
+          value: '~4'
+        }
+        {
+          name: 'FUNCTIONS_WORKER_RUNTIME'
+          value: 'python'
+        }
+        {
+          name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
+          value: storageConnectionString
+        }
+        {
+          name: 'WEBSITE_CONTENTSHARE'
+          value: contentShareName
+        }
+        {
+          name: 'WEBSITE_RUN_FROM_PACKAGE'
+          value: '1'
+        }
+        {
+          name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+          value: appInsightsModule.outputs.connectionString
+        }
+        {
+          name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
+          value: appInsightsModule.outputs.instrumentationKey
+        }
+      ]
     }
   }
   dependsOn: [
@@ -115,7 +146,7 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
   ]
 }
 
-// Apply host settings only after the system identity and its storage RBAC exist.
+// Activate identity-based storage after RBAC; appsettings replaces, rather than merges, all settings.
 resource functionAppSettings 'Microsoft.Web/sites/config@2024-04-01' = {
   parent: functionApp
   name: 'appsettings'
