@@ -40,6 +40,7 @@ var contentShareName = toLower(replace('${baseName}-content', '-', ''))
 var storageBlobDataOwnerRoleId = 'b7e6dc6d-f1e8-4753-8033-0f276bb0955b'
 var storageAccountContributorRoleId = '17d1049b-9a84-46fb-8f53-869881c3d3ab'
 var storageQueueDataContributorRoleId = '974c5e8b-45b9-4653-ba55-5f855dd0fb88'
+var storageTableDataContributorRoleId = '0a9a7e1f-b9d0-4cc4-a60d-0319b160aaa3'
 var storageFileDataPrivilegedContributorRoleId = '69566ab7-960f-475b-8e7c-b3118f30c6bd'
 
 // Connection string for WEBSITE_CONTENTAZUREFILECONNECTIONSTRING (required by platform for provisioning)
@@ -126,40 +127,6 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
       linuxFxVersion: 'Python|${pythonVersion}'
       minTlsVersion: '1.2'
       ftpsState: 'Disabled'
-      appSettings: [
-        {
-          name: 'FUNCTIONS_EXTENSION_VERSION'
-          value: '~4'
-        }
-        {
-          name: 'FUNCTIONS_WORKER_RUNTIME'
-          value: 'python'
-        }
-        {
-          name: 'AzureWebJobsStorage__accountName'
-          value: storageAccountName
-        }
-        {
-          name: 'AzureWebJobsStorage__credential'
-          value: 'managedidentity'
-        }
-        {
-          name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
-          value: storageConnectionString
-        }
-        {
-          name: 'WEBSITE_CONTENTSHARE'
-          value: contentShareName
-        }
-        {
-          name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
-          value: appInsightsModule.outputs.connectionString
-        }
-        {
-          name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
-          value: appInsightsModule.outputs.instrumentationKey
-        }
-      ]
     }
   }
   dependsOn: [
@@ -168,6 +135,29 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
     queueDnsZoneGroup
     tableDnsZoneGroup
     fileDnsZoneGroup
+  ]
+}
+
+// Apply host settings only after the system identity and its storage RBAC exist.
+resource functionAppSettings 'Microsoft.Web/sites/config@2024-04-01' = {
+  parent: functionApp
+  name: 'appsettings'
+  properties: {
+    FUNCTIONS_EXTENSION_VERSION: '~4'
+    FUNCTIONS_WORKER_RUNTIME: 'python'
+    AzureWebJobsStorage__accountName: storageAccountName
+    AzureWebJobsStorage__credential: 'managedidentity'
+    WEBSITE_CONTENTAZUREFILECONNECTIONSTRING: storageConnectionString
+    WEBSITE_CONTENTSHARE: contentShareName
+    APPLICATIONINSIGHTS_CONNECTION_STRING: appInsightsModule.outputs.connectionString
+    APPINSIGHTS_INSTRUMENTATIONKEY: appInsightsModule.outputs.instrumentationKey
+  }
+  dependsOn: [
+    blobDataOwnerAssignment
+    storageAccountContributorAssignment
+    queueDataContributorAssignment
+    tableDataContributorAssignment
+    fileDataContributorAssignment
   ]
 }
 
@@ -201,6 +191,18 @@ resource queueDataContributorAssignment 'Microsoft.Authorization/roleAssignments
   scope: storageAccount
   properties: {
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', storageQueueDataContributorRoleId)
+    principalId: functionApp.identity.principalId
+    principalType: 'ServicePrincipal'
+  }
+  dependsOn: [storageModule]
+}
+
+// RBAC: Durable Azure Storage task hub state and history.
+resource tableDataContributorAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(storageAccount.id, functionApp.id, storageTableDataContributorRoleId)
+  scope: storageAccount
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', storageTableDataContributorRoleId)
     principalId: functionApp.identity.principalId
     principalType: 'ServicePrincipal'
   }
