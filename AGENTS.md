@@ -9,6 +9,12 @@ Guidance for AI agents working in this repository.
 - **Live site**: <https://yeongseon.dev/azure-functions-python/practical-guide/>
 - **Repository**: <https://github.com/yeongseon/azure-functions-practical-guide>
 
+## Coding Agent Entry Point
+
+The same policy applies to Codex, Claude Code, OpenCode, Copilot, other agents and human contributors. Read [CONTRIBUTING.md](CONTRIBUTING.md#issue-workflow-and-triage) for local issue validity, priority/size labels, triage completion, minimal development, PR sections and maintainer-approved merges. Recheck all open issue priorities after a material change.
+
+Codex and OpenCode use this root `AGENTS.md`. Supported Claude Code versions can also read it directly; `CLAUDE.md` imports this file for compatible older sessions. Do not maintain separate copies of triage or merge rules, generate an unused abstraction, or claim CI/AI review establishes an Azure experiment result.
+
 ## Series-Wide Documentation Contract
 
 This repository is part of the Azure Practical Guide series. All repositories in the series must preserve a consistent reader experience while allowing repository-specific extensions.
