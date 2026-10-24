@@ -1,8 +1,14 @@
 name: Documentation Correction
 description: Report incorrect, outdated, or unclear documentation.
 title: "docs: "
-labels: []
+labels: [needs-triage]
 body:
+  - type: markdown
+    attributes:
+      value: |
+        Describe a standalone task for this Functions repository, including evidence, acceptance
+        criteria and out-of-scope work. Maintainers assign priority and size after triage.
+        See CONTRIBUTING.md for the issue lifecycle.
   - type: input
     id: summary
     attributes:
