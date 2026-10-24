@@ -82,3 +82,4 @@ jobs:
                 exit 1
               fi
             done
+            bash scripts/validate_durable_table_rbac.sh
