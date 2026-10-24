@@ -13,6 +13,8 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-query-overview
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/durable-task/durable-functions/durable-functions-azure-storage-provider
   diagrams:
     - id: replay-growth-model-used-in-this-lab
       type: flowchart
@@ -188,13 +190,15 @@ Before collecting replay evidence, the function host initially failed to index D
 
 The Bicep role set originally included Blob, Queue, File, and Account roles, but not Table role. Adding Table access fixed host indexing and enabled lab execution.
 
-Required storage RBAC role set for this Durable setup:
+Role set recorded for this EP1 setup (not a minimum Durable-only role list):
 
 1. Storage Account Contributor
 2. Storage Blob Data Owner
 3. Storage File Data Privileged Contributor
 4. Storage Queue Data Contributor
 5. Storage Table Data Contributor
+
+The Azure Storage Durable provider needs Blob, Queue, and Table data-plane access. Account and File roles in this historical setup concern host/content paths, not additional Durable state permissions. Current plan templates include the Table assignment; the recorded experiment below is unchanged and is not evidence of a new template deployment. See [storage identity and per-plan provisioning order](../../platform/networking-scenarios/private-egress.md#step-8-configure-storage-authentication-and-content-routing).
 
 ### Why this distinction matters
 
@@ -356,6 +360,8 @@ az monitor app-insights component show \
 
 ### 3.2 Validate Durable storage RBAC for managed identity
 
+For this EP1 lab, inspect the system-assigned principal used by `AzureWebJobsStorage`. If adapting the lab to Flex Consumption, inspect the user-assigned identity selected by `AzureWebJobsStorage__clientId` instead; the app's system principal is not the storage identity in that template.
+
 ```bash
 PRINCIPAL_ID=$(az functionapp identity show \
   --name "$APP_NAME" \
@@ -375,13 +381,25 @@ az role assignment list \
   --output table
 ```
 
-Expected role set:
+| Command/Parameter | Purpose |
+|---|---|
+| `az functionapp identity show` | Read the EP1 app's system-assigned principal. |
+| `az storage account show` | Read the host storage account scope. |
+| `az role assignment list` | Inspect that identity's role assignments at storage scope. |
+| `--name` | Select the app or storage account. |
+| `--resource-group` | Select the resource group. |
+| `--query` | Extract the principal ID or resource ID. |
+| `--output` | Use TSV for variables and a table for inspection. |
+| `--assignee` | Select the identity being inspected. |
+| `--scope` | Restrict inspection to the storage account. |
+
+Expected role set for the recorded EP1 configuration:
 
 | Required role | Why it is needed in this lab |
 |---|---|
 | Storage Account Contributor | account-level control path for host operations |
 | Storage Blob Data Owner | blob-backed durable artifacts |
-| Storage File Data Privileged Contributor | file share interactions on app service storage path |
+| Storage File Data Privileged Contributor | existing content-path assignment; not a Durable provider requirement |
 | Storage Queue Data Contributor | durable queue transport |
 | Storage Table Data Contributor | durable task hub table entities |
 
@@ -389,6 +407,8 @@ Expected role set:
     Durable host may fail to index functions with `403 AuthorizationPermissionMismatch`.
 
     Add the role before running this lab; otherwise orchestration telemetry is not trustworthy because startup itself is unhealthy.
+
+    RBAC propagation can be eventual even after provisioning succeeds. Wait and retry the small baseline orchestration, checking healthy indexing, state/history updates, and completion before generating replay load. A role listing or static Bicep build alone does not establish live Table access; `Storage Account Contributor` does not replace the Table data role.
 
 ### 3.3 Start baseline phase (50 iterations, no reset)
 
@@ -940,6 +960,7 @@ If this is a shared EP1 lab environment, skip deletion and only stop test traffi
 - [Troubleshooting methodology](../methodology.md)
 - [Troubleshooting evidence map](../evidence-map.md)
 - [KQL quick reference for troubleshooting](../kql/index.md)
+- [Storage authentication and Durable RBAC prerequisites](../../platform/networking-scenarios/private-egress.md#step-8-configure-storage-authentication-and-content-routing)
 
 ## Sources
 
@@ -949,3 +970,4 @@ If this is a shared EP1 lab environment, skip deletion and only stop test traffi
 - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
 - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
 - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-query-overview
+- https://learn.microsoft.com/en-us/azure/durable-task/durable-functions/durable-functions-azure-storage-provider
