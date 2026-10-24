@@ -7,6 +7,10 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-create-vnet
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/app-service/overview-vnet-integration
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/durable-task/durable-functions/durable-functions-azure-storage-provider
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/role-based-access-control/troubleshooting
   diagrams:
     - id: private-egress-architecture
       type: flowchart
@@ -294,7 +298,21 @@ az storage account update \
     Identity-based host storage requires RBAC role assignments. Assign `Storage Blob Data Owner` and `Storage Queue Data Contributor` to the managed identity before configuring app settings.
 
 !!! tip "Durable Functions"
-    If using Durable Functions, also assign `Storage Table Data Contributor` for orchestration state storage.
+    For the Azure Storage provider, also assign `Storage Table Data Contributor` to the identity selected by the Durable storage connection, at the storage account scope. `Storage Account Contributor` is a management-plane role, not a substitute for Table data-plane access. Private endpoints and DNS do not grant these permissions.
+
+    The four `infra/<plan>/main.bicep` templates provision Python hosts; application code is published separately. `apps/python/function_app.py` registers the Durable lab blueprint unconditionally, and `apps/python/host.json` selects `AzureStorage` with the default `AzureWebJobsStorage` connection. The Node reference app also registers Durable and selects this provider, but these templates configure the Python runtime, not Node.
+
+    | Template | Durable path after publishing `apps/python` | Storage identity / provisioning order |
+    |---|---|---|
+    | Consumption | Registered; Table role required | System identity: app → storage RBAC → host app settings |
+    | Flex Consumption | Registered; Table role required | User identity → storage RBAC → app → host app settings |
+    | Premium | Registered; Table role required | System identity: app → storage RBAC → host app settings |
+    | Dedicated | Registered; Table role required | System identity: app → storage RBAC → host app settings |
+
+    All four assign the Table role on the host storage account. Existing Blob/Queue and host/content roles are unchanged; no broader role is added. The system-assigned app must exist to obtain its principal ID, so its host settings are a separate resource that depends on RBAC rather than creating an app/role dependency cycle. This ordering controls provisioning, not runtime readiness, especially on updates to an already-running app.
+
+!!! warning "RBAC propagation is eventual"
+    A successful role assignment or Bicep deployment does not prove immediate data-plane access. Allow time for propagation and retry; before replay/load testing, confirm healthy Durable indexing and a small orchestration start, state/history update, and completion. Do not work around a transient authorization failure by granting Owner or blanket storage permissions. See [RBAC propagation troubleshooting](https://learn.microsoft.com/en-us/azure/role-based-access-control/troubleshooting#symptom---role-assignment-changes-are-not-being-detected) and the [Durable lab prerequisite check](../../troubleshooting/lab-guides/durable-replay-storm.md#32-validate-durable-storage-rbac-for-managed-identity).
 
 === "Flex Consumption (FC1)"
 
@@ -574,3 +592,5 @@ curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
 - [Azure Functions networking options (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)
 - [Create a function with VNet integration (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-create-vnet)
 - [Integrate your app with an Azure virtual network (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/app-service/overview-vnet-integration)
+- [Durable Functions Azure Storage provider: identity permissions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/durable-task/durable-functions/durable-functions-azure-storage-provider#grant-permission-to-the-identity)
+- [Troubleshoot Azure RBAC (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/role-based-access-control/troubleshooting)
