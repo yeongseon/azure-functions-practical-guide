@@ -375,7 +375,11 @@ and mark the context control undecidable rather than substituting Cloud Shell.
     archive/lock digests separately from the **actual built deployment package**,
     resolved dependencies and deployment ID. Correlate the active release through
     runtime logs and deployment receipt. A source hash is not built-byte identity.
-2. **Baseline/control:** deploy once, establish host startup and listener readiness
+2. **Baseline/control:** deploy once and establish the baseline configuration,
+    then perform exactly one declared app restart before observation. Record
+    configuration/deployment acceptance and restart request/completion UTC times
+    separately. Anchor the ten-minute phase window and first probe to restart
+    completion; observe host startup and listener readiness
     separately from ARM `Running`, then require ten distinct successful scheduled
     occurrences over ten minutes. Capture DNS, TLS/connection outcomes, an approved
     harmless host-identity Blob operation on a dedicated lab diagnostic object,
@@ -387,8 +391,10 @@ and mark the context control undecidable rather than substituting Cloud Shell.
     Table diagnostic roles, deployment/container roles or binding permissions;
     do not rotate keys, change connection settings, DNS, routes or firewall policy.
     Retain exact operation input, UTC start/end, exit code and before/after diff.
-    Perform one declared app restart after baseline, fault and restoration alike
-    to compare fresh initialization; keep its timing separate from fault acceptance.
+    After the removal operation completes, perform exactly one declared app restart,
+    then observe readiness, probes and scheduled occurrences. Record fault acceptance
+    and restart request/completion UTC times separately; anchor this phase's
+    ten-minute window and first probe to restart completion, as in baseline.
     Never treat restart as a guarantee of RBAC/cache propagation.
 4. **Collect:** observe each phase for ten minutes; issue network/data probes every
     30 seconds with a 15-second timeout. Retain every attempt and positive
@@ -400,7 +406,11 @@ and mark the context control undecidable rather than substituting Cloud Shell.
 5. **Recovery:** restore exactly the captured assignment's principal, role, scope
     and conditions. Verify that original networking and permissions match the
     pre-run snapshot; do not publish/rebuild code or reapply infrastructure.
-    Capture successful host storage operations, host startup, listener readiness
+    After restoration completes, perform exactly one declared app restart, then
+    observe readiness, probes and scheduled occurrences in that order, as in baseline
+    and fault. Record restoration acceptance and restart request/completion UTC
+    times separately; anchor the ten-minute phase window and first probe to restart
+    completion. Capture successful host storage operations, host startup, listener readiness
     and ten distinct successful scheduled occurrences over ten minutes. Record
     elapsed UTC time from restoration acceptance to first observed successful
     operation and separately first observed Timer success, including restart,
