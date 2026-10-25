@@ -28,4 +28,12 @@ expect_failure 'duplicated Python quota'
 cp "$ROOT/docs/language-guides/python/platform-limits.md" "$FIXTURE/docs/language-guides/python/platform-limits.md"
 printf '# Selector without shared-reference links\n' > "$selector"
 expect_failure 'missing canonical and migration links'
-printf 'PASS: duplicate selector/Python quota rows and missing links are rejected\n'
+cp "$ROOT/docs/language-guides/python/tutorial/index.md" "$selector"
+printf '# Hosting without shared-reference link\n' > "$FIXTURE/docs/platform/hosting.md"
+expect_failure 'missing hosting reference link'
+cp "$ROOT/docs/platform/hosting.md" "$FIXTURE/docs/platform/hosting.md"
+printf '## Sources\nhttps://learn.microsoft.com/en-us/azure/azure-functions/functions-scale\n' > "$FIXTURE/docs/reference/platform-limits.md"
+expect_failure 'missing Flex official-source link'
+cp "$ROOT/docs/reference/platform-limits.md" "$FIXTURE/docs/reference/platform-limits.md"
+bash "$ROOT/scripts/validate_hosting_limits.sh" "$FIXTURE"
+printf 'PASS: duplicate rows, missing selector/hosting/source links, and restored fixtures checked\n'

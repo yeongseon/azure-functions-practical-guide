@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Lightweight cross-document guard, not a quota database or live Azure test.
+# Structural link/row-label guard; does not verify quota values or factual consistency.
 # An optional repository root supports negative regression fixtures.
 set -euo pipefail
 
@@ -42,4 +42,4 @@ fi
 if (( failed )); then
   exit 1
 fi
-printf 'PASS: shared hosting-limit links and no duplicated selector quota rows\n'
+printf 'PASS: structural hosting-limit links and selected quota-row labels\n'
