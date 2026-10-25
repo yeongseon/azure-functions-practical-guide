@@ -43,6 +43,8 @@ content_sources:
 
 In this tutorial you deploy the Function App to a Dedicated App Service Plan using Basic B1. Dedicated plans are always running (no scale-to-zero), support Linux and Windows, and use fixed monthly pricing regardless of executions.
 
+**Runtime/build review (2026-10-25, official sources and static checks only):** Python function apps are **Linux-only**, even though Dedicated also hosts other languages on Windows. Keep Python **3.11** locally to match the command below; see [supported versions](../../python-runtime.md#supported-python-versions) for Python 3.13/3.14 GA and [build-mode guidance](../../python-runtime.md#build-mode-and-version-availability) for remote Oryx build versus prebuilt Linux packages. The historical `validation` metadata does not establish execution on newer versions and has not been restamped.
+
 ## Prerequisites
 
 - Completed [01 - Run Locally](01-local-run.md)

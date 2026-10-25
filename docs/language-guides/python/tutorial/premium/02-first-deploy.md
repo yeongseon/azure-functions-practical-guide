@@ -31,6 +31,8 @@ content_sources:
 
 Deploy a Python Function App to an Elastic Premium plan (`EP1`) with always-warm instances, then publish code and verify the app is live.
 
+**Runtime/build review (2026-10-25, official sources and static checks only):** Use Python **3.11** locally to match this track's deployment pin. The [supported-version guidance](../../python-runtime.md#supported-python-versions) covers Python 3.13/3.14 GA on Linux Premium; Windows Premium is not a Python target. Follow [build-mode guidance](../../python-runtime.md#build-mode-and-version-availability) for Core Tools' default remote build, alternative prebuilt Linux dependencies, and package-setting constraints. The existing `validation` dates/results remain historical; no new runtime execution or upgrade was tested.
+
 ## Prerequisites
 
 - You completed [01 - Run Locally](01-local-run.md).

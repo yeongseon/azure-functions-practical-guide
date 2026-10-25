@@ -37,7 +37,9 @@ content_sources:
 ---
 # 02 - First Deploy (Consumption)
 
-Deploy the app to Azure Functions Consumption (Y1) using long-form CLI commands only. This tutorial uses Linux examples and notes Windows support where relevant.
+Deploy the app to Azure Functions Consumption (Y1) using long-form CLI commands only. Python apps run on Linux only; Windows Consumption is not an alternative for this track.
+
+**Runtime/build review (2026-10-25, official sources and static checks only):** Keep Python **3.11** locally and in the deployment command below. The [supported-version guidance](../../python-runtime.md#supported-python-versions) separates the Linux Consumption ceiling from language GA status; Python 3.13/3.14 require another plan. Follow the shared [build-mode guidance](../../python-runtime.md#build-mode-and-version-availability) for remote build or a Linux-compatible prebuilt package. Historical `validation` results below are unchanged; no new Azure execution is claimed.
 
 ## Prerequisites
 
@@ -45,7 +47,7 @@ Deploy the app to Azure Functions Consumption (Y1) using long-form CLI commands 
 |------|---------|---------|
 | Azure CLI | 2.61+ | Create Azure resources |
 | Azure Functions Core Tools | v4 | Package and publish function code |
-| Python | 3.11+ | Match local development runtime |
+| Python | 3.11 | Match the tutorial's deployed example pin |
 | Azure subscription | Active | Target for deployment |
 
 ## What You'll Build
@@ -148,7 +150,7 @@ az functionapp create \
 | `--runtime-version 3.11` | Specifies the Python version. |
 | `--os-type Linux` | Deploys the function app on a Linux host. |
 
-Windows is also supported on Consumption; this track keeps Linux commands for consistency.
+For retirement and migration choices, see [Platform Limits](../../../../reference/platform-limits.md#runtime-support-and-linux-consumption-migration).
 
 !!! warning "Enterprise policy: Shared key access"
     Some enterprise subscriptions enforce Azure Policy that sets `allowSharedKeyAccess: false` on all storage accounts. Consumption (Y1) requires `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING` with a connection string that uses shared key access to create the content file share during provisioning. If your subscription has this policy, the Function App creation will fail with a 403 error. Solutions:
@@ -172,7 +174,7 @@ func azure functionapp publish "$APP_NAME" --build remote --python
 | `--python` | Specifies the application language for the build process. |
 
 !!! warning "Use `--build remote` on Linux Consumption"
-    On Linux Consumption, `func azure functionapp publish --python` (without `--build remote`) may fail with "Can't find app" or produce incomplete deployments. The `--build remote` flag instructs the platform to install Python dependencies on the server side, which is required for Linux hosts.
+    Core Tools requests remote build by default for Python; this command makes that request explicit. Remote build is recommended, not mandatory for every Linux deployment: a Linux-compatible prebuilt app can instead use the external-package-URL path in the [package matrix](../../../../operations/deployment.md#package-configuration-by-plan-and-os). The April 2026 failure below is a historical observation, not evidence that all current remote builds fail.
 
     After a `--build remote` deployment, verify that `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING` and `WEBSITE_CONTENTSHARE` app settings are still present. Remote build may remove these settings, causing the function host to stop. If missing, restore them:
 
