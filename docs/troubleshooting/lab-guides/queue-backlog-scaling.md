@@ -253,7 +253,63 @@ az monitor app-insights component show \
 | Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
 
 
-### Step 2: Verify queue trigger configuration in app source
+### Step 2: Register and verify the queue trigger before producing messages
+
+The checked-in Python app does not register `queue_processor` by default. Follow
+the [reference-app trigger selection](../../language-guides/python/index.md#default-functions-and-optional-trigger-registration):
+set `QUEUE_LAB_ENABLED=true` in local `Values`, configure `QueueStorage` for a
+local emulator or isolated test account, and run `func start --verbose` from
+`apps/python/`. Require `queue_processor` with `queueTrigger` in the `Functions:`
+list. Resolve indexing and listener startup errors before continuing, then stop
+the local host so it does not consume the Azure experiment's messages.
+
+For the deployed lab, configure `QueueStorage` with connection-string or
+identity-based queue access to the same account used by the producer, then enable
+registration and the intended five-second delay:
+
+```bash
+az functionapp config appsettings set \
+    --resource-group "$RG" \
+    --name "$APP_NAME" \
+    --settings QUEUE_LAB_ENABLED=true PROCESSING_DELAY_MS=5000 \
+    --output none
+```
+
+| Command/Parameter | Purpose |
+|---|---|
+| `az functionapp config appsettings set` | Configure the isolated queue lab without printing settings/secrets. |
+| `--resource-group` | Target resource group. |
+| `--name` | Target Function App. |
+| `--settings` | Opt in only the queue blueprint and set the lab delay. |
+| `--output` | Suppress the settings response. |
+
+Publish from `apps/python/` using `func azure functionapp publish "$APP_NAME" --python`.
+Before Step 3, check the deployed inventory:
+
+```bash
+az functionapp function list \
+    --resource-group "$RG" \
+    --name "$APP_NAME" \
+    --query "[].name" \
+    --output tsv
+```
+
+| Command/Parameter | Purpose |
+|---|---|
+| `az functionapp function list` | Read the deployed function inventory before injecting work. |
+| `--resource-group` | Target resource group. |
+| `--name` | Target Function App. |
+| `--query` | Return only function names. |
+| `--output` | Display names as TSV. |
+
+Require a name ending in `/queue_processor` and healthy host/listener startup logs.
+If absent, stop: check the deployed package, opt-in setting, import/indexing errors,
+and queue binding configuration instead of attributing missing `QueueProcessed`
+telemetry to scaling. Inventory alone does not prove message processing.
+
+[Not Proven] Local SDK/Core Tools indexing is not an Azure workload result. The
+2026-04-07 evidence below remains historical; record a new run's own timestamps
+and execution evidence without replacing its validation date.
 
 Review queue settings and processing code before evidence collection:
 
@@ -281,6 +337,14 @@ python labs/queue-backlog-scaling/producer.py --count 2000 --batch-size 32 --del
 export STORAGE_ACCOUNT_NAME="$STORAGE_NAME"
 python labs/queue-backlog-scaling/producer.py --count 2000 --use-identity
 ```
+
+| Command/Parameter | Purpose |
+|---|---|
+| `az storage account show-connection-string` | Read the lab account connection string into a shell variable, not a shared log. |
+| `--resource-group` | Target resource group. |
+| `--name` | Target storage account. |
+| `--query` | Select the connection string. |
+| `--output` | Return the value as TSV for shell assignment. |
 
 Reference incident timings from the 2026-04-07 real run:
 

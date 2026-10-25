@@ -138,6 +138,15 @@ az deployment group create \
 
 ### Step 2: Deploy function app code
 
+The reference app leaves `timer_lab` unregistered by default. Select
+`TIMER_LAB_ENABLED=true`, not `SCHEDULED_TRIGGER_ENABLED` (which registers the
+unrelated five-minute `scheduled_cleanup` tutorial). Follow the
+[reference-app trigger selection](../../language-guides/python/index.md#default-functions-and-optional-trigger-registration),
+setting the switch and `TIMER_LAB_SCHEDULE` under local `Values` with usable host
+storage. Run `func start --verbose` from `apps/python/` and require `timer_lab`
+with `timerTrigger` in the `Functions:` list without indexing/listener errors.
+Stop the local host before starting the Azure experiment.
+
 Use the 2-minute timer schedule:
 
 ```json
@@ -154,15 +163,17 @@ Configure app settings:
 az functionapp config appsettings set \
     --resource-group "$RG" \
     --name "$APP_NAME" \
-    --settings TIMER_LAB_SCHEDULE="0 */2 * * * *"
+    --settings TIMER_LAB_ENABLED=true TIMER_LAB_SCHEDULE="0 */2 * * * *" \
+    --output none
 ```
 
-| CLI element | Explanation |
+| Command/Parameter | Purpose |
 |---|---|
-| Command(s) | `az functionapp config appsettings set` |
-| Key flags | `--resource-group`, `--name`, `--settings` |
-| Variables | `$RG`, `$APP_NAME` |
-| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+| `az functionapp config appsettings set` | Register the selected timer and configure its schedule in Azure. |
+| `--resource-group` | Target resource group. |
+| `--name` | Target Function App. |
+| `--settings` | Enable only the missed-schedules timer with a two-minute schedule. |
+| `--output` | Suppress the settings response to avoid printing secrets. |
 
 
 Publish from the `apps/python/` directory:
@@ -171,6 +182,35 @@ Publish from the `apps/python/` directory:
 cd apps/python
 func azure functionapp publish "$APP_NAME" --python
 ```
+
+Before collecting baseline evidence or stopping the app, verify the deployed inventory:
+
+```bash
+az functionapp function list \
+    --resource-group "$RG" \
+    --name "$APP_NAME" \
+    --query "[].name" \
+    --output tsv
+```
+
+| Command/Parameter | Purpose |
+|---|---|
+| `az functionapp function list` | Check deployed registration before the missed-schedule experiment. |
+| `--resource-group` | Target resource group. |
+| `--name` | Target Function App. |
+| `--query` | Return only function names. |
+| `--output` | Display names as TSV. |
+
+Require a name ending in `/timer_lab` and healthy timer listener startup logs.
+If absent, stop and inspect the deployment, registration switch, schedule setting,
+imports, and host storage access. Missing `TimerFired` telemetry from an unindexed
+function is not evidence of a missed schedule. Require actual baseline fires in
+Step 3 before injecting downtime in Step 4.
+
+[Not Proven] SDK/Core Tools indexing and deployed inventory do not prove timer
+execution or `isPastDue` recovery. The 2026-04-07 experiment below is historical
+Azure evidence, not a new validation of this registration change; collect a new
+run separately without changing its recorded evidence date.
 
 ### Step 3: Collect baseline evidence
 
