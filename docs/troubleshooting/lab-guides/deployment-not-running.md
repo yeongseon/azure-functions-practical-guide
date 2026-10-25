@@ -67,6 +67,13 @@ content_sources:
 
 This lab reproduces a deceptive production scenario: deployment transport succeeds, but Azure Functions cannot discover triggers, so no functions execute. You will validate failure evidence using Application Insights tables only (`traces`, `requests`, `dependencies`, `exceptions`), then recover by correcting runtime and package structure.
 
+!!! warning "Golden scenario is defined, not Azure-executed"
+    The Golden scenario below is **NOT_RUN / NOT_TESTED**. No Azure run evidence
+    exists for it. The historical walkthrough, timestamps, excerpts and verdict
+    elsewhere on this page are unchanged historical material, not evidence for
+    this new scenario. Successful deployment and app `Running` status are each
+    insufficient to prove indexing, listener readiness, or actual processing.
+
 ## Portal Walkthrough
 
 These portal blades help investigate deployment failures. All captures from a Consumption (Y1) Function App with PII masked.
@@ -179,6 +186,225 @@ flowchart TD
 ```
 
 ## 3) Runbook
+
+### Golden scenario: offline definition and future execution recipe
+
+[Not Proven] This narrower scenario tests one HTTP function on **Linux Consumption
+(Y1), Functions v4, Python v2 programming model**. It is not a test of timer or
+queue delivery, durable business output, other hosting plans, or independent
+reproduction. Those stages are not applicable to this HTTP-response-only claim.
+The [evidence contract](../methodology/troubleshooting-method.md#evidence-and-hypothesis-contract)
+governs execution, provenance and verdicts.
+
+The machine-readable predeclaration is
+[`tests/fixtures/evidence/deployment-scenario.json`](https://github.com/yeongseon/azure-functions-practical-guide/blob/main/tests/fixtures/evidence/deployment-scenario.json).
+Its assertions are passed unchanged into the existing offline evaluator; the
+separate synthetic cases are software tests, never platform captures. No collector,
+new evaluator predicate, or Azure automation is introduced.
+
+#### Ownership and fixed controls
+
+There is **no `labs/deployment-not-running/` directory** and no deployed lab-owned
+Function App established by this definition. An authorized operator must first
+provision an isolated, disposable lab resource group with
+`infra/consumption/main.bicep`, following the
+[Consumption infrastructure tutorial](../../language-guides/python/tutorial/consumption/05-infrastructure-as-code.md).
+Use that deployment's `functionAppName`, `functionAppUrl`, and `appInsightsName`
+outputs as `APP_NAME`, `APP_URL`, and `APPINSIGHTS_NAME`; do not substitute a
+customer or production app. Record the resource inventory and explicit ownership
+approval before writes. An already-existing app is eligible only with the same
+lab ownership and permission to replace its code.
+
+Follow the [package-by-plan matrix](../../operations/deployment.md#package-configuration-by-plan-and-os)
+and its read-only precheck. Use Core Tools Python remote build consistently for
+all three packages. **Do not manually set `WEBSITE_RUN_FROM_PACKAGE`** (in
+particular, never `1` on Linux Y1), change runtime settings, or reapply infrastructure
+during fault/recovery. Flex is out of scope and must not inherit this recipe.
+Retain build/deployment logs and package digests; transport acceptance is distinct
+from remote-build completion and activation. If publishing rejects the package,
+this does not establish the intended accepted-deploy/indexing-failure scenario.
+
+#### Minimal baseline -> fault -> recovery
+
+1. **Predeclare:** assign a unique run ID, source commit/dirty diff, recipe digest,
+    tool versions, region, plan/SKU, OS, configured and observed host/Python versions
+    (unknown until captured), sanitized app identity and configuration. Choose a
+    fresh request nonce per probe. Fix startup observation at 5 minutes per phase,
+    then 10 HTTP probes, 30 seconds apart, each with a 15-second timeout. Allow
+    telemetry an additional 10 minutes, querying at 1-minute intervals. These are
+    experiment bounds, not platform SLAs; preserve timeouts, not just successes.
+2. **Baseline/control:** create a temporary Python project with `host.json` at the
+    archive root and the files below. **Before the first baseline publish**, resolve
+    `azure-functions` for the chosen Python/Linux target, export exact `==` pins
+    for every transitive dependency into `requirements.txt`, and retain the lock,
+    resolved names/versions and distribution hashes. Use the identical lock for
+    all builds; retain Python, resolver and remote-build tool/image versions.
+    Never re-resolve an unpinned requirement between phases. Configure monitoring
+    before baseline, never mid-fault; require all baseline controls before injection.
+    Retain a source-file/archive SHA256 separately from each **built deployment
+    package SHA256**. Extract resolved dependency inventories from the actual remote
+    build output (`.python_packages` distribution metadata and file hashes), not
+    just the requested lock; retain and compare these across all three builds.
+3. **Fault:** make a second project copy, omitting **only `golden_payload.py`**
+    as the functional change; the predeclared per-phase release marker also changes
+    for activation correlation below.
+    Keep its top-level import in `function_app.py`. This deliberate package/runtime
+    dependency mismatch should produce `ModuleNotFoundError` naming
+    `golden_payload` during indexing. Compare source and built-content manifests:
+    permit only that omission and the declared release-marker difference; resolved
+    dependencies must match the frozen baseline inventory. Missing build inventories,
+    unpinned dependencies, changed tooling or unexplained build-content differences
+    leave the single-change control **INCONCLUSIVE**, not a causal conclusion;
+    do not inject an invalid package URL, modify the runtime, or depend on random
+    network failure. Publish with the same remote-build command and retain both
+    upload/build results and post-deploy discovery failures, even if Core Tools
+    ultimately exits nonzero during readiness checks.
+4. **Recovery:** republish retained baseline source with the same dependency lock,
+    changing only the declared release marker. Compare source manifests excluding
+    that marker and identify the new built package with its own digest and resolved
+    inventory. This is **baseline-source rebuild recovery, not exact-package
+    recovery**: a source digest does not establish byte-identical remote-build output.
+    Measure elapsed UTC time from recovery publish acceptance to the first valid
+    recovery-release nonce response as **first-observed recovery**, not exact time
+    to readiness: the five-minute startup wait precedes probes. Record this blind
+    interval and successes/attempts
+    across the full probe window. Require 10/10 matching 200 responses, restored
+    listing/indexing and route readiness, plus the monitored collection control.
+    Record the actual duration; no recovery measurement exists yet.
+5. **Cleanup:** follow the ownership-restricted receipt procedure below, even after
+    a failed or inconclusive experiment. Cleanup does not prove incident causality.
+
+Baseline `golden_payload.py` (omit this file only in the fault copy):
+
+```python
+MARKER = "golden-baseline"
+```
+
+Baseline `function_app.py` (same bytes in all three phases):
+
+```python
+import logging
+
+import azure.functions as func
+from golden_build import RELEASE_ID
+
+logging.info("golden.startup release=%s", RELEASE_ID)
+from golden_payload import MARKER
+
+app = func.FunctionApp()
+
+@app.function_name(name="HttpHealth")
+@app.route(route="health", methods=["GET"], auth_level=func.AuthLevel.ANONYMOUS)
+def http_health(req: func.HttpRequest) -> func.HttpResponse:
+    nonce = req.params.get("nonce", "")
+    logging.info("golden.invocation release=%s nonce=%s", RELEASE_ID, nonce)
+    return func.HttpResponse(
+        f"{MARKER}:{nonce}", headers={"X-Golden-Release": RELEASE_ID}
+    )
+```
+
+**Future activation capture method:** generate `golden_build.py` before packaging
+each phase, containing a unique nonsensitive `RELEASE_ID` literal (run ID, phase
+and attempt). Retain its exact bytes and map that ID to the source commit/archive
+digest, lock digest, deployment service ID and built-package digest in a deployment
+receipt. It is packaged code, not a mutable app setting or request value. Inspect
+the deployed artifact's marker and record the service's activation result; correlate
+the startup log emitted **before** the faulting import with its worker instance,
+timestamp and subsequent indexing failure. For invocation/counter-evidence require
+the matching `X-Golden-Release`, nonce response and invocation log from that release,
+not merely HTTP 200 during the fault window. Capture these through the retained
+deployment/build output, runtime log stream or configured Application Insights
+query, and curl response headers; retain failures and unavailable channels.
+A surviving baseline worker's marker cannot count as fault-package execution.
+Missing deployment-to-runtime correlation makes the activation control
+INCONCLUSIVE, even when a discriminator claims execution. Startup logging/remote
+artifact retrieval are proposed collection steps, still NOT_RUN, not guaranteed
+available on this unexecuted deployment; collection gaps must not be guessed away.
+
+Anonymous access is limited to this disposable, nonsensitive probe; send no secrets
+or customer data. From each selected project directory, the publish operation is:
+
+```bash
+func azure functionapp publish "$APP_NAME" --python
+```
+
+Retain the exit code, stdout/stderr and deployment identifier separately. For each
+phase, capture management state and the function list (including empty responses
+and failed commands), then probe `"$APP_URL/api/health?nonce=$NONCE"` using curl
+with `--max-time 15`, `--dump-header`, `--output`, and `--write-out` for status and
+elapsed seconds. Retain body, headers, UTC start/end, nonce and exit code per probe;
+do not use `--fail` to discard fault responses. Query runtime startup/indexing
+traces and invocation requests for the same app, phase interval and nonce where
+available. A management function list can be stale: it is not a worker or route probe.
+
+```bash
+az functionapp show --name "$APP_NAME" --resource-group "$RG" --query "{state:state,kind:kind}" --output json
+az functionapp function list --name "$APP_NAME" --resource-group "$RG" --query "[].name" --output json
+az functionapp config appsettings list --name "$APP_NAME" --resource-group "$RG" --query "{insightsConfigured:contains([].name, 'APPLICATIONINSIGHTS_CONNECTION_STRING'),runtime:[?name=='FUNCTIONS_WORKER_RUNTIME'].value}" --output json
+```
+
+| Command/Parameter | Purpose |
+|---|---|
+| `az functionapp show` | Capture management state, not worker health. |
+| `az functionapp function list` | Retain the explicit function list or collection failure. |
+| `az functionapp config appsettings list` | Project only monitoring presence and runtime; never print secret values. |
+| `--name` | App name from the owned deployment output. |
+| `--resource-group` | Approved disposable lab group. |
+| `--query` | Limit published fields and avoid connection strings. |
+| `--output` | Preserve structured JSON for later inspection. |
+
+#### Predeclared assertions and disproof
+
+The JSON uses phase-qualified signals to prevent recovery evidence satisfying a
+fault assertion. Every normalized signal must cite exact raw artifact/field,
+event time and transformation in `mapping.json`; summaries are derived, not primary.
+The evaluator checks explicit equality only; it does not parse Azure logs or
+authenticate provenance. Review that mapping before offline replay.
+
+`fault-package`, `fault-host` and `fault-list` are **validity controls**, not merely
+supporting evidence: accepted fault deployment, `Running` state and a successfully
+captured function list are prerequisites to either conclusive verdict. Rejected
+deployment, `Stopped` state or a missing list makes the verdict INCONCLUSIVE even
+with decisive counter-evidence. The same applies to dependency/single-change and
+activation controls; the evaluator's general contradiction precedence is unchanged.
+
+| Stage | Baseline and recovery assertion | Fault assertion / decisive disproof |
+|---|---|---|
+| Package upload | Deployment service accepted the identified built artifact; retain its digest separately from source/archive digest, lock and resolved inventory. Recovery is an identified rebuild of baseline source/lock, not asserted identical package bytes. | Acceptance is a validity control. Source omission and declared marker change only; built dependency inventories match. Rejection or unknown/unexplained drift makes this experiment INCONCLUSIVE, even with counter-evidence. |
+| Host state | Capture `Running` and host startup evidence within 5 minutes separately. | Capture `Running` independently of the worker result; if app is stopped or state unavailable, this narrower claim is undecidable. |
+| Worker/indexing | Startup identifies `HttpHealth` from this package; no unresolved import failure. | A fresh indexing failure explicitly names missing `golden_payload`. A valid correlated invocation of the fault package decisively contradicts the proposed indexing block. Missing traces alone never disprove it. |
+| Function metadata | Explicit list contains `HttpHealth` and agrees with fresh runtime metadata. | Retain list even if empty or stale; `captured` means a successful list response, not that emptiness proves failure. Missing list makes the run INCONCLUSIVE. |
+| HTTP listener readiness | Fresh route metadata maps `GET /api/health` and controlled probes reach that route. | Explicit failed route registration/indexing plus failed probes establishes `blocked-by-indexing`. A 404 alone could be wrong routing, auth or networking; it is not this signal. |
+| Actual invocation | All 10 responses are 200 with exact `golden-baseline:<nonce>` bodies, the phase's `X-Golden-Release` and matching invocation logs. | Retain every probe result and positive indexing-block evidence. `blocked-by-indexing` must not be inferred from an empty requests table. Only execution correlated to the activated fault package is disproof, not a surviving baseline response or missing telemetry. |
+
+**Telemetry control:** retain projected app-setting presence, host.json log levels,
+sampling/filter configuration, query text, table/app scope, event interval,
+collection errors and actual ingestion/capture times. Baseline and recovery nonce
+requests must be visible through the same collection path. Missing connection
+configuration, suppressed `Host.Results`, sampling, permission errors, or ingestion
+delay beyond the bounded wait means `unavailable`, not `execution-absent`.
+See [monitoring configuration](https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring)
+and [ingestion latency](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/data-ingestion-time).
+Even with working telemetry, silence alone cannot identify non-execution; require
+positive import/indexing evidence, the explicit list and client observations.
+
+#### Outcome rules
+
+- **NOT_RUN / NOT_TESTED:** current scenario state; source review and synthetic
+    evaluator tests do not change it.
+- **COMPLETE / SUPPORTED:** all required assertions and controls hold with reviewed
+    current primary evidence; baseline-source rebuild recovery alone is insufficient causality.
+    Compare source/built manifests, resolved dependencies and unchanged settings to discriminate routing,
+    deployment rejection, storage/network issues and telemetry loss.
+- **COMPLETE / CONTRADICTED:** valid controls plus decisive fault-package execution
+    counter-evidence. Do not translate telemetry unavailability into contradiction.
+- **COMPLETE / INCONCLUSIVE:** collection attempts finished but no discriminating
+    data, invalid/missing validity controls, unexplained dependency/build drift,
+    no function list, uncorrelated activation or unavailable telemetry remains.
+    Completion is procedural, not proof. If collection did not finish, use PARTIAL
+    (or BLOCKED/FAILED per the contract) with NOT_TESTED instead.
+
+### Historical walkthrough (not the Golden run)
 
 ### Prerequisites
 
@@ -506,6 +732,53 @@ flowchart TD
 
 ## 4) Experiment Log
 
+### Golden run identity and retention (no captures yet)
+
+| Field | Current value |
+|---|---|
+| Execution / hypothesis | `NOT_RUN` / `NOT_TESTED` |
+| Claim / provenance / trust | Not Proven; offline definition, unverified for Azure execution |
+| Azure run ID / captured_at | None; no collection attempted |
+| Recovery measurement / cleanup receipt | Not available; no resources created by this scenario |
+| Offline evaluation | Synthetic regression tests only; not independent reproduction |
+
+For a future authorized run, retain sanitized primary captures under a new run ID
+outside the test fixtures. The following is a **layout specification**, not existing
+artifacts. Do not overwrite a prior run or fill gaps with historical excerpts.
+
+```text
+<approved-evidence-root>/<run-id>/
+  identity.json              # commit, recipe digest, ownership, environment/tools
+  predeclaration.json        # exact assertions and bounds saved before execution
+  baseline|fault|recovery/
+    <UTC>-source-manifest.json / <UTC>-built-package-manifest.json
+    <UTC>-dependency-lock.txt / <UTC>-resolved-dependencies.json
+    <UTC>-deployment-receipt.json   # deployment ID -> release marker -> artifact
+    <UTC>-publish.stdout.txt / <UTC>-publish.stderr.txt
+    <UTC>-deployment.json    # status, deployment ID, build result and exit codes
+    <UTC>-app-state.json / <UTC>-function-list.json
+    <UTC>-runtime.txt / <UTC>-telemetry-query.json / <UTC>-telemetry-results.json
+    <UTC>-probe-<sequence>.json   # nonce, headers/body, status, duration, exit code
+  mapping.json              # signal -> raw file/field, role, transformation
+  evidence.json             # evaluator input; no stored verdict used as proof
+  manifest.sha256           # exact sanitized bytes, retained independently
+  evaluations/<evaluation-id>.json
+  cleanup/<UTC>-receipt.json
+```
+
+Every artifact needs actual `captured_at` UTC, its own event/query window, run ID,
+role, primary/derived/reported provenance and trust justification. Record
+`evaluated_at` separately; prose edit time is Git history, never a capture date.
+Sanitize CLI/runtime output before retention/publication with stable placeholders,
+including IDs, hostnames, package URLs/SAS, auth headers and connection strings.
+Keep restricted originals only in an approved private location, not Git. Preserve
+sanitized failures and collection gaps as immutable records; hash after sanitizing.
+The evaluator requires concrete UTC capture/window fields: **do not invent them
+for the NOT_RUN definition**. Assemble a live evidence bundle only after collection;
+synthetic fixture timestamps are explicitly fictional.
+
+### Historical artifact inventory and results
+
 ### Artifact inventory
 
 | Artifact | Source | Purpose |
@@ -644,6 +917,20 @@ gantt
 
 ## Clean Up
 
+### Golden scenario ownership-restricted receipt
+
+No cleanup has been executed for the NOT_RUN scenario. A future operator must
+compare the pre-run ownership inventory with the disposable group's current
+inventory and stop if any shared/customer resources appear. Delete only the
+dedicated group created for this run; for a reused lab app, restore its approved
+baseline instead of deleting a shared group. Stop probe processes owned by this
+run only. Retain the deletion/restoration command, actual UTC start/end, exit code,
+sanitized target inventory and final completion/failure result in the cleanup
+receipt. An asynchronous delete acceptance is not a completion receipt. Cleanup
+is separate from recovery, causality and independent reproduction.
+
+### Historical walkthrough cleanup
+
 ```bash
 kill "$TRAFFIC_PID"
 az group delete --name "$RG" --yes --no-wait --output table
@@ -670,6 +957,8 @@ az group delete --name "$RG" --yes --no-wait --output table
 
 ## Sources
 
+- https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
+- https://learn.microsoft.com/en-us/azure/azure-monitor/logs/data-ingestion-time
 - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
 - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
 - https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring
