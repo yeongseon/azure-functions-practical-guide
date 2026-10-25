@@ -107,7 +107,7 @@ WORKSPACE_ID="/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RG/providers/Micro
 
 ![Environment variables blade with 4 app settings and hidden values](../assets/operations/configuration/01-environment-variables.png)
 
-[Inferred] For a security audit, check that sensitive values (connection strings, keys) are backed by Key Vault references (shown as `@Microsoft.KeyVault(...)` in the value column) rather than stored as plaintext. Use **Show values** to verify, and confirm that `AzureWebJobsStorage` uses identity-based connection for Flex Consumption deployments.
+[Inferred] For a security audit, review sensitive settings privately for Key Vault references rather than direct secrets. Check host, deployment, content, and binding connections against the canonical [storage authentication guidance](../platform/storage-connectivity.md#2-authentication-vs-network-two-independent-axes); use its [read-only settings precheck](../platform/storage-connectivity.md#read-only-settings-precheck) to collect setting names without exposing values in shared evidence.
 
 ## When to Use
 Use this runbook in these cases:
