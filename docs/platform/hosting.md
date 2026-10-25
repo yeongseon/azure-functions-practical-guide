@@ -11,6 +11,12 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/app-service/overview-hosting-plans
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/manage-connections
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to#configure-deployment-settings
   diagrams:
     - id: hosting-plans-at-a-glance
       type: flowchart
@@ -34,20 +40,20 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
 content_validation:
   status: verified
-  last_reviewed: 2026-09-11
+  last_reviewed: 2026-10-25
   reviewer: agent
   core_claims:
-    - claim: "Consumption plan scales to zero and bills per execution"
-      source: https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan
+    - claim: "AzureWebJobsStorage supports a connection string or an identity-based connection, including on Flex Consumption."
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations#storage-account-connection-setting
       verified: true
-    - claim: "Flex Consumption supports VNet integration with identity-based storage"
-      source: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+    - claim: "Flex deployment storage supports StorageAccountConnectionString, SystemAssignedIdentity, and UserAssignedIdentity authentication independently of the host storage connection."
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to#configure-deployment-settings
       verified: true
-    - claim: "Premium plan provides pre-warmed instances to avoid cold starts"
-      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
+    - claim: "Windows Consumption and Elastic Premium use Azure Files by default; removing that dependency requires an external package workflow and can limit scaling."
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations#create-an-app-without-azure-files
       verified: true
-    - claim: "Dedicated plan runs on App Service infrastructure with always-on support"
-      source: https://learn.microsoft.com/en-us/azure/app-service/overview-hosting-plans
+    - claim: "Dedicated plan apps do not have the default Azure Files content-share dependency."
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations#create-an-app-without-azure-files
       verified: true
 ---
 
@@ -170,7 +176,8 @@ Flex Consumption combines serverless economics with modern networking and scalin
 #### Critical platform facts
 
 - **No Kudu/SCM site** is available.
-- **Identity-based storage is required** for host storage configuration.
+- **Host storage supports a connection string or managed identity**; managed identity is recommended, not a Flex-only requirement. Shared Key must be allowed for an account-key connection string. See [storage authentication and restrictions](storage-connectivity.md#2-authentication-vs-network-two-independent-axes).
+- **Deployment storage is separate**: `functionAppConfig.deployment.storage` selects the Blob container and its authentication method. Changing `AzureWebJobsStorage` does not change deployment authentication or trigger/binding connections. Flex does not use a classic Azure Files content share or `WEBSITE_RUN_FROM_PACKAGE`.
 - Blob trigger must use **Event Grid source** on Flex; standard polling blob trigger is not supported.
 - Default function timeout is **30 minutes**; maximum is **unbounded**.
 
@@ -227,6 +234,13 @@ Dedicated runs Functions on pre-provisioned App Service compute.
 | Deployment slots | Yes (2 including production) | No | Yes | Yes |
 | Kudu/SCM | Yes | No | Yes | Yes |
 | Apps per plan | Multiple | One | Multiple | Multiple |
+| Host storage authentication (Functions v4) | Connection string or identity; Linux remote-build caveat | Connection string or identity (recommended) | Connection string or identity | Connection string or identity |
+| Azure Files content share | Default on Windows; Linux deployment-specific | None; separate Blob deployment container | Default; secret-based connection | No default dependency |
+
+Host identity support does not make content-share authentication identity-based. For Classic Consumption/Elastic Premium Azure Files exceptions, Linux Consumption remote-build restrictions, and endpoint reachability, use the [Storage Connectivity plan matrix](storage-connectivity.md#6-hosting-plan-differences). For OS-specific package settings, use the existing [deployment mechanism matrix](../operations/deployment.md#package-configuration-by-plan-and-os).
+
+!!! note "Storage verification boundary — 2026-10-25"
+    The storage authentication statements and rows above were checked against Microsoft Learn's [storage considerations](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations), [connection guidance](https://learn.microsoft.com/en-us/azure/azure-functions/manage-connections), and [Flex deployment settings](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to#configure-deployment-settings). This is official-reference/static verification only, not a new Azure deployment test. The existing Consumption Portal walkthrough above does not prove Flex authentication behavior.
 
 ### Timeout reference (design-time)
 
@@ -265,6 +279,7 @@ az functionapp create \
   --runtime node \
   --functions-version 4
 ```
+
 | Command/Parameter | Purpose |
 | --- | --- |
 | `az functionapp create` | Create the function app. |
@@ -285,6 +300,7 @@ az functionapp create \
   --runtime python \
   --runtime-version 3.12
 ```
+
 | Command/Parameter | Purpose |
 | --- | --- |
 | `az functionapp create` | Create the function app. |
@@ -312,6 +328,7 @@ az functionapp create \
   --runtime dotnet-isolated \
   --functions-version 4
 ```
+
 | Command/Parameter | Purpose |
 | --- | --- |
 | `az functionapp plan create` | Create the hosting plan for the function app. |
@@ -337,6 +354,7 @@ az functionapp plan show \
   --name "$PLAN_NAME" \
   --output json
 ```
+
 | Command/Parameter | Purpose |
 | --- | --- |
 | `az functionapp plan show` | Show details of a function app hosting plan. |
@@ -371,6 +389,7 @@ az functionapp list \
   --resource-group "$RG" \
   --output table
 ```
+
 | Command/Parameter | Purpose |
 | --- | --- |
 | `az functionapp list` | List function apps in a resource group. |
@@ -488,6 +507,7 @@ Use conceptual formulas to compare plan behavior before detailed calculator mode
 - [Scaling](scaling.md)
 - [Networking](networking.md)
 - [Security](security.md)
+- [Storage Connectivity](storage-connectivity.md) — Host, deployment, content, and binding authentication boundaries
 - [Deployment Scenarios](deployment-scenarios.md) — Cross-plan comparison of VNet, PE, identity, and deployment patterns
 
 ## Sources
@@ -497,3 +517,6 @@ Use conceptual formulas to compare plan behavior before detailed calculator mode
 - [Microsoft Learn: Premium plan](https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan)
 - [Microsoft Learn: App Service plan](https://learn.microsoft.com/en-us/azure/app-service/overview-hosting-plans)
 - [Microsoft Learn: Azure Functions networking options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)
+- [Microsoft Learn: Storage considerations](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations)
+- [Microsoft Learn: Configure connections](https://learn.microsoft.com/en-us/azure/azure-functions/manage-connections)
+- [Microsoft Learn: Configure Flex deployment settings](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to#configure-deployment-settings)
