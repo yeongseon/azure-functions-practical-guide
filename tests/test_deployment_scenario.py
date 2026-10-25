@@ -22,6 +22,13 @@ EVALUATED_AT: Final = "2025-01-02T00:00:00Z"  # Fictional replay clock.
     ("telemetry-ingestion-delayed", "INCONCLUSIVE"),
     ("no-discriminator", "INCONCLUSIVE"),
     ("fault-invoked", "CONTRADICTED"),
+    ("counter-host-stopped", "INCONCLUSIVE"),
+    ("counter-deployment-rejected", "INCONCLUSIVE"),
+    ("counter-list-missing", "INCONCLUSIVE"),
+    ("counter-dependency-drift", "INCONCLUSIVE"),
+    ("counter-dependencies-unknown", "INCONCLUSIVE"),
+    ("counter-activation-missing", "INCONCLUSIVE"),
+    ("surviving-baseline-worker", "INCONCLUSIVE"),
     ("not-run", "NOT_TESTED"),
 ])
 def test_synthetic_deployment_outcome(tmp_path: Path, case: str, expected: str) -> None:
