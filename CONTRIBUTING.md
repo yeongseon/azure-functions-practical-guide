@@ -94,7 +94,8 @@ and do not change hosted settings without separate authorization.
    improvements separate. Retain Functions-specific source metadata,
    troubleshooting evidence, PII protections, and truthful validation dates.
 4. Run applicable existing validators and targeted regression tests; use
-   `mkdocs build --strict` for documentation. Record commands, actual results,
+   `mkdocs build --strict` locally for documentation (recommended; required
+   GitHub CI remains authoritative). Record commands, actual results,
    limitations, and the tested commit. Source-reviewed, Azure-executed, and
    independently reproduced are different evidence levels; use `NOT_RUN` for
    unperformed Azure tests. Ordinary docs work does not require paid Azure E2E.
