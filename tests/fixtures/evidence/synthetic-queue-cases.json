@@ -1,0 +1,58 @@
+{
+  "fixture_notice": "SYNTHETIC ONLY: fictional events, timestamps and execution flags for evaluator regression tests; not Azure captures, timings or independent reproduction",
+  "bundle": {
+    "run_id": "synthetic-queue",
+    "captured_at": "2025-01-01T01:30:00Z",
+    "window": {"start": "2025-01-01T00:00:00Z", "end": "2025-01-01T01:29:00Z"},
+    "execution": {"attempted": true, "blocked": false, "failed": false, "finished": true},
+    "verdict": "PASS",
+    "events": [
+      {"run_id": "synthetic-queue", "timestamp": "2025-01-01T00:00:00Z", "signal": "run.ownership", "value": "isolated-approved-queues-and-sink"},
+      {"run_id": "synthetic-queue", "timestamp": "2025-01-01T00:15:00Z", "signal": "baseline.readiness", "value": "indexed-listener-delivery-commit-and-delete-correlated"},
+      {"run_id": "synthetic-queue", "timestamp": "2025-01-01T01:00:00Z", "signal": "run.versions", "value": "resolved-host-extension-and-settings-frozen"},
+      {"run_id": "synthetic-queue", "timestamp": "2025-01-01T01:00:00Z", "signal": "run.artifact", "value": "same-built-handler-activated-all-phases"},
+      {"run_id": "synthetic-queue", "timestamp": "2025-01-01T01:00:00Z", "signal": "run.work-identity", "value": "producer-message-invocation-and-dedup-keys-mapped"},
+      {"run_id": "synthetic-queue", "timestamp": "2025-01-01T01:00:00Z", "signal": "run.collection", "value": "delivery-exception-queue-and-sink-paths-validated"},
+      {"run_id": "synthetic-queue", "timestamp": "2025-01-01T01:00:00Z", "signal": "run.sink-contract", "value": "atomic-create-is-entire-effect-and-authoritative-read"},
+      {"run_id": "synthetic-queue", "timestamp": "2025-01-01T00:30:00Z", "signal": "fault.isolation", "value": "declared-modes-only-no-other-consumer-or-retry"},
+      {"run_id": "synthetic-queue", "timestamp": "2025-01-01T01:00:00Z", "signal": "run.sequence", "value": "one-restart-then-readiness-enqueue-observe-per-phase"},
+      {"run_id": "synthetic-queue", "timestamp": "2025-01-01T00:18:00Z", "signal": "fault.exceptions", "value": "mode-specific-failed-invocations-correlated"},
+      {"run_id": "synthetic-queue", "timestamp": "2025-01-01T00:19:00Z", "signal": "fault.transient", "value": "same-message-counts-1-2-fail-3-commit-delete"},
+      {"run_id": "synthetic-queue", "timestamp": "2025-01-01T00:21:00Z", "signal": "fault.poison", "value": "five-failed-deliveries-then-correlated-poison-no-commit"},
+      {"run_id": "synthetic-queue", "timestamp": "2025-01-01T00:19:00Z", "signal": "fault.redelivery", "value": "same-message-new-invocation-count-2-existing-key"},
+      {"run_id": "synthetic-queue", "timestamp": "2025-01-01T00:30:00Z", "signal": "fault.business-effect", "value": "one-durable-effect-per-successful-key-poison-zero"},
+      {"run_id": "synthetic-queue", "timestamp": "2025-01-01T00:30:00Z", "signal": "fault.acknowledgement", "value": "successful-runtime-delete-correlated-to-committed-work"},
+      {"run_id": "synthetic-queue", "timestamp": "2025-01-01T00:18:00Z", "signal": "fault.status-probe", "value": "http-200-is-not-durable-evidence"},
+      {"run_id": "synthetic-queue", "timestamp": "2025-01-01T00:50:00Z", "signal": "recovery.work", "value": "normal-item-commit-delete-and-prior-keys-stable"},
+      {"run_id": "synthetic-queue", "timestamp": "2025-01-01T01:20:00Z", "signal": "cleanup.receipt", "value": "owned-queues-and-sink-removed-settings-restored"}
+    ]
+  },
+  "control_matrix": [
+    ["run.ownership", "shared-or-unowned"],
+    ["baseline.readiness", "baseline-incomplete"],
+    ["run.versions", "unknown-or-drifted"],
+    ["run.artifact", "artifact-drift"],
+    ["run.work-identity", "uncorrelated-work"],
+    ["run.collection", "telemetry-or-service-log-gap"],
+    ["run.sink-contract", "marker-only-or-untrusted-read"],
+    ["fault.isolation", "mixed-fault-or-application-retry"],
+    ["run.sequence", "restart-during-delivery-or-order-drift"]
+  ],
+  "cases": {
+    "all-signals": {},
+    "status-only": {"keep": ["fault.status-probe"]},
+    "missing-acknowledgement": {"omit": ["fault.acknowledgement"]},
+    "redelivery-without-work-record": {"omit": ["fault.business-effect"]},
+    "telemetry-gap": {"replace": {"run.collection": "telemetry-or-service-log-gap"}},
+    "probe-success-without-commit": {"omit": ["fault.business-effect", "fault.transient", "recovery.work"]},
+    "duplicate-business-effect": {"replace": {"fault.business-effect": "multiple-durable-effects-for-one-key"}},
+    "positive-poison-mismatch": {"replace": {"fault.poison": "positive-contrary-poison-transition"}},
+    "swallowed-failure": {"replace": {"fault.transient": "failed-work-returned-success-and-deleted"}},
+    "poison-missing": {"omit": ["fault.poison"]},
+    "application-retry-conflated": {"replace": {"fault.isolation": "mixed-fault-or-application-retry"}},
+    "conflicting-records": {"append": [{"run_id": "synthetic-queue", "timestamp": "2025-01-01T00:31:00Z", "signal": "fault.business-effect", "value": "multiple-durable-effects-for-one-key"}]},
+    "counter-missing-recovery": {"replace": {"fault.business-effect": "multiple-durable-effects-for-one-key"}, "omit": ["recovery.work", "cleanup.receipt"]},
+    "not-run": {"execution": {"attempted": false, "blocked": false, "failed": false, "finished": false}, "expected_execution": "NOT_RUN"},
+    "partial": {"execution": {"attempted": true, "blocked": false, "failed": false, "finished": false}, "expected_execution": "PARTIAL"}
+  }
+}
