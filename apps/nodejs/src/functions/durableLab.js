@@ -1,29 +1,25 @@
 const df = require('durable-functions');
-const { app } = require('@azure/functions');
+const { registerLabHttp, LabInputError, parseReplay } = require('../shared/labLimits');
 
 /**
  * HTTP starter for the replay storm lab orchestrator.
  */
-app.http('startReplayLab', {
+registerLabHttp('startReplayLab', {
     methods: ['POST'],
     route: 'durable/start-replay-lab',
     extraInputs: [df.input.durableClient()],
     handler: async (request, context) => {
-        const client = df.getClient(context);
-        const iterations = parseInt(process.env.DurableLab__Iterations || '100', 10);
-        const continueAsNewEvery = parseInt(process.env.DurableLab__ContinueAsNewEvery || '0', 10);
-
-        let payload = {};
+        let workload;
         try {
-            const body = await request.text();
-            payload = body ? JSON.parse(body) : {};
-        } catch {
-            payload = {};
+            workload = parseReplay(await request.text());
+        } catch (error) {
+            if (!(error instanceof LabInputError)) throw error;
+            return { status: error.status, jsonBody: { error: error.message } };
         }
-
-        const instancesRequested = payload.instances || 1;
-        const overrideIterations = payload.iterations || iterations;
-        const overrideContinue = payload.continueAsNewEvery || continueAsNewEvery;
+        const client = df.getClient(context);
+        const instancesRequested = workload.instances;
+        const overrideIterations = workload.iterations;
+        const overrideContinue = workload.continueEvery;
 
         const instanceIds = [];
         for (let i = 0; i < instancesRequested; i++) {
@@ -135,7 +131,7 @@ df.app.activity('replayLabActivity', {
 /**
  * Check the status of a replay storm orchestration instance.
  */
-app.http('checkReplayStatus', {
+registerLabHttp('checkReplayStatus', {
     methods: ['GET'],
     route: 'durable/status/{instanceId}',
     extraInputs: [df.input.durableClient()],

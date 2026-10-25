@@ -1,9 +1,9 @@
-const { app } = require('@azure/functions');
+const { registerLabHttp } = require('../shared/labLimits');
 
 /**
  * Raise and catch an error to demonstrate exception handling.
  */
-app.http('testError', {
+registerLabHttp('testError', {
     methods: ['GET'],
     route: 'exceptions/test-error',
     handler: async (request, context) => {
@@ -29,7 +29,7 @@ app.http('testError', {
 /**
  * Raise an unhandled exception to generate real 500 errors in Application Insights.
  */
-app.http('unhandledError', {
+registerLabHttp('unhandledError', {
     methods: ['GET'],
     route: 'exceptions/unhandled',
     handler: async (request, context) => {

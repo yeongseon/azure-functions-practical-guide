@@ -4,6 +4,7 @@ const { app } = require('@azure/functions');
  * Health check endpoint returning application status.
  */
 app.http('health', {
+    authLevel: 'anonymous',
     methods: ['GET'],
     route: 'health',
     handler: async (request, context) => {
