@@ -28,7 +28,8 @@ flowchart TD
     Q1 -->|Yes| Q2{Need VNet integration?}
     Q1 -->|No| DEDI[Dedicated ASP]
     Q2 -->|Yes| FLEX[Flex Consumption FC1]
-    Q2 -->|No| CONS[Consumption Y1]
+    Q2 -->|No| FLEX
+    Start -.->|Existing legacy app| CONS[Consumption Y1]
     FLEX --> Q3{Need always warm instances?}
     Q3 -->|Yes| PREM[Premium EP]
     Q3 -->|No| FLEX
@@ -41,14 +42,14 @@ flowchart TD
 
 ## Plan Comparison at a Glance
 
+Use [Platform Limits](../../../reference/platform-limits.md) for plan/OS/region-qualified quotas, slots, runtime support, and timeout qualifications. Flex is Linux-only; this guide's Consumption track uses Linux. For Linux Consumption retirement and target selection, follow the [migration decision path](../../../reference/platform-limits.md#runtime-support-and-linux-consumption-migration). Tutorial runtime pins and configured scale caps are examples, not platform limits.
+
 | Feature | Consumption (Y1) | Flex Consumption (FC1) | Premium (EP) | Dedicated (ASP) |
 |---------|:-----------------:|:----------------------:|:------------:|:----------------:|
 | Scale to zero | Yes | Yes | No | No |
 | VNet integration | No | Yes | Yes | Yes (tier dependent) |
-| Deployment slots | Limited | No | Yes | Yes |
 | Always warm instances | No | Optional | Yes | Yes |
 | Billing model | Per execution | Per execution | Prewarmed instances | Reserved plan |
-| Recommended Java runtime | 17 | 17 | 17 or 21 | 17 or 21 |
 
 ## Tutorial Tracks
 

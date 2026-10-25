@@ -31,10 +31,11 @@ flowchart TD
     Q1 -->|No| Q2{"Predictable monthly cost?"}
     Q1 -->|Yes| Q3{"Scale to zero when idle?"}
 
-    Q2 -->|"Pay only when running"| CONS["Consumption (Y1)"]
+    Q2 -->|"Pay only when running"| FLEX["Flex Consumption (FC1)"]
+    Start -.->|Existing or Windows-dependent app| CONS["Consumption (Y1)"]
     Q2 -->|"Fixed monthly budget"| DEDI["Dedicated (App Service)"]
 
-    Q3 -->|Yes| FLEX["Flex Consumption (FC1)"]
+    Q3 -->|Yes| FLEX
     Q3 -->|"No — always warm"| Q4{"Need deployment slots?"}
 
     Q4 -->|Yes| PREM["Premium (EP)"]
@@ -50,13 +51,12 @@ flowchart TD
 
 ## Plan Comparison at a Glance
 
+Use [Platform Limits](../../../reference/platform-limits.md) for plan/OS/region-qualified quotas, slots, runtime support, and timeout qualifications. Flex is Linux-only; Windows-dependent PowerShell code needs compatibility assessment before migration. For Linux Consumption retirement and target selection, follow the [migration decision path](../../../reference/platform-limits.md#runtime-support-and-linux-consumption-migration). Tutorial runtime pins and configured scale caps are examples, not platform limits.
+
 | Feature | Consumption (Y1) | Flex Consumption (FC1) | Premium (EP) | Dedicated (ASP) |
 |---------|:-----------------:|:----------------------:|:------------:|:----------------:|
 | **Scale to zero** | ✅ | ✅ | ❌ (min 1 instance) | ❌ |
 | **VNet integration** | ❌ | ✅ | ✅ | ✅ (Standard+) |
-| **Deployment slots** | ✅ (Windows only) | ❌ | ✅ | ✅ (Standard+) |
-| **Default timeout** | 5 min | 30 min | 30 min | 30 min |
-| **PowerShell version** | 7.4 | 7.4 | 7.4 (7.6 preview, Windows) | 7.4 (7.6 preview, Windows) |
 | **Managed dependencies** | ✅ | ❌ (bundle `Modules`) | ✅ | ✅ |
 | **OS** | Windows / Linux | Linux only | Windows / Linux | Windows / Linux |
 
