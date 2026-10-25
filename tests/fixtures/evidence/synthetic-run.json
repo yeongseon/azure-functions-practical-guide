@@ -1,0 +1,16 @@
+{
+  "fixture_notice": "SYNTHETIC evaluator input; not an Azure capture or execution claim",
+  "run_id": "synthetic-historical-run",
+  "captured_at": "2025-01-01T00:05:00Z",
+  "execution": {"attempted": true, "blocked": false, "failed": false, "finished": true},
+  "window": {"start": "2025-01-01T00:00:00Z", "end": "2025-01-01T00:04:00Z"},
+  "assertions": [
+    {"id": "collection", "role": "control", "predicate": "equals", "signal": "collection", "expected": "healthy", "counter": "broken"},
+    {"id": "alternative", "role": "discriminating", "predicate": "equals", "signal": "cause", "expected": "fault", "counter": "alternative"}
+  ],
+  "events": [
+    {"run_id": "synthetic-historical-run", "timestamp": "2025-01-01T00:01:00Z", "signal": "collection", "value": "healthy"},
+    {"run_id": "synthetic-historical-run", "timestamp": "2025-01-01T00:02:00Z", "signal": "cause", "value": "fault"}
+  ],
+  "verdict": "PASS"
+}
