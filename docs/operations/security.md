@@ -109,6 +109,8 @@ WORKSPACE_ID="/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RG/providers/Micro
 
 [Inferred] For a security audit, review sensitive settings privately for Key Vault references rather than direct secrets. Check host, deployment, content, and binding connections against the canonical [storage authentication guidance](../platform/storage-connectivity.md#2-authentication-vs-network-two-independent-axes); use its [read-only settings precheck](../platform/storage-connectivity.md#read-only-settings-precheck) to collect setting names without exposing values in shared evidence.
 
+Check supported identity-based connections to access services without storing connection secrets in configuration, using the canonical [host storage authentication guidance](../platform/storage-connectivity.md#host-storage-authentication-including-flex) for settings and plan caveats.
+
 ## When to Use
 Use this runbook in these cases:
 
