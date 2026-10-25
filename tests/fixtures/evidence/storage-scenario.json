@@ -1,0 +1,42 @@
+{
+  "scenario_id": "host-storage-rbac-versus-network",
+  "definition_notice": "OFFLINE PREDECLARATION, not retained Azure evidence; no live capture timestamps exist",
+  "execution_status": "NOT_RUN",
+  "hypothesis_status": "NOT_TESTED",
+  "execution": {"attempted": false, "blocked": false, "failed": false, "finished": false},
+  "events": [],
+  "scope": {
+    "plan": "Flex Consumption FC1",
+    "os": "Linux",
+    "runtime": "Functions v4 / Python v2 programming model; exact versions captured at execution",
+    "workload": "one timer every minute, use_monitor=true, run_on_startup=false; no storage bindings or business data",
+    "target": "AzureWebJobsStorage host Blob storage using a dedicated managed identity",
+    "deployment": "separate lab-owned deployment account and identity, fixed Flex deployment container",
+    "fault": "remove exactly one run-owned Storage Blob Data Owner assignment on the host account; retain diagnostic Table permission",
+    "recovery": "restore exactly the captured host assignment properties; no code publish or network change",
+    "prerequisite": "isolated approved lab topology; existing Flex reference template shares account/identity and is not eligible unchanged",
+    "not_applicable": ["binding data storage workload", "Azure Files", "durable business output", "other plans/OS", "independent reproduction"]
+  },
+  "bounds": {"phase_seconds": 600, "probe_interval_seconds": 30, "probe_timeout_seconds": 15, "telemetry_wait_seconds": 600, "telemetry_retry_seconds": 60, "restart_per_phase": 1},
+  "normalization": "Review mapping.json against exact raw fields, operation, selected identity, endpoint, event window and run ID. Copy assertions unchanged into a timestamped bundle only after collection. Expected/counter values are derived classifications, never primary captures. Absence or a 403 alone is not a discriminator.",
+  "identity": "Retain source/archive, actual built package and dependency digests separately, plus deployment-to-runtime activation correlation. Keep the same deployed bytes and timer schedule through fault/recovery; unknown built identity invalidates the artifact control.",
+  "assertions": [
+    {"id": "baseline", "role": "control", "predicate": "equals", "signal": "baseline.readiness", "expected": "host-listener-and-ten-timer-successes", "counter": "baseline-failure"},
+    {"id": "ownership", "role": "control", "predicate": "equals", "signal": "run.ownership", "expected": "isolated-approved-inventory", "counter": "shared-or-unowned"},
+    {"id": "role-boundary", "role": "control", "predicate": "equals", "signal": "run.storage-roles", "expected": "host-target-deployment-and-binding-isolated", "counter": "role-conflation"},
+    {"id": "single-change", "role": "control", "predicate": "equals", "signal": "fault.config-diff", "expected": "one-host-assignment-only", "counter": "other-drift"},
+    {"id": "artifact", "role": "control", "predicate": "equals", "signal": "run.artifact", "expected": "same-built-package-activated", "counter": "artifact-drift"},
+    {"id": "collection", "role": "control", "predicate": "equals", "signal": "run.collection", "expected": "host-and-storage-diagnostics-correlated", "counter": "diagnostics-unavailable"},
+    {"id": "network-context", "role": "control", "predicate": "equals", "signal": "run.probe-context", "expected": "app-path-and-selected-host-identity", "counter": "different-context"},
+    {"id": "failure-isolation", "role": "control", "predicate": "equals", "signal": "fault.failure-isolation", "expected": "one-layer-with-reviewed-alternatives", "counter": "mixed-failures"},
+    {"id": "dns", "role": "discriminating", "predicate": "equals", "signal": "fault.dns", "expected": "intended-host-endpoint-resolved", "counter": "positive-dns-failure"},
+    {"id": "transport", "role": "discriminating", "predicate": "equals", "signal": "fault.transport", "expected": "intended-host-endpoint-tls-reached", "counter": "positive-path-failure"},
+    {"id": "firewall", "role": "discriminating", "predicate": "equals", "signal": "fault.firewall", "expected": "actual-host-path-permitted", "counter": "correlated-network-denial"},
+    {"id": "rbac", "role": "discriminating", "predicate": "equals", "signal": "fault.authorization", "expected": "selected-host-oauth-operation-denied-by-permissions", "counter": "same-host-operation-authorized"},
+    {"id": "host-symptom", "role": "symptom", "predicate": "equals", "signal": "fault.host-listener", "expected": "positive-host-storage-listener-failure", "counter": "host-listener-ready"},
+    {"id": "response", "role": "supporting", "predicate": "equals", "signal": "fault.response", "expected": "403", "counter": "success"},
+    {"id": "restore", "role": "recovery", "predicate": "equals", "signal": "recovery.config", "expected": "original-network-and-permissions-restored", "counter": "not-restored"},
+    {"id": "recovery", "role": "recovery", "predicate": "equals", "signal": "recovery.readiness", "expected": "host-listener-and-ten-timer-successes", "counter": "restart-only"},
+    {"id": "cleanup", "role": "recovery", "predicate": "equals", "signal": "cleanup.receipt", "expected": "owned-resources-restored-or-deletion-completed", "counter": "acceptance-only"}
+  ]
+}
