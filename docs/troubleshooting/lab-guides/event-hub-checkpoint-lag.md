@@ -65,7 +65,16 @@ content_sources:
 ---
 # Lab Guide: Event Hub Checkpoint Lag on Azure Functions Premium EP1
 
-This lab guide documents a completed Event Hub checkpoint lag experiment on Azure Functions Premium EP1. Every metric in this document comes from a real telemetry window (`2026-04-07 13:12:00` to `13:36:00` UTC) captured from the production-like lab deployment.
+This lab guide retains an Event Hub processing-delay experiment on Azure Functions Premium EP1 from the telemetry window (`2026-04-07 13:12:00` to `13:36:00` UTC). The historical tables and trace samples below are preserved; their event-age measurements do not establish durable checkpoint lag.
+
+!!! warning "Evidence boundary and telemetry correction"
+    [Observed] The retained traces contain batch sequence ranges, processing duration and `backlogAgeSec` (also called `BacklogAgeSeconds` / `backlogAgeSeconds` in telemetry discussions). That age is the oldest available enqueue timestamp in the delivered batch subtracted from the time of logging **after processing**, including any artificial delay. It is not checkpoint age, total unread backlog, or an event count.
+
+    [Not Proven] The former `CheckpointLagEvents=0` custom dimension was a hard-coded placeholder, not a measurement. It must not be used as evidence of zero lag or recovery. The handler reads neither durable checkpoint positions nor Event Hub end positions; missing partition identity also prevents partition-level sequence comparisons.
+
+    Current source omits `CheckpointLagEvents`, emits `EventHubBatch` instead of `CheckpointDelta`, and renames the age fields to `EnqueueAgeSeconds` / `enqueueAgeSec`. Missing enqueue timestamps yield null / `not-measured`, never zero. `MinSequenceNumber` and `MaxSequenceNumber` describe only the delivered batch; `ProcessingMs` is handler duration, and `ArtificialDelayMs` is the configured control, not measured lag.
+
+    This correction is source review and local regression-test verification only. No new Azure run or KQL execution was performed, and the historical evidence window and capture dates have not been refreshed.
 
 ## Portal Walkthrough
 
@@ -100,13 +109,13 @@ Key portal blades for Event Hub checkpoint lag investigation. Captures from a Co
 | Evidence sources | `requests`, `traces`, `AppRequests`, `AppTraces`, function logs |
 
 !!! info "What this lab is designed to prove"
-    With constant ingress (`199 events/sec`), introducing `delayMs=2500` in the Event Hub processor causes checkpoint backlog age to grow sharply, and resetting delay to `0` starts rapid drain without changing Event Hub topology.
+    With constant ingress (`199 events/sec`), introducing `delayMs=2500` in the Event Hub processor is associated with growing delivered-event enqueue age, and resetting delay to `0` restores faster processing without changing Event Hub topology.
 
-    The critical telemetry pattern is: request duration inflation + checkpoint backlog age growth during incident, then fast processing batches and backlog drain during recovery.
+    The critical telemetry pattern is request duration inflation plus enqueue-age growth during incident, then faster batches and decreasing enqueue age during recovery. Durable checkpoint lag requires separate evidence.
 
 ## 1) Background
 
-Event Hub-triggered Azure Functions process batches and checkpoint progress. When batch processing time is short, checkpoint age remains near real time. When batch processing time approaches or exceeds the ingestion cadence, checkpoint age grows and downstream consumers observe stale data.
+Event Hub-triggered Azure Functions process batches and the host checkpoints progress. When processing throughput falls below ingress, delivered events can become older. This handler measures that enqueue age after processing, not the age or position of a durable checkpoint.
 
 This lab uses a controlled delay toggle in `eventhub_lag_processor` to create and then remove sustained processing latency while keeping the same app, namespace, consumer group, partition count, and host batch settings.
 
@@ -118,8 +127,8 @@ flowchart TD
     A[Steady Event Hub ingestion at 199 eps] --> B[Function pulls batches from 4 partitions]
     B --> C[delayMs set to 2500 in processor]
     C --> D[Per-batch processing duration rises]
-    D --> E[Checkpoint writes happen later]
-    E --> F[backlogAgeSec rises from near zero to minutes]
+    D --> E[Delivered events become older]
+    E --> F[Historical backlogAgeSec rises from near zero to minutes]
     F --> G[Operational freshness degrades]
     G --> H[Lag incident declared]
     H --> I[delayMs reset to 0]
@@ -140,9 +149,10 @@ sequenceDiagram
     Prod->>EH: Send events (199 eps)
     EH->>Func: Deliver batch
     Func->>Func: Process batch (delay 0 or 2500)
-    Func->>Store: Checkpoint batchCheckpointFrequency=1
-    Func->>AI: Emit AppRequests + CheckpointDelta traces
-    AI-->>Operator: Duration, backlogAgeSec, batchSize trends
+    Func->>AI: Emit batch trace before handler returns
+    Note over Func,Store: Host manages checkpoints; handler does not read durable position
+    Note over Func,AI: AppRequests records invocation duration; historical trace name was CheckpointDelta
+    AI-->>Operator: Duration, enqueue age, batchSize trends; no checkpoint delta
 ```
 
 ### Experiment phases used in this run
@@ -172,11 +182,11 @@ sequenceDiagram
 1. Premium plans can still accumulate checkpoint lag when handler latency grows.
 2. Errors are not required for lag incidents; slow success paths are enough.
 3. Recovery can appear mixed for one bin because workers still finish delayed batches.
-4. Request duration plus checkpoint traces give a complete causality chain.
+4. Request duration plus batch traces support a processing-delay interpretation, not a measured checkpoint delta.
 
 ## 2) Hypothesis
 
-> In this EP1 deployment, if `eventhub_lag_processor` delay is increased to `2500 ms` while ingress remains `199 eps`, then request duration and checkpoint backlog age increase in the same time window; when delay is reset to `0 ms`, fast batches appear immediately and backlog begins draining without Event Hub topology changes.
+> In this EP1 deployment, if `eventhub_lag_processor` delay is increased to `2500 ms` while ingress remains `199 eps`, then request duration and delivered-event enqueue age increase in the same time window; when delay is reset to `0 ms`, faster batches and decreasing enqueue age appear without Event Hub topology changes. This does not quantify durable checkpoint lag.
 
 ### Proof and disproof criteria
 
@@ -193,7 +203,7 @@ sequenceDiagram
 | Competing hypothesis | Expected if true | Observed evidence | Verdict |
 |---|---|---|---|
 | Producer spike alone | backlog rises without processor latency jump | latency jumps to ~2.5s processing bins | Rejected |
-| Partition imbalance only | one partition drifts while others stay healthy | checkpoint traces show broad lag growth and full-batch processing | Rejected |
+| Partition imbalance only | one partition drifts while others stay healthy | aggregate traces have `partition=unknown`; partition-level behavior cannot be reconstructed | Not proven or excluded |
 | Platform transient only | no deterministic relation to delay toggle | lag growth starts after `13:28:29` and recovery starts after `13:34:26` | Rejected |
 | Handler delay bottleneck | processing and backlog move with delay toggle | exact match in requests and traces | Supported |
 
@@ -205,11 +215,11 @@ flowchart TD
     A[delayMs=0 baseline] --> B[proc ~5-6ms and backlog ~0.1s]
     B --> C[delayMs=2500 set at 13:28:29]
     C --> D[request avg rises to ~2559-2566ms]
-    D --> E[checkpoint avg proc ~2521-2524ms]
+    D --> E[batch avg proc ~2521-2524ms]
     E --> F[avg backlog grows to 63.2s then 105.5s]
     F --> G[delay reset to 0 at 13:34:26]
     G --> H[sub-ms to 303ms initially, then sub-50ms sustained]
-    H --> I[backlog drain observed in sequence progression]
+    H --> I[decreasing delivered-event age; checkpoint delta unknown]
 ```
 
 ## 3) Runbook
@@ -400,6 +410,10 @@ Recovery control timestamp:
 
 ### 3.5 Query conventions used in this lab
 
+Queries A-G and their outputs below are **historical-window queries**, retained with their original `CheckpointDelta`, `backlogAgeSec` and `chk_*` labels for reproducibility. Read every historical "checkpoint backlog age" or "Avg backlog" label as **delivered-event enqueue age in seconds**, and "checkpoint processing" as **batch handler duration in milliseconds**. These labels do not turn the values into checkpoint measurements. Do not coalesce missing values to zero.
+
+For a future run with the corrected source, filter traces on `EventHubBatch` and parse `enqueueAgeSec` as the age field instead of `backlogAgeSec`; `not-measured` must remain null in numeric analysis. The old queries intentionally do not match the new trace schema. No replacement outputs are claimed here. A true lag calculation would need a matched checkpoint provider, partition, consumer group, durable committed sequence and time-aligned end-of-stream sample, none of which this lab handler collects.
+
 !!! note "Application Insights portal KQL conventions"
     Use `requests` and `traces`, `timestamp`, `cloud_RoleName`, `operation_Name`, `message`, and `toreal(duration / 1ms)`.
 
@@ -437,7 +451,7 @@ Expected output from this run:
 | 13:34 | 178 | 1394.4 | 2684.7 | 2796.8 | 14.6 | Mixed recovery (2-minute view) |
 
 !!! tip "How to Read This"
-    The key checkpoint-lag signature is not only high average duration; it is a sustained plateau around the injected delay envelope (`~2.5s`) combined with backlog-age growth in Query B.
+    [Inferred] A sustained plateau around the injected delay envelope (`~2.5s`) combined with enqueue-age growth in Query B supports processing pressure; it does not measure checkpoint lag.
 
 CLI variant using Log Analytics:
 
@@ -456,7 +470,7 @@ az monitor log-analytics query \
 | Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
 
 
-### Query B: Checkpoint trace metrics in 2-minute bins
+### Query B: Historical batch trace metrics in 2-minute bins
 
 Application Insights query:
 
@@ -536,7 +550,7 @@ Expected query output from this run:
 | `7b30e8...` | `unknown` | 465 | 62.4 | 164.3 | 2090.8 | 91.0 |
 
 !!! tip "How to Read This"
-    This aggregate view shows one instance processed all `465` incident batches, with partition reported as `unknown` (expected in this Python v2 single-worker telemetry shape). This confirms the incident behavior is consistently represented in one worker path.
+    [Observed] The retained aggregate shows one instance with `465` incident batches and partition reported as `unknown`. [Not Proven] This does not establish which partitions were processed, exclude partition imbalance, or measure a checkpoint delta.
 
 **Sample trace line (manual inspection):**
 
@@ -820,7 +834,7 @@ flowchart TD
 | 13:34 | 89 | 2542.3 | 2688.5 | 599.7 | 2764.3 | delayed work still draining |
 | 13:35 | 89 | 246.5 | 447.4 | 14.6 | 2796.8 | rapid drain with tail overlap |
 
-### 4.3 Checkpoint telemetry by phase
+### 4.3 Historical batch telemetry by phase
 
 | Phase | Time bin | Batches | Avg backlog (s) | Max backlog (s) | Avg processing (ms) | Avg batch size | Delay range |
 |---|---|---:|---:|---:|---:|---:|---|
@@ -845,8 +859,8 @@ flowchart TD
 |---|---|---|---|
 | Delay control | `0` | `2500` | `0` |
 | Request avg duration | `30.9-43.3 ms` | `1187.1-2565.7 ms` | mixed to `246.5 ms` (1-minute drain bin) |
-| Checkpoint avg processing | `5.5-6.1 ms` | `1127.5-2524.4 ms` | mixed `1343.5 ms` then fast batches |
-| Checkpoint avg backlog | `0.1 s` | `5.5 -> 63.2 -> 105.5 s` | high but draining evidence present |
+| Batch avg processing | `5.5-6.1 ms` | `1127.5-2524.4 ms` | mixed `1343.5 ms` then fast batches |
+| Delivered-event avg enqueue age | `0.1 s` | `5.5 -> 63.2 -> 105.5 s` | high with later decreasing age |
 | Batch size pattern | `50` | `71.5 -> 99.5 -> 100` | mixed with final partial batch of `13` |
 
 ### 4.6 Batch-completion evidence snippets
@@ -932,7 +946,7 @@ gantt
 
 ### Evidence Chain: Why this proves the hypothesis
 
-!!! success "Falsification logic passed"
+!!! note "Historical processing-delay evidence; checkpoint lag remains unproven"
     1. Baseline and incident use the same app, plan, consumer group, and host settings.
 
     2. Delay toggle time and telemetry inflection align: duration and backlog rise right after `13:28:29`.
@@ -941,7 +955,7 @@ gantt
 
     4. Recovery begins immediately after delay reset (`13:34:26`) with mixed-delay bin evidence.
 
-    5. Recovery batches with `delayMs=0` reappear with sharply lower `processingMs` (sub-`50 ms` sustained), proving active draining after control reset.
+    5. Recovery batches with `delayMs=0` reappear with sharply lower `processingMs` (sub-`50 ms` sustained), supporting processing recovery after control reset. With unknown partitions and no durable checkpoint/end positions, ordered drain and zero checkpoint lag remain unproven.
 
     6. No Event Hub topology change is needed to explain behavior change; delay control is sufficient.
 
@@ -960,9 +974,9 @@ Evidence chain matrix:
 | Objective | Query |
 |---|---|
 | Request latency inflation by phase | Query A |
-| Checkpoint backlog and processing by phase | Query B |
+| Delivered-event enqueue age and batch processing by phase | Query B |
 | Incident batch shape and partition detail | Query C |
-| Sequence-level drain progression | Query D |
+| Historical batch ranges and enqueue-age recovery (not ordered partition drain) | Query D |
 | Incident batch completion concentration | Query E |
 | Postmortem aggregate phase summary | Query F |
 | 1-minute recovery progression | Query G |
