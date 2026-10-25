@@ -80,7 +80,7 @@ pie title In-Scope Document Validation Status
 | [Monitoring](../operations/monitoring.md) | ✅ | ✅ Verified | 4/4 | 2026-09-11 |
 | [Opentelemetry](../operations/opentelemetry.md) | ✅ | ✅ Verified | 4/4 | 2026-07-17 |
 | [Recovery](../operations/recovery.md) | ✅ | ✅ Verified | 4/4 | 2026-09-11 |
-| [Retries And Poison Handling](../operations/retries-and-poison-handling.md) | ✅ | ✅ Verified | 4/4 | 2026-09-11 |
+| [Retries And Poison Handling](../operations/retries-and-poison-handling.md) | ✅ | ✅ Verified | 5/5 | 2026-10-25 |
 | [Security](../operations/security.md) | ✅ | ✅ Verified | 4/4 | 2026-09-11 |
 
 ### Troubleshooting
