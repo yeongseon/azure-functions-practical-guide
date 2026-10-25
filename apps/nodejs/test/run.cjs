@@ -15,7 +15,11 @@ if (result.error) throw result.error;
 const count = /^# tests (\d+)$/m.exec(result.stdout);
 const emptyFiles = files.filter(name =>
     result.stdout.includes(`# Subtest: test/${name}\n`)).length;
-if (!count || Number(count[1]) <= emptyFiles) {
+const unexecuted = ['skipped', 'todo', 'cancelled'].reduce((total, name) => {
+    const match = new RegExp(`^# ${name} (\\d+)$`, 'm').exec(result.stdout);
+    return total + Number(match?.[1] ?? 0);
+}, emptyFiles);
+if (!count || Number(count[1]) <= unexecuted) {
     console.error('No tests executed');
     process.exit(1);
 }

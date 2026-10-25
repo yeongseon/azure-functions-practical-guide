@@ -2,12 +2,13 @@
 
 import shutil
 import subprocess
-from fnmatch import fnmatchcase
+import sys
 from pathlib import Path
 from typing import Final
 
 import pytest
 import yaml
+from wcmatch import glob
 
 ROOT: Final = Path(__file__).resolve().parents[1]
 
@@ -50,22 +51,60 @@ def test_reference_workflow_selection(workflow: str, path: str, selected: bool) 
     patterns = config["on"]["pull_request"]["paths"]
     assert all(not pattern.startswith("!") for pattern in patterns)
     # When one representative changed file is matched against the configured paths.
-    matches = any(fnmatchcase(path, pattern) for pattern in patterns)
+    matches = any(glob.globmatch(path, pattern, flags=glob.GLOBSTAR | glob.DOTGLOB)
+                  for pattern in patterns)
     # Then relevant build inputs select CI while unrelated prose/languages do not.
     assert matches is selected
 
 
-@pytest.mark.parametrize("empty_file", [False, True])
-def test_node_runner_rejects_zero_tests(tmp_path: Path, empty_file: bool) -> None:
-    # Given a test directory with no actual node:test cases.
+@pytest.mark.parametrize("source,expected", [
+    (None, 1),
+    ("", 1),
+    ("require('node:test').test.skip('skipped', () => {});", 1),
+    ("require('node:test').test.todo('todo');", 1),
+    ("require('node:test').test('cancelled', { timeout: 25 }, () => new Promise(() => {}));", 1),
+    ("require('node:test').test('failed', () => { throw Error('failure'); });", 1),
+    ("require('node:test').test('passed', () => {});", 0),
+])
+def test_node_runner_exit_status(tmp_path: Path, source: str | None, expected: int) -> None:
+    # Given missing, unexecuted, failing, or passing node:test cases.
     test_dir = tmp_path / "test"
     test_dir.mkdir()
     shutil.copyfile(ROOT / "apps/nodejs/test/run.cjs", test_dir / "run.cjs")
-    if empty_file:
-        (test_dir / "empty.test.js").write_text("", encoding="utf-8")
+    if source is not None:
+        (test_dir / "sample.test.js").write_text(source, encoding="utf-8")
     # When the same runner used by npm test executes it.
     result = subprocess.run(
-        ["node", "test/run.cjs"], cwd=tmp_path, capture_output=True, check=False,
+        ["node", "test/run.cjs"], cwd=tmp_path, capture_output=True, check=False, timeout=15,
     )
-    # Then neither missing files nor an empty suite can report success.
-    assert result.returncode == 1
+    # Then only a successful run with executed tests reports success.
+    assert result.returncode == expected
+
+
+def test_single_star_mutation_drops_nested_python_path() -> None:
+    config = yaml.load(
+        (ROOT / ".github/workflows/python-eventhub-tests.yml").read_text(encoding="utf-8"),
+        Loader=yaml.BaseLoader,
+    )
+    patterns = config["on"]["pull_request"]["paths"]
+    path = "apps/python/config/settings.py"
+    mutated = [pattern.replace("apps/python/**", "apps/python/*") for pattern in patterns]
+    flags = glob.GLOBSTAR | glob.DOTGLOB
+    assert any(glob.globmatch(path, pattern, flags=flags) for pattern in patterns)
+    assert not any(glob.globmatch(path, pattern, flags=flags) for pattern in mutated)
+
+
+def test_import_time_loopback_connection_is_blocked(tmp_path: Path) -> None:
+    shutil.copyfile(ROOT / "tests/conftest.py", tmp_path / "conftest.py")
+    (tmp_path / "test_import.py").write_text(
+        "import socket\nsocket.create_connection(('127.0.0.1', 9), timeout=0.1)\n",
+        encoding="utf-8",
+    )
+    result = subprocess.run(
+        [sys.executable, "-m", "pytest", "--collect-only", "-q",
+         "--disable-socket", "--allow-unix-socket"],
+        cwd=tmp_path, capture_output=True, text=True, check=False, timeout=15,
+    )
+    assert result.returncode == 2
+    assert "SocketBlockedError" in result.stdout
+    assert "ConnectionRefusedError" not in result.stdout
