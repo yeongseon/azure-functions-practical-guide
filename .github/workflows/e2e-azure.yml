@@ -90,6 +90,9 @@ jobs:
         id: preflight
         run: python3 scripts/golden_e2e_guard.py preflight
       # No output can enable this in the current helper; do not remove the preflight blocker.
+      # Enablement gates: F1 verify main-only Environment policy before OIDC creation;
+      # prefer credential-bound main/job_workflow_ref. F2 use a trusted-main guard or
+      # require descent from a pinned harness-approved SHA (see content contract).
       - name: Azure OIDC login (unreachable in this harness)
         if: success() && steps.preflight.outputs.azure_ready == 'true'
         uses: azure/login@a641126d1b8aa4d1fa005f4f92df94a3a4c4c906 # v3.1.0

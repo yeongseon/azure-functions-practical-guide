@@ -1061,14 +1061,34 @@ must complete these **hosted prerequisites; none is asserted to exist**:
     restricted to `main`. Merely naming an Environment in YAML does not protect it;
     GitHub can create an unprotected environment automatically. Reviewers must
     inspect the immutable target SHA before approving.
-- Configure an OIDC federated credential for **this repository's environment**,
+- **F1 — credential creation gate:** before creating any OIDC federated
+    credential, the maintainer **must verify** that the Environment's actual
+    deployment-branch policy permits **only `main`**, not all protected branches
+    or arbitrary branches. Record that hosted verification during enablement
+    review; the workflow job `if` is not a substitute because a branch editor
+    could remove it. Prefer a customized subject claim using `job_workflow_ref`
+    bound to the trusted main workflow, or an equivalent credential-side policy
+    that makes `main` a property of the credential itself. Review and verify the
+    actual claim matching before credential creation; do not assume an
+    environment-only subject binds the branch.
+    Configure trust for **this repository's environment**,
     issuer `https://token.actions.githubusercontent.com`, audience
     `api://AzureADTokenExchange`, subject
     `repo:yeongseon/azure-functions-practical-guide:environment:azure-functions-e2e`.
-    The standard environment subject does not include the branch: enforce `main`
-    through Environment deployment restrictions plus the exact workflow/ref
-    checks, or a separately reviewed customized subject policy. Do not trust forks
+    This standard environment subject alone is **not branch-bound** and is not
+    evidence that F1 is satisfied. The verified main-only Environment policy
+    remains mandatory even with customized credential claims. Do not trust forks
     or a wildcard subject. See [Microsoft Learn OIDC setup](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure-openid-connect).
+- **F2 — trusted guard gate:** before enabling login, resolve the fact that the
+    privileged job currently executes `scripts/golden_e2e_guard.py` from the
+    target-SHA checkout while holding `id-token: write`. Main ancestry alone can
+    admit a weaker historical helper. Run preflight/guard code from a separate
+    trusted checkout of `main`, keeping target scenario code separate, **or**
+    require the target SHA to descend from a pinned, reviewed harness-approved
+    SHA. Implement and regression-test the chosen boundary in a separately
+    reviewed change before removing the inert blocker. This remains unresolved;
+    the current checkout and job conditions do not establish trusted-guard
+    provenance for every historical main commit.
 - Define **environment-scoped variables only**: `AZURE_CLIENT_ID`,
     `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`, `AZURE_E2E_ENABLED=true`, and
     `AZURE_E2E_SCOPE=rg-azf-e2e-<run-id>-<attempt>`. Never define fallback repository
