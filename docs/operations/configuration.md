@@ -146,7 +146,7 @@ az functionapp config appsettings list \
 | `--query` | JMESPath query to filter and format the settings |
 | `--output table` | Formats the output as a table |
 
-Example output:
+Example output (Premium/Dedicated local-package workflow only; Linux Consumption uses a URL and Flex omits the package setting—see the [package matrix](deployment.md#package-configuration-by-plan-and-os)):
 ```text
 Name                                         Value
 -------------------------------------------  ----------------------------------------------

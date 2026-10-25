@@ -28,7 +28,7 @@ flowchart TD
     C --> C1[Azure Files content share]
     C --> C2[WEBSITE_CONTENTAZUREFILECONNECTIONSTRING]
     C --> C3[WEBSITE_CONTENTSHARE]
-    C --> C4[WEBSITE_RUN_FROM_PACKAGE=1]
+    C --> C4[Remote build or external package URL; never local value 1]
 
     D --> D1[functionAppConfig.deployment.storage]
     D --> D2[type=blobContainer]
@@ -220,6 +220,8 @@ Run one scenario at a time, capture behavior, then restore before moving to the 
 4. Confirm trigger startup and execution cadence return to baseline.
 
 ## Quick Verification Script
+The Y1 target is Linux: the verifier accepts an HTTPS package URL or absent package setting with both remote-build flags enabled; it rejects local-package value `1`. This is configuration evidence only, not proof of artifact access or execution. Infrastructure alone leaves the package setting absent until compatible publishing establishes it. Use the [shared matrix and read-only precheck](../../docs/operations/deployment.md#package-configuration-by-plan-and-os). Historical April 2026 snapshots in the lab guide retain the former unsupported `1` as history, not a recovery recipe; corrected guidance has not been live-tested.
+
 Use the helper script after deployment and after each recovery action:
 
 ```bash

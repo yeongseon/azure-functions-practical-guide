@@ -107,7 +107,7 @@ flowchart TD
     FA -.->|System-Assigned MI| ENTRA[Microsoft Entra ID]
     FA --> AI[Application Insights]
 
-    RFP["📦 WEBSITE_RUN_FROM_PACKAGE=1\nNo content share required"] -.- FA
+    RFP["📦 Local ZIP alternative: WEBSITE_RUN_FROM_PACKAGE=1\nDo not force for remote build"] -.- FA
     ALWAYS_ON["⚙️ Always On: true\nFixed capacity"] -.- FA
 
     style FA fill:#5c2d91,color:#fff
@@ -359,11 +359,13 @@ az functionapp config set \
 
 #### B-5: App Settings (connection string or identity-based)
 
+This Python track uses remote build: do not preconfigure `WEBSITE_RUN_FROM_PACKAGE=1`. The template's local-package option applies only to a separately built ready-to-run ZIP; reconcile that setting before remote publish. See the [package matrix](../../../../operations/deployment.md#package-configuration-by-plan-and-os).
+
 ```bash
 az functionapp config appsettings set \
   --name "$APP_NAME" \
   --resource-group "$RG" \
-  --settings "WEBSITE_RUN_FROM_PACKAGE=1" "FUNCTIONS_WORKER_RUNTIME=python"
+  --settings "FUNCTIONS_WORKER_RUNTIME=python"
 ```
 
 | CLI element | Explanation |

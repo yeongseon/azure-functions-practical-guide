@@ -11,6 +11,10 @@
 // - Uses AzureWebJobsStorage__accountName (identity-based, no connection string)
 // - Runtime/content settings at site creation; complete appsettings reapplied after RBAC
 // - Identity-based host storage is activated only by the post-RBAC appsettings resource
+// - No package setting until supported publishing establishes a real artifact URL.
+//   Linux Y1 does not support the local-package value 1. Remote build manages its output.
+//   Reapplying appsettings replaces deployment-managed keys; coordinate a compatible republish.
+//   https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
 //
 // Deploy:
 // az deployment group create --template-file infra/consumption/main.bicep --parameters baseName=myapp
@@ -127,10 +131,6 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
           value: contentShareName
         }
         {
-          name: 'WEBSITE_RUN_FROM_PACKAGE'
-          value: '1'
-        }
-        {
           name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
           value: appInsightsModule.outputs.connectionString
         }
@@ -157,7 +157,6 @@ resource functionAppSettings 'Microsoft.Web/sites/config@2024-04-01' = {
     AzureWebJobsStorage__credential: 'managedidentity'
     WEBSITE_CONTENTAZUREFILECONNECTIONSTRING: storageConnectionString
     WEBSITE_CONTENTSHARE: contentShareName
-    WEBSITE_RUN_FROM_PACKAGE: '1'
     APPLICATIONINSIGHTS_CONNECTION_STRING: appInsightsModule.outputs.connectionString
     APPINSIGHTS_INSTRUMENTATIONKEY: appInsightsModule.outputs.instrumentationKey
   }

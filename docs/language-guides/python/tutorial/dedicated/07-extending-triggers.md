@@ -110,7 +110,7 @@ flowchart TD
     FA -.->|System-Assigned MI| ENTRA[Microsoft Entra ID]
     FA --> AI[Application Insights]
 
-    RFP["📦 WEBSITE_RUN_FROM_PACKAGE=1\nNo content share required"] -.- FA
+    RFP["📦 Local ZIP alternative: WEBSITE_RUN_FROM_PACKAGE=1\nDo not force for remote build"] -.- FA
     ALWAYS_ON["⚙️ Always On: true\nFixed capacity"] -.- FA
 
     style FA fill:#5c2d91,color:#fff

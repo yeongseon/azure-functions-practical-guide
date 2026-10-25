@@ -10,7 +10,7 @@ content_sources:
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
     - type: mslearn-adapted
-      url: https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
     - type: mslearn-adapted
@@ -27,7 +27,7 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
-        - https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package
+        - https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
         - https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model
         - https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
@@ -40,7 +40,7 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
-        - https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package
+        - https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
         - https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model
         - https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
@@ -53,7 +53,7 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
-        - https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package
+        - https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
         - https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model
         - https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
@@ -66,7 +66,7 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
-        - https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package
+        - https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
         - https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model
         - https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
@@ -79,7 +79,7 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
-        - https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package
+        - https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
         - https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model
         - https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
@@ -87,6 +87,9 @@ content_sources:
 # Lab Guide: Code Storage Verification (All Hosting Plans)
 
 This Level 3 lab guide validates how Azure Functions stores and loads code across all four hosting plans used in this repository: Consumption (Y1), Flex Consumption (FC1), Premium (EP), and Dedicated (ASP). The lab proves the deployment-storage model, required app settings, identity and RBAC dependencies, and the failure signatures you should expect when one plan is misconfigured. It also gives deterministic recovery procedures and evidence standards for production-grade triage.
+
+!!! warning "Current guidance versus historical evidence"
+    The Y1 app in this lab is **Linux Consumption**: `WEBSITE_RUN_FROM_PACKAGE=1` is unsupported. Current instructions follow the [package matrix](../../operations/deployment.md#package-configuration-by-plan-and-os): remote build manages package output, or a locally built artifact uses its actual uploaded HTTPS URL. Content-share provisioning and identity-based host storage are independent. The April 2026 experiment log, its sanitized snapshots, and derived observations below are **historical**, including the former Y1 value `1`; they are not a supported baseline or recovery recipe. The corrected instructions and verifier have only official-source/static verification, not a new Azure run. Do not infer current platform requirements or causal proof from that historical configuration.
 
 ---
 
@@ -137,7 +140,7 @@ Code loading behavior in Azure Functions differs by hosting plan, and this diffe
 
 | Hosting plan | Code storage / deployment model | How runtime locates code | Primary config surface | Common operator mistake |
 |---|---|---|---|---|
-| Consumption (`Y1`) | Azure Files SMB content share + package mounting | Content share + package setting | `siteConfig.appSettings` | Removing content settings because identity-based storage is enabled |
+| Linux Consumption (`Y1`) | Remote-build output or external package URL; content-share provisioning is separate | Actual package URL after publish | App settings + supported publishing workflow | Forcing local-package value `1` or confusing host identity with package access |
 | Flex Consumption (`FC1`) | Blob container deployment package (`functionAppConfig`) | Deployment storage descriptor in `functionAppConfig` | `functionAppConfig.deployment.storage` + app settings | Adding legacy `WEBSITE_CONTENT*` settings and assuming they are required |
 | Premium (`EP`) | Azure Files SMB content share | Content share path resolved at startup | `siteConfig.appSettings` + VNet/site networking | Expecting Flex-style deployment config to exist |
 | Dedicated (`ASP`) | App Service filesystem with zip/package run model | Package mount on web app filesystem | `siteConfig.appSettings` + alwaysOn | Assuming content share settings are required |
@@ -146,12 +149,12 @@ Code loading behavior in Azure Functions differs by hosting plan, and this diffe
 ```mermaid
 flowchart TD
     A[Function App Plan Detection] --> B{Hosting Plan}
-    B -->|Y1 Consumption| C[Azure Files content share + WEBSITE_RUN_FROM_PACKAGE=1]
+    B -->|Linux Y1| C[Remote build or external package URL; never local value 1]
     B -->|FC1 Flex| D[Blob container deployment via functionAppConfig]
     B -->|EP Premium| E[Azure Files content share]
     B -->|ASP Dedicated| F[App Service filesystem + WEBSITE_RUN_FROM_PACKAGE=1]
 
-    C --> G[Host startup validates Azure Files path]
+    C --> G[Verify package access separately from content provisioning]
     D --> H[Host startup validates deployment.storage blobContainer]
     E --> I["Host startup validates Azure Files path with VNet/site topology"]
     F --> J[Host startup validates package mount and alwaysOn behavior]
@@ -163,7 +166,7 @@ This table is the core verification contract for this lab and mirrors the Bicep 
 
 | Plan | `AzureWebJobsStorage__accountName` | `AzureWebJobsStorage__credential` | `AzureWebJobsStorage__clientId` | `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING` | `WEBSITE_CONTENTSHARE` | `WEBSITE_RUN_FROM_PACKAGE` | `functionAppConfig.deployment.storage.type` | `functionAppConfig.deployment.storage.authentication.type` | Identity | Required RBAC roles |
 |---|---|---|---|---|---|---|---|---|---|---|
-| Consumption (`Y1`) | Required | `managedidentity` | Not used | Required | Required | `1` | Not used | Not used | SystemAssigned | Storage Blob Data Owner, Storage Account Contributor, Storage Queue Data Contributor, Storage File Data Privileged Contributor |
+| Linux Consumption (`Y1`) | Required | `managedidentity` | Not used | Required by this template | Required by this template | Absent before publish; deployment-managed/external URL after publish, never `1` | Not used | Not used | SystemAssigned | Storage Blob Data Owner, Storage Account Contributor, Storage Queue Data Contributor, Storage File Data Privileged Contributor |
 | Flex Consumption (`FC1`) | Required | `managedidentity` | Required (UAI client ID) | Not used | Not used | Not used | `blobContainer` | `UserAssignedIdentity` | UserAssigned | Storage Blob Data Owner, Storage Account Contributor, Storage Queue Data Contributor |
 | Premium (`EP`) | Required | `managedidentity` | Not used | Required | Required | Not set in template | Not used | Not used | SystemAssigned | Storage Blob Data Owner, Storage Account Contributor, Storage Queue Data Contributor, Storage File Data Privileged Contributor |
 | Dedicated (`ASP`) | Required | `managedidentity` | Not used | Not used | Not used | `1` | Not used | Not used | SystemAssigned | Storage Blob Data Owner, Storage Account Contributor, Storage Queue Data Contributor |
@@ -394,7 +397,7 @@ az deployment group create \
 Validation focus:
 
 - Azure Files content share settings exist.
-- `WEBSITE_RUN_FROM_PACKAGE` is set to `1`.
+- `WEBSITE_RUN_FROM_PACKAGE` is absent in the infrastructure template. Publish with the supported remote-build workflow or an actual uploaded artifact URL; never set `1` on Linux Y1. Before code deployment, package readiness is not established.
 - Identity is system-assigned and includes file-role capability.
 
 #### 3.3.2 Flex Consumption (FC1)
@@ -809,7 +812,7 @@ dependencies
 | Y1 | `AzureWebJobsStorage__credential` | `managedidentity` | `az functionapp config appsettings list --resource-group "$RG_Y1" --name "$APP_Y1" --output json` |
 | Y1 | `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING` | Present and non-empty | `az functionapp config appsettings list --resource-group "$RG_Y1" --name "$APP_Y1" --output json` |
 | Y1 | `WEBSITE_CONTENTSHARE` | Present and non-empty | `az functionapp config appsettings list --resource-group "$RG_Y1" --name "$APP_Y1" --output json` |
-| Y1 | `WEBSITE_RUN_FROM_PACKAGE` | `1` | `az functionapp config appsettings list --resource-group "$RG_Y1" --name "$APP_Y1" --output json` |
+| Linux Y1 | `WEBSITE_RUN_FROM_PACKAGE` | Deployment-managed/external HTTPS URL, or absent while configured for remote build; never `1`. Verify artifact access and actual execution separately. | [Read-only package precheck](../../operations/deployment.md#package-configuration-precheck-read-only) |
 | Y1 | Identity | `SystemAssigned` | `az functionapp identity show --resource-group "$RG_Y1" --name "$APP_Y1" --output json` |
 | Y1 | Storage access mode | `allowPublicAccess=true`, `allowSharedKeyAccess=true` | `az storage account show --resource-group "$RG_Y1" --name "$STORAGE_Y1" --query "{allowPublicAccess: allowBlobPublicAccess, allowSharedKeyAccess: allowSharedKeyAccess}" --output json` |
 | FC1 | `AzureWebJobsStorage__accountName` | Storage account name | `az functionapp config appsettings list --resource-group "$RG_FC1" --name "$APP_FC1" --output json` |
@@ -1742,7 +1745,7 @@ flowchart TD
 
 ### 3.12 Recover from induced failures
 
-Restore each plan to baseline values.
+Restore only demonstrated drift from a captured, supported baseline. The historical experiment snapshots are not configuration templates. For Linux Y1, complete the [read-only precheck and recovery precautions](../../operations/deployment.md#existing-linux-consumption-package-changes); never restore `1`.
 
 #### 3.12.1 Recovery: Consumption (`Y1`)
 
@@ -1753,7 +1756,7 @@ Y1_CONN_STRING="$(az storage account show-connection-string --resource-group "$R
 az functionapp config appsettings set \
   --resource-group "$RG_Y1" \
   --name "$APP_Y1" \
-  --settings "WEBSITE_CONTENTSHARE=$Y1_CONTENT_SHARE" "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING=$Y1_CONN_STRING" "WEBSITE_RUN_FROM_PACKAGE=1"
+  --settings "WEBSITE_CONTENTSHARE=$Y1_CONTENT_SHARE" "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING=$Y1_CONN_STRING"
 
 az functionapp restart \
   --resource-group "$RG_Y1" \
@@ -1987,25 +1990,11 @@ az functionapp restart \
 | Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
 
 
-#### 3.12.11 Recovery: Scenario K (`Y1`) restore `WEBSITE_RUN_FROM_PACKAGE=1`
+#### 3.12.11 Recovery: Scenario K (`Y1`) restore the supported deployment workflow
 
-```bash
-az functionapp config appsettings set \
-  --resource-group "$RG_Y1" \
-  --name "$APP_Y1" \
-  --settings "WEBSITE_RUN_FROM_PACKAGE=1"
+Do not restore the historical value `1` on Linux Consumption. For an established external-URL workflow, restore only the captured valid artifact URL and its access configuration, then follow the official restart/trigger-sync requirements. For remote build, recover through the retained project's supported publish pipeline without manually forcing package mode. See the [Linux Consumption tutorial](../../language-guides/python/tutorial/consumption/02-first-deploy.md) and [scoped recovery precautions](../../operations/deployment.md#existing-linux-consumption-package-changes). An app previously using unsupported `1` must not be blindly converted in place to an external URL; validate a replacement app and cutover plan. No new recovery result is claimed here.
 
-az functionapp restart \
-  --resource-group "$RG_Y1" \
-  --name "$APP_Y1"
-```
-
-| CLI element | Explanation |
-|---|---|
-| Command(s) | `az functionapp config appsettings set`, `az functionapp restart` |
-| Key flags | `--resource-group`, `--name`, `--settings` |
-| Variables | `$RG_Y1`, `$APP_Y1` |
-| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+After restoring proven content-share drift in section 3.12.1, use this same package recovery procedure; restoring share settings alone does not redeploy a missing package. Verify host readiness, discovery and actual trigger execution before declaring recovery.
 
 
 #### 3.12.12 Recovery: Scenario L (`FC1`) restore `AzureWebJobsStorage__clientId`
@@ -2267,6 +2256,8 @@ az group delete \
 
 
 ## 4) Experiment Log
+
+**Historical April 2026 evidence:** all snapshots, result tables and conclusions in this section describe the original run, not the corrected Linux Y1 baseline. The former package value `1` is retained only as historical evidence. These results have not been rerun with the corrected workflow and do not validate an unsupported setting.
 
 ### 4.1 Artifact inventory
 
@@ -2834,7 +2825,7 @@ graph TD
 - [How to use identity-based connections in Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection)
 - [Azure Functions networking options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)
 - [Azure Functions Flex Consumption plan](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan)
-- [Run your functions from a package file in Azure](https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package)
+- [Package-based deployment for Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push)
 - [Monitor Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)
 - [Application Insights telemetry data model](https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model)
 - [Assign Azure roles using Azure CLI](https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli)

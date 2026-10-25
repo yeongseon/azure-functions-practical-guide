@@ -151,7 +151,7 @@ flowchart TD
     ```
 
     !!! note "WEBSITE_RUN_FROM_PACKAGE"
-        Dedicated plans automatically set `WEBSITE_RUN_FROM_PACKAGE=1` for zip-based deployments. This setting is not required on Consumption or Flex Consumption.
+        For a ready-to-run local ZIP on Dedicated, configure `WEBSITE_RUN_FROM_PACKAGE=1`; it is not an automatic plan-wide default. Do not manually force this setting when requesting remote build. Windows Consumption also supports `1`, Linux Consumption uses a package URL, and Flex must not receive the setting. See the [package matrix](../../../../operations/deployment.md#package-configuration-by-plan-and-os).
 
 4. Review Dedicated-specific configuration notes.
 

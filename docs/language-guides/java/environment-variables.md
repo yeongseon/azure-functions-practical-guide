@@ -45,7 +45,7 @@ flowchart TD
 | `JAVA_HOME` | Java runtime location | Managed by platform | Do not override on Azure |
 | `JAVA_OPTS` | JVM startup options | `-Xmx512m -XX:+UseG1GC` | Heap size, GC, and diagnostic flags |
 | `FUNCTIONS_WORKER_JAVA_LOAD_APP_LIBS` | Load app libraries before worker libs | `true` | Useful for dependency conflict resolution |
-| `WEBSITE_RUN_FROM_PACKAGE` | Run from immutable package | `1` | Recommended for production deployments |
+| `WEBSITE_RUN_FROM_PACKAGE` | Run from immutable package | Plan-dependent | `1` only for local-package Windows Consumption/Premium/Dedicated; URL for Linux Consumption; absent on Flex and not manually forced for remote build. See [package matrix](../../operations/deployment.md#package-configuration-by-plan-and-os). |
 
 ### JVM Tuning via JAVA_OPTS
 

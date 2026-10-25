@@ -155,7 +155,7 @@ flowchart TD
     | Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
 
 
-    Do not set `WEBSITE_RUN_FROM_PACKAGE=1` for this Premium track when you use Azure Files content share settings (`WEBSITE_CONTENTSHARE` and `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING`).
+    Do not manually set `WEBSITE_RUN_FROM_PACKAGE` when requesting remote build in this Premium track. Azure Files content-share settings are independent; they do not prohibit local-package value `1` for a ready-to-run ZIP. See the [package matrix](../../../../operations/deployment.md#package-configuration-by-plan-and-os).
 
 3. Configure host storage as a connection string.
 

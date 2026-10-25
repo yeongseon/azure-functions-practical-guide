@@ -120,7 +120,7 @@ flowchart TD
     FA -.->|System-Assigned MI| ENTRA[Microsoft Entra ID]
     FA --> AI[Application Insights]
 
-    RFP["📦 WEBSITE_RUN_FROM_PACKAGE=1\nNo content share required"] -.- FA
+    RFP["📦 Local ZIP alternative: WEBSITE_RUN_FROM_PACKAGE=1\nDo not force for remote build"] -.- FA
     ALWAYS_ON["⚙️ Always On: true\nFixed capacity"] -.- FA
 
     style FA fill:#5c2d91,color:#fff
@@ -224,7 +224,7 @@ func azure functionapp publish $APP_NAME --python
 | `func azure functionapp publish $APP_NAME` | Deploys the local project to Azure. |
 | `--python` | Sets the application language. |
 
-Dedicated deployment here uses remote Oryx build via `func azure functionapp publish --python` with `WEBSITE_RUN_FROM_PACKAGE=1`. Unlike Consumption and Premium content share scenarios, B1 does not require `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING`.
+Dedicated deployment here requests remote Oryx build via `func azure functionapp publish --python`. Do not manually set `WEBSITE_RUN_FROM_PACKAGE=1` when requesting remote build; let the supported deployment workflow manage its output. The `1` mode is an alternative for a ready-to-run locally built ZIP, not a remote-build prerequisite. Azure Files provisioning and host-storage authentication are separate concerns; this B1 workflow does not require `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING`. See the [package matrix](../../../../operations/deployment.md#package-configuration-by-plan-and-os). Existing diagram labels showing `1` describe the local-package alternative, not this remote-build step. This correction is official-source/static review only, not a new Azure test.
 
 !!! warning "Set placeholder trigger settings before first request"
     The reference app includes EventHub, Queue, and Timer triggers that need connection settings. If these are missing, the function host may report errors. Set placeholder values immediately after first deploy:
