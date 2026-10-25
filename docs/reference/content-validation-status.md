@@ -7,7 +7,7 @@ content_sources:
 
 # Content Validation Status
 
-This page tracks `content_validation` metadata for **in-scope factual-claim documents** under `docs/best-practices/`, `docs/operations/`, `docs/platform/`, `docs/troubleshooting/`. Pages outside this scope — navigation indexes (`docs/best-practices/index.md`, `docs/operations/index.md`, `docs/platform/index.md`, `docs/troubleshooting/first-10-minutes/index.md`, `docs/troubleshooting/index.md`, `docs/troubleshooting/playbooks/index.md`), reference-lookup KQL packs and lab guides (`docs/troubleshooting/kql/`, `docs/troubleshooting/lab-guides/`), tutorials, language guides, and start-here landing pages — are not counted here, even when legacy `content_validation` blocks exist on them (the cleanup tool removes those blocks; see `scripts/remove_out_of_scope_validation.py`). See `AGENTS.md` §Text Content Validation for the full policy and `scripts/lib/content_scope.py` for the executable scope definition.
+This page tracks `content_validation` metadata for **in-scope factual-claim documents** under `docs/best-practices/`, `docs/operations/`, `docs/platform/`, `docs/troubleshooting/`. Pages outside this scope — navigation indexes (`docs/best-practices/index.md`, `docs/operations/index.md`, `docs/platform/index.md`, `docs/troubleshooting/first-10-minutes/index.md`, `docs/troubleshooting/index.md`, `docs/troubleshooting/playbooks/index.md`), reference-lookup KQL packs and lab guides (`docs/troubleshooting/kql/`, `docs/troubleshooting/lab-guides/`), tutorials, language guides, and start-here landing pages — are not counted here, even when legacy `content_validation` blocks exist on them (the cleanup tool removes those blocks; see `scripts/remove_out_of_scope_validation.py`). See [Text Content Validation](../contributing/content-contract.md#text-content-validation) for the full policy and `scripts/lib/content_scope.py` for the executable scope definition.
 
 ## Summary
 
@@ -15,7 +15,7 @@ This page tracks `content_validation` metadata for **in-scope factual-claim docu
 
 | Content Type | Total | Verified | Pending | Unverified | No Metadata |
 |---|---:|---:|---:|---:|---:|
-| Mermaid Diagrams | 567 | 567 | 0 | 0 | 0 |
+| Mermaid Diagrams | 568 | 568 | 0 | 0 | 0 |
 | In-Scope Factual-Claim Documents | 64 | 64 | 0 | 0 | 0 |
 
 !!! success "All In-Scope Documents Verified"

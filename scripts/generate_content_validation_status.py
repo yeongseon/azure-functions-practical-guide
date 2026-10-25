@@ -162,8 +162,9 @@ def _scope_summary_lines() -> list[str]:
         "landing pages — are not counted here, even when legacy "
         "`content_validation` blocks exist on them (the cleanup tool "
         "removes those blocks; see "
-        "`scripts/remove_out_of_scope_validation.py`). See `AGENTS.md` "
-        "§Text Content Validation for the full policy and "
+        "`scripts/remove_out_of_scope_validation.py`). See "
+        "[Text Content Validation](../contributing/content-contract.md#text-content-validation) "
+        "for the full policy and "
         "`scripts/lib/content_scope.py` for the executable scope definition.",
     ]
 
@@ -411,7 +412,7 @@ def main() -> None:
             file=sys.stderr,
         )
         print(
-            "Tautological claims are forbidden by AGENTS.md \u00a7Text Content "
+            "Tautological claims are forbidden by docs/contributing/content-contract.md \u00a7Text Content "
             "Validation (Agent Rule 3). Edit each offending file to replace the "
             "placeholder claim with a verifiable factual assertion about Azure "
             "Functions behavior, or — if the page does not actually contain "
