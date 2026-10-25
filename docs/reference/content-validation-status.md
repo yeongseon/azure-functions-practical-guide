@@ -111,7 +111,7 @@ pie title In-Scope Document Validation Status
 | [Scaling Issues](../troubleshooting/first-10-minutes/scaling-issues.md) | ✅ | ✅ Verified | 1/1 | 2026-04-12 |
 | [Timeout Execution Limit](../troubleshooting/playbooks/triggers/timeout-execution-limit.md) | ✅ | ✅ Verified | 1/1 | 2026-04-12 |
 | [Triggers Not Firing](../troubleshooting/first-10-minutes/triggers-not-firing.md) | ✅ | ✅ Verified | 1/1 | 2026-04-12 |
-| [Troubleshooting Method](../troubleshooting/methodology/troubleshooting-method.md) | ✅ | ✅ Verified | 1/1 | 2026-04-12 |
+| [Troubleshooting Method](../troubleshooting/methodology/troubleshooting-method.md) | ✅ | ✅ Verified | 2/2 | 2026-10-25 |
 
 ## Validation Categories
 
