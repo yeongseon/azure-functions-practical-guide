@@ -75,11 +75,15 @@ def evidence_binding(data: Mapping[str, YAMLValue], root: Path) -> str:
 
 def assess_method(value: YAMLValue, as_of: date, root: Path) -> MethodAssessment:
     """Keep reported outcome, date freshness, and evidence trust independent."""
-    if not isinstance(value, dict):
+    if value is None:
         return MethodAssessment(
             "no_data", "—", "unknown", "unknown", "No method record"
         )
-    result = str(value.get("result", "not_tested"))
+    if not isinstance(value, dict):
+        return MethodAssessment(
+            "invalid", "—", "invalid", "unknown", "Malformed method record"
+        )
+    result = str(value.get("result", "invalid"))
     raw_date = value.get("last_tested")
     stamp = str(raw_date) if raw_date is not None else "—"
     tools = (
@@ -122,9 +126,18 @@ def extract_tutorial_info(filepath: Path, docs_dir: Path) -> Tutorial:
     text = filepath.read_text(encoding="utf-8")
     match = re.match(r"^---\s*\n(.*?)\n---", text, re.DOTALL)
     metadata = yaml.load(match[1], Loader=MetadataLoader) if match else {}
-    validation = metadata.get("validation", {}) if isinstance(metadata, dict) else {}
+    validation = (
+        metadata.get("validation", {})
+        if isinstance(metadata, dict)
+        else "Malformed frontmatter"
+    )
     if not isinstance(validation, dict):
-        validation = {}
+        validation = {method: "Malformed validation container" for method in METHODS}
+    else:
+        validation = {
+            method: ("Malformed method record" if value is None else value)
+            for method, value in validation.items()
+        }
     rel = filepath.relative_to(docs_dir)
     return Tutorial(
         rel.as_posix(),
@@ -138,6 +151,8 @@ def extract_tutorial_info(filepath: Path, docs_dir: Path) -> Tutorial:
 
 def tutorial_status(methods: list[MethodAssessment]) -> str:
     """Summarize historical claims conservatively; method rows retain detail."""
+    if any(method.freshness == "invalid" for method in methods):
+        return "Invalid metadata"
     if any(method.result == "fail" for method in methods):
         return "Failed claim"
     if any(method.freshness == "stale" for method in methods):
@@ -146,6 +161,4 @@ def tutorial_status(methods: list[MethodAssessment]) -> str:
         method.result == "pass" and method.freshness == "fresh" for method in methods
     ):
         return "Fresh pass claim"
-    if any(method.freshness == "invalid" for method in methods):
-        return "Invalid metadata"
     return "Not tested / no data"

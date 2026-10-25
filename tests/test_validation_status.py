@@ -9,6 +9,7 @@ import pytest
 
 from scripts.generate_validation_status import generate_dashboard
 from scripts.lib.tutorial_validation import (
+    YAMLValue,
     assess_method,
     extract_tutorial_info,
     tutorial_status,
@@ -102,6 +103,62 @@ def test_matching_locator_does_not_prove_provenance(tmp_path: Path) -> None:
     # Then provenance, environment and retained captures still need human scrutiny.
     assert result.trust == "unverified"
     assert data["evidence_ref"] in result.binding
+
+
+def test_absent_anchor_with_matching_run_is_rejected(tmp_path: Path) -> None:
+    (tmp_path / "run.md").write_text("# Run\nrun_id: expected\n")
+    data = {
+        "result": "pass",
+        "last_tested": "2026-10-25",
+        "run_id": "expected",
+        "evidence_ref": "run.md#absent",
+    }
+    result = assess_method(data, AS_OF, tmp_path)
+    assert "mismatch" in result.binding
+    assert result.trust == "unverified"
+
+
+@pytest.mark.parametrize("value", [[], "malformed", 42, False, {}])
+def test_malformed_method_shape_is_invalid(value: YAMLValue) -> None:
+    result = assess_method(value, AS_OF, ROOT)
+    assert result.freshness == "invalid"
+
+
+@pytest.mark.parametrize(
+    "outcome,stamp",
+    [("pass", "2026-10-25"), ("pass", "2026-04-12"), ("fail", "2026-10-25")],
+)
+def test_invalid_metadata_precedes_other_method(outcome: str, stamp: str) -> None:
+    valid = assess_method({"result": outcome, "last_tested": stamp}, AS_OF, ROOT)
+    invalid = assess_method({"result": "pass", "last_tested": "bad"}, AS_OF, ROOT)
+    assert tutorial_status([valid, invalid]) == "Invalid metadata"
+
+
+@pytest.mark.parametrize(
+    "frontmatter",
+    [
+        "validation: []",
+        "validation: malformed",
+        "validation: null",
+        "validation: 42",
+        "validation: false",
+        "[]",
+        "malformed",
+        "validation:\n  az_cli: []",
+        "validation:\n  az_cli: {}",
+        "validation:\n  az_cli: null",
+    ],
+)
+def test_malformed_container_is_counted_in_report(
+    tmp_path: Path, frontmatter: str
+) -> None:
+    path = tmp_path / "language-guides/python/tutorial/consumption/01-local-run.md"
+    path.parent.mkdir(parents=True)
+    path.write_text(f"---\n{frontmatter}\n---\n")
+    tutorial = extract_tutorial_info(path, tmp_path)
+    report = generate_dashboard([tutorial], AS_OF)
+    assert "| Invalid metadata | 1 |" in report
+    assert "| Not tested / no data | 0 |" in report
 
 
 @pytest.mark.parametrize("outcome", ["fail", "not_tested", "unexpected"])
