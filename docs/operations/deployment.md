@@ -9,6 +9,10 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to
   diagrams:
     - id: deployment-workflow
       type: flowchart
@@ -121,6 +125,31 @@ az functionapp show \
 | `--query` | JMESPath query to filter specific properties |
 | `--output table` | Formats the output as a table |
 
+### Package configuration precheck (read-only)
+
+Before changing an existing Linux Consumption app, confirm its OS and the linked plan's SKU; `kind` alone does not distinguish Y1 from Premium. These commands only read configuration and suppress package URLs, SAS tokens, and connection strings:
+
+```bash
+PLAN_ID=$(az functionapp show --resource-group "$RG" --name "$APP_NAME" --query serverFarmId --output tsv)
+az appservice plan show --ids "$PLAN_ID" --query "{sku:sku.name,tier:sku.tier,reserved:reserved}" --output table
+az functionapp config appsettings list --resource-group "$RG" --name "$APP_NAME" \
+    --query "{packageSettingPresent:contains([].name, 'WEBSITE_RUN_FROM_PACKAGE'),localPackage:contains([?name=='WEBSITE_RUN_FROM_PACKAGE'].value, '1'),remoteBuild:[?name=='SCM_DO_BUILD_DURING_DEPLOYMENT' || name=='ENABLE_ORYX_BUILD'].{name:name,value:value}}" \
+    --output json
+```
+
+| Command/Parameter | Purpose |
+| --- | --- |
+| `az functionapp show` | Read the app's linked plan ID. |
+| `az appservice plan show` | Confirm SKU (`Y1` for Consumption) and Linux reservation. |
+| `az functionapp config appsettings list` | Inspect package mode and remote-build flags without printing secrets. |
+| `--resource-group` | Target resource group. |
+| `--name` | Target app name. |
+| `--ids` | Linked plan resource ID. |
+| `--query` | Select safe metadata; package presence is not proof of a valid URL. |
+| `--output` | Return TSV for the local variable, table for the SKU, JSON for the flags. |
+
+Also retain the exact current package reference (including prior absence), artifact hash, build method, identity/access configuration, and settings in an access-controlled release record using the [playbook baseline](../troubleshooting/playbooks/deployment-failures.md#4-what-to-check-first). Inspect any URL privately for artifact existence, authorization and SAS expiry; do not paste it into tickets or CI logs. No command in this precheck changes deployment mode or tests Azure runtime behavior.
+
 ## Portal Walkthrough
 
 ### Deployment Center
@@ -152,6 +181,26 @@ Choose deployment method by governance level, release frequency, and plan capabi
     - Prefer remote build when dependency compilation is platform-sensitive.
 
 ## Procedure
+
+### Package configuration by plan and OS
+
+For code-based apps, use this matrix before selecting a publish command. It summarizes [official package guidance](https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push) and [deployment technologies](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies), not measured deployment results.
+
+| Hosting plan / OS | Deployment mechanism | Package setting | Read-only content behavior |
+| --- | --- | --- | --- |
+| Windows Consumption (Y1) | ZIP deployment through supported tools | `WEBSITE_RUN_FROM_PACKAGE=1` for a ready-to-run local package | Package mounts as read-only `wwwroot`; no in-place edits. |
+| Linux Consumption (Y1) | Remote build through supported tools, or external URL for a locally built package | Never `1`. For remote build, do not manually set it; the deployment process manages the output package URL. For a locally built package, use the actual uploaded artifact URL. | Runs from a package with read-only `wwwroot`; not a writable deployment directory. |
+| Flex Consumption (FC1, Linux) | Managed package deployment (OneDeploy) through Core Tools, Azure CLI or supported CI/CD | Do **not** set `WEBSITE_RUN_FROM_PACKAGE`; use `functionAppConfig.deployment.storage` | Runs from the deployment container's package by default; read-only `wwwroot`. |
+| Premium (EP, Windows/Linux) | ZIP deployment; remote build where needed | `1` for a ready-to-run local package; do not manually set the package setting for remote build | Read-only `wwwroot` when running from package. |
+| Dedicated (Windows/Linux) | ZIP deployment; remote build where needed | `1` for a ready-to-run local package; do not manually set the package setting for remote build | Read-only `wwwroot` when running from package. |
+
+For Linux remote build on Consumption, Premium or Dedicated, the supported tooling configures `SCM_DO_BUILD_DURING_DEPLOYMENT=true` and `ENABLE_ORYX_BUILD=true`; do not combine a remote-build request with manually forced package mode. Flex requests remote build as a deployment parameter instead, not these app settings. External package URL workflows require manual trigger synchronization; updating bytes at the same URL also requires a restart. Keep runtime-generated files outside `wwwroot` and use durable external storage for persisted data.
+
+**Infrastructure boundary:** `infra/consumption/main.bicep` provisions Linux Y1 without a package setting until a compatible deployment establishes one; it does not upload code or invent a URL. Its Azure Files content-share settings are provisioning concerns, separate from package selection. `AzureWebJobsStorage__*` configures identity-based host storage, not package-blob authorization or remote build. The template retains creation-time runtime/content settings and activates identity-based host storage only after RBAC. Its later appsettings resource replaces the complete collection: reapplying this infrastructure to an already-published app can remove deployment-managed settings. Review the captured baseline and plan an approved compatible redeployment rather than applying it as an incident repair.
+
+Follow the language-specific deployment tracks: [Linux Consumption](../language-guides/python/tutorial/consumption/02-first-deploy.md), [Flex](../language-guides/python/tutorial/flex-consumption/02-first-deploy.md), [Premium](../language-guides/python/tutorial/premium/02-first-deploy.md), and [Dedicated](../language-guides/python/tutorial/dedicated/02-first-deploy.md). Python examples target Linux; use the [official Windows Consumption configuration](https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push#consumption-package-configuration) for Windows apps.
+
+**Verification boundary:** the matrix and package/storage guidance were checked against Microsoft Learn on 2026-10-25. Bicep compilation and consistency gates are static checks, not Azure deployment, authorization, trigger, or latency tests. No new Azure-tested tutorial result is claimed; retain each tutorial's own validation metadata.
 
 ### Deployment workflow
 <!-- diagram-id: deployment-workflow -->
@@ -186,6 +235,8 @@ Use this for operator-driven release or emergency recovery deployment.
     Prefer pipeline deployment for repeatability and auditability.
 
 ### Deploy with zip artifact
+Use a ready-to-run artifact for the compatible workflow in the matrix. Linux Consumption source projects needing remote build must use the plan tutorial's remote-build procedure instead. On Flex, supported tools select managed package deployment, not the classic Kudu ZIP API; request remote build explicitly when required.
+
 ```bash
 az functionapp deployment source config-zip \
     --resource-group <resource-group> \
@@ -304,6 +355,10 @@ az functionapp deployment slot swap \
 | `--target-slot production` | Specifies the target slot for cutover |
 
 ### Flex Consumption deployment specifics
+Deployment storage is configured on the site resource through `properties.functionAppConfig.deployment.storage`: `type: blobContainer`, the container `value`, and `authentication` (for example, a user-assigned identity with its `userAssignedIdentityResourceId`). Check the container, authentication identity, storage RBAC, and network reachability separately from host storage. See [Configure deployment settings](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to#configure-deployment-settings).
+
+Use **Settings > Deployment settings** to inspect the package location, and **Diagnose and solve problems > Flex Consumption Deployment** for deployment history, package status and recommendations. Flex does not provide the classic Kudu console or its `/api/deployments` diagnostics. A deployment endpoint on an `scm` host is not a Kudu management surface; let supported tools select the API. Uploading a blob directly into the container does not deploy it. Retain release artifacts outside that container because its current package is overwritten.
+
 1. **No deployment slots**
     - Deploy directly to production.
     - Use smaller and more frequent releases.
@@ -443,6 +498,13 @@ Expected output:
 4. Failure and duration metrics remain within baseline.
 
 ## Rollback / Troubleshooting
+### Existing Linux Consumption package changes
+
+Complete the [read-only precheck](#package-configuration-precheck-read-only) before approving any change. Removing the invalid `1` from this template is **not** a live-app migration. Microsoft Learn says an existing app using `WEBSITE_RUN_FROM_PACKAGE=1` cannot be converted in place to an external package URL: use a new app configured for that workflow, validate it in isolation, and plan traffic/trigger cutover without duplicate consumers. Do not blindly replace `1` with a URL on a running app.
+
+For a supported URL-based app, retain the last-known-good artifact and accessible reference before a release. Recovery restores that artifact through the established deployment workflow and only proven configuration drift; account for package identity permissions or SAS expiry, restart requirements, and manual trigger sync for external URLs. If switching to remote build, plan a compatible republish rather than merely deleting the setting and assuming code will appear. Linux Consumption has no slot swap-back: use an approved recovery window, validate discovery and real trigger completion, and keep the old app/artifact until cutover is accepted. Never restore unsupported `1` as a Linux Y1 repair; escalate if the prior working workflow cannot be established.
+
+### Recovery sequence
 Preferred sequence:
 
 1. Capture current state and diff it against captured pre-release known-good state using the [playbook's scoped recovery procedure](../troubleshooting/playbooks/deployment-failures.md#8-immediate-mitigations).
@@ -528,3 +590,5 @@ verify runtime compatibility, and validate trigger dependency identity/access.
 - [Deploy Azure Functions with GitHub Actions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions)
 - [Deployment slots in Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots)
 - [Functions Core Tools reference](https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local)
+- [Deployment technologies and remote build](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies)
+- [Configure Flex deployment settings](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to#configure-deployment-settings)

@@ -62,14 +62,15 @@ Choose the deployment method that matches plan capabilities. Incorrect method se
 
 | Plan | Preferred methods | Avoid | Why this matters |
 |---|---|---|---|
-| Consumption (Y1) | ZIP deploy, run-from-package | Mutable in-place edits | Instance file systems are ephemeral; immutable package mount is safer |
-| Flex Consumption (FC1) | `func azure functionapp publish`, One Deploy | Kudu/SCM-based flows | Flex has no Kudu/SCM endpoint |
+| Windows Consumption (Y1) | ZIP deploy + local package (`1`) | Mutable in-place edits | Package mounts read-only |
+| Linux Consumption (Y1) | Remote build or uploaded artifact URL | Local-package value `1` | Package configuration is URL-based, not the Windows local-package mode |
+| Flex Consumption (FC1) | Supported tooling with managed package deployment (OneDeploy) | Classic Kudu console/ZIP API assumptions | Deployment storage uses `functionAppConfig.deployment.storage`, not a package app setting |
 | Premium (EP) | ZIP deploy + run-from-package, slots | Direct edits in production slot | Supports staging and swap with warm capacity |
 | Dedicated | ZIP deploy + run-from-package, slots, Kudu/SCM, remote build where needed | Ad-hoc server-side edits after release | Drift between instances and slots creates non-reproducible incidents |
 
 ??? info "Plan capability checkpoint"
     - Y1 supports deployment slots but only **2 total including production**.
-    - FC1 does **not** support deployment slots and does **not** expose Kudu/SCM.
+    - FC1 does **not** support deployment slots or a classic Kudu console. Its tool-managed deployment endpoint is not a Kudu diagnostic surface.
     - EP and Dedicated support full slot workflows.
 
 ## Portal Walkthrough
@@ -94,9 +95,11 @@ This section shows the Deployment Center blade for a live Function App (Consumpt
 
 ## Recommended Practices
 
-### Why run-from-package should be default
+### Prefer plan-compatible immutable package deployment
 
 Run-from-package mounts a built artifact as a read-only package. This removes in-place mutation risk and keeps all instances on the same bits.
+
+Use the shared [package matrix](../operations/deployment.md#package-configuration-by-plan-and-os) for exact setting and read-only behavior by plan/OS, and the [Flex storage and diagnostics procedure](../operations/deployment.md#flex-consumption-deployment-specifics) instead of a Kudu path. Remote-build requests must not force `WEBSITE_RUN_FROM_PACKAGE`, even on Premium/Dedicated. For an existing Linux Y1 app, follow the [read-only precheck](../operations/deployment.md#package-configuration-precheck-read-only) and [migration/recovery precautions](../operations/deployment.md#existing-linux-consumption-package-changes), not an unconditional settings update.
 
 ### Operational benefits
 
@@ -284,7 +287,7 @@ flowchart TD
 
 | Mistake | Impact | Fix | Severity |
 |---|---|---|---|
-| Deploying without run-from-package | Mutable file system drift and inconsistent instances | Enforce package-based immutable deployment in pipeline policy | High |
+| Forcing the same package setting on every plan | Linux Y1 or Flex deployment failure | Enforce the plan/OS matrix; let remote build manage its output | High |
 | Forgetting slot-sticky settings | Swap causes environment drift (wrong endpoints/secrets) | Mark environment-specific settings as slot-sticky and validate before swap | High |
 | Skipping staging validation before swap | Production incidents immediately after cutover | Require health + smoke + telemetry gates for slot promotion | High |
 | Publishing to FC1 with wrong deployment assumptions | Failed release due to Kudu/SCM dependency or unsupported storage/deploy path | Use FC1-supported deployment methods (`func publish` or One Deploy) and validate deployment storage configuration early | Medium-High |
@@ -316,7 +319,7 @@ flowchart TD
 |---|---|---|---|
 | Pre-deploy | Plan-specific deployment method compatibility confirmed | Architecture checklist and pipeline config review | Method matches hosting plan capabilities |
 | Pre-deploy | Artifact built once and versioned/signed | CI artifact metadata and provenance record | Single immutable artifact selected for release |
-| Pre-deploy | `WEBSITE_RUN_FROM_PACKAGE` strategy confirmed | `az functionapp config appsettings list --resource-group "<resource-group>" --name "<app-name>"` | Setting present where plan supports package mount |
+| Pre-deploy | Package strategy confirmed | Shared read-only deployment precheck | `1` only for supported local-package workflows; actual URL for Linux Y1; no setting on Flex or manually forced setting for remote build |
 | Pre-deploy | Slot-sticky settings list validated | `az functionapp config appsettings list --resource-group "<resource-group>" --name "<app-name>" --slot "staging"` | Environment-specific settings marked sticky |
 | Pre-deploy | Rollback artifact/config snapshot exists | Release manifest and config snapshot store | Last-known-good artifact and config retrievable |
 | During deploy | Deploy to staging slot or isolated FC1 preprod app | Pipeline deploy job | Deployment succeeded without runtime startup errors |
@@ -349,6 +352,10 @@ flowchart TD
 - [Platform: Hosting](../platform/hosting.md)
 - [Platform: Scaling](../platform/scaling.md)
 - [Troubleshooting Playbooks](../troubleshooting/playbooks/index.md)
+- [Linux Consumption deployment tutorial](../language-guides/python/tutorial/consumption/02-first-deploy.md)
+- [Flex deployment tutorial](../language-guides/python/tutorial/flex-consumption/02-first-deploy.md)
+- [Premium deployment tutorial](../language-guides/python/tutorial/premium/02-first-deploy.md)
+- [Dedicated deployment tutorial](../language-guides/python/tutorial/dedicated/02-first-deploy.md)
 
 ## Sources
 
