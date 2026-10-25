@@ -30,13 +30,10 @@ when creating an issue through the API or CLI rather than a form:
 | Out of scope | Explicit boundaries that keep this task focused |
 | References | Relevant local issues/PRs, Microsoft Learn sources, and genuine upstream dependencies with their relationship explained; write `None` if absent |
 
-Follow the repository-specific issue-evidence contract introduced by
-[#141 / PR #142](https://github.com/yeongseon/azure-functions-practical-guide/pull/142);
-it owns the detailed context/duplicate preflight and post-save field checks, not
-a second workflow here. Search existing open and closed issues before creating
-work; extend a matching issue rather than opening another tracker. After every
-save, fetch the issue and verify the title, body, and actual labels. Forms are an
-authoring aid, not enforcement for API/CLI submissions.
+Follow [Issue Scope](#issue-scope) for the repository-specific evidence contract,
+duplicate/context preflight, and post-save field checks established by merged
+PR #142 (#141). Extend matching work rather than opening another tracker. Forms
+are an authoring aid, not enforcement for API/CLI submissions.
 
 ### Labels and Triage
 
