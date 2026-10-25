@@ -39,7 +39,7 @@ for plan in consumption flex-consumption premium dedicated; do
         WEBSITE_CONTENTAZUREFILECONNECTIONSTRING:
           "[format(\u0027DefaultEndpointsProtocol=https;AccountName={0};AccountKey={1};EndpointSuffix={2}\u0027, variables(\u0027storageAccountName\u0027), listKeys(resourceId(\u0027Microsoft.Storage/storageAccounts\u0027, variables(\u0027storageAccountName\u0027)), \u00272023-05-01\u0027).keys[0].value, environment().suffixes.storage)]"}
       else {} end) +
-     (if ($plan == "consumption" or $plan == "dedicated") then
+     (if $plan == "dedicated" then
        {WEBSITE_RUN_FROM_PACKAGE: "1"} else {} end)) as $creation_settings |
     (if $plan == "flex-consumption" then
        $monitoring + {AZURE_FUNCTIONS_ENVIRONMENT: "production", TELEMETRY_MODE: "basic", LOG_LEVEL: "INFO",

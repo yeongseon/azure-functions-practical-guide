@@ -83,3 +83,5 @@ jobs:
               fi
             done
             bash scripts/validate_durable_table_rbac.sh
+            bash scripts/validate_package_config.sh --self-test
+            bash scripts/validate_package_config.sh
