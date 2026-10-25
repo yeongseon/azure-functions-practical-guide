@@ -38,7 +38,7 @@ pie title In-Scope Document Validation Status
 | [Durable Functions](../platform/durable-functions.md) | ✅ | ✅ Verified | 5/5 | 2026-07-05 |
 | [Fixed Outbound Nat](../platform/networking-scenarios/fixed-outbound-nat.md) | ✅ | ✅ Verified | 3/3 | 2026-09-11 |
 | [Functions Vs App Service](../platform/functions-vs-app-service.md) | ✅ | ✅ Verified | 4/4 | 2026-09-11 |
-| [Hosting](../platform/hosting.md) | ✅ | ✅ Verified | 4/4 | 2026-09-11 |
+| [Hosting](../platform/hosting.md) | ✅ | ✅ Verified | 4/4 | 2026-10-25 |
 | [Index](../platform/architecture/index.md) | ✅ | ✅ Verified | 4/4 | 2026-09-11 |
 | [Index](../platform/networking-scenarios/index.md) | ✅ | ✅ Verified | 3/3 | 2026-09-11 |
 | [Networking](../platform/networking.md) | ✅ | ✅ Verified | 3/3 | 2026-09-11 |
@@ -48,7 +48,7 @@ pie title In-Scope Document Validation Status
 | [Reliability](../platform/reliability.md) | ✅ | ✅ Verified | 4/4 | 2026-09-11 |
 | [Scaling](../platform/scaling.md) | ✅ | ✅ Verified | 3/3 | 2026-09-11 |
 | [Security](../platform/security.md) | ✅ | ✅ Verified | 4/4 | 2026-09-11 |
-| [Storage Connectivity](../platform/storage-connectivity.md) | ✅ | ✅ Verified | 5/5 | 2026-07-16 |
+| [Storage Connectivity](../platform/storage-connectivity.md) | ✅ | ✅ Verified | 5/5 | 2026-10-25 |
 | [Storage Service Endpoint](../platform/networking-scenarios/storage-service-endpoint.md) | ✅ | ✅ Verified | 4/4 | 2026-07-16 |
 | [Triggers And Bindings](../platform/triggers-and-bindings.md) | ✅ | ✅ Verified | 4/4 | 2026-09-11 |
 
