@@ -15,7 +15,7 @@ from unittest.mock import Mock, patch
 import azure.functions as func
 import pytest
 from azure.identity import DefaultAzureCredential
-from azure.storage.blob import BlobServiceClient
+from azure.storage.blob import BlobProperties, BlobServiceClient, ContainerClient
 
 ROOT: Final = Path(__file__).resolve().parents[1]
 EXAMPLES: Final = [
@@ -49,19 +49,43 @@ def example(request: pytest.FixtureRequest) -> ModuleType:
     return module
 
 
-@pytest.mark.parametrize("example", EXAMPLES, indirect=True)
-def test_complete_examples_index_without_injected_names(example: ModuleType) -> None:
+@pytest.mark.parametrize(("example", "expected_routes"), [
+    (EXAMPLES[0], [("get_data", "data", ("GET",))]),
+    (EXAMPLES[1], [
+        ("create_item", "items", ("POST",)),
+        ("delete_item", "items/{item_id}", ("DELETE",)),
+        ("get_item", "items/{item_id}", ("GET",)),
+        ("list_items", "items", ("GET",)),
+        ("update_item", "items/{item_id}", ("PUT",)),
+    ]),
+    (EXAMPLES[2], [("list_blobs", "blobs", ("GET",))]),
+], indirect=["example"])
+def test_complete_examples_index_without_injected_names(
+    example: ModuleType, expected_routes: list[tuple[str, str, tuple[str, ...]]],
+) -> None:
     # Given a complete Markdown example with no test-provided bp/func/app globals.
     # When the real SDK indexes its registered blueprint.
     functions = example.__dict__["app"].get_functions()
-    # Then at least one HTTP endpoint is discoverable.
-    assert functions
-    assert all(function.get_trigger().type == "httpTrigger" for function in functions)
+    routes = []
+    for function in functions:
+        trigger, = (
+            binding for binding in function.get_bindings_dict()["bindings"]
+            if binding["type"] == "httpTrigger"
+        )
+        routes.append((
+            function.get_function_name(), trigger["route"],
+            tuple(sorted(method.value for method in trigger["methods"])),
+        ))
+    # Then every handler has exactly its documented route and HTTP methods.
+    assert sorted(routes) == expected_routes
 
 
 @pytest.mark.parametrize("example", [EXAMPLES[0]], indirect=True)
-def test_connection_client_is_reused(example: ModuleType) -> None:
+def test_connection_client_is_reused(
+    example: ModuleType, monkeypatch: pytest.MonkeyPatch,
+) -> None:
     # Given a synthetic upstream response at the external HTTP seam.
+    monkeypatch.delenv("UPSTREAM_URL", raising=False)
     session = example.__dict__["session"]
     upstream = Mock()
     upstream.json.return_value = {"value": 42}
@@ -123,15 +147,14 @@ def test_blob_identity_client_is_cached(
     monkeypatch.setenv("STORAGE_ACCOUNT_NAME", "examplestorage")
     credential = Mock(spec=DefaultAzureCredential)
     client = Mock(spec=BlobServiceClient)
-    client.get_container_client.return_value.list_blobs.return_value = [
-        Mock(name="blob", size=7),
-    ]
-    client.get_container_client.return_value.list_blobs.return_value[0].name = "demo.txt"
+    container = Mock(spec=ContainerClient)
+    client.get_container_client.return_value = container
+    container.list_blobs.return_value = [BlobProperties(name="demo.txt", **{"Content-Length": 7})]
     request = func.HttpRequest("GET", "http://localhost:7071/api/blobs", body=b"")
     # When two requests use the documented lazy client factory.
     with patch.dict(example.__dict__, {
-            "DefaultAzureCredential": Mock(return_value=credential),
-            "BlobServiceClient": Mock(return_value=client),
+            "DefaultAzureCredential": Mock(spec=DefaultAzureCredential, return_value=credential),
+            "BlobServiceClient": Mock(spec=BlobServiceClient, return_value=client),
     }):
         responses = [example.__dict__["list_blobs"](request) for _ in range(2)]
         example.__dict__["DefaultAzureCredential"].assert_called_once_with()
