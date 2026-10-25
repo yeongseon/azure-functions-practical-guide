@@ -1,7 +1,7 @@
 name: Documentation Correction
 description: Report incorrect, outdated, or unclear documentation.
 title: "docs: "
-labels: []
+labels: [needs-triage]
 body:
   - type: markdown
     attributes:
@@ -9,6 +9,8 @@ body:
         Describe the issue in this guide and explain why any external project
         or source is relevant. Use this repository's evidence and completion criteria.
         See [Issue Scope](https://github.com/yeongseon/azure-functions-practical-guide/blob/main/AGENTS.md#issue-scope).
+        Follow [CONTRIBUTING.md](https://github.com/yeongseon/azure-functions-practical-guide/blob/main/CONTRIBUTING.md#issue-lifecycle) for titles, required sections, and triage.
+        Maintainers retain `needs-triage` until validity, duplicates, scope, type, backlog-relative priority, and size are checked. Triaged work needs one `priority:critical/high/medium/low` and one `size: XS/S/M/L/XL` label; missing labels are a maintainer prerequisite, not automatic enforcement.
   - type: input
     id: summary
     attributes:
@@ -20,7 +22,7 @@ body:
   - type: textarea
     id: details
     attributes:
-      label: Details
+      label: Context
       description: Explain what is wrong or unclear and what readers might misunderstand.
       placeholder: Describe the current wording and the problem it causes.
     validations:
@@ -41,3 +43,25 @@ body:
       placeholder: Replace the current sentence with...
     validations:
       required: false
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance Checklist
+      description: Observable completion criteria; distinguish source review from actual Azure validation.
+      placeholder: "- [ ] The affected claim is corrected against a cited Microsoft Learn source."
+    validations:
+      required: true
+  - type: textarea
+    id: out-of-scope
+    attributes:
+      label: Out of scope
+      description: State which pages or behaviors this correction will not change.
+    validations:
+      required: true
+  - type: textarea
+    id: references
+    attributes:
+      label: References
+      description: Relevant issues, PRs, official sources or upstream dependencies with their local relationship; write None if absent.
+    validations:
+      required: true
