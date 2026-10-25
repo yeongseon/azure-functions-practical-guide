@@ -72,7 +72,16 @@ content_sources:
 ---
 # Lab Guide: Storage Access Failure (AzureWebJobsStorage)
 
-This Level 3 lab guide reproduces a storage authorization failure in Azure Functions and shows how to prove a full failure cascade from `AzureWebJobsStorage` access loss to listener startup failure, host unhealthy state, and zero trigger execution. The experiment uses the lab assets in `labs/storage-access-failure/` and captures evidence with KQL, CLI, and runtime logs.
+This lab separates host-storage authorization from DNS, network-path and Storage
+firewall failures. Use the new controlled scenario below for future execution;
+the older walkthrough and excerpts remain historical material.
+
+!!! warning "Golden scenario: NOT_RUN / NOT_TESTED"
+    No Azure execution, capture, recovery measurement or cleanup receipt exists
+    for this scenario. Synthetic evaluator fixtures are software tests, not Azure
+    evidence. The historical timestamps, role changes, screenshots and verdicts
+    below do not validate it. A **403** or a **successful post-change restart** is
+    supporting evidence, not a unique root cause. Missing logs are not disproof.
 
 ---
 
@@ -166,16 +175,14 @@ In this lab, the failure trigger emulates RBAC drift in identity mode.
 
 ### 1.3 Required data-plane roles for host storage work
 
-For common host flows, these roles are typically required for the identity used by the Function App:
-
-| Storage capability | Typical requirement |
-|---|---|
-| Blob container operations for host artifacts | `Storage Blob Data Owner` |
-| Queue-related runtime operations | `Storage Queue Data Contributor` |
-|| Storage account-level operations | `Storage Account Contributor` |
-|| Lease and table operations for host state | `Storage Table Data Contributor` |
-
-The exact least-privilege set depends on trigger and extension mix, but removing these roles is sufficient to reproduce deterministic startup failures in this lab scenario.
+Use the current [identity permission boundaries](../../platform/storage-connectivity.md#identity-permission-boundaries),
+not the historical four-role removal below. Host operations and the Timer's Blob
+locks require **Storage Blob Data Owner**; diagnostic events additionally use
+**Storage Table Data Contributor**. Queue and management-plane roles depend on
+extensions; they are not universal host prerequisites. Flex deployment's
+**Storage Blob Data Contributor** belongs to the deployment account/identity,
+not a replacement for host permissions. See the official
+[connection role table](https://learn.microsoft.com/en-us/azure/azure-functions/manage-connections#grant-permissions-to-an-identity).
 
 ### 1.4 FC1 behavior and why this scenario appears suddenly
 
@@ -219,6 +226,12 @@ sequenceDiagram
 ---
 
 ## 2) Hypothesis
+
+The following numbered hypothesis and criteria belong to the historical
+walkthrough. They do not constitute the new scenario's predeclaration. In
+particular, absence of authorization errors alone is **INCONCLUSIVE**, not
+falsification. The controlled scenario's assertions below supersede those criteria
+for new runs without changing the historical results.
 
 ### 2.1 Formal hypothesis statement
 
@@ -279,6 +292,185 @@ Expected outcome for this lab run:
 ---
 
 ## 3) Runbook
+
+### Golden scenario: host RBAC versus network failures (offline definition)
+
+[Not Proven] On **Linux Flex Consumption (FC1), Functions v4, Python v2**, removing
+one host-identity Blob permission assignment may prevent host storage access and
+Timer listener startup while DNS, transport and Storage networking still permit
+the path. Restoration may recover that listener and Timer execution. This is a
+narrow host-storage claim, not a test of deployment failure, binding delivery,
+durable business output, other plans/OS or independent reproduction.
+
+Follow the [merged evidence contract](../methodology/troubleshooting-method.md#evidence-and-hypothesis-contract).
+The exact machine-readable predeclaration is
+[`storage-scenario.json`](https://github.com/yeongseon/azure-functions-practical-guide/blob/main/tests/fixtures/evidence/storage-scenario.json);
+[`synthetic-storage-cases.json`](https://github.com/yeongseon/azure-functions-practical-guide/blob/main/tests/fixtures/evidence/synthetic-storage-cases.json)
+and `tests/test_storage_scenario.py` exercise its assertions unchanged through
+`scripts/lib/evidence_eval.py`. No collector, new predicate or firewall automation
+is introduced. The evaluator checks explicit equality, not Azure authenticity;
+review the raw-to-signal mapping before replay.
+
+#### Scope and storage-role matrix
+
+| Plan / OS | Storage consumer | Connection / authorization boundary | Scenario treatment |
+|---|---|---|---|
+| FC1 / Linux | Host Blob storage and Timer locks | `AzureWebJobsStorage__*`; dedicated host managed identity, Storage Blob Data Owner on host account | Only fault target. Keep diagnostic Table permission and its service path intact. |
+| FC1 / Linux | Flex deployment Blob container | `functionAppConfig.deployment.storage`; separate deployment account and selected identity, Storage Blob Data Contributor | Fixed control. Host-role removal must not affect package access. No `WEBSITE_RUN_FROM_PACKAGE` or Kudu/SCM assumptions. |
+| FC1 / Linux | Binding/application data storage | Extension-specific connection, identity and data roles on its own target | No Blob/Queue/Durable binding or customer data in this Timer-only workload. A binding-account denial cannot satisfy host evidence. |
+| FC1 / Linux | Azure Files content | No classic content-share dependency | Not applicable. |
+| Consumption, Premium, Dedicated / supported OS | Host, content, deployment and binding consumers vary | See the authoritative plan and authentication matrices | Not tested by this scenario; do not transplant its networking or role assumptions. |
+
+Use [Storage Connectivity](../../platform/storage-connectivity.md), particularly
+[host versus deployment authentication](../../platform/storage-connectivity.md#deployment-and-binding-authentication-are-separate),
+[plan differences](../../platform/storage-connectivity.md#6-hosting-plan-differences),
+and the [network combination matrix](../../platform/storage-connectivity.md#7-storage-network-settings-combination-matrix).
+A service endpoint normally resolves publicly; a private endpoint should resolve
+to its intended private address. Neither result alone proves authorization.
+
+#### Ownership, topology and validity prerequisites
+
+The `labs/storage-access-failure/` directory currently contains **only a README**,
+not the `main.bicep` named by the historical walkthrough. The existing
+`infra/flex-consumption/main.bicep` shares one storage account and identity between
+host and deployment and grants extra roles: **it is not eligible unchanged** for
+this single-consumer experiment. Do not execute the historical multi-role removal
+as this scenario. An authorized operator must first provision and review a
+disposable topology with separate host and deployment accounts/identities,
+following the existing [Flex infrastructure guide](../../language-guides/python/tutorial/flex-consumption/05-infrastructure-as-code.md)
+and [networking scenarios](../../platform/networking-scenarios/index.md).
+Record the exact resulting recipe/diff; no deployment of that topology is claimed.
+
+Before any write, retain explicit ownership approval, resource inventory and
+restoration plan. All apps, identities, accounts, containers, DNS links, subnet
+rules and diagnostic resources involved must be run-owned. Stop on shared or
+unowned resources, customer data, inherited/group permissions that mask the fault,
+policy restrictions or missing access. Never relax policy or add broad Owner roles.
+Require exactly one effective host Blob Data Owner assignment eligible for removal;
+retain its ID privately and its complete sanitized properties. Do not remove
+permissions from an operator identity or the deployment identity.
+
+Configure host logs, Application Insights and host-account Blob resource logs
+**before baseline**, including successful and failed operations. Keep Table access
+for diagnostic events. Retain sampling/log-level filters, diagnostic settings,
+query permissions and collection health. Require a correlated baseline request
+through the same host and Storage collection paths. Storage logging is collected
+only where authorized and safe: if unavailable, retain the gap and stop short of
+causal support; do not fabricate a matching service record.
+
+Run-owned probes must use the app's DNS/routes and **selected host identity**.
+A diagnostic host with equivalent routes can support network observations but
+its own identity cannot prove host RBAC. Flex has no Kudu console. Establish and
+retain an approved app-context diagnostic mechanism before baseline; if host
+failure makes it unavailable, retain pre-failure captures and collection errors,
+and mark the context control undecidable rather than substituting Cloud Shell.
+
+#### Baseline -> one fault -> recovery procedure
+
+1. **Predeclare:** save the JSON assertions, unique run ID, source commit/dirty diff,
+    recipe digest, region, SKU/OS, configured and observed host/Python versions,
+    extension versions, tools and sanitized connection/identity map. Freeze one
+    Timer running every minute with `use_monitor=true`, `run_on_startup=false`,
+    logging its packaged release marker and scheduled occurrence. Record source
+    archive/lock digests separately from the **actual built deployment package**,
+    resolved dependencies and deployment ID. Correlate the active release through
+    runtime logs and deployment receipt. A source hash is not built-byte identity.
+2. **Baseline/control:** deploy once and establish the baseline configuration,
+    then perform exactly one declared app restart before observation. Record
+    configuration/deployment acceptance and restart request/completion UTC times
+    separately. Anchor the ten-minute phase window and first probe to restart
+    completion; observe host startup and listener readiness
+    separately from ARM `Running`, then require ten distinct successful scheduled
+    occurrences over ten minutes. Capture DNS, TLS/connection outcomes, an approved
+    harmless host-identity Blob operation on a dedicated lab diagnostic object,
+    and Storage request correlation. Keep diagnostic operations identical through
+    all phases; an SDK probe is not by itself a host-lock or listener check.
+    Require all baseline/ownership/context/collection controls before injection.
+3. **Fault:** remove **only the one inventoried run-owned Storage Blob Data Owner
+    assignment** for the selected host identity on the host account. Do not remove
+    Table diagnostic roles, deployment/container roles or binding permissions;
+    do not rotate keys, change connection settings, DNS, routes or firewall policy.
+    Retain exact operation input, UTC start/end, exit code and before/after diff.
+    After the removal operation completes, perform exactly one declared app restart,
+    then observe readiness, probes and scheduled occurrences. Record fault acceptance
+    and restart request/completion UTC times separately; anchor this phase's
+    ten-minute window and first probe to restart completion, as in baseline.
+    Never treat restart as a guarantee of RBAC/cache propagation.
+4. **Collect:** observe each phase for ten minutes; issue network/data probes every
+    30 seconds with a 15-second timeout. Retain every attempt and positive
+    host-storage/listener failure, not just failed HTTP counts or empty queries.
+    Allow ten additional minutes for telemetry, querying every minute. These are
+    experiment limits, not Azure propagation or readiness guarantees. If the
+    removed permission still authorizes the same operation, retain it as valid
+    counter-evidence for this bounded prediction, not proof that RBAC never matters.
+5. **Recovery:** restore exactly the captured assignment's principal, role, scope
+    and conditions. Verify that original networking and permissions match the
+    pre-run snapshot; do not publish/rebuild code or reapply infrastructure.
+    After restoration completes, perform exactly one declared app restart, then
+    observe readiness, probes and scheduled occurrences in that order, as in baseline
+    and fault. Record restoration acceptance and restart request/completion UTC
+    times separately; anchor the ten-minute phase window and first probe to restart
+    completion. Capture successful host storage operations, host startup, listener readiness
+    and ten distinct successful scheduled occurrences over ten minutes. Record
+    elapsed UTC time from restoration acceptance to first observed successful
+    operation and separately first observed Timer success, including restart,
+    polling intervals and ingestion delay. These are **first-observed timings**,
+    not exact permission propagation or exact readiness. No timings exist yet.
+6. **Cleanup:** execute the ownership-restricted receipt below even after an
+    inconclusive or failed run. A restored app alone is not cleanup completion.
+
+Only RBAC is intentionally faulted here. DNS, network-path and Storage firewall
+are competing explanations checked without changing them. A future experiment
+that injects one of those faults needs its own predeclaration/run ID and isolated
+rollback; this definition authorizes no broad firewall/DNS automation.
+
+#### Predeclared observations and disproof
+
+| Stage / signal | Baseline and recovery expectation | Fault expectation / decisive counter-evidence |
+|---|---|---|
+| DNS | Resolver, FQDN, CNAME chain and addresses match chosen host endpoint | Same intended endpoint resolves. Positive lookup failure or wrong-endpoint resolution contradicts an authorization-only explanation; missing DNS capture is undecidable. |
+| Network path | TCP 443/TLS reaches intended host Blob endpoint; retain destination and errors | Same path reaches Storage. Positive timeout/refusal/TLS or route/NSG denial with endpoint correlation is a path alternative, not RBAC evidence. |
+| Storage firewall | Actual caller path is permitted by effective rules; capture private-endpoint approval or service-endpoint subnet rule as applicable | Unchanged policy **plus actual caller/path and matching service evidence** rules out network denial. Correlated denial contradicts the RBAC-only explanation. A policy snapshot or bare HTTP response alone cannot establish this. |
+| Data-plane RBAC | Same harmless operation succeeds using the selected host identity and host account | Correlate OAuth request, service/operation, `x-ms-error-code`, request ID, UTC time and effective role scope/removal. Permission denial with valid identity and permitted network supports RBAC. Same host operation authorized is decisive counter-evidence. SAS permission mismatch, expired credentials, Shared Key or another principal is not this signal. |
+| Host / listener | Positive startup and Timer listener readiness; ten successful distinct scheduled occurrences | Positive host-storage error and listener failure correlated to the target account/operation. Empty `requests`, an HTTP 403 or ARM `Running` alone proves neither listener failure nor cause. |
+| Recovery | Original permissions/network restored; same active built bytes; positive operations and scheduled execution | A successful post-change restart supports recovery only. Restart without restoration, unverified package identity or missing scheduled execution is insufficient. |
+
+`run.ownership`, `baseline.readiness`, `run.storage-roles`, `fault.config-diff`,
+`run.artifact`, `run.collection`, `run.probe-context` and
+`fault.failure-isolation` are **control roles**: invalid/missing prerequisites
+make even apparent decisive counter-evidence **INCONCLUSIVE**. Classify isolation
+only after reviewing all available diagnostics: one coherent layer can contradict
+the prediction; simultaneous DNS/path/authorization failures or unexplained drift
+are mixed failures, not a unique cause. Do not label isolation valid to force a
+verdict. Supporting `fault.response=403` never substitutes for a discriminator.
+
+Map every normalized value to exact raw file/field, operation, identity/endpoint,
+event time and transformation in `mapping.json`. `fault.authorization` needs a
+permission-specific, identity- and request-correlated explanation, not just a
+string match on an error family. See the
+[Storage 403 diagnostic guide](https://learn.microsoft.com/en-us/troubleshoot/azure/azure-storage/blobs/authentication/storage-troubleshoot-403-errors)
+and [separate DNS/transport/authorization evidence](../../platform/storage-connectivity.md#separate-dns-transport-and-authorization-evidence).
+
+**Outcome rules:** NOT_RUN remains NOT_TESTED. A COMPLETE run supports the claim
+only if all assertions and controls hold. Finished collection with missing,
+delayed, conflicting or nondiscriminating data is INCONCLUSIVE. Unfinished
+collection is PARTIAL (or BLOCKED/FAILED as the contract defines), hence NOT_TESTED.
+With valid controls, decisive discriminator counters yield CONTRADICTED even if
+recovery evidence is missing; a conflict within an assertion still makes the run
+INCONCLUSIVE. This preserves the evaluator's merged contradiction precedence.
+Cleanup must still be attempted and its incomplete state disclosed independently
+of the causal verdict.
+
+### Historical walkthrough (not the Golden scenario)
+
+!!! warning "Do not reuse this as the controlled fault recipe"
+    The following walkthrough changes multiple roles and references a nonexistent
+    lab template. Its broader assertions, legacy four-role advice and fixed
+    `70ms`/container-count expectations are not current least-privilege guidance.
+    The unprojected app-settings command can expose secrets: use the current
+    [read-only names-only precheck](../../platform/storage-connectivity.md#read-only-settings-precheck)
+    instead; never retain or publish full setting values. Historical material is
+    preserved for provenance, not promoted to trusted-current evidence.
 
 This runbook is execution-focused and uses long-form CLI flags only.
 
@@ -757,6 +949,61 @@ Expected recovery indicators:
 
 ## 4) Experiment Log
 
+### Golden run identity and retained evidence (no captures yet)
+
+| Field | Current value |
+|---|---|
+| Execution / hypothesis | `NOT_RUN` / `NOT_TESTED` |
+| Claim / trust | Not Proven; offline definition, unverified for Azure |
+| Azure run ID / captured_at | None; no collection attempted |
+| Recovery timing / cleanup receipt | Not available; no resources created |
+| Offline replay | Explicitly synthetic software regression cases only |
+
+Future sanitized captures belong under a fresh run ID **outside test fixtures**.
+This is a layout specification, not an inventory of existing evidence:
+
+```text
+<approved-evidence-root>/<run-id>/
+  identity.json                  # approval, inventory, source/recipe/environment
+  predeclaration.json            # assertions and bounds frozen before writes
+  baseline|fault|recovery/
+    <UTC>-config.json             # role/account map, selectors, rules, diff
+    <UTC>-source-manifest.json / <UTC>-built-manifest.json
+    <UTC>-deployment-activation.json
+    <UTC>-dns.json                # resolver, chain, service, address, context
+    <UTC>-connection.json         # TCP/TLS result, timeout, exit/error detail
+    <UTC>-storage-operation.json  # auth type, operation, status/code, request ID
+    <UTC>-host-listener.json / <UTC>-timer-occurrences.json
+    <UTC>-query.txt / <UTC>-results.json / <UTC>-collection-errors.json
+    <UTC>-storage-resource-logs.json
+    <UTC>-change-receipt.json     # exact target, command, UTC, exit, restore diff
+  mapping.json                   # signal -> raw field, role, transformation
+  evidence.json                  # evaluator input assembled after collection
+  manifest.sha256                # sanitized bytes; retain independently
+  evaluations/<evaluation-id>.json
+  cleanup/<UTC>-receipt.json
+```
+
+Each capture needs run ID, actual UTC `captured_at`, event/query interval, role,
+primary/derived/reported provenance and trust justification. Record query/table
+scope, inputs, log filters/sampling, ingestion/capture times and errors, including
+empty results and bounded waits. Review baseline and recovery collection controls
+before interpreting silence. Derived classifications need their raw inputs;
+an author-entered PASS is not evidence. Record `evaluated_at` separately from
+capture time; Git records prose edit time. Never invent timestamps to make the
+NOT_RUN definition evaluable. Synthetic dates in tests are fictional.
+
+Sanitize before retaining/publication: stable placeholders for account/resource/
+principal IDs, addresses and hostnames; preserve cross-file correlations without
+secrets, tokens, authorization headers, SAS query strings, connection strings or
+customer data. Query only relevant approved Storage logs, never enumerate real
+objects for convenience. Hash final sanitized bytes, keep immutable run artifacts
+and independently retained digests; recollection uses a new run ID. Restricted
+originals stay only in an approved private location, not Git. No historical
+capture or `last_tested` value is refreshed by this offline definition.
+
+### Historical experiment log (unchanged evidence)
+
 This section documents artifact-centered observations and links each finding to hypothesis criteria.
 
 ### 4.1 Artifact inventory
@@ -916,6 +1163,11 @@ Final verdict: **Hypothesis supported**.
 
 ## Expected Evidence
 
+For the Golden scenario, use the predeclared observation table and phase windows
+above. The following fixed patterns/timeline belong only to the historical
+walkthrough, not measured outcomes or proof criteria for a new run. In particular,
+failure to establish the chain is not automatically contradiction.
+
 This section defines the expected observation pattern before, during, and after the induced incident.
 
 ### Before Trigger (Baseline)
@@ -980,6 +1232,31 @@ graph TD
 
 ## Clean Up
 
+### Golden scenario: restoration and ownership-restricted receipt
+
+No cleanup has been executed. A future operator must first restore the one host
+assignment even if collection fails, then compare network rules, DNS links,
+identity attachments/roles and deployment/binding configuration with the approved
+baseline. Retain effective data-plane checks as well as management-state diffs;
+successful role creation alone does not prove access restoration. Stop and
+escalate on unexplained differences rather than changing other resources.
+
+After recovery capture, remove only run-created diagnostic objects and stop only
+run-owned probes. Compare the disposable group's current inventory to its
+ownership receipt before deleting it. If shared/unexpected resources appear, do
+not delete the group: retain the blocker and obtain owner direction. For reused
+approved lab resources, restore the agreed baseline instead. Never modify or
+delete unrelated accounts, customer objects, shared DNS or networking.
+
+The receipt must name sanitized targets, ownership approval, original/restored
+settings and permissions, exact operations, UTC start/end, exit codes and final
+verification results (including errors). Verify deletion **completion**, not
+asynchronous acceptance; retain the final authorized absence/inventory check.
+Cleanup is separate from causality and independent reproduction. A failed receipt
+remains visible even when counter-evidence contradicts the hypothesis.
+
+### Historical cleanup command (not a completion receipt)
+
 ```bash
 az group delete \
   --name "$RG" \
@@ -1001,6 +1278,9 @@ az group delete \
 
 ## See Also
 
+- [Storage connectivity and role boundaries](../../platform/storage-connectivity.md)
+- [Networking scenarios](../../platform/networking-scenarios/index.md)
+- [Evidence and hypothesis contract](../methodology/troubleshooting-method.md#evidence-and-hypothesis-contract)
 - [Lab Guides Hub](../lab-guides/index.md)
 - [KQL Query Library](../kql/index.md)
 - [First 10 Minutes](../first-10-minutes/index.md)
@@ -1009,6 +1289,12 @@ az group delete \
 
 ## Sources
 
+- [Host connections and identity permission table](https://learn.microsoft.com/en-us/azure/azure-functions/manage-connections#grant-permissions-to-an-identity)
+- [Flex deployment storage settings](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to#configure-deployment-settings)
+- [Storage network security](https://learn.microsoft.com/en-us/azure/storage/common/storage-network-security)
+- [Storage private endpoints and DNS](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints)
+- [Troubleshoot Storage 403 errors](https://learn.microsoft.com/en-us/troubleshoot/azure/azure-storage/blobs/authentication/storage-troubleshoot-403-errors)
+- [Monitor Blob Storage](https://learn.microsoft.com/en-us/azure/storage/blobs/monitor-blob-storage)
 - [Azure Functions storage considerations](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations)
 - [Azure Functions trigger and binding concepts](https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings)
 - [Enable managed identity for Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial)
