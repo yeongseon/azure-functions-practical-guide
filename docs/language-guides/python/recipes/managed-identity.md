@@ -212,6 +212,8 @@ azure-storage-blob>=12.19.0
 
 ### Example: Access Blob Storage with Managed Identity
 
+**Runnable example:** save the entire block as `function_app.py` in a Python v2 project with `azure-functions` and the SDK dependencies above. It includes app/blueprint registration. Set `STORAGE_ACCOUNT_NAME`, sign in locally with `az login`, and grant your developer identity Blob data access to an existing `uploads` container. Use `host.json` with `extensions.http.routePrefix` set to `"api"` and run `func start`; request `GET /api/blobs`. In Azure, configure the app identity and its RBAC separately. Local unit checks below substitute the credential/client constructors; they do not authenticate or prove RBAC.
+
 ```python
 import azure.functions as func
 import json
@@ -219,6 +221,7 @@ import os
 from azure.storage.blob import BlobServiceClient
 from azure.identity import DefaultAzureCredential
 
+app = func.FunctionApp()
 bp = func.Blueprint()
 
 # Initialize once at module level
@@ -249,9 +252,16 @@ def list_blobs(req: func.HttpRequest) -> func.HttpResponse:
         mimetype="application/json",
         status_code=200
     )
+
+
+app.register_blueprint(bp)
 ```
 
+**Local verification:** `tests/test_python_doc_examples.py` checks undefined names and real SDK registration, then verifies account URL construction, credential forwarding, client reuse across two invocations, container selection, and response serialization using SDK-constrained doubles. No storage requests or token acquisition occur.
+
 ### Example: Access Key Vault with Managed Identity
+
+**Intentionally abbreviated helper fragment:** not a standalone Functions app. It requires `import os` from the preceding example, `azure-keyvault-secrets` installed, `KEY_VAULT_URL`, and an authorized identity. It is not part of the focused executable checks.
 
 ```python
 from azure.keyvault.secrets import SecretClient

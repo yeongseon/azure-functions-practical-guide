@@ -93,6 +93,53 @@ Sources: [Functions service limits and host-config footnote](https://learn.micro
 
 See [Functions service-limit footnotes](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale#service-limits), [connection management](https://learn.microsoft.com/en-us/azure/azure-functions/manage-connections), and [storage connectivity](../platform/storage-connectivity.md#6-hosting-plan-differences). Host storage authentication, deployment Blob authentication, and classic Azure Files content shares are separate concerns; Flex does not use a classic content share or `WEBSITE_RUN_FROM_PACKAGE`. Keep [deployment settings plan/OS-specific](../operations/deployment.md#package-configuration-by-plan-and-os).
 
+## Reusable Python HTTP Client
+
+**Runnable example:** save the entire block as `function_app.py` in a Python v2 Functions project. It defines its imports, blueprint, and app registration; do not combine it with another `function_app.py`. Install `azure-functions` and `requests`. A module-level session reuses its connection pool across invocations in the same worker; it is not shared across workers or instances.
+
+```python
+import json
+import os
+
+import azure.functions as func
+import requests
+
+app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
+bp = func.Blueprint()
+session = requests.Session()
+
+
+@bp.route(route="data", methods=["GET"])
+def get_data(req: func.HttpRequest) -> func.HttpResponse:
+    response = session.get(
+        os.environ.get("UPSTREAM_URL", "https://example.com/data"), timeout=10
+    )
+    response.raise_for_status()
+    return func.HttpResponse(json.dumps(response.json()), mimetype="application/json")
+
+
+app.register_blueprint(bp)
+```
+
+**Runnable configuration:** save this as `host.json`. The host adds `api` exactly once: `route="data"` becomes `/api/data`, not `/api/api/data`.
+
+```json
+{
+  "version": "2.0",
+  "extensions": {
+    "http": {
+      "routePrefix": "api"
+    }
+  }
+}
+```
+
+In an activated Python environment, run `func start` with `FUNCTIONS_WORKER_RUNTIME=python`. Set `UPSTREAM_URL` to a reachable endpoint returning JSON; `https://example.com/data` is a placeholder, not a working JSON API. For an isolated local check, serve a `data` file containing `{"value":42}` with `python -m http.server 8081 --bind 127.0.0.1` in a separate temporary directory, and set `UPSTREAM_URL=http://127.0.0.1:8081/data`. Then request `curl --fail http://localhost:7071/api/data`; expect HTTP 200 with that JSON. `/api/api/data` must return 404. Anonymous access is for this demonstration; add authentication before deployment.
+
+**Local checks:** `tests/test_python_doc_examples.py` executes this exact block, checks undefined names (including uncalled branches), indexes its real SDK decorators, verifies the declared prefix, and substitutes only the outbound HTTP call. These checks do not themselves start a Functions host or establish Azure connection limits. Host execution evidence, when collected, must include Python, Core Tools, host runtime, SDK versions, and observed routes/status codes; it is not Azure validation.
+
+Local host evidence (2026-10-25, Linux): Python **3.11.15**, Core Tools **4.8.0**, Functions host **4.1046.100.25610**, `azure-functions` **1.25.0**, and `requests` **2.34.2**. With the exact blocks above and an isolated loopback JSON upstream, `GET /api/data` returned **200** with `{"value":42}`; `GET /api/api/data` returned **404**. The host advertised `get_data: [GET] .../api/data`. This HTTP-only run used file-based local secret storage and no `AzureWebJobsStorage`; the host subsequently reported storage health as unhealthy. It proves the route and handler response, not host-storage health, trigger execution, authentication, or Azure deployment.
+
 ## Other App Limits and Usage Notes
 
 - Functions service limits list **5,000 function apps per subscription**. Apps-per-plan counts do not override that limit.
@@ -107,6 +154,7 @@ See [Functions service-limit footnotes](https://learn.microsoft.com/en-us/azure/
 - [Hosting Plans](../platform/hosting.md)
 - [Scaling](../platform/scaling.md)
 - [Python Sizing Considerations](../language-guides/python/platform-limits.md)
+- [Python HTTP API Patterns](../language-guides/python/recipes/http-api.md)
 - [host.json Reference](host-json.md)
 - [Deployment](../operations/deployment.md)
 
@@ -123,6 +171,8 @@ See [Functions service-limit footnotes](https://learn.microsoft.com/en-us/azure/
 - [Consumption-to-Flex migration assessment](https://learn.microsoft.com/en-us/azure/azure-functions/migration/migrate-plan-consumption-to-flex)
 - [Functions app settings](https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings)
 - [Managing connections](https://learn.microsoft.com/en-us/azure/azure-functions/manage-connections)
+- [Python blueprints and app registration](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python#blueprints)
+- [HTTP route configuration](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-http-webhook-trigger#customize-the-http-endpoint)
 - [Storage considerations](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations)
 - [Standard storage account scalability targets](https://learn.microsoft.com/en-us/azure/storage/common/scalability-targets-standard-account)
 - [Blob scalability targets](https://learn.microsoft.com/en-us/azure/storage/blobs/scalability-targets)
