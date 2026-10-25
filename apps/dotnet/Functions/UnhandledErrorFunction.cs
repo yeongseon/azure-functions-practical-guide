@@ -20,7 +20,7 @@ public class UnhandledErrorFunction
 
     [Function("unhandledError")]
     public IActionResult Run(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "unhandlederror")] HttpRequest req)
+        [HttpTrigger(AuthorizationLevel.Function, "get", Route = "unhandlederror")] HttpRequest req)
     {
         _logger.LogInformation("Unhandled exception endpoint requested");
         throw new InvalidOperationException("Deliberate unhandled error for KQL data collection");

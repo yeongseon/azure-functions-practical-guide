@@ -20,7 +20,7 @@ public class IdentityProbeFunction
 
     [Function("identityProbe")]
     public IActionResult Run(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "identity")] HttpRequest req)
+        [HttpTrigger(AuthorizationLevel.Function, "get", Route = "identity")] HttpRequest req)
     {
         _logger.LogInformation("Identity probe requested");
 

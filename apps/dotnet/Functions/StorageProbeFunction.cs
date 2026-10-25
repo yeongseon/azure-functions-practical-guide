@@ -23,7 +23,7 @@ public class StorageProbeFunction
 
     [Function("storageProbe")]
     public async Task<IActionResult> Run(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "storage/probe")] HttpRequest req)
+        [HttpTrigger(AuthorizationLevel.Function, "get", Route = "storage/probe")] HttpRequest req)
     {
         var result = await _probe.RunAsync(req.HttpContext.RequestAborted);
         // Never log SDK exceptions, endpoints, account names or credentials.
