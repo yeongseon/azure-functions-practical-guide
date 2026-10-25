@@ -1,29 +1,27 @@
-#!/usr/bin/env python3
-"""Generate tutorial validation status dashboard from frontmatter metadata.
-
-Scans all tutorial markdown files for validation frontmatter and generates
-a dashboard page showing which tutorials have been tested, when, and with
-which tools.
-
-Usage:
-    python3 scripts/generate_validation_status.py
-    python3 scripts/generate_validation_status.py --docs-dir docs --output docs/reference/validation-status.md
-"""
+"""Generate a read-only tutorial claim/evidence report; --as-of fixes its clock."""
 
 from __future__ import annotations
 
 import argparse
-import re
-from datetime import date, timedelta
+import sys
+from collections import Counter
+from datetime import date
 from pathlib import Path
-from typing import Any
 
-import yaml
+if __package__ in {None, ""}:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-STALENESS_DAYS = 90
-TUTORIAL_GLOB = "language-guides/*/tutorial/**/*.md"
+from scripts.lib.tutorial_validation import (
+    METHODS,
+    STALENESS_DAYS,
+    Tutorial,
+    assess_method,
+    extract_tutorial_info,
+    tutorial_status,
+)
+from scripts.lib.yaml_style import dump_frontmatter
 
-# Display names for hosting plans
+TUTORIAL_GLOB = "language-guides/*/tutorial/*/*.md"
 PLAN_DISPLAY = {
     "consumption": "Consumption (Y1)",
     "flex-consumption": "Flex Consumption (FC1)",
@@ -31,381 +29,233 @@ PLAN_DISPLAY = {
     "dedicated": "Dedicated (App Service)",
 }
 
-# Status icons
-ICON_PASS = "✅ Pass"
-ICON_FAIL = "❌ Fail"
-ICON_STALE = "⚠️ Stale"
-ICON_NOT_TESTED = "➖ Not Tested"
-ICON_NO_DATA = "➖ No Data"
+
+def cell(text: str) -> str:
+    return text.replace("|", "&#124;").replace("\n", " ")
 
 
-def parse_frontmatter(filepath: Path) -> dict[str, Any] | None:
-    """Extract YAML frontmatter from a markdown file."""
-    text = filepath.read_text(encoding="utf-8")
-    match = re.match(r"^---\s*\n(.*?)\n---", text, re.DOTALL)
-    if not match:
-        return None
-    try:
-        return yaml.safe_load(match.group(1))
-    except yaml.YAMLError:
-        return None
-
-
-def extract_tutorial_info(filepath: Path, docs_dir: Path) -> dict[str, Any]:
-    """Extract tutorial metadata from file path and frontmatter."""
-    rel = filepath.relative_to(docs_dir)
-    parts = rel.parts
-    # Expected: language-guides/<lang>/tutorial/<plan>/<filename>.md
-    language = parts[1] if len(parts) > 1 else "unknown"
-    plan = parts[3] if len(parts) > 3 else "unknown"
-    filename = filepath.stem
-
-    frontmatter = parse_frontmatter(filepath)
-    validation = {}
-    if frontmatter and isinstance(frontmatter, dict):
-        validation = frontmatter.get("validation", {}) or {}
-
-    return {
-        "filepath": filepath,
-        "rel_path": str(rel),
-        "language": language,
-        "plan": plan,
-        "plan_display": PLAN_DISPLAY.get(plan, plan),
-        "filename": filename,
-        "title": filename.replace("-", " ").title(),
-        "validation": validation,
+def generate_dashboard(tutorials: list[Tutorial], today: date) -> str:
+    """Render per-method audit rows, retaining claims separately from trust."""
+    assessments = [
+        [assess_method(t.validation.get(method), today, t.root) for method in METHODS]
+        for t in tutorials
+    ]
+    counts = Counter(tutorial_status(methods) for methods in assessments)
+    method_counts = Counter(m.freshness for methods in assessments for m in methods)
+    source = (
+        "https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview"
+    )
+    frontmatter = {
+        "content_sources": {
+            "references": [{"type": "mslearn-adapted", "url": source}],
+            "diagrams": [
+                {
+                    "id": "tutorial-validation-status-pie",
+                    "type": "pie",
+                    "source": "self-generated",
+                    "justification": "Generated historical claim freshness, not proof of Azure execution.",
+                    "based_on": [source],
+                }
+            ],
+        }
     }
-
-
-def get_method_status(
-    method_data: dict[str, Any] | None, today: date
-) -> tuple[str, str | None]:
-    """Return (status_icon, last_tested_str) for a validation method."""
-    if not method_data or not isinstance(method_data, dict):
-        return ICON_NO_DATA, None
-
-    result = method_data.get("result", "not_tested")
-    last_tested = method_data.get("last_tested")
-
-    if result == "not_tested" or last_tested is None:
-        return ICON_NOT_TESTED, None
-
-    # Parse date
-    if isinstance(last_tested, date):
-        test_date = last_tested
-    else:
-        try:
-            test_date = date.fromisoformat(str(last_tested))
-        except (ValueError, TypeError):
-            return ICON_NO_DATA, str(last_tested)
-
-    date_str = test_date.isoformat()
-    age = (today - test_date).days
-
-    if result == "fail":
-        return ICON_FAIL, date_str
-    if age > STALENESS_DAYS:
-        return ICON_STALE, date_str
-    return ICON_PASS, date_str
-
-
-def generate_dashboard(tutorials: list[dict[str, Any]], today: date) -> str:
-    """Generate the markdown dashboard content."""
-    # Compute stats
-    total = len(tutorials)
-    validated = 0
-    stale = 0
-    failed = 0
-    not_tested = 0
-
-    for t in tutorials:
-        v = t["validation"]
-        has_any_pass = False
-        has_stale = False
-        has_fail = False
-
-        for method in ("az_cli", "bicep"):
-            method_data = v.get(method)
-            status, _ = get_method_status(method_data, today)
-            if status == ICON_PASS:
-                has_any_pass = True
-            elif status == ICON_STALE:
-                has_stale = True
-            elif status == ICON_FAIL:
-                has_fail = True
-
-        if has_fail:
-            failed += 1
-        elif has_stale:
-            stale += 1
-        elif has_any_pass:
-            validated += 1
-        else:
-            not_tested += 1
-
-    # Group by language
-    by_language: dict[str, list[dict[str, Any]]] = {}
-    for t in tutorials:
-        lang = t["language"]
-        by_language.setdefault(lang, []).append(t)
-
-    lines: list[str] = []
-    # Canonical content_sources frontmatter (PR 2d.2b3 migration shape).
-    # Must stay in sync with the migrated frontmatter on
-    # docs/reference/validation-status.md; regeneration MUST NOT wipe the
-    # references/diagrams metadata. See docs/contributing/content-contract.md "Frontmatter YAML Style".
-    lines.append("---")
-    lines.append("content_sources:")
-    lines.append("  references:")
-    lines.append("    - type: mslearn-adapted")
-    lines.append(
-        "      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview"
+    lines = [
+        "---",
+        dump_frontmatter(frontmatter).rstrip(),
+        "---",
+        "",
+        "# Tutorial Validation Status",
+        "",
+        (
+            "This is an **offline audit of reported tutorial results**, not a current Azure-verified pass count. "
+            "Historical `pass`/`fail` claims and attempt dates are preserved; absent run-owned evidence stays **unverified**."
+        ),
+        "",
+        "## Scope",
+        "",
+        (
+            "Leaf runbooks under `docs/language-guides/*/tutorial/<hosting-plan>/*.md` are included; "
+            "`index.md` chooser pages are excluded. Labs use the [existing lab evidence audit](validation-evidence-audit.md), "
+            "not tutorial validation or factual-claim `content_validation` counts."
+        ),
+        "",
+        "## Summary",
+        "",
+        "The June snapshot counted 120 tutorials; this inventory counts 158. The additional 38 (30 PowerShell and 8 testing/container pages) already existed but were absent from that snapshot; they are not newly executed tutorials.",
+        "",
+        f"*Generated / freshness as of: {today.isoformat()}*",
+        "",
+        (
+            "This is a dated snapshot, not a rolling live badge. Regenerate to assess a later date. "
+            f"Fresh means age ≤{STALENESS_DAYS} days; stale means age >{STALENESS_DAYS} days, including failed attempts. "
+            "Freshness never upgrades evidence trust. Invalid metadata takes precedence, then failures, in tutorial totals; "
+            "per-method counts below include the failed attempt's age."
+        ),
+        "",
+        "| Historical tutorial claim | Count |",
+        "|---|---:|",
+        f"| Total tutorials | {len(tutorials)} |",
+    ]
+    categories = (
+        "Fresh pass claim",
+        "Stale pass claim",
+        "Failed claim",
+        "Not tested / no data",
+        "Invalid metadata",
     )
-    lines.append("  diagrams:")
-    lines.append("    - id: tutorial-validation-status-pie")
-    lines.append("      type: pie")
-    lines.append("      source: self-generated")
-    lines.append(
-        "      justification: Auto-generated dashboard chart from repository validation metadata."
+    lines.extend(f"| {label} | {counts[label]} |" for label in categories)
+    lines.extend(["", "| Method freshness / evidence | Count |", "|---|---:|"])
+    lines.extend(
+        f"| {label} | {method_counts[label]} |"
+        for label in ("fresh", "stale", "NOT_RUN", "static-only", "unknown", "invalid")
     )
-    lines.append("      based_on:")
-    lines.append(
-        "        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview"
+    lines.extend(
+        [
+            f"| Methods with unverified evidence trust | {sum(len(ms) for ms in assessments)} |",
+            "",
+            "<!-- diagram-id: tutorial-validation-status-pie -->",
+            "```mermaid",
+            "pie title Historical tutorial claim freshness",
+        ]
     )
-    lines.append("---")
-    lines.append("# Tutorial Validation Status")
-    lines.append("")
-    lines.append(
-        "This page tracks which tutorials have been validated against real Azure deployments. "
-        "Each tutorial can be tested via **az-cli** (manual CLI commands) or **Bicep** (infrastructure as code). "
-        f"Tutorials not tested within {STALENESS_DAYS} days are marked as stale."
+    lines.extend(
+        f'    "{label}" : {counts[label]}' for label in categories if counts[label]
     )
-    lines.append("")
-    lines.append("## Scope")
-    lines.append("")
-    lines.append(
-        "This dashboard intentionally tracks leaf tutorial runbooks under "
-        "`docs/language-guides/*/tutorial/<hosting-plan>/*.md`, excluding `index.md` chooser pages. "
-        "The tracked pages are the documents a reader can execute end-to-end against Azure."
+    lines.extend(
+        [
+            "```",
+            "",
+            "## What Each Term Means",
+            "",
+            "| Field | Meaning / limits |",
+            "|---|---|",
+            "| Source review | [Content Validation Status](content-validation-status.md) tracks Learn-source review for its own factual-page scope, not tutorial execution. |",
+            "| Code/static check | Legacy `syntax_validated` means static-only, not a live Azure pass; its historical date is retained but never counted as Azure freshness. Offline pytest, lint and builds check code/docs only; see PR/CI results. |",
+            "| Live Azure run | `pass`/`fail` and `last_tested` below are historical author-entered claims; `not_tested` with no date means NOT_RUN. Missing history is unknown, not proof no run happened. |",
+            "| Evidence trust | `unverified` until run identity, executed revision, method, captured environment and retained sanitized artifacts/digests are checked. A resolving reference is not an attestation. |",
+            "| Reproduction status | Not independently reproduced by this audit; source review and offline replay are not new live runs. |",
+            "| Recovery | Not established by a tutorial pass; needs a post-mitigation probe/window where relevant. |",
+            "| Cleanup | Not established by deployment success or a cleanup command example; needs its own retained outcome or explicit non-applicability. |",
+            "",
+            (
+                "Vocabulary and provenance requirements follow the [evidence and hypothesis contract](../troubleshooting/methodology/troubleshooting-method.md#evidence-and-hypothesis-contract). "
+                "No tutorial in this inventory currently binds a run/environment/artifact set in its method metadata. "
+                "Inline output excerpts and tool versions may be useful reported history, but cannot by themselves bind an end-to-end run. "
+                "The missing bindings remain audit gaps, not evidence that the historical runs were fabricated."
+            ),
+            "",
+            "## Per-Method Validation and Evidence Audit",
+            "",
+            (
+                "Tool versions are reported metadata, not a complete environment capture. Each row keeps its own date; "
+                "a later Bicep run cannot refresh CLI freshness (or vice versa). "
+                "Recovery, cleanup and independent reproduction are **not established** for all tutorial rows in this audit."
+            ),
+            "",
+        ]
     )
-    lines.append("")
-    lines.append("Out of scope for this dashboard:")
-    lines.append("")
-    lines.append(
-        "- Tutorial `index.md` chooser pages, which explain plan selection but are not executable deployment runbooks."
-    )
-    lines.append(
-        "- Troubleshooting lab guides under `docs/troubleshooting/lab-guides/`, which are experiment reports tracked by "
-        "`content_validation`, `Lab Metadata`, `Experiment Log`, and `Expected Evidence` sections instead of tutorial execution status."
-    )
-    lines.append("")
-
-    # Summary section
-    lines.append("## Summary")
-    lines.append("")
-    lines.append(f"*Generated: {today.isoformat()}*")
-    lines.append("")
-    lines.append("| Metric | Count |")
-    lines.append("|---|---:|")
-    lines.append(f"| Total tutorials | {total} |")
-    lines.append(f"| ✅ Validated | {validated} |")
-    lines.append(f"| ⚠️ Stale (>{STALENESS_DAYS} days) | {stale} |")
-    lines.append(f"| ❌ Failed | {failed} |")
-    lines.append(f"| ➖ Not tested | {not_tested} |")
-    lines.append("")
-
-    # Mermaid pie chart
-    lines.append("<!-- diagram-id: tutorial-validation-status-pie -->")
-    lines.append("```mermaid")
-    lines.append("pie title Tutorial Validation Status")
-    if validated > 0:
-        lines.append(f'    "Validated" : {validated}')
-    if stale > 0:
-        lines.append(f'    "Stale" : {stale}')
-    if failed > 0:
-        lines.append(f'    "Failed" : {failed}')
-    if not_tested > 0:
-        lines.append(f'    "Not Tested" : {not_tested}')
-    lines.append("```")
-    lines.append("")
-
-    # Validation Matrix per language
-    lines.append("## Validation Matrix")
-    lines.append("")
-
-    plan_order = ["consumption", "flex-consumption", "premium", "dedicated"]
-
-    for lang in sorted(by_language.keys()):
-        lang_tutorials = by_language[lang]
-        lang_display = lang.replace("-", " ").title()
-        if lang == "nodejs":
-            lang_display = "Node.js"
-        elif lang == "dotnet":
-            lang_display = ".NET"
-
-        lines.append(f"### {lang_display}")
-        lines.append("")
-        lines.append(
-            "| Tutorial | Hosting Plan | az-cli | Bicep | Last Tested | Status |"
+    for language in sorted({t.language for t in tutorials}):
+        lines.extend(
+            [
+                f"### {language}",
+                "",
+                "| Tutorial / plan | Method | Reported result | Last tested / attempted | Freshness | Reported tools | Evidence trust | Run / environment / retained artifacts |",
+                "|---|---|---|---|---|---|---|---|",
+            ]
         )
-        lines.append("|---|---|---|---|---|---|")
-
-        # Sort by plan order, then filename
-        def sort_key(t: dict[str, Any]) -> tuple[int, str]:
-            try:
-                idx = plan_order.index(t["plan"])
-            except ValueError:
-                idx = 999
-            return (idx, t["filename"])
-
-        lang_tutorials.sort(key=sort_key)
-
-        for t in lang_tutorials:
-            v = t["validation"]
-            cli_data = v.get("az_cli")
-            bicep_data = v.get("bicep")
-
-            cli_status, cli_date = get_method_status(cli_data, today)
-            bicep_status, bicep_date = get_method_status(bicep_data, today)
-
-            # Last tested = most recent of the two
-            dates = [d for d in [cli_date, bicep_date] if d]
-            last_tested = max(dates) if dates else "—"
-
-            # Overall status
-            statuses = [cli_status, bicep_status]
-            if ICON_FAIL in statuses:
-                overall = ICON_FAIL
-            elif ICON_STALE in statuses:
-                overall = ICON_STALE
-            elif ICON_PASS in statuses:
-                overall = ICON_PASS
-            else:
-                overall = ICON_NOT_TESTED
-
-            # Tutorial link
-            tutorial_link = f"[{t['title']}](../{t['rel_path']})"
-
-            lines.append(
-                f"| {tutorial_link} | {t['plan_display']} | {cli_status} | {bicep_status} | {last_tested} | {overall} |"
-            )
-
+        for tutorial, methods in zip(tutorials, assessments, strict=True):
+            if tutorial.language != language:
+                continue
+            link = f"[{tutorial.title}](../{tutorial.rel_path}) / {PLAN_DISPLAY.get(tutorial.plan, tutorial.plan)}"
+            for name, assessment in zip(METHODS, methods, strict=True):
+                values = (
+                    link,
+                    name,
+                    assessment.result,
+                    assessment.last_tested,
+                    assessment.freshness,
+                    assessment.tools,
+                    assessment.trust,
+                    assessment.binding,
+                )
+                lines.append("| " + " | ".join(cell(value) for value in values) + " |")
         lines.append("")
-
-    # How to Update section
-    lines.append("## How to Update")
-    lines.append("")
-    lines.append(
-        "To mark a tutorial as validated, add a `validation` block to its YAML frontmatter:"
+    lines.extend(
+        [
+            "## How to Update",
+            "",
+            (
+                "Follow the [tutorial validation rules](../contributing/content-contract.md#agent-rules-for-validation): "
+                "a pass requires end-to-end Azure execution; a failed Azure attempt records fail with the genuine attempt date. "
+                "Preserve the other method and all historical dates when no new execution occurs. "
+                "Never substitute source review, document editing, static checks or offline replay for live execution."
+            ),
+            "",
+            (
+                "Optional method-level `run_id` and repository-relative `evidence_ref` (Markdown run note, optionally `#heading`) "
+                "locate an existing run identity record; do not invent identifiers retrospectively. "
+                "The note must follow the existing experiment-log contract and link the executed tutorial/method, "
+                "environment, captures and digests. The generator checks path/anchor/run identity only; "
+                "method/date/environment/artifact provenance still requires independent review and remains unverified here."
+            ),
+            "",
+            "Reproduce this exact snapshot (omit `--as-of` to use today's date):",
+            "",
+            "```bash",
+            f"python3 scripts/generate_validation_status.py --as-of {today.isoformat()}",
+            f"python3 scripts/generate_validation_status.py --as-of {today.isoformat()} --check",
+            "```",
+            "",
+            "`--check` is read-only and fails on drift, including a changed as-of date. No Azure access is performed.",
+            "",
+            "## See Also",
+            "",
+            "- [Existing Lab Evidence Audit](validation-evidence-audit.md)",
+            "- [Content Validation Status](content-validation-status.md)",
+            "- [Tutorial Overview & Plan Chooser](../language-guides/python/tutorial/index.md)",
+            "",
+            "## Sources",
+            "",
+            f"- [Microsoft Learn overview]({source})",
+            "",
+        ]
     )
-    lines.append("")
-    lines.append("```yaml")
-    lines.append("---")
-    lines.append("hide:")
-    lines.append("  - toc")
-    lines.append("validation:")
-    lines.append("  az_cli:")
-    lines.append("    last_tested: 2026-04-09")
-    lines.append('    cli_version: "2.83.0"')
-    lines.append('    core_tools_version: "4.8.0"')
-    lines.append("    result: pass")
-    lines.append("  bicep:")
-    lines.append("    last_tested: null")
-    lines.append("    result: not_tested")
-    lines.append("---")
-    lines.append("```")
-    lines.append("")
-    lines.append("Then regenerate this page:")
-    lines.append("")
-    lines.append("```bash")
-    lines.append("python3 scripts/generate_validation_status.py")
-    lines.append("```")
-    lines.append("")
-    lines.append('!!! info "Validation fields"')
-    lines.append("    - `result`: `pass`, `fail`, or `not_tested`")
-    lines.append("    - `last_tested`: ISO date (YYYY-MM-DD) or `null`")
-    lines.append("    - `cli_version`: Azure CLI version used")
-    lines.append("    - `core_tools_version`: Azure Functions Core Tools version used")
-    lines.append(
-        f"    - Tutorials older than {STALENESS_DAYS} days are flagged as **stale**"
-    )
-    lines.append("")
-
-    # See Also
-    lines.append("## See Also")
-    lines.append("")
-    lines.append(
-        "- [Tutorial Overview & Plan Chooser](../language-guides/python/tutorial/index.md)"
-    )
-    lines.append("- [CLI Cheatsheet](cli-cheatsheet.md)")
-    lines.append("- [Platform Limits](platform-limits.md)")
-    lines.append("")
-
-    # Sources
-    lines.append("## Sources")
-    lines.append("")
-    lines.append(
-        "- [Microsoft Learn overview](https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview)"
-    )
-    lines.append("")
-
-    return "\n".join(lines).rstrip() + "\n"
+    return "\n".join(lines)
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Generate tutorial validation status dashboard"
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--docs-dir", type=Path, default=Path("docs"))
+    parser.add_argument(
+        "--output", type=Path, default=Path("docs/reference/validation-status.md")
     )
     parser.add_argument(
-        "--docs-dir",
-        type=Path,
-        default=Path("docs"),
-        help="Path to docs directory (default: docs)",
+        "--as-of",
+        type=date.fromisoformat,
+        default=date.today(),
+        help="Freshness snapshot date (YYYY-MM-DD); defaults to today",
     )
-    parser.add_argument(
-        "--output",
-        type=Path,
-        default=Path("docs/reference/validation-status.md"),
-        help="Output file path (default: docs/reference/validation-status.md)",
-    )
+    parser.add_argument("--check", action="store_true", help="Read-only drift check")
     args = parser.parse_args()
-
-    # Resolve relative to project root
-    project_root = Path(__file__).resolve().parent.parent
-    docs_dir = project_root / args.docs_dir
-    output_path = project_root / args.output
-
-    if not docs_dir.exists():
-        print(f"Error: docs directory not found: {docs_dir}")
-        raise SystemExit(1)
-
-    # Scan tutorials
-    tutorial_files = sorted(docs_dir.glob(TUTORIAL_GLOB))
-
-    # Filter out index.md files
-    tutorial_files = [f for f in tutorial_files if f.name != "index.md"]
-
-    tutorials = [extract_tutorial_info(f, docs_dir) for f in tutorial_files]
-
-    today = date.today()
-    dashboard = generate_dashboard(tutorials, today)
-
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(dashboard, encoding="utf-8")
-
-    # Stats
-    validated = sum(
-        1
-        for t in tutorials
-        if any(
-            get_method_status(t["validation"].get(m), today)[0] == ICON_PASS
-            for m in ("az_cli", "bicep")
-        )
-    )
+    root = Path(__file__).resolve().parents[1]
+    docs_dir, output = root / args.docs_dir, root / args.output
+    if not docs_dir.is_dir():
+        parser.error(f"docs directory not found: {docs_dir}")
+    tutorials = [
+        extract_tutorial_info(path, docs_dir)
+        for path in sorted(docs_dir.glob(TUTORIAL_GLOB))
+        if path.name != "index.md"
+    ]
+    report = generate_dashboard(tutorials, args.as_of)
+    if args.check:
+        if not output.is_file() or output.read_text(encoding="utf-8") != report:
+            print(f"Dashboard drift: use --as-of {args.as_of}", file=sys.stderr)
+            raise SystemExit(1)
+        return
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(report, encoding="utf-8")
     print(
-        f"Scanned {len(tutorials)} tutorials, "
-        f"{validated} validated, "
-        f"generated {output_path}"
+        f"Scanned {len(tutorials)} tutorials; generated {output} as of {args.as_of}; no Azure execution"
     )
 
 

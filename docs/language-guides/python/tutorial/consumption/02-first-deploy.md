@@ -41,6 +41,11 @@ Deploy the app to Azure Functions Consumption (Y1) using long-form CLI commands 
 
 **Runtime/build review (2026-10-25, official sources and static checks only):** Keep Python **3.11** locally and in the deployment command below. The [supported-version guidance](../../python-runtime.md#supported-python-versions) separates the Linux Consumption ceiling from language GA status; Python 3.13/3.14 require another plan. Follow the shared [build-mode guidance](../../python-runtime.md#build-mode-and-version-availability) for remote build or a Linux-compatible prebuilt package. Historical `validation` results below are unchanged; no new Azure execution is claimed.
 
+!!! warning "Historical Azure attempt failed — not a validated deployment path"
+    The recorded **az_cli attempt on 2026-04-12 failed** (Azure CLI 2.70.0, Core Tools 4.6.0). Provisioning and remote build completed, but trigger sync failed and `/api/health` returned **503 Function host is not running**, even after restoring the content-share settings. Bicep remains **not_tested / NOT_RUN** with no test date. See the [preserved failure output](#verification-notes); the excerpts do not provide a complete retained run/environment/artifact binding, so evidence trust remains **unverified** in the [tutorial audit](../../../../reference/validation-status.md).
+
+    **Supported alternatives, not a claimed recovery:** use the [Flex Consumption first-deploy tutorial](../flex-consumption/02-first-deploy.md) for a new workload, or follow the [Linux-compatible prebuilt external-package-URL path](../../../../operations/deployment.md#package-configuration-by-plan-and-os) if retaining Linux Consumption. Microsoft Learn documents both [deployment options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies). Neither alternative was executed as part of this audit; recovery, independent reproduction and cleanup of the failed attempt are **not established**. Do not interpret the expected outputs below as a later successful rerun.
+
 ## Prerequisites
 
 | Tool | Version | Purpose |
@@ -262,7 +267,7 @@ Health response:
 
 ### Verification notes
 
-!!! warning "Current validation failure (2026-04-12)"
+!!! warning "Historical validation failure (2026-04-12)"
     The Korea Central Consumption deployment provisioned successfully and `func azure functionapp publish --build remote --python` completed a remote build, but Core Tools removed `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING` and `WEBSITE_CONTENTSHARE` during publish.
 
     After restoring both settings, trigger sync still failed with `Error calling sync triggers (BadRequest)` and the public endpoint kept returning `503 Function host is not running`.

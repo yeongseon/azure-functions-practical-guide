@@ -987,6 +987,38 @@ Each tutorial can be validated via two independent methods:
 ### Staleness Rule
 
 Tutorials not validated within **90 days** are flagged as **stale** on the dashboard.
+Exactly 90 days is within the freshness window; more than 90 is stale. Freshness
+is calculated independently for each method from its genuine `last_tested`,
+including failed attempts. A fresh date does not establish evidence trust.
+
+### Generated Evidence Audit
+
+The tutorial dashboard preserves historical result/date claims separately from
+evidence trust. Missing run identity, executed revision/method, captured
+environment or retained artifacts remains `unverified`; tool versions or inline
+success excerpts alone do not prove an end-to-end run. Independent reproduction,
+recovery and cleanup are separate outcomes, not consequences of a stored pass.
+Source review remains in the separately scoped content dashboard, and offline
+code/static checks never refresh Azure execution dates.
+Legacy `result: syntax_validated` records are preserved as **static-only**, not
+accepted as Azure passes; their dates are not live-run freshness. New live-run
+records continue to use the three result values in the field reference.
+
+Optional method fields `run_id` and `evidence_ref` may point to an **existing**
+repository-relative Markdown experiment log (optionally `#heading`). Do not invent
+historical identifiers or retrofit another run's evidence. Follow the
+[identity and retention contract](../troubleshooting/methodology/troubleshooting-method.md#run-identity-retention-and-time)
+inside that log. The generator checks reference path, heading and run identity;
+it cannot verify Azure provenance, method, environment or captures merely because
+a note resolves, so trust remains unverified pending independent review.
+
+Reports print their generation/freshness date and are snapshots, not live badges.
+Use `python3 scripts/generate_validation_status.py --as-of YYYY-MM-DD` for a
+reproducible snapshot, then the same command with `--check` for read-only drift
+detection. Omitting `--as-of` uses the report generation day's date. Neither
+command executes Azure or edits tutorial dates. The
+[lab evidence audit](../reference/validation-evidence-audit.md) classifies retained
+lab history without expanding tutorial or `content_validation` scope.
 
 ### Agent Rules for Validation
 
