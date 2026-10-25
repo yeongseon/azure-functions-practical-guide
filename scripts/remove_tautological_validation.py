@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Remove tautological `content_validation` blocks from documentation frontmatter.
 
-Rationale: AGENTS.md ("Agent Rules for Content Validation", rule 3) forbids
+Rationale: docs/contributing/content-contract.md ("Agent Rules for Content Validation", rule 3) forbids
 meta-statement core_claims; this tool strips blocks that consist only of them.
 A `content_validation` block is considered tautological (and therefore safe to
 remove) when ALL of its `core_claims` carry the placeholder text "primary source

@@ -18,7 +18,7 @@ This script:
 The scope policy lives in :mod:`lib.content_scope`; this script is the
 canonical tool for one-time cleanup of legacy out-of-scope
 ``content_validation`` blocks that pre-date the scope policy (the "follow-up
-editorial pass" noted in ``AGENTS.md`` §Text Content Validation).
+editorial pass" noted in ``docs/contributing/content-contract.md`` §Text Content Validation).
 
 Usage:
     python3 scripts/remove_out_of_scope_validation.py             # dry-run
