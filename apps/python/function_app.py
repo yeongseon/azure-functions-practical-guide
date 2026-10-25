@@ -33,4 +33,24 @@ if os.environ.get("LAB_ENDPOINTS_ENABLED") == "true":
 app.register_blueprint(durable_lab_bp)
 app.register_blueprint(eventhub_lab_bp)
 
+if os.environ.get("QUEUE_LAB_ENABLED") == "true":
+    from blueprints.queue_processor import bp as queue_processor_bp
+
+    app.register_blueprint(queue_processor_bp)
+
+if os.environ.get("TIMER_LAB_ENABLED") == "true":
+    from blueprints.timer_lab import bp as timer_lab_bp
+
+    app.register_blueprint(timer_lab_bp)
+
+if os.environ.get("SCHEDULED_TRIGGER_ENABLED") == "true":
+    from blueprints.scheduled import bp as scheduled_bp
+
+    app.register_blueprint(scheduled_bp)
+
+if os.environ.get("BLOB_TRIGGER_ENABLED") == "true":
+    from blueprints.blob_processor import bp as blob_processor_bp
+
+    app.register_blueprint(blob_processor_bp)
+
 logger.info("Azure Functions Practical Guide application initialized")
