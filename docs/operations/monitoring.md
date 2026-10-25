@@ -362,7 +362,7 @@ Weekly:
 
 ## Portal Walkthrough
 
-This section shows the key Azure Portal blades for monitoring a Function App. All captures are from a live Consumption (Y1) deployment with PII masked per [AGENTS.md](https://github.com/yeongseon/azure-functions-practical-guide/blob/main/AGENTS.md#portal-screenshot-capture-pii-replacement-rules) rules.
+This section shows the key Azure Portal blades for monitoring a Function App. All captures are from a live Consumption (Y1) deployment with PII masked per the [image and screenshot rules](../contributing/content-contract.md#image-and-screenshot-rules).
 
 ### Metrics Explorer
 
