@@ -4,7 +4,7 @@ content_sources:
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
     - type: mslearn-adapted
-      url: https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
   diagrams:
     - id: recommended-rollback-order
       type: flowchart
@@ -12,28 +12,28 @@ content_sources:
       justification: Flow view of recommended rollback order, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
-        - https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package
+        - https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
     - id: recommended-rollback-order-2
       type: flowchart
       source: self-generated
       justification: Flow view of recommended rollback order 2, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
-        - https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package
+        - https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
     - id: post-deploy
       type: flowchart
       source: self-generated
       justification: Flow view of post deploy, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
-        - https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package
+        - https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
 content_validation:
   status: verified
   last_reviewed: 2026-09-11
   reviewer: agent
   core_claims:
     - claim: "Run-from-package 배포는 패키지를 읽기 전용으로 마운트해 배포 중 파일 변이를 줄인다."
-      source: https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
       verified: true
     - claim: "Flex Consumption은 Kudu/SCM 엔드포인트를 사용하지 않는 배포 방식을 따라야 한다."
       source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
@@ -42,7 +42,7 @@ content_validation:
       source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
       verified: true
     - claim: "동일한 빌드 산출물을 환경별로 승격하는 immutable artifact 배포 방식이 안전하다."
-      source: https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
       verified: true
     - claim: "WEBSITE_RUN_FROM_PACKAGE=1 is supported for local-package deployment on Windows Consumption, Premium, and Dedicated, not Linux Consumption or Flex Consumption."
       source: https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
@@ -132,7 +132,7 @@ Slot usage must match plan limits and trigger behavior.
 
 - Use at least `staging` and optionally `preprod` slots.
 - Warm slot before swap and run trigger-aware smoke tests.
-- Use swap-back as first rollback path.
+- Consider swap-back first only after verifying the previous release remains in the other slot and its settings, including sticky settings, are safe.
 
 | Plan | Slot support | Maximum slots | Swap support | Warm-up strategy support |
 |---|---|---|---|---|
@@ -234,9 +234,10 @@ Choose rollback path based on plan capabilities.
 
 ### Recommended rollback order
 
-1. Slot swap-back (if slots exist).
-2. Redeploy last-known-good package.
-3. Reapply last-known-good configuration snapshot.
+1. Capture current state and compare it with the captured pre-release known-good state before any recovery write. Follow the [playbook's scoped recovery procedure](../troubleshooting/playbooks/deployment-failures.md#8-immediate-mitigations).
+2. Consider slot swap-back only on a supported plan after verifying the previous release's contents and settings, including sticky settings, in the other slot. Otherwise, redeploy a retained, validated last-known-good artifact through the established deployment method.
+3. If the diff proves release-induced configuration drift, restore only the affected keys or resource properties. Preserve unrelated values, prior key absence, and slot stickiness; never replay the whole snapshot. A missing trusted artifact is a reason to investigate or escalate, not to apply a configuration snapshot as a substitute.
+4. After each approved action, validate host readiness, function discovery, trigger execution, and recovery metrics.
 
 <!-- diagram-id: recommended-rollback-order -->
 ```mermaid
@@ -249,12 +250,14 @@ flowchart TD
     F -->|No| G[Keep release and close deployment]
     F -->|Yes| H[Execute rollback path]
     C -->|No| H
-    H --> I{Slots available}
-    I -->|Yes| J[Swap-back immediately]
-    I -->|No| K[Redeploy last-known-good artifact]
-    K --> L{Issue due to configuration drift}
-    L -->|Yes| M[Apply last-known-good config snapshot]
-    L -->|No| N[Continue incident troubleshooting]
+    H --> I{Supported slot with verified prior contents and settings?}
+    I -->|Yes| J[Approved swap-back]
+    I -->|No| R{Retained artifact validated and available?}
+    R -->|Yes| K[Redeploy last-known-good artifact]
+    R -->|No| N[Investigate or escalate without speculative writes]
+    K --> L{Scoped diff proves configuration drift?}
+    L -->|Yes| M[Restore only proven keys or properties from captured prior state]
+    L -->|No| O[Post-rollback validation]
     J --> O[Post-rollback validation]
     M --> O
 ```
@@ -262,14 +265,16 @@ flowchart TD
 <!-- diagram-id: recommended-rollback-order-2 -->
 ```mermaid
 flowchart TD
-    A[Production issue after deployment] --> B{Is slot swap-back available and low risk?}
-    B -->|Yes| C[Swap-back first]
+    A[Production issue after deployment] --> B{Supported slot with verified prior contents and settings?}
+    B -->|Yes| C[Approved swap-back]
     B -->|No| D{Is prior artifact validated and available?}
     D -->|Yes| E[Redeploy prior artifact]
-    D -->|No| F[Apply configuration rollback snapshot]
+    D -->|No| F[Investigate or escalate without speculative writes]
     C --> G[Validate recovery metrics]
-    E --> G
-    F --> G
+    E --> K{Scoped diff proves configuration drift?}
+    K -->|Yes| L[Restore only proven keys or properties from captured prior state]
+    K -->|No| G
+    L --> G
     G --> H{Service stable?}
     H -->|Yes| I[Close rollback action]
     H -->|No| J[Escalate incident and deep-dive diagnostics]
@@ -348,4 +353,4 @@ flowchart TD
 ## Sources
 
 - [Deployment technologies in Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies)
-- [Run Azure Functions from a deployment package (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package)
+- [Package-based deployment for Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push)

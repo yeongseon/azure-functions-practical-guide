@@ -2,7 +2,7 @@
 content_sources:
   references:
     - type: mslearn-adapted
-      url: https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions
     - type: mslearn-adapted
@@ -15,7 +15,7 @@ content_sources:
       source: self-generated
       justification: Deployment workflow, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
-        - https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package
+        - https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local
@@ -25,7 +25,7 @@ content_validation:
   reviewer: agent
   core_claims:
     - claim: "Running a function app from a deployment package supports immutable artifact deployment behavior."
-      source: https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
       verified: true
     - claim: "GitHub Actions is a supported CI/CD deployment method for Azure Functions."
       source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions
@@ -445,9 +445,10 @@ Expected output:
 ## Rollback / Troubleshooting
 Preferred sequence:
 
-1. Roll back with slot swap-back when slots are in use.
-2. Redeploy last-known-good artifact when slots are unavailable.
-3. Reapply previous config baseline if release changed settings.
+1. Capture current state and diff it against captured pre-release known-good state using the [playbook's scoped recovery procedure](../troubleshooting/playbooks/deployment-failures.md#8-immediate-mitigations).
+2. Consider swap-back only where supported and after verifying that the other slot still contains the previous release with safe settings, including slot stickiness. Otherwise, redeploy a retained, validated last-known-good artifact through the established deployment method; if none is available, investigate or escalate rather than substitute a configuration snapshot.
+3. Restore only the keys or resource properties whose release-induced drift the scoped diff proves. Preserve unrelated settings, prior key absence, and slot stickiness; do not replay an entire previous baseline.
+4. Validate host readiness, function discovery, trigger execution, and recovery metrics after each approved action.
 
 ### Slot swap-back
 ```bash
@@ -523,7 +524,7 @@ verify runtime compatibility, and validate trigger dependency identity/access.
 - [Recovery](recovery.md)
 
 ## Sources
-- [Deploy Azure Functions from package files](https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package)
+- [Package-based deployment for Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push)
 - [Deploy Azure Functions with GitHub Actions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions)
 - [Deployment slots in Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots)
 - [Functions Core Tools reference](https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local)
