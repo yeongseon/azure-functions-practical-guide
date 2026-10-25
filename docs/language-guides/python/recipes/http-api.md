@@ -19,6 +19,8 @@ content_sources:
 
 This recipe covers the essential HTTP API patterns for Azure Functions Python v2 — route parameters, query strings, request body parsing, response codes, CORS headers, and a complete CRUD-style example.
 
+**Example scope:** every Python block before **Complete Example: CRUD API** is an intentionally abbreviated fragment, not a standalone app. The first fragment defines `bp`, `func`, and `json` for the following handler fragments. The raw-body fragment belongs inside a handler with `req`. The manual CORS handler is an alternative to `list_items`, not another GET handler for the same route. Use the complete example below for a copy-paste app.
+
 ## Request Flow
 
 <!-- diagram-id: request-flow -->
@@ -247,7 +249,7 @@ def list_items_with_cors(req: func.HttpRequest) -> func.HttpResponse:
 
 ## Complete Example: CRUD API
 
-Here is a complete CRUD-style blueprint for managing items in memory. In production, replace the in-memory store with a database or storage service.
+**Runnable example:** save this entire block as `function_app.py` in a Python v2 Functions project with `azure-functions` installed. It includes the blueprint registration. Use the explicit `host.json` with `routePrefix: "api"` and local `func start` setup in [Reusable Python HTTP Client](../../../reference/platform-limits.md#reusable-python-http-client); this app does not need `requests` or an upstream server. Its endpoints are `/api/items` and `/api/items/{item_id}`. Do not concatenate the earlier fragments into this app. In production, replace the in-memory store with a database or storage service and add authentication.
 
 ```python
 import azure.functions as func
@@ -255,6 +257,7 @@ import json
 import uuid
 from datetime import datetime, timezone
 
+app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 bp = func.Blueprint()
 
 # In-memory store (replace with database in production)
@@ -296,6 +299,12 @@ def create_item(req: func.HttpRequest) -> func.HttpResponse:
             status_code=400
         )
 
+    if not isinstance(body, dict) or not isinstance(body.get("name"), str) or not body["name"].strip():
+        return func.HttpResponse(
+            json.dumps({"error": "A JSON object with a non-empty name is required"}),
+            mimetype="application/json", status_code=400
+        )
+
     item_id = str(uuid.uuid4())
     item = {
         "id": item_id,
@@ -326,6 +335,12 @@ def update_item(req: func.HttpRequest) -> func.HttpResponse:
             status_code=400
         )
 
+    if not isinstance(body, dict):
+        return func.HttpResponse(
+            json.dumps({"error": "A JSON object is required"}),
+            mimetype="application/json", status_code=400
+        )
+
     _items[item_id].update({
         "name": body.get("name", _items[item_id]["name"]),
         "description": body.get("description", _items[item_id]["description"])
@@ -345,9 +360,14 @@ def delete_item(req: func.HttpRequest) -> func.HttpResponse:
         )
     del _items[item_id]
     return func.HttpResponse(status_code=204)
+
+
+app.register_blueprint(bp)
 ```
 
 > **Note:** In-memory storage is lost when the function instance scales down or restarts. For persistent storage, see the [Cosmos DB](cosmosdb.md) or [Blob Storage](blob-storage.md) recipes.
+
+**Local verification:** `tests/test_python_doc_examples.py` extracts the complete block, rejects undefined names with Ruff `F821`, indexes the real SDK bindings, exercises a CRUD round trip, and checks malformed/non-object/missing-name POST bodies. It does not test platform authentication, CORS middleware, persistence, or Azure deployment.
 
 ## See Also
 - [HTTP Authentication](http-auth.md)
