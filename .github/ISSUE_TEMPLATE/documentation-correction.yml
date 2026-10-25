@@ -8,7 +8,7 @@ body:
       value: |
         Describe the issue in this guide and explain why any external project
         or source is relevant. Use this repository's evidence and completion criteria.
-        See [Issue Scope](https://github.com/yeongseon/azure-functions-practical-guide/blob/main/AGENTS.md#issue-scope).
+  See [Issue Scope](https://github.com/yeongseon/azure-functions-practical-guide/blob/main/CONTRIBUTING.md#issue-scope).
         Follow [CONTRIBUTING.md](https://github.com/yeongseon/azure-functions-practical-guide/blob/main/CONTRIBUTING.md#issue-lifecycle) for titles, required sections, and triage.
         Maintainers retain `needs-triage` until validity, duplicates, scope, type, backlog-relative priority, and size are checked. Triaged work needs one `priority:critical/high/medium/low` and one `size: XS/S/M/L/XL` label; missing labels are a maintainer prerequisite, not automatic enforcement.
   - type: input
