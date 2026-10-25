@@ -76,7 +76,7 @@ unset FUNCTION_KEY
 | `--setting-names` | Registration switch to remove. |
 | `--output` | Suppress configuration output. |
 
-For .NET, stop/delete the disposable deployment when experiments finish. Rotate/delete any experiment keys. Delete the disposable resource group only after confirming it contains no shared resources. Never deploy the tracked historical `apps/python/app.zip` as a substitute for rebuilding current source.
+For .NET, stop/delete the disposable deployment when experiments finish. Rotate/delete any experiment keys. Delete the disposable resource group only after confirming it contains no shared resources. The unsafe historical Python ZIP has been removed from the repository; always publish current source rather than reusing an old deployment archive.
 
 ## See Also
 

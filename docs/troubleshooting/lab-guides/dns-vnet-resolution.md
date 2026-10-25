@@ -301,22 +301,22 @@ az deployment group create \
 | Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
 
 
-Deploy the diagnostics app:
+From the repository root, publish the diagnostics app from current source using Azure Functions Core Tools v4. Do not reuse a previously built ZIP: it can contain anonymous endpoints without the current workload limits. The subshell returns you to the repository root for the following commands.
 
 ```bash
-az functionapp deployment source config-zip \
-  --name "$APP_NAME" \
-  --resource-group "$RG" \
-  --src "./apps/python/app.zip"
+(
+  cd apps/python
+  func azure functionapp publish "$APP_NAME" --build remote
+)
 ```
 
-| CLI element | Explanation |
+| Command/Parameter | Purpose |
 |---|---|
-| Command(s) | `az functionapp deployment source config-zip` |
-| Key flags | `--name`, `--resource-group`, `--src` |
-| Variables | `$APP_NAME`, `$RG` |
-| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+| `cd apps/python` | Select the current Python source project, including its `host.json` and `requirements.txt`. |
+| `func azure functionapp publish` | Package current project files and publish to the isolated Function App named by `$APP_NAME`. |
+| `--build` | Request a remote build so dependencies are installed for the Azure runtime. |
 
+This publishing procedure is source-reviewed, not a newly executed deployment. The recorded experiment outputs below remain historical. Enable lab routes and supply a function key as described in section 3.3 only after publishing current source.
 
 Verify all 4 Private DNS zone VNet links exist:
 
@@ -905,6 +905,8 @@ az group delete \
 - [Evidence Map](../evidence-map.md)
 
 ## Sources
+
+- [Publish current project files with Core Tools](https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local#publish-to-azure)
 
 - [Azure Functions networking options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)
 - [Azure private endpoint DNS configuration](https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-dns)
