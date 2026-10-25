@@ -317,6 +317,75 @@ substitute evaluation or editing time for capture time. A replay creates a new
 evaluation record referencing unchanged captures, not a new live run or independent
 reproduction.
 
+### Independent Human Reproduction
+
+Keep the repetition linked to the **same declared scenario and recipe revision**
+(commit or digest), including the predeclared assertions. A changed recipe is a
+different experiment, not reproduction of that revision. Record each run's
+environment, configuration and exact runtime/tool versions separately under the
+identity rules above; differences constrain comparison and must not be hidden by
+changing the recipe label.
+
+| Activity | Evidence required and independence limit |
+|---|---|
+| Offline re-evaluation | A new evaluation record referencing the original immutable captures; verifies calculations only, not another live collection. |
+| Automation rerun | New run identity, capture times and retained raw collection, with CI/AI or same-operator provenance; may test behavior again, but is not independent human reproduction. |
+| Independent human reproduction | A genuinely different human operator executes the same recipe revision and retains a separate run package, independently collected raw evidence and actual UTC capture times. |
+
+For the independent run, all five must differ: **operator, run identity, raw
+collection, capture timestamps and retained run package**. Preserve both immutable
+packages, raw paths/digests, command/query inputs and outputs, and operator
+provenance linking the person who actually ran collection to that run, mode and
+time. Use one stable privacy-safe token per person matching
+`operator-[a-z0-9]+(?:-[a-z0-9]+)*` (for example, `operator-synthetic-a` in tests).
+Uppercase, whitespace, emails and plus-aliases are malformed provenance, not
+aliases to normalize or guess. Authorized reviewers must establish that canonical
+tokens represent different people. A different token, copied
+capture with a new filename, summary, signature or approval checkbox alone is not
+evidence of independence. Record fresh event windows, not just a new evaluation
+timestamp. Retain each collection's UTC `start`/`end` window, bound to its run ID
+and exact raw path/digest list; missing window evidence cannot yield `MET`.
+Require `start <= end <= captured_at`. Identical windows are rejected even when
+capture clocks differ. Overlap alone (including containment) does not invalidate
+genuinely concurrent independent collections with distinct windows and raw
+provenance. A changed window label cannot make the original retained raw
+collection independent: reused raw paths/digests or a window record bound to the
+original's raw collection are rejected. Reviewers must verify the recorded
+event/query intervals against the captures, not just the receipt.
+
+Compute independence separately from execution and hypothesis outcomes:
+
+- `MET`: retained evidence establishes two distinct human collections satisfying
+    the requirements above, within the recorded comparison scope.
+- `NOT_MET`: comparison was attempted, but evidence shows reuse, same-operator or
+    automation/replay provenance, or a missing independence prerequisite.
+- `NOT_TESTED`: no second collection has been supplied/performed. No second human
+    operator means independence remains `NOT_MET` or `NOT_TESTED`, never `MET`.
+
+The small offline checker
+[`scripts/lib/reproduction_check.py`](https://github.com/yeongseon/azure-functions-practical-guide/blob/main/scripts/lib/reproduction_check.py)
+checks optional retained comparison records, not a new mandatory lab schema.
+Call `evaluate(path, expected_sha256, evaluated_at)` with an independently pinned
+comparison digest. Each run records `run_id`, `scenario_id`, `recipe_revision`,
+`operator_id`, `operator_kind` (`human`, `ci`, `ai`), `mode` (`human-run`,
+`automation-rerun`, `offline-reevaluation`), `captured_at`, `environment`, `runtime`,
+a retained `package` directory, `raw` path/SHA-256 pairs, `window_evidence`
+pointing to a retained JSON record (`run_id`, `raw`, `start`, `end`, `synthetic`), and an
+`operator_provenance` JSON receipt binding operator, kind, run, mode and capture
+time. Paths resolve relative to the comparison file. An explicit `synthetic`
+boolean applies to the comparison and receipts. See the
+[synthetic test example](https://github.com/yeongseon/azure-functions-practical-guide/blob/main/tests/test_reproduction_check.py)
+for constructing retained inputs. Stored independence fields are ignored;
+malformed packages and unsupported independent-human claims are rejected.
+
+This checks consistency, **not authenticity or approval**: reviewers still inspect
+operator provenance and raw collection against the run package. A synthetic
+`MET` only exercises checker logic; it never proves real human reproduction.
+Do not fabricate operators or promote CI/AI output to human approval. No specific
+AI model or score is required. Independence does not establish the hypothesis:
+publish honest `INCONCLUSIVE` findings with the independence limitation, even
+when no second operator has run. Initial scenario development is not blocked.
+
 ### Tutorial Validation Dates Are Execution Dates
 
 Follow the authoritative
