@@ -11,6 +11,7 @@ on:
       - 'infra/**/*.sh'
       - 'infra/**/*.bicep'
       - 'mkdocs.yml'
+      - 'requirements-docs.txt'
       - '.github/workflows/ci.yml'
       - 'scripts/**'
   workflow_dispatch:
