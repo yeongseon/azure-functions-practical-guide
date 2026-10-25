@@ -13,6 +13,12 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-site-updates
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-rollback-deployments
   diagrams:
     - id: deployment-workflow
       type: flowchart
@@ -37,8 +43,8 @@ content_validation:
     - claim: "Deployment slots are used for safer releases and rollback on supported Azure Functions hosting plans."
       source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots
       verified: true
-    - claim: "Local validation with Azure Functions Core Tools is part of the supported deployment workflow before publishing."
-      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local
+    - claim: "Flex site updates default to Recreate; RollingUpdate is opt-in, and rollback requires another site update with the previous code or configuration."
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-site-updates
       verified: true
     - claim: "Flex Consumption runs from a package by default without WEBSITE_RUN_FROM_PACKAGE; Linux Consumption uses a URL instead of the local-package value 1."
       source: https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
@@ -158,7 +164,7 @@ Also retain the exact current package reference (including prior absence), artif
 
 ![Deployment Center blade showing Source selector and production slot warning](../assets/operations/deployment/01-deployment-center.png)
 
-[Inferred] For Consumption plans, this is the expected view since Consumption supports only 2 slots (production + 1 staging, Windows only). For Flex Consumption, there are no slots at all, so direct production deployment is the only option. Premium and Dedicated plans should configure CI/CD against a staging slot instead.
+[Inferred] For Consumption plans, this is the expected view since Consumption supports only 2 slots (production + 1 staging, Windows only). Flex has no slots, but supports a configurable site update strategy and separate-app validation; see the [release strategy decision table](../best-practices/deployment.md#release-strategy-decision-table). Premium and Dedicated plans should configure CI/CD against a staging slot instead.
 
 ## When to Use
 Choose deployment method by governance level, release frequency, and plan capability.
@@ -177,7 +183,7 @@ Choose deployment method by governance level, release frequency, and plan capabi
 3. **Regulated environments**
     - Use Azure DevOps approvals and governed service connections.
 4. **Flex Consumption**
-    - Deploy directly to production because slots are unsupported.
+    - Choose recreate, rolling update, or separate-app cutover using the [strategy comparison](../best-practices/deployment.md#release-strategy-decision-table); none uses Flex slots.
     - Prefer remote build when dependency compilation is platform-sensitive.
 
 ## Procedure
@@ -211,7 +217,7 @@ flowchart TD
     C --> D[Verify]
     D --> E{Slots supported?}
     E -- Yes --> F[Swap]
-    E -- No --> G[Direct release]
+    E -- No --> G[Verify selected update strategy or separate-app cutover]
     F --> H[Monitor]
     G --> H[Monitor]
     H --> I{Issue detected?}
@@ -360,13 +366,61 @@ Deployment storage is configured on the site resource through `properties.functi
 Use **Settings > Deployment settings** to inspect the package location, and **Diagnose and solve problems > Flex Consumption Deployment** for deployment history, package status and recommendations. Flex does not provide the classic Kudu console or its `/api/deployments` diagnostics. A deployment endpoint on an `scm` host is not a Kudu management surface; let supported tools select the API. Uploading a blob directly into the container does not deploy it. Retain release artifacts outside that container because its current package is overwritten.
 
 1. **No deployment slots**
-    - Deploy directly to production.
-    - Use smaller and more frequent releases.
+    - Validate in a separate app; choose the production site's update strategy below.
+    - A second app is not a slot: HTTP traffic routing and non-HTTP trigger ownership need their own cutover plan.
 2. **Remote build requirements**
     - Use remote build when runtime-specific dependencies must compile in Azure.
     - Validate runtime version and lockfile before publish.
 3. **Rollback approach**
     - Redeploy the last-known-good artifact because swap-back is unavailable.
+
+### Flex site update strategy
+
+The package/storage mechanism above is unchanged by this setting. Code deployment, app-setting changes and other configuration changes can trigger a site update. `properties.functionAppConfig.siteUpdateStrategy.type` defaults to `Recreate`; opt-in `RollingUpdate` drains and replaces instances in platform-controlled batches, not a user-configurable canary percentage. See the [decision table and regional availability caveat](../best-practices/deployment.md#release-strategy-decision-table) before choosing it.
+
+1. Capture the existing strategy, artifact hash/build identity, expected function inventory and scoped configuration baseline. Check compatibility in both directions: old instances must tolerate new settings/messages/schema, and the retained release must tolerate state written by the new release.
+2. Use **Azure CLI 2.87.0 or later** for these documented commands. Bicep/ARM supports this property with API version **2023-12-01 or later**. Read the current strategy before an approved write:
+
+    ```bash
+    az functionapp update-strategy config show \
+        --resource-group "$RG" \
+        --name "$APP_NAME"
+    ```
+
+    | Command/Parameter | Purpose |
+    | --- | --- |
+    | `az functionapp update-strategy config show` | Read the configured site update strategy; not rollout progress. |
+    | `--resource-group` | Target resource group. |
+    | `--name` | Target Flex Function App. |
+
+3. Configure the strategy ahead of the release under change control:
+
+    ```bash
+    az functionapp update-strategy config set \
+        --resource-group "$RG" \
+        --name "$APP_NAME" \
+        --type RollingUpdate
+    ```
+
+    | Command/Parameter | Purpose |
+    | --- | --- |
+    | `az functionapp update-strategy config set` | Select the strategy used for subsequent site updates. |
+    | `--resource-group` | Target resource group. |
+    | `--name` | Target Flex Function App. |
+    | `--type` | `RollingUpdate` opts in; `Recreate` selects restart behavior, not a package rollback. |
+
+4. In GA regions, changing the strategy alone is a no-op for running instances and applies to the next deployment. Where the feature is still rolling out, that change itself triggers an update using the **previous** strategy; the new strategy applies starting with the next deployment. Plan for interruption if the previous strategy is `Recreate`.
+5. Deploy through the established [plan-compatible package workflow](#package-configuration-by-plan-and-os) and verify below. Code and configuration writes can initiate separate overlapping updates; do not treat them as one atomic release or use a fixed sleep as proof of completion. Avoid unnecessary overlapping releases while investigating a regression.
+
+#### In-flight work and trigger readiness
+
+- **Invocations:** `Recreate` forcefully restarts live and draining instances. `RollingUpdate` stops new events on draining instances and allows in-progress executions within the documented **60-minute scale-in grace period**; HTTP responses remain limited to **230 seconds**, and configured function timeouts still apply. This is not unlimited execution protection or a guarantee against crashes/dependency failures. Single-instance apps can have brief downtime even with rolling updates.
+- **Indexing/listeners:** replacement instances still have to load the package, start the worker, discover/index the expected functions and initialize bindings/listeners. A deployment API success or HTTP health response does not demonstrate all triggers are indexed or processing. Compare the function inventory, inspect startup/indexing errors and exercise each critical trigger path; do not apply external-package manual-sync assumptions to Flex's managed deployment path.
+- **Queue processing:** old/new consumers can overlap during rolling updates. Keep message contracts backward compatible and side effects idempotent. For Azure Storage queues, successful execution deletes a message; failure or a host crash can make it visible for reprocessing according to visibility/retry rules. Inspect dequeue/retry and poison counts plus age/backlog, not just HTTP request success. Service Bus settlement and Event Hubs checkpointing have different semantics; follow the existing [trigger guidance](../best-practices/trigger-and-binding.md), not a universal drain/acknowledgment assumption.
+- **Durable business completion:** a healthy host or invocation return is not evidence of a committed downstream transaction or completed orchestration. Verify the application-owned completion record using a synthetic correlation key. For Durable Functions, use an explicit [orchestration version match strategy](https://learn.microsoft.com/en-us/azure/durable-task/common/durable-orchestration-versioning) because versions overlap; package rollback does not rewind orchestration history or external state.
+
+??? note "Source-review scope"
+    Strategy guidance, CLI syntax and the added core claim were checked against Microsoft Learn on 2026-10-25. No live Azure deployment, drain, queue or rollback tests were run; commands are procedures, not results. Historical page-wide review dates and tutorial validation metadata are unchanged.
 
 ### Post-deploy checks
 - Health endpoint is successful.
@@ -498,6 +552,27 @@ Expected output:
 4. Failure and duration metrics remain within baseline.
 
 ## Rollback / Troubleshooting
+### Flex package rollback is another update
+
+Flex has no built-in site-update undo, package revision history or slot swap-back. Preserve approved artifacts outside the overwritten deployment container, as described in [Flex deployment specifics](#flex-consumption-deployment-specifics). Recovery redeploys the retained known-good package through the supported pipeline/tooling; it is subject to the configured strategy and can overlap the failed release while instances drain. Uploading an old blob alone or changing the strategy to `Recreate` does not select an old package.
+
+Use the existing [recovery sequence](#recovery-sequence): first compare captured state, then restore only demonstrated code/configuration drift. The [official CI/CD recovery guide](https://learn.microsoft.com/en-us/azure/azure-functions/functions-rollback-deployments) also describes re-running an old successful run, but that **rebuilds** from its original commit, does not reuse the original binary, and resolves secrets/variables at their current values. Prefer a retained validated artifact when exact bytes matter; review rebuild dependencies and configuration diffs otherwise. Do not copy full-settings replacement or undeclared-key deletion into incident recovery. Neither method reverses database migrations, message side effects, external resources or secret rotation. If the old release cannot read current state safely, contain the incident and assess a forward fix rather than force an unsafe rollback.
+
+### Flex update and rollback acceptance criteria
+
+Before release, record a workload-specific observation window and error, latency and queue-age thresholds against a known-good baseline. After a release or approved recovery, collect these signals; these are **criteria to execute**, not results measured by this guide:
+
+| Layer | Observable evidence | Acceptance / limitation |
+| --- | --- | --- |
+| Artifact and configuration | Pipeline artifact hash/commit, package status in Flex Deployment diagnostics, reviewed scoped config diff | Matches the intended release (or retained recovery release); strategy selection alone proves neither code identity nor health |
+| Host and function discovery | Startup/worker/indexing logs and expected function inventory using the post-deploy checks | Required functions present, no unresolved indexing/listener failures; `Running` alone is insufficient |
+| Actual trigger execution | Correlated synthetic HTTP and queue/event invocations, where applicable, including application-owned committed outcome | Expected version handles new work; durable business outcome confirmed, not merely a health `200` or enqueue acknowledgment |
+| In-flight and retry safety | Correlated pre-update work records, retry/dequeue and poison/dead-letter metrics appropriate to the trigger | Interrupted/retried work reconciled without duplicate business effects; unresolved work remains an incident item |
+| Recovery stability | Failure ratio, latency, backlog/oldest-message age and completed-work rate over the agreed window | Within agreed thresholds and backlog recovering; stop repeated recovery writes and escalate if not |
+| Version turnover | Version-tagged invocation/instance telemetry during the observation window | No observed unexpected version handling new work; absence of logs is only best-effort evidence, not proof every old instance stopped |
+
+Microsoft Learn documents **no built-in completion signal or real-time batch progress** for Flex site updates. Its instance-log KQL estimates can falsely indicate completion because quiet instances or original-version scale-out are missed; do not promote those estimates to a production automation gate. Accept recovery based on release identity, trigger outcomes and stability together, document unresolved pre-update work, and keep the incident open when business completion is unproven.
+
 ### Existing Linux Consumption package changes
 
 Complete the [read-only precheck](#package-configuration-precheck-read-only) before approving any change. Removing the invalid `1` from this template is **not** a live-app migration. Microsoft Learn says an existing app using `WEBSITE_RUN_FROM_PACKAGE=1` cannot be converted in place to an external package URL: use a new app configured for that workflow, validate it in isolation, and plan traffic/trigger cutover without duplicate consumers. Do not blindly replace `1` with a URL on a running app.
@@ -581,6 +656,7 @@ Troubleshooting checks: compare artifact hash with release manifest, diff app se
 verify runtime compatibility, and validate trigger dependency identity/access.
 
 ## See Also
+- [Deployment strategy decision table](../best-practices/deployment.md#release-strategy-decision-table)
 - [Configuration](configuration.md)
 - [Monitoring](monitoring.md)
 - [Recovery](recovery.md)
@@ -592,3 +668,9 @@ verify runtime compatibility, and validate trigger dependency identity/access.
 - [Functions Core Tools reference](https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local)
 - [Deployment technologies and remote build](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies)
 - [Configure Flex deployment settings](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to#configure-deployment-settings)
+- [Flex Consumption deployment model and availability](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan)
+- [Flex site update strategies](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-site-updates)
+- [Update strategy CLI reference](https://learn.microsoft.com/en-us/cli/azure/functionapp/update-strategy/config)
+- [Recover from a bad Flex deployment](https://learn.microsoft.com/en-us/azure/azure-functions/functions-rollback-deployments)
+- [Azure Storage queue trigger processing and retries](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger#peek-lock)
+- [Durable orchestration versioning](https://learn.microsoft.com/en-us/azure/durable-task/common/durable-orchestration-versioning)

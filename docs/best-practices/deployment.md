@@ -5,6 +5,12 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-site-updates
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-rollback-deployments
   diagrams:
     - id: recommended-rollback-order
       type: flowchart
@@ -41,8 +47,8 @@ content_validation:
     - claim: "Consumption 플랜의 배포 슬롯은 프로덕션을 포함해 총 2개까지만 지원된다."
       source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
       verified: true
-    - claim: "동일한 빌드 산출물을 환경별로 승격하는 immutable artifact 배포 방식이 안전하다."
-      source: https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
+    - claim: "Flex RollingUpdate drains and replaces instances in batches, requires backward-compatible changes, and provides no separate canary environment or built-in update completion signal."
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-site-updates
       verified: true
     - claim: "WEBSITE_RUN_FROM_PACKAGE=1 is supported for local-package deployment on Windows Consumption, Premium, and Dedicated, not Linux Consumption or Flex Consumption."
       source: https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
@@ -97,7 +103,7 @@ This section shows the Deployment Center blade for a live Function App (Consumpt
 
 ### Prefer plan-compatible immutable package deployment
 
-Run-from-package mounts a built artifact as a read-only package. This removes in-place mutation risk and keeps all instances on the same bits.
+Run-from-package mounts a built artifact as a read-only package. This removes in-place mutation risk; during a rolling update, old and new immutable package versions can still coexist until instance turnover completes.
 
 Use the shared [package matrix](../operations/deployment.md#package-configuration-by-plan-and-os) for exact setting and read-only behavior by plan/OS, and the [Flex storage and diagnostics procedure](../operations/deployment.md#flex-consumption-deployment-specifics) instead of a Kudu path. Remote-build requests must not force `WEBSITE_RUN_FROM_PACKAGE`, even on Premium/Dedicated. For an existing Linux Y1 app, follow the [read-only precheck](../operations/deployment.md#package-configuration-precheck-read-only) and [migration/recovery precautions](../operations/deployment.md#existing-linux-consumption-package-changes), not an unconditional settings update.
 
@@ -128,8 +134,25 @@ Slot usage must match plan limits and trigger behavior.
 
 ### Flex Consumption (FC1)
 
-- No slots; use artifact promotion and config rollback patterns.
-- Validate release in an isolated FC1 app before production publish.
+- No slots; choose default `Recreate` or opt-in `RollingUpdate` for the production app, independently of the package deployment method.
+- Validate release in an isolated FC1 app before production publish. Rolling updates do not provide a separate staging environment or percentage-based canary routing.
+
+### Release strategy decision table
+
+| Strategy | Choose when | Invocation and cutover tradeoff | Recovery |
+| --- | --- | --- | --- |
+| Flex basic deployment (`Recreate`, default) | Brief interruption is acceptable, or incompatible versions must not coexist | Restarts all live/draining instances; in-flight invocations are terminated and availability drops during restart | Redeploy retained known-good package; restore only proven configuration drift |
+| Flex `RollingUpdate` | Old/new code, messages, schemas and configuration can coexist | Platform-managed batches stop accepting new events while draining; old/new versions overlap. Single-instance apps can still have brief downtime | Another site update with prior code/configuration, not an atomic undo |
+| Separate Flex preproduction / blue-green apps | Need isolated validation; for blue-green, independently managed HTTP routing | Preproduction alone does not switch traffic. Blue-green needs an external router and explicit non-HTTP trigger ownership; extra apps/capacity and dependencies to manage | Route HTTP back only if the old app is healthy and compatible; reconcile trigger ownership and state separately |
+| Premium / Dedicated slot swap | Need built-in staging, prewarming and supported swap | Warm staged release then switch routing; currently executing functions can terminate, so swaps are not an unconditional zero-downtime guarantee | Swap back only with verified prior contents and safe sticky settings |
+
+!!! warning "Availability and completion are conditional"
+    Source review on 2026-10-25 found that the [Flex plan page](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan#zero-downtime-deployments) still labels rolling updates **public preview**, while [site update guidance](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-site-updates#rolling-update-strategy-considerations) distinguishes GA regions from regions still rolling out. Confirm target-region availability and support expectations before adoption; do not infer global GA from the CLI command's GA label. A single-instance app can have downtime, and replacement scale-out is not guaranteed before the next drain interval. Platform readiness is not proof that every invocation or durable business operation completed.
+
+Use the [Flex update procedure](../operations/deployment.md#flex-site-update-strategy) for version requirements, draining limits and configuration, and the [recovery acceptance criteria](../operations/deployment.md#flex-update-and-rollback-acceptance-criteria) for observable outcomes.
+
+??? note "Source-review scope"
+    The decision table and added rolling-update core claim were checked against Microsoft Learn on 2026-10-25, not tested in live Azure. The historical page-wide review date is unchanged.
 
 ### Premium and Dedicated
 
@@ -141,7 +164,7 @@ Slot usage must match plan limits and trigger behavior.
 |---|---|---|---|---|
 | Windows Consumption (Y1) | Yes | 2 total including production | Yes | Limited; validate quickly on single staging slot |
 | Linux Consumption (Y1) | No | Not applicable | Not applicable | Validate in an isolated app before direct deployment |
-| Flex Consumption (FC1) | No | Not applicable | Not applicable | Use isolated app validation instead of slot warm-up |
+| Flex Consumption (FC1) | No | Not applicable | Not applicable | Isolated app for validation; optional rolling updates for production replacement, not slot warm-up |
 | Premium (EP) | Yes | Multiple (SKU-dependent) | Yes | Strong; pre-warm instances and run trigger-aware smoke tests |
 | Dedicated | Yes | Multiple (plan capacity-dependent) | Yes | Strong; warm slot and validate before cutover |
 
@@ -364,3 +387,7 @@ flowchart TD
 
 - [Deployment technologies in Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies)
 - [Package-based deployment for Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push)
+- [Flex Consumption deployment and availability caveats](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan)
+- [Flex site update strategies and limitations](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-site-updates)
+- [Recover from a bad Flex deployment](https://learn.microsoft.com/en-us/azure/azure-functions/functions-rollback-deployments)
+- [Deployment slot swap behavior](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots)
