@@ -604,6 +604,7 @@ nav:
     - Validation Dashboards:
       - Content Validation Status: reference/content-validation-status.md
       - Validation Status: reference/validation-status.md
+      - Validation Evidence Audit: reference/validation-evidence-audit.md
   - Contributing:
     - contributing/index.md
     - Documentation Content Contract: contributing/content-contract.md
