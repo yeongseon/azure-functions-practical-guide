@@ -139,14 +139,7 @@ Use this decision model:
 
 Prefer identity-based setting patterns for supported extensions.
 
-Example pattern for host storage:
-
-- `AzureWebJobsStorage__accountName=<storage-account-name>`
-- `AzureWebJobsStorage__credential=managedidentity` (or equivalent supported pattern)
-
-Avoid classic secret pattern unless required:
-
-- `AzureWebJobsStorage=<connection-string-with-key>`
+For host storage, use the canonical [authentication settings and plan caveats](../platform/storage-connectivity.md#host-storage-authentication-including-flex) instead of copying a partial settings pattern. Review [identity permission boundaries](../platform/storage-connectivity.md#identity-permission-boundaries) before applying the resource-role examples below; host, deployment, and binding connections need separate checks.
 
 ### Key Vault reference syntax and common errors
 

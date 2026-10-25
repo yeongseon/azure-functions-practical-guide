@@ -244,12 +244,7 @@ Host identity support does not make content-share authentication identity-based.
 
 ### Timeout reference (design-time)
 
-| Plan | Default timeout | Maximum timeout |
-|---|---:|---:|
-| Consumption (classic) | 5 minutes | 10 minutes |
-| Flex Consumption | 30 minutes | Unbounded |
-| Premium | 30 minutes | Unbounded |
-| Dedicated | 30 minutes | Unbounded with Always On |
+Use the shared [hosting-plan comparison](../reference/platform-limits.md#hosting-plan-comparison) for timeout defaults and maximums, and [Execution Timeout](../reference/platform-limits.md#execution-timeout) for configuration and interruption qualifications. Compare the longest expected invocation with those boundaries before selecting a plan.
 
 !!! note
     Unbounded execution does not prevent platform-update or scale-in interruption. HTTP responses still have platform front-end constraints independent of background function timeout. See [timeout qualifications](../reference/platform-limits.md#execution-timeout) and design long-running HTTP operations using async patterns.

@@ -372,7 +372,7 @@ az role assignment create \
 | `--role` | Azure RBAC role to assign. |
 | `--scope` | Scope at which the role applies. |
 
-Flex Consumption requires identity-based host storage configuration. Plan identity and RBAC early.
+Plan identity and RBAC using the canonical [host storage authentication guidance](storage-connectivity.md#host-storage-authentication-including-flex) and [identity permission boundaries](storage-connectivity.md#identity-permission-boundaries), rather than inferring host permissions from the Blob data-access example above.
 
 ### Key and secret handling
 Preferred order:
