@@ -78,10 +78,11 @@ flowchart TD
     Q1 -->|No| Q2{"Predictable\nmonthly cost?"}
     Q1 -->|Yes| Q3{"Scale to zero\nwhen idle?"}
 
-    Q2 -->|"Pay only\nwhen running"| CONS["☁️ Consumption (Y1)"]
+    Q2 -->|"Pay only\nwhen running"| FLEX["⚡ Flex Consumption (FC1)"]
+    Start -.->|Existing legacy app| CONS["☁️ Consumption (Y1) — migration track"]
     Q2 -->|"Fixed monthly\nbudget"| DEDI["🖥️ Dedicated (App Service)"]
 
-    Q3 -->|Yes| FLEX["⚡ Flex Consumption (FC1)"]
+    Q3 -->|Yes| FLEX
     Q3 -->|"No — always\nwarm"| Q4{"Need deployment\nslots?"}
 
     Q4 -->|Yes| PREM["🚀 Premium (EP)"]
@@ -102,21 +103,15 @@ flowchart TD
 
 ## Plan Comparison at a Glance
 
+Use [Platform Limits](../../../reference/platform-limits.md) for plan/OS/region-qualified quotas, slots, runtime support, and timeout qualifications. Python apps are **Linux-only**; Windows quotas are not Python options. For Linux Consumption retirement and target selection, follow the [migration decision path](../../../reference/platform-limits.md#runtime-support-and-linux-consumption-migration). Tutorial runtime pins and configured scale caps are examples, not platform limits.
+
 | Feature | Consumption (Y1) | Flex Consumption (FC1) | Premium (EP) | Dedicated (ASP) |
 |---------|:-----------------:|:----------------------:|:------------:|:----------------:|
 | **Scale to zero** | ✅ | ✅ | ❌ (min 1 instance) | ❌ |
 | **VNet integration** | ❌ | ✅ | ✅ | ✅ (Standard+) |
 | **Private endpoints** | ❌ | ✅ | ✅ | ✅ (Standard+) |
-| **Deployment slots** | ✅ (Windows only, 2 incl. production) | ❌ | ✅ | ✅ (Standard+) |
-| **Max instances** | 100 (Linux) / 200 (Windows) | 1,000 | 20–100 (region/OS dependent) | 10–30 |
-| **Default timeout** | 5 min | 30 min | 30 min | 30 min |
-| **Max timeout** | 10 min | Unlimited | Unlimited | Unlimited |
-| **Instance memory** | 1.5 GB fixed | 512 / 2,048 / 4,096 MB | 3.5–14 GB | Plan-dependent |
-| **OS** | Windows / Linux | Linux only | Windows / Linux | Windows / Linux |
-| **Python versions** | 3.10–3.12 | 3.10–3.12 [^1] | 3.10–3.14 (Preview) | 3.10–3.14 (Preview) |
-
-[^1]: Flex Consumption remote build currently supports Python 3.10–3.12. Python 3.13+ may encounter build failures on Flex. Use 3.10–3.12 for Flex deployments.
-| **Storage backend** | File share | Blob container | File share | File share |
+| **Python OS** | Linux (legacy) | Linux | Linux | Linux |
+| **Deployment content** | Linux deployment-specific | Blob container | Azure Files by default; exceptions apply | No default Azure Files dependency |
 | **Kudu / SCM** | ✅ (Windows only) | ❌ | ✅ | ✅ |
 | **Pricing model** | Per-execution | Per-execution | Pre-allocated | Pre-allocated |
 
@@ -241,7 +236,7 @@ flowchart TD
     end
     ST --- SHARE
 
-    WARM["🔥 Pre-warmed instances\nMin: 1, Max: 20-100"] -.- FA
+    WARM["🔥 Warm baseline and burst cap\nSeparate app and plan settings"] -.- FA
 
     style FA fill:#ff8c00,color:#fff
     style VNET fill:#E8F5E9,stroke:#4CAF50
@@ -307,7 +302,7 @@ Each track contains the same seven steps. Pick your plan and follow from start t
 
 ### ☁️ [Consumption (Y1)](consumption/01-local-run.md)
 
-Classic serverless — pay only when your functions execute. Best for lightweight, event-driven workloads that don't need VNet access.
+Legacy Linux serverless track for existing workloads and migration comparison. Start new Python serverless apps with Flex; use the linked migration decision path before retaining Consumption.
 
 | Step | Topic |
 |------|-------|
