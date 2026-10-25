@@ -185,7 +185,9 @@ This Functions-local contract applies to executable labs and operational claims
 in investigations, playbooks, and verification steps. It is not an annotation
 requirement for navigation-only Markdown or ordinary explanatory prose. It
 extends the [evidence annotation policy](../../contributing/content-contract.md#evidence-annotation-policy)
-using the existing experiment log; no extra tracker, schema, or site tooling is
+using the existing experiment log in the
+[canonical lab template](../../contributing/content-contract.md#lab-guides);
+no extra tracker, schema, or site tooling is
 required. These recordkeeping rules are self-generated authoring policy, informed
 by the Microsoft Learn monitoring sources below, not an Azure feature guarantee.
 Adopting them does not declare existing labs Golden or retrospectively validate
@@ -193,12 +195,21 @@ their evidence.
 
 ### Experiment -> Evidence -> Assertion -> Hypothesis
 
-1. **Experiment:** Before execution, name the competing hypotheses, baseline,
-    fault, control, recovery, and cleanup steps. Declare each assertion's expected
-    signal, time window, and contradicting observation in advance.
+Evidence-integrity requirements (run identity, provenance, sanitization,
+retention, and honest timestamps) always apply. Experiment phases and assertion
+stages depend on the declared claim: include baseline, fault, control, recovery,
+and cleanup only where relevant. For an irrelevant phase or stage, write
+`not applicable (reason)` in the existing notes, not a new schema or tracker.
+An omitted stage is never proven; narrowing a claim cannot establish an untested
+downstream outcome.
+
+1. **Experiment:** Before execution, state the claim and competing hypotheses,
+    then declare the relevant phases and controls or explain non-applicability.
+    Declare each applicable assertion's expected signal, time window, and
+    contradicting observation in advance.
 2. **Evidence:** Collect run-owned facts without assigning a cause. Retain the
     relevant command/query inputs and sanitized outputs, including failures and
-    collection gaps, for baseline, fault, and recovery phases.
+    collection gaps, for each applicable phase.
 3. **Assertion:** Compare a specific claim with named evidence records using the
     predeclared criteria. Record whether it holds, is contradicted, or cannot be
     decided, with artifact/field references and reasoning.
@@ -206,10 +217,13 @@ their evidence.
     not from a collector summary or a stored verdict. A replay must be traceable
     back to retained observations; a generated result is not its own proof.
 
-For Functions, declare separate assertions for deployment acceptance, host
-startup/function indexing, trigger invocation, and the durable business outcome
-(for example, a persisted work record). Evidence for one does not establish the
-others. A successful restart plus a successful post-restart probe proves recovery
+For Functions, keep assertions for deployment acceptance, host startup/function
+indexing, trigger invocation, and the durable business outcome (for example, a
+persisted work record) separate **when those stages are relevant to the claim**.
+A deployment-only claim need not test a business outcome, but must mark that
+stage not applicable with a reason and cannot imply it was proven. Evidence for
+one stage does not establish the others. A successful restart plus a successful
+post-restart probe proves recovery
 for that probe and window, **not uniquely the cause**. Causal support also needs
 discriminating evidence against competing explanations and a relevant control.
 
@@ -229,11 +243,13 @@ replacing every paragraph with a new label.
 
 | Execution status | Meaning |
 |---|---|
-| `COMPLETE` | All required experiment phases, collection, recovery checks, and cleanup checks finished. This does not mean the hypothesis was supported. |
+| `COMPLETE` | All phases, collection, and checks applicable to the declared claim finished; non-applicable stages have explicit reasons. This does not mean the hypothesis or any omitted stage was proven. |
 | `PARTIAL` | Some work ran, but required phases or captures remain incomplete; list them. |
 | `BLOCKED` | A prerequisite or access boundary prevented progress; record the blocker and any steps already attempted. |
 | `FAILED` | The execution or collection procedure failed; record the failure and recovery/cleanup state. An intentionally induced fault is not itself a runner failure. |
 | `NOT_RUN` | No live execution was attempted; static source review or offline replay does not count. |
+
+For overlapping incomplete statuses, use `BLOCKED` (prerequisite/access cause) before `FAILED` (procedure error) before `PARTIAL` (otherwise unfinished work); retain all contributing causes in the notes, and use `NOT_RUN` when no attempt or blocker was encountered.
 
 | Hypothesis status | Meaning |
 |---|---|
@@ -303,19 +319,18 @@ reproduction.
 
 ### Tutorial Validation Dates Are Execution Dates
 
-The existing [tutorial validation rules](../../contributing/content-contract.md#tutorial-validation-tracking)
-remain authoritative. Update `validation.az_cli.last_tested` or
-`validation.bicep.last_tested` only for an actual Azure execution of that method:
-stamp `pass` after end-to-end execution; if a step fails during validation, record
-`fail` and the failure at the real attempt date, without claiming completion.
-Never erase the other method's results. An unexecuted method stays `not_tested`
-with `last_tested: null` unless it already has a genuine historical result, which
-must be preserved with its original date. A partial or blocked attempt is not a
-pass; describe unfinished steps in the run notes without inventing a new schema
-value. Source checking, documentation edits, and offline replay do not refresh
-either date. After an actual frontmatter update, regenerate and commit the
-tutorial dashboard. These tutorial results are separate from the execution and
-hypothesis statuses above; a successful tutorial does not prove an incident cause.
+Follow the authoritative
+[Agent Rules for Validation](../../contributing/content-contract.md#agent-rules-for-validation)
+for `validation.az_cli.last_tested` and `validation.bicep.last_tested`: `pass`
+requires end-to-end Azure execution; a failed Azure validation attempt records
+`fail` with its genuine attempt date. Source review, editing, and offline replay
+never refresh these dates, and the other method's metadata is preserved.
+An unexecuted method stays `not_tested` with `last_tested: null` unless it has a
+genuine historical result, which retains its original date. Describe partial or
+blocked work in the run notes without claiming a pass or inventing a schema
+value. Regenerate the tutorial dashboard when validation frontmatter changes as
+the authoritative rules require. Tutorial results remain separate from execution
+and hypothesis statuses; a successful tutorial does not prove an incident cause.
 
 ## Anti-patterns to avoid
 

@@ -990,9 +990,9 @@ Tutorials not validated within **90 days** are flagged as **stale** on the dashb
 
 ### Agent Rules for Validation
 
-1. **After deploying a tutorial end-to-end**, add or update the `validation` frontmatter with the current date, CLI version, and `result: pass`.
-2. **If a tutorial step fails during validation**, set `result: fail` and note the issue — do NOT remove existing passing metadata for the other method.
-3. **Never fabricate validation dates.** Only stamp a tutorial after actually executing all steps against a real Azure environment.
+1. **A `pass` requires end-to-end execution against real Azure.** Update the executed method's `validation` frontmatter with its genuine execution date in `last_tested`, CLI version, and `result: pass`.
+2. **If an actual Azure validation attempt fails**, set that method's `result: fail`, record its genuine attempt date in `last_tested`, and note the failed step and unfinished work; do not imply end-to-end completion. Preserve the other method's metadata, including its date and result.
+3. **Never fabricate or refresh validation dates without execution.** Source review, documentation editing, and offline replay never update `validation.az_cli.last_tested` or `validation.bicep.last_tested`. Preserve historical dates/results when no new Azure validation occurs; an unexecuted method without history stays `result: not_tested` with `last_tested: null`.
 4. **After updating frontmatter**, regenerate the dashboard:
     ```bash
     python3 scripts/generate_validation_status.py
