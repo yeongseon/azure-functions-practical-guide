@@ -6,11 +6,13 @@ content_sources:
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
     - type: mslearn-adapted
-      url: https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-infrastructure-as-code
   diagrams:
     - id: 1-summary
       type: flowchart
@@ -19,55 +21,48 @@ content_sources:
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
-        - https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package
+        - https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
 content_validation:
   status: verified
-  last_reviewed: 2026-04-12
+  last_reviewed: 2026-10-25
   reviewer: agent
   core_claims:
-    - claim: "Deployment Failures 관련 핵심 진단 절차와 운영 판단 기준"
-      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics
+    - claim: "Flex Consumption runs from a package by default and must not use WEBSITE_RUN_FROM_PACKAGE."
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
+      verified: true
+    - claim: "Linux Consumption uses a package URL, not WEBSITE_RUN_FROM_PACKAGE=1; remote build manages its package output."
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
+      verified: true
+    - claim: "Flex Consumption configures runtime and deployment storage through functionAppConfig instead of legacy runtime application settings."
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-infrastructure-as-code
+      verified: true
+    - claim: "Changing application settings restarts the function app by default."
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
       verified: true
 ---
 
 # Deployment Failures
-## Portal Walkthrough
-
-Key portal blades for deployment failure investigation. Captures from a Consumption (Y1) Function App with PII masked.
-
-![Deployment Center blade](../../assets/operations/deployment/01-deployment-center.png)
-
-![Log stream for deployment errors](../../assets/operations/monitoring/02-log-stream.png)
-
-![Environment variables blade](../../assets/operations/configuration/01-environment-variables.png)
-
 ## 1. Summary
 Deployment failures in Azure Functions are often deployment-success-but-runtime-failure incidents.
 Transport success (artifact uploaded) does not guarantee host startup, trigger indexing, or invocation health.
 This playbook prioritizes fast triage of runtime settings, deployment model fit, and package integrity.
+
+!!! note "Verification boundary"
+    The mitigation guidance was checked against the linked Microsoft Learn sources on 2026-10-25. `content_validation` records official-source review, not CLI execution or live Azure validation. No Azure deployment, configuration change, restart, or recovery experiment was performed for this revision. Existing log and result examples below are not evidence of a newly executed incident.
 <!-- diagram-id: 1-summary -->
 ```mermaid
 flowchart TD
-    A[Deployment failed or degraded after release] --> B{App starts?}
-    B -->|No| C[Check startup traces + activity log]
-    B -->|Yes but errors| D["Check runtime/app settings drift"]
-    C --> E{Recent deploy or config event?}
-    E -->|Yes| F[Validate deploy method + artifact]
-    E -->|No| G["Check platform/runtime changes"]
-    D --> H{FUNCTIONS_WORKER_RUNTIME correct?}
-    H -->|No| I[Fix runtime setting + restart]
-    H -->|Yes| J{linuxFxVersion aligned?}
-    J -->|No| K[Align stack and runtime]
-    J -->|Yes| L{Required settings present?}
-    L -->|No| M[Restore settings and slot config]
-    L -->|Yes| N{Method fits hosting model?}
-    N -->|No| O["Switch method: zip deploy / run-from-package"]
-    N -->|Yes| P[Check package integrity + redeploy]
-    F --> P
-    G --> J
-    P --> Q[Validate host stability and failure rate]
+    A[Deployment failed or degraded after release] --> B[Capture read-only baseline and logs]
+    B --> C{Hosting plan and OS identified?}
+    C -->|No| D[Stop and resolve missing evidence]
+    C -->|Yes| E[Compare runtime and deployment model with prior release]
+    E --> F{Evidence supports a scoped rollback?}
+    F -->|No| G[Continue competing-hypothesis investigation]
+    F -->|Yes| H[Approve interruption risk and restore only proven drift]
+    H --> I[Validate host readiness and function discovery]
+    I --> J[Validate trigger execution and recovery metrics]
 ```
 ### Incident framing
 - Common symptom: deployment command succeeds, but app returns `500`, `404`, or host loops on startup.
@@ -89,7 +84,7 @@ WORKSPACE_ID="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 3. **"Staging is healthy, swap is safe"**
     - Slot-specific settings drift can break production immediately after swap.
 4. **"Any artifact can run with current stack"**
-    - `FUNCTIONS_WORKER_RUNTIME` and `linuxFxVersion` must align with artifact language/runtime.
+    - On non-Flex code apps, `FUNCTIONS_WORKER_RUNTIME` and the OS-specific stack must align with the artifact. Flex uses `functionAppConfig.runtime` instead.
 5. **"Extension bundle issues are rare and harmless"**
     - Bundle retrieval/version issues can prevent trigger listeners from loading.
 ## 3. Competing Hypotheses
@@ -106,6 +101,7 @@ WORKSPACE_ID="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
     - `FUNCTIONS_WORKER_RUNTIME`
     - `WEBSITE_RUN_FROM_PACKAGE`
     - trigger connection setting keys referenced in bindings
+- These keys are not universally required: Flex replaces legacy runtime/package settings with `functionAppConfig`, and host storage can use identity-based `AzureWebJobsStorage__*` settings instead of a connection string.
 ### H3: Deployment method not suited to hosting model
 - Deployment strategy conflicts with plan/runtime behavior.
 - Frequent patterns:
@@ -120,38 +116,76 @@ WORKSPACE_ID="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
     - package hash mismatch between CI and deployment metadata
 ## 4. What to Check First
 ### First 5-minute checklist
-1. Identify the exact release path: zip deploy, run-from-package URL, or slot swap.
-2. Snapshot app metadata (`state`, `kind`, `linuxFxVersion`) and key settings.
-3. Inspect activity log around deployment timestamp for failed config writes.
-4. Check startup/shutdown traces for crash loop behavior.
-5. If slots are used, diff staging vs production settings.
+1. Do not write settings, redeploy, swap, or restart yet. Identify hosting SKU, OS, runtime/language/version, affected app or slot, and exact release path (including remote build or container image).
+2. Capture current resource configuration and settings, including **absence** of keys, slot stickiness, and deployment storage/authentication. Retrieve the pre-release known-good configuration and retained artifact/hash from the release record; a snapshot taken during failure is not a known-good baseline.
+3. Preserve deployment/build logs, activity events (successful and failed), startup/indexing traces, function inventory, and invocation/backlog metrics with UTC timestamps.
+4. Compare current state with that prior release. If the baseline or deployment method is unknown, stop speculative mutation and escalate.
+5. Where slots are supported and used, capture both slots and their sticky settings before considering swap-back.
 ### Metadata snapshot command
 ```bash
 az functionapp show \
     --resource-group $RG \
     --name $APP_NAME \
     --subscription $SUBSCRIPTION_ID \
-    --query "{state:state, kind:kind, reserved:reserved, linuxFxVersion:siteConfig.linuxFxVersion}" \
+    --query "{state:state, kind:kind, reserved:reserved, serverFarmId:serverFarmId, linuxFxVersion:siteConfig.linuxFxVersion, functionAppConfig:functionAppConfig}" \
     --output json
 ```
 
-| CLI element | Explanation |
+| Command/Parameter | Purpose |
 |---|---|
-| Command(s) | `az functionapp show` |
-| Key flags | `--resource-group`, `--name`, `--subscription`, `--query`, `--output` |
-| Variables | `$RG`, `$APP_NAME`, `$SUBSCRIPTION_ID` |
-| Expected result | Azure CLI returns the requested resource data; verify names, IDs, status fields, or metric values match the scenario. |
+| `az functionapp show` | Read app metadata; do not change state. |
+| `--resource-group` | Target resource group. |
+| `--name` | Target Function App. |
+| `--subscription` | Explicit subscription scope. |
+| `--query` | Include plan resource ID, OS, legacy stack, and Flex configuration. |
+| `--output` | Return JSON for review. |
+
+Resolve `PLAN_ID` from the returned `serverFarmId`, then read its SKU. Capture the full app and settings securely; outputs can contain secrets, SAS URLs, and real identifiers. Keep raw snapshots outside source control with restricted access; publish only sanitized evidence. These commands target production; for a supported non-production slot, use the corresponding slot resource and `--slot` on app commands that support it.
+
+```bash
+az appservice plan show --ids "$PLAN_ID" --query "{sku:sku, reserved:reserved}" --output json
+az functionapp show --resource-group "$RG" --name "$APP_NAME" --subscription "$SUBSCRIPTION_ID" --output json > app-current.json
+az functionapp config show --resource-group "$RG" --name "$APP_NAME" --subscription "$SUBSCRIPTION_ID" --output json > site-config-current.json
+az functionapp config appsettings list --resource-group "$RG" --name "$APP_NAME" --subscription "$SUBSCRIPTION_ID" --output json > appsettings-current.json
+```
+
+| Command/Parameter | Purpose |
+|---|---|
+| `az appservice plan show` | Read the referenced plan; distinguish FC1, Y1, EP, and Dedicated SKUs. |
+| `az functionapp show` | Capture full current app resource, including Flex configuration. |
+| `az functionapp config show` | Capture OS-specific site/stack configuration. |
+| `az functionapp config appsettings list` | Capture current values and slot-setting flags without changing them. |
+| `--ids` | Fully qualified plan resource ID from the app. |
+| `--resource-group` | Resource group containing the app. |
+| `--name` | App being investigated. |
+| `--subscription` | Subscription containing the app. |
+| `--query` | Select SKU and OS fields for the plan. |
+| `--output` | JSON format for secure local snapshots. |
 
 Expected read:
 
 - `state` should settle at `Running`.
-- `linuxFxVersion` should match intended runtime.
+- For non-Flex Linux code apps, `linuxFxVersion` should match the intended runtime. For Flex, inspect `functionAppConfig.runtime.name` and `.version`; an empty legacy stack field alone is not a fault.
 - Linux app should report `reserved: true`.
 ### Slot-focused quick checks
 - confirm sticky settings policy for production-critical values
 - confirm `WEBSITE_RUN_FROM_PACKAGE` value validity per slot
 - confirm connection settings required by bindings exist in target slot
 ## 5. Evidence to Collect
+### Portal Walkthrough
+
+Key portal blades for deployment failure investigation. Existing captures are from a Consumption (Y1) Function App with PII masked; they are not Flex evidence or a new validation run.
+
+![Deployment Center blade](../../assets/operations/deployment/01-deployment-center.png)
+
+![Log stream for deployment errors](../../assets/operations/monitoring/02-log-stream.png)
+
+![Environment variables blade](../../assets/operations/configuration/01-environment-variables.png)
+
+### Plan-specific interpretation
+
+The legacy runtime/app-setting examples in sections 5–7 apply to non-Flex code apps, not a required configuration for every plan. For Flex, inspect `functionAppConfig.runtime` and `.deployment.storage`, deployment logs, and the **Flex Consumption Deployment** diagnostic under **Diagnose and solve problems**. Do not assume a Kudu console or legacy ZIP deployment history is available. For container apps on Premium/Dedicated, compare the image digest and container configuration instead of applying package-setting fixes.
+
 ### Sample Log Patterns
 ```text
 2026-04-04T07:15:02.214Z info  Starting Host (HostId=func-orders-prod, InstanceId=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)
@@ -534,37 +568,56 @@ EventTimestamp              OperationNameValue                     Status  SubSt
     - missing root files (`host.json`) or incomplete dependencies
     - CI artifact and deployed package hash differ
 ## 8. Immediate Mitigations
-1. Roll back to last known-good artifact and release method.
-2. Restore known-good app settings snapshot, then restart host.
-3. If slots are used, swap back immediately.
-4. Align runtime settings and stack:
-    - set `FUNCTIONS_WORKER_RUNTIME` correctly
-    - align `linuxFxVersion` with target runtime
-5. Redeploy with validated package hash and immutable artifact source.
-6. If extension bundle errors exist, pin known-good bundle range and redeploy.
-Operational command examples:
+### Choose the recovery branch before any write
+
+Use the section 4 baseline and [official package guidance](https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push). Do not change the app's language to Python or enable a new deployment mode as a generic repair.
+
+| Confirmed hosting branch | Evidence-led recovery action |
+|---|---|
+| Flex Consumption (FC1, Linux) | Compare `functionAppConfig.runtime.name` / `.version` and `.deployment.storage` container/authentication with the prior release. Restore only proven resource-property drift through the reviewed resource configuration workflow and redeploy a retained known-good artifact through Flex-supported publishing. Do not add `FUNCTIONS_WORKER_RUNTIME`, `linuxFxVersion`, or `WEBSITE_RUN_FROM_PACKAGE` as a repair; Flex uses resource properties and managed package deployment. No slot swap-back. |
+| Linux Consumption (Y1) | Compare legacy worker/stack settings and the captured remote-build or external-package workflow. `WEBSITE_RUN_FROM_PACKAGE=1` is unsupported; a locally built package uses a reachable package URL. Restore the prior valid URL/authentication only for an established URL workflow, or redeploy through the prior remote-build pipeline. Do not manually force a package setting when requesting remote build. No slot swap-back. |
+| Windows Consumption (Y1) | Restore the prior worker/Windows stack configuration only if drift is established. `WEBSITE_RUN_FROM_PACKAGE=1` is valid for an already configured local-package workflow, not proof that a package exists. Redeploy the retained package using that workflow; consider swap-back only if the previous release remains in a supported slot and settings are verified. |
+| Premium (EP, Windows or Linux) | Distinguish code package, remote build, external URL, and container deployment. For code, restore only the captured settings/OS-specific stack changes. Local-package mode supports `1`, but do not overwrite an existing URL or remote-build workflow. Restore the retained artifact or image digest; use swap-back only after checking prior slot contents and sticky settings. |
+| Dedicated (Windows or Linux) | Confirm the App Service SKU and code/container model. Restore only drifted runtime/package or image configuration through the existing release workflow; local-package mode supports `1`, not a universal migration instruction. Use a verified supported slot or retained artifact/image and recheck listeners after recovery. |
+
+### Minimal rollback from captured prior state
+
+1. Pause competing deployments and obtain incident-owner approval. Record the exact target app/slot, known-good artifact/hash, keys or resource properties to restore, and a way to undo the attempted recovery using the current-state capture.
+2. Restore **only** the values changed by the failed release. Preserve unrelated settings and slot stickiness; if a key was absent before the release, remove only that newly introduced key rather than setting it to an empty string. Do not replay a whole stale settings snapshot over newer secrets/configuration. For Flex, use the captured `functionAppConfig` values in the reviewed resource workflow, not legacy app-setting substitutions.
+3. If code changed, redeploy the retained known-good artifact using the same supported build/deployment method. Keep runtime, deployment mode, and artifact compatible. A `1` setting alone cannot restore prior package bytes; a URL rollback also needs the retained blob, valid authorization, and trigger synchronization. Do not convert an existing local-package app to URL mode during incident recovery.
+4. Swap back only where supported, after confirming the other slot still contains the previous release and its configuration is safe. If no trusted baseline/artifact exists, stop and escalate rather than guess runtime or package values.
+
+!!! warning "Execution interruption"
+    Application-setting changes restart the app by default; explicit restarts and code deployments can interrupt in-flight executions. Review the configured update strategy, retry/idempotency behavior, backlog impact, and maintenance window before approval. Do not append an unconditional restart after a settings update. Recovery after a restart is correlation, not proof of the root cause.
+
+### Validate after each approved recovery action
+
+Read function inventory again (this command does not invoke a trigger):
+
 ```bash
-az functionapp config appsettings set \
-    --resource-group $RG \
-    --name $APP_NAME \
-    --subscription $SUBSCRIPTION_ID \
-    --settings FUNCTIONS_WORKER_RUNTIME=python WEBSITE_RUN_FROM_PACKAGE=1
-az functionapp restart \
-    --resource-group $RG \
-    --name $APP_NAME \
-    --subscription $SUBSCRIPTION_ID
+az functionapp function list \
+    --resource-group "$RG" \
+    --name "$APP_NAME" \
+    --subscription "$SUBSCRIPTION_ID" \
+    --output table
 ```
 
-| CLI element | Explanation |
+| Command/Parameter | Purpose |
 |---|---|
-| Command(s) | `az functionapp config appsettings set`, `az functionapp restart` |
-| Key flags | `--resource-group`, `--name`, `--subscription`, `--settings` |
-| Variables | `$RG`, `$APP_NAME`, `$SUBSCRIPTION_ID` |
-| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+| `az functionapp function list` | Read discovered functions and compare with the retained release manifest. |
+| `--resource-group` | Group containing the recovered app. |
+| `--name` | App whose function inventory is checked. |
+| `--subscription` | Explicit subscription scope for the check. |
+| `--output` | Tabular inventory, not an execution result. |
+
+- **Host readiness:** confirm stable startup/listener initialization logs with no new startup exception loop. `state: Running` or upload success alone is insufficient.
+- **Function discovery:** reconcile every expected function and trigger with the release manifest; apply the deployment method's documented trigger-sync procedure when required (notably external package URLs).
+- **Trigger execution:** after approval, use a safe HTTP request and representative non-HTTP test event where applicable, correlating the invocation ID with completion and intended downstream effects. Avoid replaying business events without idempotency controls.
+- **Recovery window:** compare failures, latency, retries, queue age/checkpoint progress, and backlog with the baseline over an agreed observation window. If the action fails, preserve evidence and undo only that action from the captured pre-action state; reassess competing hypotheses instead of repeating restarts.
 
 ## 9. Prevention
 1. Add CI/CD guardrails:
-    - validate `FUNCTIONS_WORKER_RUNTIME`, `linuxFxVersion`, and artifact language compatibility
+    - validate `functionAppConfig.runtime` for Flex, or worker/OS-specific stack settings for non-Flex apps, against the artifact language
     - fail pipeline if required settings are missing
 2. Use immutable deployment controls:
     - run-from-package with checksum verification
@@ -587,6 +640,7 @@ az functionapp restart \
 ## Sources
 - [Troubleshoot Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics)
 - [Deployment technologies in Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies)
-- [Run your functions from a package file](https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package)
+- [Package-based deployment by hosting plan](https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push)
+- [Resource configuration, including functionAppConfig](https://learn.microsoft.com/en-us/azure/azure-functions/functions-infrastructure-as-code)
 - [Azure Functions app settings reference](https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings)
 - [Azure Functions hosting options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
