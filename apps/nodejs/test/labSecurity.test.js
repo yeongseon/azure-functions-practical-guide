@@ -1,13 +1,34 @@
-const { test } = require('node:test');
+const { test, beforeEach, afterEach } = require('node:test');
 const assert = require('node:assert/strict');
 const { app } = require('@azure/functions');
 const df = require('durable-functions');
 const { DurableClient } = require('durable-functions/lib/src/durableClient/DurableClient');
 
 const routes = new Map();
-app.http = (name, options) => routes.set(name, options);
-df.app.orchestration = () => {};
-df.app.activity = () => {};
+const labSettings = ['LAB_ENDPOINTS_ENABLED', 'DurableLab__Iterations',
+    'DurableLab__ContinueAsNewEvery', 'AzureWebJobsStorage__accountName',
+    'AzureWebJobsStorage__clientId'];
+
+beforeEach((t) => {
+    t.mock.method(app, 'http', (name, options) => routes.set(name, options));
+    t.mock.method(df.app, 'orchestration', () => {});
+    t.mock.method(df.app, 'activity', () => {});
+    const saved = new Map(labSettings.map(name => [name, process.env[name]]));
+    for (const name of labSettings) delete process.env[name];
+    t.after(() => {
+        for (const [name, value] of saved) {
+            if (value === undefined) delete process.env[name];
+            else process.env[name] = value;
+        }
+    });
+});
+
+afterEach(() => {
+    routes.clear();
+    for (const file of ['diagnostics', 'durableLab', 'exceptions', 'health']) {
+        delete require.cache[require.resolve(`../src/functions/${file}`)];
+    }
+});
 
 function load(enabled) {
     routes.clear();
@@ -37,10 +58,10 @@ test('enabled lab HTTP routes require function authorization', () => {
     assert.ok(routes.has('storageProbe'));
 });
 
-test('invalid starter input cannot schedule any work', async () => {
+test('invalid starter input cannot schedule any work', async (t) => {
     load('true');
     let calls = 0;
-    DurableClient.prototype.startNew = async () => { calls++; return 'instance'; };
+    t.mock.method(DurableClient.prototype, 'startNew', async () => { calls++; return 'instance'; });
     const bodies = ['{', '[]', 'null', '"text"', ' '.repeat(4097)];
     for (const field of ['instances', 'iterations', 'continueAsNewEvery']) {
         for (const value of [-1, 1.5, true, null, '100', 5001]) {
@@ -57,13 +78,13 @@ test('invalid starter input cannot schedule any work', async () => {
     assert.equal(calls, 0);
 });
 
-test('documented incident and recovery workloads preserve explicit zero', async () => {
+test('documented incident and recovery workloads preserve explicit zero', async (t) => {
     load('true');
     process.env.DurableLab__ContinueAsNewEvery = '250';
     const inputs = [];
-    DurableClient.prototype.startNew = async (_, options) => {
+    t.mock.method(DurableClient.prototype, 'startNew', async (_, options) => {
         inputs.push(options.input); return 'instance';
-    };
+    });
     for (const reset of [0, 250]) {
         const response = await routes.get('startReplayLab').handler({ text: async () =>
             JSON.stringify({ instances: 1, iterations: 2000, continueAsNewEvery: reset }) }, {
@@ -75,7 +96,6 @@ test('documented incident and recovery workloads preserve explicit zero', async 
         assert.equal(response.status, 202);
         assert.equal(inputs.at(-1).continueAsNewEvery, reset);
     }
-    delete process.env.DurableLab__ContinueAsNewEvery;
     assert.equal(inputs.length, 2);
 });
 
@@ -103,10 +123,6 @@ test('probe responses omit backend errors, listings and identity identifiers', a
     }));
     process.env.AzureWebJobsStorage__accountName = 'examplestorage';
     process.env.AzureWebJobsStorage__clientId = 'private-identity-id';
-    t.after(() => {
-        delete process.env.AzureWebJobsStorage__accountName;
-        delete process.env.AzureWebJobsStorage__clientId;
-    });
     const storage = await routes.get('storageProbe').handler({}, context);
     assert.deepEqual(Object.keys(storage.jsonBody).sort(), ['elapsedMs', 'status']);
     const identity = await routes.get('identityProbe').handler({}, context);
@@ -140,5 +156,4 @@ test('workload boundaries and environment defaults remain bounded', () => {
         process.env.DurableLab__Iterations = value;
         assert.throws(() => parseReplay(''));
     }
-    delete process.env.DurableLab__Iterations;
 });

@@ -56,8 +56,9 @@ def test_invalid_start_does_not_schedule_work(body):
 
 
 @pytest.mark.parametrize("reset", [0, 250])
-def test_documented_replay_workload_remains_supported(reset):
+def test_documented_replay_workload_remains_supported(monkeypatch, reset):
     # Given the documented incident/recovery workloads.
+    monkeypatch.setenv("DurableLab__ContinueAsNewEvery", "250")
     req = func.HttpRequest("POST", "http://localhost", body=json.dumps(
         {"instances": 1, "iterations": 2000, "continueAsNewEvery": reset}).encode())
     client = AsyncMock()
