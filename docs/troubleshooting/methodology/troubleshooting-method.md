@@ -336,11 +336,22 @@ For the independent run, all five must differ: **operator, run identity, raw
 collection, capture timestamps and retained run package**. Preserve both immutable
 packages, raw paths/digests, command/query inputs and outputs, and operator
 provenance linking the person who actually ran collection to that run, mode and
-time. Use stable privacy-safe operator tokens; authorized reviewers must be able
-to establish that they represent different people. A different token, copied
+time. Use one stable privacy-safe token per person matching
+`operator-[a-z0-9]+(?:-[a-z0-9]+)*` (for example, `operator-synthetic-a` in tests).
+Uppercase, whitespace, emails and plus-aliases are malformed provenance, not
+aliases to normalize or guess. Authorized reviewers must establish that canonical
+tokens represent different people. A different token, copied
 capture with a new filename, summary, signature or approval checkbox alone is not
 evidence of independence. Record fresh event windows, not just a new evaluation
-timestamp. Reused raw paths or digests cannot establish a fresh collection.
+timestamp. Retain each collection's UTC `start`/`end` window, bound to its run ID
+and exact raw path/digest list; missing window evidence cannot yield `MET`.
+Require `start <= end <= captured_at`. Identical windows are rejected even when
+capture clocks differ. Overlap alone (including containment) does not invalidate
+genuinely concurrent independent collections with distinct windows and raw
+provenance. A changed window label cannot make the original retained raw
+collection independent: reused raw paths/digests or a window record bound to the
+original's raw collection are rejected. Reviewers must verify the recorded
+event/query intervals against the captures, not just the receipt.
 
 Compute independence separately from execution and hypothesis outcomes:
 
@@ -358,7 +369,8 @@ Call `evaluate(path, expected_sha256, evaluated_at)` with an independently pinne
 comparison digest. Each run records `run_id`, `scenario_id`, `recipe_revision`,
 `operator_id`, `operator_kind` (`human`, `ci`, `ai`), `mode` (`human-run`,
 `automation-rerun`, `offline-reevaluation`), `captured_at`, `environment`, `runtime`,
-a retained `package` directory, `raw` path/SHA-256 pairs, and an
+a retained `package` directory, `raw` path/SHA-256 pairs, `window_evidence`
+pointing to a retained JSON record (`run_id`, `raw`, `start`, `end`, `synthetic`), and an
 `operator_provenance` JSON receipt binding operator, kind, run, mode and capture
 time. Paths resolve relative to the comparison file. An explicit `synthetic`
 boolean applies to the comparison and receipts. See the

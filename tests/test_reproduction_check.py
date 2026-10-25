@@ -32,6 +32,11 @@ def retained(tmp_path: Path) -> Path:
         run["raw"] = [{"path": str(raw.relative_to(tmp_path)),
                        "sha256": hashlib.sha256(raw.read_bytes()).hexdigest()}]
         run["operator_provenance"] = str(receipt.relative_to(tmp_path))
+        window = package / "window.json"
+        window.write_text(json.dumps(run.pop("collection_window") | {
+            "synthetic": True, "run_id": run["run_id"], "raw": run["raw"],
+        }))
+        run["window_evidence"] = str(window.relative_to(tmp_path))
     path = tmp_path / "comparison.json"
     path.write_text(json.dumps(data))
     return path
@@ -97,12 +102,23 @@ def test_rejects_false_independence(retained: Path, case: str, reason: str) -> N
         case "timestamp":
             second["captured_at"] = first["captured_at"]
         case "package":
-            second["package"] = first["package"]
+            first["package"] = second["package"] = "."
     if "operator_provenance" in second:
         receipt = retained.parent / second["operator_provenance"]
         receipt.write_text(json.dumps({key: second[key] for key in
             ("operator_id", "operator_kind", "run_id", "mode", "captured_at")
         } | {"synthetic": True}))
+    window = retained.parent / second["window_evidence"]
+    window_data = json.loads(window.read_text())
+    window_data.update(run_id=second["run_id"], raw=second["raw"])
+    if case == "timestamp":
+        first["captured_at"] = second["captured_at"] = "2025-01-03T00:05:00Z"
+        for run in (first, second):
+            receipt = retained.parent / run["operator_provenance"]
+            provenance = json.loads(receipt.read_text())
+            provenance["captured_at"] = run["captured_at"]
+            receipt.write_text(json.dumps(provenance))
+    window.write_text(json.dumps(window_data))
     data["independence"] = "MET"  # A stored result has no authority.
     retained.write_text(json.dumps(data))
     # When the checker recomputes rather than trusting the stored MET.
@@ -129,6 +145,10 @@ def test_unsupported_human_approval_is_rejected(retained: Path, mode: str, kind:
         receipt.write_text(json.dumps({key: run[key] for key in
             ("operator_id", "operator_kind", "run_id", "mode", "captured_at")
         } | {"synthetic": False}))
+        window = retained.parent / run["window_evidence"]
+        window_data = json.loads(window.read_text())
+        window_data["synthetic"] = False
+        window.write_text(json.dumps(window_data))
     data["claim"] = "independent-human-reproduction"
     retained.write_text(json.dumps(data))
     # When the fictional record attempts to claim non-synthetic human approval.
@@ -167,6 +187,10 @@ def test_unverifiable_package_is_rejected(retained: Path, case: str) -> None:
     match case:
         case "digest":
             second["raw"][0]["sha256"] = "0" * 64
+            window = retained.parent / second["window_evidence"]
+            window_data = json.loads(window.read_text())
+            window_data["raw"] = second["raw"]
+            window.write_text(json.dumps(window_data))
         case "receipt":
             receipt = retained.parent / second["operator_provenance"]
             provenance = json.loads(receipt.read_text())
@@ -183,3 +207,55 @@ def test_unverifiable_package_is_rejected(retained: Path, case: str) -> None:
     retained.write_text(json.dumps(data))
     with pytest.raises(EvidenceError):
         check(retained)
+
+
+@pytest.mark.parametrize("token", [
+    "OPERATOR-SYNTHETIC-A", "Operator-Synthetic-A", " operator-synthetic-a ",
+    "synthetic.operator@example.com", "synthetic.operator+alias@example.com",
+])
+def test_noncanonical_operator_is_malformed(retained: Path, token: str) -> None:
+    data = json.loads(retained.read_text())
+    second = data["reproduction"]
+    second["operator_id"] = token
+    receipt = retained.parent / second["operator_provenance"]
+    provenance = json.loads(receipt.read_text())
+    provenance["operator_id"] = token
+    receipt.write_text(json.dumps(provenance))
+    retained.write_text(json.dumps(data))
+    with pytest.raises(EvidenceError, match="non-canonical operator token"):
+        check(retained)
+
+
+@pytest.mark.parametrize("case", ["missing", "identical", "overlap", "subset", "unbound", "utc", "order", "capture"])
+def test_retained_collection_windows(retained: Path, case: str) -> None:
+    data = json.loads(retained.read_text())
+    first, second = data["original"], data["reproduction"]
+    window_path = retained.parent / second["window_evidence"]
+    window = json.loads(window_path.read_text())
+    match case:
+        case "missing":
+            second.pop("window_evidence")
+        case "identical":
+            window.update(start="2025-01-01T00:00:00Z", end="2025-01-01T00:04:00Z")
+        case "overlap" | "subset":
+            window.update(start="2025-01-01T00:02:00Z", end="2025-01-01T00:06:00Z"
+                          if case == "overlap" else "2025-01-01T00:03:00Z")
+        case "unbound":
+            window["raw"] = first["raw"]
+        case "utc":
+            window["start"] = "2025-01-02T00:00:00+01:00"
+        case "order":
+            window["start"] = "2025-01-02T00:04:01Z"
+        case "capture":
+            window["end"] = "2025-01-02T00:05:01Z"
+    window_path.write_text(json.dumps(window))
+    retained.write_text(json.dumps(data))
+    if case in {"unbound", "utc", "order", "capture"}:
+        with pytest.raises(EvidenceError):
+            check(retained)
+    else:
+        result = check(retained)
+        assert result.independence == ("MET" if case in {"overlap", "subset"} else "NOT_MET")
+        assert result.reasons == (() if case in {"overlap", "subset"} else
+                                  ("missing collection window" if case == "missing" else
+                                   "reused collection window",))

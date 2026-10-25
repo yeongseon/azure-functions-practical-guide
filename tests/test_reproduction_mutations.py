@@ -35,6 +35,16 @@ MUTATIONS = [
      "test_unverifiable_package_is_rejected[receipt"),
     ("second.captured_at > clock", "test_unverifiable_package_is_rejected[future"),
     ('_text(data["environment"])', "test_unverifiable_package_is_rejected[environment"),
+    ('re.fullmatch(r"operator-[a-z0-9]+(?:-[a-z0-9]+)*", identity["operator_id"]) is None',
+     "test_noncanonical_operator_is_malformed"),
+    ("first.collection_window is None or second.collection_window is None",
+     "test_retained_collection_windows[missing"),
+    ("first.collection_window is not None and first.collection_window == second.collection_window",
+     "test_retained_collection_windows[identical"),
+    ('window.get("run_id") != identity["run_id"] or window.get("raw") != data["raw"]',
+     "test_retained_collection_windows[unbound"),
+    ("start > end or end > captured_at", "test_retained_collection_windows[order"),
+    ("start > end or end > captured_at", "test_retained_collection_windows[capture"),
 ]
 
 

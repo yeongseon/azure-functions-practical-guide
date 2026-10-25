@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -46,6 +47,7 @@ class Run:
     operator_kind: str
     mode: str
     captured_at: datetime
+    collection_window: tuple[datetime, datetime] | None
     package: Path
     raw_paths: frozenset[Path]
     raw_digests: frozenset[str]
@@ -63,6 +65,8 @@ def _run(value: JSON, root: Path, synthetic: bool) -> Run:
     data = _mapping(value)
     identity = {key: _text(data[key]) for key in
                 ("run_id", "scenario_id", "recipe_revision", "operator_id", "operator_kind", "mode")}
+    if re.fullmatch(r"operator-[a-z0-9]+(?:-[a-z0-9]+)*", identity["operator_id"]) is None:
+        raise EvidenceError("non-canonical operator token")
     if identity["operator_kind"] not in {"human", "ci", "ai"}:
         raise EvidenceError("unsupported operator kind")
     if identity["mode"] not in {"human-run", "automation-rerun", "offline-reevaluation"}:
@@ -84,6 +88,18 @@ def _run(value: JSON, root: Path, synthetic: bool) -> Run:
         raw_digests.add(digest)
     if not raw_paths:
         raise EvidenceError("raw collection must not be empty")
+    collection_window = None
+    if data.get("window_evidence") is not None:
+        window_path = _retained_path(root, data["window_evidence"])
+        window = _mapping(json.loads(window_path.read_bytes()))
+        if window.get("run_id") != identity["run_id"] or window.get("raw") != data["raw"]:
+            raise EvidenceError("collection window does not bind to retained raw collection")
+        if window.get("synthetic") is not synthetic or not window_path.is_relative_to(package):
+            raise EvidenceError("collection window scope mismatch")
+        start, end = _time(window["start"]), _time(window["end"])
+        if start > end or end > captured_at:
+            raise EvidenceError("invalid collection window")
+        collection_window = (start, end)
     provenance_present = bool(data.get("operator_provenance"))
     if provenance_present:
         receipt_path = _retained_path(root, data["operator_provenance"])
@@ -94,7 +110,7 @@ def _run(value: JSON, root: Path, synthetic: bool) -> Run:
             raise EvidenceError("operator provenance does not bind to collection")
         if receipt.get("synthetic") is not synthetic:
             raise EvidenceError("operator provenance synthetic label mismatch")
-    return Run(**identity, captured_at=captured_at, package=package,
+    return Run(**identity, captured_at=captured_at, collection_window=collection_window, package=package,
                raw_paths=frozenset(raw_paths), raw_digests=frozenset(raw_digests),
                provenance_present=provenance_present)
 
@@ -111,6 +127,10 @@ def _reasons(first: Run, second: Run) -> tuple[str, ...]:
         ((first.scenario_id, first.recipe_revision) != (second.scenario_id, second.recipe_revision),
          "different scenario or recipe revision"),
         (first.captured_at == second.captured_at, "reused capture timestamp"),
+        (first.collection_window is None or second.collection_window is None,
+         "missing collection window"),
+        (first.collection_window is not None and first.collection_window == second.collection_window,
+         "reused collection window"),
         (first.package == second.package, "reused retained package"),
         (any(not path.is_relative_to(run.package) for run in (first, second)
              for path in run.raw_paths), "raw evidence outside run package"),
