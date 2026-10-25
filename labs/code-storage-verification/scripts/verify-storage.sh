@@ -97,6 +97,20 @@ check_setting_equals() {
   fi
 }
 
+check_linux_consumption_package() {
+  local plan_code="$1" appsettings_json="$2" value remote_build oryx
+  value="$(get_setting_value "$appsettings_json" "WEBSITE_RUN_FROM_PACKAGE")"
+  remote_build="$(get_setting_value "$appsettings_json" "SCM_DO_BUILD_DURING_DEPLOYMENT")"
+  oryx="$(get_setting_value "$appsettings_json" "ENABLE_ORYX_BUILD")"
+  if [[ "$value" == https://* ]]; then
+    record_check "$plan_code" "Linux Consumption package mode" "PASS" "URL configured; artifact access and trigger sync still require verification"
+  elif [[ -z "$value" && "${remote_build,,}" == true && "${oryx,,}" == true ]]; then
+    record_check "$plan_code" "Linux Consumption package mode" "PASS" "Remote-build configuration detected; this does not prove deployment success"
+  else
+    record_check "$plan_code" "Linux Consumption package mode" "FAIL" "Use a deployment-managed/external HTTPS package URL or a configured remote-build workflow; never local value 1"
+  fi
+}
+
 verify_storage_account_settings() {
   local plan_code="$1" rg="$2" storage_name="$3" storage_json
   if ! storage_json="$(az storage account show --resource-group "$rg" --name "$storage_name" --output json 2>/dev/null)"; then
@@ -212,7 +226,7 @@ verify_plan_specific_settings() {
       check_setting_absent "$plan_code" "$appsettings_json" "AzureWebJobsStorage__clientId"
       check_setting_present "$plan_code" "$appsettings_json" "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING"
       check_setting_present "$plan_code" "$appsettings_json" "WEBSITE_CONTENTSHARE"
-      check_setting_equals "$plan_code" "$appsettings_json" "WEBSITE_RUN_FROM_PACKAGE" "1"
+      check_linux_consumption_package "$plan_code" "$appsettings_json"
       ;;
     fc1)
       check_setting_present "$plan_code" "$appsettings_json" "AzureWebJobsStorage__accountName"
@@ -325,4 +339,6 @@ main() {
   [ "$TOTAL_FAILS" -eq 0 ] || exit 1
 }
 
-main "$@"
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+  main "$@"
+fi

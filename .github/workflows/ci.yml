@@ -85,3 +85,4 @@ jobs:
             bash scripts/validate_durable_table_rbac.sh
             bash scripts/validate_package_config.sh --self-test
             bash scripts/validate_package_config.sh
+            bash scripts/test_package_config.sh
