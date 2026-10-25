@@ -44,6 +44,9 @@ content_validation:
     - claim: "동일한 빌드 산출물을 환경별로 승격하는 immutable artifact 배포 방식이 안전하다."
       source: https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package
       verified: true
+    - claim: "WEBSITE_RUN_FROM_PACKAGE=1 is supported for local-package deployment on Windows Consumption, Premium, and Dedicated, not Linux Consumption or Flex Consumption."
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
+      verified: true
 ---
 
 # Deployment Best Practices
@@ -102,18 +105,10 @@ Run-from-package mounts a built artifact as a read-only package. This removes in
 - Simplifies rollback to a known artifact version.
 - Reduces "works on one instance only" drift.
 
-```bash
-az functionapp config appsettings set \
-    --resource-group "<resource-group>" \
-    --name "<app-name>" \
-    --settings WEBSITE_RUN_FROM_PACKAGE=1
-```
-| Command/Parameter | Purpose |
-| --- | --- |
-| `az functionapp config appsettings set` | Add or update application settings on the function app. |
-| `--resource-group` | Resource group that contains the resource. |
-| `--name` | Name of the target resource. |
-| `--settings` | Key=value application settings to apply. |
+!!! warning "Not an incident mitigation"
+    Do not enable `WEBSITE_RUN_FROM_PACKAGE=1` or change `FUNCTIONS_WORKER_RUNTIME` as a generic repair. First capture the plan, OS, runtime, deployment method, current settings, and pre-release known-good state using the [deployment failure playbook](../troubleshooting/playbooks/deployment-failures.md#4-what-to-check-first). The value `1` applies to local-package deployments on Windows Consumption, Premium, and Dedicated. Linux Consumption uses a package URL; Flex runs from a package by default and uses `functionAppConfig` for runtime/deployment storage, not this app setting. Do not force a package setting when requesting remote build. Restore only demonstrated drift through the existing supported workflow, accounting for restarts and in-flight execution interruption, then validate host readiness, function discovery, and trigger execution.
+
+    This safeguard and its added core claim were verified against [Microsoft Learn package guidance](https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push) and the [deployment technologies reference](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies) on 2026-10-25 by source review only. No CLI/live Azure execution was performed; the existing page-wide review date above is retained, not presented as a new full-page validation.
 
 !!! warning "Mutable deployment anti-pattern"
     Deploying without run-from-package can produce inconsistent behavior when trigger listeners restart while files are changing. For event-driven apps, this can surface as duplicate or missed processing windows.

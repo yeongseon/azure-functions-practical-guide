@@ -36,6 +36,9 @@ content_validation:
     - claim: "Local validation with Azure Functions Core Tools is part of the supported deployment workflow before publishing."
       source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local
       verified: true
+    - claim: "Flex Consumption runs from a package by default without WEBSITE_RUN_FROM_PACKAGE; Linux Consumption uses a URL instead of the local-package value 1."
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
+      verified: true
 ---
 
 # Deployment
@@ -197,21 +200,10 @@ az functionapp deployment source config-zip \
 | `--name <app-name>` | Specifies the function app name |
 | `--src <path-to-artifact-zip>` | Path to the local zip file to deploy |
 
-Enable run-from-package when using immutable artifact patterns:
+!!! warning "Preserve the established deployment mode during recovery"
+    Do not follow ZIP deployment with an unconditional `WEBSITE_RUN_FROM_PACKAGE=1` update. That value is for local-package workflows on Windows Consumption, Premium, and Dedicated only. Linux Consumption uses a package URL; remote-build deployments manage their output and must not be forced into a manually configured package mode. Flex uses managed package deployment and `functionAppConfig.runtime` / `.deployment.storage`, not `WEBSITE_RUN_FROM_PACKAGE` or legacy worker-setting repairs. Before an incident write, capture the read-only baseline and restore only proven drift as described in the [deployment failure playbook](../troubleshooting/playbooks/deployment-failures.md#8-immediate-mitigations). Settings changes restart the app by default and can interrupt executions; validate readiness, discovery, and actual trigger completion after recovery.
 
-```bash
-az functionapp config appsettings set \
-    --resource-group <resource-group> \
-    --name <app-name> \
-    --settings WEBSITE_RUN_FROM_PACKAGE=1
-```
-
-| Command/Parameter | Purpose |
-|-------------------|---------|
-| `az functionapp config appsettings set` | Configures application settings for the function app |
-| `--resource-group <resource-group>` | Specifies the resource group |
-| `--name <app-name>` | Specifies the function app name |
-| `--settings WEBSITE_RUN_FROM_PACKAGE=1` | Enables the app to run directly from the deployment package |
+    This replacement safeguard and its added core claim were checked against [official package guidance](https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push) and [deployment technologies](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies) on 2026-10-25. This was source review only, not CLI/live Azure execution or a new full-page validation; the prior page-wide review date is preserved.
 
 ### GitHub Actions pipeline
 ```yaml
