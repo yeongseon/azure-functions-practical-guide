@@ -1,0 +1,43 @@
+{
+  "fixture_notice": "SYNTHETIC ONLY: all timestamps, flags and events below are fictional evaluator inputs, not Azure captures or actual scenario execution",
+  "bundle": {
+    "run_id": "synthetic-deployment",
+    "captured_at": "2025-01-01T01:00:00Z",
+    "window": {"start": "2025-01-01T00:00:00Z", "end": "2025-01-01T00:59:00Z"},
+    "execution": {"attempted": true, "blocked": false, "failed": false, "finished": true},
+    "verdict": "PASS",
+    "events": [
+      {"run_id": "synthetic-deployment", "timestamp": "2025-01-01T00:01:00Z", "signal": "baseline.package", "value": "accepted"},
+      {"run_id": "synthetic-deployment", "timestamp": "2025-01-01T00:02:00Z", "signal": "baseline.host", "value": "Running"},
+      {"run_id": "synthetic-deployment", "timestamp": "2025-01-01T00:03:00Z", "signal": "baseline.indexing", "value": "HttpHealth-indexed"},
+      {"run_id": "synthetic-deployment", "timestamp": "2025-01-01T00:04:00Z", "signal": "baseline.function-list", "value": "HttpHealth-present"},
+      {"run_id": "synthetic-deployment", "timestamp": "2025-01-01T00:05:00Z", "signal": "baseline.listener", "value": "route-ready"},
+      {"run_id": "synthetic-deployment", "timestamp": "2025-01-01T00:10:00Z", "signal": "baseline.invocation", "value": "10-of-10-nonce-responses"},
+      {"run_id": "synthetic-deployment", "timestamp": "2025-01-01T00:51:00Z", "signal": "telemetry.collection", "value": "healthy"},
+      {"run_id": "synthetic-deployment", "timestamp": "2025-01-01T00:11:00Z", "signal": "fault.manifest-diff", "value": "only-golden_payload-omitted"},
+      {"run_id": "synthetic-deployment", "timestamp": "2025-01-01T00:12:00Z", "signal": "fault.package", "value": "accepted"},
+      {"run_id": "synthetic-deployment", "timestamp": "2025-01-01T00:13:00Z", "signal": "fault.host", "value": "Running"},
+      {"run_id": "synthetic-deployment", "timestamp": "2025-01-01T00:14:00Z", "signal": "fault.indexing", "value": "ModuleNotFoundError:golden_payload"},
+      {"run_id": "synthetic-deployment", "timestamp": "2025-01-01T00:15:00Z", "signal": "fault.function-list", "value": "captured"},
+      {"run_id": "synthetic-deployment", "timestamp": "2025-01-01T00:16:00Z", "signal": "fault.listener", "value": "blocked-by-indexing"},
+      {"run_id": "synthetic-deployment", "timestamp": "2025-01-01T00:21:00Z", "signal": "fault.invocation", "value": "blocked-by-indexing"},
+      {"run_id": "synthetic-deployment", "timestamp": "2025-01-01T00:22:00Z", "signal": "recovery.package", "value": "accepted-baseline-digest"},
+      {"run_id": "synthetic-deployment", "timestamp": "2025-01-01T00:23:00Z", "signal": "recovery.host", "value": "Running"},
+      {"run_id": "synthetic-deployment", "timestamp": "2025-01-01T00:24:00Z", "signal": "recovery.indexing", "value": "HttpHealth-indexed"},
+      {"run_id": "synthetic-deployment", "timestamp": "2025-01-01T00:25:00Z", "signal": "recovery.function-list", "value": "HttpHealth-present"},
+      {"run_id": "synthetic-deployment", "timestamp": "2025-01-01T00:26:00Z", "signal": "recovery.listener", "value": "route-ready"},
+      {"run_id": "synthetic-deployment", "timestamp": "2025-01-01T00:31:00Z", "signal": "recovery.invocation", "value": "10-of-10-nonce-responses"}
+    ]
+  },
+  "cases": {
+    "all-signals": {},
+    "deploy-only": {"keep": ["fault.package"]},
+    "deploy-and-running": {"keep": ["fault.package", "fault.host"]},
+    "missing-function-list": {"omit": ["fault.function-list"]},
+    "telemetry-settings-unavailable": {"replace": {"telemetry.collection": "unavailable-app-settings"}},
+    "telemetry-ingestion-delayed": {"replace": {"telemetry.collection": "unavailable-ingestion-latency"}},
+    "no-discriminator": {"omit": ["fault.indexing"]},
+    "fault-invoked": {"replace": {"fault.indexing": "fault-package-nonce-executed", "fault.listener": "route-ready", "fault.invocation": "10-of-10-nonce-responses"}},
+    "not-run": {"execution": {"attempted": false, "blocked": false, "failed": false, "finished": false}}
+  }
+}
