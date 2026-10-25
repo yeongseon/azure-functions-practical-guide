@@ -1,0 +1,120 @@
+name: Azure scenario — guarded harness (NOT IMPLEMENTED)
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_commit:
+        description: Reviewed full 40-character SHA on this repository main history
+        required: true
+        type: string
+      region:
+        description: Planned region (no deployment implemented)
+        type: choice
+        options: [koreacentral, eastus, westeurope]
+        default: koreacentral
+      ttl_hours:
+        description: Planned expiry tag in hours (1–6; not an automatic sweeper)
+        type: string
+        default: '2'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: azure-scenario-${{ github.run_id }}-${{ github.run_attempt }}
+  cancel-in-progress: false
+
+env:
+  TARGET_COMMIT: ${{ inputs.target_commit }}
+  REGION: ${{ inputs.region }}
+  TTL_HOURS: ${{ inputs.ttl_hours }}
+
+jobs:
+  validate-context:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      sha: ${{ steps.context.outputs.sha }}
+    env:
+      EVIDENCE_DIR: ${{ github.workspace }}/context-evidence
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          repository: yeongseon/azure-functions-practical-guide
+          ref: refs/heads/main
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Validate repository, dispatch ref, workflow ref and main ancestry
+        id: context
+        run: python3 scripts/golden_e2e_guard.py context
+      - name: Cleanup receipt (inert harness)
+        if: always()
+        run: python3 scripts/golden_e2e_guard.py cleanup
+      - name: Scan context artifacts before upload
+        id: scan
+        if: always()
+        run: python3 scripts/golden_e2e_guard.py scan
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: always() && steps.scan.outcome == 'success'
+        with:
+          name: context-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.EVIDENCE_DIR }}/
+          if-no-files-found: error
+          retention-days: 14
+
+  azure-scenario:
+    needs: validate-context
+    if: github.repository == 'yeongseon/azure-functions-practical-guide' && github.ref == 'refs/heads/main' && github.workflow_ref == 'yeongseon/azure-functions-practical-guide/.github/workflows/e2e-azure.yml@refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment: azure-functions-e2e
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      EVIDENCE_DIR: ${{ github.workspace }}/scenario-evidence
+      AZURE_E2E_ENABLED: ${{ vars.AZURE_E2E_ENABLED }}
+      AZURE_E2E_SCOPE: ${{ vars.AZURE_E2E_SCOPE }}
+      AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      AZURE_CORE_OUTPUT: none
+      AZURE_CORE_COLLECT_TELEMETRY: 'false'
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          ref: ${{ needs.validate-context.outputs.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Preflight — BLOCKED until scenario implementation is reviewed
+        id: preflight
+        run: python3 scripts/golden_e2e_guard.py preflight
+      # No output can enable this in the current helper; do not remove the preflight blocker.
+      # Enablement gates: F1 verify main-only Environment policy before OIDC creation;
+      # prefer credential-bound main/job_workflow_ref. F2 use a trusted-main guard or
+      # require descent from a pinned harness-approved SHA (see content contract).
+      - name: Azure OIDC login (unreachable in this harness)
+        if: success() && steps.preflight.outputs.azure_ready == 'true'
+        uses: azure/login@a641126d1b8aa4d1fa005f4f92df94a3a4c4c906 # v3.1.0
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          enable-AzPSSession: false
+      - name: NOT IMPLEMENTED — deployment, fault, recovery and live cleanup
+        if: success()
+        run: exit 3
+      - name: Cleanup only run-created resources — inert no-op receipt
+        if: always()
+        run: python3 scripts/golden_e2e_guard.py cleanup
+      - name: Scan sanitized evidence and cleanup receipt
+        id: scan
+        if: always()
+        run: python3 scripts/golden_e2e_guard.py scan
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: always() && steps.scan.outcome == 'success'
+        with:
+          name: scenario-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.EVIDENCE_DIR }}/
+          if-no-files-found: error
+          retention-days: 14

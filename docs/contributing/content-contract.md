@@ -1044,6 +1044,107 @@ Run `python scripts/validate_pii.py` to scan `docs/` for leaked identifiers befo
 
 Run `python scripts/validate_visual_content.py --all` to report factual-claim pages carrying **no visual aid** (no Mermaid fence, no `shot()` capture reference, no Markdown image). Scope reuses `scripts/lib/content_scope.is_in_scope` - the same factual-claim page set as the `content_validation` policy. The gate is **WARN-only**: it prints per-page warnings plus a coverage summary and always exits 0, making visual coverage a tracked CI metric without blocking on historical debt (verified series baseline: diagrams on 79-99% of pages, portal screenshots on App Service 95 / AKS 8 / elsewhere 0). In CI the `Validate Visual Content (advisory)` job runs the gate doctests and the full-repo report. Escalation to a blocking gate is a per-repo decision tracked in [azure-container-apps-practical-guide#391](https://github.com/yeongseon/azure-container-apps-practical-guide/issues/391); vendored per repository like the other shared-core gates.
 
+## Guarded Azure Scenario Harness (Maintainer TODOs)
+
+`.github/workflows/e2e-azure.yml` is manually dispatched only. It is an **inert
+harness, not an Azure scenario runner**: preflight records `BLOCKED`, the
+deployment-not-running scenario remains `NOT_RUN`, and Azure login is unreachable
+even with all variables present. No resources, permissions or paid schedules are
+enabled by this change. Normal PR CI remains read-only/unprivileged; it never
+runs fork code with Azure credentials. Offline guard tests run in existing PR CI.
+
+Before any separately reviewed implementation can enable Azure, the maintainer
+must complete these **hosted prerequisites; none is asserted to exist**:
+
+- Create and protect `azure-functions-e2e` with required human reviewers,
+    prevention of self-review, no protection bypass, and deployment branches
+    restricted to `main`. Merely naming an Environment in YAML does not protect it;
+    GitHub can create an unprotected environment automatically. Reviewers must
+    inspect the immutable target SHA before approving.
+- **F1 — credential creation gate:** before creating any OIDC federated
+    credential, the maintainer **must verify** that the Environment's actual
+    deployment-branch policy permits **only `main`**, not all protected branches
+    or arbitrary branches. Record that hosted verification during enablement
+    review; the workflow job `if` is not a substitute because a branch editor
+    could remove it. Prefer a customized subject claim using `job_workflow_ref`
+    bound to the trusted main workflow, or an equivalent credential-side policy
+    that makes `main` a property of the credential itself. Review and verify the
+    actual claim matching before credential creation; do not assume an
+    environment-only subject binds the branch.
+    Configure trust for **this repository's environment**,
+    issuer `https://token.actions.githubusercontent.com`, audience
+    `api://AzureADTokenExchange`, subject
+    `repo:yeongseon/azure-functions-practical-guide:environment:azure-functions-e2e`.
+    This standard environment subject alone is **not branch-bound** and is not
+    evidence that F1 is satisfied. The verified main-only Environment policy
+    remains mandatory even with customized credential claims. Do not trust forks
+    or a wildcard subject. See [Microsoft Learn OIDC setup](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure-openid-connect).
+- **F2 — trusted guard gate:** before enabling login, resolve the fact that the
+    privileged job currently executes `scripts/golden_e2e_guard.py` from the
+    target-SHA checkout while holding `id-token: write`. Main ancestry alone can
+    admit a weaker historical helper. Run preflight/guard code from a separate
+    trusted checkout of `main`, keeping target scenario code separate, **or**
+    require the target SHA to descend from a pinned, reviewed harness-approved
+    SHA. Implement and regression-test the chosen boundary in a separately
+    reviewed change before removing the inert blocker. This remains unresolved;
+    the current checkout and job conditions do not establish trusted-guard
+    provenance for every historical main commit.
+- Define **environment-scoped variables only**: `AZURE_CLIENT_ID`,
+    `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`, `AZURE_E2E_ENABLED=true`, and
+    `AZURE_E2E_SCOPE=rg-azf-e2e-<run-id>-<attempt>`. Never define fallback repository
+    or organization variables with these names; the `vars` context cannot prove
+    a value's scope. The helper excludes these identifiers from retained artifacts;
+    **GitHub may show configured `vars` in shell-step environment log headers**.
+    This inert scaffold does not promise log masking. Do not configure identifiers
+    requiring log confidentiality until a separately reviewed masking mechanism
+    is in place; the artifact scanner does not protect GitHub runner logs.
+    No client secret is supported. Configuration alone cannot bypass
+    the current hardcoded `scenario-not-implemented` blocker.
+- Provide a disposable run-specific RG scope and grant the runner **Contributor
+    on that RG only**, never subscription Contributor/Owner or role-assignment
+    privileges. A maintainer-controlled provisioning process must create the RG
+    and arrange that scope; this harness cannot bootstrap it with RG-only rights.
+    Planned ownership tags are `owner=azf-golden`, `repository`, `run-id` (including
+    attempt), and UTC `expires-at`, with TTL bounded to 1–6 hours. TTL is a tag,
+    not automatic deletion. Provisioning permissions, tag enforcement, a janitor
+    and cost approval require a separate explicit decision.
+
+Dispatch must originate from this repository's `refs/heads/main`, with an exact
+main workflow reference. `target_commit` must be a full 40-character SHA in
+`origin/main` ancestry. The unprivileged context job checks out trusted main;
+only its validated SHA reaches the Environment job's credential-free checkout.
+Both checkouts disable persisted credentials. An old main SHA without the helper
+fails before login, not by falling back to branch code. GitHub-hosted Linux,
+bounded TTL, region allowlist, run identity and OIDC variables are checked before
+any possible login. Missing prerequisites produce a nonzero sanitized `BLOCKED`
+record. Environment approval denial or runner allocation failure cannot produce
+an in-job record; GitHub's job status is the available evidence in those cases.
+
+Records distinguish source SHA, GitHub run/attempt, planned region/Y1/Linux/Python
+v2/Functions v4 from **unknown observed versions**. Harness `captured_at` is not
+Azure collection time (`azure_captured_at=null`, raw events empty). The existing
+offline evaluator independently derives `NOT_TESTED` from the retained input;
+this is independent calculation, **not independent human reproduction** or proof
+of capture authenticity. No independence result or tutorial date is written.
+Artifacts are immutable per run/attempt, retained for 14 days, and uploaded only
+after rejecting secret-like/PII patterns, malformed JSON, binary/unknown files and
+symlinks. The scanner is a backstop, not a general-purpose sanitizer for future
+Azure output; raw platform collection needs separately reviewed redaction and
+human inspection before upload. Extend retention privately before relying on
+expired artifacts; do not publish dashboards automatically.
+
+Cleanup runs with `always()` on blocked/failed paths but is deliberately local:
+`NO_RESOURCES_CREATED` with an empty deletion list is the only successful receipt.
+An unexpected ownership ledger blocks; **no live deletion is implemented or
+claimed verified**. Before adding any resource creation, implement and test an
+ownership ledger tied to the exact run/attempt and RG, verify all ownership tags
+against Azure, refuse shared/preexisting resources, and retain synchronous cleanup
+completion evidence even on failures. Missing ownership, evidence or cleanup proof
+must remain blocking. Deployment, bounded baseline/fault/recovery collection,
+sanitization of live output, live cleanup, and hosted security verification remain
+future work. Independent human reproduction and scheduled paid tests are separate
+explicit decisions, never implied by a CI rerun.
+
 ## Build & Preview
 
 ```bash
@@ -1066,5 +1167,6 @@ mkdocs serve
 
 ## Sources
 
+- [Azure authentication from GitHub Actions with OIDC](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure-openid-connect)
 - [Azure Functions Flex Consumption plan](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan)
 - [Azure Functions storage considerations](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations)
