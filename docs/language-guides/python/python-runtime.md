@@ -10,6 +10,12 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/python-build-options
   diagrams:
     - id: python-runtime
       type: flowchart
@@ -37,19 +43,33 @@ flowchart TD
 
 ## Supported Python Versions
 
-Azure Functions v4 runtime supports the following Python versions:
+**Official-source review: 2026-10-25.** The live [supported-languages Python table](https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages?pivots=programming-language-python) lists the following versions for Functions v4. These are documented support levels and expected Azure Functions end-of-support dates, not Azure execution results or a recommendation to upgrade existing apps automatically.
 
-| Python Version | Support Status | End of Life |
+| Python Version | Support Status | Expected End of Support |
 |---------------|---------------|-------------|
-| **3.14** | 🔮 Preview | Pending |
+| **3.15** | 🔮 Preview | April 2030 |
+| **3.14** | ✅ GA | April 2029 |
 | **3.13** | ✅ GA | October 2029 |
 | **3.12** | ✅ GA | October 2028 |
 | **3.11** | ✅ GA | October 2027 |
-| **3.10** | ✅ GA | October 2026 |
 
-The reference application uses **Python 3.11**, which benefits from CPython's specializing adaptive interpreter introduced in that release. For the latest supported versions and plan-specific availability, check the [Azure Functions supported languages](https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages) page.
+The reference application and deployment tutorials retain **Python 3.11** as their example pin. Their historical `validation` metadata applies only to the recorded deployment, not every currently documented version. This refresh uses official sources and static checks only; it does not certify Python 3.13/3.14 execution in Azure.
 
-> **Note:** Linux Consumption supports Python 3.10–3.12. Flex Consumption, Premium, and Dedicated support Python 3.10–3.13 (GA) and 3.14 (Preview). Remote build support for Python 3.14 is not yet available on the Flex Consumption plan. Python 3.8 and 3.9 have reached end of support and are no longer available.
+- **OS:** Python function apps run on Linux only. Windows hosting support for other languages is not Python support.
+- **Linux Consumption:** The currently listed GA versions usable within this plan's ceiling are **3.11 and 3.12**. Python 3.13/3.14 are not options on this legacy plan. Use the shared [Platform Limits runtime and migration reference](../../reference/platform-limits.md#runtime-support-and-linux-consumption-migration) for the ceiling and retirement decision path rather than treating a language release as a plan upgrade.
+- **Flex Consumption:** The [Flex stack table](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan#supported-language-stack-versions) includes **3.11, 3.12, 3.13, and 3.14**, all GA in the language-support table. Confirm the target region's stack availability before provisioning. The Flex table also still lists **3.10**, while the live supported-languages table no longer lists it; do not infer current lifecycle support from that older stack entry. The Flex table does not yet list the **3.15 preview** shown in supported-languages, so do not assume Flex availability for it.
+- **Premium / Dedicated (Linux):** Python **3.11–3.14** are the currently listed GA choices, without the Linux Consumption ceiling. The general table's **3.15 preview** is not a production recommendation or a guarantee of availability in a particular region or managed image.
+
+### Build Mode and Version Availability
+
+Language GA status, plan/region availability, and dependency-build availability are separate checks. As reviewed on **2026-10-25**, [deployment technologies](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies#remote-build) and [Python build options](https://learn.microsoft.com/en-us/azure/azure-functions/python-build-options) describe remote build without a Python 3.14-specific Flex exclusion. The historical restriction from issue #25 is not a current support rule; absence of that restriction in current docs is **not** an Azure-tested build result.
+
+| Linux hosting plan | Requesting remote build | Prebuilt dependency alternative |
+|---|---|---|
+| Flex Consumption | Deployment request parameter, not app settings. Core Tools / VS Code request it for Python; GitHub Actions uses `remote-build: true`. | Build Linux-compatible dependencies with the target Python version, include `.python_packages/lib/site-packages`, and deploy a ready-to-run package with remote build disabled using a supported tool. |
+| Consumption / Premium / Dedicated | Core Tools requests remote build by default for Python. Other workflows use `SCM_DO_BUILD_DURING_DEPLOYMENT=true` and `ENABLE_ORYX_BUILD=true`; do not manually set `WEBSITE_RUN_FROM_PACKAGE` for remote build. | Use the plan/OS-specific [package configuration matrix](../../operations/deployment.md#package-configuration-by-plan-and-os); Linux Consumption requires an external package URL when not using remote build. |
+
+If the target version cannot be built remotely, do not relabel its language support as preview or silently downgrade the app. Check tool and regional availability, then follow the documented local-build option on a matching Linux/Ubuntu build environment. Do not upload Windows-built native dependencies. Changing the app's Python version requires rebuilding and redeploying dependencies; it does not convert existing packages automatically.
 
 ### Setting the Python Version
 
@@ -67,19 +87,26 @@ az functionapp create \
   --os-type linux
 ```
 
-| CLI element | Explanation |
+| Command/Parameter | Purpose |
 |---|---|
-| Command(s) | `az functionapp create` |
-| Key flags | `--name`, `--resource-group`, `--storage-account`, `--consumption-plan-location`, `--runtime`, `--runtime-version`, `--functions-version`, `--os-type` |
-| Variables | None |
-| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+| `az functionapp create` | Create the classic Consumption function app. |
+| `--name` | Function app name. |
+| `--resource-group` | Target resource group. |
+| `--storage-account` | Host storage account. |
+| `--consumption-plan-location` | Region for classic Consumption. |
+| `--runtime` | Select Python. |
+| `--runtime-version` | Select the example Python 3.11 runtime. |
+| `--functions-version` | Select Functions host v4. |
+| `--os-type` | Select Linux, required for Python. |
 
 
-> **Flex Consumption:** The `--consumption-plan-location` flag creates a classic Consumption plan. To create a Flex Consumption app, use `az functionapp create` with a pre-created Flex Consumption plan (`--plan`), or use the Bicep template in `infra/main.bicep`. See [Flex Consumption plan](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to) for CLI details.
+> **Flex Consumption:** The `--consumption-plan-location` flag creates a classic Consumption plan. For Flex, follow [First Deploy](tutorial/flex-consumption/02-first-deploy.md), which uses `--flexconsumption-location`, or use the Bicep template in `infra/main.bicep`. See [Flex Consumption how-to](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to) for CLI details.
 
 > **Important:** Azure Functions for Python only runs on Linux. The `--os-type linux` flag is required.
 
 ### Checking the Current Version
+
+For Linux Consumption, Premium, and Dedicated, query `linuxFxVersion`:
 
 ```bash
 az functionapp config show \
@@ -89,13 +116,46 @@ az functionapp config show \
 # Output: Python|3.11
 ```
 
-| CLI element | Explanation |
+| Command/Parameter | Purpose |
 |---|---|
-| Command(s) | `az functionapp config show` |
-| Key flags | `--name`, `--resource-group`, `--query`, `--output` |
-| Variables | None |
-| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+| `az functionapp config show` | Read the classic Linux app configuration. |
+| `--name` | Function app name. |
+| `--resource-group` | Resource group containing the app. |
+| `--query` | Select `linuxFxVersion`. |
+| `--output` | Return the value as TSV. |
 
+For Flex, the runtime is stored in `functionAppConfig.runtime`, not `linuxFxVersion`:
+
+```bash
+az functionapp show \
+  --name "$APP_NAME" \
+  --resource-group "$RG" \
+  --query "functionAppConfig.runtime" --output json
+```
+
+| Command/Parameter | Purpose |
+|---|---|
+| `az functionapp show` | Read the Flex function app resource. |
+| `--name` | Function app name. |
+| `--resource-group` | Resource group containing the app. |
+| `--query` | Select the configured runtime name and version. |
+| `--output` | Return JSON. |
+
+Before selecting a Flex runtime, check its availability in the intended region (run this yourself; no output is claimed here):
+
+```bash
+az functionapp list-flexconsumption-runtimes \
+  --location "$LOCATION" \
+  --runtime python \
+  --output table
+```
+
+| Command/Parameter | Purpose |
+|---|---|
+| `az functionapp list-flexconsumption-runtimes` | List Flex runtime versions offered in the target region. |
+| `--location` | Target Azure region. |
+| `--runtime` | Filter to Python. |
+| `--output` | Display a table; compare it with the lifecycle table above. |
 
 ## Worker Process Settings
 
@@ -116,12 +176,12 @@ az functionapp config appsettings set \
   --settings "PYTHON_THREADPOOL_THREAD_COUNT=16"
 ```
 
-| CLI element | Explanation |
+| Command/Parameter | Purpose |
 |---|---|
-| Command(s) | `az functionapp config appsettings set` |
-| Key flags | `--name`, `--resource-group`, `--settings` |
-| Variables | None |
-| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+| `az functionapp config appsettings set` | Configure the Python thread pool. |
+| `--name` | Function app name. |
+| `--resource-group` | Resource group containing the app. |
+| `--settings` | Set the thread count. |
 
 
 **When to increase:** If your functions are I/O-bound (making HTTP calls, querying databases, reading files). The GIL is released during I/O operations, so additional threads provide real concurrency.
@@ -138,6 +198,13 @@ az functionapp config appsettings set \
   --resource-group your-rg \
   --settings "FUNCTIONS_WORKER_PROCESS_COUNT=4"
 ```
+
+| Command/Parameter | Purpose |
+|---|---|
+| `az functionapp config appsettings set` | Configure Python worker processes. |
+| `--name` | Function app name. |
+| `--resource-group` | Resource group containing the app. |
+| `--settings` | Set the worker process count. |
 
 | Setting | Default | Maximum |
 |---------|---------|---------|
@@ -273,27 +340,33 @@ az functionapp config appsettings set \
   --settings "PYTHON_ISOLATE_WORKER_DEPENDENCIES=1"
 ```
 
-| CLI element | Explanation |
+| Command/Parameter | Purpose |
 |---|---|
-| Command(s) | `az functionapp config appsettings set` |
-| Key flags | `--name`, `--resource-group`, `--settings` |
-| Variables | None |
-| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+| `az functionapp config appsettings set` | Configure dependency isolation on earlier Python versions. |
+| `--name` | Function app name. |
+| `--resource-group` | Resource group containing the app. |
+| `--settings` | Enable worker dependency isolation. |
 
 
 ### Large Dependencies
 
 If your function app uses large packages (ML libraries like `scikit-learn`, `tensorflow`, `pandas`), consider:
 
-1. **Remote build** — always use remote build so packages are compiled for Linux
-2. **Custom Docker image** — for very large dependency trees, use a custom container image
+1. **Remote build** — recommended when available; if dependency installation exceeds build limits, use a matching Linux prebuild as described in [build-mode guidance](#build-mode-and-version-availability)
+2. **Custom Docker image** — for OS-level dependencies or very large dependency trees, consider Linux Premium or Dedicated; Flex does not support custom containers
 3. **Lazy imports** — import heavy packages inside function bodies to reduce cold start
 
 ## See Also
 - [Environment Variables](environment-variables.md)
 - [Platform Limits](platform-limits.md)
+- [Shared Runtime Support and Migration Reference](../../reference/platform-limits.md#runtime-support-and-linux-consumption-migration)
 - [Scaling](../../platform/scaling.md)
 
 ## Sources
+- [Supported languages and Python lifecycle (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages)
+- [Flex supported language stacks (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan#supported-language-stack-versions)
+- [Deployment technologies and remote build (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies)
+- [Python build options (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/python-build-options)
+- [Flex configuration and regional runtime availability (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to)
 - [Python v2 Programming Model (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python)
 - [Azure Functions Overview (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview)

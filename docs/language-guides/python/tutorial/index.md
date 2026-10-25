@@ -112,8 +112,12 @@ Use [Platform Limits](../../../reference/platform-limits.md) for plan/OS/region-
 | **Private endpoints** | ❌ | ✅ | ✅ | ✅ (Standard+) |
 | **Python OS** | Linux (legacy) | Linux | Linux | Linux |
 | **Deployment content** | Linux deployment-specific | Blob container | Azure Files by default; exceptions apply | No default Azure Files dependency |
-| **Kudu / SCM** | ✅ (Windows only) | ❌ | ✅ | ✅ |
+| **Kudu / SCM** | ❌ (Linux Python) | ❌ | Limited Linux site | Limited Linux site |
 | **Pricing model** | Per-execution | Per-execution | Pre-allocated | Pre-allocated |
+
+**Runtime and build notes (official-source review: 2026-10-25):** Keep all comparison rows above together; notes apply after the complete table. Use [Python Runtime](../python-runtime.md#supported-python-versions) for current language GA status and Python-specific plan availability, and [build-mode guidance](../python-runtime.md#build-mode-and-version-availability) for remote versus prebuilt dependencies. Python 3.13/3.14 GA does not remove the Linux Consumption ceiling or prove a successful remote build. The tracks retain Python 3.11 example pins; this source/static refresh does not extend their historical Azure validation to other versions.
+
+For deployment storage and build settings, use the [plan/OS package matrix](../../../operations/deployment.md#package-configuration-by-plan-and-os). Linux Consumption has no companion deployment site even though remote build is supported; Premium/Dedicated Linux sites are limited compared with Windows. See [deployment technologies](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies#remote-build).
 
 ## Network Architecture by Plan
 
@@ -380,6 +384,8 @@ Traditional App Service hosting with predictable pricing. Best when you already 
 
 ## Sources
 
+- [Azure Functions supported languages (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages)
+- [Azure Functions deployment technologies (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies)
 - [Azure Functions hosting options (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
 - [Flex Consumption plan (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan)
 - [Azure Functions Premium plan (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan)
