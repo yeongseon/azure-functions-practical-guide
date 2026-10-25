@@ -39,11 +39,13 @@ content_sources:
 
 Deploy the app to Azure Functions Flex Consumption (FC1) using long-form CLI commands only.
 
+**Runtime/build review (2026-10-25, official sources and static checks only):** This track retains Python **3.11**, not the newest supported runtime. See [supported versions](../../python-runtime.md#supported-python-versions) for Python 3.13/3.14 GA on Linux Flex and the regional-availability check. Follow [build-mode guidance](../../python-runtime.md#build-mode-and-version-availability): Flex requests remote build through the deployment, not `SCM_DO_BUILD_DURING_DEPLOYMENT` / `ENABLE_ORYX_BUILD` app settings. Current deployment docs do not state the historical Python 3.14 Flex remote-build exclusion. Historical `validation` metadata is unchanged and does not certify execution on those newer versions.
+
 ## Prerequisites
 
 | Tool | Version | Purpose |
 |------|---------|---------|
-| Python | 3.11+ | Local runtime |
+| Python | 3.11 | Match the tutorial's deployed example pin |
 | Azure Functions Core Tools | v4 | Local host and publishing |
 | Azure CLI | 2.61+ | Azure resource provisioning and management |
 | Azure subscription | Active | Target for deployment |
