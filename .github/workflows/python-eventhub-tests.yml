@@ -11,6 +11,8 @@ on:
       - 'tests/conftest.py'
       - 'tests/fixtures/evidence/**'
       - 'scripts/lib/evidence_eval.py'
+      - 'scripts/golden_e2e_guard.py'
+      - '.github/workflows/e2e-azure.yml'
       - 'scripts/lib/reproduction_check.py'
       - 'scripts/lib/tutorial_validation.py'
       - 'scripts/lib/yaml_style.py'
