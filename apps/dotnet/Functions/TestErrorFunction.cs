@@ -20,7 +20,7 @@ public class TestErrorFunction
 
     [Function("testError")]
     public IActionResult Run(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "testerror")] HttpRequest req)
+        [HttpTrigger(AuthorizationLevel.Function, "get", Route = "testerror")] HttpRequest req)
     {
         _logger.LogInformation("Test error endpoint requested");
 

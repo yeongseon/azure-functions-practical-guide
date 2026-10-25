@@ -1,5 +1,7 @@
 # Azure Functions .NET Reference App
 
+Diagnostics (`dns/*`, `identity`, `storage/probe`, `slow`) and exception-injection routes (`testerror`, `unhandlederror`) require function keys on Azure; health remains anonymous. See [controlled lab endpoint setup and cleanup](../../docs/reference/lab-endpoint-safety.md). Local Core Tools normally skips key authorization. Slow-response `delay` must be 0–25 integer seconds.
+
 Azure Functions .NET 8 isolated worker reference application for the practical guide.
 
 ## Trigger and Binding Coverage
@@ -73,7 +75,7 @@ curl http://localhost:7071/api/info
 - Without a connection string, `AzureWebJobsStorage__accountName` selects `https://<account-name>.blob.core.windows.net`. `AzureWebJobsStorage__blobServiceUri` supports an explicit HTTPS Blob endpoint. The worker configuration provider maps double underscores to colons.
 - `AzureWebJobsStorage__credential=managedidentity` selects managed identity, optionally with `__clientId` or `__managedIdentityResourceId` (not both). Without `__credential`, the SDK default credential chain can use local developer credentials. Setting only `__credential` without an account or Blob endpoint is not sufficient.
 - The Blob request has **zero retries**, a **3-second network timeout**, and a **3-second cancellation budget** covering credential acquisition and the service call. A per-invocation transport guard permits only one Blob transport call, including when authentication challenges would otherwise replay the request; the default HTTP transport also disables redirects. A blocked challenge replay reports the original 401 as `authenticationFailed`. Credential discovery may involve identity-provider requests in addition to the single Blob service request. No storage resources are created, changed or deleted.
-- Responses and endpoint logs contain only fixed state labels, never connection strings, keys, tokens, account/container names, tenant details, SDK exception messages or raw service errors. The endpoint remains anonymous like the other sample diagnostics; protect it with access restrictions or authentication before exposing a deployed sample publicly.
+- Responses and endpoint logs contain only fixed state labels, never connection strings, keys, tokens, account/container names, tenant details, SDK exception messages or raw service errors. The endpoint requires a function key on Azure; also restrict network access to the isolated lab.
 
 | HTTP status | `configuration` | `verification` | Interpretation |
 |---|---|---|---|

@@ -6,7 +6,7 @@ bp = func.Blueprint()
 logger = logging.getLogger(__name__)
 
 
-@bp.route(route="exceptions/test-error", methods=["GET"])
+@bp.route(route="exceptions/test-error", methods=["GET"], auth_level=func.AuthLevel.FUNCTION)
 def test_error(req: func.HttpRequest) -> func.HttpResponse:
     """Raise and catch a ValueError to demonstrate exception handling."""
     logger.info("Exception test endpoint requested")
@@ -26,7 +26,7 @@ def test_error(req: func.HttpRequest) -> func.HttpResponse:
         return func.HttpResponse(body, mimetype="application/json", status_code=200)
 
 
-@bp.route(route="exceptions/unhandled", methods=["GET"])
+@bp.route(route="exceptions/unhandled", methods=["GET"], auth_level=func.AuthLevel.FUNCTION)
 def unhandled_error(req: func.HttpRequest) -> func.HttpResponse:
     """Raise an unhandled exception to generate real 500 errors in Application Insights."""
     logger.info("Unhandled exception endpoint requested")

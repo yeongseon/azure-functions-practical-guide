@@ -15,27 +15,28 @@ import logging
 import os
 import time
 import json
+from config.lab_limits import LabInputError, parse_replay
 
 bp = df.Blueprint()
+http_bp = df.Blueprint()
 logger = logging.getLogger(__name__)
 
 
-@bp.route(route="durable/start-replay-lab", methods=["POST"])
-@bp.durable_client_input(client_name="client")
+@http_bp.route(route="durable/start-replay-lab", methods=["POST"], auth_level=func.AuthLevel.FUNCTION)
+@http_bp.durable_client_input(client_name="client")
 async def start_replay_lab(req: func.HttpRequest, client):
     """HTTP starter for the replay storm lab orchestrator."""
-    iterations = int(os.environ.get("DurableLab__Iterations", "100"))
-    continue_as_new_every = int(os.environ.get("DurableLab__ContinueAsNewEvery", "0"))
-
-    body = req.get_body().decode("utf-8")
     try:
-        payload = json.loads(body) if body else {}
-    except json.JSONDecodeError:
-        payload = {}
-
-    instances_requested = payload.get("instances", 1)
-    override_iterations = payload.get("iterations", iterations)
-    override_continue = payload.get("continueAsNewEvery", continue_as_new_every)
+        workload = parse_replay(req.get_body(), (
+            os.environ.get("DurableLab__Iterations", "100"),
+            os.environ.get("DurableLab__ContinueAsNewEvery", "0"),
+        ))
+    except LabInputError as exc:
+        return func.HttpResponse(json.dumps({"error": str(exc)}),
+                                 status_code=exc.status_code, mimetype="application/json")
+    instances_requested = workload.instances
+    override_iterations = workload.iterations
+    override_continue = workload.continue_every
 
     instance_ids = []
     for i in range(instances_requested):
@@ -161,8 +162,8 @@ def replay_lab_activity(payload: dict) -> dict:
     }
 
 
-@bp.route(route="durable/status/{instanceId}", methods=["GET"])
-@bp.durable_client_input(client_name="client")
+@http_bp.route(route="durable/status/{instanceId}", methods=["GET"], auth_level=func.AuthLevel.FUNCTION)
+@http_bp.durable_client_input(client_name="client")
 async def check_replay_status(req: func.HttpRequest, client):
     """Check the status of a replay storm orchestration instance."""
     instance_id = req.route_params.get("instanceId")

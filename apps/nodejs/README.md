@@ -49,6 +49,8 @@ apps/nodejs/
 
 ## Quick Start
 
+Diagnostics, replay starters/status and exception-injection HTTP routes are disabled unless `LAB_ENDPOINTS_ENABLED=true` (exact string). Enabled lab routes require function keys on Azure; health remains anonymous. Read [controlled lab endpoint setup and cleanup](../../docs/reference/lab-endpoint-safety.md) before running experiments. Local Core Tools normally skips key authorization.
+
 ```bash
 cd apps/nodejs
 npm install

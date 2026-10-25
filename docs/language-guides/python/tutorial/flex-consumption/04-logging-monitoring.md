@@ -174,11 +174,13 @@ Expected output:
 
 ### Step 3: Generate Traffic
 
+For exception traffic only, complete [controlled lab endpoint setup](../../../../reference/lab-endpoint-safety.md) first (`LAB_ENDPOINTS_ENABLED=true` and a protected `FUNCTION_KEY`). Disable the switch and rotate the experiment key afterward; health remains anonymous.
+
 
 ```bash
 curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
 curl --request GET "https://$APP_NAME.azurewebsites.net/api/info"
-curl --request GET "https://$APP_NAME.azurewebsites.net/api/exceptions/test-error"
+curl --request GET --header "x-functions-key: $FUNCTION_KEY" "https://$APP_NAME.azurewebsites.net/api/exceptions/test-error"
 ```
 
 Expected output:

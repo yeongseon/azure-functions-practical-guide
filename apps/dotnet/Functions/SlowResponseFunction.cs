@@ -20,11 +20,11 @@ public class SlowResponseFunction
 
     [Function("slowResponse")]
     public async Task<IActionResult> Run(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "slow")] HttpRequest req)
+        [HttpTrigger(AuthorizationLevel.Function, "get", Route = "slow")] HttpRequest req)
     {
         var delayStr = req.Query["delay"].FirstOrDefault() ?? "2";
-        if (!int.TryParse(delayStr, out var delaySec))
-            delaySec = 2;
+        if (!int.TryParse(delayStr, out var delaySec) || delaySec is < 0 or > 25)
+            return new BadRequestObjectResult(new { error = "delay must be an integer from 0 to 25 seconds" });
 
         _logger.LogInformation("Slow response: delaying {Seconds}s", delaySec);
 

@@ -21,7 +21,7 @@ public class DnsResolveFunction
 
     [Function("dnsResolve")]
     public async Task<IActionResult> Run(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "dns/{hostname}")] HttpRequest req,
+        [HttpTrigger(AuthorizationLevel.Function, "get", Route = "dns/{hostname}")] HttpRequest req,
         string hostname)
     {
         _logger.LogInformation("DNS resolve requested for {Hostname}", hostname);
@@ -46,7 +46,7 @@ public class DnsResolveFunction
             return new ObjectResult(new
             {
                 hostname,
-                error = ex.Message
+                error = "DNS resolution failed; inspect protected operator logs"
             })
             { StatusCode = 502 };
         }

@@ -1,5 +1,4 @@
-const { app } = require('@azure/functions');
-const os = require('os');
+const { registerLabHttp, LabInputError, parseDelay } = require('../shared/labLimits');
 const dns = require('dns');
 const { promisify } = require('util');
 
@@ -9,11 +8,17 @@ const dnsResolve = promisify(dns.resolve);
  * Simulate slow response with configurable delay.
  * Query parameters: delay_ms (default 3000, max 25000).
  */
-app.http('slowResponse', {
+registerLabHttp('slowResponse', {
     methods: ['GET'],
     route: 'diagnostics/slow-response',
     handler: async (request, context) => {
-        const delayMs = Math.min(parseInt(request.query.get('delay_ms') || '3000', 10), 25000);
+        let delayMs;
+        try {
+            delayMs = parseDelay(request.query.get('delay_ms') ?? '3000');
+        } catch (error) {
+            if (!(error instanceof LabInputError)) throw error;
+            return { status: error.status, jsonBody: { error: error.message } };
+        }
         context.log(`Slow response endpoint requested (delay=${delayMs}ms)`);
 
         const start = Date.now();
@@ -34,7 +39,7 @@ app.http('slowResponse', {
 /**
  * Probe storage account access via managed identity.
  */
-app.http('storageProbe', {
+registerLabHttp('storageProbe', {
     methods: ['GET'],
     route: 'diagnostics/storage-probe',
     handler: async (request, context) => {
@@ -60,19 +65,14 @@ app.http('storageProbe', {
                 credential
             );
 
-            const containers = [];
-            for await (const container of blobClient.listContainers()) {
-                containers.push(container.name);
-            }
+            await blobClient.listContainers().byPage({ maxPageSize: 1 }).next();
             const elapsed = Date.now() - start;
 
-            context.log(`Storage probe succeeded (${elapsed}ms, ${containers.length} containers)`);
+            context.log(`Storage probe succeeded (${elapsed}ms)`);
             return {
                 status: 200,
                 jsonBody: {
                     status: 'success',
-                    account: accountName,
-                    containers,
                     elapsedMs: elapsed,
                 },
             };
@@ -83,9 +83,7 @@ app.http('storageProbe', {
                 status: 502,
                 jsonBody: {
                     status: 'error',
-                    account: accountName,
-                    error: err.constructor.name,
-                    message: err.message,
+                    error: 'Storage probe failed; inspect protected operator logs',
                     elapsedMs: elapsed,
                 },
             };
@@ -97,7 +95,7 @@ app.http('storageProbe', {
  * Resolve a hostname and return the result for DNS troubleshooting.
  * Query parameters: host (required).
  */
-app.http('dnsResolve', {
+registerLabHttp('dnsResolve', {
     methods: ['GET'],
     route: 'diagnostics/dns-resolve',
     handler: async (request, context) => {
@@ -134,7 +132,7 @@ app.http('dnsResolve', {
                 jsonBody: {
                     status: 'failed',
                     host,
-                    error: err.message,
+                    error: 'DNS resolution failed; inspect protected operator logs',
                     elapsedMs: elapsed,
                 },
             };
@@ -145,7 +143,7 @@ app.http('dnsResolve', {
 /**
  * Probe managed identity token acquisition.
  */
-app.http('identityProbe', {
+registerLabHttp('identityProbe', {
     methods: ['GET'],
     route: 'diagnostics/identity-probe',
     handler: async (request, context) => {
@@ -170,7 +168,6 @@ app.http('identityProbe', {
                 jsonBody: {
                     status: 'success',
                     identityType,
-                    clientId: clientId || null,
                     tokenAcquired: true,
                     tokenExpiresOn: expiresOn,
                     elapsedMs: elapsed,
@@ -183,8 +180,7 @@ app.http('identityProbe', {
                 status: 502,
                 jsonBody: {
                     status: 'error',
-                    error: err.constructor.name,
-                    message: err.message,
+                    error: 'Identity probe failed; inspect protected operator logs',
                     elapsedMs: elapsed,
                 },
             };
