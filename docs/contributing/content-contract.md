@@ -1073,8 +1073,12 @@ must complete these **hosted prerequisites; none is asserted to exist**:
     `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`, `AZURE_E2E_ENABLED=true`, and
     `AZURE_E2E_SCOPE=rg-azf-e2e-<run-id>-<attempt>`. Never define fallback repository
     or organization variables with these names; the `vars` context cannot prove
-    a value's scope. These identifiers are not passwords but remain excluded from
-    records/logs. No client secret is supported. Configuration alone cannot bypass
+    a value's scope. The helper excludes these identifiers from retained artifacts;
+    **GitHub may show configured `vars` in shell-step environment log headers**.
+    This inert scaffold does not promise log masking. Do not configure identifiers
+    requiring log confidentiality until a separately reviewed masking mechanism
+    is in place; the artifact scanner does not protect GitHub runner logs.
+    No client secret is supported. Configuration alone cannot bypass
     the current hardcoded `scenario-not-implemented` blocker.
 - Provide a disposable run-specific RG scope and grant the runner **Contributor
     on that RG only**, never subscription Contributor/Owner or role-assignment
