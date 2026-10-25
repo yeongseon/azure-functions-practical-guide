@@ -7,31 +7,43 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/migration/migrate-plan-consumption-to-flex
   diagrams:
     - id: why-this-matters
       type: flowchart
       source: self-generated
-      justification: Flow view of why this matters, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Workload-fit recommendations synthesized from documented plan capabilities; not a measured latency or cost guarantee.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
-        - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan
 content_validation:
   status: verified
-  last_reviewed: 2026-09-11
+  last_reviewed: 2026-10-25
   reviewer: agent
   core_claims:
-    - claim: "Sporadic workload에는 scale-to-zero가 가능한 Consumption 또는 Flex Consumption이 유리할 수 있다."
-      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
-      verified: true
-    - claim: "Private networking 요구가 있으면 Flex Consumption 또는 Premium 같은 지원 플랜을 우선 검토해야 한다."
+    - claim: "Flex Consumption is Linux-only and supports optional always-ready instances per function or scale group, with a default count of zero."
       source: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
       verified: true
-    - claim: "엄격한 저지연 HTTP 요구사항에는 warm baseline을 제공하는 Premium 플랜이 적합하다."
+    - claim: "Premium supports always-ready and prewarmed instances and bills at least one active instance per plan."
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
+      verified: true
+    - claim: "The HTTP response limit is 230 seconds regardless of the function execution timeout setting."
       source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
       verified: true
-    - claim: "호스팅 플랜 선택은 비용표가 아니라 워크로드 특성과 성능/신뢰성 요구를 기준으로 해야 한다."
-      source: https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
+    - claim: "Dedicated uses manual scaling or App Service autoscale and should have Always On enabled."
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan
+      verified: true
+    - claim: "Linux Consumption retires on September 30, 2028; Windows Consumption is not affected by that retirement."
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan
       verified: true
 ---
 
@@ -39,14 +51,14 @@ content_validation:
 
 Selecting the wrong hosting plan is one of the highest-impact mistakes in Azure Functions. This guide provides a practical decision framework so plan choice matches execution behavior, trigger profile, and operational safety requirements.
 
-This page intentionally avoids re-explaining plan internals. For detailed platform capabilities, start with [Platform: Hosting](../platform/hosting.md).
+**Official-source review: 2026-10-25.** Capabilities below were checked against Microsoft Learn, not executed or benchmarked in Azure. Plan recommendations are workload-fit judgments, not latency or cost guarantees. For numerical limits and their qualifications, use the shared [Platform Limits](../reference/platform-limits.md) rather than treating this selector as a second limits table.
 
 !!! tip "Use this page with Platform"
     Read [Platform: Hosting](../platform/hosting.md) first for capability facts, then apply this guide for workload-fit decisions and migration safety.
 
 ## Why This Matters
 
-Evaluate hosting plan choice in this order:
+Evaluate these factors together when choosing a hosting plan:
 
 1. **Execution time and timeout risk**: Are handlers long-running or bursty async jobs?
 2. **Latency sensitivity**: Is p95 response time strict for HTTP paths?
@@ -57,63 +69,56 @@ Evaluate hosting plan choice in this order:
 <!-- diagram-id: why-this-matters -->
 ```mermaid
 flowchart TD
-    A[Start: characterize workload] --> B{Need VNet or private endpoints?}
-    B -->|No| C{Strict low-latency HTTP SLO?}
-    B -->|Yes| D{Need scale-to-zero economics?}
-    C -->|No| E{Mostly sporadic events?}
-    C -->|Yes| F[Premium EP]
-    E -->|Yes| G[Consumption Y1]
-    E -->|No| H[Dedicated or Premium]
-    D -->|Yes| I[Flex Consumption FC1]
-    D -->|No| J[Premium EP or Dedicated]
+    A[Start: check OS, runtime, region and release needs] --> B{Reuse suitable fixed App Service capacity?}
+    B -->|Yes| C[Evaluate Dedicated with Always On]
+    B -->|No| D{Flex meets capability requirements?}
+    D -->|No| E[Evaluate Premium or Dedicated]
+    D -->|Yes| F{Need a warm baseline?}
+    F -->|Yes| G[Compare Flex always-ready with Premium]
+    F -->|No| H[Start with Flex on demand]
 ```
 
-## Portal Walkthrough
-
-This section shows key portal blades for evaluating hosting plan choice on a live Function App (Consumption Y1, Korea Central). PII is masked.
-
-### Function App Overview
-
-[Observed] The **Overview** blade shows the Function App essentials: **App Service Plan** is linked to `KoreaCentralLinuxDynamicPlan (Y1: 0)`, **Operating System** is Linux, and **Runtime version** is `4.1048.200.26180`. Two HTTP-triggered functions (`health`, `hello`) are listed with Enabled status:
-
-![Function App Overview showing plan, OS, runtime, and functions list](../assets/operations/overview/01-function-app-overview.png)
-
-[Inferred] The plan name `KoreaCentralLinuxDynamicPlan` with `Y1: 0` confirms this is a Consumption plan with 0 always-on instances. The `(Y1: 0)` suffix is the key indicator for Consumption tier. For workloads requiring VNet integration, always-ready instances, or deployment slots, migration to Flex Consumption (FC1) or Premium (EP) is required. Note that deployment slots on Consumption are Windows-only.
-
-### App Service Plan Blade
-
-[Observed] The **App Service plan** blade shows the current plan details: **Pricing plan** is Y1, **Instance Count** is 0, **Operating System** is Linux, **Location** is Korea Central, and **Zone redundant** is Disabled. The **App(s) / Slots** field shows 1/0 (one app, no additional slots):
-
-![App Service plan blade showing Y1 pricing, 0 instances, zone redundancy disabled](../assets/operations/hosting/01-app-service-plan.png)
-
-[Inferred] Instance Count 0 confirms the Consumption plan scales to zero when idle. Zone redundancy is not available on Consumption plans. For production workloads requiring zone redundancy, use Premium (EP) or Dedicated plans with zone-redundant configuration. The 1/0 app-to-slot ratio means no staging slot is configured.
+For **new serverless apps**, Microsoft recommends Flex Consumption. For **existing Consumption apps**, assess migration rather than making an untested plan switch. Windows-dependent code can still justify legacy Windows Consumption when its constraints fit; it is not the default for new Linux workloads. [Linux Consumption retires on September 30, 2028](https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan) and receives no new features or language versions; Windows Consumption is not affected by that deadline. See the [runtime and migration reference](../reference/platform-limits.md#runtime-support-and-linux-consumption-migration).
 
 ## Recommended Practices
 
 ### Workload characteristics that should drive plan choice
 
-| Characteristic | Why it matters | Strong default |
+The tree and recommendations below apply only after these documented capability checks:
+
+| Requirement | Confirmed capability and caveat | Workload-fit recommendation |
 |---|---|---|
-| Sporadic event traffic with public endpoints | Scale-to-zero minimizes idle cost | Consumption (Y1) or Flex (FC1) |
-| Private-only dependency access | Requires VNet/private endpoint support | Flex (FC1) or Premium (EP) |
-| Strict p95 latency for HTTP | Warm baseline avoids startup penalties | Premium (EP) |
-| Long-running processing | Avoid timeout ceilings and front-end assumptions | Flex (FC1), Premium (EP), or Dedicated |
-| Existing App Service estate | Shared governance and fixed capacity model | Dedicated |
+| Sporadic public traffic | [Flex](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan#billing) supports scale-to-zero on demand; always-ready adds billed baseline capacity | Start new compatible apps on Flex on demand; review existing Y1 apps for migration |
+| Strict p95 HTTP latency | [Flex always-ready](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan#always-ready-instances) keeps configured functions/groups running; [Premium](https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan#eliminate-cold-starts) combines always-ready with an HTTP prewarmed buffer | Compare both under expected bursts and concurrency; neither establishes an end-to-end SLO without workload tests |
+| Private access | [Networking support](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale#networking-features) includes inbound private endpoints and outbound VNet integration on Flex/Premium and supported Dedicated configurations, not Consumption | Distinguish private ingress from private dependency access; check tier, subnet, DNS, and routing requirements |
+| OS, runtime, and region | [Flex is Linux-only](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan#supported-language-stack-versions), requires .NET isolated rather than in-process, and is not available in every region; [Premium scale ceilings vary by OS/region](https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan#region-max-scale-out) | Check stack version, trigger compatibility (including Event Grid-based Blob triggers on Flex), region and quota before selecting; Python runs only on Linux |
+| Release workflow | [Flex does not support deployment slots](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan#considerations); the Flex overview labels rolling updates public preview while the site-update guide distinguishes generally available regions from regions still rolling out; neither is a slot swap | Compare slot requirements with the existing [deployment reference](../reference/platform-limits.md#deployment-slots) and [Flex site update strategy](../operations/deployment.md#flex-site-update-strategy) |
+| Existing fixed App Service capacity | [Dedicated](https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan) shares plan resources, uses manual/App Service autoscale, and should enable Always On | Reuse only with sufficient headroom and an owned scaling strategy; it is not Functions event-driven scaling |
+
+Flex always-ready defaults to zero and is configured per function or scale group (the HTTP functions share a group). Enabling it retains a paid warm baseline rather than zero idle cost for that group; on-demand capacity can still be added beyond that baseline. Premium always bills at least one active plan instance. Size and compare baseline cost, burst behavior, and dependency latency rather than routing every low-latency workload directly to Premium. These are documented behaviors, not benchmark results.
+
+### Execution duration is not HTTP response time
+
+[`functionTimeout`](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale#timeout) controls invocation execution duration, not the HTTP connection's response window. Regardless of that setting, Functions documents a **230-second maximum HTTP response wait** at the front end; clients or proxies can impose shorter limits. Raising the execution timeout or switching plans does not extend that response window.
+
+For plan-specific defaults/maximums, use [Execution Timeout](../reference/platform-limits.md#execution-timeout). Flex and Premium support unbounded configured execution but still have scale-in and platform-update grace periods; Dedicated requires Always On for unbounded execution and is still subject to platform updates. Unbounded does not mean uninterrupted. The worker must also start successfully; runtime startup and OS/region capacity are separate constraints.
+
+For longer HTTP work, return promptly after durably enqueueing work, or use the Durable Functions async pattern. Do not return success and leave essential work in an untracked background thread. See [performance and reliability guidance](https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability#avoid-long-running-functions).
 
 !!! warning "Do not optimize for list price only"
     A cheaper plan can become more expensive when retries, backlog growth, or cold-start-driven latency failures increase operational load.
 
 ### Decision matrix
 
-Rows are workload types. Columns represent suitability by plan.
+These are starting recommendations, not a support matrix or cost ranking. **Existing only** means reassess an existing legacy app rather than choosing Y1 by default for a new app; the Windows-dependency exception above still applies. Apply the capability checks before using any row.
 
 | Workload type | Consumption (Y1) | Flex Consumption (FC1) | Premium (EP) | Dedicated |
 |---|---|---|---|---|
-| Low-volume cron jobs | Recommended | Recommended | Conditional | Conditional |
-| Bursty queue processing without private networking | Recommended | Recommended | Conditional | Not preferred |
+| Low-volume cron jobs | Existing only | Start here | Conditional | Conditional |
+| Bursty queue processing without private networking | Existing only | Start here | Conditional | Not preferred |
 | Bursty queue processing with private networking | Not supported | Recommended | Recommended | Conditional |
-| Public HTTP API with moderate latency tolerance | Recommended | Recommended | Conditional | Conditional |
-| Public HTTP API with strict low-latency SLO | Conditional | Conditional (with always-ready) | Recommended | Recommended |
+| Public HTTP API with moderate latency tolerance | Existing only | Start here | Conditional | Conditional |
+| Public HTTP API with strict low-latency SLO | Existing only; cold-start risk | Compare with always-ready | Compare warm baseline/buffer | Conditional with Always On and capacity |
 | Enterprise integration with private endpoints + predictable response | Not supported | Recommended | Recommended | Conditional |
 | CPU/memory-heavy continuous workloads | Not preferred | Conditional | Recommended | Recommended |
 | Multi-app consolidation on shared fixed capacity | Not preferred | Not suitable (one app per plan) | Conditional | Recommended |
@@ -128,7 +133,7 @@ Rows are workload types. Columns represent suitability by plan.
 ### Mistake 2: Choosing Premium for very low-volume HTTP endpoints
 
 - **Symptom**: baseline monthly cost dominates actual execution demand.
-- **Safer choice**: start on Flex with always-ready tuned to minimum viable level.
+- **Safer choice**: start on compatible Flex on demand if cold starts fit the latency budget; add and cost always-ready only when needed.
 
 ### Mistake 3: Ignoring private networking requirements until late
 
@@ -145,20 +150,20 @@ Rows are workload types. Columns represent suitability by plan.
 
 ### Migration paths between plans
 
-Plan migration is usually operationally straightforward when done with configuration discipline and staged validation.
+Treat these as reassessment paths, not universal in-place conversions. [Moving to or from Flex requires a new app and code redeployment](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan#considerations). [Consumption/Premium in-place migration is Windows-only](https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan#migration); other moves need a target-app, cutover, and rollback assessment.
 
 | From | To | Typical trigger | Main migration check |
 |---|---|---|---|
 | Consumption (Y1) | Flex (FC1) | Need VNet, better burst handling, or longer timeouts | Validate Flex deployment model and storage identity configuration |
-| Consumption (Y1) | Premium (EP) | Need strict latency and warm baseline | Configure minimum/pre-warmed instances and test cost impact |
-| Flex (FC1) | Premium (EP) | Need consistently warm behavior for HTTP | Re-check scale and concurrency settings under warm baseline |
+| Consumption (Y1) | Premium (EP) | Flex cannot meet OS, release, or capacity needs | Assess migration support, warm settings, and baseline cost |
+| Flex (FC1) | Premium (EP) | Warm baseline alone does not meet workload needs, or Premium-only capabilities are required | First assess Flex always-ready/concurrency; compare Premium buffer and create a target app if selected |
 | Premium (EP) | Dedicated | Need fixed capacity governance | Port autoscale strategy to App Service plan rules |
 
 ### Migration checklist
 
 1. Export and review app settings, connection settings, and `host.json` scale-related values.
-2. Confirm trigger extensions and binding compatibility in target plan.
-3. Validate storage access mode (identity-based settings where required).
+2. Confirm OS, regional runtime availability, trigger extensions, and binding compatibility in the target plan; use the [Python runtime reference](../language-guides/python/python-runtime.md#supported-python-versions) for Python version/build qualifications.
+3. Review [package configuration by plan/OS](../operations/deployment.md#package-configuration-by-plan-and-os) and [host vs deployment storage authentication](../platform/storage-connectivity.md#host-storage-authentication-including-flex) separately; do not copy classic package/content-share settings into Flex.
 4. Run staged load test to compare p95, backlog behavior, and dependency saturation.
 5. Cut over with rollback path and post-cutover telemetry watch window.
 
@@ -178,9 +183,9 @@ Use these constraints to avoid unstable designs:
 
 | If your first priority is... | Start with... | Re-evaluate when... |
 |---|---|---|
-| Lowest idle cost | Consumption (Y1) | You need private networking or long-running execution |
-| Serverless + private networking | Flex (FC1) | Strict low-latency SLO remains unstable |
-| Lowest latency consistency | Premium (EP) | Spend must be reduced and latency budget loosens |
+| Avoiding idle compute baseline for a new compatible app | Flex (FC1) on demand | Cold-start latency exceeds the budget |
+| Serverless + private networking | Flex (FC1), after compatibility checks | Regional capacity or required features do not fit |
+| A warm HTTP baseline | Compare Flex always-ready and Premium | Burst latency, concurrency, or baseline cost misses the workload target |
 | Existing fixed App Service capacity | Dedicated | Workload becomes bursty and under-utilizes fixed compute |
 
 ## Validation Checklist
@@ -202,6 +207,11 @@ Before finalizing a plan decision, hand off these concrete items to operations:
 
 - [Platform: Hosting](../platform/hosting.md)
 - [Platform: Scaling](../platform/scaling.md)
+- [Platform Limits](../reference/platform-limits.md)
+- [Deployment: Package Configuration](../operations/deployment.md#package-configuration-by-plan-and-os)
+- [Deployment: Flex Site Update Strategy](../operations/deployment.md#flex-site-update-strategy)
+- [Storage Connectivity](../platform/storage-connectivity.md)
+- [Python Runtime](../language-guides/python/python-runtime.md)
 - [Operations: Cost Optimization](../operations/cost-optimization.md)
 - [Best Practices: Scaling](./scaling.md)
 
@@ -210,3 +220,7 @@ Before finalizing a plan decision, hand off these concrete items to operations:
 - [Azure Functions hosting options and scaling (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
 - [Azure Functions Flex Consumption plan (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan)
 - [Azure Functions performance and reliability (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability)
+- [Azure Functions Premium plan (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan)
+- [Azure Functions Dedicated hosting (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan)
+- [Consumption plan and Linux retirement (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan)
+- [Consumption-to-Flex migration assessment (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/migration/migrate-plan-consumption-to-flex)

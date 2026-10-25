@@ -59,7 +59,7 @@ pie title In-Scope Document Validation Status
 | [Common Anti Patterns](../best-practices/common-anti-patterns.md) | ✅ | ✅ Verified | 4/4 | 2026-09-11 |
 | [Cost Optimization](../best-practices/cost-optimization.md) | ✅ | ✅ Verified | 4/4 | 2026-09-11 |
 | [Deployment](../best-practices/deployment.md) | ✅ | ✅ Verified | 5/5 | 2026-09-11 |
-| [Hosting Plan Selection](../best-practices/hosting-plan-selection.md) | ✅ | ✅ Verified | 4/4 | 2026-09-11 |
+| [Hosting Plan Selection](../best-practices/hosting-plan-selection.md) | ✅ | ✅ Verified | 5/5 | 2026-10-25 |
 | [Networking](../best-practices/networking.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
 | [Reliability](../best-practices/reliability.md) | ✅ | ✅ Verified | 4/4 | 2026-09-11 |
 | [Scaling](../best-practices/scaling.md) | ✅ | ✅ Verified | 4/4 | 2026-09-11 |
