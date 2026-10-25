@@ -291,7 +291,7 @@ az functionapp config appsettings list \
 | Command(s) | `az functionapp config appsettings list` |
 | Key flags | `--resource-group`, `--name`, `--subscription`, `--output` |
 | Variables | `$RG`, `$APP_NAME`, `$SUBSCRIPTION_ID` |
-| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+| Expected result | Azure CLI reads current app settings without changing them; compare returned values and missing keys with the captured known-good state. |
 
 Example output:
 ```text
@@ -377,7 +377,7 @@ az functionapp config appsettings list \
 | Command(s) | `az functionapp show`, `az functionapp config appsettings list` |
 | Key flags | `--resource-group`, `--name`, `--subscription`, `--query`, `--output` |
 | Variables | `$RG`, `$APP_NAME`, `$SUBSCRIPTION_ID` |
-| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+| Expected result | Azure CLI reads runtime metadata and worker settings without changing them; compare the stack and worker with the artifact and hosting branch. |
 
 Example output:
 ```json
@@ -430,7 +430,7 @@ az functionapp config appsettings list \
 | Command(s) | `az functionapp config appsettings list` |
 | Key flags | `--resource-group`, `--name`, `--subscription`, `--query`, `--output` |
 | Variables | `$RG`, `$APP_NAME`, `$SUBSCRIPTION_ID` |
-| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+| Expected result | Azure CLI reads the selected settings without changing them; check missing values against the app's actual connection and deployment model. |
 
 Example output:
 ```text
@@ -483,7 +483,7 @@ az monitor activity-log list \
 | Command(s) | `az functionapp config appsettings list`, `az monitor activity-log list` |
 | Key flags | `--resource-group`, `--name`, `--subscription`, `--query`, `--output`, `--offset` |
 | Variables | `$RG`, `$APP_NAME`, `$SUBSCRIPTION_ID` |
-| Expected result | Azure CLI applies the configuration change; confirm the returned JSON or follow-up query shows the expected value. |
+| Expected result | Azure CLI reads package settings and activity events without changing them; correlate deployment/configuration events with the captured incident timeline. |
 
 Example output:
 ```text
