@@ -206,7 +206,7 @@ def validate_file(path: Path) -> list[Finding]:
             # Only track ```bash fences. Other languages (mermaid, text, json,
             # kusto, etc.) may legitimately contain `az ...` text in diagram
             # labels or console-output transcripts, and do not need an
-            # explanation table per AGENTS.md ("Shell: Use bash for all CLI
+            # explanation table per docs/contributing/content-contract.md ("Shell: Use bash for all CLI
             # examples").
             if fence_language(line) != "bash":
                 continue
