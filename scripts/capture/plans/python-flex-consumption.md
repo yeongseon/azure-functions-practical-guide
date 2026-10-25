@@ -14,8 +14,8 @@ the other languages (Node.js, Java, .NET, PowerShell) follow.
 1. Deploy the track end-to-end by following the tutorial pages under
    `docs/language-guides/python/tutorial/flex-consumption/`. Real captures
    require a **live deployment** — an automated agent cannot produce them.
-2. Authenticate a **device-compliant** browser (see the "Authenticating the
-   capture browser (Conditional Access)" section in the repo-root `AGENTS.md`).
+2. Authenticate a **device-compliant** browser (see [Authenticating the capture
+   browser (Conditional Access)](../../../docs/contributing/content-contract.md#authenticating-the-capture-browser-conditional-access)).
    A fresh isolated Chromium cannot pass Conditional Access.
 3. For each row below, navigate to the **Blade / navigation** path, apply the
    PII helper (`scripts/portal-capture-helpers.js`), and capture a raw PNG.
@@ -43,7 +43,9 @@ the other languages (Node.js, Java, .NET, PowerShell) follow.
 > date. Registering them does not affect the build because no page references
 > them yet.
 
-## PII and verification requirements (per `AGENTS.md`)
+## PII and verification requirements
+
+Follow the [image and screenshot rules](../../../docs/contributing/content-contract.md#image-and-screenshot-rules).
 
 Every capture MUST, before merge:
 

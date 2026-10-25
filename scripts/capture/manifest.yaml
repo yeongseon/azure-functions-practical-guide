@@ -10,7 +10,7 @@
 #                  as [[[ shot("id") ]]]. NEVER rename — renaming breaks docs.
 #   file           Path under docs/assets/ (the rendered image, always .webp).
 #   alt            Alt text / accessibility caption. MUST accurately describe
-#                  what the image shows (AGENTS.md visual-verification contract).
+#                  what the image shows (docs/contributing/content-contract.md image rules).
 #   page           Portal blade / scene the capture depicts (human-readable).
 #   captured       Date the current image bytes were produced (YYYY-MM-DD).
 #   verified       Date the capture was last confirmed still accurate. Bumped by
