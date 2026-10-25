@@ -8,6 +8,11 @@ on:
       - 'apps/python/**'
       - 'apps/nodejs/**'
       - 'tests/test_*.py'
+      - 'tests/conftest.py'
+      - 'pytest.ini'
+      - 'pyproject.toml'
+      - '.github/workflows/dotnet-tests.yml'
+      - '.github/workflows/java-tests.yml'
       - 'docs/reference/platform-limits.md'
       - 'docs/language-guides/python/recipes/http-api.md'
       - 'docs/language-guides/python/recipes/managed-identity.md'
@@ -32,9 +37,11 @@ jobs:
         with:
           python-version: '3.11'
       - name: Install focused test dependencies
-        run: python -m pip install -r apps/python/requirements.txt pytest ruff
+        run: python -m pip install -r apps/python/requirements.txt pytest ruff PyYAML pytest-socket
+      - name: Compile all Python reference modules (static only)
+        run: python -m compileall -q apps/python
       - name: Run local Python reference tests
-        run: python -m pytest tests -q
+        run: python -m pytest tests -q --disable-socket --allow-unix-socket
   node:
     runs-on: ubuntu-latest
     steps:
