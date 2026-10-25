@@ -11,11 +11,11 @@ This page tracks `content_validation` metadata for **in-scope factual-claim docu
 
 ## Summary
 
-*Generated: 2026-07-18*
+*Generated: 2026-10-25*
 
 | Content Type | Total | Verified | Pending | Unverified | No Metadata |
 |---|---:|---:|---:|---:|---:|
-| Mermaid Diagrams | 566 | 566 | 0 | 0 | 0 |
+| Mermaid Diagrams | 569 | 569 | 0 | 0 | 0 |
 | In-Scope Factual-Claim Documents | 64 | 64 | 0 | 0 | 0 |
 
 !!! success "All In-Scope Documents Verified"
@@ -34,54 +34,54 @@ pie title In-Scope Document Validation Status
 | Document | Has Sources | Status | Claims | Last Reviewed |
 |---|---|---|---|---|
 | [Custom Handlers](../platform/custom-handlers.md) | ✅ | ✅ Verified | 4/4 | 2026-07-17 |
-| [Deployment Scenarios](../platform/deployment-scenarios.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
+| [Deployment Scenarios](../platform/deployment-scenarios.md) | ✅ | ✅ Verified | 4/4 | 2026-09-11 |
 | [Durable Functions](../platform/durable-functions.md) | ✅ | ✅ Verified | 5/5 | 2026-07-05 |
-| [Fixed Outbound Nat](../platform/networking-scenarios/fixed-outbound-nat.md) | ✅ | ✅ Verified | 3/3 | 2026-04-12 |
-| [Functions Vs App Service](../platform/functions-vs-app-service.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
-| [Hosting](../platform/hosting.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
-| [Index](../platform/architecture/index.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
-| [Index](../platform/networking-scenarios/index.md) | ✅ | ✅ Verified | 3/3 | 2026-05-21 |
-| [Networking](../platform/networking.md) | ✅ | ✅ Verified | 3/3 | 2026-04-12 |
-| [Private Egress](../platform/networking-scenarios/private-egress.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
-| [Private Ingress](../platform/networking-scenarios/private-ingress.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
-| [Public Only](../platform/networking-scenarios/public-only.md) | ✅ | ✅ Verified | 3/3 | 2026-04-12 |
-| [Reliability](../platform/reliability.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
-| [Scaling](../platform/scaling.md) | ✅ | ✅ Verified | 3/3 | 2026-04-12 |
-| [Security](../platform/security.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
+| [Fixed Outbound Nat](../platform/networking-scenarios/fixed-outbound-nat.md) | ✅ | ✅ Verified | 3/3 | 2026-09-11 |
+| [Functions Vs App Service](../platform/functions-vs-app-service.md) | ✅ | ✅ Verified | 4/4 | 2026-09-11 |
+| [Hosting](../platform/hosting.md) | ✅ | ✅ Verified | 4/4 | 2026-09-11 |
+| [Index](../platform/architecture/index.md) | ✅ | ✅ Verified | 4/4 | 2026-09-11 |
+| [Index](../platform/networking-scenarios/index.md) | ✅ | ✅ Verified | 3/3 | 2026-09-11 |
+| [Networking](../platform/networking.md) | ✅ | ✅ Verified | 3/3 | 2026-09-11 |
+| [Private Egress](../platform/networking-scenarios/private-egress.md) | ✅ | ✅ Verified | 4/4 | 2026-09-11 |
+| [Private Ingress](../platform/networking-scenarios/private-ingress.md) | ✅ | ✅ Verified | 4/4 | 2026-09-11 |
+| [Public Only](../platform/networking-scenarios/public-only.md) | ✅ | ✅ Verified | 3/3 | 2026-09-11 |
+| [Reliability](../platform/reliability.md) | ✅ | ✅ Verified | 4/4 | 2026-09-11 |
+| [Scaling](../platform/scaling.md) | ✅ | ✅ Verified | 3/3 | 2026-09-11 |
+| [Security](../platform/security.md) | ✅ | ✅ Verified | 4/4 | 2026-09-11 |
 | [Storage Connectivity](../platform/storage-connectivity.md) | ✅ | ✅ Verified | 5/5 | 2026-07-16 |
 | [Storage Service Endpoint](../platform/networking-scenarios/storage-service-endpoint.md) | ✅ | ✅ Verified | 4/4 | 2026-07-16 |
-| [Triggers And Bindings](../platform/triggers-and-bindings.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
+| [Triggers And Bindings](../platform/triggers-and-bindings.md) | ✅ | ✅ Verified | 4/4 | 2026-09-11 |
 
 ### Best Practices
 
 | Document | Has Sources | Status | Claims | Last Reviewed |
 |---|---|---|---|---|
-| [Common Anti Patterns](../best-practices/common-anti-patterns.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
-| [Cost Optimization](../best-practices/cost-optimization.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
-| [Deployment](../best-practices/deployment.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
-| [Hosting Plan Selection](../best-practices/hosting-plan-selection.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
+| [Common Anti Patterns](../best-practices/common-anti-patterns.md) | ✅ | ✅ Verified | 4/4 | 2026-09-11 |
+| [Cost Optimization](../best-practices/cost-optimization.md) | ✅ | ✅ Verified | 4/4 | 2026-09-11 |
+| [Deployment](../best-practices/deployment.md) | ✅ | ✅ Verified | 5/5 | 2026-09-11 |
+| [Hosting Plan Selection](../best-practices/hosting-plan-selection.md) | ✅ | ✅ Verified | 4/4 | 2026-09-11 |
 | [Networking](../best-practices/networking.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
-| [Reliability](../best-practices/reliability.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
-| [Scaling](../best-practices/scaling.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
-| [Security](../best-practices/security.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
+| [Reliability](../best-practices/reliability.md) | ✅ | ✅ Verified | 4/4 | 2026-09-11 |
+| [Scaling](../best-practices/scaling.md) | ✅ | ✅ Verified | 4/4 | 2026-09-11 |
+| [Security](../best-practices/security.md) | ✅ | ✅ Verified | 4/4 | 2026-09-11 |
 | [Testing](../best-practices/testing.md) | ✅ | ✅ Verified | 4/4 | 2026-07-18 |
-| [Trigger And Binding](../best-practices/trigger-and-binding.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
+| [Trigger And Binding](../best-practices/trigger-and-binding.md) | ✅ | ✅ Verified | 4/4 | 2026-09-11 |
 
 ### Operations
 
 | Document | Has Sources | Status | Claims | Last Reviewed |
 |---|---|---|---|---|
-| [Alerts](../operations/alerts.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
-| [Cold Start](../operations/cold-start.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
-| [Configuration](../operations/configuration.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
-| [Cost Optimization](../operations/cost-optimization.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
-| [Deployment](../operations/deployment.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
+| [Alerts](../operations/alerts.md) | ✅ | ✅ Verified | 4/4 | 2026-09-11 |
+| [Cold Start](../operations/cold-start.md) | ✅ | ✅ Verified | 4/4 | 2026-09-11 |
+| [Configuration](../operations/configuration.md) | ✅ | ✅ Verified | 4/4 | 2026-09-11 |
+| [Cost Optimization](../operations/cost-optimization.md) | ✅ | ✅ Verified | 4/4 | 2026-09-11 |
+| [Deployment](../operations/deployment.md) | ✅ | ✅ Verified | 5/5 | 2026-09-11 |
 | [Migration](../operations/migration.md) | ✅ | ✅ Verified | 5/5 | 2026-07-18 |
-| [Monitoring](../operations/monitoring.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
+| [Monitoring](../operations/monitoring.md) | ✅ | ✅ Verified | 4/4 | 2026-09-11 |
 | [Opentelemetry](../operations/opentelemetry.md) | ✅ | ✅ Verified | 4/4 | 2026-07-17 |
-| [Recovery](../operations/recovery.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
-| [Retries And Poison Handling](../operations/retries-and-poison-handling.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
-| [Security](../operations/security.md) | ✅ | ✅ Verified | 4/4 | 2026-04-12 |
+| [Recovery](../operations/recovery.md) | ✅ | ✅ Verified | 4/4 | 2026-09-11 |
+| [Retries And Poison Handling](../operations/retries-and-poison-handling.md) | ✅ | ✅ Verified | 4/4 | 2026-09-11 |
+| [Security](../operations/security.md) | ✅ | ✅ Verified | 4/4 | 2026-09-11 |
 
 ### Troubleshooting
 
@@ -91,7 +91,7 @@ pie title In-Scope Document Validation Status
 | [Architecture Components Reference](../troubleshooting/architecture-components-reference.md) | ✅ | ✅ Verified | 1/1 | 2026-04-12 |
 | [Blob Trigger Not Firing](../troubleshooting/playbooks/blob-trigger-not-firing.md) | ✅ | ✅ Verified | 1/1 | 2026-04-12 |
 | [Decision Tree](../troubleshooting/decision-tree.md) | ✅ | ✅ Verified | 1/1 | 2026-04-12 |
-| [Deployment Failures](../troubleshooting/playbooks/deployment-failures.md) | ✅ | ✅ Verified | 1/1 | 2026-04-12 |
+| [Deployment Failures](../troubleshooting/playbooks/deployment-failures.md) | ✅ | ✅ Verified | 4/4 | 2026-10-25 |
 | [Detector Map](../troubleshooting/methodology/detector-map.md) | ✅ | ✅ Verified | 1/1 | 2026-04-12 |
 | [Durable Orchestration Stuck](../troubleshooting/playbooks/scaling/durable-orchestration-stuck.md) | ✅ | ✅ Verified | 1/1 | 2026-04-12 |
 | [Event Hub Service Bus Lag](../troubleshooting/playbooks/triggers/event-hub-service-bus-lag.md) | ✅ | ✅ Verified | 1/1 | 2026-04-12 |
@@ -147,7 +147,7 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/...
 content_validation:
   status: verified
-  last_reviewed: 2026-09-11
+  last_reviewed: 2026-04-12
   reviewer: agent
   core_claims:
     - claim: "Flex Consumption supports VNet integration with regional VNet."

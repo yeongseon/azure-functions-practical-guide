@@ -2,7 +2,7 @@
 content_sources:
   references:
     - type: mslearn-adapted
-      url: https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions
     - type: mslearn-adapted
@@ -15,7 +15,7 @@ content_sources:
       source: self-generated
       justification: Deployment workflow, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
-        - https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package
+        - https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local
@@ -25,7 +25,7 @@ content_validation:
   reviewer: agent
   core_claims:
     - claim: "Running a function app from a deployment package supports immutable artifact deployment behavior."
-      source: https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
       verified: true
     - claim: "GitHub Actions is a supported CI/CD deployment method for Azure Functions."
       source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions
@@ -35,6 +35,9 @@ content_validation:
       verified: true
     - claim: "Local validation with Azure Functions Core Tools is part of the supported deployment workflow before publishing."
       source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local
+      verified: true
+    - claim: "Flex Consumption runs from a package by default without WEBSITE_RUN_FROM_PACKAGE; Linux Consumption uses a URL instead of the local-package value 1."
+      source: https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
       verified: true
 ---
 
@@ -197,21 +200,10 @@ az functionapp deployment source config-zip \
 | `--name <app-name>` | Specifies the function app name |
 | `--src <path-to-artifact-zip>` | Path to the local zip file to deploy |
 
-Enable run-from-package when using immutable artifact patterns:
+!!! warning "Preserve the established deployment mode during recovery"
+    Do not follow ZIP deployment with an unconditional `WEBSITE_RUN_FROM_PACKAGE=1` update. That value is for local-package workflows on Windows Consumption, Premium, and Dedicated only. Linux Consumption uses a package URL; remote-build deployments manage their output and must not be forced into a manually configured package mode. Flex uses managed package deployment and `functionAppConfig.runtime` / `.deployment.storage`, not `WEBSITE_RUN_FROM_PACKAGE` or legacy worker-setting repairs. Before an incident write, capture the read-only baseline and restore only proven drift as described in the [deployment failure playbook](../troubleshooting/playbooks/deployment-failures.md#8-immediate-mitigations). Settings changes restart the app by default and can interrupt executions; validate readiness, discovery, and actual trigger completion after recovery.
 
-```bash
-az functionapp config appsettings set \
-    --resource-group <resource-group> \
-    --name <app-name> \
-    --settings WEBSITE_RUN_FROM_PACKAGE=1
-```
-
-| Command/Parameter | Purpose |
-|-------------------|---------|
-| `az functionapp config appsettings set` | Configures application settings for the function app |
-| `--resource-group <resource-group>` | Specifies the resource group |
-| `--name <app-name>` | Specifies the function app name |
-| `--settings WEBSITE_RUN_FROM_PACKAGE=1` | Enables the app to run directly from the deployment package |
+    This replacement safeguard and its added core claim were checked against [official package guidance](https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push) and [deployment technologies](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies) on 2026-10-25. This was source review only, not CLI/live Azure execution or a new full-page validation; the prior page-wide review date is preserved.
 
 ### GitHub Actions pipeline
 ```yaml
@@ -453,9 +445,10 @@ Expected output:
 ## Rollback / Troubleshooting
 Preferred sequence:
 
-1. Roll back with slot swap-back when slots are in use.
-2. Redeploy last-known-good artifact when slots are unavailable.
-3. Reapply previous config baseline if release changed settings.
+1. Capture current state and diff it against captured pre-release known-good state using the [playbook's scoped recovery procedure](../troubleshooting/playbooks/deployment-failures.md#8-immediate-mitigations).
+2. Consider swap-back only where supported and after verifying that the other slot still contains the previous release with safe settings, including slot stickiness. Otherwise, redeploy a retained, validated last-known-good artifact through the established deployment method; if none is available, investigate or escalate rather than substitute a configuration snapshot.
+3. Restore only the keys or resource properties whose release-induced drift the scoped diff proves. Preserve unrelated settings, prior key absence, and slot stickiness; do not replay an entire previous baseline.
+4. Validate host readiness, function discovery, trigger execution, and recovery metrics after each approved action.
 
 ### Slot swap-back
 ```bash
@@ -531,7 +524,7 @@ verify runtime compatibility, and validate trigger dependency identity/access.
 - [Recovery](recovery.md)
 
 ## Sources
-- [Deploy Azure Functions from package files](https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package)
+- [Package-based deployment for Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push)
 - [Deploy Azure Functions with GitHub Actions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions)
 - [Deployment slots in Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots)
 - [Functions Core Tools reference](https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local)
