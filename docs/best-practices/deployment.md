@@ -149,7 +149,10 @@ Slot usage must match plan limits and trigger behavior.
 !!! warning "Availability and completion are conditional"
     Source review on 2026-10-25 found that the [Flex plan page](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan#zero-downtime-deployments) still labels rolling updates **public preview**, while [site update guidance](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-site-updates#rolling-update-strategy-considerations) distinguishes GA regions from regions still rolling out. Confirm target-region availability and support expectations before adoption; do not infer global GA from the CLI command's GA label. A single-instance app can have downtime, and replacement scale-out is not guaranteed before the next drain interval. Platform readiness is not proof that every invocation or durable business operation completed.
 
-Use the [Flex update procedure](../operations/deployment.md#flex-site-update-strategy) for version requirements, draining limits and configuration, and the [recovery acceptance criteria](../operations/deployment.md#flex-update-and-rollback-acceptance-criteria) for observable outcomes. This table and the added rolling-update core claim were source-reviewed only; they do not replace the existing page-wide review date or claim a live Azure test.
+Use the [Flex update procedure](../operations/deployment.md#flex-site-update-strategy) for version requirements, draining limits and configuration, and the [recovery acceptance criteria](../operations/deployment.md#flex-update-and-rollback-acceptance-criteria) for observable outcomes.
+
+??? note "Source-review scope"
+    The decision table and added rolling-update core claim were checked against Microsoft Learn on 2026-10-25, not tested in live Azure. The historical page-wide review date is unchanged.
 
 ### Premium and Dedicated
 

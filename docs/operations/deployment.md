@@ -381,33 +381,33 @@ The package/storage mechanism above is unchanged by this setting. Code deploymen
 1. Capture the existing strategy, artifact hash/build identity, expected function inventory and scoped configuration baseline. Check compatibility in both directions: old instances must tolerate new settings/messages/schema, and the retained release must tolerate state written by the new release.
 2. Use **Azure CLI 2.87.0 or later** for these documented commands. Bicep/ARM supports this property with API version **2023-12-01 or later**. Read the current strategy before an approved write:
 
-```bash
-az functionapp update-strategy config show \
-    --resource-group "$RG" \
-    --name "$APP_NAME"
-```
+    ```bash
+    az functionapp update-strategy config show \
+        --resource-group "$RG" \
+        --name "$APP_NAME"
+    ```
 
-| Command/Parameter | Purpose |
-| --- | --- |
-| `az functionapp update-strategy config show` | Read the configured site update strategy; not rollout progress. |
-| `--resource-group` | Target resource group. |
-| `--name` | Target Flex Function App. |
+    | Command/Parameter | Purpose |
+    | --- | --- |
+    | `az functionapp update-strategy config show` | Read the configured site update strategy; not rollout progress. |
+    | `--resource-group` | Target resource group. |
+    | `--name` | Target Flex Function App. |
 
 3. Configure the strategy ahead of the release under change control:
 
-```bash
-az functionapp update-strategy config set \
-    --resource-group "$RG" \
-    --name "$APP_NAME" \
-    --type RollingUpdate
-```
+    ```bash
+    az functionapp update-strategy config set \
+        --resource-group "$RG" \
+        --name "$APP_NAME" \
+        --type RollingUpdate
+    ```
 
-| Command/Parameter | Purpose |
-| --- | --- |
-| `az functionapp update-strategy config set` | Select the strategy used for subsequent site updates. |
-| `--resource-group` | Target resource group. |
-| `--name` | Target Flex Function App. |
-| `--type` | `RollingUpdate` opts in; `Recreate` selects restart behavior, not a package rollback. |
+    | Command/Parameter | Purpose |
+    | --- | --- |
+    | `az functionapp update-strategy config set` | Select the strategy used for subsequent site updates. |
+    | `--resource-group` | Target resource group. |
+    | `--name` | Target Flex Function App. |
+    | `--type` | `RollingUpdate` opts in; `Recreate` selects restart behavior, not a package rollback. |
 
 4. In GA regions, changing the strategy alone is a no-op for running instances and applies to the next deployment. Where the feature is still rolling out, that change itself triggers an update using the **previous** strategy; the new strategy applies starting with the next deployment. Plan for interruption if the previous strategy is `Recreate`.
 5. Deploy through the established [plan-compatible package workflow](#package-configuration-by-plan-and-os) and verify below. Code and configuration writes can initiate separate overlapping updates; do not treat them as one atomic release or use a fixed sleep as proof of completion. Avoid unnecessary overlapping releases while investigating a regression.
@@ -419,7 +419,8 @@ az functionapp update-strategy config set \
 - **Queue processing:** old/new consumers can overlap during rolling updates. Keep message contracts backward compatible and side effects idempotent. For Azure Storage queues, successful execution deletes a message; failure or a host crash can make it visible for reprocessing according to visibility/retry rules. Inspect dequeue/retry and poison counts plus age/backlog, not just HTTP request success. Service Bus settlement and Event Hubs checkpointing have different semantics; follow the existing [trigger guidance](../best-practices/trigger-and-binding.md), not a universal drain/acknowledgment assumption.
 - **Durable business completion:** a healthy host or invocation return is not evidence of a committed downstream transaction or completed orchestration. Verify the application-owned completion record using a synthetic correlation key. For Durable Functions, use an explicit [orchestration version match strategy](https://learn.microsoft.com/en-us/azure/durable-task/common/durable-orchestration-versioning) because versions overlap; package rollback does not rewind orchestration history or external state.
 
-**Verification boundary:** the strategy, CLI syntax, limitations and added core claim were checked against Microsoft Learn on 2026-10-25 by official-source review only. Commands are procedures, not executed results. No Azure deployment, invocation/drain timing, queue processing or rollback test was performed; the existing page-wide review date and tutorial validation metadata are unchanged.
+??? note "Source-review scope"
+    Strategy guidance, CLI syntax and the added core claim were checked against Microsoft Learn on 2026-10-25. No live Azure deployment, drain, queue or rollback tests were run; commands are procedures, not results. Historical page-wide review dates and tutorial validation metadata are unchanged.
 
 ### Post-deploy checks
 - Health endpoint is successful.
