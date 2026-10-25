@@ -4,19 +4,24 @@ import logging
 import os
 import socket
 import time
+from config.lab_limits import LabInputError, parse_delay
 
 bp = func.Blueprint()
 logger = logging.getLogger(__name__)
 
 
-@bp.route(route="diagnostics/slow-response", methods=["GET"])
+@bp.route(route="diagnostics/slow-response", methods=["GET"], auth_level=func.AuthLevel.FUNCTION)
 def slow_response(req: func.HttpRequest) -> func.HttpResponse:
     """Simulate slow response with configurable delay.
 
     Query parameters:
         delay_ms: Delay in milliseconds (default 3000, max 25000).
     """
-    delay_ms = min(int(req.params.get("delay_ms", "3000")), 25000)
+    try:
+        delay_ms = parse_delay(req.params.get("delay_ms", "3000"))
+    except LabInputError as exc:
+        return func.HttpResponse(json.dumps({"error": str(exc)}),
+                                 mimetype="application/json", status_code=400)
     logger.info("Slow response endpoint requested (delay=%dms)", delay_ms)
 
     start = time.monotonic()
@@ -33,12 +38,12 @@ def slow_response(req: func.HttpRequest) -> func.HttpResponse:
     return func.HttpResponse(body, mimetype="application/json", status_code=200)
 
 
-@bp.route(route="diagnostics/storage-probe", methods=["GET"])
+@bp.route(route="diagnostics/storage-probe", methods=["GET"], auth_level=func.AuthLevel.FUNCTION)
 def storage_probe(req: func.HttpRequest) -> func.HttpResponse:
     """Probe storage account access via managed identity.
 
     Tests blob service connectivity by listing containers.
-    Returns success or the exact error for troubleshooting.
+    Returns a safe status; backend details remain in operator logs.
     """
     account_name = os.environ.get("AzureWebJobsStorage__accountName", "")
     if not account_name:
@@ -61,17 +66,16 @@ def storage_probe(req: func.HttpRequest) -> func.HttpResponse:
             account_url=f"https://{account_name}.blob.core.windows.net",
             credential=credential,
         )
-        containers = [c["name"] for c in blob_client.list_containers()]
+        page = next(blob_client.list_containers(results_per_page=1).by_page(), [])
+        container_count = len(list(page))
         elapsed_ms = round((time.monotonic() - start) * 1000)
 
         logger.info(
-            "Storage probe succeeded (%dms, %d containers)", elapsed_ms, len(containers)
+            "Storage probe succeeded (%dms, %d sampled containers)", elapsed_ms, container_count
         )
         body = json.dumps(
             {
                 "status": "success",
-                "account": account_name,
-                "containers": containers,
                 "elapsedMs": elapsed_ms,
             }
         )
@@ -83,16 +87,14 @@ def storage_probe(req: func.HttpRequest) -> func.HttpResponse:
         body = json.dumps(
             {
                 "status": "error",
-                "account": account_name,
-                "error": type(exc).__name__,
-                "message": str(exc),
+                "error": "Storage probe failed; inspect protected operator logs",
                 "elapsedMs": elapsed_ms,
             }
         )
         return func.HttpResponse(body, mimetype="application/json", status_code=502)
 
 
-@bp.route(route="diagnostics/dns-resolve", methods=["GET"])
+@bp.route(route="diagnostics/dns-resolve", methods=["GET"], auth_level=func.AuthLevel.FUNCTION)
 def dns_resolve(req: func.HttpRequest) -> func.HttpResponse:
     """Resolve a hostname and return the result for DNS troubleshooting.
 
@@ -135,14 +137,14 @@ def dns_resolve(req: func.HttpRequest) -> func.HttpResponse:
             {
                 "status": "failed",
                 "host": host,
-                "error": str(exc),
+                "error": "DNS resolution failed; inspect protected operator logs",
                 "elapsedMs": elapsed_ms,
             }
         )
         return func.HttpResponse(body, mimetype="application/json", status_code=502)
 
 
-@bp.route(route="diagnostics/identity-probe", methods=["GET"])
+@bp.route(route="diagnostics/identity-probe", methods=["GET"], auth_level=func.AuthLevel.FUNCTION)
 def identity_probe(req: func.HttpRequest) -> func.HttpResponse:
     """Probe managed identity token acquisition and expiry."""
     logger.info("Identity probe requested")
@@ -171,7 +173,6 @@ def identity_probe(req: func.HttpRequest) -> func.HttpResponse:
             {
                 "status": "success",
                 "identityType": identity_type,
-                "clientId": client_id if client_id else None,
                 "tokenAcquired": True,
                 "tokenExpiresOn": token_expires_on,
                 "elapsedMs": elapsed_ms,
@@ -185,8 +186,7 @@ def identity_probe(req: func.HttpRequest) -> func.HttpResponse:
         body = json.dumps(
             {
                 "status": "error",
-                "error": type(exc).__name__,
-                "message": str(exc),
+                "error": "Identity probe failed; inspect protected operator logs",
                 "elapsedMs": elapsed_ms,
             }
         )
