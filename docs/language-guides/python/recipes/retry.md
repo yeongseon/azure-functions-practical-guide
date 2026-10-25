@@ -42,7 +42,7 @@ flowchart TD
 
 ## Fixed Delay
 
-A fixed amount of time elapses between each retry. Save this complete Python v2 example as `function_app.py` in a Functions project with `azure-functions` installed, `host.json`, and a valid `AzureWebJobsStorage` setting (Azurite can be used locally). Start the host with `func start`.
+A fixed amount of time elapses between each retry. **Runnable example:** save this complete Python v2 example as `function_app.py` in a Functions project with `azure-functions` installed, `host.json`, and a valid `AzureWebJobsStorage` setting (Azurite can be used locally). Start the host with `func start`.
 
 The simulated dependency fails twice by default, then succeeds on attempt 3. Set the environment variable `SIMULATED_FAILURES=4` to keep it failing through the final attempt, or `SIMULATED_FAILURES=0` for immediate success. This count-based simulation is for demonstration only: production success must depend on the actual operation completing, not the retry counter.
 
@@ -92,7 +92,7 @@ For **Event Hubs**, retries hold up progress on the affected partition and check
 
 ## Exponential Backoff
 
-The first retry waits the minimum interval; each subsequent retry adds time exponentially (with small randomization) up to the maximum interval. To use it with the complete example above, replace only the `@app.retry(...)` decorator; keep the same function body and its success/failure behavior:
+The first retry waits the minimum interval; each subsequent retry adds time exponentially (with small randomization) up to the maximum interval. **Intentionally abbreviated decorator fragment:** not standalone Python. To use it with the complete example above, replace only the `@app.retry(...)` decorator; keep the same function body and its success/failure behavior:
 
 ```python
 @app.retry(strategy="exponential_backoff", max_retry_count="5",
