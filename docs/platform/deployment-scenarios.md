@@ -77,7 +77,7 @@ content_validation:
     - claim: "Consumption plan does not support VNet integration, while Flex Consumption, Premium, and Dedicated do"
       source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
       verified: true
-    - claim: "Flex Consumption uses blob-container deployment through functionAppConfig instead of Kudu/SCM"
+    - claim: "Flex Consumption configures deployment storage through functionAppConfig and uses managed package deployment, not the classic Kudu console or ZIP API"
       source: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
       verified: true
     - claim: "Premium and Dedicated plans can host multiple apps per plan"
@@ -171,15 +171,17 @@ This section shows portal blades illustrating deployment configuration for a liv
 
 ## Matrix B — Deployment and Storage Mechanics
 
+For code-based apps, the [package matrix](../operations/deployment.md#package-configuration-by-plan-and-os) is authoritative for plan/OS and build-mode distinctions. Linux Y1 never supports `1`; remote build manages its output or a locally built package uses its actual URL. Dedicated value `1` below is the local-ready-to-run ZIP option, not a remote-build prerequisite. This clarification is official-source review only, not a new deployment result.
+
 | Feature | Consumption (Y1) | Flex Consumption (FC1) | Premium (EP) | Dedicated (ASP) |
 |---|---|---|---|---|
-| **Content backend** | Azure Files content share | Blob container | Azure Files content share | Run from package (`WEBSITE_RUN_FROM_PACKAGE=1`) |
+| **Content backend** | Linux Y1 package URL; Azure Files provisioning separate | Blob container | Azure Files content share | Local-package option (`WEBSITE_RUN_FROM_PACKAGE=1`) |
 | **Config surface** | `siteConfig.appSettings` | `functionAppConfig` | `siteConfig.appSettings` | `siteConfig.appSettings` |
 | **Key config settings** | `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING`, `WEBSITE_CONTENTSHARE`, `WEBSITE_RUN_FROM_PACKAGE` | `functionAppConfig.deployment.storage.type: blobContainer` | `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING`, `WEBSITE_CONTENTSHARE` | `WEBSITE_RUN_FROM_PACKAGE` |
 | **Deployment method** | `func azure functionapp publish` / ZIP deploy | `func azure functionapp publish` (no Kudu) | `func azure functionapp publish` / ZIP deploy / Kudu | `func azure functionapp publish` / ZIP deploy / Kudu |
-| **Kudu / SCM** | :material-check: Yes | :material-close: No | :material-check: Yes | :material-check: Yes |
+| **Classic Kudu console** | Windows only; no companion site for Linux Y1 | No; tool-managed deployment endpoint is separate | Yes (Linux limited) | Yes (Linux limited) |
 | **Apps per plan** | 1 (implicit) | 1 (implicit) | Multiple | Multiple |
-| **Key gotcha** | Needs connection string for content share provisioning even with MI | No SCM; deployment container must exist before publish | Content share requires shared key for mount | Must set `WEBSITE_RUN_FROM_PACKAGE=1` explicitly |
+| **Key gotcha** | No `1` on Linux Y1; content provisioning and package access are separate from host MI | Configure deployment container/authentication; use supported tooling and Flex deployment diagnostics | Content share requires shared key for mount | `1` only for local-package deployment; do not force it for remote build |
 
 ## Scenario A — Public Serverless (Consumption Y1)
 

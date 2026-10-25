@@ -304,10 +304,10 @@ steps:
       package: <artifact-path>
 ```
 
-### Deployment slots (Consumption, Premium, and Dedicated)
+### Deployment slots (Windows Consumption, Premium, and Dedicated)
 Use slots for safe cutover and fast rollback.
 
-> **Note:** Classic Consumption supports 2 slots total (including production). Flex Consumption does not support deployment slots.
+> **Note:** Windows Consumption supports 2 slots total (including production). Linux Consumption and Flex Consumption do not support deployment slots.
 
 #### Create staging slot
 ```bash

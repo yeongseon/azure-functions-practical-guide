@@ -52,7 +52,7 @@ timeline
 | `FUNCTIONS_WORKER_RUNTIME` | Select Java worker | `java` |
 | `JAVA_HOME` | Java installation path on host | Set automatically |
 | `JAVA_OPTS` | JVM arguments | `-Xmx512m` |
-| `WEBSITE_RUN_FROM_PACKAGE` | Immutable package deployment | `1` |
+| `WEBSITE_RUN_FROM_PACKAGE` | Immutable package deployment | `1` only for local-package Windows Consumption/Premium/Dedicated; URL for Linux Consumption; absent on Flex and not manually forced for remote build. See [package matrix](../../operations/deployment.md#package-configuration-by-plan-and-os). |
 
 ```bash
 az functionapp config appsettings set   --name $APP_NAME   --resource-group $RG   --settings "FUNCTIONS_WORKER_RUNTIME=java" "JAVA_OPTS=-Xmx512m"

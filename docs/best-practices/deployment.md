@@ -35,7 +35,7 @@ content_validation:
     - claim: "Run-from-package 배포는 패키지를 읽기 전용으로 마운트해 배포 중 파일 변이를 줄인다."
       source: https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
       verified: true
-    - claim: "Flex Consumption은 Kudu/SCM 엔드포인트를 사용하지 않는 배포 방식을 따라야 한다."
+    - claim: "Flex Consumption uses managed package deployment, not the classic Kudu console or ZIP deployment API; an scm-hosted deployment endpoint is not a Kudu diagnostic surface."
       source: https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
       verified: true
     - claim: "Consumption 플랜의 배포 슬롯은 프로덕션을 포함해 총 2개까지만 지원된다."
@@ -69,7 +69,7 @@ Choose the deployment method that matches plan capabilities. Incorrect method se
 | Dedicated | ZIP deploy + run-from-package, slots, Kudu/SCM, remote build where needed | Ad-hoc server-side edits after release | Drift between instances and slots creates non-reproducible incidents |
 
 ??? info "Plan capability checkpoint"
-    - Y1 supports deployment slots but only **2 total including production**.
+    - Windows Y1 supports deployment slots but only **2 total including production**; Linux Y1 has no slots.
     - FC1 does **not** support deployment slots or a classic Kudu console. Its tool-managed deployment endpoint is not a Kudu diagnostic surface.
     - EP and Dedicated support full slot workflows.
 
@@ -120,7 +120,7 @@ Use the shared [package matrix](../operations/deployment.md#package-configuratio
 
 Slot usage must match plan limits and trigger behavior.
 
-### Consumption (Y1)
+### Windows Consumption (Y1)
 
 - Maximum of two slots total (production + one non-production).
 - Use a single `staging` slot for smoke test then swap.
@@ -139,7 +139,8 @@ Slot usage must match plan limits and trigger behavior.
 
 | Plan | Slot support | Maximum slots | Swap support | Warm-up strategy support |
 |---|---|---|---|---|
-| Consumption (Y1) | Yes | 2 total including production | Yes | Limited; validate quickly on single staging slot |
+| Windows Consumption (Y1) | Yes | 2 total including production | Yes | Limited; validate quickly on single staging slot |
+| Linux Consumption (Y1) | No | Not applicable | Not applicable | Validate in an isolated app before direct deployment |
 | Flex Consumption (FC1) | No | Not applicable | Not applicable | Use isolated app validation instead of slot warm-up |
 | Premium (EP) | Yes | Multiple (SKU-dependent) | Yes | Strong; pre-warm instances and run trigger-aware smoke tests |
 | Dedicated | Yes | Multiple (plan capacity-dependent) | Yes | Strong; warm slot and validate before cutover |
@@ -334,7 +335,9 @@ flowchart TD
 ```mermaid
 flowchart TD
     A[Commit and Build] --> B{Hosting plan}
-    B -->|Y1| C[ZIP deploy to staging slot + run-from-package]
+    B -->|Windows Y1| C[ZIP deploy to staging slot + run-from-package]
+    B -->|Linux Y1| L[Remote build or external package URL in isolated app]
+    L --> F
     B -->|FC1| D[func publish or One Deploy]
     B -->|EP or Dedicated| E[ZIP deploy to staging slot + warm + test]
     C --> F[Health and smoke validation]

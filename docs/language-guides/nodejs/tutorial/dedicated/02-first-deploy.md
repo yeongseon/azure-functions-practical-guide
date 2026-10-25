@@ -245,7 +245,7 @@ flowchart TD
         `az functionapp create` automatically creates an Application Insights resource with the **same name** as the function app (e.g., `func-ndded-04100022`), not `$APP_NAME-ai`. The `APPLICATIONINSIGHTS_CONNECTION_STRING` app setting is auto-configured.
 
     !!! tip "No content file share needed"
-        Unlike Premium and Consumption plans, Dedicated does **not** require `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING` or `WEBSITE_CONTENTSHARE`. Deployments use `WEBSITE_RUN_FROM_PACKAGE=1` (set automatically) which stores the package in blob storage.
+This Dedicated workflow does not require `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING` or `WEBSITE_CONTENTSHARE`. For a ready-to-run local ZIP, `WEBSITE_RUN_FROM_PACKAGE=1` mounts a package from `/home/data/SitePackages`, not an external blob URL. Do not manually force this setting for remote build; see the [package matrix](../../../../operations/deployment.md#package-configuration-by-plan-and-os).
 
 7. Set required app settings for triggers.
 
@@ -517,7 +517,7 @@ flowchart TD
         `az functionapp create` automatically creates an Application Insights resource with the **same name** as the function app (e.g., `func-ndded-04100022`), not `$APP_NAME-ai`. The `APPLICATIONINSIGHTS_CONNECTION_STRING` app setting is auto-configured.
 
     !!! tip "No content file share needed"
-        Unlike Premium and Consumption plans, Dedicated does **not** require `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING` or `WEBSITE_CONTENTSHARE`. Deployments use `WEBSITE_RUN_FROM_PACKAGE=1` (set automatically) which stores the package in blob storage.
+The Bicep local-package option uses `WEBSITE_RUN_FROM_PACKAGE=1` for a ready-to-run ZIP. If publishing with remote build instead, reconcile the package setting first and let the supported workflow manage build output; Azure Files settings are independent of build selection.
 
 7. Set required app settings for triggers.
 

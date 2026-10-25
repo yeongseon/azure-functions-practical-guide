@@ -44,7 +44,7 @@ flowchart TD
 |----------|---------|---------|-------|
 | `DOTNET_ENVIRONMENT` | `Production` | .NET environment configuration | Maps to `IHostEnvironment.EnvironmentName` |
 | `AZURE_FUNCTIONS_ENVIRONMENT` | `Production` | Functions-specific environment | Overrides `DOTNET_ENVIRONMENT` when both are set |
-| `WEBSITE_RUN_FROM_PACKAGE` | `1` | Run from immutable deployment package | Recommended for production |
+| `WEBSITE_RUN_FROM_PACKAGE` | Plan-dependent | Run from immutable deployment package | `1` only for local-package Windows Consumption/Premium/Dedicated; URL for Linux Consumption; absent on Flex and not manually forced for remote build. See [package matrix](../../operations/deployment.md#package-configuration-by-plan-and-os). |
 | `DOTNET_CLI_TELEMETRY_OPTOUT` | `1` | Disable .NET CLI telemetry | Useful in build/CI environments |
 
 ### Runtime Selection
