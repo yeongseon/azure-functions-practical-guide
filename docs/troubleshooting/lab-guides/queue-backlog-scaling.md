@@ -318,6 +318,12 @@ the poison message has its **own** service ID/dequeue count, not the source's co
 
 #### Baseline -> fault -> recovery sequencing
 
+**Shared phase ordering:** after configuration/deployment acceptance or confirmation,
+perform exactly one declared app restart; observe host/listener readiness, enqueue
+phase work, then observe deliveries, durable records and queue outcomes, in that
+order. Record acceptance and restart request/completion UTC separately. Apply this
+same ordering to baseline, fault and recovery below.
+
 1. **Predeclare:** retain the JSON, run identity, inventory, source/dirty diff,
     recipe digest, environment, resolved versions and capture bounds before any
     injection. Each phase lasts 15 minutes anchored to explicit restart completion;
@@ -325,31 +331,29 @@ the poison message has its **own** service ID/dequeue count, not the source's co
     queue/sink diagnostics every 15 seconds with a 15-second operation timeout.
     Allow 10 additional minutes for telemetry, querying every minute. These are
     experiment limits, not platform retry, readiness or ingestion guarantees.
-2. **Baseline:** establish configuration/deployment acceptance, then perform exactly
-    one declared app restart; observe host/listener readiness, enqueue phase work,
-    then observe deliveries, durable records and queue outcomes, in that order.
-    Record acceptance and restart request/completion UTC separately. Enqueue only
+2. **Baseline:** establish configuration/deployment acceptance and follow the shared
+    phase ordering. Enqueue only
     `baseline-001` in normal mode after readiness. Require its delivery, one
     committed record, successful invocation and correlated runtime delete before
     fault injection. All validity controls must be eligible; stop on missing data.
-3. **Fault:** confirm the same package/configuration, then perform exactly one
-    declared app restart; observe host/listener readiness, enqueue phase work,
-    then observe deliveries, durable records and queue outcomes, in that order.
-    Record acceptance and restart request/completion UTC separately. Enqueue the
+3. **Fault:** confirm the same package/configuration and use that shared sequence.
+    Enqueue the
     transient, poison and redelivery keys with their fixed modes, retaining all
     producer receipts. No restart, package publish, manual deletion or fault-setting
     change during delivery. Keep the three outcomes separate even if concurrent.
-4. **Recovery:** confirm the unchanged package/configuration, then perform exactly
-    one declared app restart; observe host/listener readiness, enqueue phase work,
-    then observe deliveries, durable records and queue outcomes, in that order.
-    Record acceptance and restart request/completion UTC separately. After the
+4. **Recovery:** confirm the unchanged package/configuration, applying the same
+    ordering before recovery work. After the
     fault window, retain unresolved work as such; do not force a poison transition.
     Enqueue `recovery-001` in normal mode, require one record and runtime delete,
     reread prior work keys, and retain the poison item without replay. Recovery
     means a new normal item completes, not that the poison payload was repaired.
-5. **Evaluate and clean up:** retain all collection failures/timeouts, evaluate
-    only after bounded collection ends, then execute the ownership-restricted
-    cleanup receipt below even after failure. Never infer causality from restart.
+5. **Clean up and evaluate:** after bounded collection ends, retain all collection
+    failures/timeouts and execute the ownership-restricted cleanup procedure below,
+    even after failure. Retain its receipt before producing the final evaluation:
+    `cleanup.receipt` is required for SUPPORTED. If an earlier evaluation exists,
+    preserve it unchanged and create a second immutable derived evaluation after
+    retaining cleanup evidence. Disclose incomplete cleanup independently of any
+    decisive contradiction. Never infer causality from restart.
 
 Record first-observed retry, poison arrival, durable commit and deletion separately
 from enqueue acceptance. For recovery record elapsed UTC from phase acceptance to
