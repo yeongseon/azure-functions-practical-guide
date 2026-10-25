@@ -75,7 +75,10 @@ def _text(value: JSON) -> str:
 
 
 def _time(value: JSON) -> datetime:
-    stamp = datetime.fromisoformat(_text(value).replace("Z", "+00:00"))
+    text = _text(value)
+    stamp = datetime.fromisoformat(
+        text.removesuffix("Z") + "+00:00" if text.endswith("Z") else text
+    )
     if stamp.utcoffset() != timedelta(0):
         raise EvidenceError("timestamps must be UTC")
     return stamp
@@ -142,10 +145,9 @@ def _hypothesis(assertions: tuple[Assertion, ...],
                      if assertion.role == "discriminating"]
     if not controls or not discriminators or any(r.status != "SUPPORTED" for r in controls):
         return "INCONCLUSIVE"
-    if any(r.status == "INCONCLUSIVE" for r in results):
+    if any(r.status == "INCONCLUSIVE" and r.event_indexes for r in results):
         return "INCONCLUSIVE"
-    decisive = {r.status for r in discriminators}
-    if decisive == {"CONTRADICTED"}:
+    if any(r.status == "CONTRADICTED" for r in discriminators):
         return "CONTRADICTED"
     if all(r.status == "SUPPORTED" for r in results):
         return "SUPPORTED"

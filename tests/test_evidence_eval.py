@@ -65,9 +65,13 @@ def test_missing_or_ambiguous_evidence_is_inconclusive(tmp_path: Path, case: str
     match case:
         case "empty":
             data["events"] = []
-        case "wrong-run" | "counter-wrong-run":
+        case "wrong-run":
+            data["events"][1]["run_id"] = "different-run"
+        case "counter-wrong-run":
             data["events"][1].update(run_id="different-run", value="alternative")
-        case "wrong-window" | "counter-wrong-window":
+        case "wrong-window":
+            data["events"][1]["timestamp"] = "2025-01-02T00:00:00Z"
+        case "counter-wrong-window":
             data["events"][1].update(timestamp="2025-01-02T00:00:00Z", value="alternative")
         case "conflicting":
             data["events"].append(dict(data["events"][1], value="alternative"))
@@ -105,6 +109,7 @@ def test_valid_counter_evidence_overrides_stored_verdict(tmp_path: Path, stored:
     ((False, True, False, False), "BLOCKED"),
     ((True, True, True, False), "BLOCKED"),
     ((True, False, True, False), "FAILED"),
+    ((True, False, True, True), "FAILED"),
     ((True, False, False, False), "PARTIAL"),
 ])
 def test_incomplete_execution_never_verifies_hypothesis(
@@ -198,3 +203,66 @@ def test_stored_failure_cannot_override_support(tmp_path: Path) -> None:
     retained.write_text(json.dumps(data))
     result = evaluate(retained, hashlib.sha256(retained.read_bytes()).hexdigest(), EVALUATED_AT)
     assert result.hypothesis == "SUPPORTED"
+
+
+@pytest.mark.parametrize("other", ["missing-supporting", "supported-discriminator"])
+def test_decisive_counter_precedes_support_completeness(tmp_path: Path, other: str) -> None:
+    data = json.loads(FIXTURE.read_text())
+    data["events"][1]["value"] = "alternative"
+    role = "supporting" if other == "missing-supporting" else "discriminating"
+    data["assertions"].append(dict(data["assertions"][1], id="separate", signal="other", role=role))
+    if other == "supported-discriminator":
+        data["events"].append(dict(data["events"][1], signal="other", value="fault"))
+    retained = tmp_path / "run.json"
+    retained.write_text(json.dumps(data))
+    result = evaluate(retained, hashlib.sha256(retained.read_bytes()).hexdigest(), EVALUATED_AT)
+    assert result.hypothesis == "CONTRADICTED"
+
+
+@pytest.mark.parametrize("control", ["absent-assertion", "absent-observation", "broken"])
+def test_decisive_counter_requires_valid_control(tmp_path: Path, control: str) -> None:
+    data = json.loads(FIXTURE.read_text())
+    data["events"][1]["value"] = "alternative"
+    if control == "absent-assertion":
+        data["assertions"] = data["assertions"][1:]
+    elif control == "absent-observation":
+        data["events"] = data["events"][1:]
+    else:
+        data["events"][0]["value"] = "broken"
+    retained = tmp_path / "run.json"
+    retained.write_text(json.dumps(data))
+    result = evaluate(retained, hashlib.sha256(retained.read_bytes()).hexdigest(), EVALUATED_AT)
+    assert result.hypothesis == "INCONCLUSIVE"
+
+
+def test_conflict_within_assertion_blocks_separate_decisive_counter(tmp_path: Path) -> None:
+    data = json.loads(FIXTURE.read_text())
+    data["events"][1]["value"] = "alternative"
+    data["assertions"].append(dict(data["assertions"][1], id="separate", signal="other"))
+    data["events"].extend([
+        dict(data["events"][1], signal="other", value="fault"),
+        dict(data["events"][1], signal="other", value="alternative"),
+    ])
+    retained = tmp_path / "run.json"
+    retained.write_text(json.dumps(data))
+    result = evaluate(retained, hashlib.sha256(retained.read_bytes()).hexdigest(), EVALUATED_AT)
+    assert result.hypothesis == "INCONCLUSIVE"
+
+
+@pytest.mark.parametrize("field", ["event", "capture", "window", "evaluation"])
+def test_nonzero_utc_offset_is_rejected(tmp_path: Path, field: str) -> None:
+    data = json.loads(FIXTURE.read_text())
+    evaluated_at = EVALUATED_AT
+    match field:
+        case "event":
+            data["events"][1]["timestamp"] = "2025-01-01T09:02:00+09:00"
+        case "capture":
+            data["captured_at"] = "2025-01-01T09:05:00+09:00"
+        case "window":
+            data["window"]["start"] = "2025-01-01T09:00:00+09:00"
+        case "evaluation":
+            evaluated_at = "2026-01-01T09:00:00+09:00"
+    retained = tmp_path / "run.json"
+    retained.write_text(json.dumps(data))
+    with pytest.raises(EvidenceError, match="timestamps must be UTC"):
+        evaluate(retained, hashlib.sha256(retained.read_bytes()).hexdigest(), evaluated_at)
