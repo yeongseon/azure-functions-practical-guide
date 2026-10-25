@@ -253,7 +253,9 @@ flowchart TD
     C --> D[Deploy to staging]
     D --> E[Validation]
     E --> F[Swap to production]
+```
 
+```text
 %% WRONG — long horizontal overflow
 flowchart LR
     A[Commit] --> B[Build and test] --> C[Package] --> D[Deploy] --> E[Validate] --> F[Swap]
@@ -1007,7 +1009,7 @@ Run `python scripts/validate_visual_content.py --all` to report factual-claim pa
 
 ```bash
 # Install MkDocs dependencies
-pip install mkdocs-material mkdocs-minify-plugin
+pip install -r requirements-docs.txt
 
 # Build documentation (strict mode catches broken links)
 mkdocs build --strict
