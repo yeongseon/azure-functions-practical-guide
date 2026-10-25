@@ -1,0 +1,43 @@
+{
+  "scenario_id": "queue-retry-poison-durable-work",
+  "definition_notice": "OFFLINE PREDECLARATION, not retained Azure evidence; no live capture timestamps exist",
+  "execution_status": "NOT_RUN",
+  "hypothesis_status": "NOT_TESTED",
+  "execution": {"attempted": false, "blocked": false, "failed": false, "finished": false},
+  "events": [],
+  "scope": {
+    "plan": "Consumption Y1 / Linux",
+    "runtime": "Functions v4 / Python v2; exact host, Python, SDK, bundle and Storage Queues extension versions captured before execution",
+    "extension": "Microsoft.Azure.WebJobs.Extensions.Storage.Queues 5.x via Microsoft.Azure.Functions.ExtensionBundle 4.x; freeze resolved versions across phases",
+    "trigger": "queue_processor / queueTrigger / work-items / QueueStorage / QUEUE_LAB_ENABLED=true",
+    "prerequisite": "approved disposable app/account, sole queue consumer; reviewed run-local handler adaptation with durable conditional Blob create as the entire business effect, not the checked-in sleep/log handler",
+    "dedup_key": "run_id/work_item_id; independent of delivery message ID and invocation ID",
+    "fault": "fixed per-message modes: transient throws before commit for dequeue counts 1 and 2; poison throws before commit on every attempt; redelivery commits then throws on count 1",
+    "recovery": "same deployed bytes, new normal work item; no automatic poison replay",
+    "not_applicable": ["Event Hubs checkpoint", "Service Bus settlement", "customer workload replay", "external business side effects", "universal exactly-once delivery", "other plans", "independent reproduction"]
+  },
+  "bounds": {"phase_seconds": 900, "poll_interval_seconds": 15, "query_timeout_seconds": 15, "telemetry_wait_seconds": 600, "telemetry_retry_seconds": 60, "restart_per_phase": 1},
+  "configuration": {"maxDequeueCount": 5, "visibilityTimeout": "00:00:30", "messageEncoding": "none", "application_processing_retries": 0},
+  "work_items": {"baseline": "<run-id>/baseline-001", "transient": "<run-id>/transient-001", "poison": "<run-id>/poison-001", "redelivery": "<run-id>/redelivery-001", "recovery": "<run-id>/recovery-001"},
+  "normalization": "Copy assertions unchanged only after collection; map every signal to exact raw file/field, event interval, identity and transformation in mapping.json. Equality labels are reviewed derived classifications, not raw captures or authenticity proof. Missing records, missing delete acknowledgements, empty peeks and HTTP 200 alone are not counter-evidence.",
+  "assertions": [
+    {"id": "ownership", "role": "control", "predicate": "equals", "signal": "run.ownership", "expected": "isolated-approved-queues-and-sink", "counter": "shared-or-unowned"},
+    {"id": "baseline", "role": "control", "predicate": "equals", "signal": "baseline.readiness", "expected": "indexed-listener-delivery-commit-and-delete-correlated", "counter": "baseline-incomplete"},
+    {"id": "versions", "role": "control", "predicate": "equals", "signal": "run.versions", "expected": "resolved-host-extension-and-settings-frozen", "counter": "unknown-or-drifted"},
+    {"id": "artifact", "role": "control", "predicate": "equals", "signal": "run.artifact", "expected": "same-built-handler-activated-all-phases", "counter": "artifact-drift"},
+    {"id": "work-identity", "role": "control", "predicate": "equals", "signal": "run.work-identity", "expected": "producer-message-invocation-and-dedup-keys-mapped", "counter": "uncorrelated-work"},
+    {"id": "collection", "role": "control", "predicate": "equals", "signal": "run.collection", "expected": "delivery-exception-queue-and-sink-paths-validated", "counter": "telemetry-or-service-log-gap"},
+    {"id": "sink", "role": "control", "predicate": "equals", "signal": "run.sink-contract", "expected": "atomic-create-is-entire-effect-and-authoritative-read", "counter": "marker-only-or-untrusted-read"},
+    {"id": "isolation", "role": "control", "predicate": "equals", "signal": "fault.isolation", "expected": "declared-modes-only-no-other-consumer-or-retry", "counter": "mixed-fault-or-application-retry"},
+    {"id": "sequencing", "role": "control", "predicate": "equals", "signal": "run.sequence", "expected": "one-restart-then-readiness-enqueue-observe-per-phase", "counter": "restart-during-delivery-or-order-drift"},
+    {"id": "failure", "role": "symptom", "predicate": "equals", "signal": "fault.exceptions", "expected": "mode-specific-failed-invocations-correlated", "counter": "unrelated-failures"},
+    {"id": "retry", "role": "discriminating", "predicate": "equals", "signal": "fault.transient", "expected": "same-message-counts-1-2-fail-3-commit-delete", "counter": "failed-work-returned-success-and-deleted"},
+    {"id": "poison", "role": "discriminating", "predicate": "equals", "signal": "fault.poison", "expected": "five-failed-deliveries-then-correlated-poison-no-commit", "counter": "positive-contrary-poison-transition"},
+    {"id": "redelivery", "role": "supporting", "predicate": "equals", "signal": "fault.redelivery", "expected": "same-message-new-invocation-count-2-existing-key", "counter": "delivery-unresolved"},
+    {"id": "business-effect", "role": "discriminating", "predicate": "equals", "signal": "fault.business-effect", "expected": "one-durable-effect-per-successful-key-poison-zero", "counter": "multiple-durable-effects-for-one-key"},
+    {"id": "acknowledgement", "role": "supporting", "predicate": "equals", "signal": "fault.acknowledgement", "expected": "successful-runtime-delete-correlated-to-committed-work", "counter": "delete-unresolved"},
+    {"id": "probe", "role": "supporting", "predicate": "equals", "signal": "fault.status-probe", "expected": "http-200-is-not-durable-evidence", "counter": "http-failed"},
+    {"id": "restore", "role": "recovery", "predicate": "equals", "signal": "recovery.work", "expected": "normal-item-commit-delete-and-prior-keys-stable", "counter": "restart-or-http-only"},
+    {"id": "cleanup", "role": "recovery", "predicate": "equals", "signal": "cleanup.receipt", "expected": "owned-queues-and-sink-removed-settings-restored", "counter": "acceptance-only"}
+  ]
+}
