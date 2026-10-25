@@ -2,6 +2,11 @@
 
 Thank you for your interest in contributing to Azure Functions Practical Guide!
 
+The repository's [CONTRIBUTING.md](https://github.com/yeongseon/azure-functions-practical-guide/blob/main/CONTRIBUTING.md)
+is the authority for issue authoring, labels and triage, focused implementation,
+PR sections, and maintainer-authorized review/merge. This page covers authoring
+and local setup; coding agents also start with `AGENTS.md`.
+
 ## Quick Start
 
 1. Fork the repository
@@ -205,7 +210,9 @@ az functionapp create -g $RG -n $APP_NAME  # ❌ Don't do this
 
 ### Mermaid Diagrams
 
-All architectural diagrams use Mermaid. Every documentation page should include at least one diagram.
+Use Mermaid when it clarifies architecture, dependencies, or diagnosis. Follow
+the document-type requirements in [AGENTS.md](https://github.com/yeongseon/azure-functions-practical-guide/blob/main/AGENTS.md#mermaid-diagrams);
+do not add redundant diagrams or screenshots just to meet a count.
 
 ### Nested Lists
 
@@ -276,9 +283,10 @@ Titles for issues, pull requests, and commits follow the **Title Convention** in
 
 ## Review Process
 
-1. Automated CI checks (MkDocs build)
-2. Maintainer review for accuracy and completeness
-3. Merge to main triggers GitHub Pages deployment
+Follow the [review and merge policy](https://github.com/yeongseon/azure-functions-practical-guide/blob/main/CONTRIBUTING.md#tool-neutral-pr-review-and-merge):
+required GitHub CI on the final head, relevant content/image/PII checks, and a
+responsible maintainer's squash-merge decision. AI feedback is advisory. Publishing
+remains a separate workflow; merging alone does not authorize a deployment.
 
 ## Code of Conduct
 
