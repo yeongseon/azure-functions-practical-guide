@@ -234,21 +234,40 @@ this does not establish the intended accepted-deploy/indexing-failure scenario.
     telemetry an additional 10 minutes, querying at 1-minute intervals. These are
     experiment bounds, not platform SLAs; preserve timeouts, not just successes.
 2. **Baseline/control:** create a temporary Python project with `host.json` at the
-    archive root, `requirements.txt` containing `azure-functions`, and the two
-    files below. Verify locally, retain the source/archive inventory and digest,
-    then publish from that project directory. Require all baseline assertions
-    before inducing a fault. Configure monitoring before baseline, never mid-fault.
-3. **Fault:** make a second project copy, omitting **only `golden_payload.py`**.
+    archive root and the files below. **Before the first baseline publish**, resolve
+    `azure-functions` for the chosen Python/Linux target, export exact `==` pins
+    for every transitive dependency into `requirements.txt`, and retain the lock,
+    resolved names/versions and distribution hashes. Use the identical lock for
+    all builds; retain Python, resolver and remote-build tool/image versions.
+    Never re-resolve an unpinned requirement between phases. Configure monitoring
+    before baseline, never mid-fault; require all baseline controls before injection.
+    Retain a source-file/archive SHA256 separately from each **built deployment
+    package SHA256**. Extract resolved dependency inventories from the actual remote
+    build output (`.python_packages` distribution metadata and file hashes), not
+    just the requested lock; retain and compare these across all three builds.
+3. **Fault:** make a second project copy, omitting **only `golden_payload.py`**
+    as the functional change; the predeclared per-phase release marker also changes
+    for activation correlation below.
     Keep its top-level import in `function_app.py`. This deliberate package/runtime
     dependency mismatch should produce `ModuleNotFoundError` naming
-    `golden_payload` during indexing. Compare manifests to prove the single change;
+    `golden_payload` during indexing. Compare source and built-content manifests:
+    permit only that omission and the declared release-marker difference; resolved
+    dependencies must match the frozen baseline inventory. Missing build inventories,
+    unpinned dependencies, changed tooling or unexplained build-content differences
+    leave the single-change control **INCONCLUSIVE**, not a causal conclusion;
     do not inject an invalid package URL, modify the runtime, or depend on random
     network failure. Publish with the same remote-build command and retain both
     upload/build results and post-deploy discovery failures, even if Core Tools
     ultimately exits nonzero during readiness checks.
-4. **Recovery:** republish the exact retained baseline project (verify its digest),
-    not a separately repaired source tree. Measure elapsed UTC time from recovery
-    publish acceptance to the first valid nonce response, and successes/attempts
+4. **Recovery:** republish retained baseline source with the same dependency lock,
+    changing only the declared release marker. Compare source manifests excluding
+    that marker and identify the new built package with its own digest and resolved
+    inventory. This is **baseline-source rebuild recovery, not exact-package
+    recovery**: a source digest does not establish byte-identical remote-build output.
+    Measure elapsed UTC time from recovery publish acceptance to the first valid
+    recovery-release nonce response as **first-observed recovery**, not exact time
+    to readiness: the five-minute startup wait precedes probes. Record this blind
+    interval and successes/attempts
     across the full probe window. Require 10/10 matching 200 responses, restored
     listing/indexing and route readiness, plus the monitored collection control.
     Record the actual duration; no recovery measurement exists yet.
@@ -264,7 +283,12 @@ MARKER = "golden-baseline"
 Baseline `function_app.py` (same bytes in all three phases):
 
 ```python
+import logging
+
 import azure.functions as func
+from golden_build import RELEASE_ID
+
+logging.info("golden.startup release=%s", RELEASE_ID)
 from golden_payload import MARKER
 
 app = func.FunctionApp()
@@ -272,8 +296,30 @@ app = func.FunctionApp()
 @app.function_name(name="HttpHealth")
 @app.route(route="health", methods=["GET"], auth_level=func.AuthLevel.ANONYMOUS)
 def http_health(req: func.HttpRequest) -> func.HttpResponse:
-    return func.HttpResponse(f"{MARKER}:{req.params.get('nonce', '')}")
+    nonce = req.params.get("nonce", "")
+    logging.info("golden.invocation release=%s nonce=%s", RELEASE_ID, nonce)
+    return func.HttpResponse(
+        f"{MARKER}:{nonce}", headers={"X-Golden-Release": RELEASE_ID}
+    )
 ```
+
+**Future activation capture method:** generate `golden_build.py` before packaging
+each phase, containing a unique nonsensitive `RELEASE_ID` literal (run ID, phase
+and attempt). Retain its exact bytes and map that ID to the source commit/archive
+digest, lock digest, deployment service ID and built-package digest in a deployment
+receipt. It is packaged code, not a mutable app setting or request value. Inspect
+the deployed artifact's marker and record the service's activation result; correlate
+the startup log emitted **before** the faulting import with its worker instance,
+timestamp and subsequent indexing failure. For invocation/counter-evidence require
+the matching `X-Golden-Release`, nonce response and invocation log from that release,
+not merely HTTP 200 during the fault window. Capture these through the retained
+deployment/build output, runtime log stream or configured Application Insights
+query, and curl response headers; retain failures and unavailable channels.
+A surviving baseline worker's marker cannot count as fault-package execution.
+Missing deployment-to-runtime correlation makes the activation control
+INCONCLUSIVE, even when a discriminator claims execution. Startup logging/remote
+artifact retrieval are proposed collection steps, still NOT_RUN, not guaranteed
+available on this unexecuted deployment; collection gaps must not be guessed away.
 
 Anonymous access is limited to this disposable, nonsensitive probe; send no secrets
 or customer data. From each selected project directory, the publish operation is:
@@ -315,14 +361,21 @@ event time and transformation in `mapping.json`; summaries are derived, not prim
 The evaluator checks explicit equality only; it does not parse Azure logs or
 authenticate provenance. Review that mapping before offline replay.
 
+`fault-package`, `fault-host` and `fault-list` are **validity controls**, not merely
+supporting evidence: accepted fault deployment, `Running` state and a successfully
+captured function list are prerequisites to either conclusive verdict. Rejected
+deployment, `Stopped` state or a missing list makes the verdict INCONCLUSIVE even
+with decisive counter-evidence. The same applies to dependency/single-change and
+activation controls; the evaluator's general contradiction precedence is unchanged.
+
 | Stage | Baseline and recovery assertion | Fault assertion / decisive disproof |
 |---|---|---|
-| Package upload | Deployment service accepted the intended artifact; remote build and package inventory retained. | Same acceptance required for fault artifact. Upload/build rejection invalidates this experiment, not proof of indexing failure. |
+| Package upload | Deployment service accepted the identified built artifact; retain its digest separately from source/archive digest, lock and resolved inventory. Recovery is an identified rebuild of baseline source/lock, not asserted identical package bytes. | Acceptance is a validity control. Source omission and declared marker change only; built dependency inventories match. Rejection or unknown/unexplained drift makes this experiment INCONCLUSIVE, even with counter-evidence. |
 | Host state | Capture `Running` and host startup evidence within 5 minutes separately. | Capture `Running` independently of the worker result; if app is stopped or state unavailable, this narrower claim is undecidable. |
 | Worker/indexing | Startup identifies `HttpHealth` from this package; no unresolved import failure. | A fresh indexing failure explicitly names missing `golden_payload`. A valid correlated invocation of the fault package decisively contradicts the proposed indexing block. Missing traces alone never disprove it. |
 | Function metadata | Explicit list contains `HttpHealth` and agrees with fresh runtime metadata. | Retain list even if empty or stale; `captured` means a successful list response, not that emptiness proves failure. Missing list makes the run INCONCLUSIVE. |
 | HTTP listener readiness | Fresh route metadata maps `GET /api/health` and controlled probes reach that route. | Explicit failed route registration/indexing plus failed probes establishes `blocked-by-indexing`. A 404 alone could be wrong routing, auth or networking; it is not this signal. |
-| Actual invocation | All 10 responses are 200 with exact `golden-baseline:<nonce>` bodies and correlated invocation evidence. | Retain every probe result and positive indexing-block evidence. `blocked-by-indexing` must not be inferred from an empty requests table. Matching fault-package nonce execution is disproof, not missing telemetry. |
+| Actual invocation | All 10 responses are 200 with exact `golden-baseline:<nonce>` bodies, the phase's `X-Golden-Release` and matching invocation logs. | Retain every probe result and positive indexing-block evidence. `blocked-by-indexing` must not be inferred from an empty requests table. Only execution correlated to the activated fault package is disproof, not a surviving baseline response or missing telemetry. |
 
 **Telemetry control:** retain projected app-setting presence, host.json log levels,
 sampling/filter configuration, query text, table/app scope, event interval,
@@ -340,13 +393,14 @@ positive import/indexing evidence, the explicit list and client observations.
 - **NOT_RUN / NOT_TESTED:** current scenario state; source review and synthetic
     evaluator tests do not change it.
 - **COMPLETE / SUPPORTED:** all required assertions and controls hold with reviewed
-    current primary evidence; same-package recovery alone is insufficient causality.
-    Compare package manifests and unchanged settings to discriminate routing,
+    current primary evidence; baseline-source rebuild recovery alone is insufficient causality.
+    Compare source/built manifests, resolved dependencies and unchanged settings to discriminate routing,
     deployment rejection, storage/network issues and telemetry loss.
 - **COMPLETE / CONTRADICTED:** valid controls plus decisive fault-package execution
     counter-evidence. Do not translate telemetry unavailability into contradiction.
 - **COMPLETE / INCONCLUSIVE:** collection attempts finished but no discriminating
-    data, no function list, ambiguous/stale data or unavailable telemetry remains.
+    data, invalid/missing validity controls, unexplained dependency/build drift,
+    no function list, uncorrelated activation or unavailable telemetry remains.
     Completion is procedural, not proof. If collection did not finish, use PARTIAL
     (or BLOCKED/FAILED per the contract) with NOT_TESTED instead.
 
@@ -697,7 +751,9 @@ artifacts. Do not overwrite a prior run or fill gaps with historical excerpts.
   identity.json              # commit, recipe digest, ownership, environment/tools
   predeclaration.json        # exact assertions and bounds saved before execution
   baseline|fault|recovery/
-    <UTC>-package-manifest.json
+    <UTC>-source-manifest.json / <UTC>-built-package-manifest.json
+    <UTC>-dependency-lock.txt / <UTC>-resolved-dependencies.json
+    <UTC>-deployment-receipt.json   # deployment ID -> release marker -> artifact
     <UTC>-publish.stdout.txt / <UTC>-publish.stderr.txt
     <UTC>-deployment.json    # status, deployment ID, build result and exit codes
     <UTC>-app-state.json / <UTC>-function-list.json
