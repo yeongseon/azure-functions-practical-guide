@@ -58,7 +58,7 @@ Selecting the wrong hosting plan is one of the highest-impact mistakes in Azure 
 
 ## Why This Matters
 
-Evaluate hosting plan choice in this order:
+Evaluate these factors together when choosing a hosting plan:
 
 1. **Execution time and timeout risk**: Are handlers long-running or bursty async jobs?
 2. **Latency sensitivity**: Is p95 response time strict for HTTP paths?
@@ -92,14 +92,14 @@ The tree and recommendations below apply only after these documented capability 
 | Strict p95 HTTP latency | [Flex always-ready](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan#always-ready-instances) keeps configured functions/groups running; [Premium](https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan#eliminate-cold-starts) combines always-ready with an HTTP prewarmed buffer | Compare both under expected bursts and concurrency; neither establishes an end-to-end SLO without workload tests |
 | Private access | [Networking support](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale#networking-features) includes inbound private endpoints and outbound VNet integration on Flex/Premium and supported Dedicated configurations, not Consumption | Distinguish private ingress from private dependency access; check tier, subnet, DNS, and routing requirements |
 | OS, runtime, and region | [Flex is Linux-only](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan#supported-language-stack-versions), requires .NET isolated rather than in-process, and is not available in every region; [Premium scale ceilings vary by OS/region](https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan#region-max-scale-out) | Check stack version, trigger compatibility (including Event Grid-based Blob triggers on Flex), region and quota before selecting; Python runs only on Linux |
-| Release workflow | [Flex does not support deployment slots](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan#considerations); rolling updates are public preview, not slot swaps | Compare slot requirements with the existing [deployment reference](../reference/platform-limits.md#deployment-slots) and [Flex site update strategy](../operations/deployment.md#flex-site-update-strategy) |
+| Release workflow | [Flex does not support deployment slots](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan#considerations); the Flex overview labels rolling updates public preview while the site-update guide distinguishes generally available regions from regions still rolling out; neither is a slot swap | Compare slot requirements with the existing [deployment reference](../reference/platform-limits.md#deployment-slots) and [Flex site update strategy](../operations/deployment.md#flex-site-update-strategy) |
 | Existing fixed App Service capacity | [Dedicated](https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan) shares plan resources, uses manual/App Service autoscale, and should enable Always On | Reuse only with sufficient headroom and an owned scaling strategy; it is not Functions event-driven scaling |
 
 Flex always-ready defaults to zero and is configured per function or scale group (the HTTP functions share a group). Enabling it retains a paid warm baseline rather than zero idle cost for that group; on-demand capacity can still be added beyond that baseline. Premium always bills at least one active plan instance. Size and compare baseline cost, burst behavior, and dependency latency rather than routing every low-latency workload directly to Premium. These are documented behaviors, not benchmark results.
 
 ### Execution duration is not HTTP response time
 
-[`functionTimeout`](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale#function-app-timeout-duration) controls invocation execution duration, not the HTTP connection's response window. Regardless of that setting, Functions documents a **230-second maximum HTTP response wait** at the front end; clients or proxies can impose shorter limits. Raising the execution timeout or switching plans does not extend that response window.
+[`functionTimeout`](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale#timeout) controls invocation execution duration, not the HTTP connection's response window. Regardless of that setting, Functions documents a **230-second maximum HTTP response wait** at the front end; clients or proxies can impose shorter limits. Raising the execution timeout or switching plans does not extend that response window.
 
 For plan-specific defaults/maximums, use [Execution Timeout](../reference/platform-limits.md#execution-timeout). Flex and Premium support unbounded configured execution but still have scale-in and platform-update grace periods; Dedicated requires Always On for unbounded execution and is still subject to platform updates. Unbounded does not mean uninterrupted. The worker must also start successfully; runtime startup and OS/region capacity are separate constraints.
 
