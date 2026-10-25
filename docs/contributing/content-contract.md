@@ -367,6 +367,13 @@ The documentation is organized by intent and lifecycle stage:
 
 ### Evidence Levels
 
+For executable labs and operational claims, follow the Functions-local
+[evidence and hypothesis contract](../troubleshooting/methodology/troubleshooting-method.md#evidence-and-hypothesis-contract):
+keep claim level, execution status, hypothesis verdict, provenance, and capture,
+evaluation, and edit times separate in the existing experiment log. This does not
+expand evidence-tag requirements to navigation pages or replace the
+[tutorial validation rules](#tutorial-validation-tracking).
+
 When documenting troubleshooting steps or analysis, use these tags to specify the strength of the evidence:
 
 - `[Observed]`: Directly seen in logs, metrics, or UI (e.g., 503 errors in Log Analytics).
