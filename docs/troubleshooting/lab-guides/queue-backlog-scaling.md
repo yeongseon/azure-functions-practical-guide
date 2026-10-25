@@ -67,6 +67,13 @@ content_sources:
 
 This lab reproduces and analyzes a real queue backlog burst on Azure Functions Consumption (Y1) using telemetry collected on 2026-04-07. The objective is to prove what happened, what did not happen, and why a 2000-message burst drained in about 7.3 minutes without scale-out.
 
+!!! warning "Retry/poison Golden scenario: NOT_RUN / NOT_TESTED"
+    The separate controlled scenario below has no Azure execution, durable work
+    capture, recovery timing or cleanup receipt. Its synthetic fixtures test the
+    evaluator only. The historical burst did not exercise retries or durable
+    downstream work and cannot validate this scenario. Historical evidence remains
+    unchanged; no `last_tested` value is refreshed.
+
 ## Portal Walkthrough
 
 These portal blades help investigate queue backlog and scaling issues. All captures from a Consumption (Y1) Function App with PII masked.
@@ -206,6 +213,197 @@ flowchart TD
 ```
 
 ## 3) Runbook
+
+### Golden scenario: retry, poison and durable work (offline definition)
+
+[Not Proven] On **Linux Consumption (Y1), Functions v4, Python v2**, declared
+per-message failures should cause Storage Queue redelivery and poison handling,
+while a conditional durable write should prevent duplicate effects for a stable
+work key. This is a bounded experiment, not an exactly-once delivery guarantee,
+customer replay, Service Bus settlement test or Event Hubs checkpoint experiment.
+Follow the [evidence contract](../methodology/troubleshooting-method.md#evidence-and-hypothesis-contract).
+
+The predeclaration is
+[`queue-scenario.json`](https://github.com/yeongseon/azure-functions-practical-guide/blob/main/tests/fixtures/evidence/queue-scenario.json).
+[`synthetic-queue-cases.json`](https://github.com/yeongseon/azure-functions-practical-guide/blob/main/tests/fixtures/evidence/synthetic-queue-cases.json)
+and `tests/test_queue_scenario.py` pass its assertions unchanged to
+`scripts/lib/evidence_eval.py`. No new evaluator predicate, collector, retry
+framework or production-app behavior is introduced. Equality labels are derived
+classifications requiring human review of the raw-to-signal mapping.
+
+#### Eligibility and frozen configuration
+
+Use a newly approved disposable app and storage account, following the
+[Consumption infrastructure tutorial](../../language-guides/python/tutorial/consumption/05-infrastructure-as-code.md).
+Do **not** reuse the historical shared app/account named below. The fixed queue
+name `work-items` is isolated by this dedicated account; inventory it and
+`work-items-poison` before writes. Require no other consumers, local hosts,
+poison processors, producers or customer messages. Retain ownership approval,
+permissions, rollback and cost bounds; stop on shared resources or policy limits.
+Keep host/deployment and application storage identities and roles explicitly
+mapped; do not break host storage or networking to induce a processing fault.
+
+The existing Python trigger is **`queue_processor`**, registered only when
+**`QUEUE_LAB_ENABLED=true`**, bound to **`work-items`** through **`QueueStorage`**.
+Follow the [existing opt-in procedure](#step-2-register-and-verify-the-queue-trigger-before-producing-messages),
+not a second registration recipe. Its checked-in handler only sleeps and logs;
+neither `QueueProcessed` nor the existing burst producer proves durable work.
+`labs/queue-backlog-scaling/` has a producer and README, not a complete Golden
+deployment or durable sink. A reviewed run-local adaptation is required before
+Azure execution; it must satisfy the workload contract below. Do not claim the
+reference handler already implements it or silently replace its historical behavior.
+
+Use **Storage Queues extension 5.x** via **`Microsoft.Azure.Functions.ExtensionBundle`
+4.x** (checked-in range `[4.*, 5.0.0)`). Capture the actual resolved bundle and
+`Microsoft.Azure.WebJobs.Extensions.Storage.Queues` versions from host startup/
+bundle inventory, along with exact host, Python, SDK, tool and dependency versions;
+a range is not an observed version. Freeze the resolved inventory and built
+package across phases. Unknown versions or drift invalidate `run.versions`.
+Keep `maxDequeueCount=5`, `visibilityTimeout=00:00:30`, `messageEncoding=none`
+and the existing batching settings. Disable application processing retries for
+this experiment; inventory SDK transport retries separately. Do not add `@app.retry`
+as a Queue delivery policy. Record all effective overrides, including environment
+settings and dynamic concurrency; batch settings do not guarantee one global worker.
+
+#### Run-local workload contract (not yet deployed)
+
+Before baseline, review and retain the adapted source, frozen dependency lock,
+tests and built-package inventory. Retain deployment acceptance, actual built
+digest (separate from source/archive digest), resolved dependencies and a packaged
+release marker correlated to startup/invocations. Keep the same built bytes active
+in all phases. Deploy no fault toggle that changes between phases: only the
+predeclared synthetic message modes differ. Unrelated triggers must not consume
+this account's lab queues or alter the sink.
+
+Use nonsensitive JSON containing `run_id`, `work_item_id`, `mode`, `sequence` and
+`enqueuedUtc`. Freeze five work keys before execution: `<run-id>/baseline-001`,
+`<run-id>/transient-001`, `<run-id>/poison-001`, `<run-id>/redelivery-001`, and
+`<run-id>/recovery-001`. Producer receipts must bind each key and payload digest
+to the service-assigned message ID; those message IDs cannot be invented in advance.
+Never use invocation ID or dequeue count as the deduplication key.
+
+For this narrow experiment the **entire business effect** is one immutable Blob
+work record in a run-owned container, named by `run_id/work_item_id` (encode the
+components consistently to avoid ambiguous paths). Use an atomic conditional
+create, for example [Blob SDK `upload_blob(..., overwrite=False)`](https://learn.microsoft.com/en-us/python/api/azure-storage-blob/azure.storage.blob.blobclient#azure-storage-blob-blobclient-upload-blob), not a separate
+"seen" flag followed by a second side effect. Retain the immutable record body,
+dedup key, payload digest, commit time, ETag and service request ID. On an existing
+record, verify its key/payload matches through an authoritative read; a mismatch
+must fail, not be swallowed as a duplicate. A dedup marker written **before** an
+external effect cannot establish that effect; the general idempotency sketch in
+[Retries and Poison Handling](../../operations/retries-and-poison-handling.md#idempotency-requirements)
+is not this experiment's commit evidence. External payments, emails or database
+transactions are out of scope.
+
+The adapted handler must log a delivery-start record with `msg.id`,
+`msg.dequeue_count`, `context.invocation_id`, run/work key, mode, worker/release
+identity and UTC time **before** processing; retain sanitized exception type and
+invocation outcome even for failure before commit. Normal mode awaits the
+conditional create/read then returns. Transient mode throws a named lab exception
+before commit on dequeue counts 1 and 2, then processes normally. Poison mode
+throws before commit on every delivery, including the final attempt. Redelivery
+mode commits on count 1 then deliberately throws before normal return; count 2
+must read the same committed key and return without a second create. These are
+explicit per-delivery fault modes, not a loop retrying within one invocation.
+
+Configure Application Insights sampling/log levels and Queue/Blob resource logs
+before baseline. Retain successful/failed service operations, query scope, filter
+settings, permissions and collection-health checks. The authoritative sink reader
+and queue diagnostics must be validated with baseline data. If runtime deletes or
+durable writes cannot be correlated safely through available diagnostics, record
+the gap; an empty peek or approximate queue count is not an acknowledgement.
+Never receive/dequeue messages from a diagnostic client: it changes dequeue counts.
+Use non-consuming peeks and service logs; retain poison payload correlation since
+the poison message has its **own** service ID/dequeue count, not the source's count.
+
+#### Baseline -> fault -> recovery sequencing
+
+1. **Predeclare:** retain the JSON, run identity, inventory, source/dirty diff,
+    recipe digest, environment, resolved versions and capture bounds before any
+    injection. Each phase lasts 15 minutes anchored to explicit restart completion;
+    readiness and delivery are included, not extra unbounded waits. Poll owned
+    queue/sink diagnostics every 15 seconds with a 15-second operation timeout.
+    Allow 10 additional minutes for telemetry, querying every minute. These are
+    experiment limits, not platform retry, readiness or ingestion guarantees.
+2. **Baseline:** establish configuration/deployment acceptance, then perform exactly
+    one declared app restart; observe host/listener readiness, enqueue phase work,
+    then observe deliveries, durable records and queue outcomes, in that order.
+    Record acceptance and restart request/completion UTC separately. Enqueue only
+    `baseline-001` in normal mode after readiness. Require its delivery, one
+    committed record, successful invocation and correlated runtime delete before
+    fault injection. All validity controls must be eligible; stop on missing data.
+3. **Fault:** confirm the same package/configuration, then perform exactly one
+    declared app restart; observe host/listener readiness, enqueue phase work,
+    then observe deliveries, durable records and queue outcomes, in that order.
+    Record acceptance and restart request/completion UTC separately. Enqueue the
+    transient, poison and redelivery keys with their fixed modes, retaining all
+    producer receipts. No restart, package publish, manual deletion or fault-setting
+    change during delivery. Keep the three outcomes separate even if concurrent.
+4. **Recovery:** confirm the unchanged package/configuration, then perform exactly
+    one declared app restart; observe host/listener readiness, enqueue phase work,
+    then observe deliveries, durable records and queue outcomes, in that order.
+    Record acceptance and restart request/completion UTC separately. After the
+    fault window, retain unresolved work as such; do not force a poison transition.
+    Enqueue `recovery-001` in normal mode, require one record and runtime delete,
+    reread prior work keys, and retain the poison item without replay. Recovery
+    means a new normal item completes, not that the poison payload was repaired.
+5. **Evaluate and clean up:** retain all collection failures/timeouts, evaluate
+    only after bounded collection ends, then execute the ownership-restricted
+    cleanup receipt below even after failure. Never infer causality from restart.
+
+Record first-observed retry, poison arrival, durable commit and deletion separately
+from enqueue acceptance. For recovery record elapsed UTC from phase acceptance to
+first observed valid commit and separately runtime deletion, including restart,
+readiness wait, poll intervals and ingestion delay. These are **first-observed
+timings**, not exact processing, propagation or readiness times. No timings exist yet.
+
+#### Predeclared expected signals and decisive disproof
+
+| Stage | Expected evidence | Counter-evidence or undecidable case |
+|---|---|---|
+| Baseline/control | Positive indexing/listener, known delivery, immutable record and runtime delete correlated | HTTP 200, ARM Running or function listing alone cannot validate this path. |
+| Transient | Same source message ID, distinct invocation IDs, `dequeueCount` 1/2 fail before write, count 3 commits and is deleted | Positive unresolved-work normal return plus successful runtime deletion contradicts the intended failure/retry path. Missing retries alone is undecidable. |
+| Poison | Five failed processing attempts including the first, then a correlated payload in `work-items-poison`, no durable work record | A positively traced contrary transition (for example successful processing/deletion of the always-failing payload) contradicts the prediction. Missing poison telemetry/peek is not disproof. |
+| Redelivery | Commit then deliberate failed invocation on count 1; same source ID and new invocation on count 2; existing dedup key read | Redelivery itself does not mean duplicate business effects. Missing work read/acknowledgement leaves the relevant assertion undecidable. |
+| Business effect | Authoritative inventory/read shows one matching immutable record for each successful key and zero for poison, within the window | Two independently retained committed effects for one key decisively contradict the bounded dedup claim; a missing record or HTTP success alone cannot decide it. |
+| Acknowledgement | Successful runtime `DeleteMessage` service operation correlated to the committed source work | An invocation success or empty queue peek does not prove deletion; missing acknowledgement is INCONCLUSIVE, not successful processing or contradiction. |
+| Recovery | New normal work commits/deletes, prior keys stay stable, no poison replay | Restart or status probe success without durable commit cannot establish recovery. |
+
+Documented [Queue trigger behavior](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger#poison-messages)
+uses **`maxDequeueCount` default 5 (including the first attempt)** and
+**`<queue>-poison`**. `DequeueCount` counts dequeues, not SDK calls or committed
+effects. On success the runtime deletes the message. On ordinary invocation
+failure it applies `visibilityTimeout` (default zero; explicitly 30 seconds here).
+Polling/processing can delay observation beyond 30 seconds; it is not a fixed
+delivery schedule. A host crash cannot apply that setting and instead leaves the
+service's ten-minute invisibility timeout. This recipe does not inject a crash;
+an unexpected restart invalidates `run.sequence` rather than being misclassified
+as the declared transient exception. See the
+[host.json settings](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue#host-json-settings).
+
+Platform redelivery, in-code application retries and SDK transport retries are
+different counters/budgets. Poison handling is queue-specific, not proof of an
+exactly-once downstream effect. Only the atomic record-as-effect design is tested;
+no inference extends to a separate external business operation or future delivery.
+
+All nine validity prerequisites are **control roles**: ownership, baseline,
+versions/settings, activated built artifact, work identity, collection paths,
+sink contract, fault isolation and restart sequencing. Missing or invalid controls
+make even decisive counter-evidence **INCONCLUSIVE**. The parameterized test matrix
+removes and invalidates **each** control with duplicate-effect counter-evidence;
+mutation checking must kill every control-to-supporting downgrade. Do not mark
+collection/isolation valid merely to force a verdict.
+
+**Bounded results:** current execution is `NOT_RUN`, hypothesis `NOT_TESTED`; every
+assertion is undecided for Azure. A COMPLETE run is SUPPORTED only when all
+assertions/controls hold. Finished collection with gaps, ambiguity or conflicting
+values is INCONCLUSIVE; list each undecidable assertion ID and its missing raw
+signal. With valid controls, decisive discriminator counters are CONTRADICTED even
+if recovery or cleanup evidence is missing, preserving evaluator precedence.
+Incomplete execution is PARTIAL/BLOCKED/FAILED as appropriate and NOT_TESTED.
+Cleanup debt must be disclosed independently of the hypothesis verdict.
+
+### Historical burst runbook (not the Golden scenario)
 
 ### Prerequisites
 
@@ -498,6 +696,55 @@ az monitor app-insights query \
 
 ## 4) Experiment Log
 
+### Golden identity and retention (no captures yet)
+
+| Field | Current value |
+|---|---|
+| Execution / hypothesis | `NOT_RUN` / `NOT_TESTED` |
+| Claim / trust | Not Proven; offline definition, unverified for Azure |
+| Azure run ID / captured_at | None; no collection attempted |
+| Retry / poison / recovery measurements | Not available |
+| Cleanup receipt | None; no resources created |
+| Offline replay | Synthetic regression cases only, not independent reproduction |
+
+Future sanitized captures belong outside test fixtures under a fresh run ID.
+This is a layout specification, **not existing evidence**:
+
+```text
+<approved-evidence-root>/<run-id>/
+  identity.json / predeclaration.json
+  baseline|fault|recovery/
+    <UTC>-config-and-versions.json / <UTC>-built-activation.json
+    <UTC>-change-and-restart-receipts.json
+    <UTC>-producer-receipts.json     # work key -> payload digest -> source ID
+    <UTC>-deliveries.json           # message ID, dequeueCount, invocation ID
+    <UTC>-exceptions-and-results.json
+    <UTC>-queue-service-logs.json / <UTC>-nonconsuming-peeks.json
+    <UTC>-blob-service-logs.json / <UTC>-durable-work-records.json
+    <UTC>-status-probes.json        # never substituted for work records
+    <UTC>-query.txt / <UTC>-results.json / <UTC>-collection-errors.json
+  mapping.json                      # signal -> exact raw field and transformation
+  evidence.json / manifest.sha256    # pin sanitized bytes independently
+  evaluations/<evaluation-id>.json
+  cleanup/<UTC>-receipt.json
+```
+
+Each artifact needs run ID, real UTC `captured_at`, event/query window, role,
+primary/derived/reported provenance and trust justification. Retain failures,
+filters, sampling, ingestion/capture times and every attempt. Map normalized
+assertions to exact source fields with reasoning; the evaluator neither parses
+service logs nor authenticates Azure provenance. Hash immutable sanitized bytes;
+recollection requires a new run ID. Record `evaluated_at` separately; Git records
+prose editing. Do not invent capture/window timestamps for the NOT_RUN definition.
+
+Preserve stable placeholder correlations for message IDs, invocation IDs and work
+keys. Remove real account/resource identifiers, hostnames, addresses, credentials,
+SAS URLs, connection strings, authorization headers, pop receipts and customer
+content before publication. Restricted originals remain in an approved private
+location, never Git. Synthetic fixture clocks and labels cannot fill capture gaps.
+
+### Historical burst evidence (unchanged)
+
 ### Run context
 
 | Item | Value |
@@ -674,6 +921,23 @@ sequenceDiagram
 
 ## Clean Up
 
+### Golden ownership-restricted cleanup receipt
+
+No cleanup has run for this definition. Stop only run-owned producers/hosts,
+retain poison and work evidence first, and compare current resources against
+approved pre-run inventory. Delete **only** this run's `work-items` and
+`work-items-poison` queues and dedicated work-record container, or delete the
+entire disposable group if exclusively owned and approved. Never clear a shared
+queue, replay customer work or delete the historical shared group. Restore any
+approved reused lab app's prior settings/registration; otherwise delete the owned
+app with the group. Retain the exact sanitized targets, command inputs, UTC
+start/end, exit codes, restoration diff and final completion/failure result.
+Asynchronous acceptance is not completion. If cleanup cannot finish, list remaining
+queues/items/resources, ownership and safe next action in the receipt. Recovery,
+cleanup and causal verdict are separate assertions.
+
+### Historical cleanup guidance
+
 If this environment was dedicated to lab runs, remove resources:
 
 ```bash
@@ -696,6 +960,8 @@ If using shared resources (`rg-lab-y1-shared`), skip deletion and only clear tes
 
 ## See Also
 
+- [Retries and Poison Handling](../../operations/retries-and-poison-handling.md)
+- [Evidence and hypothesis contract](../methodology/troubleshooting-method.md#evidence-and-hypothesis-contract)
 - [Troubleshooting methodology](../methodology.md)
 - [First 10 minutes triage](../first-10-minutes/index.md)
 - [KQL investigation guide](../kql/index.md)
@@ -705,6 +971,8 @@ If using shared resources (`rg-lab-y1-shared`), skip deletion and only clear tes
 ## Sources
 
 - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
+- https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue
+- https://learn.microsoft.com/en-us/python/api/azure-storage-blob/azure.storage.blob.blobclient#azure-storage-blob-blobclient-upload-blob
 - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
 - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
 - https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
