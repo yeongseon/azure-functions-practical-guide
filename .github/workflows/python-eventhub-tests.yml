@@ -9,6 +9,8 @@ on:
       - 'apps/nodejs/**'
       - 'tests/test_*.py'
       - 'tests/conftest.py'
+      - 'tests/fixtures/evidence/**'
+      - 'scripts/lib/evidence_eval.py'
       - 'pytest.ini'
       - 'pyproject.toml'
       - '.github/workflows/dotnet-tests.yml'
