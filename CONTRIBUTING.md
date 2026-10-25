@@ -2,7 +2,10 @@
 
 Thank you for your interest in contributing!
 
-To ensure consistency and quality across this guide, please refer to our full contributing documentation:
+This file is the workflow authority for humans and coding agents: issue authoring,
+triage, focused implementation, PR review, and merge decisions. `AGENTS.md` is the
+shared agent entry point and retains the Functions-specific content contracts.
+For document templates and writing standards, use the site contributing guide:
 
 **[Contributing Guide](https://yeongseon.dev/azure-functions-python/practical-guide/contributing/)**
 
@@ -12,6 +15,116 @@ This guide covers:
 - Document templates and writing standards (Markdown, CLI style, PII rules)
 - Local development setup and build validation
 - Pull request process and review standards
+
+## Issue Lifecycle
+
+### Authoring and Required Sections
+
+Use the [Title Convention](#title-convention) and these issue sections, including
+when creating an issue through the API or CLI rather than a form:
+
+| Section | Required content |
+|---|---|
+| Context | Repository-local problem, affected files/pages, evidence, reader/user impact, and proposed work |
+| Acceptance Checklist | Observable completion criteria as Markdown checkboxes; distinguish source review from Azure execution or independent reproduction |
+| Out of scope | Explicit boundaries that keep this task focused |
+| References | Relevant local issues/PRs, Microsoft Learn sources, and genuine upstream dependencies with their relationship explained; write `None` if absent |
+
+Follow [Issue Scope](#issue-scope) for the repository-specific evidence contract,
+duplicate/context preflight, and post-save field checks established by merged
+PR #142 (#141). Extend matching work rather than opening another tracker. Forms
+are an authoring aid, not enforcement for API/CLI submissions.
+
+### Labels and Triage
+
+New issues start with `needs-triage`. The issue forms may assign it only while
+that exact repository label exists; API/CLI authors must also verify it after
+saving. Contributors may suggest classifications, but maintainers own triage.
+
+| Label | Meaning |
+|---|---|
+| `priority:critical` | Evidenced active security exposure, production data loss, or equivalent immediate harm; explain urgency, not just a hypothetical risk |
+| `priority:high` | Unsafe guidance, broken supported behavior, or a major reader/user blocker |
+| `priority:medium` | Valuable correctness or usability improvement with a workaround and no immediate harm |
+| `priority:low` | Optional polish or low-impact work behind correctness and safety fixes |
+| `size: XS` | One localized, straightforward correction |
+| `size: S` | A small bounded change with targeted validation |
+| `size: M` | Several related changes and meaningful integration or documentation validation |
+| `size: L` | Broad coordination or substantial implementation/validation; look for useful splits |
+| `size: XL` | Too large or uncertain for one focused PR; investigate and split into independently useful tasks where practical |
+
+Size estimates effort and uncertainty, not severity or a promised delivery date.
+Use exactly one canonical priority and one size on each triaged actionable issue;
+`priority: high` is a legacy spelling, not an additional priority tier. Type labels
+such as `bug`, `documentation`, or `enhancement` complement these classifications.
+
+1. Confirm validity, local evidence, duplicates, type, scope, completion criteria,
+   dependencies, and estimated size. Close invalid/duplicate issues with a reason
+   and link to the surviving issue rather than labeling them ready for work.
+2. Compare impact, urgency, dependencies, and effort against **all open issues**,
+   not only the current batch. Record the relative order and reasoning on the
+   issue or PR; do not create a new mandatory tracker.
+3. Set one priority and one size, fetch the issue to verify both, and only then
+   remove `needs-triage` from valid actionable work. If a required label is
+   unavailable, retain `needs-triage`, record the intended classification, and
+   request maintainer provisioning; never silently substitute a different label.
+4. Repeat triage after material scope changes, new safety evidence, or changed
+   dependencies. Restore `needs-triage` until re-evaluation is complete. After
+   delivery, reassess remaining backlog priorities and record any changed order.
+
+**Hosted prerequisites:** inspect actual label definitions before relying on them.
+The governance implementation audit found `needs-triage`, all five size labels,
+and high/medium/low priorities, but no `priority:critical`. A maintainer must
+provision that label before it can be used. These text rules do not configure
+GitHub label automation or branch protection; report unsupported settings honestly
+and do not change hosted settings without separate authorization.
+
+## Focused Implementation
+
+1. Start from a triaged issue and inspect the existing code, documentation,
+   tests, and related PRs. Choose the smallest viable correction and a bounded
+   validation plan before editing.
+2. Make an explicit **overengineering assessment** in the issue or PR: compare
+   the existing simple path with the proposed change and explain any necessary
+   complexity. Prefer reuse; no speculative abstractions, libraries, shared
+   frameworks, broad refactors, extra CI workflows/gates, redundant tests,
+   repeated diagrams, documentation, or screenshots. Preserve a straightforward
+   alternative. Split oversized work instead of expanding a single PR.
+3. Implement only the accepted scope in a small reviewable PR. Keep unrelated
+   improvements separate. Retain Functions-specific source metadata,
+   troubleshooting evidence, PII protections, and truthful validation dates.
+4. Run applicable existing validators and targeted regression tests; use
+   `mkdocs build --strict` locally for documentation (recommended; required
+   GitHub CI remains authoritative). Record commands, actual results,
+   limitations, and the tested commit. Source-reviewed, Azure-executed, and
+   independently reproduced are different evidence levels; use `NOT_RUN` for
+   unperformed Azure tests. Ordinary docs work does not require paid Azure E2E.
+5. Use the PR template sections: **Summary**, **Changes**, **Type of Change**,
+   **Validation**, **Checklist**, **Related Issues**. Include scope/risks and
+   remaining work under Changes; keep significant decisions in the issue or PR,
+   not another mandatory decision template.
+6. Review and record required GitHub CI links and findings on the **final PR
+   head SHA**. New commits invalidate earlier exact-head evidence; refresh the
+   relevant checks and review. Resolve blocking findings and verify captions,
+   rendering, and final-image PII where applicable. AI reviews are advisory.
+7. Only the responsible maintainer authorizes squash merge after required checks
+   pass; do not bypass gates or treat a green build as permission. After an
+   authorized merge, verify intended issue closure and reassess the backlog.
+
+### Issue Linkage
+
+Use `Closes #123` only when the PR completes **all accepted repository-local
+scope** of that issue. Use `Refs #123` for partial work, prerequisites, or related
+context, and list remaining work explicitly. Link same-repository issues in
+**Related Issues**, not the PR title. Do not auto-close upstream or sibling work
+that this repository does not own.
+
+### Shared Agent Entry Point
+
+Codex and OpenCode start with `AGENTS.md`; Claude Code must read the same file
+directly or through the single-line `CLAUDE.md` import. All tools then follow this
+workflow authority and the shared Functions content contract. Do not copy long
+rules into tool-specific files or automatically install/invoke agent plugins.
 
 ## Tool-Neutral PR Review and Merge
 

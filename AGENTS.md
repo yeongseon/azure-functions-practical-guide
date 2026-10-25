@@ -2,6 +2,16 @@
 
 Guidance for AI agents working in this repository.
 
+## Workflow Authority
+
+Read [CONTRIBUTING.md](CONTRIBUTING.md) for issue authoring, triage and labels,
+focused implementation, overengineering assessment, PR linkage, and maintainer-led
+review/merge rules. It is the workflow authority for humans, Codex, Claude Code,
+and OpenCode; this file is the shared agent entry point and Functions-specific
+content contract. Do not duplicate these rules in tool-specific instructions or
+install agent plugins automatically. Existing detailed content rules below remain
+in force; shrinking them is separate work (#165).
+
 ## Project Overview
 
 **Azure Functions Practical Guide** — a unified documentation hub, reference applications, and hands-on troubleshooting labs for building and operating serverless applications on Azure Functions.
