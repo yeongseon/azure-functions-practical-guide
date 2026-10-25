@@ -38,7 +38,7 @@ jobs:
     env:
       EVIDENCE_DIR: ${{ github.workspace }}/context-evidence
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           repository: yeongseon/azure-functions-practical-guide
           ref: refs/heads/main
@@ -54,7 +54,7 @@ jobs:
         id: scan
         if: always()
         run: python3 scripts/golden_e2e_guard.py scan
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: always() && steps.scan.outcome == 'success'
         with:
           name: context-${{ github.run_id }}-${{ github.run_attempt }}
@@ -81,7 +81,7 @@ jobs:
       AZURE_CORE_OUTPUT: none
       AZURE_CORE_COLLECT_TELEMETRY: 'false'
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           ref: ${{ needs.validate-context.outputs.sha }}
           fetch-depth: 0
@@ -108,7 +108,7 @@ jobs:
         id: scan
         if: always()
         run: python3 scripts/golden_e2e_guard.py scan
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: always() && steps.scan.outcome == 'success'
         with:
           name: scenario-${{ github.run_id }}-${{ github.run_attempt }}
