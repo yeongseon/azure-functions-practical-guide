@@ -14,7 +14,7 @@ import re
 import subprocess
 import sys
 from collections.abc import Mapping
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Final
 
@@ -92,7 +92,7 @@ def safe_value(value: str, pattern: str) -> str:
 def record(root: Path, env: Mapping[str, str], errors: list[str]) -> None:
     """Capture harness facts only; timestamps do not imply Azure collection."""
     root.mkdir(parents=True, exist_ok=True)
-    now = datetime.now(timezone.utc).isoformat()
+    now = datetime.now(UTC).isoformat()
     run = safe_value(env.get("GITHUB_RUN_ID", ""), r"[1-9][0-9]*")
     attempt = safe_value(env.get("GITHUB_RUN_ATTEMPT", ""), r"[1-9][0-9]*")
     region = env.get("REGION", "")
@@ -133,7 +133,7 @@ def record(root: Path, env: Mapping[str, str], errors: list[str]) -> None:
         output.write(json.dumps(bundle, indent=2) + "\n")
     digest = hashlib.sha256(retained.read_bytes()).hexdigest()
     (root / "manifest.sha256").write_text(digest + "\n")
-    write_result(root / "evaluation.json", evaluate(retained, digest, datetime.now(timezone.utc).isoformat()))
+    write_result(root / "evaluation.json", evaluate(retained, digest, datetime.now(UTC).isoformat()))
 
 
 def cleanup(root: Path, env: Mapping[str, str]) -> int:
@@ -142,7 +142,7 @@ def cleanup(root: Path, env: Mapping[str, str]) -> int:
     unexpected = (root / "created-resources.json").exists()
     receipt = {
         "status": "BLOCKED" if unexpected else "NO_RESOURCES_CREATED",
-        "captured_at": datetime.now(timezone.utc).isoformat(),
+        "captured_at": datetime.now(UTC).isoformat(),
         "github_run_id": safe_value(env.get("GITHUB_RUN_ID", ""), r"[1-9][0-9]*"),
         "github_run_attempt": safe_value(env.get("GITHUB_RUN_ATTEMPT", ""), r"[1-9][0-9]*"),
         "deleted": [], "azure_calls": False,
@@ -165,7 +165,7 @@ def artifacts_safe(root: Path) -> bool:
         try:
             text = path.read_text(encoding="utf-8")
             if path.suffix == ".json":
-                text = json.dumps(json.loads(text), ensure_ascii=False)
+                text = json.dumps(json.loads(text, object_pairs_hook=list), ensure_ascii=False)
         except (OSError, UnicodeError, ValueError):
             return False
         if UUID.search(text) or SENSITIVE.search(text) or SENSITIVE.search(path.name):

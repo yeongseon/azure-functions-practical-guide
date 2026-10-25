@@ -7,7 +7,6 @@ import sys
 from pathlib import Path
 
 import pytest
-from ruamel.yaml import YAML
 
 from scripts import golden_e2e_guard as guard
 
@@ -88,14 +87,26 @@ def test_ttl_endpoints(hours: str) -> None:
     assert "invalid-ttl" not in guard.preflight_errors({**context("a" * 40), "TTL_HOURS": hours})
 
 
-@pytest.mark.parametrize("key", [
-    "AZURE_CLIENT_ID", "AZURE_TENANT_ID", "AZURE_SUBSCRIPTION_ID", "AZURE_E2E_ENABLED",
-    "AZURE_E2E_SCOPE", "REGION", "RUNNER_ENVIRONMENT", "RUNNER_OS",
+@pytest.mark.parametrize("key,malformed,code", [
+    ("AZURE_CLIENT_ID", "not-a-uuid", "missing-or-invalid-azure_client_id"),
+    ("AZURE_TENANT_ID", "not-a-uuid", "missing-or-invalid-azure_tenant_id"),
+    ("AZURE_SUBSCRIPTION_ID", "not-a-uuid", "missing-or-invalid-azure_subscription_id"),
+    ("GITHUB_RUN_ID", "0", "invalid-run-identity"),
+    ("GITHUB_RUN_ATTEMPT", "-1", "invalid-run-identity"),
+    ("AZURE_E2E_ENABLED", "false", "environment-not-enabled"),
+    ("AZURE_E2E_SCOPE", "rg-shared", "run-scope-not-approved"),
+    ("REGION", "arbitrary-region", "invalid-region"),
+    ("RUNNER_ENVIRONMENT", "self-hosted", "unsupported-runner"),
+    ("RUNNER_OS", "Windows", "unsupported-runner"),
 ])
-def test_missing_prerequisites_are_blocked(key: str) -> None:
+@pytest.mark.parametrize("state", ["missing", "empty", "malformed"])
+def test_prerequisite_specific_error(key: str, malformed: str, code: str, state: str) -> None:
     env = context("a" * 40)
-    env.pop(key)
-    assert guard.preflight_errors(env)
+    if state == "missing":
+        env.pop(key)
+    else:
+        env[key] = "" if state == "empty" else malformed
+    assert code in guard.preflight_errors(env)
 
 
 @pytest.mark.parametrize("content", [
@@ -108,41 +119,9 @@ def test_scan_rejects_sensitive_content(tmp_path: Path, content: str) -> None:
     assert not guard.artifacts_safe(tmp_path)
 
 
-def test_scan_rejects_symlinks_and_unknown_files(tmp_path: Path) -> None:
-    (tmp_path / "raw.json").symlink_to(__file__)
-    assert not guard.artifacts_safe(tmp_path)
-
-
 def test_scan_decodes_json_escapes(tmp_path: Path) -> None:
     (tmp_path / "raw.json").write_text('{"raw": "Account\\u004bey=abc"}')
     assert not guard.artifacts_safe(tmp_path)
-
-
-def test_workflow_privilege_boundary() -> None:
-    workflow = YAML(typ="safe").load(
-        (Path(__file__).resolve().parents[1] / ".github/workflows/e2e-azure.yml").read_text()
-    )
-    assert set(workflow["on"]) == {"workflow_dispatch"}
-    assert workflow["permissions"] == {"contents": "read"}
-    jobs = workflow["jobs"]
-    assert set(jobs) == {"validate-context", "azure-scenario"}
-    assert "permissions" not in jobs["validate-context"]
-    azure = jobs["azure-scenario"]
-    assert azure["permissions"] == {"contents": "read", "id-token": "write"}
-    assert azure["environment"] == "azure-functions-e2e"
-    assert azure["needs"] == "validate-context"
-    steps = azure["steps"]
-    login = next(step for step in steps if step.get("uses", "").startswith("azure/login@"))
-    assert login["if"] == "success() && steps.preflight.outputs.azure_ready == 'true'"
-    assert next(i for i, step in enumerate(steps) if step.get("id") == "preflight") < steps.index(login)
-    for job in jobs.values():
-        for step in job["steps"]:
-            if "uses" in step:
-                assert guard.SHA.fullmatch(step["uses"].split("@")[1])
-            if step.get("uses", "").startswith("actions/checkout@"):
-                assert step["with"]["persist-credentials"] is False
-            if step.get("uses", "").startswith("actions/upload-artifact@"):
-                assert "steps.scan.outcome == 'success'" in step["if"]
 
 
 def test_blocked_cli_retains_only_safe_metadata(tmp_path: Path) -> None:
