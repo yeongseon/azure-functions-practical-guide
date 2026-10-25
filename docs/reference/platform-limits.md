@@ -20,7 +20,7 @@ The [Functions scale table](https://learn.microsoft.com/en-us/azure/azure-functi
 
 | Limit / support | Consumption (Y1), Windows | Consumption (Y1), Linux | Flex Consumption (FC1), Linux only | Elastic Premium (EP), Windows / Linux | Dedicated (App Service), Windows / Linux |
 |---|---|---|---|---|---|
-| Maximum instances | 200 per app | 100 per app | Up to 1,000 on-demand per function scale group; quota also applies | Up to 100 per plan on Windows; 20–100 on Linux; check region exceptions below | Basic: 3; Standard: 10; Premium v1: 20; Premium v2–v4: 30; Isolated: 100 |
+| Maximum instances | 200 per app | 100 per app | Up to 1,000 on-demand per function scale group; quota also applies | Up to 100 per plan on Windows; 20–100 on Linux; check region exceptions below | Basic: 3; Standard: 10; Premium v1: 20; Premium v2–v4: 30; Isolated: documented baseline 100, increasable by request |
 | Default / maximum execution timeout | 5 / 10 minutes | 5 / 10 minutes | 30 minutes / unbounded | 30 minutes / unbounded | 30 minutes / unbounded with Always On |
 | Deployment slots, including production | 2 total | 2 total | Not supported | 3 total | SKU-dependent; see App Service slot limits below |
 | Instance memory | 1.5 GB | 1.5 GB | 512 / 2,048 / 4,096 MB | EP1: 3.5 GB; EP2: 7 GB; EP3: 14 GB | SKU-dependent; do not infer from EP sizes |
@@ -59,7 +59,7 @@ Linux Consumption retires on **September 30, 2028**, receives no new features or
 
 Windows Consumption is not affected by this Linux retirement. The separate Linux Consumption **Functions v3** stop-running date was September 30, 2026; do not confuse host runtime retirement with the hosting-plan deadline.
 
-**Migration decision path:** For a new Linux serverless workload, start with [Flex tutorials](../language-guides/python/tutorial/index.md). For an existing app, follow [Consumption-to-Flex assessment and migration](https://learn.microsoft.com/en-us/azure/azure-functions/migration/migrate-plan-consumption-to-flex): check region, runtime version/model, slots, certificates, and Blob trigger source before selecting a target. Migration creates a **new app**, not an in-place plan change. If Flex cannot meet an OS or release requirement, compare [Premium and Dedicated](../platform/hosting.md#hosting-decision-workflow). Windows-dependent code must be made Linux-compatible before moving to Flex. Preserve a tested cutover and rollback path.
+**Migration decision path:** For a new Linux serverless workload, select your language's Flex track from the [Language Guides](../language-guides/index.md). For an existing app, follow [Consumption-to-Flex assessment and migration](https://learn.microsoft.com/en-us/azure/azure-functions/migration/migrate-plan-consumption-to-flex): check region, runtime version/model, slots, certificates, and Blob trigger source before selecting a target. Migration creates a **new app**, not an in-place plan change. If Flex cannot meet an OS or release requirement, compare [Premium and Dedicated](../platform/hosting.md#hosting-decision-workflow). Windows-dependent code must be made Linux-compatible before moving to Flex. Preserve a tested cutover and rollback path.
 
 ## Execution Timeout
 
@@ -88,7 +88,7 @@ Sources: [Functions service limits and host-config footnote](https://learn.micro
 | Dedicated connections | Use the App Service SKU limits and your network path; do not import Consumption's sandbox connection limit. |
 | Memory | The host, dependencies, workers, and concurrent invocations share instance resources. Fixed Python idle-worker estimates are not service limits or measurements of your app. Profile the deployed workload. |
 | Temporary storage | Functions lists **0.8 GB Flex**, **11–61 GB Premium**, and **0.5 GB Consumption**, with a Linux Consumption footnote of **1.5 GB**. Temporary storage totals are across apps in the same App Service plan, not a durable data allowance per app. Dedicated is SKU-dependent. |
-| Persisted storage | The Functions table lists **0 GB Flex**, **250 GB Premium**, and **1 GB Consumption** with Azure Files and Linux-mount qualifications. These describe hosting storage, not the capacity of `AzureWebJobsStorage` or a deployment Blob container. Linux requires an explicit mount for your own Azure Files share. Dedicated is SKU-dependent. |
+| Persisted storage | The Functions table lists **0 GB Flex**, **250 GB Premium**, and **1 GB Consumption** with Azure Files and Linux-mount qualifications. These describe hosting storage, not the capacity of `AzureWebJobsStorage` or a deployment Blob container. [Custom Azure Files mounts](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations#mount-file-shares) are supported on Linux Flex/Premium/Dedicated, not Consumption. Dedicated is SKU-dependent. |
 | Storage-account throughput | Azure Storage service targets, not Functions quotas. The former 20,000 account requests/s, 60 MiB/s/blob, 2,000 queue messages/s, and 20,000 table operations/s were not universal Functions guarantees. Use the storage service, account type, region, redundancy, and workload-specific target documentation. |
 
 See [Functions service-limit footnotes](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale#service-limits), [connection management](https://learn.microsoft.com/en-us/azure/azure-functions/manage-connections), and [storage connectivity](../platform/storage-connectivity.md#6-hosting-plan-differences). Host storage authentication, deployment Blob authentication, and classic Azure Files content shares are separate concerns; Flex does not use a classic content share or `WEBSITE_RUN_FROM_PACKAGE`. Keep [deployment settings plan/OS-specific](../operations/deployment.md#package-configuration-by-plan-and-os).
@@ -98,9 +98,9 @@ See [Functions service-limit footnotes](https://learn.microsoft.com/en-us/azure/
 - Functions service limits list **5,000 function apps per subscription**. Apps-per-plan counts do not override that limit.
 - Custom domains are **25 per Flex app**, versus **500 per Consumption/Premium/Dedicated app**, per the Functions service table. DNS mapping and certificate support have separate plan qualifications.
 - Do not use “no hard limit, recommended fewer than 100 functions” as an app-size guarantee. The [scaling article](https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling#understanding-scaling-behaviors) documents a **100 monitored event-trigger** limit for Consumption/Premium scale decisions, not a universal functions-per-app count.
-- Package-size restrictions depend on deployment technology; use [run-from-package considerations](https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package#general-considerations) only for applicable workflows, not as a universal Flex deployment quota.
+- Package-size restrictions depend on deployment technology; use [package deployment considerations](https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push#package-deployment-considerations) only for applicable workflows, not as a universal Flex deployment quota.
 - The former “4,096 bytes per app setting; no limit on number” entry was not sourced as a universal Functions limit and has been removed. Use the [Functions app settings reference](https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings) and applicable App Service configuration limits.
-- Run `bash scripts/validate_hosting_limits.sh` after editing this reference or tutorial selectors. It checks shared-reference links and guards against duplicated selector quota/runtime-version rows; it does not fetch Learn or prove cloud capacity.
+- Run `bash scripts/validate_hosting_limits.sh` after editing this reference or tutorial selectors. This **structural guard** checks required link text and selected quota/runtime-version table-row labels to discourage duplicated selector tables. It does not validate numeric values, compare factual claims across pages, fetch Learn, or prove cloud capacity; official-source review is still required.
 
 ## See Also
 
@@ -128,4 +128,4 @@ See [Functions service-limit footnotes](https://learn.microsoft.com/en-us/azure/
 - [Blob scalability targets](https://learn.microsoft.com/en-us/azure/storage/blobs/scalability-targets)
 - [Queue scalability targets](https://learn.microsoft.com/en-us/azure/storage/queues/scalability-targets)
 - [Table scalability targets](https://learn.microsoft.com/en-us/azure/storage/tables/scalability-targets)
-- [Run-from-package considerations](https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package#general-considerations)
+- [Package deployment considerations](https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push#package-deployment-considerations)
