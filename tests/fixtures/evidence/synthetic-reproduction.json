@@ -1,0 +1,26 @@
+{
+  "fixture_notice": "SYNTHETIC ONLY: fictional operator tokens, packages and clocks; no humans or Azure runs are asserted",
+  "synthetic": true,
+  "original": {
+    "run_id": "synthetic-run-a",
+    "scenario_id": "synthetic-independence-example",
+    "recipe_revision": "synthetic-recipe-v1",
+    "operator_id": "synthetic-human-a",
+    "operator_kind": "human",
+    "mode": "human-run",
+    "captured_at": "2025-01-01T00:05:00Z",
+    "environment": "synthetic Linux Consumption Y1, region example-a",
+    "runtime": "synthetic Functions v4, Python 3.11"
+  },
+  "reproduction": {
+    "run_id": "synthetic-run-b",
+    "scenario_id": "synthetic-independence-example",
+    "recipe_revision": "synthetic-recipe-v1",
+    "operator_id": "synthetic-human-b",
+    "operator_kind": "human",
+    "mode": "human-run",
+    "captured_at": "2025-01-02T00:05:00Z",
+    "environment": "synthetic Linux Consumption Y1, region example-b",
+    "runtime": "synthetic Functions v4, Python 3.12"
+  }
+}
