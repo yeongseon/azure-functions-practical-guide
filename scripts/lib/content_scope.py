@@ -19,8 +19,8 @@ Imported by:
 - ``scripts/generate_content_validation_status.py``
 - ``scripts/remove_out_of_scope_validation.py``
 
-The policy MUST stay in sync with ``AGENTS.md`` §Text Content Validation.
-If you change the rules here, update ``AGENTS.md`` in the same commit.
+The policy MUST stay in sync with ``docs/contributing/content-contract.md`` §Text Content Validation.
+If you change the rules here, update that policy section in the same commit.
 """
 
 from __future__ import annotations

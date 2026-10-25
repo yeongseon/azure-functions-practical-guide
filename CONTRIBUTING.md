@@ -4,7 +4,8 @@ Thank you for your interest in contributing!
 
 This file is the workflow authority for humans and coding agents: issue authoring,
 triage, focused implementation, PR review, and merge decisions. `AGENTS.md` is the
-shared agent entry point and retains the Functions-specific content contracts.
+shared agent entry point; the detailed Functions-specific content contract lives
+in [the contributor reference](docs/contributing/content-contract.md).
 For document templates and writing standards, use the site contributing guide:
 
 **[Contributing Guide](https://yeongseon.dev/azure-functions-python/practical-guide/contributing/)**
@@ -142,12 +143,66 @@ documentation and publishing protections; do not authorize autonomous
 merges based only on AI scores or green CI. CI runner hosting is
 independent of this review policy.
 
+### Required validation for every PR
+
+1. **GitHub CI:** all required status checks on the final PR head must
+   pass. CI is authoritative; local preview and source checks are
+   recommended but not a separate merge prerequisite. This policy
+   makes no assumption about CI runner hosting.
+2. **Caption and image accuracy:** every added/changed referenced image
+   must accurately match its Markdown caption and alt text.
+3. **Final-image PII verification:** visually inspect the **final committed
+   bytes** of every added/changed referenced PNG/WebP for subscription
+   or tenant identifiers, employee data or misleading redactions.
+   Re-encoded WebP must be rechecked; do not infer it from a PNG.
+4. **Security and content:** preserve existing documentation, PII,
+   repetition, screenshot integrity and publishing checks; no
+   unresolved critical/security issues or unreviewed sensitive assets.
+5. **Maintainer decision:** the responsible maintainer reviews final
+   code/content, required CI results, image checks and outstanding
+   findings, then decides whether to merge. For high-risk publishing
+   or permissions changes, obtain independent scrutiny.
+
+### Merge procedure
+
+1. Record required GitHub CI links and the final-image/PII verification
+   results in the PR. AI review comments are optional and not test
+   evidence or approval.
+2. Only after the responsible maintainer's decision, use squash merge:
+   `gh pr merge <pr> --squash --delete-branch`.
+3. Never use `--admin` to bypass required checks. Do not silently
+   downgrade visual verification, security or documentation policy.
+4. An autonomous agent may prepare the PR and evidence but must not
+   treat a passing score or green CI as permission to merge without
+   the maintainer's decision.
+
+### Stop conditions
+
+- Any required CI check is pending or failing.
+- A referenced image cannot be verified against the final committed
+  bytes or contains unaddressed PII.
+- Blocking security, scope or factual accuracy findings remain.
+- The responsible maintainer has not authorized the merge.
+
+Report remaining blockers instead of merging.
+
 ## Issue Scope
 
-Follow the [issue-scope guidance in AGENTS.md](AGENTS.md#issue-scope) when
-opening or editing an issue. Use this guide's pages, scripts, workflows, and
-reader needs to explain the problem and completion criteria, and state why
-any external project reference is relevant.
+- Describe the problem, evidence, proposed work, priority, and completion criteria
+  using this repository's own responsibilities and user impact.
+- Adapt reusable ideas to the actual files and conventions here. Another
+  project's policy, observations, or release plan do not establish this
+  repository's requirements.
+- Keep relevant technical evidence and source attribution, including actual
+  dependencies, integrations, upstream defects, and official documentation.
+  Explain the relationship and the work owned by this repository. Apply the
+  same local-evidence requirement to explicitly requested comparisons.
+- Before creating or editing an issue, search for duplicates and review every
+  project name and repository link in the title and body. Remove unrelated
+  copied context; the work must be understandable without an unrelated issue.
+- After saving, fetch the issue again and verify its title, body, and labels
+  before reporting completion. This applies to API and CLI authoring as well
+  as the issue templates.
 
 ## Title Convention
 

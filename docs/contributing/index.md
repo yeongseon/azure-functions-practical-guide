@@ -1,3 +1,7 @@
+---
+title: Contributing
+---
+
 # Contributing
 
 Thank you for your interest in contributing to Azure Functions Practical Guide!
@@ -11,7 +15,7 @@ and local setup; coding agents also start with `AGENTS.md`.
 
 1. Fork the repository
 2. Clone: `git clone https://github.com/yeongseon/azure-functions-practical-guide.git`
-3. Install dependencies: `pip install mkdocs-material mkdocs-minify-plugin`
+3. Install dependencies: `pip install -r requirements-docs.txt`
 4. Start local preview: `mkdocs serve`
 5. Open `http://127.0.0.1:8000` in your browser
 6. Create a feature branch: `git checkout -b feature/your-change`
@@ -71,193 +75,45 @@ and local setup; coding agents also start with `AGENTS.md`.
 
 ## Document Templates
 
-Every document must follow the template for its section. Do not invent new structures.
-
-### Platform docs
-
-```text
-# Title
-Brief introduction (1-2 sentences)
-## Prerequisites (optional)
-## Main Content
-### Subsections
-## Advanced Topics (optional)
-## See Also
-## Sources
-```
-
-### Best Practices docs
-
-```text
-# Title
-Brief introduction
-## Why This Matters
-## Recommended Practices
-## Common Mistakes / Anti-Patterns
-## Validation Checklist
-## See Also
-## Sources
-```
-
-### Operations docs
-
-```text
-# Title
-Brief introduction
-## Prerequisites
-## When to Use
-## Procedure
-## Verification
-## Rollback / Troubleshooting
-## See Also
-## Sources
-```
-
-### Tutorial docs (Language Guides)
-
-```text
-# Title
-Brief introduction
-## Prerequisites
-## What You'll Build
-## Steps
-## Verification
-## Next Steps / Clean Up (optional)
-## See Also
-## Sources (optional)
-```
-
-### Playbooks
-
-```text
-# Title (no intro paragraph)
-## 1. Summary
-## 2. Common Misreadings
-## 3. Competing Hypotheses
-## 4. What to Check First
-## 5. Evidence to Collect
-## 6. Validation and Disproof by Hypothesis
-## 7. Likely Root Cause Patterns
-## 8. Immediate Mitigations
-## 9. Prevention (optional)
-## See Also
-## Sources (optional)
-```
-
-### Lab Guides
-
-```text
-# Title
-Brief introduction
-## Lab Metadata (table: difficulty, duration, tier, etc.)
-## 1) Background
-## 2) Hypothesis
-## 3) Runbook
-## 4) Experiment Log
-## Expected Evidence
-## Clean Up
-## Related Playbook
-## See Also
-## Sources
-```
-
-### Reference docs
-
-```text
-# Title
-Brief introduction
-## Topic/Command Groups
-## Usage Notes
-## See Also
-
-## See Also
-
-- [Repository Map](../start-here/repository-map.md)
-- [Learning Paths](../start-here/learning-paths.md)
-## Sources
-```
+Use the [seven canonical document templates](content-contract.md#canonical-document-templates)
+for your section. Do not invent new structures. The detailed versions include
+optional prerequisites, advanced topics, language-specific details, and the
+required See Also / Sources order.
 
 ## Writing Standards
 
-### CLI Commands
+Read the [Documentation Content Contract](content-contract.md) sections relevant
+to your change; these requirements apply equally to human and agent authors.
 
-```bash
-# ALWAYS use long flags for readability
-az functionapp create --resource-group $RG --name $APP_NAME --plan $PLAN_NAME --runtime python
-
-# NEVER use short flags in documentation
-az functionapp create -g $RG -n $APP_NAME  # ❌ Don't do this
-```
-
-| CLI element | Explanation |
+| Area | Rules and examples |
 |---|---|
-| Command(s) | `az functionapp create` |
-| Key flags | `--resource-group`, `--name`, `--plan`, `--runtime` |
-| Variables | `$RG`, `$APP_NAME`, `$PLAN_NAME` |
-| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
-
-
-### Variables
-
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `$RG` | Resource group name | `rg-functions-demo` |
-| `$APP_NAME` | Function app name | `func-demo-app` |
-| `$PLAN_NAME` | Hosting plan | `plan-demo-functions` |
-| `$STORAGE_NAME` | Storage account | `stdemofunctions` |
-| `$LOCATION` | Azure region | `koreacentral` |
-| `$SUBSCRIPTION_ID` | Subscription identifier placeholder | `<subscription-id>` |
-
-### Mermaid Diagrams
-
-Use Mermaid when it clarifies architecture, dependencies, or diagnosis. Follow
-the document-type requirements in [AGENTS.md](https://github.com/yeongseon/azure-functions-practical-guide/blob/main/AGENTS.md#mermaid-diagrams);
-do not add redundant diagrams or screenshots just to meet a count.
-
-### Nested Lists
-
-All nested list items MUST use **4-space indent** (Python-Markdown standard).
-
-### Admonitions
-
-For MkDocs admonitions, indent body content by **4 spaces**:
-
-```markdown
-!!! warning "Title"
-    Body text here.
-```
-
-### Tail Sections
-
-Every document ends with these sections in order:
-
-1. `## See Also` — internal cross-links within this repository
-2. `## Sources` — external references (Microsoft Learn URLs)
+| CLI Commands | [Long flags](content-contract.md#cli-command-style) and [explanation tables, blank-line termination, rendered-HTML verification](content-contract.md#cli-explanation-table-rule-quality-gate) |
+| Variables | [Variable naming convention](content-contract.md#variable-naming-convention) |
+| Mermaid Diagrams | [Required document types and orientation](content-contract.md#mermaid-diagrams); avoid redundant diagrams/screenshots |
+| Nested Lists | [Four-space nesting](content-contract.md#nested-list-indentation) |
+| Admonitions | [Four-space body indentation](content-contract.md#admonition-indentation-rule) |
+| Tail Sections | [See Also followed by Sources](content-contract.md#tail-section-naming) |
+| Evidence | [Levels](content-contract.md#evidence-levels), [annotation scope](content-contract.md#evidence-annotation-policy), [playbook/lab evidence](content-contract.md#troubleshooting-content-standards) |
+| Screenshots | [Capture pipeline, compliant authentication, final-byte review](content-contract.md#image-and-screenshot-rules) |
+| Frontmatter | [YAML serialization rules](content-contract.md#frontmatter-yaml-style) and [validation scope/schema](content-contract.md#text-content-validation) |
 
 ## Content Source Policy
 
-All content must be traceable to official Microsoft Learn documentation.
-
-| Source Type | Description | Allowed? |
-|---|---|---|
-| `mslearn` | Directly from Microsoft Learn | Required for platform content |
-| `mslearn-adapted` | Adapted from Microsoft Learn | Yes, with source URL |
-| `self-generated` | Original content | Requires justification |
+All content must be traceable to official Microsoft Learn documentation. Follow
+the [source types and provenance policy](content-contract.md#content-source-requirements),
+including the Functions-specific legacy migration rules for edited Mermaid pages.
 
 ## PII Rules
 
-NEVER include real Azure identifiers in documentation or examples:
-
-- Subscription IDs: use `<subscription-id>`
-- Tenant IDs: use `<tenant-id>`
-- Emails: use `user@example.com`
-- Secrets, tokens, connection strings: NEVER include
+NEVER include real Azure identifiers, emails, secrets, tokens, or connection
+strings. Use the [PII placeholders and synthetic-example rules](content-contract.md#pii-removal-quality-gate)
+and [image safeguards](content-contract.md#image-and-screenshot-rules).
 
 ## Build and Validate
 
 ```bash
 # Install dependencies
-pip install mkdocs-material mkdocs-minify-plugin
+pip install -r requirements-docs.txt
 
 # Recommended local validation (required GitHub CI validates final PR head)
 mkdocs build --strict
@@ -265,6 +121,11 @@ mkdocs build --strict
 # Local preview
 mkdocs serve
 ```
+
+Run applicable [quality-gate commands](https://github.com/yeongseon/azure-functions-practical-guide/blob/main/AGENTS.md#build-preview-and-quality-gates)
+and their CI doctests. The contract preserves the full [repetition](content-contract.md#documentation-repetition-gate-quality-gate),
+[PII](content-contract.md#pii-detection-gate-quality-gate), and
+[visual coverage](content-contract.md#visual-content-gate-quality-gate) gate semantics.
 
 ### Tutorial Validation Dashboard Scope
 
@@ -276,6 +137,8 @@ The dashboard intentionally excludes:
 - Troubleshooting lab guides under `docs/troubleshooting/lab-guides/`, because they are experiment reports. Validate them through their lab metadata, experiment log, expected evidence, and content source metadata instead of tutorial `validation` frontmatter.
 
 Only add or update tutorial `validation` frontmatter after actually executing the documented steps against Azure. Do not add synthetic `last_tested` dates to close dashboard gaps.
+See [tutorial validation tracking](content-contract.md#tutorial-validation-tracking)
+for the schema, method-specific results, staleness and dashboard regeneration rules.
 
 ## Git Commit Style
 
@@ -291,3 +154,9 @@ remains a separate workflow; merging alone does not authorize a deployment.
 ## Code of Conduct
 
 Please read our [Code of Conduct](https://github.com/yeongseon/azure-functions-practical-guide/blob/main/CODE_OF_CONDUCT.md) before contributing.
+
+## See Also
+
+- [Documentation Content Contract](content-contract.md)
+- [Repository Map](../start-here/repository-map.md)
+- [Learning Paths](../start-here/learning-paths.md)

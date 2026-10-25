@@ -6,7 +6,7 @@ across tools. PyYAML's ``yaml.dump()`` aggressively quotes dates, flattens
 nested sequences, and flows multi-line strings; routing all mutations through
 this module prevents that drift.
 
-Style rules (must stay in sync with ``AGENTS.md`` §Frontmatter YAML Style):
+Style rules (must stay in sync with ``docs/contributing/content-contract.md`` §Frontmatter YAML Style):
 
 - Block style for mappings and sequences (no flow style).
 - Indentation: ``mapping=2, sequence=4, offset=2`` -- each list item's hyphen
@@ -36,7 +36,7 @@ from ruamel.yaml import YAML
 
 __all__ = ["build_yaml", "dump_frontmatter", "CANONICAL_INDENT"]
 
-# Captured for documentation/tests; mirror in ``AGENTS.md`` if changed.
+# Captured for documentation/tests; mirror in the contributor content contract if changed.
 CANONICAL_INDENT: dict[str, int] = {
     "mapping": 2,
     "sequence": 4,

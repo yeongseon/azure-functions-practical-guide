@@ -606,4 +606,5 @@ nav:
       - Validation Status: reference/validation-status.md
   - Contributing:
     - contributing/index.md
+    - Documentation Content Contract: contributing/content-contract.md
     - contributing/cross-guide-baseline.md

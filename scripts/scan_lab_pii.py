@@ -4,7 +4,8 @@
 Purpose:
     Fail CI if real subscription IDs, employee emails, Azure hostnames,
     or secret tokens appear in tracked lab artifacts. Local authors mask
-    values per the PII Removal rules in AGENTS.md; this scanner is the
+    values per the PII Removal rules in docs/contributing/content-contract.md;
+    this scanner is the
     repo-side merge gate that enforces them.
 
 Scope:
@@ -341,7 +342,7 @@ def main(argv: list[str] | None = None) -> int:
     if findings:
         print(
             "[scan_lab_pii] PII found. Mask the values per the PII Removal "
-            "rules in AGENTS.md before committing.",
+            "rules in docs/contributing/content-contract.md before committing.",
             file=sys.stderr,
         )
         return 1

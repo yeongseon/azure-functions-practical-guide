@@ -7,9 +7,9 @@ avoid leaking real Azure account identifiers into the documentation.
 ## What it does
 
 - Replaces real identifiers in text nodes, `aria-label`, `title`, and `input`/
-  `textarea` values with documentation-safe placeholders (see PII Replacement
-  Rules section in `AGENTS.md` — to be added when this convention is fully
-  adopted; the canonical rule set is encoded in `PII_RULES` below).
+  `textarea` values with documentation-safe placeholders (see the [image and
+  screenshot rules](../docs/contributing/content-contract.md#image-and-screenshot-rules);
+  the canonical replacement rule set is encoded in `PII_RULES` below).
 - Walks the main frame **and** every nested iframe (Portal blades render
   inside iframes).
 - Masks only the Account-menu avatar using Playwright's native `mask` option
@@ -55,8 +55,8 @@ The MCP browser tool executes a single async function in an isolated page
 context, so it cannot `require()` this module. Inline the snippet below
 (replace `<OUTPUT_PATH>` per capture). Keep this snippet in lockstep with
 `PII_RULES` in `portal-capture-helpers.js` — any change in one must be
-mirrored in the other (and in the PII Replacement Rules section in
-`AGENTS.md` once it is added).
+mirrored in the other. Keep the [image and screenshot policy](../docs/contributing/content-contract.md#image-and-screenshot-rules)
+aligned if the documented capture safeguards change.
 
 ```javascript
 async (page) => {
@@ -161,4 +161,5 @@ async (page) => {
   to a black rectangle.
 
 If `PII_RULES` is updated, mirror the change in the inline MCP snippet above
-(and in any future `AGENTS.md` PII Replacement Rules section once added).
+and keep the [image and screenshot policy](../docs/contributing/content-contract.md#image-and-screenshot-rules)
+aligned if the documented capture safeguards change.
