@@ -78,7 +78,7 @@ This section shows portal blades relevant to retry and poison handling for a liv
 
 ![Log stream blade showing real-time function logs](../assets/operations/monitoring/02-log-stream.png)
 
-[Inferred] Use the Log stream during active debugging to observe retry behavior in real time. Look for repeated execution attempts for the same message ID, which indicates retries in progress. When messages stop appearing for a specific ID, check the poison queue or dead-letter for exhausted retries.
+[Inferred] Use the Log stream during active debugging to observe retry behavior in real time. Repeated execution attempts for the same message ID can indicate retries. If attempts stop, inspect invocation status and the trigger-specific failure path: Storage Queue poison handling, Service Bus dead-letter handling, or an application-owned recovery store for Event Hubs. Silence alone does not prove successful processing or dead-letter delivery.
 
 ### Configuration General Settings Blade
 
@@ -86,12 +86,16 @@ This section shows portal blades relevant to retry and poison handling for a liv
 
 ![Configuration General settings blade](../assets/operations/configuration/02-general-settings.png)
 
-[Inferred] While retry counts are primarily configured in `host.json`, platform-level settings like timeout values and TLS configuration can affect trigger connectivity. Verify these settings after infrastructure changes that might impact trigger reliability.
+[Inferred] Retry configuration depends on the trigger: binding-extension settings can live in `host.json`, while Python v2 runtime policies use `@app.retry`. Platform-level settings such as timeout values and TLS configuration can affect trigger connectivity. Verify these settings after infrastructure changes that might impact trigger reliability.
 
 ## Procedure
 
 ### Reliability model
-Azure Functions reliability for triggers is a combination of trigger-level delivery semantics, runtime retry policy behavior, and destination after retry exhaustion (poison queue or dead-letter). Design for idempotency first, then tune retries.
+Azure Functions reliability for triggers combines delivery semantics, retry behavior, and trigger-specific recovery after exhaustion. A poison queue or dead-letter destination exists only where the trigger/service provides one; it is not a universal runtime retry feature. Design for idempotency first, then tune retries.
+
+Never suppress an unresolved processing exception simply because the retry budget is exhausted. A normal return reports success; logging alone does not preserve the failed work. Let the exception escape on the final failed attempt too, unless failure has been deliberately and durably handled by a recovery workflow. The [Python retry recipe](../language-guides/python/recipes/retry.md) demonstrates both successful recovery and terminal failure.
+
+Timer runtime retries stop after exhaustion without creating a poison queue or DLQ. Event Hubs delays checkpoints until the retry policy finishes, but processing can advance after exhaustion even when work failed; preserve failed events in an application-owned durable recovery store when needed. Neither behavior should be described as Service Bus dead-lettering or Storage Queue poison handling.
 
 ### Built-in retry support
 Azure Functions supports retry behavior for selected triggers.
@@ -144,7 +148,7 @@ Concrete Service Bus extension retry example:
 ```
 
 Concrete Event Hubs extension retry example:
-`clientRetryOptions` controls Event Hubs SDK transport retries (service communication behavior), not Azure Functions invocation retry policy. Configure function-level retries separately using `host.json` settings or function retry attributes, depending on trigger and language.
+`clientRetryOptions` controls Event Hubs SDK transport retries (service communication behavior), not Azure Functions invocation retry policy. Configure function-level retries separately with the language's function metadata or decorators (`@app.retry` in Python v2), not the Event Hubs `host.json` transport settings.
 
 ```json
 {
@@ -324,6 +328,7 @@ az monitor metrics list \
 | Command/Parameter | Purpose |
 |-------------------|---------|
 | `az monitor metrics list` | Retrieves metrics for the storage account |
+| `--resource` | Identifies the storage account resource to query |
 | `--metric QueueMessageCount` | Tracks the number of messages in the queues |
 | `--interval PT5M` | Aggregates data in 5-minute intervals |
 | `--aggregation Average` | Calculates the average message count |
@@ -353,6 +358,7 @@ az servicebus queue show \
 | Command/Parameter | Purpose |
 |-------------------|---------|
 | `az servicebus queue show` | Displays details for the specified Service Bus queue |
+| `--resource-group` | Resource group containing the Service Bus namespace |
 | `--namespace-name` | Specifies the Service Bus namespace |
 | `--name orders` | Target queue name |
 | `--query "countDetails"` | Extracts active, dead-letter, and scheduled message counts |
@@ -367,6 +373,8 @@ Example output (PII masked):
 ```
 
 ## Verification
+For the terminal-failure guidance added here, verification is Microsoft Learn source review plus the recipe's local SDK tests, not a new Azure experiment. Existing Portal illustrations do not establish the sample's invocation or checkpoint outcomes. In Azure, verify failed invocation status after exhaustion separately from poison/dead-letter delivery, and verify Event Hubs recovery-store writes and replay independently.
+
 Validate that retry tuning reduces failure amplification and poison/dead-letter growth stabilizes.
 
 KQL query: retry rates by function (last 60 minutes):
@@ -416,6 +424,7 @@ Common anti-patterns:
 - Raising retry counts without reducing concurrency.
 - Replaying poison queues before fixing schema/business-rule defects.
 - Combining trigger-level and in-code retries without total budget limits.
+- Returning normally after logging an unresolved terminal failure, or assuming every exhausted runtime policy creates a poison/DLQ message.
 
 ## See Also
 - [Monitoring](monitoring.md)
