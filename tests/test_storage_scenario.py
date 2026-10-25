@@ -62,6 +62,34 @@ def test_synthetic_storage_outcome(tmp_path: Path, case: str, expected: str) -> 
     assert result.execution == variant.get("expected_execution", "COMPLETE")
 
 
+@pytest.mark.parametrize("control", json.loads(
+    (FIXTURES / "synthetic-storage-cases.json").read_text(),
+)["control_matrix"], ids=lambda control: control[0])
+@pytest.mark.parametrize("missing", [True, False], ids=["missing", "invalid"])
+def test_counter_requires_every_control(
+    tmp_path: Path, control: tuple[str, str], missing: bool,
+) -> None:
+    # Given decisive counter-evidence and one absent or explicitly invalid prerequisite.
+    scenario = json.loads((FIXTURES / "storage-scenario.json").read_text())
+    bundle = json.loads((FIXTURES / "synthetic-storage-cases.json").read_text())["bundle"]
+    signal, invalid = control
+    bundle["assertions"] = scenario["assertions"]
+    bundle["events"] = [
+        dict(event, value="same-host-operation-authorized")
+        if event["signal"] == "fault.authorization"
+        else dict(event, value=invalid) if event["signal"] == signal else event
+        for event in bundle["events"]
+        if not (missing and event["signal"] == signal)
+    ]
+    retained = tmp_path / "synthetic-control.json"
+    retained.write_text(json.dumps(bundle))
+    # When the real evaluator applies the scenario's unchanged roles.
+    result = evaluate(retained, hashlib.sha256(retained.read_bytes()).hexdigest(), EVALUATED_AT)
+    # Then every prerequisite gates contradiction, not just support.
+    assert result.execution == "COMPLETE"
+    assert result.hypothesis == "INCONCLUSIVE"
+
+
 def test_storage_definition_is_unexecuted() -> None:
     # Given the definition rather than the separate synthetic capture bundle.
     scenario = json.loads((FIXTURES / "storage-scenario.json").read_text())

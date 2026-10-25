@@ -26,6 +26,16 @@
       {"run_id": "synthetic-storage", "timestamp": "2025-01-01T00:50:00Z", "signal": "cleanup.receipt", "value": "owned-resources-restored-or-deletion-completed"}
     ]
   },
+  "control_matrix": [
+    ["baseline.readiness", "baseline-failure"],
+    ["run.ownership", "shared-or-unowned"],
+    ["run.storage-roles", "role-conflation"],
+    ["fault.config-diff", "other-drift"],
+    ["run.artifact", "artifact-drift"],
+    ["run.collection", "diagnostics-unavailable"],
+    ["run.probe-context", "different-context"],
+    ["fault.failure-isolation", "mixed-failures"]
+  ],
   "cases": {
     "all-signals": {},
     "missing-diagnostic-logs": {"omit": ["run.collection"]},
