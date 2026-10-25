@@ -340,11 +340,13 @@ done
 
 ### 3.3 Capture baseline evidence
 
+First follow [controlled lab endpoint setup and cleanup](../../reference/lab-endpoint-safety.md): enable `LAB_ENDPOINTS_ENABLED=true` on an isolated deployment and load a function key into `FUNCTION_KEY`. Use a function-scoped key for each route, or a temporary lab host key when calling several routes. Current probes omit container listings/client IDs and return generic backend failures; inspect access-controlled logs for details. The output blocks below preserve historical experiment evidence, not the current response schema or a new deployment validation.
+
 #### Baseline DNS resolution (all 4 endpoints)
 
 ```bash
 for svc in blob queue table file; do
-  curl --silent \
+  curl --silent --header "x-functions-key: $FUNCTION_KEY" \
     "https://${APP_NAME}.azurewebsites.net/api/diagnostics/dns-resolve?host=${STORAGE_NAME}.${svc}.core.windows.net"
   echo ""
 done
@@ -362,7 +364,7 @@ Baseline output:
 #### Baseline storage probe
 
 ```bash
-curl --silent \
+curl --silent --header "x-functions-key: $FUNCTION_KEY" \
   "https://${APP_NAME}.azurewebsites.net/api/diagnostics/storage-probe"
 ```
 
@@ -376,7 +378,7 @@ Output:
 
 ```bash
 curl --silent "https://${APP_NAME}.azurewebsites.net/api/health"
-curl --silent "https://${APP_NAME}.azurewebsites.net/api/diagnostics/identity-probe"
+curl --silent --header "x-functions-key: $FUNCTION_KEY" "https://${APP_NAME}.azurewebsites.net/api/diagnostics/identity-probe"
 ```
 
 Output:
@@ -477,7 +479,7 @@ Expected: queue, table, and file VNet links still present.
 
 ```bash
 for svc in blob queue table file; do
-  curl --silent \
+  curl --silent --header "x-functions-key: $FUNCTION_KEY" \
     "https://${APP_NAME}.azurewebsites.net/api/diagnostics/dns-resolve?host=${STORAGE_NAME}.${svc}.core.windows.net"
   echo ""
 done
@@ -498,7 +500,7 @@ Incident output:
 #### Incident storage probe
 
 ```bash
-curl --silent --write-out "\nHTTP Status: %{http_code}\n" \
+curl --silent --header "x-functions-key: $FUNCTION_KEY" --write-out "\nHTTP Status: %{http_code}\n" \
   "https://${APP_NAME}.azurewebsites.net/api/diagnostics/storage-probe"
 ```
 
@@ -513,7 +515,7 @@ HTTP Status: 502
 
 ```bash
 curl --silent "https://${APP_NAME}.azurewebsites.net/api/health"
-curl --silent "https://${APP_NAME}.azurewebsites.net/api/diagnostics/identity-probe"
+curl --silent --header "x-functions-key: $FUNCTION_KEY" "https://${APP_NAME}.azurewebsites.net/api/diagnostics/identity-probe"
 ```
 
 Output:
@@ -536,9 +538,9 @@ az functionapp restart \
 # Wait 30 seconds for restart
 sleep 30
 
-curl --silent \
+curl --silent --header "x-functions-key: $FUNCTION_KEY" \
   "https://${APP_NAME}.azurewebsites.net/api/diagnostics/dns-resolve?host=${STORAGE_NAME}.blob.core.windows.net"
-curl --silent --write-out "\nHTTP Status: %{http_code}\n" \
+curl --silent --header "x-functions-key: $FUNCTION_KEY" --write-out "\nHTTP Status: %{http_code}\n" \
   "https://${APP_NAME}.azurewebsites.net/api/diagnostics/storage-probe"
 ```
 
@@ -639,7 +641,7 @@ Wait 30 seconds for DNS propagation.
 
 ```bash
 for svc in blob queue table file; do
-  curl --silent \
+  curl --silent --header "x-functions-key: $FUNCTION_KEY" \
     "https://${APP_NAME}.azurewebsites.net/api/diagnostics/dns-resolve?host=${STORAGE_NAME}.${svc}.core.windows.net"
   echo ""
 done
@@ -657,7 +659,7 @@ Recovery output:
 #### Recovery storage probe
 
 ```bash
-curl --silent \
+curl --silent --header "x-functions-key: $FUNCTION_KEY" \
   "https://${APP_NAME}.azurewebsites.net/api/diagnostics/storage-probe"
 ```
 
@@ -671,7 +673,7 @@ Output:
 
 ```bash
 curl --silent "https://${APP_NAME}.azurewebsites.net/api/health"
-curl --silent "https://${APP_NAME}.azurewebsites.net/api/diagnostics/identity-probe"
+curl --silent --header "x-functions-key: $FUNCTION_KEY" "https://${APP_NAME}.azurewebsites.net/api/diagnostics/identity-probe"
 ```
 
 Output:
@@ -872,6 +874,8 @@ gantt
     If any of these conditions failed to hold, the hypothesis would require reassessment.
 
 ## Clean Up
+
+Also [remove lab endpoint opt-in and rotate experiment keys](../../reference/lab-endpoint-safety.md#clean-up) after restoring injected changes. Historical response detail above is no longer exposed by current probes.
 
 ```bash
 az group delete \

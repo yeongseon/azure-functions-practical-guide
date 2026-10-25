@@ -591,6 +591,7 @@ nav:
       - host.json: reference/host-json.md
       - Environment Variables: reference/environment-variables.md
       - Platform Limits: reference/platform-limits.md
+      - Controlled Lab Endpoints: reference/lab-endpoint-safety.md
     - CLI Cheatsheet: reference/cli-cheatsheet.md
     - Glossary: reference/glossary.md
     - Metrics:

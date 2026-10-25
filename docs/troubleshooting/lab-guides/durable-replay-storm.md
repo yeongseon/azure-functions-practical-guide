@@ -412,8 +412,11 @@ Expected role set for the recorded EP1 configuration:
 
 ### 3.3 Start baseline phase (50 iterations, no reset)
 
+Before sending traffic, follow [controlled lab endpoint setup](../../reference/lab-endpoint-safety.md): deploy current source to an isolated app, set `LAB_ENDPOINTS_ENABLED=true`, and load a function key into `FUNCTION_KEY`. Current starters reject invalid inputs with 4xx and cap each request at 10 instances and 5000 total activity calls; the recorded workloads below remain within those limits. These source changes have local-test verification only, not a new Azure experiment.
+
 ```bash
 curl --request POST \
+  --header "x-functions-key: $FUNCTION_KEY" \
   --url "https://${APP_NAME}.azurewebsites.net/api/durable/start-replay-lab" \
   --header "Content-Type: application/json" \
   --data '{"iterations":50,"continueAsNewEvery":0,"instances":1}'
@@ -427,6 +430,7 @@ Expected baseline instance ID from recorded run:
 
 ```bash
 curl --request POST \
+  --header "x-functions-key: $FUNCTION_KEY" \
   --url "https://${APP_NAME}.azurewebsites.net/api/durable/start-replay-lab" \
   --header "Content-Type: application/json" \
   --data '{"iterations":2000,"continueAsNewEvery":0,"instances":1}'
@@ -440,6 +444,7 @@ Expected incident instance ID from recorded run:
 
 ```bash
 curl --request POST \
+  --header "x-functions-key: $FUNCTION_KEY" \
   --url "https://${APP_NAME}.azurewebsites.net/api/durable/start-replay-lab" \
   --header "Content-Type: application/json" \
   --data '{"iterations":2000,"continueAsNewEvery":250,"instances":1}'
@@ -455,6 +460,7 @@ Expected recovery instance ID from recorded run:
 INSTANCE_ID="7a21e8d1258a488bad8392f1bdfa36bf"
 
 curl --request GET \
+  --header "x-functions-key: $FUNCTION_KEY" \
   --url "https://${APP_NAME}.azurewebsites.net/api/durable/status/${INSTANCE_ID}"
 ```
 
@@ -928,6 +934,8 @@ Evidence chain matrix:
 5. Confirm tail order is `See Also` then `Sources`.
 
 ## Clean Up
+
+Stop new traffic, wait for or terminate active instances, then [remove lab endpoint opt-in and rotate experiment keys](../../reference/lab-endpoint-safety.md#clean-up). Disabling HTTP routes does not cancel running orchestrations.
 
 If this was a temporary environment, remove the resource group.
 

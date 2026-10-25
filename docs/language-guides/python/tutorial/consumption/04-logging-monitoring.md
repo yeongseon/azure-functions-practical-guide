@@ -141,10 +141,12 @@ az functionapp config appsettings set \
 
 ### Step 4 - Generate test traffic
 
+For exception traffic only, complete [controlled lab endpoint setup](../../../../reference/lab-endpoint-safety.md) first (`LAB_ENDPOINTS_ENABLED=true` and a protected `FUNCTION_KEY`). Disable the switch and rotate the experiment key afterward; health remains anonymous.
+
 ```bash
 curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
 curl --request GET "https://$APP_NAME.azurewebsites.net/api/requests/log-levels"
-curl --request GET "https://$APP_NAME.azurewebsites.net/api/exceptions/test-error"
+curl --request GET --header "x-functions-key: $FUNCTION_KEY" "https://$APP_NAME.azurewebsites.net/api/exceptions/test-error"
 ```
 
 ### Step 5 - Query recent requests

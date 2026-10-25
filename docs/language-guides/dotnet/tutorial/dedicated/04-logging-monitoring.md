@@ -117,6 +117,8 @@ host.Run();
 
 ### Step 3 - Generate telemetry by calling endpoints
 
+Load `FUNCTION_KEY` using [controlled lab key setup](../../../../reference/lab-endpoint-safety.md) before calling `testerror` on Azure. Rotate the experiment key and stop/delete the isolated lab afterward; health remains anonymous.
+
 ```bash
 # Trigger structured logging
 curl --request GET "https://$APP_NAME.azurewebsites.net/api/loglevels"
@@ -125,7 +127,7 @@ curl --request GET "https://$APP_NAME.azurewebsites.net/api/loglevels"
 curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
 
 # Trigger intentional errors for error telemetry
-curl --request GET "https://$APP_NAME.azurewebsites.net/api/testerror"
+curl --request GET --header "x-functions-key: $FUNCTION_KEY" "https://$APP_NAME.azurewebsites.net/api/testerror"
 ```
 
 !!! note "Telemetry ingestion delay"
