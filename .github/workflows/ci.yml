@@ -45,6 +45,11 @@ jobs:
         run: |
           find apps labs infra scripts -type f -name '*.sh' -print0 | xargs -0 -r bash -n
 
+      - name: Check hosting limits cross-document consistency (static)
+        run: |
+          bash scripts/validate_hosting_limits.sh
+          bash scripts/test_hosting_limits.sh
+
       - name: Run ShellCheck (errors block)
         run: |
           find apps labs infra scripts -type f -name '*.sh' -print0 | xargs -0 -r shellcheck --severity=error

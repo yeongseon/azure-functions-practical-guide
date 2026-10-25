@@ -27,20 +27,21 @@ flowchart TD
     S[Need Node.js Azure Functions] --> Q1{Need VNet integration?}
     Q1 -->|No| Q2{Pay only on execution?}
     Q1 -->|Yes| Q3{Need scale-to-zero?}
-    Q2 -->|Yes| C[Consumption]
+    Q2 -->|Yes| F[Flex Consumption]
+    S -.->|Existing legacy app| C[Consumption]
     Q2 -->|No| D[Dedicated]
-    Q3 -->|Yes| F[Flex Consumption]
+    Q3 -->|Yes| F
     Q3 -->|No| P[Premium]
 ```
 
 ## Plan Comparison at a Glance
 
+Use [Platform Limits](../../../reference/platform-limits.md) for plan/OS/region-qualified quotas, slots, runtime support, and timeout qualifications. Flex is Linux-only; this guide's Consumption track uses Linux. For Linux Consumption retirement and target selection, follow the [migration decision path](../../../reference/platform-limits.md#runtime-support-and-linux-consumption-migration). Tutorial runtime pins and configured scale caps are examples, not platform limits.
+
 | Feature | Consumption | Flex Consumption | Premium | Dedicated |
 |---|---:|---:|---:|---:|
 | Scale to zero | Yes | Yes | No | No |
 | VNet integration | No | Yes | Yes | Yes (tier-dependent) |
-| Deployment slots | Limited | No | Yes | Yes |
-| Timeout max | 10 min | Unlimited | Unlimited | Unlimited |
 | Typical fit | Burst workloads | Modern serverless default | Low latency and warm capacity | Existing App Service estates |
 
 ## Tutorial Tracks

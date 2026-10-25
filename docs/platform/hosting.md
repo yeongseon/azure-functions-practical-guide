@@ -98,13 +98,9 @@ This section shows portal blades illustrating hosting plan behavior for a live F
 
 [Inferred] Instance Count 0 confirms scale-to-zero behavior, which is a defining characteristic of Consumption. Zone redundancy is not available on Consumption — consider Premium (EP) or Dedicated for zone-redundant deployments. The plan details directly map to the hosting plan comparison table below.
 
-### Scale Out Blade
+### Scale-out interpretation
 
-[Observed] The **Scale out** blade shows **Dynamic Scale out** with **Enforce Scale Out Limit: Yes** and **Maximum Scale Out Limit: 200**:
-
-![Scale out blade showing Consumption plan maximum of 200 instances](../assets/operations/scaling/01-scale-out.png)
-
-[Inferred] The 200-instance maximum is the platform ceiling for Linux Consumption. Windows Consumption has a lower default ceiling. Premium and Flex Consumption plans have different scale-out controls. Always set an explicit scale limit before production deployment.
+The earlier Portal example's configured value of 200 must not be interpreted as a Linux Consumption platform ceiling. Current Learn lists **Windows Consumption: 200; Linux Consumption: 100** per app. A Portal control or historical capture is not proof of service capacity. Use the shared [Platform Limits](../reference/platform-limits.md#hosting-plan-comparison) for OS/region ceilings and distinguish these from an app's configured cap.
 
 ## Main Content
 
@@ -122,7 +118,7 @@ Azure Functions supports four main hosting models:
 !!! tip "Decision rule"
     Start with Flex Consumption for most new serverless workloads, then choose Premium when you need permanently warm behavior and advanced App Service premium features.
 
-> **Last verified**: 2026-06-06 | **Primary source**: [Azure Functions hosting options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
+> **Hosting limits source review**: 2026-10-25 (official-source/static only) | **Primary source**: [Azure Functions hosting options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale). See the shared [Platform Limits](../reference/platform-limits.md); this is not a new deployment validation.
 >
 > Key values subject to change: Flex Consumption max instances, function timeout defaults/maximums, Linux Consumption retirement timeline, deployment slot support, Kudu/SCM availability, private endpoint and VNet integration support, scale behavior by trigger type.
 
@@ -132,7 +128,7 @@ flowchart TD
     A[Workload Requirement] --> B{Scale to zero required?}
     B -->|Yes| C{Private networking required?}
     B -->|No| D{Existing App Service estate?}
-    C -->|No| E[Consumption or Flex]
+    C -->|No| E[Flex by default; Consumption for legacy needs]
     C -->|Yes| F[Flex Consumption]
     D -->|Yes| G[Dedicated]
     D -->|No| H{Low-latency warm baseline needed?}
@@ -143,6 +139,8 @@ flowchart TD
 ### Consumption plan (classic)
 
 Consumption is the original serverless model.
+
+Treat Linux Consumption as a legacy/migration track: it retires on **September 30, 2028**, receives no new language versions, and Python cannot use Windows Consumption instead. Use the [runtime support and migration decision path](../reference/platform-limits.md#runtime-support-and-linux-consumption-migration) before selecting a tutorial. Windows Consumption is not affected by this Linux retirement.
 
 #### Key characteristics
 
@@ -198,7 +196,7 @@ Premium (Elastic Premium) is designed for consistently low latency and enterpris
 - Instances are **permanently warm** at configured minimum count.
 - Elastic scale beyond baseline.
 - Supports VNet integration, private endpoints, and advanced App Service capabilities.
-- No practical execution timeout ceiling for most long-running patterns (host settings still apply).
+- Configurable unbounded execution timeout, subject to scale-in and platform-update interruption; not an uninterrupted-run guarantee.
 
 #### Premium is a fit when
 
@@ -231,11 +229,13 @@ Dedicated runs Functions on pre-provisioned App Service compute.
 | Scale to zero | Yes | Yes | No | No |
 | VNet integration | No | Yes | Yes | Yes |
 | Inbound private endpoint | No | Yes | Yes | Yes |
-| Deployment slots | Yes (2 including production) | No | Yes | Yes |
+| Deployment slots | 2 total (including production; current Learn has no Windows-only restriction) | Not supported | 3 total including production | Staging support/count varies by SKU; see shared reference |
 | Kudu/SCM | Yes | No | Yes | Yes |
 | Apps per plan | Multiple | One | Multiple | Multiple |
 | Host storage authentication (Functions v4) | Connection string or identity; Linux remote-build caveat | Connection string or identity (recommended) | Connection string or identity | Connection string or identity |
 | Azure Files content share | Default on Windows; Linux deployment-specific | None; separate Blob deployment container | Default; secret-based connection | No default dependency |
+
+For instance ceilings, runtime restrictions, slot counting conventions, and configured caps, use [Platform Limits](../reference/platform-limits.md). Python is Linux-only; Flex is Linux-only and requires .NET isolated rather than in-process. Premium region/OS constraints and Dedicated SKU limits cannot be inferred from a generic “Yes” capability cell.
 
 Host identity support does not make content-share authentication identity-based. For Classic Consumption/Elastic Premium Azure Files exceptions, Linux Consumption remote-build restrictions, and endpoint reachability, use the [Storage Connectivity plan matrix](storage-connectivity.md#6-hosting-plan-differences). For OS-specific package settings, use the existing [deployment mechanism matrix](../operations/deployment.md#package-configuration-by-plan-and-os).
 
@@ -248,11 +248,11 @@ Host identity support does not make content-share authentication identity-based.
 |---|---:|---:|
 | Consumption (classic) | 5 minutes | 10 minutes |
 | Flex Consumption | 30 minutes | Unbounded |
-| Premium | 30 minutes (common default) | Unbounded |
-| Dedicated | 30 minutes (common default) | Unbounded |
+| Premium | 30 minutes | Unbounded |
+| Dedicated | 30 minutes | Unbounded with Always On |
 
 !!! note
-    HTTP responses still have platform front-end constraints independent of background function timeout. Design long-running HTTP operations using async patterns.
+    Unbounded execution does not prevent platform-update or scale-in interruption. HTTP responses still have platform front-end constraints independent of background function timeout. See [timeout qualifications](../reference/platform-limits.md#execution-timeout) and design long-running HTTP operations using async patterns.
 
 ### Cost comparison (relative)
 
@@ -424,7 +424,7 @@ flowchart TD
     A[Start: Define workload requirements] --> B{Need scale-to-zero?}
     B -->|No| C{Need strict low latency?}
     B -->|Yes| D{"Need VNet/private endpoints?"}
-    D -->|No| E[Choose Consumption]
+    D -->|No| E[Flex by default; Consumption for legacy needs]
     D -->|Yes| F{Accept one app per plan?}
     F -->|Yes| G[Choose Flex Consumption]
     F -->|No| H[Choose Premium]
@@ -460,6 +460,8 @@ flowchart TD
 ### Plan migration strategies
 
 Use migration as a controlled rollout, not a same-day in-place switch:
+
+Start with the shared [migration decision path](../reference/platform-limits.md#runtime-support-and-linux-consumption-migration) and official [Consumption-to-Flex assessment](https://learn.microsoft.com/en-us/azure/azure-functions/migration/migrate-plan-consumption-to-flex). Flex migration creates a new app; check runtime, region, slots, certificates, and trigger compatibility before provisioning or redirecting traffic.
 
 1. Baseline current latency, error rate, and concurrency under representative load.
 2. Provision target plan in parallel with matching app settings and identities.
@@ -505,6 +507,7 @@ Use conceptual formulas to compare plan behavior before detailed calculator mode
 
 - [Architecture](architecture/index.md)
 - [Scaling](scaling.md)
+- [Platform Limits](../reference/platform-limits.md) — Shared OS/region/SKU-qualified quotas and runtime support
 - [Networking](networking.md)
 - [Security](security.md)
 - [Storage Connectivity](storage-connectivity.md) — Host, deployment, content, and binding authentication boundaries
@@ -520,3 +523,6 @@ Use conceptual formulas to compare plan behavior before detailed calculator mode
 - [Microsoft Learn: Storage considerations](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations)
 - [Microsoft Learn: Configure connections](https://learn.microsoft.com/en-us/azure/azure-functions/manage-connections)
 - [Microsoft Learn: Configure Flex deployment settings](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to#configure-deployment-settings)
+- [Microsoft Learn: Deployment slots](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots)
+- [Microsoft Learn: Supported languages](https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages)
+- [Microsoft Learn: Consumption-to-Flex migration](https://learn.microsoft.com/en-us/azure/azure-functions/migration/migrate-plan-consumption-to-flex)

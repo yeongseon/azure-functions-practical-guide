@@ -27,10 +27,11 @@ flowchart TD
     Start[Need .NET on Azure Functions] --> Q1{Need scale to zero?}
     Q1 -->|Yes| Q2{Need VNet integration?}
     Q1 -->|No| DEDI[Dedicated]
-    Q2 -->|No| CONS[Consumption]
+    Q2 -->|No| FLEX[Flex Consumption]
+    Start -.->|Existing legacy app| CONS[Consumption]
     Q2 -->|Yes| Q3{Need always-warm baseline?}
     Q3 -->|Yes| PREM[Premium]
-    Q3 -->|No| FLEX[Flex Consumption]
+    Q3 -->|No| FLEX
 
     click CONS "consumption/01-local-run/"
     click FLEX "flex-consumption/01-local-run/"
@@ -40,13 +41,13 @@ flowchart TD
 
 ## Plan Comparison at a Glance
 
+Use [Platform Limits](../../../reference/platform-limits.md) for plan/OS/region-qualified quotas, slots, runtime support, and timeout qualifications. Flex is Linux-only and requires .NET isolated worker, not in-process; this guide's Consumption track uses Linux. For Linux Consumption retirement and target selection, follow the [migration decision path](../../../reference/platform-limits.md#runtime-support-and-linux-consumption-migration). Tutorial runtime pins and configured scale caps are examples, not platform limits.
+
 | Feature | Consumption (Y1) | Flex Consumption (FC1) | Premium (EP) | Dedicated (ASP) |
 |---------|:----------------:|:----------------------:|:------------:|:---------------:|
 | Scale to zero | Yes | Yes | No | No |
 | VNet integration | No | Yes | Yes | Yes |
 | Private endpoints | No | Yes | Yes | Yes |
-| Deployment slots | Limited | No | Yes | Yes |
-| Timeout max | 10 min | Unlimited | Unlimited | Unlimited |
 | Cost model | Per execution | Per execution | Pre-allocated | Pre-allocated |
 
 ## Tutorial Tracks
