@@ -11,6 +11,8 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
   diagrams:
     - id: cold-start-phase-timeline
       type: sequenceDiagram
@@ -128,18 +130,13 @@ sequenceDiagram
 
 #### Consumption
 Use Consumption when cost efficiency is primary and latency tolerance is moderate.
-Apply startup optimization first:
-```bash
-az functionapp config appsettings set \
-    --resource-group <resource-group> \
-    --name <function-app-name> \
-    --settings WEBSITE_RUN_FROM_PACKAGE=1
-```
+Optimize dependencies and initialization first. Package configuration is a deployment compatibility choice, not a universal latency control. Follow the [plan/OS package matrix](deployment.md#package-configuration-by-plan-and-os) and its [read-only precheck](deployment.md#package-configuration-precheck-read-only) before any change:
 
-| Command/Parameter | Purpose |
-|-------------------|---------|
-| `az functionapp config appsettings set` | Configures the application setting for the function app |
-| `--settings WEBSITE_RUN_FROM_PACKAGE=1` | Enables the app to run directly from the deployment package to speed up startup |
+- Windows Consumption supports `WEBSITE_RUN_FROM_PACKAGE=1` for local-package deployment.
+- Linux Consumption never supports `1`; use a real package URL for locally built output, or let a supported remote-build workflow manage the package configuration. See the [Linux Consumption tutorial](../language-guides/python/tutorial/consumption/02-first-deploy.md).
+- Flex runs from package by default and must not receive this app setting.
+
+[Microsoft Learn](https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push#run-functions-from-the-deployment-package) says package mounting **can** reduce cold-start time, particularly for JavaScript apps with large npm trees. It does not guarantee lower latency for every language, plan, or workload. Measure first-hit and scale-out latency before and after changes with the same artifact, workload and warm-capacity settings. This package guidance was source-reviewed on 2026-10-25; no Azure latency experiment was run and the existing full-page review date is unchanged.
 
 #### Flex Consumption (FC1)
 Flex Consumption supports always-ready instances to reduce cold-start frequency.
@@ -279,7 +276,7 @@ Recommended practices:
 
 - Audit dependencies quarterly and remove unused packages.
 - Prefer lighter libraries for common operations.
-- Use run-from-package deployment for immutable and consistent startup files.
+- Use plan-compatible package deployment for immutable startup files, not as a guaranteed cold-start improvement.
 - Keep extension bundle and worker runtime versions current and supported.
 
 #### Warmup and traffic shaping
@@ -458,3 +455,4 @@ Escalate to platform diagnostics if startup remains unstable after rollback and 
 - [Azure Functions Premium plan](https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan)
 - [Improve performance and reliability of Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability)
 - [Monitor Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data)
+- [Package deployment and cold-start considerations](https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push)
