@@ -81,12 +81,14 @@ def generate_dashboard(tutorials: list[Tutorial], today: date) -> str:
         "",
         "## Summary",
         "",
+        "The June snapshot counted 120 tutorials; this inventory counts 158. The additional 38 (30 PowerShell and 8 testing/container pages) already existed but were absent from that snapshot; they are not newly executed tutorials.",
+        "",
         f"*Generated / freshness as of: {today.isoformat()}*",
         "",
         (
             "This is a dated snapshot, not a rolling live badge. Regenerate to assess a later date. "
             f"Fresh means age ≤{STALENESS_DAYS} days; stale means age >{STALENESS_DAYS} days, including failed attempts. "
-            "Freshness never upgrades evidence trust. Failures take precedence in tutorial totals; "
+            "Freshness never upgrades evidence trust. Invalid metadata takes precedence, then failures, in tutorial totals; "
             "per-method counts below include the failed attempt's age."
         ),
         "",

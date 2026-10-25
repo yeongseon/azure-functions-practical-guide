@@ -22,9 +22,11 @@ Leaf runbooks under `docs/language-guides/*/tutorial/<hosting-plan>/*.md` are in
 
 ## Summary
 
+The June snapshot counted 120 tutorials; this inventory counts 158. The additional 38 (30 PowerShell and 8 testing/container pages) already existed but were absent from that snapshot; they are not newly executed tutorials.
+
 *Generated / freshness as of: 2026-10-25*
 
-This is a dated snapshot, not a rolling live badge. Regenerate to assess a later date. Fresh means age ≤90 days; stale means age >90 days, including failed attempts. Freshness never upgrades evidence trust. Failures take precedence in tutorial totals; per-method counts below include the failed attempt's age.
+This is a dated snapshot, not a rolling live badge. Regenerate to assess a later date. Fresh means age ≤90 days; stale means age >90 days, including failed attempts. Freshness never upgrades evidence trust. Invalid metadata takes precedence, then failures, in tutorial totals; per-method counts below include the failed attempt's age.
 
 | Historical tutorial claim | Count |
 |---|---:|
