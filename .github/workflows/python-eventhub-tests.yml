@@ -1,0 +1,31 @@
+name: CI — Python Event Hubs Tests
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'apps/python/blueprints/eventhub_lab.py'
+      - 'tests/test_eventhub_lab.py'
+      - '.github/workflows/python-eventhub-tests.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: python-eventhub-tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.11'
+      - name: Install focused test dependencies
+        run: python -m pip install azure-functions pytest
+      - name: Run local Event Hubs telemetry tests
+        run: python -m pytest tests/test_eventhub_lab.py -q

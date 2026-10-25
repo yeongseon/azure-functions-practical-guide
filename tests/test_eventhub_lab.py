@@ -2,6 +2,7 @@
 
 import datetime
 import logging
+import re
 
 import azure.functions as func
 import pytest
@@ -91,3 +92,69 @@ def test_lag_not_emitted_when_batch_or_sequence_metadata_missing(
 
     # Then missing metadata must not manufacture a lag measurement.
     assert caplog.records == []
+
+
+def test_message_schema_when_normal_batch_is_processed(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    # Given a batch with enqueue and sequence metadata.
+    enqueued = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(seconds=30)
+    events = [func.EventHubEvent(body=b"event", sequence_number=42, enqueued_time=enqueued)]
+
+    # When the handler emits normal batch telemetry.
+    with caplog.at_level(logging.INFO, logger=eventhub_lab.__name__):
+        eventhub_lab.eventhub_lag_processor.build().get_user_function()(events)
+
+    # Then the machine-parsed message exposes distinct age and duration fields.
+    assert len(caplog.records) == 1
+    match = re.fullmatch(
+        r"EventHubBatch partition=unknown batchSize=1 seqRange=\[42-42\] "
+        r"enqueueAgeSec=(\d+\.\d) processingMs=(\d+\.\d) delayMs=0",
+        caplog.records[0].getMessage(),
+    )
+    assert match is not None
+    dimensions = vars(caplog.records[0])["custom_dimensions"]
+    assert float(match[1]) == dimensions["EnqueueAgeSeconds"]
+    assert float(match[2]) == dimensions["ProcessingMs"]
+
+
+def test_batch_telemetry_disabled_when_legacy_setting_is_false(
+    caplog: pytest.LogCaptureFixture, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # Given disabled detailed telemetry and a batch that still earns a completion log.
+    monkeypatch.setenv("EventHubLab__LogCheckpointDelta", "false")
+    events = [func.EventHubEvent(body=b"event", sequence_number=i) for i in range(50)]
+
+    # When the handler processes the batch.
+    with caplog.at_level(logging.INFO, logger=eventhub_lab.__name__):
+        eventhub_lab.eventhub_lag_processor.build().get_user_function()(events)
+
+    # Then detailed telemetry is suppressed without suppressing batch completion.
+    assert len(caplog.records) == 1
+    assert caplog.records[0].getMessage().startswith("Batch completed:")
+    assert "custom_dimensions" not in vars(caplog.records[0])
+
+
+def test_artificial_delay_when_configured_is_applied_and_reported_separately(
+    caplog: pytest.LogCaptureFixture, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # Given nonzero delay with simulated clocks and sleep, avoiding real waiting.
+    monkeypatch.setenv("EventHubLab__ArtificialDelayMs", "250")
+    sleeps: list[float] = []
+    monkeypatch.setattr(eventhub_lab.time, "sleep", sleeps.append)
+    ticks = iter([10.0, 10.375])
+    monkeypatch.setattr(eventhub_lab.time, "monotonic", lambda: next(ticks))
+    events = [func.EventHubEvent(body=b"event", sequence_number=42)]
+
+    # When the handler processes the batch with artificial delay.
+    with caplog.at_level(logging.INFO, logger=eventhub_lab.__name__):
+        eventhub_lab.eventhub_lag_processor.build().get_user_function()(events)
+
+    # Then configured milliseconds convert to sleep seconds, not lag or measured duration.
+    assert sleeps == [0.25]
+    assert len(caplog.records) == 1
+    dimensions = vars(caplog.records[0])["custom_dimensions"]
+    assert dimensions["ArtificialDelayMs"] == 250
+    assert dimensions["ProcessingMs"] == 375.0
+    assert dimensions["EnqueueAgeSeconds"] is None
+    assert "CheckpointLagEvents" not in dimensions

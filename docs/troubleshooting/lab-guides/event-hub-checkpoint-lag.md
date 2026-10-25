@@ -595,7 +595,7 @@ Expected recovery drain evidence at `13:35:06`:
 |---|---|---:|---:|---:|---:|
 | Last delayed batch | `[16850-16949]` | 100 | 177.3 | 2545.5 | 2500 |
 | First recovered batch | `[16650-16749]` | 100 | 175.6 | 303.1 | 0 |
-| Final partial batch (drain endpoint) | `[20887-20899]` | 13 | 97.6 | 0.8 | 0 |
+| Selected partial batch | `[20887-20899]` | 13 | 97.6 | 0.8 | 0 |
 
 !!! tip "How to Read This"
     Recovery is shown by `delayMs=0` reappearing with sharply lower `processingMs` (from `~2545 ms` to `~303 ms` initially, then sub-`50 ms` sustained) and later decreasing `backlogAgeSec`. Since `partition=unknown`, these samples prove mixed delayed and recovered batches coexist, not ordered sequence drain.
@@ -851,7 +851,7 @@ flowchart TD
 |---|---|
 | Last delayed batch | `seqRange=[16850-16949]`, `backlogAgeSec=177.3`, `processingMs=2545.5`, `delayMs=2500` |
 | First recovered batch | `seqRange=[16650-16749]`, `backlogAgeSec=175.6`, `processingMs=303.1`, `delayMs=0` |
-| Final partial batch | `seqRange=[20887-20899]`, `batchSize=13`, `backlogAgeSec=97.6`, `processingMs=0.8` |
+| Selected partial batch | `seqRange=[20887-20899]`, `batchSize=13`, `backlogAgeSec=97.6`, `processingMs=0.8` |
 
 ### 4.5 Phase summary matrix
 
@@ -861,7 +861,7 @@ flowchart TD
 | Request avg duration | `30.9-43.3 ms` | `1187.1-2565.7 ms` | mixed to `246.5 ms` (1-minute drain bin) |
 | Batch avg processing | `5.5-6.1 ms` | `1127.5-2524.4 ms` | mixed `1343.5 ms` then fast batches |
 | Delivered-event avg enqueue age | `0.1 s` | `5.5 -> 63.2 -> 105.5 s` | high with later decreasing age |
-| Batch size pattern | `50` | `71.5 -> 99.5 -> 100` | mixed with final partial batch of `13` |
+| Batch size pattern | `50` | `71.5 -> 99.5 -> 100` | mixed with selected partial batch of `13` |
 
 ### 4.6 Batch-completion evidence snippets
 
@@ -921,7 +921,7 @@ Recovery drain snippets:
 | Recovery mixed 2-minute bin | `13:34` avg `1394.4 ms`, p95 `2684.7 ms`, max `2796.8 ms` |
 | Checkpoint mixed 2-minute bin | avg backlog `133.3 s`, max `179.6 s`, avg proc `1343.5 ms`, delay range `0-2500` |
 | First recovered batch evidence | `seqRange=[16650-16749]`, `processingMs=303.1` (initial recovery, not yet fully fast) |
-| Drain endpoint evidence | final batch `seqRange=[20887-20899]`, `batchSize=13`, `processingMs=0.8` |
+| Selected partial batch evidence | selected batch `seqRange=[20887-20899]`, `batchSize=13`, `processingMs=0.8` |
 
 ### Evidence Timeline
 
@@ -967,7 +967,7 @@ Evidence chain matrix:
 | L2 | Incident onset tied to control change | delay set at `13:28:29`, transition bins |
 | L3 | Sustained lag under full delay | `13:30` and `13:32` bins |
 | L4 | Recovery is real but mixed initially | `13:34` mixed delay range |
-| L5 | Drain starts immediately after reset | `13:35:06` drain detail |
+| L5 | Processing recovery and lower enqueue age observed after reset | `13:35:06` selected batch detail |
 
 ### Query-to-evidence mapping
 
