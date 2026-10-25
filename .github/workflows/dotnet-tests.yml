@@ -7,6 +7,10 @@ on:
     paths:
       - 'apps/dotnet/**'
       - 'tests/dotnet/**'
+      - 'global.json'
+      - 'Directory.Build.*'
+      - 'Directory.Packages.props'
+      - '[Nn]u[Gg]et.[Cc]onfig'
       - '.github/workflows/dotnet-tests.yml'
   workflow_dispatch:
 
@@ -27,5 +31,5 @@ jobs:
           dotnet-version: '8.0.x'
       - name: Build reference app and tests
         run: dotnet build tests/dotnet/AzureFunctionsGuide.Tests.csproj
-      - name: Run local storage probe tests
+      - name: Run local .NET reference tests (no Azure host)
         run: dotnet test tests/dotnet/AzureFunctionsGuide.Tests.csproj --no-build
