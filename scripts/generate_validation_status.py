@@ -153,7 +153,7 @@ def generate_dashboard(tutorials: list[dict[str, Any]], today: date) -> str:
     # Canonical content_sources frontmatter (PR 2d.2b3 migration shape).
     # Must stay in sync with the migrated frontmatter on
     # docs/reference/validation-status.md; regeneration MUST NOT wipe the
-    # references/diagrams metadata. See AGENTS.md "Frontmatter YAML Style".
+    # references/diagrams metadata. See docs/contributing/content-contract.md "Frontmatter YAML Style".
     lines.append("---")
     lines.append("content_sources:")
     lines.append("  references:")
