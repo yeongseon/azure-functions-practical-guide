@@ -127,6 +127,24 @@ directly or through the single-line `CLAUDE.md` import. All tools then follow th
 workflow authority and the shared Functions content contract. Do not copy long
 rules into tool-specific files or automatically install/invoke agent plugins.
 
+## Pull Request Writing
+
+Write PR titles and descriptions for readers and reviewers, using the existing
+title convention and required template headings. In the summary, explain what
+changed and why; in changes, describe the meaningful implementation and scope;
+and in validation, identify commands actually run and their results.
+
+Keep source dates, final-head CI links, screenshot/PII checks, evidence levels,
+overengineering decisions, and remaining blockers when relevant. Do not fill
+ordinary PRs with agent transcripts, failed review-agent attempts, redundant
+risk labels, or long explanations of tools that were not required. Do not
+recast source review as reproduction or claim that missing Azure evidence passed.
+Check the final saved PR description before requesting a review. Follow this
+guidance for Codex, Claude, OpenCode, Copilot, and human contributors alike.
+
+This writing convention does not change mandatory headings, issue linkage,
+document contracts, security checks, or maintainer-led merge decisions.
+
 ## Tool-Neutral PR Review and Merge
 
 Every contribution follows one process, whether human-authored or created
