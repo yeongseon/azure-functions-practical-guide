@@ -109,6 +109,12 @@ PII blocks changed Markdown; full PII and historical source audits are advisory;
 visual coverage is WARN-only. Never allowlist boilerplate instead of removing it.
 Do not weaken workflows, publishing checks, or security gates to make checks pass.
 
+## Pull Request Descriptions
+
+Follow [CONTRIBUTING.md](CONTRIBUTING.md#pull-request-writing) for concise,
+reader-focused PR descriptions. Preserve required Azure and screenshot evidence,
+source/validation distinctions, and all existing CI and image gates.
+
 ## Merge Policy (Tool-Neutral Review)
 
 Follow [the complete review/merge policy](CONTRIBUTING.md#tool-neutral-pr-review-and-merge).
