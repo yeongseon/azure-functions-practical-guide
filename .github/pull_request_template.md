@@ -2,11 +2,11 @@
 
 ## Summary
 
-<!-- What changes and why? -->
+<!-- Explain what changed and why in plain English. Avoid agent transcripts. -->
 
 ## Changes
 
-<!-- Concrete changes, scope/risks, remaining work, and overengineering assessment:
+<!-- Concise changes, actual scope/risks, remaining work, and overengineering assessment:
      existing simple path first; justify any added complexity. -->
 
 ## Type of Change
