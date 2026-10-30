@@ -15,6 +15,7 @@ from scripts.lib.tutorial_validation import (
     METHODS,
     STALENESS_DAYS,
     Tutorial,
+    YAMLValue,
     assess_method,
     extract_tutorial_info,
     tutorial_status,
@@ -34,9 +35,12 @@ def cell(text: str) -> str:
     return text.replace("|", "&#124;").replace("\n", " ")
 
 
-def has_locator(value: object) -> bool:
-    """A method record names a run or evidence note; that is a pointer, not an attestation."""
-    return isinstance(value, dict) and bool(value.get("run_id") or value.get("evidence_ref"))
+def has_locator(value: YAMLValue) -> bool:
+    """A method record names a run or evidence note as a non-blank string; that is a pointer, not an attestation."""
+    if not isinstance(value, dict):
+        return False
+    fields = (value.get("run_id"), value.get("evidence_ref"))
+    return any(isinstance(field, str) and bool(field.strip()) for field in fields)
 
 
 def generate_dashboard(tutorials: list[Tutorial], today: date) -> str:
@@ -153,9 +157,11 @@ def generate_dashboard(tutorials: list[Tutorial], today: date) -> str:
             (
                 "Vocabulary and provenance requirements follow the [evidence and hypothesis contract](../troubleshooting/methodology/troubleshooting-method.md#evidence-and-hypothesis-contract). "
                 + (
-                    f"{with_locator} of {total_methods} method records carry a run or evidence locator in their metadata. "
-                    "A locator only points to a retained run note (the last column below shows whether it resolves); "
-                    "it does not attest the executed method, environment or artifacts, so every method stays **unverified**. "
+                    (
+                        f"{with_locator} of {total_methods} method records carry a run or evidence locator in their metadata. "
+                        "A locator only points to a retained run note (the last column below shows whether it resolves); "
+                        "it does not attest the executed method, environment or artifacts, so every method stays **unverified**. "
+                    )
                     if with_locator
                     else "No method record currently carries a run or evidence locator in its metadata, so no tutorial binds a run, environment or artifact set. "
                 )

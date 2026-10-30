@@ -133,6 +133,42 @@ def test_locator_statement_follows_the_metadata(tmp_path: Path) -> None:
     assert "remain audit gaps" not in full
 
 
+@pytest.mark.parametrize(
+    "value,expected",
+    [
+        ({"run_id": True}, False),
+        ({"run_id": 12345}, False),
+        ({"run_id": ["expected"]}, False),
+        ({"evidence_ref": ["run.md"]}, False),
+        ({"evidence_ref": {"path": "run.md"}}, False),
+        ({"run_id": "   ", "evidence_ref": "\t"}, False),
+        ({"run_id": True, "evidence_ref": ["run.md"]}, False),
+        ({"run_id": True, "evidence_ref": "run.md#run"}, True),
+        ({"run_id": "expected", "evidence_ref": ["run.md"]}, True),
+    ],
+)
+def test_locator_must_be_a_nonblank_string(value: YAMLValue, expected: bool) -> None:
+    # A value that cannot name a run or a note would otherwise hide a missing locator.
+    assert has_locator(value) is expected
+
+
+def test_malformed_locators_do_not_hide_the_audit_gap(tmp_path: Path) -> None:
+    # Given every method record carries a locator-shaped key whose value cannot name a note.
+    docs = tmp_path / "docs"
+    malformed = (
+        "  az_cli:\n    result: pass\n    last_tested: 2026-10-25\n    run_id: true\n    evidence_ref: [run.md]\n"
+        "  bicep:\n    result: pass\n    last_tested: 2026-10-25\n    run_id: '   '\n"
+    )
+    tutorial = extract_tutorial_info(write_tutorial(docs, "01-malformed", malformed), docs)
+    # When the report is rendered.
+    report = generate_dashboard([tutorial], AS_OF)
+    # Then no pointer is counted, so the zero statement and the audit gap both remain.
+    assert "| Methods carrying a run or evidence locator (pointers, not attestations) | 0 |" in report
+    assert "No method record currently carries" in report
+    assert "remain audit gaps" in report
+    assert "carry a run or evidence locator in their metadata" not in report
+
+
 @pytest.mark.parametrize("reference", ["missing.md", "run.md#absent", "run.md#run"])
 def test_evidence_reference_mismatch_stays_unverified(
     tmp_path: Path, reference: str
