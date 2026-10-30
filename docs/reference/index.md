@@ -45,6 +45,8 @@ graph TD
 | [Platform Limits](platform-limits.md) | Timeouts, payload sizes, concurrency limits per hosting plan |
 | [Troubleshooting](troubleshooting.md) | Common issues and debugging for Python function apps |
 | [Glossary](glossary.md) | Definitions of core Azure Functions terms used across this guide |
+| [Diagram Inventory](diagram-inventory.md) | Repository-wide baseline, declared sources, hosting/trigger variants, exclusions and migration owners |
+| [ADR: Diagram Composition](adr-diagram-composition.md) | Reuse options, complexity limits and dependency on the shared App Service prototype |
 
 ## Quick Links
 
