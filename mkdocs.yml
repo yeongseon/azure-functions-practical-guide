@@ -605,6 +605,8 @@ nav:
       - Content Validation Status: reference/content-validation-status.md
       - Validation Status: reference/validation-status.md
       - Validation Evidence Audit: reference/validation-evidence-audit.md
+      - Diagram Inventory: reference/diagram-inventory.md
+      - ADR - Diagram Composition: reference/adr-diagram-composition.md
   - Contributing:
     - contributing/index.md
     - Documentation Content Contract: contributing/content-contract.md

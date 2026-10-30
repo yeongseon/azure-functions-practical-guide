@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Diagram inventory interchange v1 (not a composition interface)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "kind", "repository", "baseline", "totals", "batches", "exclusions", "visuals", "exceptions", "candidate_components", "diagrams"],
+  "properties": {
+    "schema_version": {"type": "integer", "const": 1},
+    "kind": {"const": "diagram-inventory"},
+    "repository": {"type": "string"},
+    "baseline": {"$ref": "#/$defs/baseline"},
+    "totals": {"$ref": "#/$defs/totals"},
+    "batches": {"type": "array", "items": {"$ref": "#/$defs/batch"}},
+    "exclusions": {"type": "object", "additionalProperties": false, "required": ["occurrences", "assets"], "properties": {
+      "occurrences": {"type": "array", "items": {"$ref": "#/$defs/excluded"}},
+      "assets": {"type": "array", "items": {"$ref": "#/$defs/assets"}}
+    }},
+    "visuals": {"type": "array", "description": "Non-Mermaid visuals are reported separately from Mermaid batch counts: totals.by_batch counts only Mermaid migration-required occurrences. Visual keys must be unique and disjoint from diagram keys. A visual is excluded when assignment.method is excluded (as for diagrams): it has a null batch and nonblank rationales; any other visual names a batch that owns diagrams. The disposition is free text and does not decide exclusion.", "items": {"$ref": "#/$defs/visual"}},
+    "exceptions": {"$ref": "#/$defs/exceptions"},
+    "candidate_components": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["label", "diagram_count", "method"], "properties": {"label": {"type": "string"}, "diagram_count": {"$ref": "#/$defs/count"}, "method": {"const": "regex-approximate"}}}},
+    "diagrams": {"type": "array", "items": {"$ref": "#/$defs/diagram"}}
+  },
+  "$defs": {
+    "count": {"type": "integer", "minimum": 0},
+    "strings": {"type": "array", "items": {"type": "string"}},
+    "counts": {"type": "object", "additionalProperties": {"$ref": "#/$defs/count"}},
+    "sha": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "genre": {"enum": ["topology", "flow", "decision", "sequence", "state", "timeline", "chart", "unknown"]},
+    "baseline": {"type": "object", "additionalProperties": false, "required": ["base_commit", "scanner", "rules_sha256", "counting_policy"], "properties": {
+      "base_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+      "scanner": {"type": "object", "additionalProperties": false, "required": ["path", "version", "sha256"], "properties": {"path": {"const": "scripts/diagram_inventory.py"}, "version": {"type": "string"}, "sha256": {"$ref": "#/$defs/sha"}}},
+      "rules_sha256": {"$ref": "#/$defs/sha"}, "counting_policy": {"type": "string"}
+    }},
+    "totals": {"type": "object", "additionalProperties": false, "required": ["occurrences", "published", "repository_only", "excluded_occurrences", "migration_required", "non_mermaid_visuals", "by_section", "by_mermaid_type", "by_genre_candidate", "by_batch", "by_provenance_status", "by_assignment_method"], "properties": {
+      "occurrences": {"$ref": "#/$defs/count"}, "published": {"$ref": "#/$defs/count"}, "repository_only": {"$ref": "#/$defs/count"}, "excluded_occurrences": {"$ref": "#/$defs/count"}, "migration_required": {"$ref": "#/$defs/count"}, "non_mermaid_visuals": {"$ref": "#/$defs/count"},
+      "by_section": {"$ref": "#/$defs/counts"}, "by_mermaid_type": {"$ref": "#/$defs/counts"}, "by_genre_candidate": {"$ref": "#/$defs/genre_counts"}, "by_batch": {"$ref": "#/$defs/counts"}, "by_provenance_status": {"$ref": "#/$defs/provenance_counts"}, "by_assignment_method": {"$ref": "#/$defs/assignment_counts"}
+    }},
+    "batch": {"type": "object", "additionalProperties": false, "required": ["issue", "title", "phase", "scope", "owns_diagrams", "count"], "properties": {"issue": {"type": "integer"}, "title": {"type": "string"}, "phase": {"type": "string"}, "scope": {"type": "string"}, "owns_diagrams": {"type": "boolean"}, "count": {"$ref": "#/$defs/count"}}},
+    "excluded": {"type": "object", "additionalProperties": false, "required": ["key", "kind", "reason"], "properties": {"key": {"type": "string"}, "kind": {"type": "string"}, "reason": {"type": "string"}}},
+    "assets": {"type": "object", "additionalProperties": false, "required": ["group", "reason", "rule", "count", "referenced_count", "paths"], "properties": {"group": {"type": "string"}, "reason": {"type": "string"}, "rule": {"type": "string"}, "count": {"$ref": "#/$defs/count"}, "referenced_count": {"$ref": "#/$defs/count"}, "paths": {"$ref": "#/$defs/strings"}}},
+    "assignment": {"type": "object", "additionalProperties": false, "required": ["batch_issue", "method", "rule", "candidates", "rationale"], "properties": {"batch_issue": {"type": ["integer", "null"]}, "method": {"enum": ["override", "rule", "residual-rule", "excluded"]}, "rule": {"type": "string"}, "candidates": {"$ref": "#/$defs/strings"}, "rationale": {"type": "string"}}, "if": {"properties": {"method": {"const": "excluded"}}, "required": ["method"]}, "then": {"properties": {"batch_issue": {"type": "null"}}}, "else": {"properties": {"batch_issue": {"type": "integer"}}}},
+    "target": {"type": "object", "additionalProperties": false, "required": ["base", "extensions", "overlays", "status"], "properties": {"base": {"type": ["string", "null"]}, "extensions": {"$ref": "#/$defs/strings"}, "overlays": {"$ref": "#/$defs/strings"}, "status": {"const": "provisional"}}},
+    "visual": {"type": "object", "additionalProperties": false, "required": ["key", "kind", "pages", "sources", "assignment", "disposition", "rationale"], "properties": {"key": {"type": "string"}, "kind": {"type": "string"}, "pages": {"$ref": "#/$defs/strings"}, "sources": {"$ref": "#/$defs/strings"}, "assignment": {"$ref": "#/$defs/assignment"}, "disposition": {"type": "string"}, "rationale": {"type": "string"}}, "if": {"properties": {"assignment": {"properties": {"method": {"const": "excluded"}}, "required": ["method"]}}, "required": ["assignment"]}, "then": {"properties": {"rationale": {"type": "string", "pattern": "\\S"}, "assignment": {"properties": {"rationale": {"type": "string", "pattern": "\\S"}}}}}},
+    "exceptions": {"type": "object", "additionalProperties": false, "required": ["missing_id_comment", "duplicate_ids_on_page", "id_reused_on_other_pages", "frontmatter_entries_without_fence", "fences_without_frontmatter_entry", "frontmatter_unparseable", "unresolved_overlaps", "unclassified_assets", "unclosed_fences", "frontmatter_duplicate_ids", "unrecognized_mermaid_fences"], "properties": {
+      "frontmatter_duplicate_ids": {"type": "array", "description": "One record per repeated usable ID on a page, with its total entry count. The first entry is kept as declared provenance; later entries never replace it.", "items": {"$ref": "#/$defs/frontmatter_duplicate_ids"}},
+      "unrecognized_mermaid_fences": {"type": "array", "items": {"$ref": "#/$defs/unrecognized_mermaid_fences"}},
+      "missing_id_comment": {"type": "array", "items": {"$ref": "#/$defs/missing_id_comment"}}, "duplicate_ids_on_page": {"type": "array", "items": {"$ref": "#/$defs/duplicate_ids_on_page"}}, "id_reused_on_other_pages": {"type": "object", "additionalProperties": {"$ref": "#/$defs/strings"}}, "frontmatter_entries_without_fence": {"type": "array", "items": {"$ref": "#/$defs/frontmatter_entries_without_fence"}}, "fences_without_frontmatter_entry": {"type": "array", "items": {"$ref": "#/$defs/fences_without_frontmatter_entry"}}, "frontmatter_unparseable": {"type": "array", "items": {"$ref": "#/$defs/frontmatter_unparseable"}}, "unresolved_overlaps": {"type": "array", "items": {"$ref": "#/$defs/unresolved_overlaps"}}, "unclassified_assets": {"type": "array", "items": {"$ref": "#/$defs/unclassified_assets"}}, "unclosed_fences": {"type": "array", "items": {"$ref": "#/$defs/unclosed_fences"}}
+    }},
+    "diagram": {"type": "object", "additionalProperties": false, "required": ["key", "diagram_id", "id_provisional", "page", "section", "published", "ordinal", "location", "mermaid_type", "genre_candidate", "classification", "needs_review", "context", "baseline", "provenance", "assignment", "target", "migration"], "properties": {
+      "key": {"type": "string"}, "diagram_id": {"type": ["string", "null"]}, "id_provisional": {"type": "boolean"}, "page": {"type": "string"}, "section": {"type": "string"}, "published": {"type": "boolean"}, "ordinal": {"type": "integer", "minimum": 1},
+      "location": {"type": "object", "additionalProperties": false, "required": ["line", "end_line", "heading_path"], "properties": {"line": {"type": "integer", "minimum": 1}, "end_line": {"type": "integer", "minimum": 1}, "heading_path": {"$ref": "#/$defs/strings"}}},
+      "mermaid_type": {"type": "string"}, "genre_candidate": {"$ref": "#/$defs/genre"},
+       "classification": {"type": "object", "additionalProperties": false, "required": ["method", "signals", "review_status"], "properties": {"method": {"enum": ["syntax", "heuristic"]}, "signals": {"type": "object", "additionalProperties": false, "required": ["subgraphs", "decision_nodes", "yes_no_labels"], "properties": {"subgraphs": {"$ref": "#/$defs/count"}, "decision_nodes": {"$ref": "#/$defs/count"}, "yes_no_labels": {"$ref": "#/$defs/count"}}}, "review_status": {"enum": ["unreviewed", "reviewed"]}}},
+      "needs_review": {"type": "boolean"},
+      "context": {"type": "object", "additionalProperties": false, "required": ["lead_in", "reader_intent"], "properties": {"lead_in": {"type": "string", "maxLength": 200}, "reader_intent": {"type": ["string", "null"]}}},
+      "baseline": {"type": "object", "description": "LF-normalized fence body hash; node and edge counts are regex approximations.", "additionalProperties": false, "required": ["source_sha256", "lines", "subgraphs", "nodes_approx", "edges_approx"], "properties": {"source_sha256": {"$ref": "#/$defs/sha"}, "lines": {"$ref": "#/$defs/count"}, "subgraphs": {"$ref": "#/$defs/count"}, "nodes_approx": {"$ref": "#/$defs/count"}, "edges_approx": {"$ref": "#/$defs/count"}}},
+      "provenance": {"type": "object", "additionalProperties": false, "required": ["status", "declared", "verification"], "properties": {"status": {"enum": ["declared", "missing", "malformed"]}, "declared": {"type": ["object", "null"]}, "verification": {"const": "not-performed"}}},
+      "assignment": {"$ref": "#/$defs/assignment"}, "target": {"$ref": "#/$defs/target"},
+       "migration": {"type": "object", "additionalProperties": false, "required": ["state", "exception"], "properties": {"state": {"enum": ["not-started", "in-progress", "completed", "exception"]}, "exception": {"type": ["string", "null"]}}, "if": {"properties": {"state": {"const": "exception"}}, "required": ["state"]}, "then": {"properties": {"exception": {"type": "string", "pattern": "\\S"}}}, "else": {"properties": {"exception": {"type": "null"}}}}
+    }},
+    "assignment_counts": {"type": "object", "additionalProperties": false, "properties": {"override": {"$ref": "#/$defs/count"}, "rule": {"$ref": "#/$defs/count"}, "residual-rule": {"$ref": "#/$defs/count"}, "excluded": {"$ref": "#/$defs/count"}}},
+    "provenance_counts": {"type": "object", "additionalProperties": false, "properties": {"declared": {"$ref": "#/$defs/count"}, "missing": {"$ref": "#/$defs/count"}, "malformed": {"$ref": "#/$defs/count"}}},
+    "genre_counts": {"type": "object", "additionalProperties": false, "properties": {"topology": {"$ref": "#/$defs/count"}, "flow": {"$ref": "#/$defs/count"}, "decision": {"$ref": "#/$defs/count"}, "sequence": {"$ref": "#/$defs/count"}, "state": {"$ref": "#/$defs/count"}, "timeline": {"$ref": "#/$defs/count"}, "chart": {"$ref": "#/$defs/count"}, "unknown": {"$ref": "#/$defs/count"}}},
+    "missing_id_comment": {"type": "string"},
+    "fences_without_frontmatter_entry": {"type": "string"},
+    "unclassified_assets": {"type": "string"},
+    "frontmatter_duplicate_ids": {"type": "object", "additionalProperties": false, "required": ["page", "id", "count"], "properties": {"page": {"type": "string"}, "id": {"type": "string", "pattern": "\\S"}, "count": {"type": "integer", "minimum": 2}}},
+    "unrecognized_mermaid_fences": {"type": "object", "additionalProperties": false, "required": ["page", "line", "reason"], "properties": {"page": {"type": "string"}, "line": {"type": "integer", "minimum": 1}, "reason": {"enum": ["html-comment", "indented-code", "indented", "blockquote", "list-marker"]}}},
+    "duplicate_ids_on_page": {"type": "object", "additionalProperties": false, "required": ["key", "count", "keys"], "properties": {"key": {"type": "string"}, "count": {"type": "integer", "minimum": 2}, "keys": {"$ref": "#/$defs/strings"}}},
+    "frontmatter_entries_without_fence": {"type": "object", "additionalProperties": false, "required": ["page", "entry"], "properties": {"page": {"type": "string"}, "entry": {}}},
+    "frontmatter_unparseable": {"type": "object", "additionalProperties": false, "required": ["page", "error"], "properties": {"page": {"type": "string"}, "error": {"type": "string"}}},
+    "unresolved_overlaps": {"type": "object", "additionalProperties": false, "required": ["key", "candidates"], "properties": {"key": {"type": "string"}, "candidates": {"$ref": "#/$defs/strings"}}},
+    "unclosed_fences": {"type": "object", "additionalProperties": false, "required": ["page", "line"], "properties": {"page": {"type": "string"}, "line": {"type": "integer", "minimum": 1}}}
+  }
+}
