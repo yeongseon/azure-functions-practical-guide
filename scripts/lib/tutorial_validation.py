@@ -97,7 +97,7 @@ def assess_method(value: YAMLValue, as_of: date, root: Path) -> MethodAssessment
     binding = evidence_binding(value, root)
     if result == "not_tested" and raw_date is None:
         return MethodAssessment(result, stamp, "NOT_RUN", tools, binding)
-    if result == "syntax_validated":
+    if result == "syntax_validated" and raw_date is None:
         return MethodAssessment(result, stamp, "static-only", tools, binding)
     if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", stamp):
         return MethodAssessment(result, stamp, "invalid", tools, binding)
@@ -105,7 +105,11 @@ def assess_method(value: YAMLValue, as_of: date, root: Path) -> MethodAssessment
         tested = date.fromisoformat(str(raw_date))
     except ValueError:
         return MethodAssessment(result, stamp, "invalid", tools, binding)
-    if tested > as_of or result not in {"pass", "fail"}:
+    if tested > as_of:
+        return MethodAssessment(result, stamp, "invalid", tools, binding)
+    if result == "syntax_validated":
+        return MethodAssessment(result, stamp, "static-only", tools, binding)
+    if result not in {"pass", "fail"}:
         return MethodAssessment(result, stamp, "invalid", tools, binding)
     freshness = "stale" if (as_of - tested).days > STALENESS_DAYS else "fresh"
     return MethodAssessment(result, stamp, freshness, tools, binding)

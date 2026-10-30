@@ -180,6 +180,47 @@ def test_legacy_syntax_check_is_separate_from_live_run() -> None:
     assert result.freshness == "static-only"
 
 
+@pytest.mark.parametrize(
+    "stamp,expected",
+    [
+        ("bad", "invalid"), ("2026-02-30", "invalid"),
+        ("2026-10-26", "invalid"), ("20261025", "invalid"),
+        (20261025, "invalid"), (AS_OF.isoformat(), "static-only"),
+    ],
+)
+def test_static_date_validation_preserves_history(stamp: str | int, expected: str) -> None:
+    # Given static history with a present date, including the report-date boundary.
+    data = {"result": "syntax_validated", "last_tested": stamp}
+    # When the method is assessed.
+    result = assess_method(data, AS_OF, ROOT)
+    # Then invalid timing is visible without rewriting the reported history.
+    assert result.freshness == expected
+    assert result.result == "syntax_validated"
+    assert result.last_tested == str(stamp)
+
+
+def test_null_static_date_keeps_unknown_timing() -> None:
+    # Given static history without a recorded date.
+    data = {"result": "syntax_validated", "last_tested": None}
+    # When the method is assessed.
+    result = assess_method(data, AS_OF, ROOT)
+    # Then it remains static-only without inventing timing.
+    assert result.freshness == "static-only"
+    assert result.last_tested == "—"
+    assert result.result == "syntax_validated"
+
+
+def test_malformed_static_date_makes_tutorial_invalid() -> None:
+    # Given static history with malformed timing.
+    method = assess_method(
+        {"result": "syntax_validated", "last_tested": "bad"}, AS_OF, ROOT
+    )
+    # When the tutorial outcome is summarized.
+    status = tutorial_status([method])
+    # Then malformed static history is not hidden by the absence of live results.
+    assert status == "Invalid metadata"
+
+
 def test_malformed_yaml_date_is_reported_not_crashed(tmp_path: Path) -> None:
     path = tmp_path / "language-guides/python/tutorial/consumption/01-local-run.md"
     path.parent.mkdir(parents=True)
