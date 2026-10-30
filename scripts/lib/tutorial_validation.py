@@ -49,6 +49,8 @@ def evidence_binding(data: Mapping[str, YAMLValue], root: Path) -> str:
     reference = data.get("evidence_ref")
     run_id = data.get("run_id")
     if not reference:
+        if isinstance(run_id, str) and run_id.strip():
+            return "Evidence-reference mismatch: run identity without evidence reference"
         return "No run/environment/artifact binding retained in metadata"
     if (
         not isinstance(reference, str)
@@ -58,17 +60,44 @@ def evidence_binding(data: Mapping[str, YAMLValue], root: Path) -> str:
         return "Evidence-reference mismatch: missing run identity"
     filename, _, anchor = reference.partition("#")
     path = (root / filename).resolve()
-    if not path.is_relative_to(root.resolve()) or not path.is_file():
+    if (
+        Path(filename).is_absolute()
+        or not path.is_relative_to(root.resolve())
+        or not path.is_file()
+    ):
         return "Evidence-reference mismatch: absent or outside repository"
     text = path.read_text(encoding="utf-8")
-    headings = re.findall(r"^#+\s+(.+)$", text, re.MULTILINE)
-    slugs = {
-        re.sub(r"[^\w -]", "", heading.lower()).replace(" ", "-")
-        for heading in headings
-    }
-    if (anchor and anchor not in slugs) or not re.search(
+    if anchor:
+        lines = text.splitlines(keepends=True)
+        start = None
+        level = 0
+        fence = ""
+        end = len(lines)
+        for index, line in enumerate(lines):
+            if fence:
+                if re.fullmatch(rf" {{0,3}}{fence[0]}{{{len(fence)},}}\s*", line):
+                    fence = ""
+                continue
+            opening = re.match(r"^ {0,3}(`{3,}|~{3,})", line)
+            if opening:
+                fence = opening[1]
+                continue
+            heading = re.match(r"^(#+)\s+(.+)$", line)
+            if heading:
+                if start is not None and len(heading[1]) <= level:
+                    end = index
+                    break
+                slug = re.sub(r"[^\w -]", "", heading[2].lower()).replace(" ", "-")
+                if start is None and slug == anchor:
+                    start, level = index, len(heading[1])
+        if start is None:
+            return "Evidence-reference mismatch: anchor or run identity"
+        text = "".join(lines[start:end])
+    if not re.search(
         rf"(?m)^\s*run_id:\s*{re.escape(run_id)}\s*$", text
     ):
+        if anchor:
+            return "Evidence-reference mismatch: run identity not in the referenced section"
         return "Evidence-reference mismatch: anchor or run identity"
     return f"{reference} (run {run_id}); method/environment/artifacts require review"
 

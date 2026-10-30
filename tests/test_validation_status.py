@@ -118,6 +118,90 @@ def test_absent_anchor_with_matching_run_is_rejected(tmp_path: Path) -> None:
     assert result.trust == "unverified"
 
 
+@pytest.mark.parametrize(
+    "note,anchor,mismatch",
+    [
+        ("# Other\nrun_id: expected\n# Selected\n", "selected", True),
+        ("## Selected\n## Other\nrun_id: expected\n", "selected", True),
+        ("## Selected\n# Other\nrun_id: expected\n", "selected", True),
+        ("# Selected\nrun_id: expected\n# Other\n", "selected", False),
+        ("# Selected\n## Details\nrun_id: expected\n# Other\n", "selected", False),
+        ("# Other\nrun_id: expected\n# Selected\n", "", False),
+        ("# Selected!\n# Selected\nrun_id: expected\n", "selected", True),
+        ("# Selected!\nrun_id: expected\n# Selected\n", "selected", False),
+    ],
+)
+def test_locator_uses_first_heading_section(
+    tmp_path: Path, note: str, anchor: str, mismatch: bool
+) -> None:
+    # Given a note with identities in distinct heading sections.
+    _ = (tmp_path / "run.md").write_text(note)
+    reference = "run.md" + (f"#{anchor}" if anchor else "")
+    # When the selected locator is evaluated.
+    result = assess_method({"evidence_ref": reference, "run_id": "expected"}, AS_OF, tmp_path)
+    # Then only the selected section supplies identity, without proving provenance.
+    assert ("mismatch" in result.binding) is mismatch
+    assert result.trust == "unverified"
+
+
+@pytest.mark.parametrize("fence", ["```", "~~~"])
+@pytest.mark.parametrize("anchor,mismatch", [("selected", False), ("comment", True)])
+def test_fenced_comments_neither_select_nor_end_sections(
+    tmp_path: Path, fence: str, anchor: str, mismatch: bool
+) -> None:
+    # Given a shell comment inside a fenced example before the identity.
+    _ = (tmp_path / "run.md").write_text(
+        f"# Selected\n{fence}bash\n# comment\n{fence}\nrun_id: expected\n"
+    )
+    # When either the real heading or the comment is referenced.
+    result = assess_method(
+        {"evidence_ref": f"run.md#{anchor}", "run_id": "expected"}, AS_OF, tmp_path
+    )
+    # Then fenced comments are not headings, and trust never increases.
+    assert ("mismatch" in result.binding) is mismatch
+    assert result.trust == "unverified"
+
+
+@pytest.mark.parametrize(
+    "fields,expected",
+    [
+        ({"run_id": "expected"}, "run identity without evidence reference"),
+        ({"evidence_ref": "run.md"}, "missing run identity"),
+        ({"evidence_ref": "run.md", "run_id": " "}, "missing run identity"),
+        ({"evidence_ref": "run.md", "run_id": 42}, "missing run identity"),
+        ({"evidence_ref": 42, "run_id": "expected"}, "missing run identity"),
+        ({}, "No run/environment/artifact binding retained in metadata"),
+    ],
+)
+def test_locator_requires_usable_pair(
+    tmp_path: Path, fields: dict[str, YAMLValue], expected: str
+) -> None:
+    # Given absent, incomplete or malformed locator metadata.
+    # When the optional binding is assessed.
+    result = assess_method(fields, AS_OF, tmp_path)
+    # Then incomplete identities are distinguished from absent binding metadata.
+    assert expected in result.binding
+    assert result.trust == "unverified"
+
+
+@pytest.mark.parametrize("reference", ["absolute", "../outside.md", "link.md", "directory"])
+def test_locator_rejects_unsafe_or_nonfile_path(tmp_path: Path, reference: str) -> None:
+    # Given an outside note reachable directly or through an in-repository symlink.
+    root = tmp_path / "repository"
+    root.mkdir()
+    outside = tmp_path / "outside.md"
+    _ = outside.write_text("# Run\nrun_id: expected\n")
+    (root / "link.md").symlink_to(outside)
+    (root / "directory").mkdir()
+    _ = (root / "run.md").write_text(outside.read_text())
+    locator = str(root / "run.md") if reference == "absolute" else reference
+    # When the locator is resolved against the repository boundary.
+    result = assess_method({"evidence_ref": locator, "run_id": "expected"}, AS_OF, root)
+    # Then only repository-relative regular files are eligible, never trusted.
+    assert "mismatch" in result.binding
+    assert result.trust == "unverified"
+
+
 @pytest.mark.parametrize("value", [[], "malformed", 42, False, {}])
 def test_malformed_method_shape_is_invalid(value: YAMLValue) -> None:
     result = assess_method(value, AS_OF, ROOT)
