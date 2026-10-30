@@ -45,10 +45,10 @@ graph TD
 
 ## How Labs Work
 
-Each lab includes:
+Each lab guide provides:
 
-1. **Lab infrastructure** — Bicep templates and app source in `labs/` directory
-2. **Documentation page** — Step-by-step walkthrough with KQL queries and expected observations
+1. **Lab infrastructure** — Shared hosting plan templates reside in `infra/`. Companion files under `labs/` exist for 7 of the 11 lab guide pages (`code-storage-verification`, `cold-start`, `dns-vnet-resolution`, `event-hub-checkpoint-lag`, `managed-identity-auth`, `queue-backlog-scaling`, `storage-access-failure`) and consist of README notes, helper scripts, or test producers (9 files in total; no Bicep template exists under `labs/`). `deployment-not-running`, `durable-replay-storm`, `out-of-memory-crash`, and `timer-missed-schedules` have no companion directory.
+2. **Documentation page** — Step-by-step walkthrough with KQL queries and expected observations. See the [Validation Evidence Audit](../../reference/validation-evidence-audit.md) for how historical observations captured during earlier test runs (unverified trust; not re-tested today) are separated from newly defined fault scenarios that have not been run (`NOT_RUN`).
 3. **Expected evidence** — Baseline, during-incident, and after-recovery evidence to validate your investigation
 
 ## Available Labs
