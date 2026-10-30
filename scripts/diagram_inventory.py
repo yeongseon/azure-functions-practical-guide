@@ -38,10 +38,13 @@ IDENTIFIER = re.compile(r'^\s*<!--\s*diagram-id:\s*(.*?)\s*-->\s*$')
 HEADING = re.compile(r'^ {0,3}(#{1,6})[ \t]+(.*?)[ \t]*$')
 LIST_MARKER = re.compile(r'(?:[-+*]|\d{1,9}[.)])(?:[ \t]+|$)')
 CONTAINER = re.compile(r'^\s*(!!!|\?\?\?\+?|===[+!]?)\s')
-THEMATIC_BREAK = re.compile(r'^ {0,3}([-*_])(?:[ \t]*\1){2,}[ \t]*$')
+THEMATIC_BREAK = re.compile(r'^ {0,3}([-*_])(?: *\1){2,} *$')
 HTML_OPEN = re.compile(r'^ {0,3}<([A-Za-z][A-Za-z0-9-]*)(?=[\s/>]|$)')
-HTML_CLOSE = re.compile(r'^ {0,3}</([A-Za-z][A-Za-z0-9-]*)\s*>')
+HTML_CLOSE = re.compile(r'^ {0,3}</([A-Za-z][A-Za-z0-9-]*)(?=[\s/>]|$)')
+HTML_TAG = re.compile(r'<(/?)([A-Za-z][A-Za-z0-9-]*)(?=[\s/>]|$)')
+HTML_COMPLETE_TAG = re.compile(r'''</?[A-Za-z][A-Za-z0-9-]*(?=[\s/>])(?:"[^"]*"|'[^']*'|[^'">])*>''')
 HTML_VOID = frozenset('area base br col embed hr img input link meta param source track wbr'.split())
+HTML_RAW = frozenset(('pre', 'script', 'style', 'textarea'))
 INLINE_CODE = re.compile(r'(?<!`)(`+)(?!`).*?(?<!`)\1(?!`)')
 BLOCKING_REASONS = {'blockquote', 'list-marker', 'indented'}
 TYPES = set(('flowchart graph sequenceDiagram stateDiagram stateDiagram-v2 '
@@ -231,28 +234,69 @@ def indentation(line: str) -> int:
     return len(expanded) - len(expanded.lstrip(' '))
 
 
-def track_html(line: str, open_tags: list[str]) -> None:
-    """Keep the names of HTML elements that a line start opened and nothing has closed yet.
+def track_html(line: str, open_tags: list[str], pending: str = '') -> str:
+    """Apply line-start HTML tags in order, returning any unfinished tag for the next line.
 
-    Void and self-closing tags and elements closed on the same line are ignored; a closing tag
-    pops the nearest open element of that name. An element that is never closed stays open,
-    which only makes a later indented fence blocking instead of informational.
+    Quotes protect tag boundaries and embedded tag text. An unfinished start tag opens
+    provisionally; completion replaces that provisional entry, while EOF keeps it open.
+    Closing tags remove the nearest matching element and its descendants.
     """
-    closing_tag = HTML_CLOSE.match(line)
-    if closing_tag:
-        name = closing_tag.group(1).lower()
-        if name in open_tags:
-            del open_tags[len(open_tags) - 1 - open_tags[::-1].index(name):]
-        return
-    opening_tag = HTML_OPEN.match(line)
-    if not opening_tag:
-        return
-    name = opening_tag.group(1).lower()
-    rest = line[opening_tag.end():]
-    tag_end = rest.find('>')
-    if name in HTML_VOID or (tag_end > 0 and rest[tag_end - 1] == '/') or f'</{name}' in rest.lower():
-        return
-    open_tags.append(name)
+    raw = open_tags[-1] if open_tags and open_tags[-1] in HTML_RAW else ''
+    if not pending and not raw and not (HTML_OPEN.match(line) or HTML_CLOSE.match(line)
+                            or re.match(r'^ {0,3}<(?:!--|!DOCTYPE\b|\?)', line, re.I)):
+        return ''
+    text = pending + '\n' + line if pending else line
+    position = 0
+    while position < len(text):
+        start = text.find('<', position)
+        if start < 0:
+            break
+        literal = INLINE_CODE.search(text, position)
+        if literal and literal.start() < start:
+            position = literal.end()
+            continue
+        raw = open_tags[-1] if open_tags and open_tags[-1] in HTML_RAW else ''
+        if raw and not re.match(r'</' + raw + r'(?=[\s/>]|$)', text[start:], re.I):
+            position = start + 1
+            continue
+        if text.startswith('<!--', start):
+            end = text.find('-->', start + 4)
+            if end < 0:
+                break
+            position = end + 3
+            continue
+        tag = HTML_TAG.match(text, start)
+        if not tag and not text.startswith(('<!', '<?'), start):
+            position = start + 1
+            continue
+        quote = ''
+        end = start + 1
+        while end < len(text):
+            char = text[end]
+            if quote:
+                if char == quote:
+                    quote = ''
+            elif char in "\"'":
+                quote = char
+            elif char == '>':
+                break
+            end += 1
+        if tag:
+            name = tag.group(2).lower()
+            is_close = bool(tag.group(1))
+            if pending and start == 0 and not is_close and name not in HTML_VOID:
+                _ = open_tags.pop()
+            if end == len(text):
+                if not is_close and name not in HTML_VOID:
+                    open_tags.append(name)
+                return text[start:]
+            if is_close:
+                if name in open_tags:
+                    del open_tags[len(open_tags) - 1 - open_tags[::-1].index(name):]
+            elif name not in HTML_VOID and text[end - 1] != '/':
+                open_tags.append(name)
+        position = end + 1
+    return ''
 
 
 def plain_code(lines: list[str], index: int, html_open: bool) -> bool:
@@ -265,6 +309,8 @@ def plain_code(lines: list[str], index: int, html_open: bool) -> bool:
         if not earlier.strip() or indentation(earlier) >= column:
             continue
         column = indentation(earlier)
+        if THEMATIC_BREAK.match(earlier):
+            break
         if LIST_MARKER.match(earlier.lstrip()) or CONTAINER.match(earlier):
             return False
         if column == 0:
@@ -315,7 +361,7 @@ def opens_comment(line: str) -> bool:
     rest, quote, listed = prefixed_fence(line)
     if quote or listed:
         return False
-    literal_free = INLINE_CODE.sub('', rest)
+    literal_free = HTML_COMPLETE_TAG.sub('', INLINE_CODE.sub('', rest))
     opener = literal_free.find('<!--')
     return opener >= 0 and '-->' not in literal_free[opener + 4:]
 
@@ -355,6 +401,7 @@ def scan_fences(text: str, offset: int = 0, example: bool = False) -> tuple[list
     unclosed: list[int] = []
     unrecognized: list[Record] = []
     open_tags: list[str] = []
+    pending_tag = ''
     i = offset
     plain = False
     while i < len(lines):
@@ -365,11 +412,13 @@ def scan_fences(text: str, offset: int = 0, example: bool = False) -> tuple[list
         heading = HEADING.match(lines[i])
         opening = FENCE.match(lines[i])
         unsupported = unsupported_fence(lines[i], plain)
-        if not example and not opening and opens_comment(lines[i]):
+        if not example and not opening and not pending_tag and opens_comment(lines[i]):
             closed = comment_end(lines, i)
             if closed:
                 end, hidden = closed
                 unrecognized.extend({'line': n, 'reason': 'html-comment'} for n in hidden)
+                pending_tag = track_html(lines[i], open_tags)
+                pending_tag = track_html(lines[end].split('-->', 1)[1], open_tags, pending_tag)
                 i = end + 1
                 continue
         prefixed = FENCE.match(prefixed_fence(lines[i])[0])
@@ -388,7 +437,7 @@ def scan_fences(text: str, offset: int = 0, example: bool = False) -> tuple[list
                 headings = [h for h in headings if h[0] < level]
                 title = re.sub(r'[ \t]+#+[ \t]*$', '', heading.group(2))
                 headings.append((level, title))
-            track_html(lines[i], open_tags)
+            pending_tag = track_html(lines[i], open_tags, pending_tag)
             i += 1
             continue
         marker, info = opening.groups()

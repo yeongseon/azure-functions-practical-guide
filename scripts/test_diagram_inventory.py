@@ -24,6 +24,158 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class ParsingTests(unittest.TestCase):
+    def test_nested_same_line_elements_keep_outer_html_context(self):
+        # Site renderer: one diagram with an indented body; zero with a dedented body.
+        for tag in ('div', 'section', 'details', 'DIV'):
+            for marker in ('```', '~~~'):
+                for body_prefix in ('    ', ''):
+                    for newline in ('\n', '\r\n'):
+                        with self.subTest(tag=tag, marker=marker, body_prefix=body_prefix, newline=newline):
+                            text = (f'<{tag}><{tag}>Note</{tag}>\n\n    {marker}mermaid\n'
+                                    + body_prefix + 'flowchart LR\n' + body_prefix + 'A --> B\n'
+                                    + f'    {marker}\n</{tag}>\n').replace('\n', newline)
+                            found, unclosed, findings = inventory.scan_fences(text)
+                            self.assertEqual((found, unclosed), ([], []))
+                            self.assertEqual(findings, [{'line': 3, 'reason': 'indented'}])
+
+    def test_quoted_attribute_markup_does_not_close_html_context(self):
+        # Site renderer: one diagram for every quoted opener with an indented body.
+        openings = ('<div title="a/>b">', "<div title='a/>b'>", '<div data-example="</div>">',
+                    "<div data-example='</div>'>", '<div title="a\'/>b" data-example=\'</div>"\'>',
+                    '<div title="< > /> </div>">', "<div title='< > /> </div>'>",
+                    '<DIV title="/> </DIV>">')
+        for opening in openings:
+            for marker in ('```', '~~~'):
+                for newline in ('\n', '\r\n'):
+                    with self.subTest(opening=opening, marker=marker, newline=newline):
+                        text = (opening + '\n\n    ' + marker + 'mermaid\n    flowchart LR\n    A --> B\n    '
+                                + marker + '\n</div>\n').replace('\n', newline)
+                        found, unclosed, findings = inventory.scan_fences(text)
+                        self.assertEqual((found, unclosed), ([], []))
+                        self.assertEqual(findings, [{'line': 3, 'reason': 'indented'}])
+
+    def test_multiline_start_tags_preserve_quotes_and_close_when_complete(self):
+        # Site renderer: one diagram inside each completed wrapper, zero after it closes.
+        openings = ('<div\n class="x">', '<div title="a/>\n</div> b">', "<div title='a/>\n</div> b'>")
+        for opening in openings:
+            for marker in ('```', '~~~'):
+                for newline in ('\n', '\r\n'):
+                    with self.subTest(opening=opening, marker=marker, newline=newline):
+                        fence = '    ' + marker + 'mermaid\n    flowchart LR\n    ' + marker + '\n'
+                        text = (opening + '\n\n' + fence + '</div>\n\n' + fence).replace('\n', newline)
+                        found, unclosed, findings = inventory.scan_fences(text)
+                        self.assertEqual((found, unclosed), ([], []))
+                        self.assertEqual(findings, [{'line': 4, 'reason': 'indented'}, {'line': 9, 'reason': 'indented-code'}])
+
+    def test_unterminated_start_tags_keep_conservative_blocking_context(self):
+        # Site renderer: zero diagrams; unfinished tags deliberately remain conservative.
+        for opening in ('<div', '<div title="a/>', "<div title='</div>"):
+            with self.subTest(opening=opening):
+                text = opening + '\n\n    ```mermaid\n    flowchart LR\n    ```\n'
+                found, unclosed, findings = inventory.scan_fences(text)
+                self.assertEqual((found, unclosed), ([], []))
+                self.assertEqual(findings, [{'line': 3, 'reason': 'indented'}])
+
+    def test_all_balanced_closers_leave_later_plain_code_informational(self):
+        # Site renderer: zero diagrams after each closed context.
+        contexts = ('<section>\n<div>\n</div></section>', '<div><div>Note</div></div>',
+                    '<DIV><section>Note</section></DIV  >', '<div></div title="</div>">',
+                    "<div></div title='/> </div>'>", '<b><i></b></i>',
+                    '<div/>', '<br />', '<!-- note --><div></div>', '<div><!-- <div> --></div>')
+        for context in contexts:
+            for marker in ('```', '~~~'):
+                for newline in ('\n', '\r\n'):
+                    with self.subTest(context=context, marker=marker, newline=newline):
+                        text = (context + '\n\n    ' + marker + 'mermaid\n    flowchart LR\n    ' + marker + '\n').replace('\n', newline)
+                        found, unclosed, findings = inventory.scan_fences(text)
+                        self.assertEqual((found, unclosed), ([], []))
+                        self.assertEqual(findings, [{'line': len(context.splitlines()) + 2, 'reason': 'indented-code'}])
+
+    def test_bare_less_than_sign_in_html_text_does_not_hide_a_closing_tag(self):
+        # Site renderer: zero diagrams after each closed wrapper, one while an element stays open.
+        closed = ('<div>CPU < 50%</div>', '<p>a < b</p>', '<table>\n<tr><td>x < y</td></tr>\n</table>')
+        for context in closed:
+            for marker in ('```', '~~~'):
+                with self.subTest(context=context, marker=marker):
+                    text = context + '\n\n    ' + marker + 'mermaid\n    flowchart LR\n    ' + marker + '\n'
+                    found, unclosed, findings = inventory.scan_fences(text)
+                    self.assertEqual((found, unclosed), ([], []))
+                    self.assertEqual(findings, [{'line': len(context.splitlines()) + 2, 'reason': 'indented-code'}])
+        for context in ('<div>a < b <section>', '<div>CPU < 50%'):
+            with self.subTest(context=context):
+                text = context + '\n\n    ```mermaid\n    flowchart LR\n    ```\n'
+                found, unclosed, findings = inventory.scan_fences(text)
+                self.assertEqual((found, unclosed), ([], []))
+                self.assertEqual(findings, [{'line': 3, 'reason': 'indented'}])
+
+    def test_raw_text_does_not_close_an_outer_html_element(self):
+        # Site renderer: script/style show one diagram; pre/textarea show zero (conservative).
+        for tag in ('pre', 'script', 'style', 'textarea'):
+            for marker in ('```', '~~~'):
+                with self.subTest(tag=tag, marker=marker):
+                    text = '<div><' + tag + '>\n</div>\n\n    ' + marker + 'mermaid\n    flowchart LR\n    ' + marker + '\n</' + tag + '></div>\n'
+                    found, unclosed, findings = inventory.scan_fences(text)
+                    self.assertEqual((found, unclosed), ([], []))
+                    self.assertEqual(findings, [{'line': 4, 'reason': 'indented'}])
+
+    def test_spaced_thematic_break_precedes_list_marker_classification(self):
+        # Site renderer: zero diagrams after these space-separated thematic breaks.
+        for first in ('- item', '1. item', '- outer\n    - inner'):
+            for boundary in ('* * *', '- - -', '_ _ _', '  * * *'):
+                for marker in ('```', '~~~'):
+                    for newline in ('\n', '\r\n'):
+                        with self.subTest(first=first, boundary=boundary, marker=marker, newline=newline):
+                            text = (first + '\n' + boundary + '\n\n    ' + marker + 'mermaid\n    flowchart LR\n    ' + marker + '\n').replace('\n', newline)
+                            found, unclosed, findings = inventory.scan_fences(text)
+                            self.assertEqual((found, unclosed), ([], []))
+                            self.assertEqual(findings, [{'line': len(first.splitlines()) + 3, 'reason': 'indented-code'}])
+
+    def test_tab_separated_stars_are_not_a_thematic_list_boundary(self):
+        # Site renderer: one diagram; tabs expand too widely to form this thematic break.
+        for marker in ('```', '~~~'):
+            for newline in ('\n', '\r\n'):
+                with self.subTest(marker=marker, newline=newline):
+                    text = ('- item\n*\t*\t*\n\n    ' + marker + 'mermaid\n    flowchart LR\n    ' + marker + '\n').replace('\n', newline)
+                    found, unclosed, findings = inventory.scan_fences(text)
+                    self.assertEqual((found, unclosed), ([], []))
+                    self.assertEqual(findings, [{'line': 4, 'reason': 'indented'}])
+
+    def test_comments_around_tags_preserve_visible_html_context(self):
+        # Site renderer: one diagram after each comment-bearing wrapper.
+        contexts = ('<div><!-- note\ntext\n-->', '<!-- note\ntext\n--><div>',
+                    '<div title="<!--">\ntext\n<!-- end -->', '<!-- note --><div>',
+                    '<div><!-- <div></div> -->')
+        for context in contexts:
+            for marker in ('```', '~~~'):
+                for newline in ('\n', '\r\n'):
+                    with self.subTest(context=context, marker=marker, newline=newline):
+                        text = (context + '\n\n    ' + marker + 'mermaid\n    flowchart LR\n    ' + marker + '\n</div>\n').replace('\n', newline)
+                        found, unclosed, findings = inventory.scan_fences(text)
+                        self.assertEqual((found, unclosed), ([], []))
+                        self.assertEqual(findings, [{'line': len(context.splitlines()) + 2, 'reason': 'indented'}])
+
+    def test_inline_and_fenced_tag_literals_do_not_open_html_context(self):
+        # Site renderer: zero diagrams after these literal tags.
+        for context in ('`<div>`', '``<div title="x">``', '```html\n<div>\n```',
+                        '<div>`<section>`</div>', '<!DOCTYPE html>', '<?target title="<div>"?>'):
+            with self.subTest(context=context):
+                text = context + '\n\n    ```mermaid\n    flowchart LR\n    ```\n'
+                found, unclosed, findings = inventory.scan_fences(text)
+                self.assertEqual((found, unclosed), ([], []))
+                self.assertEqual(findings, [{'line': len(context.splitlines()) + 2, 'reason': 'indented-code'}])
+
+    def test_comment_tokens_in_attributes_keep_conservative_fence_findings(self):
+        # Site renderer: zero diagrams; quoted comment tokens retain conservative context.
+        for quote in ('"', "'"):
+            for marker in ('```', '~~~'):
+                for newline in ('\n', '\r\n'):
+                    with self.subTest(quote=quote, marker=marker, newline=newline):
+                        text = (f'<div title={quote}<!--{quote}>\n\n    ' + marker + 'mermaid\n    flowchart LR\n    '
+                                + marker + '\n</div>\n<!-- end -->\n').replace('\n', newline)
+                        found, unclosed, findings = inventory.scan_fences(text)
+                        self.assertEqual((found, unclosed), ([], []))
+                        self.assertEqual(findings, [{'line': 3, 'reason': 'indented'}])
+
     def test_html_ancestor_makes_indented_fences_blocking(self):
         ancestors = ('<div>', '<section>', '<details>', '<aside>', '<table>\n  <td>',
                      '<custom-widget>', '<div class="x">', '<DIV>', '<div\n  class="x">')
@@ -87,13 +239,13 @@ class ParsingTests(unittest.TestCase):
         for before, line, expected in cases:
             with self.subTest(before=before, line=line):
                 stack = list(before)
-                inventory.track_html(line, stack)
+                _ = inventory.track_html(line, stack)
                 self.assertEqual(stack, expected)
 
     def test_heading_or_thematic_break_ends_a_list_before_plain_code(self):
         fence = '    ```mermaid\n    flowchart LR\n    ```\n'
         for text, line in (('- item\n# Heading\n\n' + fence, 4), ('- item\n---\n\n' + fence, 4), ('* item\n***\n\n' + fence, 4),
-                           ('1. item\n## Heading\ntext\n\n' + fence, 5), ('- item\n# Heading\n\n' + fence.replace('```', '~~~'), 4)):
+                            ('1. item\n## Heading\ntext\n\n' + fence, 5), ('- item\n# Heading\n\n' + fence.replace('```', '~~~'), 4)):
             for newline in ('\n', '\r\n'):
                 with self.subTest(text=text, newline=newline):
                     found, unclosed, findings = inventory.scan_fences(text.replace('\n', newline))
@@ -1120,7 +1272,7 @@ class IntegrationTests(unittest.TestCase):
         self.assertEqual(inventory.check(ROOT, manifest, rules), [])
 
     @unittest.skipUnless(os.environ.get('DIAGRAM_INVENTORY_REPRODUCE') == '1',
-                         'current-tree reproduction is opt-in: baseline is frozen at baseline.base_commit; tree drift is advisory')
+                         'current-tree reproduction is opt-in: committed snapshot; commit recorded as metadata; --write reads the current working tree')
     def test_baseline_reproduction_in_temp_tree(self):
         if not (ROOT / inventory.MANIFEST).exists():
             self.skipTest('baseline not generated yet')
