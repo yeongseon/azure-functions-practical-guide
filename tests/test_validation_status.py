@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from scripts.generate_validation_status import generate_dashboard
+from scripts.generate_validation_status import generate_dashboard, has_locator
 from scripts.lib.tutorial_validation import (
     YAMLValue,
     assess_method,
@@ -68,6 +68,69 @@ def test_methods_keep_independent_dates_and_results() -> None:
     # Then the historical failure/date and unexecuted method remain distinct.
     assert "| az_cli | fail | 2026-04-12 | stale |" in report
     assert "| bicep | not_tested | — | NOT_RUN |" in report
+
+
+def write_tutorial(docs: Path, name: str, method: str = "") -> Path:
+    path = docs / f"language-guides/python/tutorial/consumption/{name}.md"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    _ = path.write_text(f"---\nvalidation:\n{method}---\n")
+    return path
+
+
+@pytest.mark.parametrize("count", [1, 2, 5])
+def test_summary_count_follows_the_inventory(tmp_path: Path, count: int) -> None:
+    # Given an inventory of a different size than the June snapshot or the real tree.
+    docs = tmp_path / "docs"
+    tutorials = [extract_tutorial_info(write_tutorial(docs, f"{n:02d}-page"), docs) for n in range(count)]
+    # When the report is rendered.
+    report = generate_dashboard(tutorials, AS_OF)
+    # Then the total comes from the input, never from a literal.
+    assert f"this inventory counts {count}." in report
+    assert f"| Total tutorials | {count} |" in report
+    assert "counts 158" not in report
+    assert "At the 2026-10-25 inventory (158 tutorials)" in report
+
+
+@pytest.mark.parametrize(
+    "value,expected",
+    [
+        ({"run_id": "expected"}, True),
+        ({"evidence_ref": "run.md#run"}, True),
+        ({"run_id": "expected", "evidence_ref": "run.md#run"}, True),
+        ({"run_id": "", "evidence_ref": None}, False),
+        ({}, False),
+        (None, False),
+        ("malformed", False),
+    ],
+)
+def test_locator_counts_either_field_as_a_pointer(value: YAMLValue, expected: bool) -> None:
+    assert has_locator(value) is expected
+
+
+def test_locator_statement_follows_the_metadata(tmp_path: Path) -> None:
+    # Given one tutorial whose CLI method carries a resolving locator and one without any.
+    docs = tmp_path / "docs"
+    _ = (tmp_path / "run.md").write_text("# Run\nrun_id: expected\n")
+    located = "  az_cli:\n    result: pass\n    last_tested: 2026-10-25\n    run_id: expected\n    evidence_ref: run.md#run\n"
+    first = extract_tutorial_info(write_tutorial(docs, "01-located", located), docs)
+    second = extract_tutorial_info(write_tutorial(docs, "02-plain"), docs)
+    # When the report is rendered for each inventory.
+    with_locator = generate_dashboard([first, second], AS_OF)
+    without = generate_dashboard([second], AS_OF)
+    # Then a locator is counted as a pointer and never as verification, and the zero statement needs zero locators.
+    assert "| Methods carrying a run or evidence locator (pointers, not attestations) | 1 |" in with_locator
+    assert "1 of 4 method records carry a run or evidence locator" in with_locator
+    assert "No method record currently carries" not in with_locator
+    assert "| az_cli | pass | 2026-10-25 | fresh |" in with_locator
+    assert "| unverified | run.md#run (run expected); method/environment/artifacts require review |" in with_locator
+    assert "| Methods carrying a run or evidence locator (pointers, not attestations) | 0 |" in without
+    assert "No method record currently carries" in without
+    assert "carry a run or evidence locator" not in without
+    # And when every method carries one, no audit-gap statement remains.
+    both = located + located.replace("az_cli", "bicep")
+    full = generate_dashboard([extract_tutorial_info(write_tutorial(docs, "03-both", both), docs)], AS_OF)
+    assert "2 of 2 method records carry a run or evidence locator" in full
+    assert "remain audit gaps" not in full
 
 
 @pytest.mark.parametrize("reference", ["missing.md", "run.md#absent", "run.md#run"])

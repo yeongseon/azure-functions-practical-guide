@@ -22,9 +22,9 @@ Leaf runbooks under `docs/language-guides/*/tutorial/<hosting-plan>/*.md` are in
 
 ## Summary
 
-The June snapshot counted 120 tutorials; this inventory counts 158. The additional 38 (30 PowerShell and 8 testing/container pages) already existed but were absent from that snapshot; they are not newly executed tutorials.
+The June snapshot counted 120 tutorials; this inventory counts 158. At the 2026-10-25 inventory (158 tutorials) the 38 additional pages (30 PowerShell and 8 testing/container pages) already existed but were absent from the June snapshot; they were not newly executed tutorials. A different count at another date reflects the pages inventoried, not new executions.
 
-*Generated / freshness as of: 2026-10-25*
+*Generated / freshness as of: 2026-10-30*
 
 This is a dated snapshot, not a rolling live badge. Regenerate to assess a later date. Fresh means age ≤90 days; stale means age >90 days, including failed attempts. Freshness never upgrades evidence trust. Invalid metadata takes precedence, then failures, in tutorial totals; per-method counts below include the failed attempt's age.
 
@@ -46,6 +46,7 @@ This is a dated snapshot, not a rolling live badge. Regenerate to assess a later
 | unknown | 0 |
 | invalid | 0 |
 | Methods with unverified evidence trust | 316 |
+| Methods carrying a run or evidence locator (pointers, not attestations) | 0 |
 
 <!-- diagram-id: tutorial-validation-status-pie -->
 ```mermaid
@@ -67,7 +68,7 @@ pie title Historical tutorial claim freshness
 | Recovery | Not established by a tutorial pass; needs a post-mitigation probe/window where relevant. |
 | Cleanup | Not established by deployment success or a cleanup command example; needs its own retained outcome or explicit non-applicability. |
 
-Vocabulary and provenance requirements follow the [evidence and hypothesis contract](../troubleshooting/methodology/troubleshooting-method.md#evidence-and-hypothesis-contract). No tutorial in this inventory currently binds a run/environment/artifact set in its method metadata. Inline output excerpts and tool versions may be useful reported history, but cannot by themselves bind an end-to-end run. The missing bindings remain audit gaps, not evidence that the historical runs were fabricated.
+Vocabulary and provenance requirements follow the [evidence and hypothesis contract](../troubleshooting/methodology/troubleshooting-method.md#evidence-and-hypothesis-contract). No method record currently carries a run or evidence locator in its metadata, so no tutorial binds a run, environment or artifact set. Inline output excerpts and tool versions may be useful reported history, but cannot by themselves bind an end-to-end run. Method records without a locator remain audit gaps, not evidence that the historical runs were fabricated.
 
 ## Per-Method Validation and Evidence Audit
 
@@ -423,8 +424,8 @@ Optional method-level `run_id` and repository-relative `evidence_ref` (Markdown 
 Reproduce this exact snapshot (omit `--as-of` to use today's date):
 
 ```bash
-python3 scripts/generate_validation_status.py --as-of 2026-10-25
-python3 scripts/generate_validation_status.py --as-of 2026-10-25 --check
+python3 scripts/generate_validation_status.py --as-of 2026-10-30
+python3 scripts/generate_validation_status.py --as-of 2026-10-30 --check
 ```
 
 `--check` is read-only and fails on drift, including a changed as-of date. No Azure access is performed.
