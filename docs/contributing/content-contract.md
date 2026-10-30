@@ -1003,6 +1003,10 @@ code/static checks never refresh Azure execution dates.
 Legacy `result: syntax_validated` records are preserved as **static-only**, not
 accepted as Azure passes; their dates are not live-run freshness. New live-run
 records continue to use the three result values in the field reference.
+Any date on a static record is still validated: a malformed or future date makes
+the method `invalid`, while an absent date remains static-only with unknown timing.
+This does not change the stored result or date, count as Azure freshness, or count
+as a live pass.
 
 Optional method fields `run_id` and `evidence_ref` may point to an **existing**
 repository-relative Markdown experiment log (optionally `#heading`). Do not invent
