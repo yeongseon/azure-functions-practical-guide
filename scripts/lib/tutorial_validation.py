@@ -44,6 +44,45 @@ class MethodAssessment:
     trust: str = "unverified"
 
 
+SECTION_FENCE = re.compile(r"^ {0,3}(`{3,}(?=[^`]*$)|~{3,})")
+SECTION_HEADING = re.compile(r"^ {0,3}(#+)\s+(.+)$")
+SECTION_UNDERLINE = re.compile(r"^ {0,3}(=+|-+)[ \t]*$")
+SECTION_TEXT = re.compile(r"^ {0,3}(?![>#]|[-+*][ \t]|\d{1,9}[.)][ \t])\S")
+
+
+def referenced_section(text: str, anchor: str) -> str | None:
+    """Slice a note from the first heading with this anchor to the next heading of the same or higher level.
+
+    Headings are ATX (up to three leading spaces) or Setext; lines inside fenced code blocks are not headings.
+    """
+    lines = text.splitlines(keepends=True)
+    start = None
+    level = 0
+    fence = ""
+    for index, line in enumerate(lines):
+        if fence:
+            if re.fullmatch(rf" {{0,3}}{fence[0]}{{{len(fence)},}}\s*", line):
+                fence = ""
+            continue
+        opening = SECTION_FENCE.match(line)
+        if opening:
+            fence = opening[1]
+            continue
+        atx = SECTION_HEADING.match(line)
+        underline = SECTION_UNDERLINE.match(lines[index + 1]) if index + 1 < len(lines) else None
+        if atx:
+            depth, title = len(atx[1]), atx[2]
+        elif underline and SECTION_TEXT.match(line):
+            depth, title = (1 if underline[1][0] == "=" else 2), line.strip()
+        else:
+            continue
+        if start is not None and depth <= level:
+            return "".join(lines[start:index])
+        if start is None and re.sub(r"[^\w -]", "", title.lower()).replace(" ", "-") == anchor:
+            start, level = index, depth
+    return None if start is None else "".join(lines[start:])
+
+
 def evidence_binding(data: Mapping[str, YAMLValue], root: Path) -> str:
     """Resolve optional run-note locators without treating existence as proof."""
     reference = data.get("evidence_ref")
@@ -68,31 +107,10 @@ def evidence_binding(data: Mapping[str, YAMLValue], root: Path) -> str:
         return "Evidence-reference mismatch: absent or outside repository"
     text = path.read_text(encoding="utf-8")
     if anchor:
-        lines = text.splitlines(keepends=True)
-        start = None
-        level = 0
-        fence = ""
-        end = len(lines)
-        for index, line in enumerate(lines):
-            if fence:
-                if re.fullmatch(rf" {{0,3}}{fence[0]}{{{len(fence)},}}\s*", line):
-                    fence = ""
-                continue
-            opening = re.match(r"^ {0,3}(`{3,}|~{3,})", line)
-            if opening:
-                fence = opening[1]
-                continue
-            heading = re.match(r"^(#+)\s+(.+)$", line)
-            if heading:
-                if start is not None and len(heading[1]) <= level:
-                    end = index
-                    break
-                slug = re.sub(r"[^\w -]", "", heading[2].lower()).replace(" ", "-")
-                if start is None and slug == anchor:
-                    start, level = index, len(heading[1])
-        if start is None:
+        section = referenced_section(text, anchor)
+        if section is None:
             return "Evidence-reference mismatch: anchor or run identity"
-        text = "".join(lines[start:end])
+        text = section
     if not re.search(
         rf"(?m)^\s*run_id:\s*{re.escape(run_id)}\s*$", text
     ):

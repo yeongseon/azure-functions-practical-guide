@@ -129,6 +129,15 @@ def test_absent_anchor_with_matching_run_is_rejected(tmp_path: Path) -> None:
         ("# Other\nrun_id: expected\n# Selected\n", "", False),
         ("# Selected!\n# Selected\nrun_id: expected\n", "selected", True),
         ("# Selected!\nrun_id: expected\n# Selected\n", "selected", False),
+        ("# Selected\n # Other\nrun_id: expected\n", "selected", True),
+        ("# Selected\n   # Other\nrun_id: expected\n", "selected", True),
+        ("# Selected\n    # Other\nrun_id: expected\n", "selected", False),
+        ("# Selected\n\nOther\n=====\nrun_id: expected\n", "selected", True),
+        ("# Selected\n\nSub\n---\nrun_id: expected\n", "selected", False),
+        ("## Selected\n- item\n---\nrun_id: expected\n", "selected", False),
+        ("Other\n=====\nrun_id: expected\n", "other", False),
+        ("# Selected\n```inline```\n# Other\nrun_id: expected\n", "selected", True),
+        ("# Selected\n``` text ```\nrun_id: expected\n# Other\n", "selected", False),
     ],
 )
 def test_locator_uses_first_heading_section(
