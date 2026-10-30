@@ -15,6 +15,7 @@ from scripts.lib.tutorial_validation import (
     METHODS,
     STALENESS_DAYS,
     Tutorial,
+    YAMLValue,
     assess_method,
     extract_tutorial_info,
     tutorial_status,
@@ -34,6 +35,14 @@ def cell(text: str) -> str:
     return text.replace("|", "&#124;").replace("\n", " ")
 
 
+def has_locator(value: YAMLValue) -> bool:
+    """A method record names a run or evidence note as a non-blank string; that is a pointer, not an attestation."""
+    if not isinstance(value, dict):
+        return False
+    fields = (value.get("run_id"), value.get("evidence_ref"))
+    return any(isinstance(field, str) and bool(field.strip()) for field in fields)
+
+
 def generate_dashboard(tutorials: list[Tutorial], today: date) -> str:
     """Render per-method audit rows, retaining claims separately from trust."""
     assessments = [
@@ -42,6 +51,8 @@ def generate_dashboard(tutorials: list[Tutorial], today: date) -> str:
     ]
     counts = Counter(tutorial_status(methods) for methods in assessments)
     method_counts = Counter(m.freshness for methods in assessments for m in methods)
+    total_methods = sum(len(methods) for methods in assessments)
+    with_locator = sum(has_locator(t.validation.get(method)) for t in tutorials for method in METHODS)
     source = (
         "https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview"
     )
@@ -81,7 +92,12 @@ def generate_dashboard(tutorials: list[Tutorial], today: date) -> str:
         "",
         "## Summary",
         "",
-        "The June snapshot counted 120 tutorials; this inventory counts 158. The additional 38 (30 PowerShell and 8 testing/container pages) already existed but were absent from that snapshot; they are not newly executed tutorials.",
+        (
+            f"The June snapshot counted 120 tutorials; this inventory counts {len(tutorials)}. "
+            "At the 2026-10-25 inventory (158 tutorials) the 38 additional pages (30 PowerShell and 8 testing/container pages) "
+            "already existed but were absent from the June snapshot; they were not newly executed tutorials. "
+            "A different count at another date reflects the pages inventoried, not new executions."
+        ),
         "",
         f"*Generated / freshness as of: {today.isoformat()}*",
         "",
@@ -111,7 +127,8 @@ def generate_dashboard(tutorials: list[Tutorial], today: date) -> str:
     )
     lines.extend(
         [
-            f"| Methods with unverified evidence trust | {sum(len(ms) for ms in assessments)} |",
+            f"| Methods with unverified evidence trust | {total_methods} |",
+            f"| Methods carrying a run or evidence locator (pointers, not attestations) | {with_locator} |",
             "",
             "<!-- diagram-id: tutorial-validation-status-pie -->",
             "```mermaid",
@@ -139,9 +156,21 @@ def generate_dashboard(tutorials: list[Tutorial], today: date) -> str:
             "",
             (
                 "Vocabulary and provenance requirements follow the [evidence and hypothesis contract](../troubleshooting/methodology/troubleshooting-method.md#evidence-and-hypothesis-contract). "
-                "No tutorial in this inventory currently binds a run/environment/artifact set in its method metadata. "
-                "Inline output excerpts and tool versions may be useful reported history, but cannot by themselves bind an end-to-end run. "
-                "The missing bindings remain audit gaps, not evidence that the historical runs were fabricated."
+                + (
+                    (
+                        f"{with_locator} of {total_methods} method records carry a run or evidence locator in their metadata. "
+                        "A locator only points to a retained run note (the last column below shows whether it resolves); "
+                        "it does not attest the executed method, environment or artifacts, so every method stays **unverified**. "
+                    )
+                    if with_locator
+                    else "No method record currently carries a run or evidence locator in its metadata, so no tutorial binds a run, environment or artifact set. "
+                )
+                + "Inline output excerpts and tool versions may be useful reported history, but cannot by themselves bind an end-to-end run."
+                + (
+                    " Method records without a locator remain audit gaps, not evidence that the historical runs were fabricated."
+                    if with_locator < total_methods
+                    else ""
+                )
             ),
             "",
             "## Per-Method Validation and Evidence Audit",
