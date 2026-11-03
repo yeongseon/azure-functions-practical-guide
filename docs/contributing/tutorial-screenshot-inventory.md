@@ -84,6 +84,12 @@ give the target paths and intended scenes.
 | 06 | `py-flex-06-github-actions-run`, `py-flex-06-deployment-center` | 2 |
 | 07 | `py-flex-07-functions-list-multi-trigger`, `py-flex-07-event-grid-subscription` | 2 |
 
+Scene reconciliation is still needed: `py-flex-03-identity-system-assigned`
+targets the System assigned tab, while the current step 03 configures a
+user-assigned host-storage identity. Retain the entry as `planned` in this census,
+but exclude it from a capture batch until its intended scene and caption have
+been reconciled with the tutorial; its presence is not evidence of suitability.
+
 ## Owned Assets and Generic Reuse
 
 There are **29 files** under `docs/assets/`: **27 PNGs** (23 operations, four
@@ -153,7 +159,7 @@ and existing first-deploy child. IDs not already in the manifest are proposals o
 
 | Candidate / tracker | Exact page relative to `docs/language-guides/` | Bounded scene and exact IDs |
 |---|---|---|
-| Python Flex configuration / [#109](https://github.com/yeongseon/azure-functions-practical-guide/issues/109), after #227 | `python/tutorial/flex-consumption/03-configuration.md` | Environment variables and system identity: existing `py-flex-03-environment-variables`, `py-flex-03-identity-system-assigned` |
+| Python Flex configuration / [#109](https://github.com/yeongseon/azure-functions-practical-guide/issues/109), after #227 | `python/tutorial/flex-consumption/03-configuration.md` | Environment variables only: existing `py-flex-03-environment-variables`; exclude `py-flex-03-identity-system-assigned` pending scene reconciliation |
 | Node.js Flex configuration / [#110](https://github.com/yeongseon/azure-functions-practical-guide/issues/110), after #228 | `nodejs/tutorial/flex-consumption/03-configuration.md` | Environment variables: proposed `node-flex-03-environment-variables` |
 | Java Premium configuration / [#111](https://github.com/yeongseon/azure-functions-practical-guide/issues/111), after #229 | `java/tutorial/premium/03-configuration.md` | Environment variables: proposed `java-premium-03-environment-variables` |
 | .NET Premium configuration / [#112](https://github.com/yeongseon/azure-functions-practical-guide/issues/112), after #230 | `dotnet/tutorial/premium/03-configuration.md` | Environment variables: proposed `dotnet-premium-03-environment-variables` |
