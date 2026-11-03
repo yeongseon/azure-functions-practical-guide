@@ -90,6 +90,7 @@ to your change; these requirements apply equally to human and agent authors.
 | CLI Commands | [Long flags](content-contract.md#cli-command-style) and [explanation tables, blank-line termination, rendered-HTML verification](content-contract.md#cli-explanation-table-rule-quality-gate) |
 | Variables | [Variable naming convention](content-contract.md#variable-naming-convention) |
 | Mermaid Diagrams | [Required document types and orientation](content-contract.md#mermaid-diagrams); avoid redundant diagrams/screenshots |
+| Diagram Render Review | [Browser procedure, reusable PR checklist and sample audit](diagram-render-audit.md) |
 | Nested Lists | [Four-space nesting](content-contract.md#nested-list-indentation) |
 | Admonitions | [Four-space body indentation](content-contract.md#admonition-indentation-rule) |
 | Tail Sections | [See Also followed by Sources](content-contract.md#tail-section-naming) |
