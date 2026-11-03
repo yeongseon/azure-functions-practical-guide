@@ -26,10 +26,15 @@ when creating an issue through the API or CLI rather than a form:
 
 | Section | Required content |
 |---|---|
-| Context | Repository-local problem, affected files/pages, evidence, reader/user impact, and proposed work |
-| Acceptance Checklist | Observable completion criteria as Markdown checkboxes; distinguish source review from Azure execution or independent reproduction |
+| Context | Repository-local problem and evidence, reader/user impact, one bounded deliverable, affected files/pages and applicable plan/language/lab/diagram IDs; state Azure/manual-access needs or `None` |
+| Acceptance Checklist | Observable completion criteria as Markdown checkboxes and the verification method; distinguish source review from Azure execution or independent reproduction |
 | Out of scope | Explicit boundaries that keep this task focused |
 | References | Relevant local issues/PRs, Microsoft Learn sources, and genuine upstream dependencies with their relationship explained; write `None` if absent |
+
+For run/capture work, state evidence provenance: retained run/capture locator,
+source revision, environment scope (sanitized), original execution/capture time,
+and collection tool/method. Before execution, describe the planned record and
+mark missing evidence `NOT_RUN` / `NOT_CAPTURED`; never invent provenance.
 
 Follow [Issue Scope](#issue-scope) for the repository-specific evidence contract,
 duplicate/context preflight, and post-save field checks established by merged
@@ -50,11 +55,13 @@ saving. Contributors may suggest classifications, but maintainers own triage.
 | `priority:low` | Optional polish or low-impact work behind correctness and safety fixes |
 | `size: XS` | One localized, straightforward correction |
 | `size: S` | A small bounded change with targeted validation |
-| `size: M` | Several related changes and meaningful integration or documentation validation |
-| `size: L` | Broad coordination or substantial implementation/validation; look for useful splits |
-| `size: XL` | Too large or uncertain for one focused PR; investigate and split into independently useful tasks where practical |
+| `size: M` | Several related changes and meaningful integration or documentation validation; requires an explicit bounded deliverable |
+| `size: L` | Broad coordination or substantial implementation/validation; split before agent assignment or declare tracking-only |
+| `size: XL` | Too large or uncertain for one focused PR; investigate and split into independently useful tasks before agent assignment or declare tracking-only |
 
-Size estimates effort and uncertainty, not severity or a promised delivery date.
+Size estimates effort and uncertainty, not raw ticket word count, severity, or a
+promised delivery date. Prefer XS/S executable issues; apply the M/L/XL limits
+above using the [tracker and splitting rules](#trackers-and-executable-issues).
 Use exactly one canonical priority and one size on each triaged actionable issue;
 `priority: high` is a legacy spelling, not an additional priority tier. Type labels
 such as `bug`, `documentation`, or `enhancement` complement these classifications.
@@ -80,6 +87,68 @@ provision that label before it can be used. These text rules do not configure
 GitHub label automation or branch protection; report unsupported settings honestly
 and do not change hosted settings without separate authorization.
 
+### Trackers and Executable Issues
+
+An **executable issue** owns one bounded deliverable, reviewable in one focused
+PR or one explicitly verified manual action. A **tracker/epic** coordinates child
+issues and dependencies; it is not one agent assignment or evidence of completed
+work. Declare it tracking-only and link the execution slices/split plan. A
+decision-only issue may instead state the question, options and decision needed.
+These non-actionable issues use a lighter path: context, child/dependency links
+or options, and an observable closure/decision condition; execution-only fields
+may say `Not applicable — tracking-only` (or `decision-only`). Forms cannot
+conditionally require fields, so use that explanation in required fields rather
+than inventing an implementation or run. Before assigning a child, apply the
+actionable requirements and size limits in [Labels and Triage](#labels-and-triage).
+
+Split at meaningful review or execution boundaries, not arbitrary ticket length:
+
+- **Screenshots:** one plan plus one tutorial step or closely coupled capture
+  set, with the language and existing stable capture IDs identified. Check the
+  current [capture manifest and pipeline](docs/contributing/content-contract.md#manifest-driven-capture-pipeline)
+  first; reuse the real, authorized Portal session, captions, final-byte inspection
+  and PII policy in the [image rules](docs/contributing/content-contract.md#image-and-screenshot-rules).
+  A screenshot does not prove unperformed Azure testing.
+- **Labs:** separate design/implementation, live run plus retained evidence, and
+  documentation/capture follow-up when they need different sessions, permissions
+  or costs. State dependencies, approved resource/cost boundaries and explicit
+  teardown. Do not split a tiny lab pointlessly or mark offline preparation as
+  live reproduction; unperformed runs remain `NOT_RUN`.
+- **Diagrams:** inventory stable IDs first, then assign migration issues per
+  small set of related diagrams. Preserve sources, semantics, readability and
+  existing tests; an inventory or assignment is not completed migration.
+
+### New Actionable Issue Review
+
+Use this low-noise manual checklist for new actionable issues and material scope
+changes, not a bulk pass/fail audit of historical issues. Existing trackers and
+decisions follow the lighter path above; note missing legacy fields as follow-up
+work, not as evidence that execution passed or that a tracker must be executable.
+
+- [ ] One scope and affected files/IDs, dependencies (or `None`), exclusions,
+  acceptance criteria and verification method make completion verifiable.
+- [ ] Exactly one canonical priority and one size label after triage; retain
+  `needs-triage` until the existing [triage steps](#labels-and-triage) are complete.
+- [ ] XS/S is preferred; M has an explicit bounded deliverable. No open L/XL is
+  used as an execution unit: record its split plan and assign bounded children,
+  or declare it tracking-only before agent assignment.
+- [ ] Azure/manual access, cost/teardown needs and run/capture provenance are
+  explicit where applicable. Missing access means `BLOCKED` / `NOT_RUN` /
+  `NOT_CAPTURED`, not success; a well-scoped manual issue need not have run yet.
+
+After saving through UI/API/CLI, re-fetch title, labels and body as required by
+[Issue Scope](#issue-scope). For example, these read-only commands let a human or
+agent compare the saved fields with the checklist (replace `<n>`):
+
+```bash
+gh issue view <n> --json labels,body
+gh issue view <n> --json title
+```
+
+Record omissions or blockers without asserting automated enforcement. Forms
+only supply static labels; they cannot dynamically choose priority/size. This
+checklist adds no bot, script, CI gate or hosted GitHub setting.
+
 ## Focused Implementation
 
 1. Start from a triaged issue and inspect the existing code, documentation,
@@ -94,6 +163,10 @@ and do not change hosted settings without separate authorization.
 3. Implement only the accepted scope in a small reviewable PR. Keep unrelated
    improvements separate. Retain Functions-specific source metadata,
    troubleshooting evidence, PII protections, and truthful validation dates.
+   If work grows beyond the approved scope, stop scope creep, record partial
+   artifacts/evidence and remaining work, and open/link a bounded follow-up
+   rather than hiding unfinished work in the PR. If issue creation is not
+   authorized, propose the follow-up for the maintainer instead.
 4. Run applicable existing validators and targeted regression tests; use
    `mkdocs build --strict` locally for documentation (recommended; required
    GitHub CI remains authoritative). Record commands, actual results,
