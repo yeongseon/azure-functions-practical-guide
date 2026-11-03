@@ -47,6 +47,7 @@ graph TD
 | [Glossary](glossary.md) | Definitions of core Azure Functions terms used across this guide |
 | [Diagram Inventory](diagram-inventory.md) | Repository-wide baseline, declared sources, hosting/trigger variants, exclusions and migration owners |
 | [ADR: Diagram Composition](adr-diagram-composition.md) | Reuse options, complexity limits and dependency on the shared App Service prototype |
+| [Functions Topology Templates](functions-topology-templates.md) | Copyable typed base, trigger and private-storage views with illustrative fault overlays |
 
 ## Quick Links
 
