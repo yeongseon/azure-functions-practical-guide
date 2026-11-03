@@ -50,15 +50,22 @@ the static server first. Do not serve the source Markdown as the rendered site.
    waits alone proves that drawing succeeded.
 2. In DevTools responsive mode set **1440 × 1000**, then **390 × 1000** CSS pixels.
    Record device scale factor (the sample used 1, not a physical phone). At each
-   width use the site's palette toggle for **default** and **slate**. Confirm
-   `body[data-md-color-scheme]` in Elements; OS color-scheme emulation alone does
-   not establish the selected Material palette. Check the in-place palette change
+   width use the header's **Switch to dark mode** control for **slate**, and
+   **Switch to light mode** for **default**. Verify the resulting
+   `body[data-md-color-scheme]` attribute in Elements; OS color-scheme emulation
+   alone does not establish the selected Material palette. Wait for palette
+   transitions to finish before capturing. Check the in-place palette change
    as well as a fresh navigation. If instant navigation is enabled, repeat after
    following an internal link and waiting for Material's `document$` update.
 3. Capture the inline diagram with its nearby explanation. Click the diagram to
-   open the existing zoom overlay; wheel/pinch to enlarge, drag to inspect both
-   ends and all branches, then press Escape or Close. Record whether labels
-   actually became easier to read, anything clipped, and any theme change.
+   open the existing zoom overlay. Wait for its opacity/transform transitions to
+   finish before capturing; `.mermaid-zoom-visible` alone is too early and can
+   capture prose showing through the opening fade. Wheel/pinch to enlarge, drag
+   to inspect both ends and all branches, then press Escape or Close. Record the
+   wheel event count/delta or pinch amount, resulting scale when available, drag
+   distance, and whether pan persists after release (read the computed transform
+   while held and after settling). Record whether labels actually became easier
+   to read, anything clipped, and any theme change.
    Overlay zoom is not browser zoom. Optionally repeat at **200% browser zoom**
    and record it separately; changing device scale factor is not browser zoom.
 4. Open **every captured image** before writing observations. Record exact labels,
@@ -103,7 +110,10 @@ additional browser package is needed for the successful automatic procedure abov
 
 ## Per-Diagram Sampling Checklist
 
-Copy this block into a migration PR body once per exact key. Replace every
+For a single-key migration PR, copy this block once. For multi-key PRs (for
+example, an issue owning eight diagrams), record shared browser/SHA/environment
+details once per PR, with per-key matrices and findings underneath; do not repeat
+the whole block. Replace every
 `NOT_CHECKED` with `PASS` or `FAIL` only after observing that case; keep a reason
 for unperformed checks. `PASS` means readable and semantically correct, not just
 “an SVG exists.” Use `not applicable: reason` for absent topology/fault features.
@@ -128,12 +138,18 @@ for unperformed checks. `PASS` means readable and semantically correct, not just
 | 390 | slate | NOT_CHECKED | NOT_CHECKED | |
 
 - Optional 200% browser zoom: NOT_CHECKED — reason or observations:
+- Wheel/pinch amount / resulting scale / drag distance / pan persists on release:
+- Palette and overlay transitions settled before capture: NOT_CHECKED
 - Automatic rendering vs manual compatibility fallback; console/network errors:
+- Shared grammar: NOT_CHECKED — consistent component names/icons and stable
+  unchanged components across variants; distinguish DNS/auth/control from data.
 - Arrows: NOT_CHECKED — invocation, control/metadata, dependency, return or order;
   explain line legend; do not imply a measured network trace.
 - Fault/decision: NOT_CHECKED — symptom -> evidence -> next decision; label every
   branch, start and end; distinguish evidence, hypothesis and confirmed verdict.
   For sequences check participants, message direction and temporal order instead.
+- Fault placement, when applicable: NOT_CHECKED — normal path and accessible fault
+  marker at the affected component/edge, with evidence and next check.
 - Network boundaries: NOT_CHECKED — identify hosting plan and integration mode.
   Do not infer customer-subnet containment from multitenant VNet integration;
   documented ASE hosting is a distinct case where the environment and hosted apps
@@ -185,7 +201,9 @@ is **(a) an inspection artifact**, explained by Material's closed shadow root,
 not evidence of (b) a blank site for readers. The overlay problems below **are**
 reader-facing defects. No zero-text-metrics cause was demonstrated. Instant
 navigation and 200% browser zoom were **NOT_CHECKED**; the required zoom sample
-used the site's click overlay and a wheel-up event, not CSS zoom.
+used the site's click overlay and one wheel-up event, not CSS zoom. That baseline
+did not retain the wheel delta, resulting scale or post-release pan persistence;
+the follow-up below records a measured interaction separately.
 
 ### Sample Keys and Outcomes
 
@@ -203,6 +221,9 @@ attest every claim in either page or change manifest provenance status.
 
 The following verdicts assess **legibility**, not rendering presence (which
 succeeded in all eight inline cases). Each cell was inspected in both palettes.
+
+The overlay cells describe the sampled opening/one-wheel state, not the maximum
+enlargement achievable through repeated wheel events.
 
 | Sample / width | default inline | slate inline | default overlay | slate overlay |
 |---|---|---|---|---|
@@ -242,8 +263,9 @@ succeeded in all eight inline cases). Each cell was inspected in both palettes.
   caption and make evidence → hypothesis → next check explicit; absence of scale
   events alone does not prove H1. The playbook's later evidence sections are
   necessary context, not evidence that this audit ran an Azure experiment.
-- **Overlay — #217, affecting #234/#273:** Clicking opens a white panel; at 1440
-  the moved diagrams become smaller than inline. A wheel-up event did not yield
+- **Overlay — #217, affecting #234/#273:** In the sampled opening/one-wheel state,
+   clicking opens a white panel; at 1440 the moved diagrams become smaller than
+   inline. One wheel-up event did not yield
   readable mobile branch labels: at 390 the side nodes/leaves extend beyond the
   viewport. In slate, formerly light text/edges become faint against white.
   The visible zoom hint is not proof of usable enlargement. Review overlay
@@ -266,6 +288,43 @@ These findings do not block publishing an honest baseline audit, but they preven
 calling these diagrams visually approved. Full coverage, migration before/after
 inspection, human approval and renderer follow-up remain with the owning issues
 and #217; this sample closes none of those trackers.
+
+## Follow-up Interaction Observation — 2026-11-03 23:50–23:51 UTC
+
+An independent reviewer reported the pan reset and repeated-wheel enlargement
+first. A follow-up **AI-reviewer browser run** reproduced them on the built site
+at source **`2ed31cfe162461d72b1477c724be6acd1b16af5e`**, using the host key/route
+above, Playwright headless Chrome **145.0.0.0**, **1440 × 1000** CSS pixels,
+device scale factor 1 and browser zoom 100%. This is separately timed evidence,
+not a change to the baseline's date or attribution; human approval is **NOT_DONE**.
+The diagram rendered automatically without manual Mermaid calls, while its light
+DOM remained empty. The header controls selected slate/default and the body
+attribute confirmed each palette. Captures waited 500 ms after overlay/palette
+changes and final input; settled overlay opacity was 1.
+
+- **Pan persistence — FAIL, existing interaction defect for #217:** Starting at
+  `translate(0px, 0px) scale(1.5)`, a 100 CSS px rightward mouse drag produced
+  `translate(100px, 0px) scale(1.5)` while held (computed
+  `matrix(1.5, 0, 0, 1.5, 100, 0)`). On release it reset to
+  `translate(0px, 0px) scale(1.5)` (computed `matrix(1.5, 0, 0, 1.5, 0, 0)`),
+  still reset after 500 ms. Two `mermaid-zoom-overlay` IDs briefly existed just
+  after release, returning to one after settling. This is consistent with the
+  existing diagram click handler in `docs/javascripts/mermaid-zoom.js` reopening
+  the overlay after a drag; it is not proof of every possible input path.
+- **Repeated wheel enlargement — observed, not a usability pass:** Twenty
+  wheel-up events, each `deltaY = -100` CSS px (20 ms between events), enlarged
+  the host overlay from scale 1.5 to **3.5** (computed
+  `matrix(3.5, 0, 0, 3.5, 0, 0)`) in both default and slate. Thus the earlier
+  small-panel finding concerns the sampled opening/one-wheel state, not an
+  inability to enlarge. At scale 3.5 the slate labels/edges remained pale on the
+  white panel: **FAIL** for contrast. Pinch and mobile pan were **NOT_CHECKED**
+  in this follow-up.
+
+Five screenshots (inline, drag-held, released, default wheel-20 and slate
+wheel-20) were opened outside Git, named `394-followup-host-*.png`. The measured
+findings remain here if temporary captures expire. Fixing site JavaScript/CSS
+is outside this audit PR; retain the interaction/contrast findings for #217 and
+diagram repairs for #234/#273.
 
 ## See Also
 
