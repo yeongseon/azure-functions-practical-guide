@@ -11,6 +11,7 @@ body:
         See [Issue Scope](https://github.com/yeongseon/azure-functions-practical-guide/blob/main/CONTRIBUTING.md#issue-scope).
         Follow [CONTRIBUTING.md](https://github.com/yeongseon/azure-functions-practical-guide/blob/main/CONTRIBUTING.md#issue-lifecycle) for titles, required sections, and triage.
         Maintainers retain `needs-triage` until validity, duplicates, scope, type, backlog-relative priority, and size are checked. Triaged work needs one `priority:critical/high/medium/low` and one `size: XS/S/M/L/XL` label; missing labels are a maintainer prerequisite, not automatic enforcement.
+        For trackers/decisions, follow the [lighter path](https://github.com/yeongseon/azure-functions-practical-guide/blob/main/CONTRIBUTING.md#trackers-and-executable-issues): state tracking-only/decision-only, links/options and a closure condition; explain non-applicable execution fields.
   - type: input
     id: summary
     attributes:
@@ -23,7 +24,7 @@ body:
     id: details
     attributes:
       label: Context
-      description: Explain the problem, goal, or gap this request would address.
+      description: Explain the repository-local gap, one bounded deliverable, affected files and applicable plan/language/lab/diagram IDs.
       placeholder: Readers need...
     validations:
       required: true
@@ -35,6 +36,14 @@ body:
       placeholder: A new page or section covering...
     validations:
       required: false
+  - type: textarea
+    id: verification
+    attributes:
+      label: Verification and access
+      description: State the verification method and Azure/manual-access needs (or None), including cost/teardown for live work. For runs/captures, give retained locator, revision, sanitized environment, original time and tool/method; otherwise describe planned provenance and mark NOT_RUN/NOT_CAPTURED.
+      placeholder: Targeted local checks; no Azure access needed. No run/capture evidence claimed.
+    validations:
+      required: true
   - type: textarea
     id: acceptance
     attributes:
@@ -54,7 +63,7 @@ body:
     id: references
     attributes:
       label: References
-      description: Relevant issues, PRs, official sources or upstream dependencies with their local relationship; write None if absent.
+      description: Dependencies and relevant issues, PRs or official sources with their local relationship; explicitly state dependencies or None.
     validations:
       required: true
   - type: textarea
