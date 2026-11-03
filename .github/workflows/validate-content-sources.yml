@@ -3,6 +3,7 @@ name: Validate Content Sources
 on:
   pull_request:
     paths:
+      - '**/*.md'
       # These path filters MUST stay at least as broad as the EXTENSIONS set
       # in scripts/normalize_mslearn_locale.py (.md, .py, .yml, .yaml, .json,
       # .bicep, .tf, .txt). Narrowing 'docs/**' to 'docs/**/*.md' or
@@ -24,6 +25,7 @@ on:
     branches:
       - main
     paths:
+      - '**/*.md'
       - 'docs/**'
       - 'scripts/**'
       - 'apps/**'
@@ -80,10 +82,12 @@ jobs:
       - name: Run diagram inventory tests
         run: |
           python scripts/test_diagram_inventory.py
+          python scripts/test_diagram_inventory_tree.py
 
       - name: Validate diagram inventory manifest
         run: |
           python scripts/diagram_inventory.py --check
+          python scripts/check_diagram_inventory_tree.py
 
       - name: Check frontmatter YAML style (canonical ruamel.yaml format)
         run: |
