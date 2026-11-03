@@ -1,43 +1,11 @@
 name: Validate Content Sources
 
 on:
+  # No path restriction: inventory assets span the tracked tree with case-insensitive extensions.
   pull_request:
-    paths:
-      - '**/*.md'
-      # These path filters MUST stay at least as broad as the EXTENSIONS set
-      # in scripts/normalize_mslearn_locale.py (.md, .py, .yml, .yaml, .json,
-      # .bicep, .tf, .txt). Narrowing 'docs/**' to 'docs/**/*.md' or
-      # 'scripts/**' to 'scripts/**/*.py' lets a PR touching only .json files
-      # under those paths bypass the MSLearn locale check entirely.
-      - 'docs/**'
-      - 'scripts/**'
-      - 'apps/**'
-      - 'labs/**'
-      - 'infra/**'
-      - 'AGENTS.md'
-      - 'README*.md'
-      - 'CONTRIBUTING.md'
-      - 'SECURITY.md'
-      - 'CODE_OF_CONDUCT.md'
-      - 'mkdocs.yml'
-      - '.github/workflows/**'
   push:
     branches:
       - main
-    paths:
-      - '**/*.md'
-      - 'docs/**'
-      - 'scripts/**'
-      - 'apps/**'
-      - 'labs/**'
-      - 'infra/**'
-      - 'AGENTS.md'
-      - 'README*.md'
-      - 'CONTRIBUTING.md'
-      - 'SECURITY.md'
-      - 'CODE_OF_CONDUCT.md'
-      - 'mkdocs.yml'
-      - '.github/workflows/**'
 
 jobs:
   validate-content-sources:

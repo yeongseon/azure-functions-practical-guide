@@ -10,12 +10,26 @@ import tempfile
 import unittest
 from pathlib import Path
 
+import yaml
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from scripts import diagram_inventory as inventory
 from scripts.check_diagram_inventory_tree import check_tree
 
 ROOT = Path(__file__).resolve().parents[1]
 FENCE = '<!-- diagram-id: x -->\n```mermaid\nflowchart LR\nA --> B\n```\n'
+
+
+class WorkflowScopeTests(unittest.TestCase):
+    def test_both_events_cover_all_asset_extensions(self) -> None:
+        # Given case-insensitive tracked-tree assets, when CI triggers, then no path filter excludes them.
+        workflow = yaml.load((ROOT / '.github/workflows/validate-content-sources.yml').read_text(),
+                             Loader=yaml.BaseLoader)
+        for event in ('pull_request', 'push'):
+            with self.subTest(event=event):
+                trigger = workflow['on'][event] or {}
+                self.assertNotIn('paths', trigger)
+                self.assertNotIn('paths-ignore', trigger)
 
 
 class TreePolicyTests(unittest.TestCase):
