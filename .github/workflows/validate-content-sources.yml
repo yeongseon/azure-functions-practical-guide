@@ -55,7 +55,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install pyyaml 'ruamel.yaml==0.19.1'
+          pip install pyyaml 'ruamel.yaml==0.19.1' 'jsonschema>=4.0'
 
       # ---------------------------------------------------------------------
       # STRICT checks run first so canonical-drift failures are surfaced
@@ -76,6 +76,14 @@ jobs:
       - name: Validate mermaid syntax
         run: |
           python scripts/validate_mermaid_syntax.py
+
+      - name: Run diagram inventory tests
+        run: |
+          python scripts/test_diagram_inventory.py
+
+      - name: Validate diagram inventory manifest
+        run: |
+          python scripts/diagram_inventory.py --check
 
       - name: Check frontmatter YAML style (canonical ruamel.yaml format)
         run: |

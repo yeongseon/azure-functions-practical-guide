@@ -150,9 +150,9 @@ sequenceDiagram
     EH->>Func: Deliver batch
     Func->>Func: Process batch (delay 0 or 2500)
     Func->>AI: Emit batch trace before handler returns
-    Note over Func,Store: Host manages checkpoints; handler does not read durable position
-    Note over Func,AI: AppRequests records invocation duration; historical trace name was CheckpointDelta
-    AI-->>Operator: Duration, enqueue age, batchSize trends; no checkpoint delta
+    Note over Func,Store: Host manages checkpoints#59; handler does not read durable position
+    Note over Func,AI: AppRequests records invocation duration#59; historical trace name was CheckpointDelta
+    AI-->>Operator: Duration, enqueue age, batchSize trends#59; no checkpoint delta
 ```
 
 ### Experiment phases used in this run

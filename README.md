@@ -36,10 +36,10 @@ Comprehensive guide for running serverless applications on Azure Functions — f
 | [Best Practices](https://yeongseon.dev/azure-functions-python/practical-guide/best-practices/) | Hosting selection, triggers, scaling, reliability, security, deployment | Comprehensive |
 | [Language Guides](https://yeongseon.dev/azure-functions-python/practical-guide/language-guides/) | Step-by-step tutorials for Python, Node.js, Java, and .NET | Comprehensive |
 | [Operations](https://yeongseon.dev/azure-functions-python/practical-guide/operations/) | Deployment, monitoring, alerts, cost optimization, recovery | Comprehensive |
-| [Troubleshooting](https://yeongseon.dev/azure-functions-python/practical-guide/troubleshooting/) | Playbooks, KQL queries, methodology, and hands-on labs | Lab-validated |
+| [Troubleshooting](https://yeongseon.dev/azure-functions-python/practical-guide/troubleshooting/) | Playbooks, KQL queries, methodology, and hands-on labs | Historical lab coverage |
 | [Reference](https://yeongseon.dev/azure-functions-python/practical-guide/reference/) | CLI cheatsheet, host.json, platform limits | Comprehensive |
 
-**Status legend**: **Lab-validated** = Comprehensive + reproducible labs prove the guidance · **Comprehensive** = Full section, MSLearn-verified, production-ready · **Published** = Core content in place, still expanding · **In progress** = Partial content, active development · **Planned** = Placeholder, content not yet started
+**Status legend**: **Historical lab coverage** = Comprehensive guidance accompanied by reported historical lab observations (unverified trust; see the [Validation Evidence Audit](https://yeongseon.dev/azure-functions-python/practical-guide/reference/validation-evidence-audit/)) · **Comprehensive** = Full section, MSLearn-verified, production-ready · **Published** = Core content in place, still expanding · **In progress** = Partial content, active development · **Planned** = Placeholder, content not yet started
 
 ## Hosting Scope
 
