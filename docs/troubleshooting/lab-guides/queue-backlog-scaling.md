@@ -351,7 +351,12 @@ same ordering to baseline, fault and recovery below.
     phase ordering. Enqueue only
     `baseline-001` in normal mode after readiness. Require its delivery, one
     committed record, successful invocation and correlated runtime delete before
-    fault injection. All validity controls must be eligible; stop on missing data.
+    fault injection. Establish pre-injection eligibility through the configuration,
+    access/query checks and positive baseline delivery/Queue/Blob samples. No
+    exception sample is expected from normal baseline work; retain positive
+    exception-path samples during the declared fault phase before evaluating
+    `collection` as valid. Stop on missing baseline prerequisites; later collection
+    gaps leave the control unresolved, not implicitly valid.
 3. **Fault:** confirm the same package/configuration and use that shared sequence.
     Enqueue the
     transient, poison and redelivery keys with their fixed modes, retaining all
@@ -806,7 +811,7 @@ rather than duplicating captures or replacing raw records with a summary label.
 | `versions`, `artifact` | Host startup/bundle inventory, exact resolved versions, effective settings, built-package digest and release-marker startup/invocation lines in `config-and-versions` and `built-activation`. | Binds behavior to the frozen package and environment; source hash alone cannot identify activated bytes. |
 | `sequencing` | Deployment/configuration acceptance, restart request/completion receipts, host indexing/listener-ready lines, producer acceptance and observation timestamps in each phase's restart receipts and logs. | Establishes phase order; a successful restart does not establish cause or recovery. |
 | `work-identity` | Producer send receipts: work key, mode, exact submitted body SHA-256, source message ID, send acceptance UTC and service insertion/expiry times where available; join to handler delivery records. | Links business identity to service identity; producer `enqueuedUtc` is not service insertion or first dequeue time. |
-| `collection` | Baseline positive samples from each delivery, exception, Queue and Blob collection path, diagnostic/sampling/filter configuration, exact queries/windows and collection-error responses. | Establishes collection coverage; missing records with an unhealthy path cannot establish absence. |
+| `collection` | Pre-injection diagnostic/sampling/filter configuration and access/query checks for all paths; positive baseline delivery/Queue/Blob samples; positive exception samples from the declared fault phase. Retain exact queries/windows and collection-error responses. | Baseline checks establish eligibility to inject, not final exception-path coverage. Evaluate this control only after fault collection; missing records with an unhealthy path cannot establish absence. |
 | `baseline` | Baseline host readiness lines plus producer receipt, delivery-start/invocation outcome, authoritative Blob record/read and correlated successful runtime queue deletion. | Exercises the complete control path, not just HTTP status or function inventory. |
 | `failure`, `retry` | `deliveries` and `exceptions-and-results`: source ID, `dequeueCount`, invocation ID, mode/key, release/worker identity, delivery-start UTC, exception type and host completion/failure lines for every attempt; Queue receive/visibility-update service operations where available. | Distinguishes transient counts 1/2/3 and their outcomes; a count gap cannot reconstruct an unretained attempt, and an exception is not a sink read. |
 | `poison` | Five source delivery/failure records; non-consuming `work-items-poison` peek response with poison message ID, body/hash, insertion/expiry time, its own dequeue count and observation UTC; host poison-handling lines and correlated Queue add/delete service operations. Keep an explicit source-ID -> poison-ID mapping via the producer's body hash and run/work key. | Links the failed original payload to a new poison item; do not assume the poison body contains the original service ID or that its count equals five. Pair with sink reads to decide no commit. |
