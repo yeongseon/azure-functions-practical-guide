@@ -610,4 +610,5 @@ nav:
   - Contributing:
     - contributing/index.md
     - Documentation Content Contract: contributing/content-contract.md
+    - Tutorial Screenshot Inventory: contributing/tutorial-screenshot-inventory.md
     - contributing/cross-guide-baseline.md

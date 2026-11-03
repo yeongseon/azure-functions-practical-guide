@@ -97,6 +97,9 @@ to your change; these requirements apply equally to human and agent authors.
 | Screenshots | [Capture pipeline, compliant authentication, final-byte review](content-contract.md#image-and-screenshot-rules) |
 | Frontmatter | [YAML serialization rules](content-contract.md#frontmatter-yaml-style) and [validation scope/schema](content-contract.md#text-content-validation) |
 
+For capture planning, use the SHA-pinned [Tutorial Screenshot Inventory](tutorial-screenshot-inventory.md)
+for per-language/plan/step gaps, existing capture IDs, and proposed small batches.
+
 ## Content Source Policy
 
 All content must be traceable to official Microsoft Learn documentation. Follow
