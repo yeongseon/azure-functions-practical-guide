@@ -20,6 +20,8 @@ content_sources:
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/storage/common/storage-network-security
     - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/storage/common/storage-network-security-limitations
+    - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/troubleshoot/azure/azure-storage/blobs/authentication/storage-troubleshoot-403-errors
@@ -460,7 +462,11 @@ Reuse the [ownership and collection prerequisites](#ownership-topology-and-valid
 with these variant-specific controls frozen before any authorized future run:
 
 1. **Baseline/control:** host Blob requests must use the permitted **public**
-    endpoint with `publicNetworkAccess=Enabled`; retain effective firewall rules,
+    endpoint with `publicNetworkAccess=Enabled`. Before baseline collection,
+    establish `networkAcls.defaultAction=Deny` and the specific permitted
+    public-endpoint path: [disabling public access through Portal, PowerShell or
+    Azure CLI also sets defaultAction to Deny](https://learn.microsoft.com/en-us/azure/storage/common/storage-network-security-limitations).
+    Freeze the complete network configuration, retaining effective firewall rules,
     exceptions and actual caller path. No host Blob private endpoint/fallback may
     bypass the target. Keep diagnostic Table access on a fixed, approved Table
     private endpoint and DNS path, and export Blob resource logs to a separate
@@ -472,12 +478,18 @@ with these variant-specific controls frozen before any authorized future run:
     `publicNetworkAccess` from `Enabled` to `Disabled`. Keep every assignment,
     identity selector, DNS record, route, NSG rule, deployment setting and package
     fixed. Do not remove any role or alter an allowlist as a second intervention.
-    Retain the property diff and change receipt; use the same restart/window/probe
+    Use a reviewed update method whose captured diff changes only
+    `publicNetworkAccess`; any additional change invalidates the single-property
+    intervention. Retain the change receipt; use the same restart/window/probe
     protocol as above. Table private-endpoint access must remain healthy.
 3. **Recovery:** restore that property to its captured baseline value, leaving
     original rules and all permissions untouched. Apply the same observation
     protocol and ownership-restricted cleanup receipt, restoring the network
-    property even if collection fails. Recovered Blob operations and Timer
+    property even if collection fails. For this variant, network-property
+    restoration replaces the RBAC-assignment restoration step in the shared
+    cleanup receipt; verify all role assignments are unchanged. If an update
+    changed other network properties, restore the complete captured baseline and
+    record the isolation failure. Recovered Blob operations and Timer
     occurrences are `recovery`, not a unique-cause certificate.
 
 ##### Compact causal test matrix
@@ -506,10 +518,12 @@ principal, harmless operation/object and phase intervals across collectors. In
 [StorageBlobLogs](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/storagebloblogs),
 retain sanitized `TimeGenerated`, `AccountName`, `ServiceType`, `OperationName`,
 `AuthenticationType`, `RequesterObjectId`, `CallerIpAddress`, `StatusCode`,
-`StatusText`, `ClientRequestId` and relevant `AuthorizationDetails` when populated;
-correlate with the probe's client request ID, response `x-ms-request-id` and
-`x-ms-error-code`. Do not assume the server request ID equals `ClientRequestId`,
-or that rejected requests populate every identity/policy field. Missing matching
+`StatusText`, `ClientRequestId`, `Uri`, `ObjectKey` and relevant
+`AuthorizationDetails` when populated. Match `ClientRequestId` to the probe's
+`x-ms-client-request-id`, together with account, operation/object and time window.
+Retain the response `x-ms-request-id` and `x-ms-error-code` separately; do not assume
+an undocumented server-ID mapping. Rejected requests may not populate every
+identity/policy field. Missing matching
 logs, probe context or unchanged Table diagnostics makes attribution undecidable;
 use the existing outcome rules, not absence-as-disproof.
 
@@ -1388,6 +1402,7 @@ az group delete \
 - [Host connections and identity permission table](https://learn.microsoft.com/en-us/azure/azure-functions/manage-connections#grant-permissions-to-an-identity)
 - [Flex deployment storage settings](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to#configure-deployment-settings)
 - [Storage network security](https://learn.microsoft.com/en-us/azure/storage/common/storage-network-security)
+- [Storage firewall guidelines and limitations](https://learn.microsoft.com/en-us/azure/storage/common/storage-network-security-limitations)
 - [Storage private endpoints and DNS](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints)
 - [Troubleshoot Storage 403 errors](https://learn.microsoft.com/en-us/troubleshoot/azure/azure-storage/blobs/authentication/storage-troubleshoot-403-errors)
 - [Monitor Blob Storage](https://learn.microsoft.com/en-us/azure/storage/blobs/monitor-blob-storage)
