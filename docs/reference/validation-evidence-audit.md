@@ -164,10 +164,9 @@ record of OS, region, host/runtime versions, configuration or retained artifacts
 ### Reproduce the Inventory Without Rewriting Status
 
 Use a clean detached checkout of the desired SHA and a Python 3.11 environment
-with the repository's documentation dependencies. For this snapshot, the Python
-executable used was `/tmp/opencode/venv311/bin/python` (the `python` commands
-below use that environment on PATH); that environment location is not part of
-the evidence identity. From the repository root:
+with the repository's documentation dependencies and `ruamel.yaml==0.19.1`
+(`pip install -r requirements-docs.txt 'ruamel.yaml==0.19.1'`). The interpreter
+location is not part of the evidence identity. From the repository root:
 
 ```bash
 SNAPSHOT_SHA=e1c409ee42d179d65ff0033295d998dc96fb1953
