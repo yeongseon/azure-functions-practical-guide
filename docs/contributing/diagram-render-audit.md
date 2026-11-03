@@ -134,10 +134,14 @@ for unperformed checks. `PASS` means readable and semantically correct, not just
 - Fault/decision: NOT_CHECKED — symptom -> evidence -> next decision; label every
   branch, start and end; distinguish evidence, hypothesis and confirmed verdict.
   For sequences check participants, message direction and temporal order instead.
-- Network boundaries: NOT_CHECKED — host outside customer subnets; PE is an
-  inbound NIC in a subnet, not the service; VNet integration is outbound-only
-  via its delegated subnet; Private DNS zone outside VNets, linked not contained.
-  Check hosting-plan assumptions against Learn and the shared topology grammar.
+- Network boundaries: NOT_CHECKED — identify hosting plan and integration mode.
+  Do not infer customer-subnet containment from multitenant VNet integration;
+  documented ASE hosting is a distinct case where the environment and hosted apps
+  run within a customer-VNet subnet. A PE is a NIC in a subnet providing private
+  inbound access to its target service, not containment of that service. Regional
+  VNet integration provides outbound connectivity through a delegated subnet, not
+  private inbound access; check plan-specific support and delegation. Show Private
+  DNS zones as linked to VNets, not contained within them.
 - Accessibility: NOT_CHECKED — meaningful accTitle/accDescr or nearby caption;
   accessible name/description checked; meaning not conveyed by colour alone.
 - Readability: NOT_CHECKED — label size, whitespace, hierarchy, viewBox behavior,
@@ -278,5 +282,6 @@ and #217; this sample closes none of those trackers.
 - [Final coverage and bounded audit scope — #217](https://github.com/yeongseon/azure-functions-practical-guide/issues/217)
 - [Shared Azure topology grammar — App Service #296](https://github.com/yeongseon/azure-app-service-practical-guide/issues/296)
 - [Functions networking options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)
+- [App Service Environment overview](https://learn.microsoft.com/en-us/azure/app-service/environment/overview)
 - [Queue trigger behavior](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger)
 - [Material native Mermaid integration](https://squidfunk.github.io/mkdocs-material/reference/diagrams/)
