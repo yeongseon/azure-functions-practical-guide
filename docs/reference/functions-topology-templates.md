@@ -15,7 +15,7 @@ content_sources:
     - id: functions-v1-base-failure
       type: flowchart
       source: self-generated
-      justification: Illustrative host-storage access failure anchored on the base metadata edge; diagnostic suggestions are not lab results.
+      justification: Illustrative host-storage access failure anchored on the base data-plane edge; diagnostic suggestions are not lab results.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-recover-storage-account
@@ -109,10 +109,10 @@ and DNS zones, potentially Files/Table/Queue, and content-share routing where
 applicable ([secured storage](https://learn.microsoft.com/en-us/azure/azure-functions/configure-networking-how-to)).
 
 **Reading key:** solid single-headed edges carry polling/invocation/data; dotted
-edges carry scaling/control/metadata or DNS queries; thick red `==>` edges also
+edges carry scaling/control or DNS queries; thick red `==>` edges also
 say `[FAULT / Illustrative]`, so colour is never the only fault cue. Arrows name
-the initiator, not the direction of the returned message. Host-storage metadata
-uses a Storage data-plane API, **not ARM control plane**. Dashed scaling links
+the initiator, not the direction of the returned message. Host state and keys
+use a solid Storage data-plane path, **not ARM control plane**. Dashed scaling links
 are a logical summary, not undocumented Azure-managed transport. No `[Observed]`
 claims are used: that prefix requires a named retained lab artifact.
 
@@ -134,7 +134,7 @@ flowchart TD
     scale_controller -.->|"[Configured] Adjust instances"| app_runtime
     app_runtime -->|"[Configured] Poll queue"| client
     app_runtime -->|"[Configured] Invoke function"| language_worker
-    app_runtime -.->|"[Configured] Host metadata"| storage_db
+    app_runtime -->|"[Configured] Host state / keys"| storage_db
     classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
     classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e;
     classDef bandMuted fill:#ffffff,stroke:#707e93,stroke-width:1.5px,stroke-dasharray:4 3,color:#14202e;
@@ -154,7 +154,7 @@ dependency, not the queue invocation itself.
 ```mermaid
 flowchart TD
     accTitle: Functions base - host storage failure
-    accDescr: Illustrative failure on the host-to-Blob metadata edge, not on worker execution. Collect host errors before choosing a storage diagnosis.
+    accDescr: Illustrative failure on the host-to-Blob data-plane edge, not on worker execution. Collect host errors before choosing a storage diagnosis.
     scale_controller["Scale controller<br/>[Control and metadata]"]
     client(["Event source: Storage queue<br/>[Public endpoint]"])
     app_runtime["Compute: Functions host<br/>[Premium runtime]"]
@@ -205,7 +205,7 @@ flowchart TD
     app_runtime -.->|"[Illustrative] Owns listener"| trigger_listener
     trigger_listener -->|"[Configured] Poll queue"| client
     app_runtime -->|"[Configured] Invoke function"| language_worker
-    app_runtime -.->|"[Configured] Host metadata"| storage_db
+    app_runtime -->|"[Configured] Host state / keys"| storage_db
     classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
     classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e;
     classDef bandMuted fill:#ffffff,stroke:#707e93,stroke-width:1.5px,stroke-dasharray:4 3,color:#14202e;
@@ -238,7 +238,7 @@ flowchart TD
     app_runtime -.->|"[Illustrative] Owns listener"| trigger_listener
     trigger_listener ==>|"[FAULT / Illustrative] Poll fails"| client
     app_runtime -->|"[Configured] Invoke function"| language_worker
-    app_runtime -.->|"[Configured] Host metadata"| storage_db
+    app_runtime -->|"[Configured] Host state / keys"| storage_db
     classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
     classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e;
     classDef bandMuted fill:#ffffff,stroke:#707e93,stroke-width:1.5px,stroke-dasharray:4 3,color:#14202e;
@@ -274,10 +274,10 @@ flowchart TD
     storage_db[("Host storage: Azure Blob<br/>[AzureWebJobsStorage slice]")]
     dns_fn{{"Private DNS zone: Blob<br/>[Linked to VNet]"}}
     subgraph vnet_fn["Customer VNet &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [VNet boundary]"]
-        subgraph subnet_int_fn["Subnet: VNet integration &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [delegated]"]
+        subgraph subnet_int_fn["Subnet: VNet integration &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [delegated]"]
             vnet_integration[["VNet Integration: delegated NIC<br/>[Outbound only]"]]
         end
-        subgraph subnet_pe_fn["Subnet: private endpoints &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Inbound NIC]"]
+        subgraph subnet_pe_fn["Subnet: private endpoints &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Inbound NIC]"]
             pe_storage[["Private Endpoint: Storage NIC<br/>[Inbound private IP]"]]
         end
     end
@@ -286,9 +286,11 @@ flowchart TD
     app_runtime -->|"[Configured] Poll queue"| client
     app_runtime -->|"[Configured] Invoke function"| language_worker
     app_runtime -.->|"[Configured] DNS returns PE IP"| dns_fn
-    app_runtime -->|"[Configured] Outbound Blob access"| vnet_integration
+    app_runtime -->|"[Configured] Host state / keys"| vnet_integration
     vnet_integration -->|"[Configured] Connect to PE IP"| pe_storage
     pe_storage -->|"[Configured] Private Link to Blob"| storage_db
+    client ~~~ language_worker
+    language_worker ~~~ dns_fn
     classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
     classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e;
     classDef bandMuted fill:#ffffff,stroke:#707e93,stroke-width:1.5px,stroke-dasharray:4 3,color:#14202e;
@@ -322,10 +324,10 @@ flowchart TD
     storage_db[("Host storage: Azure Blob<br/>[AzureWebJobsStorage slice]")]
     dns_fn{{"Private DNS zone: Blob<br/>[Linked to VNet]"}}
     subgraph vnet_fn["Customer VNet &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [VNet boundary]"]
-        subgraph subnet_int_fn["Subnet: VNet integration &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [delegated]"]
+        subgraph subnet_int_fn["Subnet: VNet integration &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [delegated]"]
             vnet_integration[["VNet Integration: delegated NIC<br/>[Outbound only]"]]
         end
-        subgraph subnet_pe_fn["Subnet: private endpoints &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Inbound NIC]"]
+        subgraph subnet_pe_fn["Subnet: private endpoints &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Inbound NIC]"]
             pe_storage[["Private Endpoint: Storage NIC<br/>[Inbound private IP]"]]
         end
     end
@@ -334,9 +336,11 @@ flowchart TD
     app_runtime -->|"[Configured] Poll queue"| client
     app_runtime -->|"[Configured] Invoke function"| language_worker
     app_runtime -.->|"[Configured] DNS returns PE IP"| dns_fn
-    app_runtime -->|"[Configured] Outbound Blob access"| vnet_integration
+    app_runtime -->|"[Configured] Host state / keys"| vnet_integration
     vnet_integration ==>|"[FAULT / Illustrative] Connection blocked"| pe_storage
     pe_storage -->|"[Configured] Private Link to Blob"| storage_db
+    client ~~~ language_worker
+    language_worker ~~~ dns_fn
     classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
     classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e;
     classDef bandMuted fill:#ffffff,stroke:#707e93,stroke-width:1.5px,stroke-dasharray:4 3,color:#14202e;
@@ -422,8 +426,10 @@ figures at 1440 and 390 CSS pixels in `default` and `slate`, then click to zoom
 and pan. Check titles, captions, arrowheads, fault labels, container-title clearance
 and SVG viewBox; record actual observations, not just parse success. Normal/failure
 pairs retain IDs and declaration order, **not guaranteed pixel positions**: Dagre
-reflows as edges/subgraphs change. At narrow widths full-graph labels may require
-zoom; do not shrink a complex topology until text becomes the only casualty.
+reflows as edges/subgraphs change. **Known limitation:** the network figures are
+not legible as full graphs at 390 CSS pixels; narrow-view acceptance remains open.
+Use a wider viewport to read them; zoom is not evidence that responsive acceptance
+has passed.
 Sequence messages use their native return-arrow convention, not topology edge
 weights. These are explicit layout/type exceptions, not Azure topology exceptions.
 Human visual approval is still required before broad migration.

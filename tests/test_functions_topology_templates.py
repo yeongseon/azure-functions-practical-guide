@@ -23,7 +23,15 @@ NODE: Final = re.compile(r'^\s*(\w+)(\[\[|\[\(|\(\[|\{\{|\[|>)("[^"]+")(\]\]|\)\
 EDGE: Final = re.compile(r'^\s*(\w+) (-->|-\.->|==>|~~~)(?:\|"([^"\n]+)"\|)? (\w+)$')
 CONTAINER: Final = re.compile(r'^\s*subgraph (\w+)\["([^"]+)"\]$')
 STYLE: Final = re.compile(r"^\s*linkStyle (\d+(?:,\d+)*) (.+);$")
-CLAIM: Final = re.compile(r"^\[(?:Configured|Illustrative|Inferred)\] ")
+CLAIM: Final = re.compile(r"\[(?:Configured|Illustrative|Inferred|Observed)\] \S.*")
+FAULT: Final = re.compile(r"\[FAULT / (?:Illustrative|Inferred|Observed)\] \S.*")
+PALETTE: Final = {
+    "baseNeutral": "fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e",
+    "focusActive": "fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e",
+    "bandMuted": "fill:#ffffff,stroke:#707e93,stroke-width:1.5px,stroke-dasharray:4 3,color:#14202e",
+    "stateFault": "fill:#fdebee,stroke:#da495d,stroke-width:3px,color:#86172a",
+    "netBox": "fill:transparent,stroke:#287ce4,stroke-width:2px,stroke-dasharray:6 3",
+}
 SHAPES: Final = {
     "client": ("([", "])"), "storage_db": ("[(", ")]"),
     "app_runtime": ("[", "]"), "language_worker": ("[", "]"),
@@ -38,6 +46,9 @@ def topology_problems(code: str) -> list[str]:
     problems: list[str] = []
     nodes: list[str] = []
     containers: list[str] = []
+    container_ids: list[str] = []
+    classes: set[str] = set()
+    assignments: list[tuple[str, str]] = []
     placement: dict[str, tuple[str, ...]] = {}
     edges: list[tuple[str, str, str, str]] = []
     styles: dict[int, str] = {}
@@ -49,6 +60,7 @@ def topology_problems(code: str) -> list[str]:
             if name.startswith("subnet_") and (not containers or not containers[-1].startswith("vnet_")):
                 problems.append("subnet outside VNet")
             containers.append(name)
+            container_ids.append(name)
         elif line.strip() == "end":
             if containers:
                 containers.pop()
@@ -64,25 +76,40 @@ def topology_problems(code: str) -> list[str]:
                 problems.append("runtime inside customer container")
             if (name.startswith("dns") or "Private DNS zone" in label) and containers:
                 problems.append("DNS inside customer container")
+            if containers and name not in ("vnet_integration", "pe_storage"):
+                problems.append("service inside customer container")
         elif match := EDGE.fullmatch(line):
             source, arrow, label, target = match.groups()
             edges.append((source, arrow, label or "", target))
-            if arrow != "~~~" and not (CLAIM.match(label or "") or (arrow == "==>" and (label or "").startswith("[FAULT / Illustrative] "))):
+            if arrow != "~~~" and not (FAULT if arrow == "==>" else CLAIM).fullmatch(label or ""):
                 problems.append("missing edge claim or fault prefix")
             if arrow == "~~~" and label:
                 problems.append("label on layout anchor")
-            if target.startswith("dns") and arrow != "-.->":
+            if target.startswith("dns") and arrow not in ("-.->", "~~~"):
                 problems.append("DNS lookup must be dotted")
-            if source.startswith("dns"):
+            if source.startswith("dns") and arrow != "~~~":
                 problems.append("DNS lookup starts at zone")
         elif match := STYLE.fullmatch(line):
             styles.update((int(index), match[2]) for index in match[1].split(","))
-        elif not re.fullmatch(r"\s*(?:classDef .+;|class .+;|linkStyle default stroke-width:2px;|%%.*|)", line):
+        elif match := re.fullmatch(r"\s*classDef (\w+) ([^;]+);", line):
+            classes.add(match[1])
+            if PALETTE.get(match[1]) != match[2]:
+                problems.append("unsupported class palette")
+        elif match := re.fullmatch(r"\s*class (\w+(?:,\w+)*) (\w+);", line):
+            assignments.extend((member, match[2]) for member in match[1].split(","))
+        elif not re.fullmatch(r"\s*(?:linkStyle default stroke-width:2px;|%%.*|)", line):
             problems.append("unsupported topology line")
     if containers:
         problems.append("unbalanced container")
     if len(nodes) != len(set(nodes)):
         problems.append("duplicate node")
+    if len(container_ids) != len(set(container_ids)) or set(container_ids) & set(nodes):
+        problems.append("duplicate container")
+    for member, class_name in assignments:
+        if member not in nodes + container_ids:
+            problems.append("undeclared class member")
+        if class_name not in classes:
+            problems.append("undefined class")
     if tuple(n for n in nodes if n in BASE) != BASE:
         problems.append("base IDs or declaration order differ")
     for source, _, _, target in edges:
@@ -91,7 +118,7 @@ def topology_problems(code: str) -> list[str]:
     if any(index >= len(edges) for index in styles):
         problems.append("linkStyle index out of range")
     faults = {i for i, (_, arrow, _, _) in enumerate(edges) if arrow == "==>"}
-    if set(styles) != faults or any("stroke:#da495d,stroke-width:3px" not in styles[i] for i in faults & styles.keys()):
+    if set(styles) != faults or any(styles[i] != "stroke:#da495d,stroke-width:3px" for i in faults & styles.keys()):
         problems.append("fault linkStyle differs from fault edges")
     for name in ("vnet_integration", "pe_storage"):
         if name in nodes:
@@ -100,6 +127,49 @@ def topology_problems(code: str) -> list[str]:
             if chain != ("vnet_fn", expected):
                 problems.append("NIC outside its dedicated subnet")
     return problems
+
+
+def sequence_problems(code: str) -> list[str]:
+    problems: list[str] = []
+    participants: list[str] = []
+    messages: list[tuple[str, str, str]] = []
+    for line in code.splitlines()[3:]:
+        if match := re.fullmatch(r"    participant (\w+) as [^\s;][^;]*", line):
+            participants.append(match[1])
+        elif match := re.fullmatch(r"    (\w+)(?:->>|-->>)(\w+): (.*)", line):
+            messages.append((match[1], match[2], match[3]))
+        else:
+            problems.append("unsupported sequence statement")
+    if len(participants) != len(set(participants)):
+        problems.append("duplicate participant")
+    for source, target, label in messages:
+        if source not in participants or target not in participants:
+            problems.append("undeclared sequence endpoint")
+        if not CLAIM.fullmatch(label):
+            problems.append("missing sequence claim or description")
+    return problems
+
+
+def relationship_problems(name: str, code: str) -> list[str]:
+    edges = {(m[1], m[2], m[4]) for line in code.splitlines() if (m := EDGE.fullmatch(line))}
+    failure = name.endswith("failure")
+    trigger = "-trigger-" in name
+    network = "-network-storage-" in name
+    expected = [
+        ("poll", "trigger_listener" if trigger else "app_runtime", "==>" if trigger and failure else "-->", "client"),
+        ("invoke", "app_runtime", "-->", "language_worker"),
+        ("scale", "scale_controller", "-.->", "app_runtime"),
+    ]
+    if network:
+        expected.extend([
+            ("DNS", "app_runtime", "-.->", "dns_fn"),
+            ("host storage", "app_runtime", "-->", "vnet_integration"),
+            ("integration to PE", "vnet_integration", "==>" if failure else "-->", "pe_storage"),
+            ("PE to storage", "pe_storage", "-->", "storage_db"),
+        ])
+    else:
+        expected.append(("host storage", "app_runtime", "==>" if failure and not trigger else "-->", "storage_db"))
+    return [f"essential relationship: {purpose}" for purpose, source, arrow, target in expected if (source, arrow, target) not in edges]
 
 
 def template_problems(text: str) -> list[str]:
@@ -115,8 +185,9 @@ def template_problems(text: str) -> list[str]:
         problems.append("missing or unexpected variant")
     base_declarations: list[tuple[str, ...]] = []
     for name, code in fixtures:
-        for keyword in ("accTitle", "accDescr"):
-            if not re.search(rf"^    {keyword}: [^\s\n].*$", code, re.MULTILINE):
+        lines = code.splitlines()
+        for position, keyword in enumerate(("accTitle", "accDescr"), 1):
+            if len(lines) <= position or not re.fullmatch(rf"    {keyword}: \S.*", lines[position]):
                 problems.append(f"missing or empty {keyword}")
         if "[Observed]" in code or "/ Observed]" in code:
             # This synthetic family has no retained lab artifact: fail closed.
@@ -127,16 +198,14 @@ def template_problems(text: str) -> list[str]:
             if not code.startswith("flowchart TD\n"):
                 problems.append("topology orientation/type")
             problems.extend(topology_problems(code))
+            problems.extend(relationship_problems(name, code))
             base_declarations.append(tuple(line.strip() for line in code.splitlines() if (m := NODE.fullmatch(line)) and m[1] in BASE))
             if name.endswith("failure") and "==>" not in code:
                 problems.append("failure lacks anchored fault")
         elif name == SEQUENCE:
             if not code.startswith("sequenceDiagram\n"):
                 problems.append("sequence type")
-            participants = re.findall(r"^    participant (\w+) as .+$", code, re.MULTILINE)
-            for source, target in re.findall(r"^    (\w+)-{1,2}>>(\w+):", code, re.MULTILINE):
-                if source not in participants or target not in participants:
-                    problems.append("undeclared sequence endpoint")
+            problems.extend(sequence_problems(code))
     if base_declarations and any(declarations != base_declarations[0] for declarations in base_declarations):
         problems.append("base declarations differ across variants")
     return problems
@@ -165,9 +234,9 @@ def test_committed_templates() -> None:
     ('app_runtime -->', 'app_runtime <-->', "bidirectional topology edge"),
     ('Customer VNet &nbsp;', 'Customer VNet /27 &nbsp;', "CIDR in container title"),
     ('[Configured]', '[Observed]', "Observed without retained artifact"),
-    ('    app_runtime["', '    subgraph subnet_bad["Subnet: bad"]\n    app_runtime["', "runtime inside customer container"),
-    ('    dns_fn{{', '    subgraph vnet_bad["Customer VNet"]\n    dns_fn{{', "DNS inside customer container"),
-    ('    pe_storage[[', '    pe_storage[', "unknown component or wrong shape"),
+    ('    app_runtime["Compute: Functions host<br/>[Premium runtime]"]', '    subgraph vnet_bad["Customer VNet"]\n    app_runtime["Compute: Functions host<br/>[Premium runtime]"]\n    end', "runtime inside customer container"),
+    ('    dns_fn{{"Private DNS zone: Blob<br/>[Linked to VNet]"}}', '    subgraph vnet_bad["Customer VNet"]\n    dns_fn{{"Private DNS zone: Blob<br/>[Linked to VNet]"}}\n    end', "DNS inside customer container"),
+    ('pe_storage[["Private Endpoint: Storage NIC<br/>[Inbound private IP]"]]', 'pe_storage["Private Endpoint: Storage NIC<br/>[Inbound private IP]"]', "unknown component or wrong shape"),
     ('subgraph subnet_pe_fn[', 'subgraph subnet_int_fn[', "NIC outside its dedicated subnet"),
     ('[Configured] Monitor event rate', 'Monitor event rate', "missing edge claim or fault prefix"),
     ('==>|"[FAULT / Illustrative]', '-->|"[FAULT / Illustrative]', "missing edge claim or fault prefix"),
@@ -184,6 +253,31 @@ def test_committed_templates() -> None:
     ('    end\n    scale_controller -.->', '    scale_controller -.->', "unbalanced container"),
     ('    app_runtime -.->|"[Configured] DNS returns PE IP"| dns_fn', '    dns_fn -.->|"[Configured] DNS returns PE IP"| app_runtime', "DNS lookup starts at zone"),
     ('    app_runtime ==>|"[FAULT / Illustrative] Storage unavailable"| storage_db', '', "failure lacks anchored fault"),
+    ('[FAULT / Illustrative] Storage unavailable', '[Configured] Storage unavailable', "missing edge claim or fault prefix"),
+    ('[Configured] Poll queue', '[Configured] ', "missing edge claim or fault prefix"),
+    ('app_runtime->>language_worker:', 'app_runtime->ghost:', "unsupported sequence statement"),
+    ('app_runtime->>language_worker:', 'ghost->>language_worker:', "undeclared sequence endpoint"),
+    ('[Illustrative] Invoke function', '[Illustrative] ', "missing sequence claim or description"),
+    ('    participant language_worker as Isolated worker', '    participant language_worker as Isolated worker\n    participant language_worker as Duplicate', "duplicate participant"),
+    ('    app_runtime->>language_worker:', '    garbage\n    app_runtime->>language_worker:', "unsupported sequence statement"),
+    ('class client,language_worker,storage_db baseNeutral;', 'class client,language_worker,storage_db baseNeutral; app_runtime --> ghost;', "unsupported topology line"),
+    ('class client,language_worker,storage_db baseNeutral;', 'class client,language_worker,ghost baseNeutral;', "undeclared class member"),
+    ('class app_runtime focusActive;', 'class app_runtime mystery;', "undefined class"),
+    ('classDef baseNeutral fill:#f2f4f8', 'classDef baseNeutral fill:#ffffff', "unsupported class palette"),
+    ('linkStyle 4 stroke:#da495d,stroke-width:3px;', 'linkStyle 4 stroke:#da495d,stroke-width:3px,stroke:#ffffff,stroke-width:0px;', "fault linkStyle differs from fault edges"),
+    ('classDef baseNeutral fill:#f2f4f8,', 'classDef baseNeutral fill:#f2f4f8,fill:#ffffff,', "unsupported class palette"),
+    ('    class app_runtime focusActive;', '    style app_runtime fill:#ffffff;\n    class app_runtime focusActive;', "unsupported topology line"),
+    ('    scale_controller -.->|"[Configured] Monitor event rate"| client', '    subgraph vnet_empty["Customer VNet"]\n    end\n    subgraph vnet_empty["Customer VNet"]\n    end\n    scale_controller -.->|"[Configured] Monitor event rate"| client', "duplicate container"),
+    ('flowchart TD\n    accTitle:', 'garbage\n    accTitle:', "topology orientation/type"),
+    ('flowchart TD\n    accTitle:', 'flowchart TD\n    garbage\n    accTitle:', "missing or empty accTitle"),
+    ('    app_runtime -->|"[Configured] Poll queue"| client', '', "essential relationship: poll"),
+    ('    app_runtime -->|"[Configured] Poll queue"| client', '    app_runtime ~~~ client', "essential relationship: poll"),
+    ('    app_runtime -->|"[Configured] Poll queue"| client', '    app_runtime -.->|"[Configured] Poll queue"| client', "essential relationship: poll"),
+    ('    app_runtime -->|"[Configured] Invoke function"| language_worker', '    app_runtime -.->|"[Configured] Invoke function"| language_worker', "essential relationship: invoke"),
+    ('    scale_controller -.->|"[Configured] Adjust instances"| app_runtime', '', "essential relationship: scale"),
+    ('    app_runtime -->|"[Configured] Host state / keys"| storage_db', '', "essential relationship: host storage"),
+    ('    vnet_integration -->|"[Configured] Connect to PE IP"| pe_storage', '', "essential relationship: integration to PE"),
+    ('    pe_storage -->|"[Configured] Private Link to Blob"| storage_db', '', "essential relationship: PE to storage"),
 ])
 def test_rejects_mutated_templates(old: str, new: str, diagnostic: str) -> None:
     # Given: a single in-memory defect in the committed page.
@@ -194,3 +288,36 @@ def test_rejects_mutated_templates(old: str, new: str, diagnostic: str) -> None:
     problems = template_problems(mutated)
     # Then: its specific rule fires, not merely an incidental parser failure.
     assert diagnostic in problems
+
+
+def test_rejects_storage_service_inside_balanced_subnet() -> None:
+    # Given: move only Storage into the existing, balanced PE subnet.
+    text = PAGE.read_text(encoding="utf-8")
+    code = next(code for name, code in FENCE.findall(text) if name == "functions-v1-network-storage-normal")
+    declaration = next(line for line in code.splitlines() if line.strip().startswith('storage_db[('))
+    moved = code.replace(declaration + "\n", "").replace('            pe_storage[[', declaration + '\n            pe_storage[[')
+    # When: the same topology guard inspects factual containment.
+    problems = topology_problems(moved)
+    # Then: it rejects the service, not an unbalanced container.
+    assert "service inside customer container" in problems
+    assert "unbalanced container" not in problems
+
+
+def test_accepts_unlabeled_dns_layout_anchor() -> None:
+    # Given: an extra invisible anchor, not a DNS query.
+    code = next(code for name, code in FENCE.findall(PAGE.read_text(encoding="utf-8")) if name == "functions-v1-network-storage-normal")
+    # When: the complete otherwise-valid normal view is checked.
+    problems = topology_problems(code + "\n    app_runtime ~~~ dns_fn")
+    # Then: purpose-specific arrow rules do not apply to layout anchors.
+    assert problems == []
+
+
+@pytest.mark.parametrize(("kind", "expected"), [("base", 4), ("trigger", 3), ("network-storage", 6)])
+def test_fault_index_tracks_edge_declaration_order(kind: str, expected: int) -> None:
+    # Given: the failure variant including any invisible layout anchors.
+    code = next(code for name, code in FENCE.findall(PAGE.read_text(encoding="utf-8")) if name == f"functions-v1-{kind}-failure")
+    # When: derive zero-based fault indices from actual edge order.
+    edges = [m for line in code.splitlines() if (m := EDGE.fullmatch(line))]
+    indices = [index for index, edge in enumerate(edges) if edge[2] == "==>"]
+    # Then: the hand-maintained supported indices still name the fault edge.
+    assert indices == [expected]
