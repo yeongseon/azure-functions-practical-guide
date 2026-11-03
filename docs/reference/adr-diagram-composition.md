@@ -46,6 +46,26 @@ A published package offers central distribution but creates versioning, release 
 
 ## Decision Outcome
 
+### Functions-local choice — 2026-11-04
+
+For Functions #211, adopt **Option A: typed literal Mermaid templates and documented
+copyable snippets**, with the [Functions templates](functions-topology-templates.md)
+and a small offline guard. Adopt the App Service [topology grammar v1](https://github.com/yeongseon/azure-app-service-practical-guide/blob/3429ca0/docs/reference/diagram-topology-grammar.md)
+by reference; its status remains **Proposed**. No generator, macro, new plugin or
+dependency is introduced. Literal fences remain visible to the existing validators
+and inventory; the inventory schema/scanner are unchanged.
+
+App Service PR #298 is merged, but #283 remains open with no final maintainer
+composition decision recorded. Its opt-in PoC failed its predeclared M4 size budget
+(434 generator nonblank lines against 400; 449 test lines against 260). This local
+choice neither accepts nor rejects that upstream prototype. Option A is usable
+under either outcome; children #231–#383 must not assume a generator. Repeated
+declarations are deliberate reviewed source, checked for ID/order drift rather than
+compiled from a second specification. Human visual acceptance remains pending;
+this note is not a cross-guide ruling or completion of #209/#217.
+
+### Original inventory decision
+
 Keep inline Mermaid as the reviewed source of truth. Compare Options B and C in App Service #283 using a base, distinct extensions and normal/failure overlays before Functions adopts a composition path in #211. Preserve sequence/state/timeline/chart semantics as hand-authored typed Mermaid where composition adds no value. A flowchart remains a flow or decision tree when that is its teaching purpose.
 
 For this inventory only, share `scripts/diagram_inventory.py` and `diagram-manifest.schema.json` byte-identically with Container Apps. The manifest pins the scanner and repository-specific rules by SHA-256. Schema v1 is an **inventory interchange contract**, not a composition/build API. Rules, ownership, exclusions and pages remain Functions-specific. A future scanner change must be reconciled and re-synchronized rather than independently extended here.
