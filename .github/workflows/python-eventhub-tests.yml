@@ -19,6 +19,7 @@ on:
       - 'scripts/generate_validation_status.py'
       - 'docs/language-guides/*/tutorial/**'
       - 'docs/reference/validation-status.md'
+      - 'docs/reference/functions-topology-templates.md'
       - 'pytest.ini'
       - 'pyproject.toml'
       - '.github/workflows/dotnet-tests.yml'
