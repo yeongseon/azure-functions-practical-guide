@@ -11,6 +11,7 @@ body:
         See [Issue Scope](https://github.com/yeongseon/azure-functions-practical-guide/blob/main/CONTRIBUTING.md#issue-scope).
         Follow [CONTRIBUTING.md](https://github.com/yeongseon/azure-functions-practical-guide/blob/main/CONTRIBUTING.md#issue-lifecycle) for titles, required sections, and triage.
         Maintainers retain `needs-triage` until validity, duplicates, scope, type, backlog-relative priority, and size are checked. Triaged work needs one `priority:critical/high/medium/low` and one `size: XS/S/M/L/XL` label; missing labels are a maintainer prerequisite, not automatic enforcement.
+        For trackers/decisions, follow the [lighter path](https://github.com/yeongseon/azure-functions-practical-guide/blob/main/CONTRIBUTING.md#trackers-and-executable-issues): state tracking-only/decision-only, links/options and a closure condition; explain non-applicable execution fields.
   - type: input
     id: summary
     attributes:
@@ -23,7 +24,7 @@ body:
     id: details
     attributes:
       label: Context
-      description: Describe what happened, what you expected, and any relevant context.
+      description: Describe actual vs expected behavior, one bounded fix, affected files and applicable plan/language/lab/diagram IDs.
       placeholder: What happened? What did you expect to happen?
     validations:
       required: true
@@ -31,7 +32,7 @@ body:
     id: reproduction
     attributes:
       label: Reproduction steps
-      description: List the exact steps needed to reproduce the issue.
+      description: List exact reproduction steps; if not reproduced, say so. Trackers/decisions may explain why this is not applicable.
       placeholder: |
         1. Go to ...
         2. Run ...
@@ -42,10 +43,10 @@ body:
     id: validation
     attributes:
       label: Validation or evidence
-      description: Share logs, screenshots, links, or other evidence.
-      placeholder: Paste relevant output or links here.
+      description: State the verification method and Azure/manual-access needs (or None), including cost/teardown for live work. For runs/captures, give retained locator, revision, sanitized environment, original time and tool/method; otherwise describe planned provenance and mark NOT_RUN/NOT_CAPTURED.
+      placeholder: Local regression command; no Azure access needed. No run/capture evidence claimed.
     validations:
-      required: false
+      required: true
   - type: textarea
     id: acceptance
     attributes:
@@ -65,6 +66,6 @@ body:
     id: references
     attributes:
       label: References
-      description: Relevant issues, PRs, official sources or upstream dependencies with their local relationship; write None if absent.
+      description: Dependencies and relevant issues, PRs or official sources with their local relationship; explicitly state dependencies or None.
     validations:
       required: true
