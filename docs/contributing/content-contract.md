@@ -1012,9 +1012,13 @@ Optional method fields `run_id` and `evidence_ref` may point to an **existing**
 repository-relative Markdown experiment log (optionally `#heading`). Do not invent
 historical identifiers or retrofit another run's evidence. Follow the
 [identity and retention contract](../troubleshooting/methodology/troubleshooting-method.md#run-identity-retention-and-time)
-inside that log. The generator checks reference path, heading and run identity;
-it cannot verify Azure provenance, method, environment or captures merely because
-a note resolves, so trust remains unverified pending independent review.
+inside that log. The generator checks the repository-relative file path, that the
+heading exists, and that the run identity appears in that heading's section,
+including subsections (anywhere in the note when no heading is given). Reference
+multi-run notes with a heading. An orphan `run_id` or an `evidence_ref` without a
+usable run identity is reported as a mismatch. The generator cannot verify Azure
+provenance, method, environment or captures merely because a note resolves, so
+trust remains unverified pending independent review.
 
 Reports print their generation/freshness date and are snapshots, not live badges.
 Use `python3 scripts/generate_validation_status.py --as-of YYYY-MM-DD` for a
