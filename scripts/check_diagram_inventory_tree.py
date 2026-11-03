@@ -41,6 +41,12 @@ def check_tree(root: Path) -> list[str]:
                 continue
             if identifier is None or ID.fullmatch(identifier) is None:
                 errors.append(f'{diagram["key"]}: invalid or missing diagram ID')
+        for unmatched in snapshot['exceptions']['frontmatter_entries_without_fence']:
+            entry = unmatched['entry']
+            identifier = entry.get('id') if isinstance(entry, dict) else None
+            if not isinstance(identifier, str) or ID.fullmatch(identifier) is None:
+                errors.append(f'{unmatched["page"]}: invalid or missing source diagram ID; '
+                              f'entry={json.dumps(entry, sort_keys=True)}')
         for category in ('duplicate_ids_on_page', 'frontmatter_duplicate_ids'):
             if snapshot['exceptions'][category]:
                 errors.append(f'{category}: {json.dumps(snapshot["exceptions"][category], sort_keys=True)}')

@@ -90,6 +90,27 @@ class TreePolicyTests(unittest.TestCase):
         errors = check_tree(self.root)
         self.assertTrue(any('frontmatter_duplicate_ids:' in error for error in errors))
 
+    def test_invalid_unmatched_source_ids_fail_after_regeneration(self) -> None:
+        for entry in ('{}', '{id: ""}', '{id: 42}', '{id: "two words"}'):
+            with self.subTest(entry=entry):
+                # Given regenerated unmatched metadata, when CI runs, then reject its ID.
+                _ = self.page.write_text(
+                    '---\ncontent_sources:\n  diagrams: [{id: x}, ' + entry + ']\n---\n' + FENCE)
+                self.write()
+                result = subprocess.run(
+                    [sys.executable, str(ROOT / 'scripts/check_diagram_inventory_tree.py'),
+                     '--root', str(self.root)], capture_output=True, text=True, check=False)
+                self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+                self.assertIn('docs/reference/x.md: invalid or missing source diagram ID', result.stdout)
+                self.assertIn('entry=', result.stdout)
+
+    def test_valid_unmatched_source_id_passes_after_regeneration(self) -> None:
+        # Given valid unmatched metadata, when regenerated and checked, then retain it.
+        _ = self.page.write_text(
+            '---\ncontent_sources:\n  diagrams: [{id: x}, {id: Source-2._}]\n---\n' + FENCE)
+        self.write()
+        self.assertEqual(check_tree(self.root), [])
+
     def test_wrong_valid_owner_fails(self) -> None:
         # Given a self-consistent snapshot assigned to another valid batch, check live rules.
         manifest = json.loads((self.root / inventory.MANIFEST).read_text())
