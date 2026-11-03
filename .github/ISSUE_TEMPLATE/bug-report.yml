@@ -43,8 +43,8 @@ body:
     id: validation
     attributes:
       label: Validation or evidence
-      description: State the verification method and Azure/manual-access needs (or None), including cost/teardown for live work. For runs/captures, give retained locator, revision, sanitized environment, original time and tool/method; otherwise describe planned provenance and mark NOT_RUN/NOT_CAPTURED.
-      placeholder: Local regression command; no Azure access needed. No run/capture evidence claimed.
+      description: State the verification method and Azure/manual-access needs (or None), including cost/teardown for live work. For run/capture work, provide retained locator, source revision, sanitized environment, original time and tool/method; before execution, describe the planned record and mark missing evidence NOT_RUN/NOT_CAPTURED. Otherwise state that run/capture evidence is not applicable.
+      placeholder: Local regression command; no Azure access needed. Run/capture evidence is not applicable.
     validations:
       required: true
   - type: textarea
