@@ -315,7 +315,7 @@ flowchart TD
     linkStyle default stroke-width:2px;
 ```
 
-**Reading key:** This orders checks, not packet hops: NSGs and UDRs are subnet policies, and NAT is not a UDR next hop. The integration checks apply to Flex Consumption, Premium and supported Dedicated configurations, not Consumption. NAT, firewall routing and private endpoints are configuration-dependent alternatives; SNAT and DNS callouts are hypotheses to test, not faults proved at a subnet or destination.
+**Reading key:** This orders checks, not packet hops: NSGs and UDRs are subnet policies, and NAT is not a UDR next hop. The integration checks apply to Flex Consumption, Premium and supported Dedicated configurations, not Consumption. NAT, firewall routing and private endpoints are configuration-dependent features that can be combined; SNAT and DNS callouts are hypotheses to test, not faults proved at a subnet or destination.
 
 ### Outbound failure evidence table
 
