@@ -22,6 +22,12 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/control-plane-and-data-plane
+        - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
     - id: control-data-plane
       type: flowchart
       source: self-generated
@@ -30,6 +36,11 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/control-plane-and-data-plane
+        - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide
     - id: runtime-execution-path
       type: flowchart
       source: self-generated
@@ -37,6 +48,7 @@ content_sources:
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide
     - id: detailed-host-worker-communication-sequence
       type: sequenceDiagram
       source: self-generated
@@ -44,6 +56,8 @@ content_sources:
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
     - id: core-resource-relationships
       type: flowchart
       source: self-generated
@@ -52,6 +66,9 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
     - id: configuration-layers-diagram
       type: flowchart
       source: self-generated
@@ -59,6 +76,8 @@ content_sources:
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
     - id: pattern-b-active-active-with-regional-affinity
       type: flowchart
       source: self-generated
@@ -66,12 +85,17 @@ content_sources:
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/frontdoor/routing-methods
+        - https://learn.microsoft.com/en-us/azure/traffic-manager/traffic-manager-routing-methods
     - id: durable-functions-orchestration-architecture
       type: flowchart
       source: self-generated
       justification: "Summarizes Durable Functions orchestration, activities, timers, and state persistence"
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
+        - https://learn.microsoft.com/en-us/azure/durable-task/durable-functions/durable-functions-azure-storage-provider
+        - https://learn.microsoft.com/en-us/azure/durable-task/common/durable-task-timers
+        - https://learn.microsoft.com/en-us/azure/durable-task/common/durable-task-external-events
 content_validation:
   status: verified
   last_reviewed: 2026-09-11
@@ -136,40 +160,36 @@ This view gives you the end-to-end mental model before you dive into individual 
 <!-- diagram-id: functions-architecture-overview -->
 ```mermaid
 flowchart TD
-    Events["Event sources<br/>HTTP, timers, queues, blobs, Event Grid"]
-    Config["Function app settings<br/>Identity and configuration"]
-
-    subgraph Control["Control plane"]
-        ARM["Azure Resource Manager"]
-        ScaleCtrl["Scale controller"]
-    end
-
-    subgraph Plan["Hosting plan<br/>Consumption, Flex, Premium, or Dedicated"]
-        subgraph Instance["Function app instance"]
-            Host["Functions host runtime"]
-            Bindings["Trigger and binding extensions"]
-            Worker["Language worker process"]
-        end
-        InstanceN["Additional instances<br/>when scaled out"]
-    end
-
-    State["Storage account<br/>Checkpoints and durable state"]
-    Outputs["Downstream services<br/>Databases, messaging, APIs"]
-    Monitor["Application Insights<br/>and platform logs"]
-
-    Events --> ScaleCtrl
-    Events --> Bindings
-    Config --> Host
-    ScaleCtrl --> Instance
-    ScaleCtrl --> InstanceN
-    Bindings --> Host
-    Host --> Worker
-    Host --> State
-    Worker --> Outputs
-    Host --> Monitor
+    accTitle: What does the Functions host coordinate?
+    accDescr: Queue-triggered out-of-process view. The host owns listeners and bindings, invokes the worker and uses host storage. ARM configuration and event-driven scaling are separate from invocation. These are logical roles, not network hops.
+    scale_controller["Scale controller<br/>[Event-driven plans]"]
+    client(["Source: Storage queue<br/>[Polling trigger]"])
+    app_runtime["Compute: Functions host<br/>[Listeners and bindings]"]
+    language_worker["Language worker<br/>[Function code]"]
+    storage_db[("Host storage<br/>[State and keys]")]
+    control_plane["Control plane: ARM<br/>[App configuration]"]
+    telemetry>"Application Insights<br/>[Off-path telemetry]"]
+    dependency["Downstream service<br/>[Application dependency]"]
+    scale_controller -.->|"[Configured] Monitor demand"| client
+    scale_controller -.->|"[Configured] Adjust instances"| app_runtime
+    control_plane -.->|"[Configured] Configure app"| app_runtime
+    app_runtime -->|"[Configured] Poll queue"| client
+    app_runtime -->|"[Configured] Invoke code"| language_worker
+    app_runtime -->|"[Configured] State / keys"| storage_db
+    language_worker -->|"[Illustrative] SDK call"| dependency
+    app_runtime -.->|"[Configured] Host logs"| telemetry
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e;
+    classDef bandMuted fill:#ffffff,stroke:#707e93,stroke-width:1.5px,stroke-dasharray:4 3,color:#14202e;
+    class client,language_worker,storage_db,dependency baseNeutral;
+    class app_runtime focusActive;
+    class scale_controller,control_plane,telemetry bandMuted;
+    linkStyle default stroke-width:2px;
+    linkStyle 7 stroke-width:1.5px;
 ```
 
-- Event sources feed both trigger listeners and the scale controller, so workload shape affects execution and scale behavior together.
+- **Takeaway:** The host polls and invokes; the scale controller monitors demand, not event delivery. Solid arrows name data/invocation initiators; dotted arrows name configuration, scaling or telemetry. `[Configured]` means documented/intended behavior; `[Illustrative]` marks an example, not a measured trace.
+- This queue slice shows an out-of-process worker. HTTP has ingress, timers have schedules, and push triggers have delivery paths rather than this polling arrow. Consumption and Premium scale apps; Flex scales functions with HTTP/Blob/Durable groups; Dedicated uses App Service scaling ([event-driven scaling](https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling)).
 - The hosting plan defines the runtime boundary where the Functions host, extensions, and language worker actually run.
 - Storage is a runtime dependency for checkpoints, leases, and durable state, not just a deployment prerequisite.
 - Observability flows out of the host into Application Insights and platform logs, which is why host health is central to troubleshooting.
@@ -180,26 +200,29 @@ Azure Functions works best when you separate what you configure from what execut
 <!-- diagram-id: control-data-plane -->
 ```mermaid
 flowchart TD
-    subgraph CP["Control plane<br/>What you configure"]
-        C1["Hosting plan selection"]
-        C2["Function app settings"]
-        C3["Identity and RBAC assignment"]
-        C4["Networking and access restrictions"]
-        C5["Deployment and slot configuration"]
-        C6["Scale limits"]
-    end
-
-    subgraph DP["Data plane<br/>What runs at runtime"]
-        D1["Trigger listeners"]
-        D2["Functions host execution"]
-        D3["Language worker invocation"]
-        D4["Input and output binding resolution"]
-        D5["Scale controller decisions"]
-        D6["Checkpoint and lease management"]
-    end
-
-    CP --> DP
+    accTitle: Which paths configure the app and which execute work?
+    accDescr: ARM manages app configuration separately from queue polling, worker invocation and host-storage data access. Scaling is platform orchestration, not event forwarding.
+    control_plane["Control plane: ARM<br/>[Manage resources]"]
+    scale_controller["Scale controller<br/>[Platform orchestration]"]
+    app_runtime["Compute: Functions host<br/>[Runtime coordination]"]
+    client(["Source: Storage queue<br/>[Data endpoint]"])
+    language_worker["Language worker<br/>[Execute function]"]
+    storage_db[("Host storage<br/>[Leases and state]")]
+    control_plane -.->|"[Configured] Settings / policy"| app_runtime
+    scale_controller -.->|"[Configured] Adjust capacity"| app_runtime
+    app_runtime -->|"[Configured] Poll messages"| client
+    app_runtime -->|"[Configured] Invoke function"| language_worker
+    app_runtime -->|"[Configured] Read / write"| storage_db
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e;
+    classDef bandMuted fill:#ffffff,stroke:#707e93,stroke-width:1.5px,stroke-dasharray:4 3,color:#14202e;
+    class client,language_worker,storage_db baseNeutral;
+    class app_runtime focusActive;
+    class control_plane,scale_controller bandMuted;
+    linkStyle default stroke-width:2px;
 ```
+
+**Takeaway:** Dotted management/scaling relationships configure capacity; solid runtime paths use resource data endpoints. Host storage is data-plane access, not ARM traffic; Dedicated scaling differs from the event-driven plans.
 
 | Operation | Plane | Example |
 |---|---|---|
@@ -222,19 +245,28 @@ Architecture decisions in Azure Functions determine:
 Understanding these layers helps you choose the right hosting plan and avoid design mismatches later.
 
 ### Runtime execution path
-At a high level, every invocation follows this path:
+At a high level, an out-of-process invocation with an output binding follows this logical order:
 `Event source -> Trigger listener -> Functions host -> Language worker -> Function code -> Output binding`
 
 <!-- diagram-id: runtime-execution-path -->
 ```mermaid
 flowchart TD
-    E["Event Source<br/>HTTP / Timer / Queue / Blob / Event Grid"] --> T["Trigger Listener"]
-    T --> H["Azure Functions Host<br/>.NET runtime process"]
-    H --> W["Language Worker<br/>Python / Node.js / Java / .NET isolated"]
-    W --> C["Function Code"]
-    C --> O["Output Bindings<br/>optional"]
-    O --> D["Destination Service"]
+    accTitle: In what order does an invocation run?
+    accDescr: Logical invocation stages, not network topology. A trigger is detected, the host coordinates bindings and worker execution, and optional output bindings write to a destination. In-process .NET executes code within the host instead.
+    E["1. Event available<br/>HTTP / timer / message"]
+    T["2. Trigger listener<br/>Detect work"]
+    H["3. Functions host<br/>Context and input bindings"]
+    W["4. Language worker<br/>Execute function code"]
+    O["5. Output binding<br/>Optional write"]
+    D["6. Destination service"]
+    E -->|"Detected"| T
+    T -->|"Payload"| H
+    H -->|"Invocation"| W
+    W -->|"Result"| O
+    O -->|"Write"| D
 ```
+
+**Takeaway:** These arrows show stage order, not connection initiators: a queue listener polls its source. Worker and function-code stages share one box; output bindings are optional, and code can call SDKs directly.
 
 ### Host process responsibilities
 The Functions host is the control plane and data-plane coordinator for your app instance. It is responsible for:
@@ -267,25 +299,23 @@ Use this sequence when investigating cold start, timeout, or extension load beha
 <!-- diagram-id: detailed-host-worker-communication-sequence -->
 ```mermaid
 sequenceDiagram
+    accTitle: How do the host and worker complete an invocation?
+    accDescr: Illustrative successful queue invocation with a host-owned listener and bindings and a separate worker executing function code. Messages show logical order, not RPC envelopes or universal trigger acknowledgement rules.
     autonumber
-    participant ES as Event Source
-    participant TL as Trigger Listener
-    participant FH as Functions Host
-    participant LW as Language Worker
-    participant FN as Function Code
-    participant OB as Output Binding
-
-    ES->>TL: Emit trigger event
-    TL->>FH: Provide trigger payload + metadata
-    FH->>FH: Build invocation context
-    FH->>FH: Resolve input bindings
-    FH->>LW: Dispatch invocation over worker channel
-    LW->>FN: Execute handler
-    FN-->>LW: Return result / exception
-    LW-->>FH: Invocation response envelope
-    FH->>OB: Commit output bindings
-    FH-->>TL: Complete checkpoint/ack/delete
+    participant client as Queue source
+    participant app_runtime as Host / bindings
+    participant language_worker as Worker / code
+    app_runtime->>client: [Configured] Poll queue
+    client-->>app_runtime: [Configured] Payload and metadata
+    app_runtime->>app_runtime: [Illustrative] Build context
+    app_runtime->>app_runtime: [Configured] Resolve inputs
+    app_runtime->>language_worker: [Illustrative] Invoke handler
+    language_worker-->>app_runtime: [Illustrative] Return result
+    app_runtime->>app_runtime: [Configured] Apply outputs
+    app_runtime->>client: [Configured] Delete on success
 ```
+
+**Takeaway:** The listener and binding roles belong to the host; function code belongs to the worker. This successful queue example omits failure/retry branches and exact worker-channel messages; other triggers have different completion rules.
 
 ### Invocation lifecycle (request to completion)
 1. An event source emits a trigger event.
@@ -311,19 +341,30 @@ Most platform choices are applied at Function App scope, then interpreted at fun
 <!-- diagram-id: core-resource-relationships -->
 ```mermaid
 flowchart TD
-    SRC["Event Sources<br/>HTTP, Queue, Blob, Event Hub, Service Bus"] --> FA["Function App"]
-
-    subgraph PLAN["Hosting Plan<br/>Consumption / Flex / Premium / Dedicated"]
-        FA
-    end
-
-    FA --> ST["Storage Account<br/>Host state, leases, checkpoints"]
-    FA --> AI["Application Insights"]
-    FA -. identity .-> MI["Managed Identity"]
-    MI --> ENTRA["Microsoft Entra ID"]
-
-    FA --> DATA["Downstream Services<br/>SQL, Cosmos DB, Storage, Key Vault"]
+    accTitle: Which resources does a Function App use?
+    accDescr: Function App resource relationships separate hosting configuration, identity token acquisition, storage and downstream data access, and off-path monitoring. Managed identity is a configured option, not a mandatory resource for every trigger.
+    hosting_plan["Hosting plan<br/>[Capacity and OS]"]
+    app_runtime["Compute: Function App<br/>[Deployment boundary]"]
+    identity{{"Identity: Microsoft Entra ID<br/>[Managed identity token]"}}
+    storage_db[("Host storage<br/>[State and keys]")]
+    dependency["Downstream services<br/>[SDKs or bindings]"]
+    telemetry>"Application Insights<br/>[Logs and metrics]"]
+    hosting_plan -.->|"[Configured] Host app"| app_runtime
+    app_runtime -.->|"[Configured] Request token"| identity
+    app_runtime -->|"[Configured] State / keys"| storage_db
+    app_runtime -->|"[Illustrative] Data access"| dependency
+    app_runtime -.->|"[Configured] Emit telemetry"| telemetry
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e;
+    classDef bandMuted fill:#ffffff,stroke:#707e93,stroke-width:1.5px,stroke-dasharray:4 3,color:#14202e;
+    class storage_db,dependency baseNeutral;
+    class app_runtime focusActive;
+    class hosting_plan,identity,telemetry bandMuted;
+    linkStyle default stroke-width:2px;
+    linkStyle 4 stroke-width:1.5px;
 ```
+
+**Takeaway:** Hosting is a resource association, not a customer-subnet boundary. Identity token acquisition is separate from data access; each target still needs appropriate permissions. Flex is Linux-only; other classic plans have plan/OS-specific capabilities ([hosting options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)).
 
 #### Important design implication
 Storage and identity are foundational runtime dependencies, not optional add-ons. Trigger execution, leases, and checkpoints depend on them.
@@ -362,6 +403,8 @@ flowchart TD
     H --> F["Layer 4: Function Metadata<br/>Trigger and binding definitions"]
     F --> R["Runtime Behavior<br/>Execution, retries, output commits"]
 ```
+
+**Takeaway:** Read these layers as configuration scope, not network hops or a strict override order. App settings can override `host.json`; function metadata selects triggers/bindings within the hosting plan's capabilities.
 
 #### Example host-level setting (cross-language)
 ```json
@@ -496,14 +539,32 @@ Best fit: latency-sensitive workloads with region-tolerant data architecture.
 <!-- diagram-id: pattern-b-active-active-with-regional-affinity -->
 ```mermaid
 flowchart TD
-    U["Clients"] --> FD["Global Front Door / Traffic Manager"]
-    FD --> R1["Function App - Region A"]
-    FD --> R2["Function App - Region B"]
-    R1 --> D1["Regional Dependencies A"]
-    R2 --> D2["Regional Dependencies B"]
-    D1 <--> DR["Replication and Event Relay"]
-    D2 <--> DR
+    accTitle: How does active-active HTTP routing reach regional data?
+    accDescr: Illustrative two-region Front Door pattern. HTTPS reaches either healthy regional Function App and its dependencies. Cross-region replication or event relay is application-specific, not an automatic Functions feature or a Traffic Manager proxy hop.
+    client(["Caller: HTTPS client<br/>[Global users]"])
+    ingress["Ingress: Azure Front Door<br/>[Health and latency]"]
+    app_runtime["Compute: Function App A<br/>[Region A]"]
+    app_runtime_b["Compute: Function App B<br/>[Region B]"]
+    storage_db[("Dependencies A<br/>[Regional data]")]
+    storage_db_b[("Dependencies B<br/>[Regional data]")]
+    relay["Replication / event relay<br/>[Application-specific]"]
+    client -->|"[Configured] HTTPS"| ingress
+    ingress -->|"[Configured] Route A"| app_runtime
+    ingress -->|"[Configured] Route B"| app_runtime_b
+    app_runtime -->|"[Illustrative] Data access"| storage_db
+    app_runtime_b -->|"[Illustrative] Data access"| storage_db_b
+    storage_db -->|"[Illustrative] Publish A"| relay
+    storage_db_b -->|"[Illustrative] Publish B"| relay
+    relay -->|"[Illustrative] Apply to B"| storage_db_b
+    relay -->|"[Illustrative] Apply to A"| storage_db
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e;
+    class client,ingress,storage_db,storage_db_b,relay baseNeutral;
+    class app_runtime,app_runtime_b focusActive;
+    linkStyle default stroke-width:2px;
 ```
+
+**Takeaway:** Front Door proxies HTTP to healthy origins using latency/routing policy; session affinity is optional. Traffic Manager is a DNS-routing alternative, not a proxy in this path. Replication/relay requires a separate data strategy; the illustrated arrows do not promise conflict resolution or automatic replication.
 
 !!! caution
     Multi-region function apps without multi-region data strategy often produce partial outages instead of resilience.
@@ -520,15 +581,28 @@ Core components:
 <!-- diagram-id: durable-functions-orchestration-architecture -->
 ```mermaid
 flowchart TD
-    C["Client Trigger<br/>HTTP / Queue / Event"] --> O["Orchestrator Function"]
-    O --> S[(Durable State Store)]
-    O --> A1["Activity Function A"]
-    O --> A2["Activity Function B"]
-    A1 --> S
-    A2 --> S
-    O --> T["Timer / External Event Wait"]
-    T --> O
+    accTitle: How does Durable Functions persist and resume work?
+    accDescr: Azure Storage provider slice. The Durable extension coordinates client starts, orchestrator replay, activities and timer or external-event messages through a task hub containing queues, tables and blobs. Function roles are logical, not independent Azure services.
+    client(["Client function<br/>[Start / signal]"])
+    app_runtime["Compute: Durable runtime<br/>[Host extension]"]
+    orchestrator["Orchestrator function<br/>[Deterministic replay]"]
+    activity["Activity functions A / B<br/>[Unit operations]"]
+    storage_db[("Task hub: Azure Storage<br/>[Queues / Tables / Blobs]")]
+    wait_event["Timer / external event<br/>[Resume message]"]
+    client -->|"[Configured] Start / signal"| app_runtime
+    app_runtime -->|"[Configured] Invoke / replay"| orchestrator
+    app_runtime -->|"[Configured] Execute work"| activity
+    app_runtime -->|"[Configured] History / messages"| storage_db
+    orchestrator -.->|"[Illustrative] Schedule / wait"| wait_event
+    wait_event -->|"[Configured] Enqueue message"| storage_db
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e;
+    class client,orchestrator,activity,storage_db,wait_event baseNeutral;
+    class app_runtime focusActive;
+    linkStyle default stroke-width:2px;
 ```
+
+**Takeaway:** The Durable runtime persists history and messages, then replays the orchestrator when work completes or a timer/event arrives; activities do not independently own orchestration checkpoints. This is the Azure Storage provider, not a claim that every Durable provider uses queues, tables and blobs.
 
 Architecture considerations:
 
@@ -588,6 +662,19 @@ Platform architecture is consistent, but implementation details vary by language
 - [Language Guides Home](../../language-guides/index.md)
 
 ## Sources
+- [Microsoft Learn: Event-driven scaling](https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling)
+- [Microsoft Learn: Host storage](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations)
+- [Microsoft Learn: Control and data planes](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/control-plane-and-data-plane)
+- [Microsoft Learn: Isolated worker](https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide)
+- [Microsoft Learn: Queue trigger](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger)
+- [Microsoft Learn: Managed identity](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)
+- [Microsoft Learn: Monitoring](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)
+- [Microsoft Learn: host.json](https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json)
+- [Microsoft Learn: Front Door routing](https://learn.microsoft.com/en-us/azure/frontdoor/routing-methods)
+- [Microsoft Learn: Traffic Manager routing](https://learn.microsoft.com/en-us/azure/traffic-manager/traffic-manager-routing-methods)
+- [Microsoft Learn: Durable Azure Storage provider](https://learn.microsoft.com/en-us/azure/durable-task/durable-functions/durable-functions-azure-storage-provider)
+- [Microsoft Learn: Durable timers](https://learn.microsoft.com/en-us/azure/durable-task/common/durable-task-timers)
+- [Microsoft Learn: Durable external events](https://learn.microsoft.com/en-us/azure/durable-task/common/durable-task-external-events)
 - [Microsoft Learn: Azure Functions overview](https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview)
 - [Microsoft Learn: Azure Functions hosting options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
 - [Microsoft Learn: Azure Functions networking options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)
