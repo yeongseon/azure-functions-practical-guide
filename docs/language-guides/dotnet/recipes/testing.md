@@ -25,6 +25,8 @@ In the .NET isolated worker model a function is a plain class method, so you tes
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Direct-method unit test for a .NET isolated function
+    accDescr: The xUnit test constructs the function class with fakes, calls its method and asserts the result. This illustrates the direct-method test below, not validation of host execution, timer scheduling or binding integration.
     TEST[xUnit test] --> INJECT[Construct class with fakes]
     INJECT --> CALL[Call function method]
     CALL --> ASSERT[Assert result]
