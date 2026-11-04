@@ -24,6 +24,8 @@ The Java programming model has **no built-in middleware pipeline**. Unlike the .
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Java shared executor application flow
+    accDescr: Illustrative successful path for a Java handler that explicitly calls the shared executor: pre-logic, business logic, post-logic and returned response. This application helper is not a runtime middleware pipeline; the HTTP sample returns a response, while an exception follows its catch/finally path rather than this success path.
     REQ[Trigger fires] --> WRAP[Shared executor: pre-logic]
     WRAP --> FUNC[Business logic]
     FUNC --> POST[Shared executor: post-logic]
