@@ -96,7 +96,7 @@ Because this lab uses EP1, thresholds should match EP1 capacity characteristics,
 ```mermaid
 flowchart TD
     accTitle: EP1 Python blob lab - proposed failure progression
-    accDescr: Model linking blob buffering and overlapping invocations to memory pressure, Python worker failure, host restart, impact and remediation. Read the proof and disproof criteria; this is not a new lab result.
+    accDescr: Model linking blob buffering and overlapping invocations to memory pressure, Python worker failure, host-managed worker restart, impact and remediation. Read the proof and disproof criteria; this is not a new lab result.
     A[Blob load increases] --> B[Function buffers payload in memory]
     B --> C[Concurrent invocations overlap]
     C --> D[Private Bytes climbs rapidly]
