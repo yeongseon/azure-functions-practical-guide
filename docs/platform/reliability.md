@@ -196,8 +196,8 @@ sequenceDiagram
 
 **Reading key — illustrative timing:** The three lifelines retain trigger
 delivery, function execution and dependency calls. The 5/15/45-second waits are
-example backoff intervals, not a platform schedule: supported Functions retry
-policies add randomization, and extension retries are distinct. “Ack/Complete”
+example backoff intervals, not a platform schedule. Functions exponential-backoff retry policies add randomization; fixed-delay policies use a specified interval. Extension retries are distinct.
+“Ack/Complete”
 summarizes trigger-specific successful completion, not a settlement API shared by
 every trigger. See [retry strategies and support](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages#retry-strategies).
 
@@ -383,7 +383,7 @@ flowchart TD
 | 1 — HTTP routing | Optional global Front Door forwards HTTP requests to a regional function app; the platform distributes requests across its instances. The three arrows summarize this relationship, not direct routing to individually addressable workers. Traffic Manager is an alternative DNS endpoint selector, not an HTTP proxy or a zone selector ([Front Door](https://learn.microsoft.com/en-us/azure/frontdoor/front-door-overview), [Traffic Manager](https://learn.microsoft.com/en-us/azure/traffic-manager/traffic-manager-overview)). |
 | 2 — Messaging | Each instance initiates illustrative Service Bus operations against the shared Premium zone-redundant namespace. Event delivery is not routed through Front Door ([Service Bus reliability](https://learn.microsoft.com/en-us/azure/reliability/reliability-service-bus)). |
 | 3 — Storage | Each instance accesses the shared ZRS storage account; ZRS replicates across availability zones ([Storage redundancy](https://learn.microsoft.com/en-us/azure/storage/common/storage-redundancy#zone-redundant-storage)). |
-| Region / Zone 1–3; Fn 1–3 | Availability boundaries, not VNets or subnets. Fn means Function app instance (the original workers). Three instances show distribution conceptually, not a guaranteed count or placement. Flex Consumption, Premium and Dedicated support zone redundancy subject to plan/region requirements; Consumption does not. Flex/Premium host storage requires ZRS ([Functions reliability](https://learn.microsoft.com/en-us/azure/reliability/reliability-functions#resilience-to-availability-zone-failures)). |
+| Region / Zone 1–3; Fn 1–3 | Availability boundaries, not VNets or subnets. Fn means Function app instance (the original workers). Three instances show distribution conceptually, not a guaranteed count or placement. Flex Consumption, Premium and Dedicated support zone redundancy subject to plan/region requirements; Consumption does not. When zone redundancy is enabled, Flex/Premium host storage requires ZRS. ([Functions reliability](https://learn.microsoft.com/en-us/azure/reliability/reliability-functions#resilience-to-availability-zone-failures)). |
 
 ### Idempotency is mandatory
 Because retries and duplicate deliveries are normal in distributed systems, handlers must be idempotent.
