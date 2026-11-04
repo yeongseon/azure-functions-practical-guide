@@ -182,29 +182,29 @@ flowchart TD
 
 <!-- diagram-id: timeline-view -->
 ```mermaid
+%%{init: {"gantt":{"fontSize":16,"sectionFontSize":16,"leftPadding":95,"rightPadding":35,"barHeight":24,"barGap":10},"theme":"base","themeVariables":{"doneTaskBkgColor":"#e2e8f0","critBkgColor":"#fed7aa","taskBkgColor":"#e2e8f0"},"themeCSS":".grid .tick text{font-size:16px;fill:var(--md-default-fg-color);} .section{opacity:0;} .titleText{font-size:14px;fill:var(--md-default-fg-color);} .sectionTitle{fill:var(--md-default-fg-color);} .taskTextOutsideLeft,.taskTextOutsideRight{fill:var(--md-default-fg-color)!important;} .taskText{fill:#14202e!important;}"}}%%
 gantt
-    %%{init: {'gantt': {'useWidth': 358, 'leftPadding': 90, 'rightPadding': 15, 'fontSize': 16, 'sectionFontSize': 16}}}%%
     accTitle: Queue Backlog Burst and Drain (UTC, 2026-04-07)
     accDescr: Historical injection, drain and completion sections retain their reported start times and durations; the adjacent key gives exact seconds. This is not a new run.
-    title Queue burst and drain
+    title Queue Backlog Burst and Drain (UTC, 2026-04-07)
     dateFormat  HH:mm:ss
     axisFormat  %H:%M
     tickInterval 2minute
     section Injection
-    I - 2000 messages             :done, inj, 08:23:09, 22s
+    T1 :done, inj, 08:23:09, 22s
     section Drain
-    D - Single instance           :done, drn, 08:23:09, 7m20s
+    T2 :done, drn, 08:23:09, 7m20s
     section Completion
-    C - Fully drained             :done, fin, 08:30:29, 1s
+    T3 :done, fin, 08:30:29, 1s
 ```
 
 **Timeline key — Queue Backlog Burst and Drain (UTC, 2026-04-07):**
 
 | Key | Historical task | Start (UTC) | Duration |
 |---|---|---|---|
-| I | Producer sends 2000 messages | 08:23:09 | 22s |
-| D | Single-instance drain phase | 08:23:09 | 7m20s |
-| C | Queue reaches fully drained | 08:30:29 | 1s |
+| T1 | Producer sends 2000 messages | 08:23:09 | 22s |
+| T2 | Single-instance drain phase | 08:23:09 | 7m20s |
+| T3 | Queue reaches fully drained | 08:30:29 | 1s |
 
 ## 2) Hypothesis
 
