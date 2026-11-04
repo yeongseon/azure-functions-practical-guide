@@ -94,7 +94,7 @@ flowchart TD
     D -->|No| F(["Check upstream<br/>dependencies<br/>and network"])
     C --> G{"Large payload or<br/>media processing?"}
     E --> G
-    G -->|Yes| H["Validate memory<br/>pressure in AppMetrics"]
+    G -->|Yes| H["Validate collected<br/>memory telemetry"]
     G -->|No| I["Check unbounded<br/>collections, leaks<br/>and disposal"]
     H --> J{"Plan memory<br/>ceiling reached?"}
     I --> J
@@ -112,7 +112,7 @@ flowchart TD
     class A,B,C,D,E,F,G,H,I,J,K,L,M neutral;
 ```
 
-**Reading key:** OOM = out-of-memory exception. Diamonds route evidence checks to candidate causes and next actions; restart gaps alone do not prove memory exhaustion. “Scale up” is a plan-dependent option, not a substitute for checking allocations and disposal ([hosting options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale), [performance guidance](https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability)).
+**Reading key:** OOM = out-of-memory exception; “collected memory telemetry” means memory metrics or performance counters available for the app's hosting plan, operating system and runtime, with collection verified before querying. Diamonds route evidence checks to candidate causes and next actions; restart gaps alone do not prove memory exhaustion. “Scale up” is a plan-dependent option, not a substitute for checking allocations and disposal ([hosting options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale), [performance guidance](https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability)).
 
 ### Severity guidance
 | Condition | Severity | Action priority |
