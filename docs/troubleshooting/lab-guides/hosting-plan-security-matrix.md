@@ -171,10 +171,8 @@ flowchart TD
             end
             subgraph subnet_pe_s["PE subnet"]
                 pe_storage_s[["S Storage PEs<br/>blob / queue / table"]]
+                pe_site_s[["S site PE"]]
             end
-        end
-        subgraph subnet_site_s["Site PE subnet"]
-            pe_site_s[["S site PE"]]
         end
         client_s -->|"[Configured]<br/>HTTPS"| pe_site_s
         pe_site_s -->|"[Configured]<br/>Inbound"| app_runtime_s
@@ -198,7 +196,7 @@ flowchart TD
     classDef netBox fill:transparent,stroke:#287ce4,stroke-width:2px,stroke-dasharray:6 3;
     class app_runtime_fc,app_runtime_ep,app_runtime_y,app_runtime_s,client_s,storage_db_fc,storage_db_ep,storage_db_y,storage_db_s,vnet_integration_fc,vnet_integration_ep,vnet_integration_s,pe_storage_fc,pe_storage_ep,pe_storage_s,pe_site_s baseNeutral;
     class identity_fc,identity_ep,identity_y,identity_s,dns_fc,dns_ep,dns_s,config_ep,config_y,config_s bandMuted;
-    class vnet_fc,vnet_ep,vnet_s,subnet_int_fc,subnet_int_ep,subnet_int_s,subnet_pe_fc,subnet_pe_ep,subnet_pe_s,subnet_site_s netBox;
+    class vnet_fc,vnet_ep,vnet_s,subnet_int_fc,subnet_int_ep,subnet_int_s,subnet_pe_fc,subnet_pe_ep,subnet_pe_s netBox;
     linkStyle default stroke-width:2px;
 ```
 
@@ -209,7 +207,7 @@ flowchart TD
 | FC | FC1 Flex Consumption; user-assigned managed identity; Storage `allowSharedKeyAccess: false`; separate `blob`, `queue`, `table`, `file` PEs and corresponding private DNS zones. The file PE is retained from this lab configuration, not a Flex requirement. |
 | EP | EP1 Premium; system-assigned identity; separate `blob`, `queue`, `table`, `file` PEs; file PE serves the content share. `EP content setting` = `vnetContentShareEnabled: true`. |
 | Y | Y1 Consumption; system-assigned identity; Storage public endpoints. `Y host-storage setting` = `AzureWebJobsStorage__accountName`. |
-| S | S1 Dedicated; system-assigned identity; separate `blob`, `queue`, `table` PEs; `S package setting` = run-from-package, no file PE in this configuration. Site PE is a separate inbound path, not an outbound integration target. Its subnet is drawn separately to separate ingress from storage egress, not to assert an additional VNet. |
+| S | S1 Dedicated; system-assigned identity; separate `blob`, `queue`, `table` PEs; `S package setting` = run-from-package, no file PE in this configuration. Site PE is a separate inbound path, not an outbound integration target. It shares the Storage PE subnet inside the S customer VNet, matching `infra/dedicated/main.bicep`; the inbound arrows remain distinct from storage egress. |
 | DNS | FC/EP/S DNS nodes stand for the private zones corresponding to the enumerated Storage services, linked to each VNet. App lookup resolves the service hostname to its PE IP. |
 | Identity | Logical use of the assigned identity via the app's managed-identity endpoint, not a direct app-to-Entra network hop or Azure Files identity authentication. |
 
