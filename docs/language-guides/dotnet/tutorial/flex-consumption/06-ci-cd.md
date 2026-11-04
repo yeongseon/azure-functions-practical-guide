@@ -51,7 +51,7 @@ You will configure a GitHub Actions pipeline that builds and deploys a .NET isol
 ```mermaid
 flowchart TD
     accTitle: CI/CD stage order for the .NET isolated Flex Consumption tutorial
-    accDescr: A push to main starts GitHub Actions, followed by dotnet build and publish, the Functions deployment action and a smoke test. This summarizes the intended stages for Flex Consumption package deployment, not proof that the publish-profile configuration below is complete or that deployment and smoke testing succeeded.
+    accDescr: A push to main that changes files matching apps/dotnet/** starts GitHub Actions, followed by dotnet build and publish, the Functions deployment action and a smoke test. This summarizes the intended stages for Flex Consumption package deployment, not proof that the publish-profile configuration below is complete or that deployment and smoke testing succeeded.
     A[Push to main] --> B[GitHub Actions]
     B --> C[dotnet build + publish]
     C --> D[azure/functions-action]
