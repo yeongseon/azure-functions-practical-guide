@@ -31,12 +31,16 @@ This reference captures supported Java versions, JVM/runtime settings, Maven dep
 <!-- diagram-id: supported-java-versions -->
 ```mermaid
 timeline
+    accTitle: Four Java LTS generations used by Azure Functions
+    accDescr: The timeline pairs 2014 with Java 8 LTS, 2018 with Java 11 LTS, 2021 with Java 17 LTS, and 2023 with Java 21 LTS. It depicts four Java generations, not a complete current support list or the dates Azure Functions adopted them.
     title Java runtime options for Azure Functions v4
     2014 : Java 8 (LTS)
     2018 : Java 11 (LTS)
     2021 : Java 17 (LTS)
     2023 : Java 21 (LTS)
 ```
+
+**Reading note:** The figure pairs 2014 with Java 8 (LTS), 2018 with Java 11 (LTS), 2021 with Java 17 (LTS), and 2023 with Java 21 (LTS). These year markers are illustrative historical context, not Azure Functions adoption dates. The figure and table show a subset of runtime options; consult [Supported languages](https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages) for the current list and hosting restrictions.
 
 | Runtime | Status | Typical recommendation |
 |---------|--------|------------------------|
@@ -71,6 +75,8 @@ az functionapp config appsettings set   --name $APP_NAME   --resource-group $RG 
 <!-- diagram-id: maven-build-and-deployment -->
 ```mermaid
 flowchart TD
+    accTitle: Maven build and Function App deployment stages
+    accDescr: The stage map proceeds from pom.xml to mvn clean package, the azure-functions-maven-plugin, and Function App deployment. Arrows organize configuration, build tooling, and deployment, not network calls or a claim that packaging alone deploys the app.
     A[pom.xml] --> B[mvn clean package]
     B --> C[azure-functions-maven-plugin]
     C --> D[Function App deployment]
