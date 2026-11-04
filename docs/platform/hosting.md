@@ -126,7 +126,7 @@ Azure Functions supports four main hosting models:
 ```mermaid
 flowchart TD
     accTitle: Hosting plan requirements decision flow
-    accDescr: Scale-to-zero and private networking lead to Flex Consumption or legacy Consumption needs. Without scale-to-zero, existing App Service estate leads to Dedicated; otherwise warm baseline requirements lead to Premium or Dedicated or Premium. These are selection heuristics, not a complete capability test.
+    accDescr: When scale-to-zero is required, private networking leads to Flex Consumption; without private networking, Flex is the default candidate and Consumption is reserved for legacy needs. Without scale-to-zero, existing App Service estate leads to Dedicated; otherwise warm baseline requirements lead to Premium or Dedicated or Premium. These are selection heuristics, not a complete capability test.
     A(["Workload Requirement"])
     B{"Scale to zero<br/>required?"}
     C{"Private networking<br/>required?"}
