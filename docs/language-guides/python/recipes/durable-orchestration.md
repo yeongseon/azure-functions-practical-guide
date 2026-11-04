@@ -16,6 +16,8 @@ content_sources:
       source: self-generated
       justification: Flow view of overview, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-http-features
+        - https://learn.microsoft.com/en-us/azure/durable-task/common/durable-task-code-constraints
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
     - id: fan-out-fan-in-pattern
@@ -23,6 +25,7 @@ content_sources:
       source: self-generated
       justification: Interaction sequence for fan out fan in pattern, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/durable-task/common/durable-task-fan-in-fan-out
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
     - id: monitor-pattern
@@ -30,6 +33,7 @@ content_sources:
       source: self-generated
       justification: Flow view of the monitor pattern, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/durable-task/common/durable-task-timers
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-eternal-orchestrations
     - id: human-interaction-pattern
@@ -37,6 +41,8 @@ content_sources:
       source: self-generated
       justification: Interaction sequence for the human interaction pattern, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/durable-task/common/durable-task-external-events
+        - https://learn.microsoft.com/en-us/azure/durable-task/common/durable-task-timers
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-http-features
 ---
@@ -59,20 +65,35 @@ Durable Functions use three function types:
 <!-- diagram-id: overview -->
 ```mermaid
 flowchart TD
-    HTTP["HTTP Request"] --> CL["Client Function\n(HTTP Trigger)\nStarts orchestration"]
-    CL -->|"start_new()\nreturns instance_id"| ORC["Orchestrator Function\nDefines workflow logic\n(deterministic)"]
-    ORC -->|"call_activity()"| A1["Activity Function\nvalidate_order"]
-    ORC -->|"call_activity()"| A2["Activity Function\ncharge_payment"]
-    ORC -->|"call_activity()"| A3["Activity Function\nsend_notification"]
+    accTitle: Durable workflow roles and asynchronous HTTP management
+    accDescr: An HTTP starter starts a deterministic orchestrator and returns management URLs without waiting for completion. The orchestrator calls activities and receives results. A separate status query retrieves orchestration status.
+    HTTP["HTTP caller"] --> CL["Client function<br/>HTTP starter"]
+    CL -->|"start"| ORC["Orchestrator<br/>Deterministic workflow"]
+    ORC -->|"call"| A1["Activity 1"]
+    ORC -->|"call"| A2["Activity 2"]
+    ORC -->|"call"| A3["Activity 3"]
     A1 --> ORC
     A2 --> ORC
     A3 --> ORC
-    ORC -->|"Completed"| CL
-    CL -->|"Management URLs\nstatus / terminate"| HTTP
-
-    style ORC fill:#0078d4,color:#fff
-    style CL fill:#107c10,color:#fff
+    ORC -->|"status result"| CL
+    CL -->|"202 + URLs"| HTTP
+    CL -->|"query status"| ORC
+    %% Layout-only tiers; add no activity calls or execution-order arrows.
+    A1 ~~~ A2
+    A2 ~~~ A3
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class HTTP,CL,ORC,A1,A2,A3 neutral;
 ```
+
+**Reading key:** “start” is `start_new()`, which returns an `instance_id`.
+“call” is `call_activity()`; activities 1–3 retain the illustrative names
+`validate_order`, `charge_payment` and `send_notification`. Unlabelled return
+arrows carry activity results. The HTTP-triggered client starts the workflow and
+returns HTTP 202 with management URLs (including status and terminate), not a
+completion callback. “query status” / “status result” summarize a later client
+API query; callers can instead poll the returned status URL. These are logical
+roles, not network hops or a chronological sequence
+([HTTP management](https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-http-features#async-operation-tracking)).
 
 ## Prerequisites
 
@@ -237,21 +258,31 @@ def send_notification(notification: dict) -> dict:
 
 <!-- diagram-id: fan-out-fan-in-pattern -->
 ```mermaid
+%%{init: {"sequence": {"width": 40, "actorMargin": 10, "diagramMarginX": 5, "noteMargin": 5}}}%%
 sequenceDiagram
-    participant O as Orchestrator
-    participant A1 as Activity: process_item_1
-    participant A2 as Activity: process_item_2
-    participant A3 as Activity: process_item_3
+    accTitle: Fan-out, join and aggregate
+    accDescr: The orchestrator schedules three activity tasks before waiting, receives each result, waits for all results with task_all, and aggregates them. Activity completion order is illustrative.
+    participant O as O
+    participant A1 as A1
+    participant A2 as A2
+    participant A3 as A3
 
-    O->>A1: call_activity() [parallel]
-    O->>A2: call_activity() [parallel]
-    O->>A3: call_activity() [parallel]
+    O->>A1: call 1
+    O->>A2: call 2
+    O->>A3: call 3
     A1-->>O: result_1
     A2-->>O: result_2
     A3-->>O: result_3
-    Note over O: task_all([t1, t2, t3])<br/>waits for all results
-    O->>O: aggregate_results([r1, r2, r3])
+    Note over O: Join all<br/>three results
+    O->>O: aggregate
 ```
+
+**Reading key:** O = orchestrator; A1/A2/A3 = activity functions
+`process_item_1`, `process_item_2`, `process_item_3`. “call 1–3” means
+`call_activity()` scheduled in parallel (tasks t1–t3); `result_1`–`result_3`
+are r1–r3. “Join all” is `task_all([t1, t2, t3])`; “aggregate” is
+`aggregate_results([r1, r2, r3])`. Return order is illustrative, not guaranteed
+([fan-out/fan-in](https://learn.microsoft.com/en-us/azure/durable-task/common/durable-task-fan-in-fan-out)).
 
 Process multiple items in parallel, then aggregate results:
 
@@ -295,6 +326,8 @@ Poll a long-running job on a durable timer until it finishes or a deadline passe
 <!-- diagram-id: monitor-pattern -->
 ```mermaid
 flowchart TD
+    accTitle: Durable monitor loop
+    accDescr: Start with a job ID and deadline, check job status, and return when done or expired. While still running, wait on a durable timer before checking again.
     START["Start\nget job_id + deadline"] --> CHECK["call_activity\ncheck_job_status"]
     CHECK --> COND{"Done or expired?"}
     COND -->|"still running"| TIMER["create_timer\nsleep interval"]
@@ -342,19 +375,31 @@ Pause a workflow until an external decision arrives — an approval, a signature
 
 <!-- diagram-id: human-interaction-pattern -->
 ```mermaid
+%%{init: {"sequence": {"width": 50, "actorMargin": 10, "diagramMarginX": 5, "noteMargin": 5}}}%%
 sequenceDiagram
-    participant Cli as Client (HTTP)
-    participant Orc as Orchestrator
-    participant Act as Activity
-    Orc->>Act: request_approval
-    Note over Orc: wait_for_external_event + create_timer (timeout)
-    alt approval arrives first
-        Cli->>Orc: raise_event ApprovalEvent
-        Orc->>Act: apply approved / rejected
-    else timeout fires first
-        Orc->>Orc: escalate (default action)
+    accTitle: Approval event versus durable timeout
+    accDescr: An orchestrator requests approval through an activity and waits for an external decision or a timer. If the event arrives first it applies the decision, approved or rejected; if the timer wins it escalates.
+    participant Cli as C
+    participant Orc as O
+    participant Act as A
+    Orc->>Act: request<br/>approval
+    Note over Orc: Event wait +<br/>timeout timer
+    alt event first
+        Cli->>Orc: raise event
+        Orc->>Act: apply decision
+    else timer first
+        Orc->>Orc: escalate
     end
 ```
+
+**Reading key:** C = HTTP client, O = orchestrator, A = activity.
+“request approval” is `request_approval`; the wait is
+`wait_for_external_event` plus `create_timer` (timeout). “raise event” is
+`raise_event` for `ApprovalEvent`; “apply decision” retains the approved/rejected
+outcomes; “escalate” is the default timeout action. The activity action is
+illustrative, not a required platform callback
+([external events](https://learn.microsoft.com/en-us/azure/durable-task/common/durable-task-external-events),
+[timers](https://learn.microsoft.com/en-us/azure/durable-task/common/durable-task-timers)).
 
 ```python
 from datetime import timedelta
@@ -440,6 +485,10 @@ async def get_status(req: func.HttpRequest, client: df.DurableOrchestrationClien
 - [Platform: Durable Functions](../../../platform/durable-functions.md)
 
 ## Sources
+- [Fan-out/fan-in](https://learn.microsoft.com/en-us/azure/durable-task/common/durable-task-fan-in-fan-out)
+- [External events](https://learn.microsoft.com/en-us/azure/durable-task/common/durable-task-external-events)
+- [Durable timers](https://learn.microsoft.com/en-us/azure/durable-task/common/durable-task-timers)
+- [Orchestrator code constraints](https://learn.microsoft.com/en-us/azure/durable-task/common/durable-task-code-constraints)
 - [Durable Functions Overview (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview)
 - [Python v2 Programming Model (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python)
 - [HTTP features: raise event webhooks (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-http-features)
