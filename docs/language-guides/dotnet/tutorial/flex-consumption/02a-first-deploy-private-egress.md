@@ -77,6 +77,7 @@ You will provision a Flex Consumption Function App with Azure CLI, publish .NET 
 
 <!-- diagram-id: what-you-ll-build -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 10, 'rankSpacing': 70, 'padding': 8, 'subGraphTitleMargin': {'top': 8, 'bottom': 32}}}}%%
 flowchart TD
     accTitle: Linux FC1 .NET 8 private Storage topology
     accDescr: Intended public HTTPS ingress and private Storage access for this Flex tutorial. Outbound integration does not deploy app compute into the integration subnet. Four separate Storage endpoints and DNS zones are grouped by service in the adjacent key; identity and telemetry are not transit hops.
@@ -88,21 +89,21 @@ flowchart TD
         dns_fn{{"Blob · Queue<br/>Table · File"}}
     end
     subgraph vnet_fn["VNet"]
-        subgraph subnet_int_fn["Integration subnet"]
+        subgraph subnet_int_fn["<div style='width:170px;text-align:right'>Integration<br/>subnet</div>"]
             vnet_integration[["Outbound<br/>integration"]]
         end
-        subgraph subnet_pe_fn["PE subnet"]
+        subgraph subnet_pe_fn["<div style='width:130px;text-align:left'>PE<br/>subnet</div>"]
             pe_storage[["Storage PEs<br/>blob · queue<br/>table · file"]]
         end
     end
     storage_db[("Storage account<br/>Settings: S")]
-    subgraph DEPLOY["Deployment"]
+    subgraph DEPLOY["<div style='width:200px;text-align:left'>Deployment</div>"]
         BLOB_CTR[("Blob container<br/>deployment-packages")]
     end
     client -->|"[Configured]<br/>HTTPS"| app_runtime
     app_runtime -.->|"[Configured]<br/>Identity"| identity
     app_runtime -.->|"[Configured]<br/>Telemetry"| telemetry
-    dns_fn -.->|"[Configured]<br/>VNet link"| vnet_integration
+    dns_fn -.->|"[Configured]<br/>VNet link"| vnet_fn
     app_runtime -->|"[Configured]<br/>Outbound"| vnet_integration
     vnet_integration -->|"[Configured]<br/>Each PE"| pe_storage
     pe_storage -->|"[Configured]<br/>Each service"| storage_db
@@ -119,7 +120,7 @@ flowchart TD
     linkStyle default stroke-width:2px;
 ```
 
-**Reading key (Linux FC1):** Solid arrows show intended request/data access; dotted arrows show identity, telemetry, the VNet DNS-link association or membership, not transport through those roles. Arrows name the initiator or association owner. VNet integration is outbound-only and does not deploy the app into the integration subnet. Flex uses subnet-dedicated shared gateways, not one interface per app instance. The DNS zones are linked to the VNet, not hosted inside it; the link arrow terminates at the integration role for layout, not a DNS-query hop ([networking](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options), [Flex integration](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to#configure-virtual-network-integration)).
+**Reading key (Linux FC1):** Solid arrows show intended request/data access; dotted arrows show identity, telemetry, the VNet DNS-link association or membership, not transport through those roles. Arrows name the initiator or association owner. VNet integration is outbound-only and does not deploy the app into the integration subnet. Flex uses subnet-dedicated shared gateways, not one interface per app instance. The DNS zones are linked to the VNet, not hosted inside it; the link arrow terminates at the VNet boundary, not a DNS-query hop ([networking](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options), [Flex integration](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to#configure-virtual-network-integration)).
 
 | Key | Tutorial configuration / meaning |
 |---|---|
@@ -137,7 +138,7 @@ The bundled `pe_storage` node represents **four distinct endpoints**, not one sh
 | `PE_TABLE` → Table | `privatelink.table.core.windows.net` |
 | `PE_FILE` → File | `privatelink.file.core.windows.net` |
 
-These are this tutorial's provisioned endpoints, not a universal four-endpoint requirement. Flex does not depend on an Azure Files content share; a File PE alone does not establish identity-authenticated Files use. Clients retain normal Storage hostnames; DNS resolves them to PE IPs ([Storage endpoints/DNS](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints), [storage considerations](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations), [identity](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)).
+These are this tutorial's provisioned endpoints, not a universal four-endpoint requirement. Flex does not depend on an Azure Files content share; a File PE alone does not establish identity-authenticated Files use. Clients retain normal Storage hostnames; with the appropriate private DNS resolution configured for their network, those hostnames resolve to PE IPs ([Storage endpoints/DNS](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints), [storage considerations](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations), [identity](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)).
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
