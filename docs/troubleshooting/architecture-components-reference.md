@@ -133,6 +133,7 @@ content_sources:
       source: self-generated
       justification: Flow view of durable functions orchestration architecture where replay and state coordination confuse diagnosis, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/durable-task/durable-functions/durable-functions-azure-storage-provider
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
@@ -150,6 +151,8 @@ content_sources:
       source: self-generated
       justification: Durable state machine view, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/durable-task/common/durable-task-instance-management
+        - https://learn.microsoft.com/en-us/azure/durable-task/durable-functions/durable-functions-azure-storage-provider
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
@@ -234,18 +237,27 @@ Azure Functions does not have one runtime shape. The failure domain changes mate
 
 <!-- diagram-id: 1-hosting-plan-architecture-where-startup-and-scale-behavior-change -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 10}}}%%
 flowchart TD
-    A[Client or Event Source] --> B["Azure Functions Front Door / Trigger Source"]
+    accTitle: Hosting plan diagnostic routing
+    accDescr: Illustrative routing by hosting plan to four candidate failure points, not proof of an incident cause. HTTP front-end routing and non-HTTP trigger sources are alternatives, not a mandatory Azure Front Door deployment.
+    A(["Client or<br/>Event Source"]) --> B["Functions HTTP front end<br/>or trigger source"]
     B --> C{Hosting plan}
-    C -->|Consumption| D[Shared serverless workers\nScale to zero]
-    C -->|Flex Consumption| E[Serverless workers with newer scale model\nPer-function scaling focus]
-    C -->|Premium| F[Prewarmed and always-ready workers\nNo scale-to-zero]
-    C -->|Dedicated| G[App Service Plan instances\nManual or autoscale]
+    C -->|Consumption| D["Shared serverless workers<br/>Scale to zero"]
+    C -->|Flex Consumption| E["Serverless workers<br/>Newer scale model<br/>Per-function scaling focus"]
+    C -->|Premium| F["Prewarmed and<br/>always-ready workers<br/>No scale-to-zero"]
+    C -->|Dedicated| G["App Service Plan instances<br/>Manual or autoscale"]
 
-    D -. FP-PLAN-01 .-> D1[Cold start after idle or scale-out]
-    E -. FP-PLAN-02 .-> E1[Trigger-specific scale behavior and networking assumptions]
-    F -. FP-PLAN-03 .-> F1[Prewarmed capacity insufficient for burst]
-    G -. FP-PLAN-04 .-> G1[Too few instances or noisy-neighbor within plan]
+    D -. FP-PLAN-01 .-> D1("Cold start after<br/>idle or scale-out")
+    E -. FP-PLAN-02 .-> E1("Trigger-specific scale<br/>behavior and networking<br/>assumptions")
+    F -. FP-PLAN-03 .-> F1("Prewarmed capacity<br/>insufficient for burst")
+    G -. FP-PLAN-04 .-> G1("Too few instances or<br/>noisy-neighbor within plan")
+    %% Layout-only links serialize categories; they add no diagnostic steps or arrows.
+    D1 ~~~ E
+    E1 ~~~ F
+    F1 ~~~ G
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,D1,E1,F1,G1 baseNeutral;
 ```
 
 ### Hosting plan troubleshooting differences
@@ -272,13 +284,16 @@ Most Azure Functions incidents begin before user code runs. The event must first
 
 <!-- diagram-id: 2-trigger-and-binding-architecture-where-invocations-begin-or-stall -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 10}}}%%
 flowchart TD
-    A[Event source or caller] --> B{Trigger type}
-    B -->|HTTP| C[Functions front end and host routing]
-    B -->|"Queue / Service Bus"| D[Listener polls or receives messages]
-    B -->|Event Hubs| E[Partition processor and checkpoint store]
-    B -->|"Blob / Event Grid"| F[Event delivery or storage scan path]
-    B -->|Timer| G[Schedule monitor]
+    accTitle: Trigger and binding diagnostic routing
+    accDescr: Illustrative logical diagnostic map preserving HTTP, Queue and Service Bus, Event Hubs, Blob and Event Grid, and Timer paths. Arrows group responsibilities, not network hops or a universal execution order. Input bindings can supply data before user code executes; output bindings write results. Failure points are candidates to investigate, not confirmed causes.
+    A(["Event source<br/>or caller"]) --> B{Trigger type}
+    B -->|HTTP| C["Functions front end<br/>and host routing"]
+    B -->|"Queue / Service Bus"| D["Listener polls or<br/>receives messages"]
+    B -->|Event Hubs| E["Partition processor<br/>and checkpoint store"]
+    B -->|"Blob / Event Grid"| F["Event delivery or<br/>storage scan path"]
+    B -->|Timer| G["Schedule monitor"]
     C --> H[Functions host]
     D --> H
     E --> H
@@ -286,16 +301,27 @@ flowchart TD
     G --> H
     H --> I[Language worker]
     I --> J[Function code]
-    J --> K[Input and output bindings]
-    K --> L[Storage, Service Bus, Event Hubs, Cosmos DB, HTTP APIs]
+    J --> K["Input and<br/>output bindings"]
+    K --> L["Storage, Service Bus,<br/>Event Hubs, Cosmos DB,<br/>HTTP APIs"]
 
-    C -. FP-TRIG-01 .-> C1[HTTP auth, route, or host availability issue]
-    D -. FP-TRIG-02 .-> D1["Queue or Service Bus listener auth/backlog issue"]
-    E -. FP-TRIG-03 .-> E1[Partition lag or checkpoint delay]
-    F -. FP-TRIG-04 .-> F1[Blob delivery path or Event Grid subscription issue]
-    H -. FP-TRIG-05 .-> H1[Host cannot initialize listener]
-    K -. FP-TRIG-06 .-> K1["Binding write/read failure after execution"]
+    C -. FP-TRIG-01 .-> C1("HTTP path issue")
+    D -. FP-TRIG-02 .-> D1("Listener issue")
+    E -. FP-TRIG-03 .-> E1("Partition lag or<br/>checkpoint delay")
+    F -. FP-TRIG-04 .-> F1("Delivery issue")
+    H -. FP-TRIG-05 .-> H1("Host cannot<br/>initialize listener")
+    K -. FP-TRIG-06 .-> K1("Binding write/read<br/>failure")
+    %% Layout-only links serialize alternatives; they add no diagnostic steps or arrows.
+    C1 ~~~ D
+    D1 ~~~ E
+    E1 ~~~ F
+    F1 ~~~ G
+    H1 ~~~ I
+    K1 ~~~ L
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J,K,L,C1,D1,E1,F1,H1,K1 baseNeutral;
 ```
+
+**Reading key:** Solid arrows associate logical roles, not universal transport or binding-resolution order; dotted FP arrows identify candidates, not proven causes. FP-TRIG-01 covers HTTP authentication, routing or host availability; FP-TRIG-02 covers Queue or Service Bus listener authentication/backlog; FP-TRIG-04 covers the Blob delivery path or Event Grid subscription. Input bindings can read before function code runs; output bindings write results.
 
 ### Request flow examples by trigger type
 
@@ -346,19 +372,29 @@ Azure Functions scaling is a control loop, not instant elasticity. Backlog, targ
 <!-- diagram-id: 3-scale-controller-and-instance-management-where-backlog-and-burst-failures-originate -->
 ```mermaid
 flowchart TD
-    A[Incoming load or event backlog] --> B[Scale controller observes trigger metrics]
+    accTitle: Event-driven scale diagnostic flow
+    accDescr: Illustrative scale-out stages for Consumption, Flex Consumption and Premium, not Dedicated App Service autoscale or a documented internal protocol. Preserve the Yes additional-instance path and No current-count outcome. Five failure points identify candidate observation, cap, allocation, startup and downstream bottlenecks, not measured failures.
+    A(["Incoming load or<br/>event backlog"]) --> B["Scale controller observes<br/>trigger metrics"]
     B --> C{Need more workers?}
-    C -->|No| D[Keep current instance count]
-    C -->|Yes| E[Request additional instances]
-    E --> F[Allocate workers for hosting plan]
-    F --> G[Start host and listeners on new instances]
-    G --> H[Instances begin processing]
+    C -->|No| D(["Keep current<br/>instance count"])
+    C -->|Yes| E["Request additional instances"]
+    E --> F["Allocate workers<br/>for hosting plan"]
+    F --> G["Start host and listeners<br/>on new instances"]
+    G --> H["Instances begin processing"]
 
-    B -. FP-SCALE-01 .-> B1[Metrics do not reflect actual bottleneck yet]
-    E -. FP-SCALE-02 .-> E1[Scale request delayed or capped]
-    F -. FP-SCALE-03 .-> F1[Instance allocation slow in burst]
-    G -. FP-SCALE-04 .-> G1[Host startup or specialization delay]
-    H -. FP-SCALE-05 .-> H1[More instances exist but downstream still throttles]
+    B -. FP-SCALE-01 .-> B1("Metrics do not reflect<br/>actual bottleneck yet")
+    E -. FP-SCALE-02 .-> E1("Scale request<br/>delayed or capped")
+    F -. FP-SCALE-03 .-> F1("Instance allocation<br/>slow in burst")
+    G -. FP-SCALE-04 .-> G1("Host startup or<br/>specialization delay")
+    H -. FP-SCALE-05 .-> H1("More instances exist but<br/>downstream still throttles")
+    %% Layout-only links serialize candidates; they add no diagnostic steps or arrows.
+    B1 ~~~ C
+    D ~~~ E
+    E1 ~~~ F
+    F1 ~~~ G
+    G1 ~~~ H
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,B1,E1,F1,G1,H1 baseNeutral;
 ```
 
 ### Scale-out decision flow
@@ -413,24 +449,41 @@ Cold start is not one step. It is a chain: instance allocation, host specializat
 
 <!-- diagram-id: 4-cold-start-flow-where-first-execution-latency-appears -->
 ```mermaid
+%%{init: {'sequence': {'actorMargin': 0, 'width': 20, 'diagramMarginX': 0, 'messageMargin': 25}}}%%
 sequenceDiagram
-    participant S as Scale Controller
-    participant I as New Instance
-    participant H as Functions Host
-    participant W as Language Worker
-    participant F as Function Code
-    participant D as Dependency
+    accTitle: Cold start logical startup sequence
+    accDescr: Illustrative out-of-process startup with six roles and nine ordered exchanges, not a measured timeline or a universal hosting protocol. Allocation, site specialization, host configuration, worker startup, code import and first dependency initialization remain distinct.
+    participant S as S
+    participant I as I
+    participant H as H
+    participant W as W
+    participant F as F
+    participant D as D
 
-    S->>I: Allocate worker for load or first request
-    I->>H: Specialize site and mount app content
-    H->>H: Load host.json and extensions
-    H->>W: Start language worker process
-    W->>F: Import user code and initialize globals
-    F->>D: Open first dependency connection
-    D-->>F: Return auth/session/metadata
-    F-->>H: Ready for invocation
-    H-->>I: Execute first invocation
+    S->>I: 1
+    I->>H: 2
+    H->>H: 3
+    H->>W: 4
+    W->>F: 5
+    F->>D: 6
+    D-->>F: 7
+    F-->>H: 8
+    H-->>I: 9
 ```
+
+**Roles:** S = Scale Controller; I = New Instance; H = Functions Host; W = Language Worker; F = Function Code; D = Dependency. This is an illustrative out-of-process startup sequence, not a measured timeline or wire protocol.
+
+| Exchange | Full meaning |
+|---|---|
+| 1. S → I | Allocate worker for load or first request |
+| 2. I → H | Specialize site and mount app content |
+| 3. H → H | Load host.json and extensions |
+| 4. H → W | Start language worker process |
+| 5. W → F | Import user code and initialize globals |
+| 6. F → D | Open first dependency connection |
+| 7. D → F | Return authentication/session/metadata |
+| 8. F → H | Ready for invocation |
+| 9. H → I | Execute first invocation |
 
 ### Cold start interpretation
 
@@ -472,46 +525,74 @@ Durable Functions is not a single long-running process. It is a state-driven wor
 
 <!-- diagram-id: 5-durable-functions-orchestration-architecture-where-replay-and-state-coordination-confuse-diagnosis -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 10}}}%%
 flowchart TD
-    A[Client starts orchestration] --> B[Durable client binding]
+    accTitle: Durable orchestration diagnostic flow
+    accDescr: Illustrative Azure Storage task-hub model; the runtime mediates history reads, persistence and activity scheduling. Replay is the normal reconstruction path; supported caching can avoid a full replay. Activity results, durable timers and external client signals resume processing; waiting itself does not send an event. Sub-orchestrations are also supported, although this figure branches only to activities, timers and external-event waits. Failure points are diagnostic candidates.
+    A(["Client starts<br/>orchestration"]) --> B["Durable client binding"]
     B --> C[Orchestration trigger]
-    C --> D[Read execution history from durable store]
-    D --> E[Replay orchestrator code deterministically]
-    E --> F{Schedule activity, timer, or sub-orchestration?}
+    C --> D["Read history"]
+    D --> E["Replay orchestrator"]
+    E --> F{"Schedule work<br/>or wait?"}
     F -->|Activity| G[Queue work item]
-    F -->|Timer| H[Persist wake-up event]
-    F -->|External event| I[Wait for event in durable store]
-    G --> J[Activity function executes]
-    J --> K[Write result to durable store]
+    F -->|Timer| H["Persist wake-up"]
+    F -->|External event| I["Wait for event"]
+    G --> J["Activity function executes"]
+    J --> K["Write result"]
     H --> D
     I --> D
     K --> D
 
-    C -. FP-DUR-01 .-> C1[Orchestrator trigger not advancing]
-    D -. FP-DUR-02 .-> D1[History or storage access issue]
-    E -. FP-DUR-03 .-> E1[Replay storm or non-deterministic code]
-    G -. FP-DUR-04 .-> G1[Activity backlog or queue saturation]
-    K -. FP-DUR-05 .-> K1["Checkpoint/state write failure"]
+    C -. FP-DUR-01 .-> C1("Trigger stalled")
+    D -. FP-DUR-02 .-> D1("History/store issue")
+    E -. FP-DUR-03 .-> E1("Replay issue")
+    G -. FP-DUR-04 .-> G1("Activity backlog")
+    K -. FP-DUR-05 .-> K1("Write failure")
+    %% Layout-only links tier candidates; they add no diagnostic steps or arrows.
+    C1 ~~~ D
+    D1 ~~~ E
+    E1 ~~~ F
+    G1 ~~~ J
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J,K,C1,D1,E1,G1,K1 baseNeutral;
 ```
+
+**Reading key:** This illustrates the Azure Storage task-hub model. The runtime reads execution history from the durable store, normally replays orchestrator code deterministically, queues activity work, persists timer wake-up messages and activity results, and resumes processing when results, timers or external client signals arrive. Supported caching can avoid a full replay. “Schedule work or wait?” retains activities, timers and sub-orchestrations as scheduling options; the three drawn branches remain Activity, Timer and External event (waiting does not send its own signal).
+
+| Candidate | Full diagnostic meaning |
+|---|---|
+| FP-DUR-01 | Orchestrator trigger not advancing |
+| FP-DUR-02 | History or storage access issue |
+| FP-DUR-03 | Replay storm or non-deterministic code |
+| FP-DUR-04 | Activity backlog or queue saturation |
+| FP-DUR-05 | Checkpoint/state write failure |
 
 ### Durable state-machine view
 
 <!-- diagram-id: durable-state-machine-view -->
 ```mermaid
+%%{init: {'state': {'nodeSpacing': 10, 'rankSpacing': 30}}}%%
 stateDiagram-v2
+    accTitle: Durable conceptual waiting and outcome states
+    accDescr: Illustrative diagnostic state model retaining activity, timer and external-event waits, completion, failure and termination. WaitingFor states are conceptual, not runtimeStatus values. Failure arrows identify possible diagnostic paths, not a guarantee that storage outages, poison messages or repeated activity failures set orchestration status to Failed; recovery and exception handling affect the outcome.
+    state "Waiting for<br/>activity" as WaitingForActivity
+    state "Waiting for<br/>timer" as WaitingForTimer
+    state "Waiting for<br/>external event" as WaitingForExternalEvent
     [*] --> Pending
-    Pending --> Running: orchestration starts
-    Running --> WaitingForActivity: schedule activity
-    WaitingForActivity --> Running: activity result written
-    Running --> WaitingForTimer: durable timer created
+    Pending --> Running: orchestration<br/>starts
+    Running --> WaitingForActivity: schedule<br/>activity
+    WaitingForActivity --> Running: activity result<br/>written
+    Running --> WaitingForTimer: durable timer<br/>created
     WaitingForTimer --> Running: timer fires
-    Running --> WaitingForExternalEvent: external event expected
+    Running --> WaitingForExternalEvent: external event<br/>expected
     WaitingForExternalEvent --> Running: event received
-    Running --> Completed: final output stored
-    Running --> Failed: unhandled exception or storage failure
-    WaitingForActivity --> Failed: repeated activity failure or poison state
+    Running --> Completed: final output<br/>stored
+    Running --> Failed: F1
+    WaitingForActivity --> Failed: F2
     WaitingForExternalEvent --> Terminated: manual terminate
 ```
+
+**Reading key:** WaitingForActivity, WaitingForTimer and WaitingForExternalEvent are conceptual waiting states, not `runtimeStatus` values. F1 retains the diagnostic path “unhandled exception or storage failure”; F2 retains “repeated activity failure or poison state.” These are investigation candidates, not a guarantee of `Failed`: storage outages can stall progress, and exception handling/retry policy affects the final outcome. The diagram is not an exhaustive runtime state machine.
 
 ### Durable troubleshooting matrix
 
@@ -546,19 +627,29 @@ Azure Functions usually sits in the middle of other services rather than at the 
 
 <!-- diagram-id: 6-azure-service-integration-path-where-dependencies-amplify-failure -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 10}}}%%
 flowchart TD
-    A[Function invocation] --> B{Integration type}
-    B -->|Host storage| C[Azure Storage account]
+    accTitle: Azure service integration diagnostic routing
+    accDescr: Illustrative routing from five integration categories to candidate failure points. Host storage, streaming input, messaging, document data and output events remain separate; this is a diagnostic association map, not a network transport diagram or observed deployment.
+    A(["Function invocation"]) --> B{Integration type}
+    B -->|Host storage| C["Azure Storage<br/>account"]
     B -->|Streaming input| D[Event Hubs]
     B -->|Messaging| E[Service Bus]
     B -->|Document data| F[Cosmos DB]
-    B -->|Output events| G[Event Grid or HTTP API]
+    B -->|Output events| G["Event Grid or<br/>HTTP API"]
 
-    C -. FP-INT-01 .-> C1[Host lease, checkpoint, or auth failure]
-    D -. FP-INT-02 .-> D1[Checkpoint lag or consumer auth failure]
-    E -. FP-INT-03 .-> E1[Lock loss, dead-letter growth, auth failure]
-    F -. FP-INT-04 .-> F1[429 throttling, lease issue, auth failure]
-    G -. FP-INT-05 .-> G1[Delivery or downstream API failure]
+    C -. FP-INT-01 .-> C1("Host lease, checkpoint,<br/>or auth failure")
+    D -. FP-INT-02 .-> D1("Checkpoint lag or<br/>consumer auth failure")
+    E -. FP-INT-03 .-> E1("Lock loss, dead-letter<br/>growth, auth failure")
+    F -. FP-INT-04 .-> F1("429 throttling, lease<br/>issue, auth failure")
+    G -. FP-INT-05 .-> G1("Delivery or downstream<br/>API failure")
+    %% Layout-only links serialize categories; they add no diagnostic steps or arrows.
+    C1 ~~~ D
+    D1 ~~~ E
+    E1 ~~~ F
+    F1 ~~~ G
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,C1,D1,E1,F1,G1 baseNeutral;
 ```
 
 ### Integration failure mapping
@@ -576,12 +667,22 @@ flowchart TD
 <!-- diagram-id: 7-observability-coverage-and-fast-evidence-commands -->
 ```mermaid
 flowchart TD
-    A[Architecture segment] --> B[Best first evidence source]
-    C[Hosting plan and scale] --> D[Metrics + Activity Log]
-    E[Trigger startup and listener health] --> F[Application Insights traces]
-    G[User-facing failures] --> H[requests + exceptions]
-    I[Dependency issues] --> J[dependencies + service metrics]
-    K[Durable state progression] --> L[traces + storage artifacts]
+    accTitle: Architecture segment to first evidence source
+    accDescr: Six independent source-to-evidence associations, not sequential incident steps. Suggested telemetry depends on instrumentation and collection settings; absence of telemetry does not establish absence of failures. Durable storage artifacts apply to the configured backend.
+    A["Architecture segment"] --> B["Best first<br/>evidence source"]
+    C["Hosting plan and scale"] --> D["Metrics + Activity Log"]
+    E["Trigger startup<br/>and listener health"] --> F["Application Insights<br/>traces"]
+    G["User-facing failures"] --> H["requests + exceptions"]
+    I["Dependency issues"] --> J["dependencies +<br/>service metrics"]
+    K["Durable state progression"] --> L["traces +<br/>storage artifacts"]
+    %% Layout-only links stack independent pairs; they add no diagnostic steps or arrows.
+    B ~~~ C
+    D ~~~ E
+    F ~~~ G
+    H ~~~ I
+    J ~~~ K
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J,K,L baseNeutral;
 ```
 
 ### Quick evidence commands by component
