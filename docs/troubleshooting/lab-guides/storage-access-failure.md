@@ -31,58 +31,43 @@ content_sources:
     - id: 1-1-storage-dependency-model-for-azure-functions
       type: flowchart
       source: self-generated
-      justification: Flow view of storage dependency model for azure functions, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative logical host-storage startup and failure paths; stage order is a teaching model, not an internal protocol or a new lab result.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
-        - https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model
-        - https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
+        - https://learn.microsoft.com/en-us/azure/azure-functions/manage-connections
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-timer
     - id: 1-5-failure-progression-model
       type: sequenceDiagram
       source: self-generated
-      justification: Interaction sequence for failure progression model, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative host, identity, Storage and Timer listener exchange using historical error strings; not a timestamped trace or a verified internal message protocol.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
-        - https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model
-        - https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
+        - https://learn.microsoft.com/en-us/azure/azure-functions/manage-connections
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-timer
+        - https://learn.microsoft.com/en-us/troubleshoot/azure/azure-storage/blobs/authentication/storage-troubleshoot-403-errors
     - id: 2-2-causal-chain
       type: flowchart
       source: self-generated
-      justification: Flow view of causal chain, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Historical hypothesis and recovery chains with the original probe values retained; source guidance supports storage dependencies, not unique-cause attribution or re-certification of the historical result.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
-        - https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model
-        - https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
+        - https://learn.microsoft.com/en-us/azure/azure-functions/manage-connections
+        - https://learn.microsoft.com/en-us/troubleshoot/azure/azure-storage/blobs/authentication/storage-troubleshoot-403-errors
     - id: 3-10-triage-decision-logic
       type: flowchart
       source: self-generated
-      justification: Flow view of triage decision logic, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Historical triage routing with all Yes/No branches and original verdict labels preserved; current Golden controls supersede its causal classification shortcuts.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
-        - https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model
-        - https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
+        - https://learn.microsoft.com/en-us/azure/azure-functions/manage-connections
+        - https://learn.microsoft.com/en-us/troubleshoot/azure/azure-storage/blobs/authentication/storage-troubleshoot-403-errors
     - id: evidence-timeline
-      type: graph
+      type: flowchart
       source: self-generated
-      justification: Flow view of evidence timeline, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Stage-order summary of the historical walkthrough, retaining its probe values without asserting new captures, timing or Golden validation.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
-        - https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model
-        - https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
+        - https://learn.microsoft.com/en-us/azure/azure-functions/manage-connections
 ---
 # Lab Guide: Storage Access Failure (AzureWebJobsStorage)
 
@@ -161,18 +146,27 @@ Even when application code does not directly read blobs or queues, the host stil
 <!-- diagram-id: 1-1-storage-dependency-model-for-azure-functions -->
 ```mermaid
 flowchart TD
-    A[Function host process starts] --> B[Resolve AzureWebJobsStorage configuration]
-    B --> C[Authenticate to storage account]
-    C --> D[Probe containers and coordination artifacts]
-    D --> E[Initialize listeners and schedule state]
-    E --> F[Mark host healthy and begin trigger execution]
-
-    C --> G[Auth failure]
-    G --> H[Storage probe failure]
-    H --> I[Listener initialization failure]
-    I --> J[Host reports unhealthy]
-    J --> K[No trigger invocations]
+    accTitle: Azure Functions host-storage dependency paths
+    accDescr: Illustrative logical startup stages branch at storage authentication into initialization and healthy execution, or failed probes, failed listener initialization, unhealthy host and no trigger invocations. This is not a universal startup protocol or a new lab observation.
+    A["Function host<br/>process starts"] --> B["Resolve host-storage<br/>configuration"]
+    B --> C["Authenticate to<br/>storage account"]
+    C --> D["Probe containers and<br/>coordination artifacts"]
+    D --> E["Initialize listeners<br/>and schedule state"]
+    E --> F(["Mark host healthy;<br/>begin trigger execution"])
+    C --> G["Auth failure"]
+    G --> H["Storage probe failure"]
+    H --> I["Listener initialization<br/>failure"]
+    I --> J["Host reports unhealthy"]
+    J --> K(["No trigger invocations"])
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J,K baseNeutral;
+    linkStyle default stroke-width:2px;
 ```
+
+**Takeaway:** Follow the authentication split to distinguish host-storage access,
+listener initialization and execution symptoms. Here, host-storage configuration
+means `AzureWebJobsStorage`; arrows show illustrative stage order, not network
+hops or a language-worker failure diagnosis.
 
 ### 1.2 Managed identity vs connection string behavior
 
@@ -212,20 +206,32 @@ That makes configuration and RBAC consistency critical:
 
 <!-- diagram-id: 1-5-failure-progression-model -->
 ```mermaid
+%%{init: {"sequence": {"width": 40, "actorMargin": 20, "diagramMarginX": 5}}}%%
 sequenceDiagram
-    participant Host as Functions Host
-    participant MSI as Managed Identity Token Service
-    participant SA as Storage Account
-    participant Listener as Timer Listener
-
-    Host->>MSI: Acquire token for storage
-    MSI-->>Host: Access token
-    Host->>SA: Probe host storage artifacts
-    SA-->>Host: 403 AuthorizationPermissionMismatch
-    Host->>Listener: Initialize Functions.scheduled_cleanup
-    Listener-->>Host: Unable to start
-    Host-->>Host: Process reporting unhealthy: azure.functions.webjobs.storage
+    accTitle: Storage authorization failure - logical role sequence
+    accDescr: Illustrative managed-identity exchange in the original message order: the Functions host obtains a token, probes Storage, receives a 403 permission mismatch, attempts Timer listener initialization, receives an unable-to-start response and reports unhealthy storage. Logical roles are not separate Azure resources or a timestamped trace.
+    participant Host as H
+    participant MSI as MI
+    participant SA as S
+    participant Listener as TL
+    Host->>MSI: 1. Token
+    MSI-->>Host: 2. Token
+    Host->>SA: 3. Probe
+    SA-->>Host: 4. 403
+    Host->>Listener: 5. Init
+    Listener-->>Host: 6. Fail
+    Host-->>Host: 7. Unhealthy
 ```
+
+**Reading key:** H = Functions host; MI = managed identity token service;
+S = Storage account; TL = Timer listener. **1:** Acquire token for Storage;
+**2:** return access token; **3:** probe host-storage artifacts;
+**4:** `403 AuthorizationPermissionMismatch`; **5:** initialize
+`Functions.scheduled_cleanup`; **6:** unable to start; **7:**
+`Process reporting unhealthy: azure.functions.webjobs.storage`.
+**Takeaway:** Token acquisition and Storage permission checks are distinct from
+Timer listener startup; this illustrative order is not a timestamp reconstruction
+of the historical logs or evidence of language-worker execution.
 
 ### 1.6 Signal map: normal vs incident
 
@@ -256,16 +262,27 @@ for new runs without changing the historical results.
 <!-- diagram-id: 2-2-causal-chain -->
 ```mermaid
 flowchart TD
-    A[Role assignment removed or invalid storage auth] --> B[Storage probe returns 403 AuthorizationPermissionMismatch]
-    B --> C[Listener initialization fails for Functions.scheduled_cleanup]
-    C --> D[Host emits unhealthy storage signal]
-    D --> E[Timer trigger invocations stop]
-    E --> F[Operational symptom: no scheduled executions]
-
-    G[Role restored] --> H[Storage probe succeeded 70ms 4 containers]
+    accTitle: Historical storage-access hypothesis and recovery chains
+    accDescr: Historical hypothesis links removed roles or invalid storage auth to a 403 probe, failed scheduled_cleanup listener, unhealthy host and stopped Timer executions. A separate recovery chain retains role restoration, the reported 70ms and four-container probe, listener startup and resumed invocations. These are not new Golden results or unique-cause proof.
+    A["Role removed or<br/>invalid storage auth"] --> B["Storage probe:<br/>403 APM"]
+    B --> C["scheduled_cleanup<br/>listener initialization fails"]
+    C --> D["Host emits unhealthy<br/>storage signal"]
+    D --> E["Timer trigger<br/>invocations stop"]
+    E --> F["Symptom: no<br/>scheduled executions"]
+    G["Role restored"] --> H["Storage probe succeeded<br/>70ms, 4 containers"]
     H --> I[Listener starts]
     I --> J[Invocations resume]
+    %% Layout-only link stacks the two chains; it adds no causal step or arrow.
+    F ~~~ G
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J baseNeutral;
+    linkStyle default stroke-width:2px;
 ```
+
+**Takeaway:** Read the historical failure and recovery chains separately, not as
+a new causal verdict. APM means `AuthorizationPermissionMismatch`, the listener
+is `Functions.scheduled_cleanup`, and `70ms, 4 containers` is the historical
+probe value, not a platform target. Current runs use the Golden controls below.
 
 ### 2.3 Proof criteria
 
@@ -959,18 +976,35 @@ Process reporting unhealthy: Unhealthy. Health check entries are {
 <!-- diagram-id: 3-10-triage-decision-logic -->
 ```mermaid
 flowchart TD
-    A[No scheduled executions observed] --> B{AuthorizationPermissionMismatch present?}
-    B -->|Yes| C{Listener unable to start present?}
-    B -->|No| D[Investigate other causes: DNS, runtime, trigger config]
-    C -->|Yes| E{Host unhealthy storage signal present?}
-    C -->|No| F[Check trigger binding and schedule config]
-    E -->|Yes| G[Classify as storage authorization failure]
-    E -->|No| H[Collect more host lifecycle traces]
-    G --> I[Restore RBAC or storage auth settings]
-    I --> J{Probe success + invocation recovery?}
-    J -->|Yes| K[Hypothesis confirmed]
-    J -->|No| L["Escalate to network/platform differential diagnosis"]
+    accTitle: Historical storage-access triage decision logic
+    accDescr: Historical routing preserves all four Yes/No checks and their outcomes: permission mismatch, listener unable to start, unhealthy storage and probe plus invocation recovery. No branches retain alternative checks or escalation. Classification and confirmation labels quote historical logic, not the current Golden scenario verdict rules.
+    A(["No scheduled<br/>executions observed"]) --> B{"APM<br/>present?"}
+    B -->|No| D["Investigate DNS,<br/>runtime, trigger config"]
+    B -->|Yes| C{"Listener unable<br/>to start present?"}
+    %% Layout-only links serialize leaves; they add no diagnostic steps or arrows.
+    D ~~~ C
+    C -->|No| F["Check trigger binding<br/>and schedule config"]
+    C -->|Yes| E{"Host unhealthy<br/>storage signal present?"}
+    F ~~~ E
+    E -->|No| H["Collect more host<br/>lifecycle traces"]
+    E -->|Yes| G["Historical classification:<br/>Storage authorization failure"]
+    H ~~~ G
+    G --> I["Restore RBAC or<br/>storage auth settings"]
+    I --> J{"Probe success and<br/>invocation recovery?"}
+    J -->|Yes| K(["Historical verdict:<br/>Hypothesis confirmed"])
+    J -->|No| L(["Escalate to network/platform<br/>differential diagnosis"])
+    K ~~~ L
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J,K,L baseNeutral;
+    linkStyle default stroke-width:2px;
 ```
+
+**Reading key:** APM = `AuthorizationPermissionMismatch`. Diamonds retain the
+historical Yes/No routing; boxes name actions and stadiums mark the symptom and
+terminal outcomes. **Takeaway:** “Classify” and “Hypothesis confirmed” preserve
+the historical walkthrough's labels, not a new verdict. For current runs, use
+the [Golden observation controls](#predeclared-observations-and-disproof): a
+403 or recovery alone is not unique-cause proof; absent logs are not disproof.
 
 ### 3.11 Recover from the induced failure
 
@@ -1313,17 +1347,25 @@ This section defines the expected observation pattern before, during, and after 
 
 <!-- diagram-id: evidence-timeline -->
 ```mermaid
-graph TD
+flowchart TD
+    accTitle: Historical storage-access evidence timeline
+    accDescr: Historical stage order runs from healthy baseline through role removal, authorization errors, listener failure, unhealthy storage and invocation halt, then role restoration, the reported 70ms and four-container probe, listener recovery and invocation recovery. No new captures or Golden validation are asserted.
     A[Baseline healthy state] --> B[Role removal trigger]
     B --> C[Auth failure traces appear]
     C --> D[Listener startup failure]
     D --> E[Host unhealthy storage signal]
     E --> F[Invocation halt]
     F --> G[Role restoration]
-    G --> H[Storage probe succeeded 70ms 4 containers]
+    G --> H["Storage probe succeeded<br/>70ms, 4 containers"]
     H --> I[Listener recovery]
     I --> J[Invocation recovery]
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J baseNeutral;
+    linkStyle default stroke-width:2px;
 ```
+
+**Takeaway:** This is the historical walkthrough's stage order, not elapsed time
+or a Golden execution record; the original probe values remain historical only.
 
 ### Evidence Chain: Why This Proves the Hypothesis
 
