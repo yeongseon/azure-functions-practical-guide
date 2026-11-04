@@ -134,7 +134,7 @@ flowchart TD
 | W | Premium always-ready instances keep app capacity warm; at least one active billed instance per plan. Prewarmed instances buffer HTTP scale-out (default1), not the overall instance maximum. Linux regional scale-out maxima20–100 are separate; Korea Central lists20 |
 | Content Backend | Azure Files content share; separate connection-string authentication, not the host-storage identity configuration. Private content-share routing must be configured for secured Files access |
 
-The bundled `pe_storage` node represents **four distinct endpoints**. Each row expands integration → endpoint → the matching Storage service and endpoint → linked DNS zone-group association; these services are alternatives, not serial hops:
+The bundled `pe_storage` node represents **four distinct endpoints**. Each row expands integration → endpoint → the matching Storage service and endpoint → linked DNS zone-group association; these are separate service paths, not serial hops, and a workload can use several of them.
 
 | Endpoint → Storage service | Linked private DNS zone |
 |---|---|
