@@ -17,6 +17,9 @@ content_sources:
       justification: Flow view of overview, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-http-features
+        - https://learn.microsoft.com/en-us/azure/durable-task/durable-functions/durable-functions-http-features#async-operation-tracking
+        - https://learn.microsoft.com/en-us/azure/durable-task/common/durable-task-instance-management#query-instances
+        - https://learn.microsoft.com/en-us/azure/durable-task/durable-functions/durable-functions-azure-storage-provider#instances-table-for-orchestration-and-entity-status
         - https://learn.microsoft.com/en-us/azure/durable-task/common/durable-task-code-constraints
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
@@ -65,9 +68,9 @@ Durable Functions use three function types:
 <!-- diagram-id: overview -->
 ```mermaid
 flowchart TD
-    accTitle: Durable workflow roles and asynchronous HTTP management
-    accDescr: An HTTP starter starts a deterministic orchestrator and returns management URLs without waiting for completion. The orchestrator calls activities and receives results. A separate status query retrieves orchestration status.
-    HTTP["HTTP caller"] --> CL["Client function<br/>HTTP starter"]
+    accTitle: Durable workflow roles and runtime-owned status queries
+    accDescr: Client functions start a deterministic orchestrator and return HTTP 202 with management URLs without waiting for completion. The orchestrator calls activities and receives results. Status queries use the Durable runtime management API to read persisted orchestration metadata without invoking orchestrator code.
+    HTTP["HTTP caller"] --> CL["Client functions<br/>Start / status"]
     CL -->|"start"| ORC["Orchestrator<br/>Deterministic workflow"]
     ORC -->|"call"| A1["Activity 1"]
     ORC -->|"call"| A2["Activity 2"]
@@ -75,14 +78,15 @@ flowchart TD
     A1 --> ORC
     A2 --> ORC
     A3 --> ORC
-    ORC -->|"status result"| CL
+    RT["Durable runtime<br/>Management API"] -->|"status result"| CL
     CL -->|"202 + URLs"| HTTP
-    CL -->|"query status"| ORC
+    CL -->|"query status"| RT
     %% Layout-only tiers; add no activity calls or execution-order arrows.
+    RT ~~~ ORC
     A1 ~~~ A2
     A2 ~~~ A3
     classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
-    class HTTP,CL,ORC,A1,A2,A3 neutral;
+    class HTTP,CL,ORC,A1,A2,A3,RT neutral;
 ```
 
 **Reading key:** “start” is `start_new()`, which returns an `instance_id`.
@@ -90,10 +94,11 @@ flowchart TD
 `validate_order`, `charge_payment` and `send_notification`. Unlabelled return
 arrows carry activity results. The HTTP-triggered client starts the workflow and
 returns HTTP 202 with management URLs (including status and terminate), not a
-completion callback. “query status” / “status result” summarize a later client
-API query; callers can instead poll the returned status URL. These are logical
+completion callback. Status queries use the Durable client API or the returned runtime management URL; they read orchestration status without invoking orchestrator code. The starter returns 202 without waiting for completion. These are logical
 roles, not network hops or a chronological sequence
-([HTTP management](https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-http-features#async-operation-tracking)).
+([HTTP management](https://learn.microsoft.com/en-us/azure/durable-task/durable-functions/durable-functions-http-features#async-operation-tracking),
+[client status query](https://learn.microsoft.com/en-us/azure/durable-task/common/durable-task-instance-management#query-instances),
+[persisted status metadata](https://learn.microsoft.com/en-us/azure/durable-task/durable-functions/durable-functions-azure-storage-provider#instances-table-for-orchestration-and-entity-status)).
 
 ## Prerequisites
 
@@ -485,6 +490,9 @@ async def get_status(req: func.HttpRequest, client: df.DurableOrchestrationClien
 - [Platform: Durable Functions](../../../platform/durable-functions.md)
 
 ## Sources
+- [Asynchronous HTTP operation tracking](https://learn.microsoft.com/en-us/azure/durable-task/durable-functions/durable-functions-http-features#async-operation-tracking)
+- [Query orchestration instances](https://learn.microsoft.com/en-us/azure/durable-task/common/durable-task-instance-management#query-instances)
+- [Instances table for orchestration and entity status](https://learn.microsoft.com/en-us/azure/durable-task/durable-functions/durable-functions-azure-storage-provider#instances-table-for-orchestration-and-entity-status)
 - [Fan-out/fan-in](https://learn.microsoft.com/en-us/azure/durable-task/common/durable-task-fan-in-fan-out)
 - [External events](https://learn.microsoft.com/en-us/azure/durable-task/common/durable-task-external-events)
 - [Durable timers](https://learn.microsoft.com/en-us/azure/durable-task/common/durable-task-timers)
