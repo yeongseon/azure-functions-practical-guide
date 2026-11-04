@@ -11,6 +11,22 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-query-overview
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-azure-and-service-bus-queues-compared-contrasted
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/storage/queues/storage-queues-introduction
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/rest/api/storageservices/get-messages
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/rest/api/storageservices/peek-messages
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-idempotent
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/python/api/azure-storage-blob/azure.storage.blob.blobclient#azure-storage-blob-blobclient-upload-blob
   diagrams:
     - id: failure-progression-model-for-this-incident
       type: flowchart
@@ -216,7 +232,7 @@ flowchart TD
 
 ### Golden scenario: retry, poison and durable work (offline definition)
 
-[Not Proven] On **Linux Consumption (Y1), Functions v4, Python v2**, declared
+[Not Proven] On **Linux Consumption (Y1), Functions v4, Python 3.11 (v2 model)**, declared
 per-message failures should cause Storage Queue redelivery and poison handling,
 while a conditional durable write should prevent duplicate effects for a stable
 work key. This is a bounded experiment, not an exactly-once delivery guarantee,
@@ -335,7 +351,12 @@ same ordering to baseline, fault and recovery below.
     phase ordering. Enqueue only
     `baseline-001` in normal mode after readiness. Require its delivery, one
     committed record, successful invocation and correlated runtime delete before
-    fault injection. All validity controls must be eligible; stop on missing data.
+    fault injection. Establish pre-injection eligibility through the configuration,
+    access/query checks and positive baseline delivery/Queue/Blob samples. No
+    exception sample is expected from normal baseline work; retain positive
+    exception-path samples during the declared fault phase before evaluating
+    `collection` as valid. Stop on missing baseline prerequisites; later collection
+    gaps leave the control unresolved, not implicitly valid.
 3. **Fault:** confirm the same package/configuration and use that shared sequence.
     Enqueue the
     transient, poison and redelivery keys with their fixed modes, retaining all
@@ -373,22 +394,61 @@ timings**, not exact processing, propagation or readiness times. No timings exis
 | Acknowledgement | Successful runtime `DeleteMessage` service operation correlated to the committed source work | An invocation success or empty queue peek does not prove deletion; missing acknowledgement is INCONCLUSIVE, not successful processing or contradiction. |
 | Recovery | New normal work commits/deletes, prior keys stay stable, no poison replay | Restart or status probe success without durable commit cannot establish recovery. |
 
+#### Documented delivery semantics and limits
+
+Storage Queues provide [at-least-once delivery, without built-in duplicate detection](https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-azure-and-service-bus-queues-compared-contrasted#foundational-capabilities).
+[Retrieving a message](https://learn.microsoft.com/en-us/rest/api/storageservices/get-messages#remarks)
+makes it temporarily invisible, not deleted; it can become available for another
+delivery if it remains undeleted. The service sets `DequeueCount` to 1 on the first
+dequeue and increments it on subsequent dequeues. This is not a count of successful
+invocations or business commits. The REST receive operation's visibility parameter
+and the Functions failure-delay setting below are different layers, not a single
+end-to-end processing deadline.
+
+At the storage-service layer, if the current receive invisibility period expires
+without renewal or deletion, another consumer can receive the message while the
+original consumer is still processing it
+([Get Messages](https://learn.microsoft.com/en-us/rest/api/storageservices/get-messages#remarks),
+[Queue trigger peek lock](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger#peek-lock)).
+This is not a prediction that a Functions invocation lasting over 30 seconds will
+overlap: the configured `visibilityTimeout` is the delay after failed processing,
+not the invocation's processing lease.
+
 Documented [Queue trigger behavior](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger#poison-messages)
 uses **`maxDequeueCount` default 5 (including the first attempt)** and
-**`<queue>-poison`**. `DequeueCount` counts dequeues, not SDK calls or committed
-effects. On success the runtime deletes the message. On ordinary invocation
+**`<queue>-poison`**. The Functions host/extension adds the poison message after
+failed processing exhausts this budget; it is not Storage Queue service automatic
+dead-lettering or a business commit. This run expects `work-items-poison` and leaves
+triage/replay to a separately approved action, not an automatic recovery path.
+On success the runtime deletes the message. On ordinary invocation
 failure it applies `visibilityTimeout` (default zero; explicitly 30 seconds here).
 Polling/processing can delay observation beyond 30 seconds; it is not a fixed
 delivery schedule. A host crash cannot apply that setting and instead leaves the
 service's ten-minute invisibility timeout. This recipe does not inject a crash;
 an unexpected restart invalidates `run.sequence` rather than being misclassified
 as the declared transient exception. See the
-[host.json settings](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue#host-json-settings).
+[host.json settings](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue#host-json).
 
-Platform redelivery, in-code application retries and SDK transport retries are
-different counters/budgets. Poison handling is queue-specific, not proof of an
-exactly-once downstream effect. Only the atomic record-as-effect design is tested;
-no inference extends to a separate external business operation or future delivery.
+The [Functions retry-source table](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages#retries)
+assigns Queue retries to the binding extension and `host.json`, not function-level
+retry policies. Platform redelivery, in-code application retries and SDK transport
+retries therefore have different counters/budgets.
+
+**Eventual delivery is not eventual business success:** visibility expiry makes
+work eligible again, not guaranteed to finish within this lab's window. Persistent
+processing failure can end in poison handling rather than a commit. Also retain
+the actual message expiry/TTL: [Queue Storage messages default to seven days when
+TTL is omitted](https://learn.microsoft.com/en-us/azure/storage/queues/storage-queues-introduction#queue-storage-concepts),
+so unbounded retention must not be assumed. No result here promises completion
+after the observation window.
+
+[Idempotent handling](https://learn.microsoft.com/en-us/azure/azure-functions/functions-idempotent)
+is required because repeated input must preserve the same business outcome.
+In this experiment, a commit followed by failure before acknowledgement deliberately
+permits duplicate delivery; the stable `run_id/work_item_id` conditional record
+must still represent one effect. **Exactly-once delivery or a general exactly-once
+business-effect guarantee is unsupported.** Only this record-as-effect contract
+and its bounded observations are at issue, not separate external operations.
 
 All nine validity prerequisites are **control roles**: ownership, baseline,
 versions/settings, activated built artifact, work identity, collection paths,
@@ -747,6 +807,43 @@ SAS URLs, connection strings, authorization headers, pop receipts and customer
 content before publication. Restricted originals remain in an approved private
 location, never Git. Synthetic fixture clocks and labels cannot fill capture gaps.
 
+#### Raw artifact checklist by assertion
+
+[Not Proven] The following specifies what a future authorized run must retain in
+the layout above; none has been collected. Assertion IDs are the existing JSON
+IDs, not new predicates. Reuse an artifact across rows through `mapping.json`
+rather than duplicating captures or replacing raw records with a summary label.
+
+| Assertion IDs | Raw artifacts and collection point | What they establish / cannot establish |
+|---|---|---|
+| `ownership`, `isolation` | Approved inventory/permissions, queue and sink pre-run inventory, consumer/producer inventory and adapted source in `identity.json`/`predeclaration.json`; retain effective retry settings with each phase's configuration. | Bounds ownership and declared fault modes; a quiet queue alone cannot exclude another consumer. |
+| `versions`, `artifact` | Host startup/bundle inventory, exact resolved versions, effective settings, built-package digest and release-marker startup/invocation lines in `config-and-versions` and `built-activation`. | Binds behavior to the frozen package and environment; source hash alone cannot identify activated bytes. |
+| `sequencing` | Deployment/configuration acceptance, restart request/completion receipts, host indexing/listener-ready lines, producer acceptance and observation timestamps in each phase's restart receipts and logs. | Establishes phase order; a successful restart does not establish cause or recovery. |
+| `work-identity` | Producer send receipts: work key, mode, exact submitted body SHA-256, source message ID, send acceptance UTC and service insertion/expiry times where available; join to handler delivery records. | Links business identity to service identity; producer `enqueuedUtc` is not service insertion or first dequeue time. |
+| `collection` | Pre-injection diagnostic/sampling/filter configuration and access/query checks for all paths; positive baseline delivery/Queue/Blob samples; positive exception samples from the declared fault phase. Retain exact queries/windows and collection-error responses. | Baseline checks establish eligibility to inject, not final exception-path coverage. Evaluate this control only after fault collection; missing records with an unhealthy path cannot establish absence. |
+| `baseline` | Baseline host readiness lines plus producer receipt, delivery-start/invocation outcome, authoritative Blob record/read and correlated successful runtime queue deletion. | Exercises the complete control path, not just HTTP status or function inventory. |
+| `failure`, `retry` | `deliveries` and `exceptions-and-results`: source ID, `dequeueCount`, invocation ID, mode/key, release/worker identity, delivery-start UTC, exception type and host completion/failure lines for every attempt; Queue receive/visibility-update service operations where available. | Distinguishes transient counts 1/2/3 and their outcomes; a count gap cannot reconstruct an unretained attempt, and an exception is not a sink read. |
+| `poison` | Five source delivery/failure records; non-consuming `work-items-poison` peek response with poison message ID, body/hash, insertion/expiry time, its own dequeue count and observation UTC; host poison-handling lines and correlated Queue add/delete service operations. Keep an explicit source-ID -> poison-ID mapping via the producer's body hash and run/work key. | Links the failed original payload to a new poison item; do not assume the poison body contains the original service ID or that its count equals five. Pair with sink reads to decide no commit. |
+| `redelivery` | First commit receipt/read and deliberate failed invocation; subsequent delivery of the same source ID with a new invocation ID, count 2, existing-record read and host outcome. | Demonstrates delivery repetition after commit; repeated logs alone cannot establish duplicate effects. |
+| `sink`, `business-effect` | Reviewed conditional-create source/tests; Blob operation responses/service logs and authoritative run-container inventory/reads in `durable-work-records`: key, matching body/digest, commit time, ETag and service request ID, including existing-key reads and poison-key lookup results. | Tests the record-as-entire-effect contract within the window; a duplicate-rejection log or marker alone cannot prove durable work or arbitrary external effects. |
+| `acknowledgement` | Queue service deletion records: operation, success status, service time/request correlation and sanitized source-message locator, joined to handler outcome and committed work. Establish the join with baseline first. | Separates runtime acknowledgement from invocation success and from poison-path source removal. If diagnostics cannot identify the deleted source safely, retain the gap rather than claim acknowledgement. |
+| `probe`, `restore` | Status-probe request/response separately; recovery item's delivery, commit/read, runtime deletion and rereads of prior records/retained poison item. | Shows new normal work and stable prior effects; HTTP 200 without these records is not recovery. |
+| `cleanup` | Ownership-scoped target inventory, cleanup/restoration inputs, completion/failure receipts and remaining-resource inventory in `cleanup/`. | Records teardown independently; asynchronous acceptance alone is not completion. |
+
+For timing, retain **insertion**, **first dequeue** and **every redelivery** as
+separate fields. Collect insertion/expiry from [Queue trigger metadata](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger#metadata).
+Keep the corresponding receive-operation time if diagnostics expose it, and each
+handler's delivery-start UTC; a handler timestamp is only a first-observed bound
+after dequeue, not the exact service dequeue time. Preserve `time_next_visible`
+when exposed, without interpreting it as an actual retry timestamp. A
+[peek](https://learn.microsoft.com/en-us/rest/api/storageservices/peek-messages#remarks)
+does not increment dequeue count and returns only visible messages; its response
+does not include next-visible time. Retain the poison insertion time separately
+from first peek observation and from the original message's insertion time.
+Mark unavailable fields unknown, never reconstruct them from the 30-second setting.
+These requirements refine collection for the existing assertions; the fixture and
+synthetic tests remain unchanged because no expected outcome or verdict rule changes.
+
 ### Historical burst evidence (unchanged)
 
 ### Run context
@@ -976,6 +1073,12 @@ If using shared resources (`rg-lab-y1-shared`), skip deletion and only clear tes
 
 - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
 - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue
+- https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-azure-and-service-bus-queues-compared-contrasted
+- https://learn.microsoft.com/en-us/azure/storage/queues/storage-queues-introduction
+- https://learn.microsoft.com/en-us/rest/api/storageservices/get-messages
+- https://learn.microsoft.com/en-us/rest/api/storageservices/peek-messages
+- https://learn.microsoft.com/en-us/azure/azure-functions/functions-idempotent
+- https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages
 - https://learn.microsoft.com/en-us/python/api/azure-storage-blob/azure.storage.blob.blobclient#azure-storage-blob-blobclient-upload-blob
 - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
 - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
