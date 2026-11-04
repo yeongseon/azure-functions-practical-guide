@@ -14,6 +14,8 @@ content_sources:
       justification: "Private endpoint ingress pattern from MSLearn networking documentation"
       based_on:
         - https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/configure-networking-how-to
 content_validation:
   status: verified
   last_reviewed: 2026-09-11
@@ -57,39 +59,62 @@ The Networking blade shows the baseline state before private endpoint configurat
 <!-- diagram-id: private-ingress-architecture -->
 ```mermaid
 flowchart TD
-    subgraph CORP["Corporate Network / VPN"]
-        CLIENT[Internal Client]
+    accTitle: Private Function app ingress and Storage egress
+    accDescr: A corporate client connects through the site private endpoint to the Function app outside the customer VNet. Public ingress is disabled by configuration. Separate outbound integration reaches Blob, Queue, Table and File private endpoints; endpoint requirements depend on the hosting plan and workload.
+    subgraph corp_network["Corporate Network / VPN"]
+        client(["Internal Client"])
     end
-    
-    CLIENT -->|Private IP| PE_APP[Site Private Endpoint]
-    
-    subgraph VNET["VNet"]
-        subgraph PE_SUB["Private Endpoint Subnet"]
-            PE_APP
-            PE_BLOB[PE: blob]
-            PE_QUEUE[PE: queue]
-            PE_TABLE[PE: table]
-            PE_FILE[PE: file]
+    app_runtime["Function App<br/>Managed compute"]
+    storage_db[("Storage Account")]
+    public_client(["Internet"])
+    subgraph vnet_fn["Customer VNet"]
+        subgraph subnet_pe_fn["Private Endpoint Subnet"]
+            pe_app[["Site Private Endpoint"]]
+            pe_blob[["PE: blob"]]
+            pe_queue[["PE: queue"]]
+            pe_table[["PE: table"]]
+            pe_file[["PE: file"]]
         end
-        subgraph INT_SUB["Integration Subnet"]
-            FA[Function App]
+        subgraph subnet_int_fn["Integration Subnet"]
+            vnet_integration[["VNet integration<br/>Outbound only"]]
         end
     end
-    
-    PE_APP --> FA
-    FA --> PE_BLOB
-    PE_BLOB --> ST[Storage Account]
-    PE_QUEUE --> ST
-    PE_TABLE --> ST
-    PE_FILE --> ST
-    
-    INET[Internet] -.->|Blocked| FA
-    
-    style FA fill:#0078d4,color:#fff
-    style VNET fill:#E8F5E9,stroke:#4CAF50
-    style ST fill:#FFF3E0
-    style INET fill:#FFCDD2,stroke:#F44336
+    client -->|"[Configured] Private IP"| pe_app
+    pe_app -->|"[Configured] Private Link"| app_runtime
+    public_client -->|"[Configured] Public ingress disabled"| app_runtime
+    app_runtime -->|"[Configured] Outbound"| vnet_integration
+    vnet_integration -->|"[Configured] Private IP"| pe_blob
+    vnet_integration -->|"[Configured] Private IP"| pe_queue
+    vnet_integration -->|"[Configured] Private IP"| pe_table
+    vnet_integration -->|"[Configured] Private IP"| pe_file
+    pe_blob -->|"[Configured] Private Link"| storage_db
+    pe_queue -->|"[Configured] Private Link"| storage_db
+    pe_table -->|"[Configured] Private Link"| storage_db
+    pe_file -->|"[Configured] Private Link"| storage_db
+    %% Layout-only links tier endpoint alternatives; no connection or step added.
+    pe_blob ~~~ pe_queue
+    pe_queue ~~~ pe_table
+    pe_table ~~~ pe_file
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e;
+    classDef stateWarn fill:#fff3e0,stroke:#ba690c,stroke-width:2px,color:#5c3200;
+    classDef netBox fill:transparent,stroke:#287ce4,stroke-width:2px,stroke-dasharray:6 3;
+    class client,storage_db baseNeutral;
+    class app_runtime,pe_app,vnet_integration,pe_blob,pe_queue,pe_table,pe_file focusActive;
+    class public_client stateWarn;
+    class corp_network,vnet_fn,subnet_int_fn,subnet_pe_fn netBox;
+    linkStyle default stroke-width:2px;
 ```
+
+**Reading key:** Arrows identify the initiating client or app. The Internet
+arrow labels a rejected request with public network access disabled, not a
+working connection or observed failure. A site private endpoint provides inbound
+access only; outbound integration uses a separate subnet. The app and Storage
+service remain outside the customer VNet. All four Storage private endpoints
+remain visible, with plan/workload requirements and routing configured separately
+([private endpoints](https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint),
+[Functions networking](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options),
+[secured storage](https://learn.microsoft.com/en-us/azure/azure-functions/configure-networking-how-to)).
 
 ## Supported Plans
 
@@ -491,6 +516,7 @@ az functionapp update \
 
 ## Sources
 
+- [Secured storage with Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/configure-networking-how-to)
 - [Azure Functions networking options (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)
 - [Use private endpoints for Azure App Service (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint)
 - [What is Azure Private Endpoint? (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-overview)
