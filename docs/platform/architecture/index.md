@@ -355,7 +355,7 @@ Use this sequence to distinguish trigger detection, host coordination, worker ex
 
 <!-- diagram-id: detailed-host-worker-communication-sequence -->
 ```mermaid
-%%{init: {'sequence': {'width': 60, 'actorMargin': 10, 'messageMargin': 20, 'noteMargin': 5, 'diagramMarginX': 0}}}%%
+%%{init: {'sequence': {'width': 60, 'actorMargin': 30, 'messageMargin': 20, 'noteMargin': 5, 'diagramMarginX': 5, 'rightAngles': true}}}%%
 sequenceDiagram
     accTitle: How do the host and worker complete an invocation?
     accDescr: Generic logical invocation with host-owned listener and bindings, and a worker executing code. Detection differs for push, polling and schedules. Result or failure returns to the host; successful output commits and trigger-specific completion are conditional, not universal queue deletion.
@@ -363,7 +363,7 @@ sequenceDiagram
     participant client as Source
     participant app_runtime as Host
     participant language_worker as Worker
-    Note over client,app_runtime: Push / poll / schedule
+    Note over client,app_runtime: Push / poll<br/>/ schedule
     app_runtime->>app_runtime: Detect work<br/>Payload / metadata
     app_runtime->>app_runtime: Build context
     app_runtime->>app_runtime: Resolve inputs
@@ -375,7 +375,7 @@ sequenceDiagram
         app_runtime->>app_runtime: Commit outputs
     end
     app_runtime->>app_runtime: Complete trigger
-    Note over client,app_runtime: Delete / checkpoint / ack
+    Note over client,app_runtime: Delete / checkpoint<br/>/ ack
 ```
 
 | Figure key | Full logical role / exchange |
