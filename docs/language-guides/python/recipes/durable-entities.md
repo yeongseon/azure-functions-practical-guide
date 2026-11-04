@@ -63,7 +63,7 @@ flowchart TD
 `read_entity_state()`); O is the orchestrator function (`call_entity()` and
 `signal_entity()`). A signal is one-way; a call waits for a result. The entity's
 operations run serially. “persist” summarizes `set_state()` and runtime-owned
-persistence in S; “read state” queries S, which returns the last committed state,
+persistence in S; “read state” queries S, which returns the last committed, potentially stale state,
 not an in-progress entity operation ([entity access](https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-entities#access-entities)).
 
 ## Prerequisites
@@ -198,7 +198,7 @@ sequenceDiagram
 **Reading key:** C = client; O = orchestrator; E = entity `Counter@game1`;
 S = durable tracking store. “signal add 1” is the one-way
 `signal_entity("add", 1)`; “call get” is the two-way `call_entity("get")`.
-“read state” is `read_entity_state()`: its response is the last committed state
+“read state” is `read_entity_state()`: its response is the last committed, potentially stale state
 from S, not an operation executed by E. Signals do not wait for operation results;
 the depicted order does not make the orchestrator's separate get and add atomic
 ([entity access](https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-entities#access-entities)).
