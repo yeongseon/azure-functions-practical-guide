@@ -88,7 +88,7 @@ The goal is to restore trigger execution and outbound dependency access quickly,
 ### Decision Flow
 <!-- diagram-id: decision-flow -->
 ```mermaid
-%%{init: {"flowchart":{"nodeSpacing":10}}}%%
+%%{init: {"flowchart":{"nodeSpacing":10,"padding":5}}}%%
 flowchart TD
     accTitle: Managed identity diagnostic decisions
     accDescr: Illustrative Yes-No checks for identity selection, roles, recent changes, vault permission model and token scope. Branches select investigations or actions, not proven diagnoses; verify against the disproof sections.
@@ -105,8 +105,8 @@ flowchart TD
     K -->|No| L("L: Align model")
     K -->|Yes| M{"M: Scope<br/>correct?"}
     J -->|No| M
-    M -->|No| N("N: Scope / SDK fix")
-    M -->|Yes| O("O: Network / deny")
+    M -->|No| N("N: Scope /<br/>SDK fix")
+    M -->|Yes| O("O: Network /<br/>deny")
     C --> P(["P: Verify recovery"])
     E --> P
     G --> P
@@ -137,7 +137,7 @@ flowchart TD
 | M / N | Audience and scope correct? / fix token scope and SDK settings. |
 | O / P | Check network and service-side deny / verify dependency success recovery. |
 
-**Propagation caveat:** A 5–10 minute wait is not a guaranteed recovery bound. Managed-identity backend caches can delay group or role membership changes for around 24 hours; their tokens cannot be forcibly refreshed before expiration. A host restart does not establish that backend authorization has refreshed ([managed identity guidance](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity#configure-the-target-resource)).
+**Propagation caveat:** Distinguish ordinary RBAC assignment propagation from managed-identity group or role membership caching; a 5–10 minute retest interval is not a universal recovery deadline. Managed-identity backend caches can delay group or role membership changes for around 24 hours; their tokens cannot be forcibly refreshed before expiration. A host restart does not establish that backend authorization has refreshed ([RBAC propagation guidance](https://learn.microsoft.com/en-us/azure/role-based-access-control/troubleshooting#symptom---role-assignment-changes-are-not-being-detected), [managed identity guidance](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity#configure-the-target-resource)).
 
 ### Severity guidance
 | Condition | Severity | Action priority |
@@ -474,31 +474,39 @@ If timeout and DNS errors dominate while 401/403 are sparse, treat auth findings
 ### Host startup correlation
 <!-- diagram-id: host-startup-correlation -->
 ```mermaid
-%%{init: {"timeline":{"padding":0,"disableMulticolor":true}}}%%
+%%{init: {"timeline":{"padding":8,"disableMulticolor":true},"theme":"base","fontSize":60,"themeVariables":{"fontSize":"16px"},"themeCSS":".timeline-node text{font-size:60px;fill:#14202e;} .timeline-node .node-bkg{fill:#e2e8f0;} .eventWrapper{filter:none;} text:not([dy]){font-size:60px;text-anchor:middle;fill:var(--md-default-fg-color);} .lineWrapper line{stroke:var(--md-default-fg-color);}"}}%%
 timeline
-    accTitle: Managed identity auth incident timeline
-    accDescr: Eight existing scenario periods from 01h00 through 01h40 in their original order. T1 through T8 expand in the adjacent legend; correlation does not recertify an execution or prove causation.
+    accTitle: Managed identity auth incident timeline with periods P1-P8 and events E1-E8 listed in the adjacent legend
+    accDescr: Eight existing scenario periods from 01h00 through 01h40 in their original order. Periods P1-P8 and events E1-E8 are listed verbatim in the adjacent legend; correlation does not recertify an execution or prove causation.
     title Managed identity auth incident timeline
-    01h00 : T1
-    01h03 : T2
-    01h05 : T3
-    01h12 : T4
-    01h14 : T5
-    01h20 : T6
-    01h25 : T7
-    01h40 : T8
+    P1 : E1
+    P2 : E2
+    P3 : E3
+    P4 : E4
+    P5 : E5
+    P6 : E6
+    P7 : E7
+    P8 : E8
 ```
 
-| Key | Time | Original event |
-|---|---|---|
-| T1 | 01h00 | RBAC assignment removed accidentally |
-| T2 | 01h03 | First 403 in dependencies |
-| T3 | 01h05 | Listener startup warnings appear |
-| T4 | 01h12 | Incident declared SEV-1 |
-| T5 | 01h14 | Role assignment restored |
-| T6 | 01h20 | Auth failures decline after propagation |
-| T7 | 01h25 | Invocations recover |
-| T8 | 01h40 | Monitoring confirms steady state |
+| Key | Original period or event (verbatim) |
+|---|---|
+| P1 | 01h00 |
+| E1 | RBAC assignment removed accidentally |
+| P2 | 01h03 |
+| E2 | First 403 in dependencies |
+| P3 | 01h05 |
+| E3 | Listener startup warnings appear |
+| P4 | 01h12 |
+| E4 | Incident declared SEV-1 |
+| P5 | 01h14 |
+| E5 | Role assignment restored |
+| P6 | 01h20 |
+| E6 | Auth failures decline after propagation |
+| P7 | 01h25 |
+| E7 | Invocations recover |
+| P8 | 01h40 |
+| E8 | Monitoring confirms steady state |
 
 ### Normal vs abnormal comparison
 | Dimension | Normal | Abnormal | Interpretation |
