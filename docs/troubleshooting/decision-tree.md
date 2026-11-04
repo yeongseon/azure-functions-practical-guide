@@ -57,29 +57,29 @@ flowchart TD
     Q1 -->|"No<br/>invocations"| Q1A{"Function enabled and<br/>listener healthy?"}
     Q1 -->|"Yes but<br/>slow/failing"| Q2{"Is it a<br/>latency issue?"}
 
-    Q1A -->|"Function<br/>disabled"| P1(["Playbook: Functions<br/>Not Executing"])
+    Q1A -->|"Function<br/>disabled"| P1(["P1: Not executing"])
     Q1A -->|"Listener failed<br/>to start"| Q1B{"Auth or<br/>connection error?"}
-    Q1A -->|"Host not<br/>starting"| P2(["Playbook: App Settings<br/>Misconfiguration"])
+    Q1A -->|"Host not<br/>starting"| P2(["P2: App settings"])
 
-    Q1B -->|"Auth error<br/>401/403"| P3(["Playbook: Managed Identity<br/>/ RBAC Failure"])
-    Q1B -->|"Connection<br/>error"| P4(["Playbook: Functions<br/>Not Executing"])
+    Q1B -->|"Auth error<br/>401/403"| P3(["P3: Identity / RBAC"])
+    Q1B -->|"Connection<br/>error"| P4(["P4: Not executing"])
 
     Q2 -->|"Yes, high<br/>latency"| Q2A{"Cold start<br/>or dependency?"}
     Q2 -->|"No,<br/>errors/failures"| Q3{"What type<br/>of failure?"}
 
-    Q2A -->|"Cold start<br/>pattern"| P5(["Playbook: High Latency"])
-    Q2A -->|"Dependency<br/>timeout"| P6(["Check dependency health"])
-    Q2A -->|"Execution<br/>timeout"| P7(["Playbook: Timeout /<br/>Execution Limit Exceeded"])
+    Q2A -->|"Cold start<br/>pattern"| P5(["P5: High latency"])
+    Q2A -->|"Dependency<br/>timeout"| P6(["P6: Dependency"])
+    Q2A -->|"Execution<br/>timeout"| P7(["P7: Timeout"])
 
     Q3 -->|5xx errors| Q3A{"After deployment?"}
-    Q3 -->|"Exception<br/>storm"| P8(["Playbook: Functions Failing"])
-    Q3 -->|"Queue backlog<br/>growing"| P9(["Playbook: Queue Piling Up"])
+    Q3 -->|"Exception<br/>storm"| P8(["P8: Failing"])
+    Q3 -->|"Queue backlog<br/>growing"| P9(["P9: Queue backlog"])
 
-    Q3A -->|Yes| P10(["Playbook:<br/>Deployment Failures"])
+    Q3A -->|Yes| P10(["P10: Deployment"])
     Q3A -->|No| Q4{"Memory or<br/>OOM signals?"}
 
-    Q4 -->|Yes| P11(["Playbook: Out of Memory<br/>/ Worker Crash"])
-    Q4 -->|No| P12(["Use Methodology:<br/>build hypotheses<br/>from evidence"])
+    Q4 -->|Yes| P11(["P11: Memory / crash"])
+    Q4 -->|No| P12(["P12: Methodology"])
     %% Layout-only links tier alternatives; they add no diagnostic steps or arrows.
     P1 ~~~ Q1B
     P3 ~~~ P4
@@ -97,6 +97,21 @@ flowchart TD
     linkStyle default stroke-width:2px;
 ```
 
+| Key | Full investigation title / destination |
+|---|---|
+| P1 | Playbook: [Functions Not Executing](playbooks/functions-not-executing.md) |
+| P2 | Playbook: [App Settings Misconfiguration](playbooks/auth-config/app-settings-misconfiguration.md) |
+| P3 | Playbook: [Managed Identity / RBAC Failure](playbooks/auth-config/managed-identity-rbac-failure.md) |
+| P4 | Playbook: [Functions Not Executing](playbooks/functions-not-executing.md) |
+| P5 | Playbook: [High Latency](playbooks/high-latency.md) |
+| P6 | Check dependency health |
+| P7 | Playbook: [Timeout / Execution Limit Exceeded](playbooks/triggers/timeout-execution-limit.md) |
+| P8 | Playbook: [Functions Failing](playbooks/functions-failing.md) |
+| P9 | Playbook: [Queue Piling Up](playbooks/queue-piling-up.md) |
+| P10 | Playbook: [Deployment Failures](playbooks/deployment-failures.md) |
+| P11 | Playbook: [Out of Memory / Worker Crash](playbooks/scaling/out-of-memory-worker-crash.md) |
+| P12 | Use Methodology: [build hypotheses from evidence](methodology/troubleshooting-method.md) |
+
 ## Trigger-specific decision tree
 
 <!-- diagram-id: trigger-specific-decision-tree -->
@@ -106,22 +121,22 @@ flowchart TD
     accTitle: Trigger-specific symptom routing
     accDescr: Illustrative lookup for HTTP, Queue or Service Bus, Blob, Timer, Event Hub and Durable symptoms. Each trigger routes through its pattern question to the named investigation. FC1 and Y1 Blob cases, HTTP timeout at 230 seconds, timer flags and all nine endpoints are retained as triage cues, not proof of cause.
     A(["Trigger type"]) --> B{"Which trigger?"}
-    B -->|HTTP| C{"Status code<br/>pattern"}
-    B -->|"Queue/<br/>Service Bus"| D{"Processing pattern"}
-    B -->|Blob| E{"Event delivery"}
-    B -->|Timer| F{"Schedule pattern"}
-    B -->|Event Hub| G{"Lag pattern"}
-    B -->|Durable| H{"Orchestration state"}
+    B -->|HTTP| C{"C: Status?"}
+    B -->|"Queue/<br/>Service<br/>Bus"| D{"D: Work?"}
+    B -->|Blob| E{"E: Delivery?"}
+    B -->|Timer| F{"F: Due?"}
+    B -->|"Event<br/>Hub"| G{"G: Lag?"}
+    B -->|Durable| H{"H: State?"}
 
-    C -->|5xx spike| I(["Functions Failing"])
-    C -->|Timeout 230s| J(["Timeout /<br/>Execution Limit"])
-    D -->|"Backlog<br/>growing"| K(["Queue Piling Up"])
-    D -->|"Poison<br/>messages"| L(["Functions Failing"])
-    E -->|"Not firing<br/>on FC1"| M(["Blob Trigger<br/>Not Firing"])
-    E -->|"Delayed<br/>on Y1"| N(["Blob Trigger<br/>Not Firing"])
-    F -->|"Missed<br/>executions"| O(["Check isPastDue<br/>and RunOnStartup"])
-    G -->|"Checkpoint<br/>behind"| P(["Event Hub /<br/>Service Bus Lag"])
-    H -->|"Stuck in<br/>Running"| Q(["Durable Orchestration<br/>Stuck"])
+    C -->|"5xx<br/>spike"| I(["I: Failing"])
+    C -->|"Timeout<br/>230s"| J(["J: Timeout"])
+    D -->|"Backlog<br/>growing"| K(["K: Backlog"])
+    D -->|"Poison<br/>messages"| L(["L: Failing"])
+    E -->|"Not firing<br/>on FC1"| M(["M: Blob trigger"])
+    E -->|"Delayed<br/>on Y1"| N(["N: Blob trigger"])
+    F -->|"Missed<br/>executions"| O(["O: Timer flags"])
+    G -->|"Checkpoint<br/>behind"| P(["P: Lag"])
+    H -->|"Stuck in<br/>Running"| Q(["Q: Stuck"])
     %% Layout-only links tier trigger families; they add no diagnostic steps or arrows.
     I ~~~ J
     J ~~~ D
@@ -135,6 +150,27 @@ flowchart TD
     class A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q baseNeutral;
     linkStyle default stroke-width:2px;
 ```
+
+| Key | Full pattern question |
+|---|---|
+| C | Status code pattern |
+| D | Processing pattern |
+| E | Event delivery |
+| F | Schedule pattern |
+| G | Lag pattern |
+| H | Orchestration state |
+
+| Key | Full outcome / destination |
+|---|---|
+| I | [Functions Failing](playbooks/functions-failing.md) |
+| J | [Timeout / Execution Limit](playbooks/triggers/timeout-execution-limit.md) |
+| K | [Queue Piling Up](playbooks/queue-piling-up.md) |
+| L | [Functions Failing](playbooks/functions-failing.md) |
+| M | [Blob Trigger Not Firing](playbooks/blob-trigger-not-firing.md) |
+| N | [Blob Trigger Not Firing](playbooks/blob-trigger-not-firing.md) |
+| O | Check isPastDue and RunOnStartup |
+| P | [Event Hub / Service Bus Lag](playbooks/triggers/event-hub-service-bus-lag.md) |
+| Q | [Durable Orchestration Stuck](playbooks/scaling/durable-orchestration-stuck.md) |
 
 ## Playbook leaves (direct links)
 
