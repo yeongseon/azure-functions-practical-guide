@@ -27,7 +27,7 @@ This section provides four complete .NET tracks that follow the same seven-step 
 flowchart TD
     accTitle: Choose a .NET tutorial hosting plan
     accDescr: Illustrative tutorial-track recommendations, not exclusive plan capabilities or a strict scale-to-zero constraint. Start with the scale-to-zero preference, then the VNet and warm-baseline questions; retain the separate existing-legacy-app path. Read the trade-offs below before choosing a plan.
-    Start["Need .NET on<br/>Azure Functions"] --> Q1{"Need scale<br/>to zero?"}
+    Start["Need .NET on<br/>Azure Functions"] --> Q1{"Prefer scale<br/>to zero?"}
     Q1 -->|Yes| Q2{"Need VNet<br/>integration?"}
     Q1 -->|No| DEDI[Dedicated]
     Q2 -->|No| FLEX["Flex<br/>Consumption"]
