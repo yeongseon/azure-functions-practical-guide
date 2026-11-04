@@ -977,7 +977,7 @@ Process reporting unhealthy: Unhealthy. Health check entries are {
 ```mermaid
 flowchart TD
     accTitle: Historical storage-access triage decision logic
-    accDescr: Historical routing preserves all four Yes/No checks and their outcomes: permission mismatch, listener unable to start, unhealthy storage and probe plus invocation recovery. No branches retain alternative checks or escalation. Classification and confirmation labels quote historical logic, not the current Golden scenario verdict rules.
+    accDescr: Historical routing preserves all four Yes/No checks and their outcomes: permission mismatch, listener unable to start, unhealthy storage and probe plus invocation recovery. Branches labelled No retain alternative checks or escalation. Classification and confirmation labels quote historical logic, not the current Golden scenario verdict rules.
     A(["No scheduled<br/>executions observed"]) --> B{"APM<br/>present?"}
     B -->|No| D["Investigate DNS,<br/>runtime, trigger config"]
     B -->|Yes| C{"Listener unable<br/>to start present?"}
