@@ -160,36 +160,55 @@ This view gives you the end-to-end mental model before you dive into individual 
 <!-- diagram-id: functions-architecture-overview -->
 ```mermaid
 flowchart TD
-    accTitle: What does the Functions host coordinate?
-    accDescr: Queue-triggered out-of-process view. The host owns listeners and bindings, invokes the worker and uses host storage. ARM configuration and event-driven scaling are separate from invocation. These are logical roles, not network hops.
-    scale_controller["Scale controller<br/>[Event-driven plans]"]
-    client(["Source: Storage queue<br/>[Polling trigger]"])
-    app_runtime["Compute: Functions host<br/>[Listeners and bindings]"]
-    language_worker["Language worker<br/>[Function code]"]
-    storage_db[("Host storage<br/>[State and keys]")]
-    control_plane["Control plane: ARM<br/>[App configuration]"]
-    telemetry>"Application Insights<br/>[Off-path telemetry]"]
-    dependency["Downstream service<br/>[Application dependency]"]
-    scale_controller -.->|"[Configured] Monitor demand"| client
+    accTitle: How do events, hosting and runtime roles fit together?
+    accDescr: General Functions mental model with HTTP, timers, queues, blobs and Event Grid. Hosting contains a logical app instance with host, extensions and worker plus additional scaled instances. ARM manages configuration separately from platform scaling; polling, push delivery and timer schedules are distinct.
+    subgraph Management["Platform management"]
+        control_plane["ARM<br/>Resource configuration"]
+        scale_controller["Scale controller<br/>Event-driven plans"]
+    end
+    Config["App settings<br/>Identity and configuration"]
+    subgraph Events["Event sources"]
+        client(["HTTP / Event Grid<br/>Event-driven blobs"])
+        poll_source(["Queues / blobs<br/>Polling mode"])
+        timer_source(["Timers<br/>Local schedule"])
+    end
+    subgraph Plan["Hosting"]
+        hosting_plan["Consumption / Flex<br/>Premium / Dedicated"]
+        subgraph Instance["App instance"]
+            trigger_listener["Trigger / binding extensions<br/>Host-owned listeners"]
+            app_runtime["Functions host<br/>Runtime coordination"]
+            language_worker["Language worker<br/>Function code"]
+        end
+        InstanceN["Additional instances<br/>When scaled out"]
+    end
+    storage_db[("Host storage<br/>Checkpoints / leases<br/>Durable state")]
+    dependency["Downstream services<br/>Databases / messaging / APIs"]
+    telemetry>"Application Insights<br/>Platform logs"]
+    Config -.->|"[Configured] Manage"| control_plane
+    control_plane -.->|"[Configured] Configure"| app_runtime
+    scale_controller -.->|"[Configured] Monitor demand"| Events
     scale_controller -.->|"[Configured] Adjust instances"| app_runtime
-    control_plane -.->|"[Configured] Configure app"| app_runtime
-    app_runtime -->|"[Configured] Poll queue"| client
-    app_runtime -->|"[Configured] Invoke code"| language_worker
-    app_runtime -->|"[Configured] State / keys"| storage_db
-    language_worker -->|"[Illustrative] SDK call"| dependency
-    app_runtime -.->|"[Configured] Host logs"| telemetry
+    scale_controller -.->|"[Configured] Add / remove"| InstanceN
+    client -->|"[Configured] Push delivery"| trigger_listener
+    trigger_listener -->|"[Configured] Poll"| poll_source
+    timer_source -.->|"[Illustrative] Schedule due"| trigger_listener
+    trigger_listener -->|"[Illustrative] Payload / metadata"| app_runtime
+    app_runtime -->|"[Configured] Invoke"| language_worker
+    app_runtime -->|"[Configured] State access"| storage_db
+    language_worker -->|"[Illustrative] SDK / data"| dependency
+    app_runtime -.->|"[Configured] Telemetry"| telemetry
     classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
     classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e;
     classDef bandMuted fill:#ffffff,stroke:#707e93,stroke-width:1.5px,stroke-dasharray:4 3,color:#14202e;
-    class client,language_worker,storage_db,dependency baseNeutral;
+    class client,poll_source,timer_source,language_worker,trigger_listener,hosting_plan,InstanceN,Config,storage_db,dependency baseNeutral;
     class app_runtime focusActive;
     class scale_controller,control_plane,telemetry bandMuted;
     linkStyle default stroke-width:2px;
-    linkStyle 7 stroke-width:1.5px;
+    linkStyle 12 stroke-width:1.5px;
 ```
 
-- **Takeaway:** The host polls and invokes; the scale controller monitors demand, not event delivery. Solid arrows name data/invocation initiators; dotted arrows name configuration, scaling or telemetry. `[Configured]` means documented/intended behavior; `[Illustrative]` marks an example, not a measured trace.
-- This queue slice shows an out-of-process worker. HTTP has ingress, timers have schedules, and push triggers have delivery paths rather than this polling arrow. Consumption and Premium scale apps; Flex scales functions with HTTP/Blob/Durable groups; Dedicated uses App Service scaling ([event-driven scaling](https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling)).
+- **Takeaway:** Trigger-specific detection leads to host coordination and worker execution; configuration and scaling are separate responsibilities. Solid arrows show invocation and resource access with the initiator at the tail; dotted arrows show management, scheduling or off-path telemetry. `[Configured]` means documented/intended behavior; `[Illustrative]` marks a logical teaching exchange, not a measured trace.
+- HTTP and Event Grid use push delivery; queues and polling-mode blobs are polled; timers use a local schedule, not a remote event endpoint. The grouping is a logical model, not an HTTP ingress path for every trigger. This worker is out-of-process; in-process .NET executes code in the host. Consumption and Premium scale apps; Flex scales functions with HTTP, Blob (Event Grid), and Durable Functions groups; Dedicated uses App Service scaling ([event-driven scaling](https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling)). Downstream access can use optional bindings coordinated by the host or SDK calls from code.
 - The hosting plan defines the runtime boundary where the Functions host, extensions, and language worker actually run.
 - Storage is a runtime dependency for checkpoints, leases, and durable state, not just a deployment prerequisite.
 - Observability flows out of the host into Application Insights and platform logs, which is why host health is central to troubleshooting.
@@ -200,29 +219,36 @@ Azure Functions works best when you separate what you configure from what execut
 <!-- diagram-id: control-data-plane -->
 ```mermaid
 flowchart TD
-    accTitle: Which paths configure the app and which execute work?
-    accDescr: ARM manages app configuration separately from queue polling, worker invocation and host-storage data access. Scaling is platform orchestration, not event forwarding.
-    control_plane["Control plane: ARM<br/>[Manage resources]"]
-    scale_controller["Scale controller<br/>[Platform orchestration]"]
-    app_runtime["Compute: Functions host<br/>[Runtime coordination]"]
-    client(["Source: Storage queue<br/>[Data endpoint]"])
-    language_worker["Language worker<br/>[Execute function]"]
-    storage_db[("Host storage<br/>[Leases and state]")]
-    control_plane -.->|"[Configured] Settings / policy"| app_runtime
-    scale_controller -.->|"[Configured] Adjust capacity"| app_runtime
-    app_runtime -->|"[Configured] Poll messages"| client
-    app_runtime -->|"[Configured] Invoke function"| language_worker
-    app_runtime -->|"[Configured] Read / write"| storage_db
+    accTitle: What do you configure and what runs?
+    accDescr: Six configuration responsibilities and five runtime data-plane responsibilities are grouped vertically. The sixth original runtime item, scale-controller decisions, is separately classified as platform-managed scaling, not ARM data access or a trigger-processing stage. Invisible anchors only position the lists.
+    subgraph CP["Control plane: configure"]
+        C12["Hosting plan selection<br/>App settings"]
+        C34["Identity and RBAC<br/>Networking and access restrictions"]
+        C56["Deployment and slots<br/>Scale limits"]
+        %% Layout-only anchors: list placement, not execution steps or arrows.
+        C12 ~~~ C34
+        C34 ~~~ C56
+    end
+    subgraph DP["Data plane: run"]
+        D12["Trigger listeners<br/>Functions host execution"]
+        D34["Worker invocation<br/>Input / output binding resolution"]
+        D6["Checkpoints and leases"]
+        %% Layout-only anchors: list placement, not execution steps or arrows.
+        D12 ~~~ D34
+        D34 ~~~ D6
+    end
+    scale_controller["Platform-managed scaling<br/>Scale-controller decisions"]
+    CP -.->|"Configuration shapes runtime"| DP
+    scale_controller -.->|"Adjust runtime capacity"| DP
     classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
     classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e;
     classDef bandMuted fill:#ffffff,stroke:#707e93,stroke-width:1.5px,stroke-dasharray:4 3,color:#14202e;
-    class client,language_worker,storage_db baseNeutral;
-    class app_runtime focusActive;
-    class control_plane,scale_controller bandMuted;
+    class C12,C34,C56,D12,D34,D6 baseNeutral;
+    class scale_controller bandMuted;
     linkStyle default stroke-width:2px;
 ```
 
-**Takeaway:** Dotted management/scaling relationships configure capacity; solid runtime paths use resource data endpoints. Host storage is data-plane access, not ARM traffic; Dedicated scaling differs from the event-driven plans.
+**Takeaway:** The two categories distinguish configured resource choices from runtime work, not a sequence of network hops. Solid arrows show runtime invocation and resource data access in the surrounding architecture figures. Scale-controller decisions are platform-managed orchestration outside these categories; Dedicated uses App Service scaling. Checkpoint and lease access is runtime storage work, not ARM traffic.
 
 | Operation | Plane | Example |
 |---|---|---|
@@ -253,7 +279,7 @@ At a high level, an out-of-process invocation with an output binding follows thi
 flowchart TD
     accTitle: In what order does an invocation run?
     accDescr: Logical invocation stages, not network topology. A trigger is detected, the host coordinates bindings and worker execution, and optional output bindings write to a destination. In-process .NET executes code within the host instead.
-    E["1. Event available<br/>HTTP / timer / message"]
+    E["1. Event available<br/>HTTP / timer / queue<br/>Blob / Event Grid"]
     T["2. Trigger listener<br/>Detect work"]
     H["3. Functions host<br/>Context and input bindings"]
     W["4. Language worker<br/>Execute function code"]
@@ -266,7 +292,7 @@ flowchart TD
     O -->|"Write"| D
 ```
 
-**Takeaway:** These arrows show stage order, not connection initiators: a queue listener polls its source. Worker and function-code stages share one box; output bindings are optional, and code can call SDKs directly.
+**Takeaway:** These arrows show stage order, not connection initiators: a queue listener polls its source. The host is a .NET runtime process. Worker and function-code stages share one box; the language models are listed below. Output bindings are optional, and code can call SDKs directly.
 
 ### Host process responsibilities
 The Functions host coordinates runtime execution for your app instance; it is not the ARM control plane. It is responsible for:
@@ -294,28 +320,33 @@ Language workers execute your function code and return outputs to the host. Work
     The host/worker split is why platform behavior (triggers, bindings, scaling) is consistent across languages, while coding experience differs by language guide.
 
 ### Detailed host/worker communication sequence
-Use this sequence when investigating cold start, timeout, or extension load behavior.
+Use this sequence to distinguish trigger detection, host coordination, worker execution and trigger-specific completion.
 
 <!-- diagram-id: detailed-host-worker-communication-sequence -->
 ```mermaid
 sequenceDiagram
     accTitle: How do the host and worker complete an invocation?
-    accDescr: Illustrative successful queue invocation with a host-owned listener and bindings and a separate worker executing function code. Messages show logical order, not RPC envelopes or universal trigger acknowledgement rules.
+    accDescr: Generic logical invocation with host-owned listener and bindings, and a worker executing code. Detection differs for push, polling and schedules. Result or failure returns to the host; successful output commits and trigger-specific completion are conditional, not universal queue deletion.
     autonumber
-    participant client as Queue source
-    participant app_runtime as Host / bindings
+    participant client as Event source
+    participant app_runtime as Host / listener / bindings
     participant language_worker as Worker / code
-    app_runtime->>client: [Configured] Poll queue
-    client-->>app_runtime: [Configured] Payload and metadata
-    app_runtime->>app_runtime: [Illustrative] Build context
-    app_runtime->>app_runtime: [Configured] Resolve inputs
-    app_runtime->>language_worker: [Illustrative] Invoke handler
-    language_worker-->>app_runtime: [Illustrative] Return result
-    app_runtime->>app_runtime: [Configured] Apply outputs
-    app_runtime->>client: [Configured] Delete on success
+    Note over client,app_runtime: Detect: push / poll / schedule<br/>Trigger-specific, not one transport
+    app_runtime->>app_runtime: Listener detects work<br/>Payload and metadata
+    app_runtime->>app_runtime: Build invocation context
+    app_runtime->>app_runtime: Resolve input bindings
+    app_runtime->>language_worker: Invoke over worker channel
+    language_worker->>language_worker: Execute handler
+    language_worker-->>language_worker: Result or failure
+    language_worker-->>app_runtime: Invocation response<br/>Result or failure
+    opt Successful invocation with output bindings
+        app_runtime->>app_runtime: Commit output bindings
+    end
+    app_runtime->>app_runtime: Trigger-specific completion
+    Note over client,app_runtime: Queue delete / checkpoint / ack<br/>Failure and retry rules vary
 ```
 
-**Takeaway:** The listener and binding roles belong to the host; function code belongs to the worker. This successful queue example omits failure/retry branches and exact worker-channel messages; other triggers have different completion rules.
+**Takeaway:** Listener-to-host handoff and output binding coordination share the host lifeline; handler execution and its result or exception share the worker lifeline. Messages show logical order, not exact RPC response envelopes or guaranteed eager input resolution for every SDK-binding mode. Detection and completion depend on the trigger: polling, push delivery and timer schedules differ, and queue deletion on success is not a universal acknowledgement rule.
 
 ### Invocation lifecycle (request to completion)
 1. An event source emits a trigger event.
@@ -342,14 +373,16 @@ Most platform choices are applied at Function App scope, then interpreted at fun
 ```mermaid
 flowchart TD
     accTitle: Which resources does a Function App use?
-    accDescr: Function App resource relationships separate hosting configuration, identity token acquisition, storage and downstream data access, and off-path monitoring. Managed identity is a configured option, not a mandatory resource for every trigger.
-    hosting_plan["Hosting plan<br/>[Capacity and OS]"]
+    accDescr: Function App incoming sources include HTTP, Queue, Blob, Event Hubs and Service Bus. Hosting, optional managed identity, host storage, downstream SQL, Cosmos DB, Storage and Key Vault, and telemetry are distinct logical relationships, not universal HTTP transport or direct network token acquisition from Entra ID.
+    client(["Event sources<br/>HTTP / Queue / Blob<br/>Event Hubs / Service Bus"])
+    hosting_plan["Hosting plan<br/>Consumption / Flex<br/>Premium / Dedicated"]
     app_runtime["Compute: Function App<br/>[Deployment boundary]"]
     identity{{"Identity: Microsoft Entra ID<br/>[Managed identity token]"}}
-    storage_db[("Host storage<br/>[State and keys]")]
-    dependency["Downstream services<br/>[SDKs or bindings]"]
+    storage_db[("Host storage<br/>State / leases / checkpoints")]
+    dependency["Downstream services<br/>SQL / Cosmos DB<br/>Storage / Key Vault"]
     telemetry>"Application Insights<br/>[Logs and metrics]"]
     hosting_plan -.->|"[Configured] Host app"| app_runtime
+    app_runtime -.->|"[Illustrative] Trigger detection"| client
     app_runtime -.->|"[Configured] Request token"| identity
     app_runtime -->|"[Configured] State / keys"| storage_db
     app_runtime -->|"[Illustrative] Data access"| dependency
@@ -361,10 +394,10 @@ flowchart TD
     class app_runtime focusActive;
     class hosting_plan,identity,telemetry bandMuted;
     linkStyle default stroke-width:2px;
-    linkStyle 4 stroke-width:1.5px;
+    linkStyle 5 stroke-width:1.5px;
 ```
 
-**Takeaway:** Hosting is a resource association, not a customer-subnet boundary. Identity token acquisition is separate from data access; each target still needs appropriate permissions. Flex is Linux-only; other classic plans have plan/OS-specific capabilities ([hosting options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)).
+**Takeaway:** Hosting is a resource association, not a customer-subnet boundary. The dotted trigger relationship means incoming work detected by app listeners; HTTP/push, polling and schedule mechanisms differ as shown in the overview, so it is not a universal app-to-source request. Downstream services use SDKs or supported bindings. The token arrow summarizes acquisition through the app's managed-identity endpoint, not a direct network hop to Entra ID; each target still needs appropriate permissions. Flex is Linux-only; other classic plans have plan/OS-specific capabilities ([hosting options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)).
 
 #### Important design implication
 Host storage is a foundational runtime dependency for state, leases, and checkpoints. Managed identity is an authentication option that requires configuration and target permissions, not a prerequisite for every trigger.
