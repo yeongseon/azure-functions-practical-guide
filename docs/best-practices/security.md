@@ -338,8 +338,8 @@ flowchart TD
 <!-- diagram-id: security-boundary-and-identity-flow -->
 ```mermaid
 flowchart TD
-    accTitle: HTTP security controls and dependency identity
-    accDescr: Conceptual relationship map, not a network route or token protocol. Token and shared-key controls lead to function execution; managed identity supports access to Key Vault, Storage, Service Bus and Event Hubs. The dependency group denotes policy scope, not VNet containment.
+    accTitle: Alternative HTTP security controls and dependency policies
+    accDescr: Conceptual relationship map, not a network route or token protocol. Token and shared-key controls lead to function execution; managed identity supports access to Key Vault, Storage, Service Bus and Event Hubs. The Policies dependency group denotes network policy scope, not VNet containment. The token and key branches illustrate alternative configurations, not automatic fallback; a function key does not bypass required Easy Auth or gateway token validation.
     Caller["Client or<br/>service caller"] --> Ingress["Function endpoint<br/>HTTP trigger"]
     Ingress --> Auth{Auth control}
     Auth -->|"User/API token"| AppAuth["App Service Auth<br/>or APIM JWT"]
@@ -350,7 +350,7 @@ flowchart TD
     MI --> KV[Key Vault]
     MI --> ST[Storage account]
     MI --> SB["Service Bus /<br/>Event Hubs"]
-    subgraph NetworkBoundary["Network &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; policies"]
+    subgraph NetworkBoundary["Policies"]
         KV
         ST
         SB
@@ -362,13 +362,17 @@ flowchart TD
     class Caller,Ingress,Auth,AppAuth,KeyGate,Code,MI,KV,ST,SB baseNeutral;
 ```
 
-**Reading key:** Arrows connect security responsibilities, not packet hops. `MI`
-summarizes obtaining a token through the app's managed-identity endpoint and using
+**Reading key:** Arrows connect security responsibilities, not packet hops.
+**Managed identity token-backed access** summarizes obtaining a token through the app's managed-identity endpoint and using
 it on a resource call; the identity service does not forward data requests.
-`NetworkBoundary` groups dependencies whose network access policies must be
+The **Policies** group contains dependencies whose network access policies must be
 checked independently of identity permissions; it does not place these services
 inside one VNet. See [managed identity](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)
 and [network security](https://learn.microsoft.com/en-us/azure/azure-functions/security-concepts#network-security).
+
+The token and key branches illustrate alternative configurations, not automatic fallback; a function key does not bypass required Easy Auth or gateway token validation.
+See [function keys](https://learn.microsoft.com/en-us/azure/azure-functions/function-keys-how-to)
+and [App Service Authentication](https://learn.microsoft.com/en-us/azure/app-service/overview-authentication-authorization#how-it-works).
 
 ### Practical hardening commands (long flags only)
 
