@@ -337,6 +337,7 @@ flowchart TD
 
 <!-- diagram-id: security-boundary-and-identity-flow -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 80}}}%%
 flowchart TD
     accTitle: Alternative HTTP security controls and dependency policies
     accDescr: Conceptual relationship map, not a network route or token protocol. Token and shared-key controls lead to function execution; managed identity supports access to Key Vault, Storage, Service Bus and Event Hubs. The Policies dependency group denotes network policy scope, not VNet containment. The token and key branches illustrate alternative configurations, not automatic fallback; a function key does not bypass required Easy Auth or gateway token validation.
@@ -358,6 +359,8 @@ flowchart TD
     %% Layout-only links tier the dependency list; no extra steps or semantic arrows.
     KV ~~~ ST
     ST ~~~ SB
+    %% Layout-only anchor offsets the dependency group from the incoming paths.
+    Code ~~~ SB
     classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
     class Caller,Ingress,Auth,AppAuth,KeyGate,Code,MI,KV,ST,SB baseNeutral;
 ```
