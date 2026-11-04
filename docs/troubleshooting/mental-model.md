@@ -11,15 +11,15 @@ content_sources:
     - id: classification-flowchart
       type: flowchart
       source: self-generated
-      justification: Classification flowchart, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative symptom-to-category routing and first-evidence checks informed by the cited diagnostics and monitoring guidance; not a deterministic diagnosis or an executed incident.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics
+        - https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring
     - id: using-this-model-during-incidents
       type: sequenceDiagram
       source: self-generated
-      justification: Interaction sequence for using this model during incidents, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative human investigation workflow using this page's classification model, informed by the cited diagnostics and monitoring guidance; not an Azure protocol or a retained incident trace.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
@@ -56,19 +56,38 @@ This classification helps you avoid looking at the wrong logs from the start.
 <!-- diagram-id: classification-flowchart -->
 ```mermaid
 flowchart TD
-    A[Observed symptom] --> B{Primary failure signal}
-    B -->|No invocations, zero executions| C[Category 1: Trigger and listener issue]
-    B -->|5xx, latency, timeout| D[Category 2: Execution and runtime issue]
-    B -->|Degradation over time| E[Category 3: Resource exhaustion]
-    B -->|Dependency timeout, DNS, connection reset| F[Category 4: Dependency and outbound issue]
-    B -->|Regression after change, restart, config| G[Category 5: Deployment and configuration event]
+    accTitle: Incident classification and first evidence
+    accDescr: Illustrative routing from a primary symptom to five candidate categories and their first evidence sources. Signal keys S1 to S5 are expanded immediately below; categories are investigation starting points, not proven causes.
+    A(["Observed symptom"]) --> B{"Primary<br/>failure signal"}
+    B -->|S1| C("Category 1:<br/>Trigger and<br/>listener issue")
+    B -->|S2| D("Category 2:<br/>Execution and<br/>runtime issue")
+    B -->|S3| E("Category 3:<br/>Resource exhaustion")
+    B -->|S4| F("Category 4:<br/>Dependency and<br/>outbound issue")
+    B -->|S5| G("Category 5:<br/>Deployment and<br/>configuration event")
 
-    C --> C1[Start with trigger listener and host startup evidence]
-    D --> D1[Start with requests and exceptions tables]
-    E --> E1[Start with memory and cold start progression]
-    F --> F1[Start with dependencies and resolver evidence]
-    G --> G1[Start with Activity Log and config delta]
+    C --> C1["Start with trigger listener<br/>and host startup<br/>evidence"]
+    D --> D1["Start with requests<br/>and exceptions tables"]
+    E --> E1["Start with memory<br/>and cold start<br/>progression"]
+    F --> F1["Start with dependencies<br/>and resolver evidence"]
+    G --> G1["Start with Activity Log<br/>and config delta"]
+    %% Layout-only links serialize categories; they add no diagnostic steps or arrows.
+    C1 ~~~ D
+    D1 ~~~ E
+    E1 ~~~ F
+    F1 ~~~ G
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,C1,D1,E1,F1,G1 neutral;
 ```
+
+**Signal key:** S1 = no invocations, zero executions; S2 = 5xx, latency,
+timeout; S3 = degradation over time; S4 = dependency timeout, DNS, connection
+reset; S5 = regression after change, restart, config.
+
+**Takeaway:** Follow the symptom to a candidate category (rounded box), then its
+first evidence check (rectangle). These are illustrative investigation routes,
+not confirmed diagnoses. Missing Application Insights telemetry alone does not
+prove zero executions: [sampling and log-level filters](https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring)
+can omit execution telemetry.
 
 ## Category summary matrix
 
@@ -282,23 +301,30 @@ az monitor activity-log list \
 
 <!-- diagram-id: using-this-model-during-incidents -->
 ```mermaid
+%%{init: {'sequence': {'actorMargin': 10, 'diagramMarginX': 5, 'width': 65, 'mirrorActors': false}}}%%
 sequenceDiagram
+    accTitle: Using incident classification with evidence
+    accDescr: Illustrative responder workflow with four roles: responder, mental model, evidence and playbook. Check a category's first signal, investigate a confirmed category with its playbook, or reclassify an eliminated category.
     participant R as Responder
-    participant M as Mental Model
+    participant M as Model
     participant E as Evidence
     participant P as Playbook
 
-    R->>M: Observe primary symptom
-    M->>R: Classify into category (1-5)
-    R->>E: Check first signal for that category
-    E->>R: Evidence confirms or eliminates category
+    R->>M: Observe primary<br/>symptom
+    M->>R: Classify into<br/>category 1-5
+    R->>E: Check category's<br/>first signal
+    E->>R: Confirm or<br/>eliminate category
     alt Category confirmed
-        R->>P: Open category-specific playbook
-        P->>R: Follow hypothesis-driven investigation
+        R->>P: Open category's<br/>playbook
+        P->>R: Hypothesis-driven<br/>investigation
     else Category eliminated
-        R->>M: Re-classify with next likely category
+        R->>M: Reclassify: next<br/>likely category
     end
 ```
+
+**Takeaway:** Model means the mental model above; the other lifelines represent
+the responder, collected evidence and the selected playbook. The two alternatives
+preserve the investigate-or-reclassify choice, not an automated Azure exchange.
 
 ## Anti-patterns
 
@@ -323,3 +349,4 @@ sequenceDiagram
 - [Azure Functions diagnostics overview](https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics)
 - [Monitor Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)
 - [Troubleshoot Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics)
+- [Configure monitoring and telemetry collection](https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring)
