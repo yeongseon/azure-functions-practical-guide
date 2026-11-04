@@ -126,7 +126,7 @@ arrows summarize work committed by the runtime, not storage I/O in orchestrator 
 | 1 | `call_activity()` schedules activity functions, the units of work. |
 | 2 | `call_entity()` / `signal_entity()` interact with entity functions, the stateful objects. |
 | Task hub | Instance state, history and messages persisted through the runtime. |
-| Storage provider | Azure Storage, Netherite, MSSQL or Durable Task Scheduler; alternatives, not successive stages. |
+| Storage provider | Azure Storage, Netherite, MSSQL or Durable Task Scheduler; alternatives, not successive stages. Provider/feature support varies; see [Storage Providers](https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-storage-providers). |
 
 ## Application Patterns
 
@@ -239,9 +239,9 @@ sequenceDiagram
     Orc->>Act: Request<br/>approval
     Note over Orc: Wait: event<br/>or timer
     App->>Orc: Raise decision
-    alt event first
+    alt A
         Orc->>Orc: Process<br/>approval
-    else timer first
+    else B
         Orc->>Orc: Escalate<br/>or default
     end
 ```
@@ -251,6 +251,8 @@ sequenceDiagram
 | Workflow / Activity / Approver | Orchestrator function; approval-request activity; responding person or external system. |
 | Wait: event or timer | Race `wait_for_external_event` against a durable timer (timeout). |
 | Raise decision | `raise_event` sends the approval decision through a durable client or the built-in HTTP API, not a direct call to orchestrator code. |
+| A: event before timeout | Process the approval. |
+| B: timer fires first | Escalate or apply the default. |
 | Event first / Process approval | Event before timeout: process the approval. |
 | Timer first / Escalate or default | Timeout fires first: escalate or apply the default. |
 
