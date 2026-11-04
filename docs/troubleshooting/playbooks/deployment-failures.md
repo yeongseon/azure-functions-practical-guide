@@ -55,7 +55,7 @@ This playbook prioritizes fast triage of runtime settings, deployment model fit,
 ```mermaid
 flowchart TD
     accTitle: Deployment failure triage and scoped recovery
-    accDescr: Illustrative decision flow, not an executed incident. Capture a read-only baseline and logs. If hosting plan and OS are unknown, stop and resolve missing evidence; otherwise compare runtime and deployment model with the prior release. If evidence does not support a scoped rollback, continue competing-hypothesis investigation; otherwise approve interruption risk and restore only proven drift, then validate host readiness, function discovery, trigger execution and recovery metrics.
+    accDescr: Illustrative decision flow, not an executed incident. Capture a read-only baseline and logs. If either the hosting plan or OS is unknown, stop and resolve missing evidence; otherwise compare runtime and deployment model with the prior release. If evidence does not support a scoped rollback, continue competing-hypothesis investigation; otherwise approve interruption risk and restore only proven drift, then validate host readiness, function discovery, trigger execution and recovery metrics.
     A(["Deployment failed or<br/>degraded after release"]) --> B["Capture read-only<br/>baseline and logs"]
     B --> C{"Hosting plan and<br/>OS identified?"}
     C -->|No| D(["Stop and resolve<br/>missing evidence"])
