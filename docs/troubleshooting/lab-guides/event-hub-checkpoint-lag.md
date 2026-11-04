@@ -962,33 +962,44 @@ Recovery drain snippets:
 
 <!-- diagram-id: evidence-timeline -->
 ```mermaid
-%%{init: {'gantt': {'fontSize': 16, 'sectionFontSize': 16, 'leftPadding': 65, 'rightPadding': 25, 'barHeight': 25}, 'themeVariables': {'fontSize': '16px'}}}%%
+%%{init: {"gantt":{"fontSize":16,"sectionFontSize":16,"leftPadding":95,"rightPadding":35,"barHeight":24,"barGap":10},"theme":"base","themeVariables":{"doneTaskBkgColor":"#e2e8f0","critBkgColor":"#fed7aa","taskBkgColor":"#e2e8f0"},"themeCSS":".grid .tick text{font-size:16px;fill:var(--md-default-fg-color);} .section{opacity:0;} .titleText{font-size:14px;fill:var(--md-default-fg-color);} .sectionTitle{fill:var(--md-default-fg-color);} .taskTextOutsideLeft,.taskTextOutsideRight{fill:var(--md-default-fg-color)!important;} .taskText{fill:#14202e!important;}"}}%%
 gantt
     accTitle: Historical processing-delay evidence timeline
     accDescr: UTC baseline, incident and recovery bins and delay-control milestones from the retained execution ledger. Short task keys are expanded below. All original start times, durations and statuses remain; this is not new Azure validation or a checkpoint-lag measurement.
     title Processing-delay evidence (UTC)
     dateFormat  HH:mm:ss
     axisFormat  %H:%M
-    tickInterval 4minute
+    tickInterval 10minute
     section Baseline
-    b1                                          :done, b1, 13:12:00, 4m
+    T1                                          :done, b1, 13:12:00, 4m
     section Incident
-    i0                                          :milestone, i0, 13:28:29, 0s
-    i1                                          :crit, i1, 13:28:00, 2m
-    i2                                          :crit, i2, 13:30:00, 2m
-    i3                                          :crit, i3, 13:32:00, 2m
+    T2                                          :milestone, i0, 13:28:29, 0s
+    T3                                          :crit, i1, 13:28:00, 2m
+    T4                                          :crit, i2, 13:30:00, 2m
+    T5                                          :crit, i3, 13:32:00, 2m
     section Recovery
-    r0                                          :milestone, r0, 13:34:26, 0s
-    r1                                          :done, r1, 13:34:00, 2m
-    r2                                          :milestone, r2, 13:35:06, 0s
+    T6                                          :milestone, r0, 13:34:26, 0s
+    T7                                          :done, r1, 13:34:00, 2m
+    T8                                          :milestone, r2, 13:35:06, 0s
 ```
 
-**Timeline key (historical UTC window):** b1 = baseline 2-minute bins captured
-(`13:12`–`13:16`); i0 = delay set to `2500 ms` (`13:28:29`);
-i1 = mixed transition bin (`13:28`–`13:30`); i2 = full incident bin
-(`13:30`–`13:32`); i3 = sustained incident bin (`13:32`–`13:34`);
-r0 = delay reset to `0 ms` (`13:34:26`); r1 = mixed recovery bin
-(`13:34`–`13:36`); r2 = drain evidence point (`13:35:06`).
+| Key | Task ID | Original task label |
+|---|---|---|
+| T1 | b1 | Baseline 2-minute bins captured |
+| T2 | i0 | Delay set to 2500 |
+| T3 | i1 | Transition bin (mixed) |
+| T4 | i2 | Full incident bin |
+| T5 | i3 | Sustained incident bin |
+| T6 | r0 | Delay reset to 0 |
+| T7 | r1 | Mixed recovery bin |
+| T8 | r2 | Drain evidence point |
+
+**Timeline key (historical UTC window):** T1 = baseline 2-minute bins captured
+(`13:12`–`13:16`); T2 = delay set to `2500 ms` (`13:28:29`);
+T3 = mixed transition bin (`13:28`–`13:30`); T4 = full incident bin
+(`13:30`–`13:32`); T5 = sustained incident bin (`13:32`–`13:34`);
+T6 = delay reset to `0 ms` (`13:34:26`); T7 = mixed recovery bin
+(`13:34`–`13:36`); T8 = drain evidence point (`13:35:06`).
 Bars represent query bins and diamonds represent control/evidence timestamps;
 the recovery point does not certify zero checkpoint lag.
 
