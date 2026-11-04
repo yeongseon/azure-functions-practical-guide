@@ -317,7 +317,7 @@ For plans without strong always-ready guarantees, use conservative warmup patter
 %%{init: {'flowchart': {'nodeSpacing': 15, 'rankSpacing': 35}}}%%
 flowchart TD
     accTitle: Cold start mitigation decisions
-    accDescr: Illustrative operational guide, not proof that startup caused latency. A p95 SLO check leads to weekly monitoring or startup optimization. Reassess after the illustrative 24-to-72-hour window, then choose Consumption, Flex, Premium or Dedicated mitigation when needed. Re-measure p95 and p99 and adopt only if SLO and cost are acceptable; otherwise seek architecture review. Every Yes/No branch remains explicit.
+    accDescr: Illustrative operational guide, not proof that startup caused latency. A p95 SLO check leads to weekly monitoring or startup optimization. Reassess after the illustrative 24-to-72-hour window, then choose Consumption, Flex, Premium or Dedicated mitigation when needed. Improvement returns to monitoring. After plan-specific mitigation, re-measure p95 and p99; adopt the baseline if SLO and cost are acceptable, otherwise seek architecture review. Every Yes/No branch remains explicit.
     A(["Start: latency<br/>issue identified"]) --> B{"Is p95<br/>within SLO?"}
     B -->|Yes| C(["C: Keep;<br/>monitor weekly"])
     B -->|No| D{"Startup path<br/>optimized?"}
@@ -351,7 +351,7 @@ flowchart TD
 
 **Outcome key:** C keeps the current setup and monitors weekly. I moves from
 Consumption to Flex with always-ready or Premium. J increases Flex always-ready
-instances. K tunes Premium minimum elastic and pre-warmed instances. P escalates
+instances. K tunes Premium always-ready capacity (`minimumElasticInstanceCount`) and, for HTTP scale-out, the pre-warmed instance buffer. P escalates
 to architecture review. The 24–72-hour observation window is illustrative;
 re-measure p95/p99 and cost rather than treating a plan change as a guaranteed fix.
 
