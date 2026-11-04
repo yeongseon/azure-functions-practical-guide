@@ -269,7 +269,7 @@ flowchart TD
 **Takeaway:** These arrows show stage order, not connection initiators: a queue listener polls its source. Worker and function-code stages share one box; output bindings are optional, and code can call SDKs directly.
 
 ### Host process responsibilities
-The Functions host is the control plane and data-plane coordinator for your app instance. It is responsible for:
+The Functions host coordinates runtime execution for your app instance; it is not the ARM control plane. It is responsible for:
 
 - loading trigger and binding extensions,
 - maintaining trigger listeners,
@@ -367,7 +367,7 @@ flowchart TD
 **Takeaway:** Hosting is a resource association, not a customer-subnet boundary. Identity token acquisition is separate from data access; each target still needs appropriate permissions. Flex is Linux-only; other classic plans have plan/OS-specific capabilities ([hosting options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)).
 
 #### Important design implication
-Storage and identity are foundational runtime dependencies, not optional add-ons. Trigger execution, leases, and checkpoints depend on them.
+Host storage is a foundational runtime dependency for state, leases, and checkpoints. Managed identity is an authentication option that requires configuration and target permissions, not a prerequisite for every trigger.
 
 ### Plan-specific architectural differences
 | Area | Consumption | Flex Consumption | Premium | Dedicated |
