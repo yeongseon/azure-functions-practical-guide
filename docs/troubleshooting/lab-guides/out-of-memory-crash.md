@@ -653,8 +653,9 @@ Final verdict: **Hypothesis supported**.
 
 <!-- diagram-id: evidence-timeline -->
 ```mermaid
-%%{init: {'themeCSS': '.grid .tick text { font-size: 16px !important; }', 'gantt': {'useMaxWidth': true, 'fontSize': 16, 'sectionFontSize': 16, 'leftPadding': 70, 'rightPadding': 30, 'barHeight': 24, 'barGap': 12}}}%%
+%%{init: {"gantt":{"fontSize":16,"sectionFontSize":16,"leftPadding":95,"rightPadding":35,"barHeight":24,"barGap":10},"theme":"base","themeVariables":{"doneTaskBkgColor":"#e2e8f0","critBkgColor":"#fed7aa","taskBkgColor":"#e2e8f0"},"themeCSS":".grid .tick text{font-size:16px;fill:var(--md-default-fg-color);} .section{opacity:0;} .titleText{font-size:14px;fill:var(--md-default-fg-color);} .sectionTitle{fill:var(--md-default-fg-color);} .taskTextOutsideLeft,.taskTextOutsideRight{fill:var(--md-default-fg-color)!important;} .taskText{fill:#14202e!important;}"}}%%
 gantt
+    title OOM Lab Evidence Timeline (EP1)
     accTitle: OOM Lab Evidence Timeline (EP1)
     accDescr: Six page-defined lab windows, from baseline at 01:30 to recovery ending at 02:40. O1 to O6 map to the adjacent task legend; no new execution is asserted.
     dateFormat  HH:mm
