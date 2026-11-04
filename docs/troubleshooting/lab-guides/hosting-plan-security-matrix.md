@@ -1353,47 +1353,48 @@ Dedicated behavior contrast:
 
 <!-- diagram-id: evidence-timeline -->
 ```mermaid
-%%{init: {'gantt': {'fontSize': 14, 'sectionFontSize': 14}}}%%
+%%{init: {"gantt":{"fontSize":16,"sectionFontSize":16,"leftPadding":95,"rightPadding":35,"barHeight":24,"barGap":10},"theme":"base","themeVariables":{"doneTaskBkgColor":"#e2e8f0","critBkgColor":"#fed7aa","taskBkgColor":"#e2e8f0"},"themeCSS":".grid .tick text{font-size:16px;fill:var(--md-default-fg-color);} .section{opacity:0;} .titleText{font-size:14px;fill:var(--md-default-fg-color);} .sectionTitle{fill:var(--md-default-fg-color);} .taskTextOutsideLeft,.taskTextOutsideRight{fill:var(--md-default-fg-color)!important;} .taskText{fill:#14202e!important;}"}}%%
 gantt
     accTitle: Hosting Plan Security Matrix Fault Timeline
     accDescr: Existing page timeline with Baseline, Fault Injection Window, Distinct Emergence and Recovery sections. All original tasks and relative time values are retained; this migration does not establish run provenance or revalidate timing.
     title Hosting Plan Security Matrix Fault Timeline
     dateFormat  X
-    axisFormat  T+%Ss
+    axisFormat  T+%Mm
+    tickInterval 2minute
 
     section Baseline
-    b1 Healthy                                       :done, b1, 0, 30
+    T1 :done, b1, 0, 30
 
     section Fault Injection Window
-    f1 RBAC removal                                  :done, f1, 30, 30
-    f2 Identity removal                              :done, f2, 90, 30
-    f3 DNS break                                     :done, f3, 150, 30
-    f4 Network break                                 :done, f4, 210, 30
+    T2 :done, f1, 30, 30
+    T3 :done, f2, 90, 30
+    T4 :done, f3, 150, 30
+    T5 :done, f4, 210, 30
 
     section Distinct Emergence
-    e1 FC1 timeout                                   :crit, e1, 120, 120
-    e2 EP1/S1 cache                                  :active, e2, 120, 180
-    e3 Y1 502                                        :crit, e3, 150, 90
-    e4 EP1 pages                                     :active, e4, 180, 120
+    T6 :crit, e1, 120, 120
+    T7 :active, e2, 120, 180
+    T8 :crit, e3, 150, 90
+    T9 :active, e4, 180, 120
 
     section Recovery
-    r1 Restore                                       :done, r1, 360, 120
+    T10 :done, r1, 360, 120
 ```
 
-Task IDs link the short chart labels to the full labels below. Intervals are unchanged.
+T-keys link the short chart labels to the original task IDs and full labels below. Intervals are unchanged; axis ticks show elapsed minutes.
 
-| Task ID | Full timeline label |
-|---|---|
-| b1 | All plans healthy |
-| f1 | RBAC removal |
-| f2 | Identity removal |
-| f3 | DNS break ("FC1/EP1/S1") |
-| f4 | Network break ("FC1/EP1/S1") |
-| e1 | FC1 fast timeout behavior |
-| e2 | EP1/S1 cache-masked identity interval |
-| e3 | Y1 generic 502 behavior |
-| e4 | EP1 page differentiation visible |
-| r1 | Controls restored + validation probes |
+| Key | Task ID | Full timeline label |
+|---|---|---|
+| T1 | b1 | All plans healthy |
+| T2 | f1 | RBAC removal |
+| T3 | f2 | Identity removal |
+| T4 | f3 | DNS break ("FC1/EP1/S1") |
+| T5 | f4 | Network break ("FC1/EP1/S1") |
+| T6 | e1 | FC1 fast timeout behavior |
+| T7 | e2 | EP1/S1 cache-masked identity interval |
+| T8 | e3 | Y1 generic 502 behavior |
+| T9 | e4 | EP1 page differentiation visible |
+| T10 | r1 | Controls restored + validation probes |
 
 ### Evidence Chain: Why This Proves the Hypothesis
 
