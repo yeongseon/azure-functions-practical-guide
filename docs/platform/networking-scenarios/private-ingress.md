@@ -58,53 +58,52 @@ The Networking blade shows the baseline state before private endpoint configurat
 
 <!-- diagram-id: private-ingress-architecture -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 10, 'rankSpacing': 35, 'padding': 4}}}%%
 flowchart TD
     accTitle: Private Function app ingress and Storage egress
     accDescr: A corporate client connects through the site private endpoint to the Function app outside the customer VNet. Public ingress is disabled by configuration. Separate outbound integration reaches Blob, Queue, Table and File private endpoints; endpoint requirements depend on the hosting plan and workload.
-    subgraph corp_network["Corporate Network / VPN"]
+    subgraph corp_network["Corporate / VPN"]
         client(["Internal Client"])
     end
-    app_runtime["Function App<br/>Managed compute"]
-    storage_db[("Storage Account")]
+    app_runtime["Function App<br/>Managed<br/>compute"]
+    storage_db[("Storage<br/>Account")]
     public_client(["Internet"])
     subgraph vnet_fn["Customer VNet"]
-        subgraph subnet_pe_fn["Private Endpoint Subnet"]
-            pe_app[["Site Private Endpoint"]]
-            pe_blob[["PE: blob"]]
-            pe_queue[["PE: queue"]]
-            pe_table[["PE: table"]]
-            pe_file[["PE: file"]]
+        subgraph subnet_pe_fn["PE subnet"]
+            pe_app[["Site private<br/>endpoint"]]
+            pe_storage[["PE: blob<br/>PE: queue<br/>PE: table<br/>PE: file"]]
         end
-        subgraph subnet_int_fn["Integration Subnet"]
-            vnet_integration[["VNet integration<br/>Outbound only"]]
+        subgraph subnet_int_fn["Integration<br/>subnet"]
+            vnet_integration[["VNet<br/>integration<br/>Outbound only"]]
         end
     end
-    client -->|"[Configured] Private IP"| pe_app
-    pe_app -->|"[Configured] Private Link"| app_runtime
-    public_client -->|"[Configured] Public ingress disabled"| app_runtime
-    app_runtime -->|"[Configured] Outbound"| vnet_integration
-    vnet_integration -->|"[Configured] Private IP"| pe_blob
-    vnet_integration -->|"[Configured] Private IP"| pe_queue
-    vnet_integration -->|"[Configured] Private IP"| pe_table
-    vnet_integration -->|"[Configured] Private IP"| pe_file
-    pe_blob -->|"[Configured] Private Link"| storage_db
-    pe_queue -->|"[Configured] Private Link"| storage_db
-    pe_table -->|"[Configured] Private Link"| storage_db
-    pe_file -->|"[Configured] Private Link"| storage_db
-    %% Layout-only links tier endpoint alternatives; no connection or step added.
-    pe_blob ~~~ pe_queue
-    pe_queue ~~~ pe_table
-    pe_table ~~~ pe_file
+    client -->|"[Configured]<br/>Private IP"| pe_app
+    pe_app -->|"[Configured]<br/>Private Link"| app_runtime
+    public_client -->|"[Configured]<br/>Public ingress<br/>disabled"| app_runtime
+    app_runtime -->|"[Configured]<br/>Outbound"| vnet_integration
+    vnet_integration -->|"[Configured]<br/>Private IP<br/>Each endpoint"| pe_storage
+    pe_storage -->|"[Configured]<br/>Private Link<br/>Each endpoint"| storage_db
+    %% Layout-only link tiers public attempt above compute; no connection added.
+    pe_app ~~~ public_client
     classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
     classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e;
     classDef stateWarn fill:#fff3e0,stroke:#ba690c,stroke-width:2px,color:#5c3200;
     classDef netBox fill:transparent,stroke:#287ce4,stroke-width:2px,stroke-dasharray:6 3;
     class client,storage_db baseNeutral;
-    class app_runtime,pe_app,vnet_integration,pe_blob,pe_queue,pe_table,pe_file focusActive;
+    class app_runtime,pe_app,vnet_integration,pe_storage focusActive;
     class public_client stateWarn;
     class corp_network,vnet_fn,subnet_int_fn,subnet_pe_fn netBox;
     linkStyle default stroke-width:2px;
 ```
+
+The bundled Storage node represents four separate private endpoints:
+
+| Initiating integration | Private endpoint | Destination |
+|---|---|---|
+| VNet integration → private IP | `blob` PE → Private Link | Storage Account: Blob |
+| VNet integration → private IP | `queue` PE → Private Link | Storage Account: Queue |
+| VNet integration → private IP | `table` PE → Private Link | Storage Account: Table |
+| VNet integration → private IP | `file` PE → Private Link | Storage Account: File |
 
 **Reading key:** Arrows identify the initiating client or app. The Internet
 arrow labels a rejected request with public network access disabled, not a
