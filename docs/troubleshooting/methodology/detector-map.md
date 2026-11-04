@@ -11,7 +11,7 @@ content_sources:
     - id: detector-map
       type: graph
       source: self-generated
-      justification: Flow view of detector map, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative selection of diagnostic topics and monitoring tools informed by the cited guidance; the labels are not a guaranteed detector catalogue for every hosting plan.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
@@ -33,26 +33,57 @@ Quick reference for Azure Functions Diagnostics detectors and monitoring tools r
 <!-- diagram-id: detector-map -->
 ```mermaid
 graph TD
-    A[Troubleshooting scenario] --> B{Scenario type}
-    B --> C[Trigger or listener failure]
-    B --> D[Performance degradation]
-    B --> E[Scaling or capacity]
-    B --> F[Dependency or outbound]
-    C --> G[Function App Down]
-    C --> H[Function Execution Errors]
-    D --> I[HTTP Server Errors]
-    D --> J[Function Duration]
-    E --> K[Scale Controller Status]
-    E --> L[Instance Count]
-    F --> M[Dependency Failures]
-    F --> N[DNS and Network]
-    G --> O[Validate with logs and metrics]
+    accTitle: Scenario to diagnostic topic map
+    accDescr: Illustrative selection among trigger, performance, scaling and dependency topics, retaining eight diagnostic labels and the original validation routes. Instance Count and DNS and Network remain terminal topics; labels do not promise a fixed detector catalogue.
+    A(["Troubleshooting<br/>scenario"]) --> B{"Scenario type"}
+    B --> C("Trigger or<br/>listener failure")
+    B --> D("Performance<br/>degradation")
+    B --> E("Scaling or<br/>capacity")
+    B --> F("Dependency<br/>or outbound")
+    C --> G["T1"]
+    C --> H["T2"]
+    D --> I["T3"]
+    D --> J["T4"]
+    E --> K["T5"]
+    E --> L["T6"]
+    F --> M["T7"]
+    F --> N["T8"]
+    G --> O(["Validate:<br/>logs and metrics"])
     H --> O
     I --> O
     J --> O
     K --> O
     M --> O
+    %% Layout-only links serialize topics; they add no diagnostic steps or arrows.
+    G ~~~ H
+    H ~~~ D
+    I ~~~ J
+    J ~~~ E
+    K ~~~ L
+    L ~~~ F
+    M ~~~ N
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J,K,L,M,N,O neutral;
 ```
+
+| Topic key | Full diagnostic label |
+|---|---|
+| T1 | Function App Down |
+| T2 | Function Execution Errors |
+| T3 | HTTP Server Errors |
+| T4 | Function Duration |
+| T5 | Scale Controller Status |
+| T6 | Instance Count |
+| T7 | Dependency Failures |
+| T8 | DNS and Network |
+
+**Takeaway:** Choose a topic to investigate, then validate the candidate
+explanation with evidence. Names here are illustrative diagnostic topics and
+monitoring tools, not a guaranteed detector catalogue for every plan; use the
+[diagnostics category search](https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics)
+to find the reports available for your app. The original map leaves Instance
+Count and DNS and Network without a drawn validation arrow; that is not an
+exemption from validating their results.
 
 ## How to Access
 
