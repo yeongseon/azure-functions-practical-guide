@@ -47,18 +47,29 @@ It maps diagnostic questions to the fastest evidence source, then shows what hea
 
 <!-- diagram-id: evidence-path-overview -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 5, 'rankSpacing': 35}}}%%
 flowchart TD
-    A[Diagnostic question] --> B{What kind of symptom?}
-    B -->|Request failure or latency| C[Application Insights: requests and dependencies]
-    B -->|Startup or trigger issue| D[Application Insights: traces]
-    B -->|Restart or deployment correlation| E[Platform logs and Activity Log]
-    B -->|Queue backlog or storage issues| F[Storage metrics and queue inspection]
-    B -->|Regional concern| G[Azure Service Health]
-    C --> H[Decide first mitigation]
+    accTitle: Symptom to first evidence source
+    accDescr: Illustrative evidence lookup, not a causal classifier. Request failures or latency route to requests and dependencies; startup or trigger issues to traces; restart or deployment correlation to platform logs and Activity Log; queue backlog or storage issues to Storage metrics and queue inspection; regional concerns to Service Health. Each source leads to choosing a first mitigation. Telemetry availability depends on instrumentation and configuration.
+    A(["Diagnostic question"]) --> B{"What kind<br/>of symptom?"}
+    B -->|"Request failure<br/>or latency"| C["Application Insights:<br/>requests and dependencies"]
+    B -->|"Startup or<br/>trigger issue"| D["Application Insights:<br/>traces"]
+    B -->|"Restart or<br/>deployment correlation"| E["Platform logs<br/>and Activity Log"]
+    B -->|"Queue backlog<br/>or storage issues"| F["Storage metrics<br/>and queue inspection"]
+    B -->|"Regional<br/>concern"| G["Azure Service Health"]
+    C --> H(["Decide first mitigation"])
     D --> H
     E --> H
     F --> H
     G --> H
+    %% Layout-only links tier alternatives; they add no diagnostic steps or arrows.
+    C ~~~ D
+    D ~~~ E
+    E ~~~ F
+    F ~~~ G
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H baseNeutral;
+    linkStyle default stroke-width:2px;
 ```
 
 ## Evidence source inventory
