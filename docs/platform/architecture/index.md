@@ -223,7 +223,7 @@ flowchart TD
     accDescr: Six configuration responsibilities and five runtime data-plane responsibilities are grouped vertically. The sixth original runtime item, scale-controller decisions, is separately classified as platform-managed scaling, not ARM data access or a trigger-processing stage. Invisible anchors only position the lists.
     subgraph CP["Control plane: configure"]
         C12["Hosting plan selection<br/>App settings"]
-        C34["Identity and RBAC<br/>Networking and access restrictions"]
+        C34["Identity and RBAC<br/>Networking<br/>Access restrictions"]
         C56["Deployment and slots<br/>Scale limits"]
         %% Layout-only anchors: list placement, not execution steps or arrows.
         C12 ~~~ C34
@@ -231,15 +231,17 @@ flowchart TD
     end
     subgraph DP["Data plane: run"]
         D12["Trigger listeners<br/>Functions host execution"]
-        D34["Worker invocation<br/>Input / output binding resolution"]
+        D34["Worker invocation<br/>Input / output bindings<br/>Resolution"]
         D6["Checkpoints and leases"]
         %% Layout-only anchors: list placement, not execution steps or arrows.
         D12 ~~~ D34
         D34 ~~~ D6
     end
-    scale_controller["Platform-managed scaling<br/>Scale-controller decisions"]
-    CP -.->|"Configuration shapes runtime"| DP
-    scale_controller -.->|"Adjust runtime capacity"| DP
+    scale_controller["Platform scaling<br/>Scale-controller decisions"]
+    %% Layout-only: place platform scaling between the two category lists.
+    C56 ~~~ scale_controller
+    CP -.->|"Configuration shapes<br/>runtime"| DP
+    scale_controller -.->|"Adjust runtime<br/>capacity"| DP
     classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
     classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e;
     classDef bandMuted fill:#ffffff,stroke:#707e93,stroke-width:1.5px,stroke-dasharray:4 3,color:#14202e;
@@ -387,6 +389,11 @@ flowchart TD
     app_runtime -->|"[Configured] State / keys"| storage_db
     app_runtime -->|"[Illustrative] Data access"| dependency
     app_runtime -.->|"[Configured] Emit telemetry"| telemetry
+    %% Layout-only: tier resource associations; these add no data paths.
+    client ~~~ identity
+    identity ~~~ storage_db
+    storage_db ~~~ dependency
+    dependency ~~~ telemetry
     classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
     classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e;
     classDef bandMuted fill:#ffffff,stroke:#707e93,stroke-width:1.5px,stroke-dasharray:4 3,color:#14202e;
@@ -576,20 +583,28 @@ flowchart TD
     accDescr: Illustrative two-region Front Door pattern. HTTPS reaches either healthy regional Function App and its dependencies. Cross-region replication or event relay is application-specific, not an automatic Functions feature or a Traffic Manager proxy hop.
     client(["Caller: HTTPS client<br/>[Global users]"])
     ingress["Ingress: Azure Front Door<br/>[Health and latency]"]
-    app_runtime["Compute: Function App A<br/>[Region A]"]
-    app_runtime_b["Compute: Function App B<br/>[Region B]"]
-    storage_db[("Dependencies A<br/>[Regional data]")]
-    storage_db_b[("Dependencies B<br/>[Regional data]")]
-    relay["Replication / event relay<br/>[Application-specific]"]
+    subgraph Regions["Active-active regions"]
+        direction LR
+        subgraph RegionA["Region A"]
+            app_runtime["Function App A"]
+            storage_db["Dependencies A"]
+            app_runtime -->|"[Illustrative] Data access"| storage_db
+        end
+        subgraph RegionB["Region B"]
+            app_runtime_b["Function App B"]
+            storage_db_b["Dependencies B"]
+            app_runtime_b -->|"[Illustrative] Data access"| storage_db_b
+        end
+    end
+    relay["Replication / event relay<br/>Application-specific"]
     client -->|"[Configured] HTTPS"| ingress
     ingress -->|"[Configured] Route A"| app_runtime
     ingress -->|"[Configured] Route B"| app_runtime_b
-    app_runtime -->|"[Illustrative] Data access"| storage_db
-    app_runtime_b -->|"[Illustrative] Data access"| storage_db_b
     storage_db -->|"[Illustrative] Publish A"| relay
     storage_db_b -->|"[Illustrative] Publish B"| relay
-    relay -->|"[Illustrative] Apply to B"| storage_db_b
-    relay -->|"[Illustrative] Apply to A"| storage_db
+    %% Start arrowheads preserve relay-to-dependency direction without reversing tiers.
+    storage_db_b <---|"[Illustrative] Apply to B"| relay
+    storage_db <---|"[Illustrative] Apply to A"| relay
     classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
     classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e;
     class client,ingress,storage_db,storage_db_b,relay baseNeutral;
@@ -615,27 +630,32 @@ Core components:
 ```mermaid
 flowchart TD
     accTitle: How does Durable Functions persist and resume work?
-    accDescr: Azure Storage provider slice. The Durable extension coordinates client starts, orchestrator replay, activities and timer or external-event messages through a task hub containing queues, tables and blobs. Function roles are logical, not independent Azure services.
-    client(["Client function<br/>[Start / signal]"])
-    app_runtime["Compute: Durable runtime<br/>[Host extension]"]
-    orchestrator["Orchestrator function<br/>[Deterministic replay]"]
-    activity["Activity functions A / B<br/>[Unit operations]"]
-    storage_db[("Task hub: Azure Storage<br/>[Queues / Tables / Blobs]")]
-    wait_event["Timer / external event<br/>[Resume message]"]
-    client -->|"[Configured] Start / signal"| app_runtime
-    app_runtime -->|"[Configured] Invoke / replay"| orchestrator
-    app_runtime -->|"[Configured] Execute work"| activity
-    app_runtime -->|"[Configured] History / messages"| storage_db
-    orchestrator -.->|"[Illustrative] Schedule / wait"| wait_event
-    wait_event -->|"[Configured] Enqueue message"| storage_db
+    accDescr: Generic HTTP, queue or event client starts or signals orchestration through Durable APIs. Orchestrator code schedules activities and timers through the runtime and waits for external events. For the Azure Storage provider the runtime persists messages/history and polls the task hub, then resumes orchestration; a waiting object never sends its own signal.
+    client(["Client function<br/>HTTP / Queue / Event"])
+    app_runtime["Durable runtime<br/>Host extension / client APIs"]
+    orchestrator["Orchestrator function<br/>Deterministic workflow<br/>Timer / external-event wait"]
+    activity["Activity functions A / B<br/>Unit operations"]
+    storage_db[("Azure Storage task hub<br/>Queues / Tables / Blobs")]
+    client -->|"[Configured]<br/>Start / raise event"| app_runtime
+    app_runtime -->|"[Configured]<br/>Invoke / resume"| orchestrator
+    app_runtime <---|"[Configured]<br/>Schedule activities"| orchestrator
+    app_runtime <-.-|"[Configured]<br/>Schedule timer / wait"| orchestrator
+    app_runtime -->|"[Configured]<br/>Execute activities"| activity
+    app_runtime <---|"[Illustrative]<br/>Result / failure"| activity
+    app_runtime -->|"[Configured]<br/>Persist history / messages<br/>Timer due / client signal"| storage_db
+    app_runtime -->|"[Configured]<br/>Poll / read<br/>messages and history"| storage_db
+    app_runtime <---|"[Configured]<br/>Messages / history"| storage_db
+    %% Layout-only anchors add no workflow steps or transport relationships.
+    orchestrator ~~~ activity
+    activity ~~~ storage_db
     classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
     classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e;
-    class client,orchestrator,activity,storage_db,wait_event baseNeutral;
+    class client,orchestrator,activity,storage_db baseNeutral;
     class app_runtime focusActive;
     linkStyle default stroke-width:2px;
 ```
 
-**Takeaway:** The Durable runtime persists history and messages, then replays the orchestrator when work completes or a timer/event arrives; activities do not independently own orchestration checkpoints. This is the Azure Storage provider, not a claim that every Durable provider uses queues, tables and blobs.
+**Takeaway:** Orchestrator code requests activity work and timers through the runtime, and waits for external events raised by clients. The framework schedules timer messages with future visibility; client raise-event operations enqueue signals, not the waiting task. The runtime polls task-hub messages and reads history, records outcomes, and resumes the orchestrator; the storage-to-runtime arrow is a response, not a Storage-initiated push. The runtime resumes the orchestrator from recorded history, normally by replay; supported caching can avoid a full replay. Activities do not independently own orchestration checkpoints. Queues, tables and blobs here describe the Azure Storage provider, not every Durable provider.
 
 Architecture considerations:
 
