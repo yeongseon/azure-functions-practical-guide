@@ -126,8 +126,7 @@ flowchart TD
 | A / Q | Functions unavailable or triggers not firing / restart and verify startup logs. |
 | C | Check required app settings baseline. |
 | E | Validate worker runtime and `FUNCTIONS_EXTENSION_VERSION` (Functions runtime version). |
-| G | Validate connection setting name and value. |
-| H | Key Vault references present? |
+| G / H | Validate connection setting name and value / Key Vault references present? |
 | I | Is the host-storage connection valid for the hosting plan, using either `AzureWebJobsStorage` or an identity-based configuration such as `AzureWebJobsStorage__accountName` or service-specific URIs? |
 | J / K | Fix storage connection or identity setup / check content share settings. |
 | L / M | Set `FUNCTIONS_WORKER_RUNTIME` correctly / set `FUNCTIONS_EXTENSION_VERSION` to `~4` for a compatible v4 app. |
