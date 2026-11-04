@@ -36,10 +36,10 @@
 | [베스트 프랙티스](https://yeongseon.dev/azure-functions-python/practical-guide/best-practices/) | 호스팅 선택, 트리거, 스케일링, 안정성, 보안, 배포 | 포괄적임 |
 | [언어별 가이드](https://yeongseon.dev/azure-functions-python/practical-guide/language-guides/) | Python, Node.js, Java 및 .NET을 위한 단계별 튜토리얼 | 포괄적임 |
 | [운영](https://yeongseon.dev/azure-functions-python/practical-guide/operations/) | 배포, 모니터링, 알림, 비용 최적화, 복구 | 포괄적임 |
-| [트러블슈팅](https://yeongseon.dev/azure-functions-python/practical-guide/troubleshooting/) | 플레이북, KQL 쿼리, 방법론 및 실습 랩 | 랩 검증됨 |
+| [트러블슈팅](https://yeongseon.dev/azure-functions-python/practical-guide/troubleshooting/) | 플레이북, KQL 쿼리, 방법론 및 실습 랩 | 과거 랩 기록 포함 |
 | [참조](https://yeongseon.dev/azure-functions-python/practical-guide/reference/) | CLI 치트시트, host.json, 플랫폼 제한 사항 | 포괄적임 |
 
-**상태 범례**: **랩 검증됨** = 포괄적임 + 재현 가능한 실습 랩을 통한 가이드 입증 · **포괄적임** = 전체 섹션 완료, MSLearn 검증됨, 운영 환경 준비 완료 · **게시됨** = 핵심 콘텐츠 준비됨, 계속 확장 중 · **진행 중** = 콘텐츠 일부 작성됨, 활발히 개발 중 · **계획됨** = 자리 표시자, 콘텐츠 아직 시작되지 않음
+**상태 범례**: **과거 랩 기록 포함** = 보고된 과거 랩 관찰 기록을 포함한 포괄적인 가이드 (증거 신뢰도는 미검증; [검증 증거 감사](https://yeongseon.dev/azure-functions-python/practical-guide/reference/validation-evidence-audit/) 참조) · **포괄적임** = 전체 섹션 완료, MSLearn 검증됨, 운영 환경 준비 완료 · **게시됨** = 핵심 콘텐츠 준비됨, 계속 확장 중 · **진행 중** = 콘텐츠 일부 작성됨, 활발히 개발 중 · **계획됨** = 자리 표시자, 콘텐츠 아직 시작되지 않음
 
 ## 호스팅 범위
 

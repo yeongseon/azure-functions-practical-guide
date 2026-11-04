@@ -36,10 +36,10 @@
 | [最佳实践](https://yeongseon.dev/azure-functions-python/practical-guide/best-practices/) | 托管选择、触发器、扩展、可靠性、安全、部署 | 全面 |
 | [语言指南](https://yeongseon.dev/azure-functions-python/practical-guide/language-guides/) | Python、Node.js、Java 和 .NET 的分步教程 | 全面 |
 | [运营](https://yeongseon.dev/azure-functions-python/practical-guide/operations/) | 部署、监控、告警、成本优化、恢复 | 全面 |
-| [故障排除](https://yeongseon.dev/azure-functions-python/practical-guide/troubleshooting/) | 实战手册、KQL 查询、方法论和动手实验 | 实验已验证 |
+| [故障排除](https://yeongseon.dev/azure-functions-python/practical-guide/troubleshooting/) | 实战手册、KQL 查询、方法论和动手实验 | 包含历史实验记录 |
 | [参考](https://yeongseon.dev/azure-functions-python/practical-guide/reference/) | CLI 速查表、host.json、平台限制 | 全面 |
 
-**状态图例**：**实验已验证** = 全面 + 可重现的实验证明了指南的可行性 · **全面** = 完整章节，经过 MSLearn 验证，生产就绪 · **已发布** = 核心内容已就绪，仍持续扩展中 · **进行中** = 部分内容已完成，处于活跃开发中 · **已计划** = 占位符，内容尚未开始
+**状态图例**：**包含历史实验记录** = 附有已报告的历史实验观察记录的全面指南（证据可信度未经验证；参见[验证证据审计](https://yeongseon.dev/azure-functions-python/practical-guide/reference/validation-evidence-audit/)） · **全面** = 完整章节，经过 MSLearn 验证，生产就绪 · **已发布** = 核心内容已就绪，仍持续扩展中 · **进行中** = 部分内容已完成，处于活跃开发中 · **已计划** = 占位符，内容尚未开始
 
 ## 托管范围
 
