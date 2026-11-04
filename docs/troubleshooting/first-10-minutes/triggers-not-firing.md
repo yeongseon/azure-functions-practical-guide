@@ -80,7 +80,7 @@ EH_NAMESPACE="evh-myapp-prod"
 ```mermaid
 flowchart TD
     accTitle: Trigger not firing first-response decisions
-    accDescr: Illustrative triage starts with platform or regional incidents and function enablement. Disabled leads to re-enabling the function or app setting; enabled leads to listener startup traces. An unhealthy listener leads to auth or configuration startup checks; a healthy listener leads to source activity and publisher checks. These are suggested checks, not confirmed causes.
+    accDescr: Illustrative triage starts with platform or regional incidents and function enablement. Disabled leads to re-enabling the function by setting AzureWebJobs.<FUNCTION_NAME>.Disabled to false; enabled leads to listener startup traces. An unhealthy listener leads to auth or configuration startup checks; a healthy listener leads to source activity and publisher checks. These are suggested checks, not confirmed causes.
     A(["Trigger not firing"]) --> B["Check platform/regional<br/>incidents"]
     B --> C["Check function<br/>enabled state"]
     C --> D{Enabled?}

@@ -74,7 +74,7 @@ Use this classification first to narrow where to collect evidence.
 ```mermaid
 flowchart TD
     accTitle: Troubleshooting symptom routing decisions
-    accDescr: Illustrative routing, not a root-cause verdict. For 5xx, constant errors lead to host startup and recent deployment checks; intermittent errors lead to deployment comparison or dependency correlation, then dependency health and outbound networking or concurrency, memory and cold start. Other symptoms lead to listener and connection checks for triggers not firing, dependency, scaling and storage checks for performance degradation, or the evidence map.
+    accDescr: Illustrative routing, not a root-cause verdict. For 5xx, constant errors lead to host startup and recent deployment checks; intermittent errors lead to the recent-deployment check: Yes ends at comparing before/after metrics and considering rollback, while No leads to the dependency-correlation check, whose Yes branch ends at dependency health and outbound networking checks and whose No branch ends at concurrency, memory and cold-start checks. Other symptoms lead to listener and connection checks for triggers not firing, dependency, scaling and storage checks for performance degradation, or the evidence map.
     A(["Issue detected"]) --> B{Is it a 5xx issue?}
     B -->|Yes| C{"Intermittent<br/>or constant?"}
     C -->|Constant| D(["Check host startup<br/>+ recent deploy"])
