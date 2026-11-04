@@ -22,6 +22,10 @@ and maintainer-led review/merge. Preserve its post-save issue field checks.
 Do not duplicate rules in tool-specific files or automatically install/invoke
 agent plugins, hooks, or frameworks.
 
+Use [Trackers and Executable Issues](CONTRIBUTING.md#trackers-and-executable-issues)
+for assignment/splitting and the adjacent new-issue checklist; keep that policy
+in CONTRIBUTING.md, not tool-specific copies.
+
 ## Content Contract: Read Before Editing
 
 [Documentation Content Contract](docs/contributing/content-contract.md) is the
