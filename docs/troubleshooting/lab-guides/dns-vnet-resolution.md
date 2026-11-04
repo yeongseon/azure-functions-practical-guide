@@ -17,8 +17,11 @@ content_sources:
     - id: 1-1-private-endpoint-dns-architecture
       type: flowchart
       source: self-generated
-      justification: Flow view of private endpoint dns architecture, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative FC1 lab decision model for linked-zone DNS and storage access; successful authorization and public-path denial are scenario assumptions, not universal DNS outcomes.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints
+        - https://learn.microsoft.com/en-us/azure/storage/common/storage-network-security
+        - https://learn.microsoft.com/en-us/azure/storage/common/shared-key-authorization-prevent
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-dns
         - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
@@ -28,8 +31,9 @@ content_sources:
     - id: 1-4-failure-progression-model
       type: sequenceDiagram
       source: self-generated
-      justification: Interaction sequence for failure progression model, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative FC1 logical exchange contrasting linked and unlinked Blob DNS visibility; not a resolver protocol trace or new lab execution.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-dns
         - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
@@ -39,8 +43,10 @@ content_sources:
     - id: 2-2-causal-chain
       type: flowchart
       source: self-generated
-      justification: Flow view of causal chain, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative incident and recovery chains for this FC1 lab with public-path network denial and unchanged other-service DNS; not a new causality verdict.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/storage/common/storage-network-security
+        - https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-dns
         - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
@@ -50,7 +56,7 @@ content_sources:
     - id: 3-7-triage-decision-flow
       type: flowchart
       source: self-generated
-      justification: Triage decision flow, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Diagnostic synthesis routing the lab symptom to DNS, network and authorization checks; branches suggest investigation rather than establish a root cause.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-dns
@@ -61,7 +67,7 @@ content_sources:
     - id: evidence-timeline
       type: gantt
       source: self-generated
-      justification: Evidence timeline, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Visualization of the existing FC1 experiment log with its original task times and durations; Learn supports the mechanism, not the historical execution or evidence trust.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-dns
@@ -120,23 +126,30 @@ Azure Functions on Flex Consumption with VNet integration and private endpoints 
 
 ### 1.1 Private endpoint DNS architecture
 
-When `allowSharedKeyAccess: false` is set on the storage account (common in FC1 identity-based deployments), the managed identity token works over the private endpoint path but fails when traffic routes to the public endpoint — because the storage account's network rules block public access.
+This FC1 lab model assumes working managed-identity permissions, a reachable private endpoint and storage network rules that deny the public path. `allowSharedKeyAccess: false` disables Shared Key authorization; it does not make a managed-identity token valid only over a private endpoint. Private endpoints use the same authorization mechanisms as public endpoints ([Storage private endpoints](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints), [network rules](https://learn.microsoft.com/en-us/azure/storage/common/storage-network-security), [Shared Key control](https://learn.microsoft.com/en-us/azure/storage/common/shared-key-authorization-prevent)).
 
 <!-- diagram-id: 1-1-private-endpoint-dns-architecture -->
 ```mermaid
 flowchart TD
-    A[Function host starts] --> B[Resolve storage FQDN]
-    B --> C[DNS resolver checks linked Private DNS zone]
-    C --> D{VNet link present?}
-    D -->|Yes| E[Resolve to private IP via PE]
-    E --> F[Storage call via private endpoint]
-    F --> G[Auth succeeds with MI token]
-
-    D -->|No| H[Resolve to public IP]
-    H --> I[Storage call via public endpoint]
-    I --> J[Auth fails: AuthorizationFailure]
-    J --> K[502 error returned]
+    accTitle: FC1 lab private endpoint DNS decision
+    accDescr: Illustrative lab model. A linked zone selects the private path with configured managed-identity access; without the link, public resolution leads to the denied public path and a probe 502. These outcomes assume this lab's DNS and access configuration.
+    A(["Function host<br/>starts"]) --> B["Resolve storage<br/>FQDN"]
+    B --> C["Resolver checks linked<br/>Private DNS zone"]
+    C --> D{"VNet link<br/>present?"}
+    D -->|Yes| E["Resolve private IP<br/>via PE"]
+    E --> F["Storage call via<br/>private endpoint"]
+    F --> G(["MI-authorized call<br/>succeeds"])
+    D -->|No| H["Resolve to<br/>public IP"]
+    H --> I["Storage call via<br/>public endpoint"]
+    I --> J["Public path denied:<br/>AuthorizationFailure"]
+    J --> K(["502 error<br/>returned"])
+    %% Layout-only link tiers alternatives; adds no diagnostic step or arrow.
+    G ~~~ H
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J,K neutral;
 ```
+
+**Takeaway:** Follow the Yes/No alternatives, not physical network hops; DNS selects the path, while network access and authorization remain separate checks.
 
 ### 1.2 Why individual service DNS links matter
 
@@ -163,29 +176,47 @@ Flex Consumption scales quickly and can instantiate new workers frequently. Each
 
 <!-- diagram-id: 1-4-failure-progression-model -->
 ```mermaid
+%%{init: {"sequence":{"width":40,"actorMargin":10,"diagramMarginX":5,"wrap":true}}}%%
 sequenceDiagram
-    participant App as Function App (FC1)
-    participant DNS as DNS Resolver
-    participant BlobZone as privatelink.blob DNS Zone
-    participant PE as Blob Private Endpoint (10.0.2.7)
-    participant Public as Blob Public Endpoint
+    accTitle: FC1 lab DNS and storage failure progression
+    accDescr: Illustrative logical sequence with five separate roles and baseline then incident exchanges. The crossed zone exchange denotes loss of zone visibility, not a response from an unreachable zone. Historical addresses and response codes are retained in the adjacent key and signal map, not revalidated here.
+    participant App as FC1
+    participant DNS as DNS
+    participant BlobZone as Zone
+    participant PE as PE
+    participant Public as Public
 
-    Note over BlobZone: VNet link present
-    App->>DNS: Resolve labdnsfc1storage.blob.core.windows.net
-    DNS->>BlobZone: Query A record
-    BlobZone-->>DNS: 10.0.2.7
-    DNS-->>App: Private IP returned
-    App->>PE: Storage call via PE
-    PE-->>App: 200 OK
+    Note over BlobZone: VNet link<br/>present
+    App->>DNS: M1
+    DNS->>BlobZone: M2
+    BlobZone-->>DNS: M3
+    DNS-->>App: M4
+    App->>PE: M5
+    PE-->>App: M6
 
-    Note over BlobZone: VNet link REMOVED
-    App->>DNS: Resolve labdnsfc1storage.blob.core.windows.net
-    DNS->>BlobZone: Query A record
-    BlobZone--xDNS: No VNet link — zone not visible
-    DNS-->>App: Public IP 20.150.4.36
-    App->>Public: Storage call via public endpoint
-    Public-->>App: 403 AuthorizationFailure
+    Note over BlobZone: VNet link<br/>REMOVED
+    App->>DNS: M7
+    DNS->>BlobZone: M8
+    BlobZone--xDNS: M9
+    DNS-->>App: M10
+    App->>Public: M11
+    Public-->>App: M12
 ```
+
+**Reading key:** FC1 = Function App (FC1); DNS = DNS Resolver; Zone = `privatelink.blob` DNS Zone; PE = Blob Private Endpoint (`10.0.2.7`); Public = Blob Public Endpoint. These are logical roles, not subnet containment. Read the baseline exchanges first, then the link-removed exchanges.
+
+| Message | Full exchange label |
+|---|---|
+| M1, M7 | Resolve `labdnsfc1storage.blob.core.windows.net` |
+| M2, M8 | Query A record |
+| M3 | `10.0.2.7` |
+| M4 | Private IP returned |
+| M5 | Storage call via PE |
+| M6 | 200 OK |
+| M9 | No VNet link — zone not visible (logical visibility failure) |
+| M10 | Public IP (historical address in the signal map below) |
+| M11 | Storage call via public endpoint |
+| M12 | 403 AuthorizationFailure |
 
 ### 1.5 Signal map: normal vs incident
 
@@ -210,17 +241,24 @@ sequenceDiagram
 <!-- diagram-id: 2-2-causal-chain -->
 ```mermaid
 flowchart TD
-    A[Blob DNS VNet link removed] --> B[Blob FQDN resolves to public IP]
-    B --> C[Storage call routes to public endpoint]
-    C --> D[MI token rejected: AuthorizationFailure]
-    D --> E[Storage probe returns 502]
-    E --> F["Queue/table/file unaffected — private IPs intact"]
-
-    G[Blob DNS VNet link restored] --> H[Blob FQDN resolves to private IP]
-    H --> I[Storage call routes via PE]
-    I --> J[MI token accepted]
-    J --> K[Storage probe returns 200]
+    accTitle: FC1 lab incident and recovery chains
+    accDescr: Illustrative lab chains retain link removal, public resolution, denied public storage access, probe 502 and unchanged queue, table and file DNS; link restoration leads to private resolution and the successful managed-identity call. Recovery is a separate chain, not caused by the unaffected-service check.
+    A["Blob DNS VNet<br/>link removed"] --> B["Blob FQDN resolves<br/>to public IP"]
+    B --> C["Storage call via<br/>public endpoint"]
+    C --> D["Public path denied:<br/>AuthorizationFailure"]
+    D --> E["Storage probe<br/>returns 502"]
+    E --> F["Queue/table/file unaffected:<br/>private IPs intact"]
+    G["Blob DNS VNet<br/>link restored"] --> H["Blob FQDN resolves<br/>to private IP"]
+    H --> I["Storage call<br/>via PE"]
+    I --> J["MI token<br/>accepted"]
+    J --> K["Storage probe<br/>returns 200"]
+    %% Layout-only link separates chains vertically; no causal step or arrow.
+    F ~~~ G
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J,K neutral;
 ```
+
+**Takeaway:** Compare the incident and recovery chains under the section 1.1 scenario assumptions; the unaffected-service box is a comparison check, not an effect of the 502 response. The historical hypothesis verdict below is unchanged.
 
 ### 2.3 Proof criteria
 
@@ -585,16 +623,26 @@ HTTP Status: 502
 <!-- diagram-id: 3-7-triage-decision-flow -->
 ```mermaid
 flowchart TD
-    A[Storage probe returns 502 AuthorizationFailure] --> B{DNS resolves to private IP?}
-    B -->|Yes| C[Investigate RBAC, storage networking rules, MI config]
+    accTitle: Storage probe DNS triage decisions
+    accDescr: Diagnostic checks, not confirmed causes. A private DNS answer routes to RBAC, storage networking and managed identity checks; public resolution routes by affected-service scope and zone-link presence, retaining every Yes/No outcome and both recovery checks.
+    A(["Storage probe: 502<br/>AuthorizationFailure"]) --> B{"DNS resolves to<br/>private IP?"}
+    B -->|Yes| C["Investigate RBAC,<br/>storage networking rules,<br/>MI config"]
     B -->|No - resolves to public IP| D{All storage services affected?}
-    D -->|Yes| E[Check VNet integration, NSG, route table]
-    D -->|No - only one service| F{Private DNS zone VNet link present?}
-    F -->|No| G[Restore VNet link for affected service]
-    F -->|Yes| H[Check DNS zone A record, PE NIC IP]
-    G --> I[Verify DNS resolves to private IP]
-    I --> J[Verify storage probe succeeds]
+    D -->|Yes| E["Check VNet integration,<br/>NSG, route table"]
+    D -->|No - only one service| F{"Private DNS zone<br/>VNet link present?"}
+    F -->|No| G["Restore VNet link<br/>for affected service"]
+    F -->|Yes| H["Check DNS zone<br/>A record, PE NIC IP"]
+    G --> I["Verify DNS resolves<br/>to private IP"]
+    I --> J(["Verify storage<br/>probe succeeds"])
+    %% Layout-only links serialize checks; add no diagnostic steps or arrows.
+    C ~~~ D
+    E ~~~ F
+    H ~~~ G
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J neutral;
 ```
+
+**Takeaway:** Diamonds select the next investigation; validate candidate causes against the competing hypotheses and disproof criteria, then verify both private resolution and storage recovery.
 
 ### 3.8 Recover from the induced failure
 
@@ -841,22 +889,38 @@ Final verdict: **Hypothesis supported**.
 
 <!-- diagram-id: evidence-timeline -->
 ```mermaid
+%%{init: {"gantt":{"fontSize":16,"sectionFontSize":16,"leftPadding":95,"rightPadding":35,"barHeight":24,"barGap":10},"theme":"base","themeVariables":{"doneTaskBkgColor":"#e2e8f0","critBkgColor":"#fed7aa","taskBkgColor":"#e2e8f0"},"themeCSS":".grid .tick text{font-size:16px;fill:var(--md-default-fg-color);} .section{opacity:0;} .titleText{font-size:14px;fill:var(--md-default-fg-color);} .sectionTitle{fill:var(--md-default-fg-color);} .taskTextOutsideLeft,.taskTextOutsideRight{fill:var(--md-default-fg-color)!important;} .taskText{fill:#14202e!important;}"}}%%
 gantt
+    accTitle: FC1 lab DNS failure evidence timeline
+    accDescr: Original reported Baseline, Trigger, Incident and Recovery phases with seven unchanged tasks and timestamps. T1 through T7 expand in the adjacent key. This visualization does not recertify the historical lab run.
     title DNS / VNet Resolution Failure Timeline (FC1 Lab)
     dateFormat  HH:mm
     axisFormat  %H:%M
+    tickInterval 10minute
     section Baseline
-    Baseline capture (all endpoints private)    :done, b1, 09:25, 2m
+    T1 :done, b1, 09:25, 2m
     section Trigger
-    Remove blob DNS VNet link                   :crit, t1, 09:27, 1m
+    T2 :crit, t1, 09:27, 1m
     section Incident
-    Blob resolves to public IP + storage 502    :crit, i1, 09:28, 2m
-    Confirm restart does not fix                :crit, i2, 09:29, 1m
+    T3 :crit, i1, 09:28, 2m
+    T4 :crit, i2, 09:29, 1m
     section Recovery
-    Restore blob DNS VNet link                  :done, r1, 09:36, 2m
-    App restart + DNS propagation               :done, r2, 09:37, 1m
-    Verify recovery (private IP + storage 200)  :done, r3, 09:38, 2m
+    T5 :done, r1, 09:36, 2m
+    T6 :done, r2, 09:37, 1m
+    T7 :done, r3, 09:38, 2m
 ```
+
+| Key | Original task label (unchanged meaning) |
+|---|---|
+| T1 | Baseline capture (all endpoints private) |
+| T2 | Remove blob DNS VNet link |
+| T3 | Blob resolves to public IP + storage 502 |
+| T4 | Confirm restart does not fix |
+| T5 | Restore blob DNS VNet link |
+| T6 | App restart + DNS propagation |
+| T7 | Verify recovery (private IP + storage 200) |
+
+**Takeaway:** Read the original phase order and approximate bars alongside the experiment log's more precise timestamps; the task key preserves the full labels.
 
 ### Evidence Chain: Why This Proves the Hypothesis
 
@@ -905,6 +969,10 @@ az group delete \
 - [Evidence Map](../evidence-map.md)
 
 ## Sources
+
+- [Storage private endpoints and authorization](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints)
+- [Storage public-endpoint network rules](https://learn.microsoft.com/en-us/azure/storage/common/storage-network-security)
+- [Prevent Shared Key authorization](https://learn.microsoft.com/en-us/azure/storage/common/shared-key-authorization-prevent)
 
 - [Publish current project files with Core Tools](https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local#publish-to-azure)
 
