@@ -52,6 +52,21 @@ For this inventory only, share `scripts/diagram_inventory.py` and `diagram-manif
 
 The scanner is a scanning, consistency-validation, and reporting tool that never renders, converts, or verifies source provenance. `--write` writes the manifest and generated inventory-page blocks; `--check` validates consistency, not provenance. `--verify-tree` compares extracted records with the baseline, not extraction completeness; `--check` reports `unrecognized_mermaid_fences`.
 
+On pull requests and pushes to `main`, without path restrictions, CI also runs
+`python scripts/check_diagram_inventory_tree.py` after `--check`, reusing the
+unchanged shared scanner. It blocks added/removed/moved keys,
+assignment/type/genre reclassification, provenance and asset/visual drift,
+duplicate page/source IDs, and missing or stale generated inventory blocks.
+Fence and source-entry IDs use ASCII letters, digits, dots, underscores or
+hyphens, starting with a letter or digit, including source entries without a
+matching fence; valid unmatched entries are not themselves blocked after
+regeneration. Reuse across pages is valid. Only the existing repository-only
+`labs/code-storage-verification/README.md#~1` missing ID is retained as debt.
+Body hashes and source locations alone remain advisory (`--verify-tree` reports
+them); CI does not establish semantic correctness, rendering, source verification
+or completed migration. Use `--write` for structural updates, not for every label
+edit. Existing source, PII, screenshot, evidence and strict-build checks still apply.
+
 Every entry retains a traceable source key, location, source-body hash, owning batch or explicit exclusion, and a provisional target record. `target.base` remains null and extensions/overlays empty until the prototype establishes meaningful names; this is deferred design, not an unmapped owner. Migration remains `not-started`. The [hosting/trigger plan](diagram-inventory.md#functions-specific-hosting-and-trigger-plan) derives candidate variants from paths without adding scanner fields.
 
 ## Over-Engineering Assessment
