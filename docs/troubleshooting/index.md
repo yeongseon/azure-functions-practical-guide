@@ -73,20 +73,33 @@ Use this classification first to narrow where to collect evidence.
 <!-- diagram-id: decision-tree -->
 ```mermaid
 flowchart TD
-    A[Issue detected] --> B{Is it a 5xx issue?}
-    B -->|Yes| C{Intermittent or constant?}
-    C -->|Constant| D[Check host startup + recent deploy]
+    accTitle: Troubleshooting symptom routing decisions
+    accDescr: Illustrative routing, not a root-cause verdict. For 5xx, constant errors lead to host startup and recent deployment checks; intermittent errors lead to deployment comparison or dependency correlation, then dependency health and outbound networking or concurrency, memory and cold start. Other symptoms lead to listener and connection checks for triggers not firing, dependency, scaling and storage checks for performance degradation, or the evidence map.
+    A(["Issue detected"]) --> B{Is it a 5xx issue?}
+    B -->|Yes| C{"Intermittent<br/>or constant?"}
+    C -->|Constant| D(["Check host startup<br/>+ recent deploy"])
     C -->|Intermittent| E{Recent deployment?}
-    E -->|Yes| F["Compare before/after metrics, consider rollback"]
+    E -->|Yes| F(["Compare before/after metrics,<br/>consider rollback"])
     E -->|No| G{Dependency-correlated?}
-    G -->|Yes| H[Check dependency health + outbound networking]
-    G -->|No| I[Check concurrency + memory + cold start]
+    G -->|Yes| H(["Check dependency health<br/>+ outbound networking"])
+    G -->|No| I(["Check concurrency + memory<br/>+ cold start"])
     B -->|No| J{Trigger not firing?}
-    J -->|Yes| K[Check listener status + connection config]
+    J -->|Yes| K(["Check listener status<br/>+ connection config"])
     J -->|No| L{Performance degradation?}
-    L -->|Yes| M[Check dependencies + scaling + storage]
-    L -->|No| N[Review evidence-map for matching symptoms]
+    L -->|Yes| M(["Check dependencies<br/>+ scaling + storage"])
+    L -->|No| N(["Review evidence-map<br/>for matching symptoms"])
+    %% Layout-only links tier the branches; they add no diagnostic steps or arrows.
+    D ~~~ E
+    F ~~~ G
+    H ~~~ I
+    I ~~~ J
+    K ~~~ L
+    M ~~~ N
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J,K,L,M,N neutral;
 ```
+
+**Reading key:** Diamonds route symptoms to investigation endpoints, not confirmed causes. Constant/Intermittent and Yes/No retain their original routes; use the linked playbooks and evidence map to test hypotheses.
 
 ## Representative log patterns (quick reference)
 
