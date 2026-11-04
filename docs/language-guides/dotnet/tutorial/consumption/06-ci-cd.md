@@ -51,7 +51,7 @@ You will configure a GitHub Actions pipeline that builds and deploys a .NET isol
 ```mermaid
 flowchart TD
     accTitle: CI/CD stage order for the .NET isolated Consumption tutorial
-    accDescr: A push to main starts GitHub Actions, followed by dotnet build and publish, the Functions deployment action and a smoke test. This summarizes the tutorial's intended code-deployment workflow for Consumption, not authentication prerequisites, OS-specific deployment mechanics or evidence of a successful release.
+    accDescr: A push to main that changes files matching apps/dotnet/** starts GitHub Actions, followed by dotnet build and publish, the Functions deployment action and a smoke test. This summarizes the tutorial's intended code-deployment workflow for Consumption, not authentication prerequisites, OS-specific deployment mechanics or evidence of a successful release.
     A[Push to main] --> B[GitHub Actions]
     B --> C[dotnet build + publish]
     C --> D[azure/functions-action]
