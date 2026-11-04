@@ -31,7 +31,7 @@ content_sources:
     - id: failure-progression-model-for-this-incident
       type: flowchart
       source: self-generated
-      justification: Flow view of failure progression model for this incident, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Summary of the historical Y1 burst reported on this page; Learn supports queue-trigger and scaling concepts, not the recorded timings or a new Azure validation.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
@@ -41,7 +41,7 @@ content_sources:
     - id: timeline-view
       type: gantt
       source: self-generated
-      justification: Timeline view, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Timeline of the historical burst reported on this page, not a platform timing guarantee or new execution evidence.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
@@ -51,7 +51,7 @@ content_sources:
     - id: hypothesis-decision-flow
       type: flowchart
       source: self-generated
-      justification: Hypothesis decision flow, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Historical lab diagnostic routing, not an exhaustive classifier; Learn supports queue retry and scaling concepts, not proof of the historical causal verdict.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
@@ -61,7 +61,7 @@ content_sources:
     - id: evidence-timeline
       type: sequenceDiagram
       source: self-generated
-      justification: Interaction sequence for evidence timeline, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Experiment-log summary of the historical Y1 burst and reported telemetry, not an internal host-worker protocol or new execution evidence.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
@@ -71,7 +71,7 @@ content_sources:
     - id: evidence-timeline-2
       type: sequenceDiagram
       source: self-generated
-      justification: Interaction sequence for evidence timeline 2, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Expected-evidence summary of the historical Y1 burst and reported telemetry, not an internal host-worker protocol or new execution evidence.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
@@ -159,12 +159,16 @@ These values are emitted in the `message` column of `traces` and must be parsed 
 <!-- diagram-id: failure-progression-model-for-this-incident -->
 ```mermaid
 flowchart TD
-    A[Burst injection starts\n08:23:09 UTC] --> B[2000 messages injected\nends 08:23:31 UTC]
-    B --> C[Single Y1 instance processes queue]
-    C --> D[Per-minute throughput ramps up\n25 -> 518]
+    accTitle: Historical Y1 queue burst progression
+    accDescr: Summary of the reported burst, from injection through single-instance processing and rising message age to drain completion; not a new lab run.
+    A["Burst injection starts<br/>08:23:09 UTC"] --> B["2000 messages injected<br/>ends 08:23:31 UTC"]
+    B --> C["Single Y1 instance<br/>processes queue"]
+    C --> D["Per-minute throughput<br/>ramps up: 25 → 518"]
     D --> E[Backlog age increases over time]
-    E --> F[Drain completes ~08:30:29 UTC]
+    E --> F["Drain completes<br/>~08:30:29 UTC"]
     F --> G[No retry and no poison]
+    classDef neutral fill:#f2f4f8,stroke:#707e93,color:#14202e;
+    class A,B,C,D,E,F,G neutral;
 ```
 
 ### Why this scenario matters
@@ -179,16 +183,28 @@ flowchart TD
 <!-- diagram-id: timeline-view -->
 ```mermaid
 gantt
-    title Queue Backlog Burst and Drain (UTC, 2026-04-07)
+    %%{init: {'gantt': {'useWidth': 470, 'leftPadding': 100, 'rightPadding': 15, 'fontSize': 16, 'sectionFontSize': 16}}}%%
+    accTitle: Queue Backlog Burst and Drain (UTC, 2026-04-07)
+    accDescr: Historical injection, drain and completion sections retain their reported start times and durations; the adjacent key gives exact seconds. This is not a new run.
+    title Queue burst and drain
     dateFormat  HH:mm:ss
-    axisFormat  %H:%M:%S
+    axisFormat  %H:%M
+    tickInterval 2minute
     section Injection
-    Producer sends 2000 messages   :done, inj, 08:23:09, 22s
+    I: 2000 messages              :done, inj, 08:23:09, 22s
     section Drain
-    Single-instance drain phase    :done, drn, 08:23:09, 7m20s
+    D: Single instance            :done, drn, 08:23:09, 7m20s
     section Completion
-    Queue reaches fully drained    :done, fin, 08:30:29, 1s
+    C: Fully drained              :done, fin, 08:30:29, 1s
 ```
+
+**Timeline key — Queue Backlog Burst and Drain (UTC, 2026-04-07):**
+
+| Key | Historical task | Start (UTC) | Duration |
+|---|---|---|---|
+| I | Producer sends 2000 messages | 08:23:09 | 22s |
+| D | Single-instance drain phase | 08:23:09 | 7m20s |
+| C | Queue reaches fully drained | 08:30:29 | 1s |
 
 ## 2) Hypothesis
 
@@ -219,13 +235,21 @@ If a high-burst queue workload is injected into Y1 Consumption with steady 5-sec
 <!-- diagram-id: hypothesis-decision-flow -->
 ```mermaid
 flowchart TD
-    A[Backlog observed] --> B{Any retries or poison?}
-    B -->|No, dequeueCount=1| C{"Any dependency calls/failures?"}
-    B -->|Yes| X[Investigate poison loop path]
-    C -->|No| D{Scaled out beyond one instance?}
-    C -->|Yes| Y[Investigate dependency bottleneck]
-    D -->|No| E[Confirm single-instance burst absorption]
-    D -->|Yes| Z[Investigate post-scale throughput mismatch]
+    accTitle: Historical Y1 backlog hypothesis decisions
+    accDescr: Three Yes or No checks route the reported backlog to poison, dependency or post-scale investigations, or confirmation of single-instance burst absorption. Interpret with this lab's evidence and competing hypotheses, not as a universal classifier.
+    A([Backlog observed]) --> B{"Any retries<br/>or poison?"}
+    B -->|"No, dequeueCount=1"| C{"Any dependency<br/>calls/failures?"}
+    B -->|Yes| X(["Investigate poison<br/>loop path"])
+    C -->|No| D{"Scaled out beyond<br/>one instance?"}
+    C -->|Yes| Y(["Investigate dependency<br/>bottleneck"])
+    D -->|No| E(["Confirm single-instance<br/>burst absorption"])
+    D -->|Yes| Z(["Investigate post-scale<br/>throughput mismatch"])
+    %% Layout-only links tier the outcomes; they add no diagnostic steps or arrows.
+    X ~~~ C
+    Y ~~~ D
+    Z ~~~ E
+    classDef neutral fill:#f2f4f8,stroke:#707e93,color:#14202e;
+    class A,B,C,D,X,Y,E,Z neutral;
 ```
 
 ## 3) Runbook
@@ -939,19 +963,34 @@ Age interpretation:
 <!-- diagram-id: evidence-timeline -->
 ```mermaid
 sequenceDiagram
+    %%{init: {'sequence': {'width': 60, 'actorMargin': 10, 'diagramMarginX': 8, 'noteMargin': 5, 'messageMargin': 20}}}%%
+    accTitle: Historical Y1 burst evidence timeline
+    accDescr: Four roles summarize the experiment log in its original message and note order. Numbered exchanges and notes are expanded in the adjacent key; this is not a host-worker protocol or new lab evidence.
     participant Producer
-    participant Queue as work-items
-    participant Func as labshared-func (single instance)
-    participant AI as App Insights
+    participant Queue
+    participant Func as App
+    participant AI as Insights
 
-    Producer->>Queue: Inject 2000 messages (08:23:09-08:23:31)
-    Func->>Queue: Start dequeue and processing
-    Func->>AI: QueueProcessed traces (dequeueCount=1)
-    Note over Func,AI: DistinctInstances remains 1
-    Func->>AI: requests success=true for all invocations
-    Note over Queue,Func: Per-minute throughput ramps 25 -> 518
-    Note over Queue: Queue fully drained around 08:30:29
+    Producer->>Queue: 1. Inject
+    Func->>Queue: 2. Process
+    Func->>AI: 3. Traces
+    Note over Func,AI: 4. One instance
+    Func->>AI: 5. Success
+    Note over Queue,Func: 6. Throughput
+    Note over Queue: 7. Drained
 ```
+
+**Reading key (historical summary):** Producer = burst producer; Queue = `work-items`;
+App = `labshared-func` (single Y1 instance); Insights = Application Insights.
+App summarizes the application role, not separate host, listener or language-worker transports.
+
+1. Inject 2000 messages (`08:23:09–08:23:31 UTC`).
+2. Start dequeue and processing.
+3. `QueueProcessed` traces (`dequeueCount=1`).
+4. `DistinctInstances` remains `1`.
+5. `requests` has `success=true` for all invocations in this historical summary.
+6. Per-minute throughput ramps `25 → 518`.
+7. Queue fully drained around `08:30:29 UTC`.
 
 ### Final verdict for this run
 
@@ -998,19 +1037,34 @@ sequenceDiagram
 <!-- diagram-id: evidence-timeline-2 -->
 ```mermaid
 sequenceDiagram
+    %%{init: {'sequence': {'width': 60, 'actorMargin': 10, 'diagramMarginX': 8, 'noteMargin': 5, 'messageMargin': 20}}}%%
+    accTitle: Historical Y1 burst expected-evidence timeline
+    accDescr: Four roles summarize the historical expected-evidence sequence in its original message and note order. The adjacent key expands all seven numbered entries; the unexecuted Golden retry scenario is separate.
     participant Producer
-    participant Queue as work-items
-    participant Func as labshared-func (single instance)
-    participant AI as App Insights
+    participant Queue
+    participant Func as App
+    participant AI as Insights
 
-    Producer->>Queue: Inject 2000 messages (08:23:09-08:23:31)
-    Func->>Queue: Start dequeue and processing
-    Func->>AI: QueueProcessed traces (dequeueCount=1)
-    Note over Func,AI: DistinctInstances remains 1
-    Func->>AI: requests success=true for all invocations
-    Note over Queue,Func: Per-minute throughput ramps 25 → 518
-    Note over Queue: Queue fully drained around 08:30:29
+    Producer->>Queue: 1. Inject
+    Func->>Queue: 2. Process
+    Func->>AI: 3. Traces
+    Note over Func,AI: 4. One instance
+    Func->>AI: 5. Success
+    Note over Queue,Func: 6. Throughput
+    Note over Queue: 7. Drained
 ```
+
+**Reading key (historical summary, not the Golden retry scenario):** Producer = burst producer;
+Queue = `work-items`; App = `labshared-func` (single Y1 instance); Insights = Application Insights.
+App summarizes the application role, not separate host, listener or language-worker transports.
+
+1. Inject 2000 messages (`08:23:09–08:23:31 UTC`).
+2. Start dequeue and processing.
+3. `QueueProcessed` traces (`dequeueCount=1`).
+4. `DistinctInstances` remains `1`.
+5. `requests` has `success=true` for all invocations in this historical summary.
+6. Per-minute throughput ramps `25 → 518`.
+7. Queue fully drained around `08:30:29 UTC`.
 
 ### Evidence chain: why this proves the conclusion
 
