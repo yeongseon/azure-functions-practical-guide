@@ -163,6 +163,7 @@ This view gives you the end-to-end mental model before you dive into individual 
 
 <!-- diagram-id: functions-architecture-overview -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 15, 'rankSpacing': 35}}}%%
 flowchart TD
     accTitle: How do events, hosting and runtime roles fit together?
     accDescr: General Functions mental model with HTTP, timers, queues, blobs and Event Grid. Hosting contains a logical app instance with host, extensions and worker plus additional scaled instances. ARM manages configuration separately from platform scaling; polling, push delivery and timer schedules are distinct.
@@ -354,7 +355,7 @@ Use this sequence to distinguish trigger detection, host coordination, worker ex
 
 <!-- diagram-id: detailed-host-worker-communication-sequence -->
 ```mermaid
-%%{init: {'sequence': {'width': 70, 'actorMargin': 20, 'messageMargin': 20, 'noteMargin': 5, 'diagramMarginX': 5}}}%%
+%%{init: {'sequence': {'width': 60, 'actorMargin': 10, 'messageMargin': 20, 'noteMargin': 5, 'diagramMarginX': 0}}}%%
 sequenceDiagram
     accTitle: How do the host and worker complete an invocation?
     accDescr: Generic logical invocation with host-owned listener and bindings, and a worker executing code. Detection differs for push, polling and schedules. Result or failure returns to the host; successful output commits and trigger-specific completion are conditional, not universal queue deletion.
@@ -367,9 +368,9 @@ sequenceDiagram
     app_runtime->>app_runtime: Build context
     app_runtime->>app_runtime: Resolve inputs
     app_runtime->>language_worker: Worker channel<br/>Invoke
-    language_worker->>language_worker: Execute handler
-    language_worker-->>language_worker: Result or failure
-    language_worker-->>app_runtime: Response<br/>Result or failure
+    language_worker->>language_worker: Execute<br/>handler
+    language_worker-->>language_worker: Result or<br/>failure
+    language_worker-->>app_runtime: Response<br/>Result or<br/>failure
     opt Success with outputs
         app_runtime->>app_runtime: Commit outputs
     end
