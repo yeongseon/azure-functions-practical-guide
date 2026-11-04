@@ -444,7 +444,7 @@ flowchart TD
 ```
 
 **Reading key:** The four plan branches are alternatives, not sequential deploys.
-Windows Y1 and EP use the slot path shown here; Dedicated requires a slot-capable App Service tier (Standard, Premium or Isolated), otherwise validate in an isolated app. Linux Y1 uses an isolated app, and FC1 has no slots.
+Windows Y1 and EP use the slot path shown here; Dedicated requires a [slot-capable App Service tier (Standard, Premium or Isolated)](https://learn.microsoft.com/en-us/azure/app-service/deploy-staging-slots), otherwise validate in an isolated app. Linux Y1 uses an isolated app, and FC1 has no slots.
 “Promote artifact” is a pipeline
 decision, not a Flex slot swap. Recovery at I follows the guarded procedure above;
 configuration restoration requires proven drift, and Flex recovery uses another
@@ -483,3 +483,4 @@ deployment rather than an automatic platform undo.
 - [Flex site update strategies and limitations](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-site-updates)
 - [Recover from a bad Flex deployment](https://learn.microsoft.com/en-us/azure/azure-functions/functions-rollback-deployments)
 - [Deployment slot swap behavior](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots)
+- [App Service staging-slot tier requirements](https://learn.microsoft.com/en-us/azure/app-service/deploy-staging-slots)
