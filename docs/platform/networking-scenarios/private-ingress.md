@@ -96,7 +96,7 @@ flowchart TD
     linkStyle default stroke-width:2px;
 ```
 
-The bundled Storage node represents four separate private endpoints:
+The bundled private-endpoint node (`pe_storage`) represents four separate private endpoints:
 
 | Initiating integration | Private endpoint | Destination |
 |---|---|---|
