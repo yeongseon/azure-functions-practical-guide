@@ -62,7 +62,7 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/manage-connections
         - https://learn.microsoft.com/en-us/troubleshoot/azure/azure-storage/blobs/authentication/storage-troubleshoot-403-errors
     - id: evidence-timeline
-      type: flowchart
+      type: graph
       source: self-generated
       justification: Stage-order summary of the historical walkthrough, retaining its probe values without asserting new captures, timing or Golden validation.
       based_on:
@@ -1347,7 +1347,7 @@ This section defines the expected observation pattern before, during, and after 
 
 <!-- diagram-id: evidence-timeline -->
 ```mermaid
-flowchart TD
+graph TD
     accTitle: Historical storage-access evidence timeline
     accDescr: Historical stage order runs from healthy baseline through role removal, authorization errors, listener failure, unhealthy storage and invocation halt, then role restoration, the reported 70ms and four-container probe, listener recovery and invocation recovery. No new captures or Golden validation are asserted.
     A[Baseline healthy state] --> B[Role removal trigger]
