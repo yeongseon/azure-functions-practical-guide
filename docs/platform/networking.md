@@ -163,7 +163,7 @@ flowchart TD
     VPN <--> VNET
 ```
 
-**Reading key:** This overview preserves logical connectivity and alternatives, not identical implementations. VNet integration is outbound-only; the Function App is not placed inside a customer subnet. NAT is associated with a subnet rather than configured as a routed firewall hop ([Functions networking](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options), [NAT Gateway routing](https://learn.microsoft.com/en-us/azure/nat-gateway/nat-overview#outbound-connectivity)).
+**Reading key:** This overview preserves logical connectivity and alternatives, not identical implementations. VNet integration is outbound-only; enabling it does not deploy the Function App into the integration subnet. NAT is associated with a subnet rather than configured as a routed firewall hop ([Functions networking](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options), [NAT Gateway routing](https://learn.microsoft.com/en-us/azure/nat-gateway/nat-overview#outbound-connectivity)).
 
 ### Inbound network controls
 
@@ -437,7 +437,7 @@ DNS resolution sequence (private endpoint path):
 ```mermaid
 sequenceDiagram
     accTitle: Private DNS resolution followed by an HTTPS exchange
-    accDescr: Illustrative sequence retains the VNet client, DNS resolver, private DNS zone and Function App private endpoint. The resolver returns a synthetic private A record before the client sends an HTTPS request to the private IP and receives a response.
+    accDescr: Illustrative sequence retains the VNet client, DNS resolver, private DNS zone and Function App private endpoint. The resolver returns an illustrative private A record; the client then connects to that private IP using `<app-name>.azurewebsites.net` as the HTTPS hostname and receives a response.
     participant C as Client in VNet
     participant R as DNS Resolver
     participant Z as Private DNS Zone
