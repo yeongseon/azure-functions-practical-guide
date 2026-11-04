@@ -30,6 +30,7 @@ This reference captures supported Java versions, JVM/runtime settings, Maven dep
 
 <!-- diagram-id: supported-java-versions -->
 ```mermaid
+%%{init: {"timeline":{"padding":8,"disableMulticolor":true},"theme":"base","fontSize":32,"themeVariables":{"fontSize":"16px"},"themeCSS":".timeline-node text{font-size:32px;fill:#14202e;} .timeline-node .node-bkg{fill:#e2e8f0;} .eventWrapper{filter:none;} text:not([dy]){font-size:32px;text-anchor:middle;fill:var(--md-default-fg-color);} .lineWrapper line{stroke:var(--md-default-fg-color);}"}}%%
 timeline
     accTitle: Four Java LTS generations used by Azure Functions
     accDescr: The timeline pairs 2014 with Java 8 LTS, 2018 with Java 11 LTS, 2021 with Java 17 LTS, and 2023 with Java 21 LTS. It depicts four Java generations, not a complete current support list or the dates Azure Functions adopted them.
