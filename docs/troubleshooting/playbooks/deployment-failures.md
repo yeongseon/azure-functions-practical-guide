@@ -54,16 +54,27 @@ This playbook prioritizes fast triage of runtime settings, deployment model fit,
 <!-- diagram-id: 1-summary -->
 ```mermaid
 flowchart TD
-    A[Deployment failed or degraded after release] --> B[Capture read-only baseline and logs]
-    B --> C{Hosting plan and OS identified?}
-    C -->|No| D[Stop and resolve missing evidence]
-    C -->|Yes| E[Compare runtime and deployment model with prior release]
-    E --> F{Evidence supports a scoped rollback?}
-    F -->|No| G[Continue competing-hypothesis investigation]
-    F -->|Yes| H[Approve interruption risk and restore only proven drift]
-    H --> I[Validate host readiness and function discovery]
-    I --> J[Validate trigger execution and recovery metrics]
+    accTitle: Deployment failure triage and scoped recovery
+    accDescr: Illustrative decision flow, not an executed incident. Capture a read-only baseline and logs. If hosting plan and OS are unknown, stop and resolve missing evidence; otherwise compare runtime and deployment model with the prior release. If evidence does not support a scoped rollback, continue competing-hypothesis investigation; otherwise approve interruption risk and restore only proven drift, then validate host readiness, function discovery, trigger execution and recovery metrics.
+    A(["Deployment failed or<br/>degraded after release"]) --> B["Capture read-only<br/>baseline and logs"]
+    B --> C{"Hosting plan and<br/>OS identified?"}
+    C -->|No| D(["Stop and resolve<br/>missing evidence"])
+    C -->|Yes| E["Compare runtime and<br/>deployment model with<br/>prior release"]
+    E --> F{"Evidence supports<br/>a scoped rollback?"}
+    F -->|No| G(["Continue competing-hypothesis<br/>investigation"])
+    F -->|Yes| H["Approve interruption risk<br/>and restore only<br/>proven drift"]
+    H --> I["Validate host readiness<br/>and function discovery"]
+    I --> J(["Validate trigger execution<br/>and recovery metrics"])
+    %% Layout-only links tier the branches; they add no diagnostic steps or arrows.
+    D ~~~ E
+    G ~~~ H
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J neutral;
+    linkStyle default stroke-width:2px;
 ```
+
+**Reading key:** This illustrative flow routes evidence checks (diamonds) to further steps (rectangles) or branch endpoints (rounded boxes). The rollback branch requires approval and proven drift; the other branches stop for missing evidence or continue investigation, not a confirmed root-cause verdict.
+
 ### Incident framing
 - Common symptom: deployment command succeeds, but app returns `500`, `404`, or host loops on startup.
 - Deployment concepts in scope: zip deploy, run-from-package, deployment slots, extension bundles, `FUNCTIONS_WORKER_RUNTIME`, `linuxFxVersion`.
