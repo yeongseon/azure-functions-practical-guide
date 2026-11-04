@@ -455,7 +455,7 @@ gantt
 ```
 
 **Timer Missed Schedules Evidence Timeline.** Task key (UTC): T1 — Baseline
-fires (07:18–07:24); T2 — App stopped (07:23:43), shown in the 07:23–07:24
+fires (07:18–07:24); T2 — App stop command issued (07:23:43), shown in the 07:23–07:24
 window; T3 — Missed windows (07:26–07:40); T4 — App restart + `isPastDue` fire,
 07:40–07:42; T5 — Normal schedule resumed, 07:42–07:46. Bars preserve the
 historical page's minute-resolution windows, not exact event boundaries or a
