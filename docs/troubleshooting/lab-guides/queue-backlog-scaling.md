@@ -183,7 +183,7 @@ flowchart TD
 <!-- diagram-id: timeline-view -->
 ```mermaid
 gantt
-    %%{init: {'gantt': {'useWidth': 470, 'leftPadding': 100, 'rightPadding': 15, 'fontSize': 16, 'sectionFontSize': 16}}}%%
+    %%{init: {'gantt': {'useWidth': 358, 'leftPadding': 90, 'rightPadding': 15, 'fontSize': 16, 'sectionFontSize': 16}}}%%
     accTitle: Queue Backlog Burst and Drain (UTC, 2026-04-07)
     accDescr: Historical injection, drain and completion sections retain their reported start times and durations; the adjacent key gives exact seconds. This is not a new run.
     title Queue burst and drain
@@ -191,11 +191,11 @@ gantt
     axisFormat  %H:%M
     tickInterval 2minute
     section Injection
-    I: 2000 messages              :done, inj, 08:23:09, 22s
+    I - 2000 messages             :done, inj, 08:23:09, 22s
     section Drain
-    D: Single instance            :done, drn, 08:23:09, 7m20s
+    D - Single instance           :done, drn, 08:23:09, 7m20s
     section Completion
-    C: Fully drained              :done, fin, 08:30:29, 1s
+    C - Fully drained             :done, fin, 08:30:29, 1s
 ```
 
 **Timeline key — Queue Backlog Burst and Drain (UTC, 2026-04-07):**
