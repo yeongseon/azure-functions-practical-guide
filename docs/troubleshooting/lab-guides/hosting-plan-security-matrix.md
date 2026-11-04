@@ -1358,30 +1358,30 @@ gantt
     accTitle: Hosting Plan Security Matrix Fault Timeline
     accDescr: Existing page timeline with Baseline, Fault Injection Window, Distinct Emergence and Recovery sections. All original tasks and relative time values are retained; this migration does not establish run provenance or revalidate timing.
     title Hosting Plan Security Matrix Fault Timeline
-    dateFormat  X
-    axisFormat  T+%Mm
+    dateFormat  HH:mm:ss
+    axisFormat  %M:%S
     tickInterval 2minute
 
     section Baseline
-    T1 :done, b1, 0, 30
+    T1 :done, b1, 00:00:00, 00:00:30
 
     section Fault Injection Window
-    T2 :done, f1, 30, 30
-    T3 :done, f2, 90, 30
-    T4 :done, f3, 150, 30
-    T5 :done, f4, 210, 30
+    T2 :done, f1, 00:00:30, 00:00:30
+    T3 :done, f2, 00:01:30, 00:00:30
+    T4 :done, f3, 00:02:30, 00:00:30
+    T5 :done, f4, 00:03:30, 00:00:30
 
     section Distinct Emergence
-    T6 :crit, e1, 120, 120
-    T7 :active, e2, 120, 180
-    T8 :crit, e3, 150, 90
-    T9 :active, e4, 180, 120
+    T6 :crit, e1, 00:02:00, 00:02:00
+    T7 :active, e2, 00:02:00, 00:03:00
+    T8 :crit, e3, 00:02:30, 00:01:30
+    T9 :active, e4, 00:03:00, 00:02:00
 
     section Recovery
-    T10 :done, r1, 360, 120
+    T10 :done, r1, 00:06:00, 00:02:00
 ```
 
-T-keys link the short chart labels to the original task IDs and full labels below. Intervals are unchanged; axis ticks show elapsed minutes.
+T-keys link the short chart labels to the original task IDs and full labels below. Start and end offsets are unchanged; the chart parses and formats in the same local clock frame, with `00:00:00` as the baseline. Axis ticks show minutes:seconds from that baseline, independent of the viewer's timezone. Bare numbers in the original epoch format were end timestamps, not durations; this display-only conversion preserves those endpoints, including existing zero-length or reversed intervals, rather than recertifying the timeline.
 
 | Key | Task ID | Full timeline label |
 |---|---|---|
