@@ -186,7 +186,7 @@ sequenceDiagram
     participant PE as PE
     participant Public as Public
 
-    Note over BlobZone: VNet link<br/>present
+    Note over BlobZone: N1
     App->>DNS: M1
     DNS->>BlobZone: M2
     BlobZone-->>DNS: M3
@@ -194,7 +194,7 @@ sequenceDiagram
     App->>PE: M5
     PE-->>App: M6
 
-    Note over BlobZone: VNet link<br/>REMOVED
+    Note over BlobZone: N2
     App->>DNS: M7
     DNS->>BlobZone: M8
     BlobZone--xDNS: M9
@@ -203,7 +203,7 @@ sequenceDiagram
     Public-->>App: M12
 ```
 
-**Reading key:** FC1 = Function App (FC1); DNS = DNS Resolver; Zone = `privatelink.blob` DNS Zone; PE = Blob Private Endpoint (`10.0.2.7`); Public = Blob Public Endpoint. These are logical roles, not subnet containment. Read the baseline exchanges first, then the link-removed exchanges.
+**Reading key:** FC1 = Function App (FC1); DNS = DNS Resolver; Zone = `privatelink.blob` DNS Zone; PE = Blob Private Endpoint (`10.0.2.7`); Public = Blob Public Endpoint. N1 = VNet link present; N2 = VNet link REMOVED. These are logical roles, not subnet containment. Read the baseline exchanges first, then the link-removed exchanges.
 
 | Message | Full exchange label |
 |---|---|
