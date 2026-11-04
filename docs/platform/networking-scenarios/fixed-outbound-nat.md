@@ -68,7 +68,7 @@ The Networking blade shows the baseline outbound configuration before NAT Gatewa
 ```mermaid
 flowchart TD
     accTitle: Function app fixed outbound IP and private Blob access
-    accDescr: Public HTTPS ingress reaches the Function app outside the customer VNet. Outbound VNet integration reaches a Blob private endpoint or an external service using the integration subnet's NAT Gateway public IP. The address and allowlist are illustrative.
+    accDescr: Public HTTPS ingress reaches the Function app outside the customer VNet. Outbound VNet integration reaches Blob over a private endpoint; external-service calls use the integration subnet's NAT Gateway public IP. The address and allowlist are illustrative.
     client(["Internet<br/>HTTPS caller"])
     app_runtime["Function App<br/>Managed compute"]
     external_service(["External Service<br/>IP Allowlist: 203.0.113.10"])
@@ -98,8 +98,8 @@ flowchart TD
 ```
 
 **Reading key:** Solid arrows show initiated connections. The Function app and
-Storage service stay outside the customer VNet; only the integration interface
-and private endpoint sit inside their separate subnets. NAT Gateway is associated
+Storage service stay outside the customer VNet. The subnet contains the plan-specific integration networking components, not the Function app's compute.
+The private endpoint sits in a separate subnet. NAT Gateway is associated
 with the integration subnet, not a routed hop. `203.0.113.10` is an illustrative
 public source IP and allowlist. Internet-bound traffic must be routed into the
 VNet for NAT egress; the Blob private path does not use that public IP
@@ -355,6 +355,7 @@ and fixed-IP public egress:
 
 <!-- diagram-id: full-isolation-with-nat -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 20, 'rankSpacing': 45, 'padding': 8}}}%%
 flowchart TD
     accTitle: Corporate private ingress with fixed outbound IP
     accDescr: A corporate client initiates a private connection through the site private endpoint to the Function app outside the customer VNet. The app uses a separate outbound integration subnet with NAT Gateway for external API calls. The public source IP is illustrative; this is not an internet-disconnected deployment.
@@ -362,17 +363,17 @@ flowchart TD
     app_runtime["Function App<br/>Managed compute"]
     external_service(["External API"])
     subgraph vnet_fn["Customer VNet"]
-        subgraph subnet_pe_fn["Private Endpoint Subnet"]
+        subgraph subnet_pe_fn["PE subnet"]
             pe_app[["Site Private Endpoint"]]
         end
-        subgraph subnet_int_fn["Integration [NAT Gateway]"]
+        subgraph subnet_int_fn["Integration subnet<br/>[NAT Gateway]"]
             vnet_integration[["VNet integration<br/>Outbound only"]]
         end
     end
-    client -->|"[Configured] Private IP"| pe_app
-    pe_app -->|"[Configured] Private Link"| app_runtime
-    app_runtime -->|"[Configured] Outbound"| vnet_integration
-    vnet_integration -->|"[Illustrative] NAT public IP<br/>203.0.113.10"| external_service
+    client -->|"[Configured]<br/>Private IP"| pe_app
+    pe_app -->|"[Configured]<br/>Private Link"| app_runtime
+    app_runtime -->|"[Configured]<br/>Outbound"| vnet_integration
+    vnet_integration -->|"[Illustrative]<br/>NAT public IP<br/>203.0.113.10"| external_service
     classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
     classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e;
     classDef netBox fill:transparent,stroke:#287ce4,stroke-width:2px,stroke-dasharray:6 3;
