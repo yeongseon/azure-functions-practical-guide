@@ -621,11 +621,19 @@ HTML/reference-style images or establish authenticity from file names.
 
 ### Identifier concerns and remaining limits
 
-Resource names are visible in all twelve audited images. In particular, account,
-subscription-name, domain or directory/header text merits maintainer privacy
-follow-up in the files below. Values are intentionally not transcribed; their
-presence is not a determination that a real identifier leaked. Placeholder-looking
-fields do not establish that every pixel is safe.
+Resource names are visible in all twelve audited images. In the seven files below
+the Portal header, a subscription name or a default domain is also visible, which
+merits a maintainer privacy decision. Values are intentionally not transcribed.
+An **AI-reviewer observation** of those seven files at this SHA: the subscription
+ID and the managed-identity principal ID appear as all-zero placeholders, the
+signed-in account appears as an `example.com` address, and the directory label is
+the Portal's obfuscated form; no other GUID or email address was observed. What
+remains visible is the demo resource-group, app and plan names, a generic
+subscription offer name and, in the Overview capture only, the capture app's
+default `azurewebsites.net` host name. Whether any of that needs masking is a
+maintainer decision. This is not a privacy certification: a human final-byte check
+under the PII gate is still required, and placeholder-looking fields do not
+establish that every pixel is safe.
 
 - `docs/assets/operations/overview/01-function-app-overview.png`
 - `docs/assets/operations/hosting/01-app-service-plan.png`
