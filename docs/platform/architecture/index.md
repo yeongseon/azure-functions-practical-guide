@@ -28,6 +28,7 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide
         - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
     - id: control-data-plane
       type: flowchart
       source: self-generated
@@ -69,6 +70,7 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
         - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
     - id: configuration-layers-diagram
       type: flowchart
       source: self-generated
