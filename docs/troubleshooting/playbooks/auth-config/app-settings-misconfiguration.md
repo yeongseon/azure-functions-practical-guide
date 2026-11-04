@@ -82,7 +82,7 @@ The objective is to restore host startup, function discovery, and trigger execut
 ### Decision Flow
 <!-- diagram-id: decision-flow -->
 ```mermaid
-%%{init: {"flowchart":{"nodeSpacing":10}}}%%
+%%{init: {"flowchart":{"nodeSpacing":10,"padding":5}}}%%
 flowchart TD
     accTitle: App settings diagnostic decisions
     accDescr: Illustrative checks for startup, discovery, trigger connections and Key Vault references; branches select checks, not confirmed causes. Use the evidence and disproof sections before mitigation.
@@ -92,8 +92,8 @@ flowchart TD
     D -->|No| E("E: Runtime checks")
     D -->|Yes| F{"Specific trigger<br/>failing?"}
     F -->|Yes| G("G: Connection")
-    F -->|No| H{"Key Vault references<br/>present?"}
-    C --> I{"Host storage valid<br/>for plan?"}
+    F -->|No| H{"Vault refs?"}
+    C --> I{"Storage valid?"}
     I -->|No| J("J: Storage fix")
     I -->|Yes| K("K: Content share")
     E --> L("L: Worker setting")
@@ -127,7 +127,8 @@ flowchart TD
 | C | Check required app settings baseline. |
 | E | Validate worker runtime and `FUNCTIONS_EXTENSION_VERSION` (Functions runtime version). |
 | G | Validate connection setting name and value. |
-| I | Is `AzureWebJobsStorage` valid for the hosting plan? |
+| H | Key Vault references present? |
+| I | Is the host-storage connection valid for the hosting plan, using either `AzureWebJobsStorage` or an identity-based configuration such as `AzureWebJobsStorage__accountName` or service-specific URIs? |
 | J / K | Fix storage connection or identity setup / check content share settings. |
 | L / M | Set `FUNCTIONS_WORKER_RUNTIME` correctly / set `FUNCTIONS_EXTENSION_VERSION` to `~4` for a compatible v4 app. |
 | N | Correct binding setting key and endpoint. |
@@ -460,31 +461,39 @@ If setting rollback alone restores startup and invocation flow without code roll
 ### Function discovery timeline
 <!-- diagram-id: function-discovery-timeline -->
 ```mermaid
-%%{init: {"timeline":{"padding":0,"disableMulticolor":true}}}%%
+%%{init: {"timeline":{"padding":8,"disableMulticolor":true},"theme":"base","fontSize":60,"themeVariables":{"fontSize":"16px"},"themeCSS":".timeline-node text{font-size:60px;fill:#14202e;} .timeline-node .node-bkg{fill:#e2e8f0;} .eventWrapper{filter:none;} text:not([dy]){font-size:60px;text-anchor:middle;fill:var(--md-default-fg-color);} .lineWrapper line{stroke:var(--md-default-fg-color);}"}}%%
 timeline
-    accTitle: App settings incident timeline
-    accDescr: Eight existing scenario periods from 02h30 through 02h55, in their original order. T1 through T8 expand in the adjacent legend; these times are not newly collected evidence.
+    accTitle: App settings incident timeline with periods P1-P8 and events E1-E8 listed in the adjacent legend
+    accDescr: Eight existing scenario periods from 02h30 through 02h55, in their original order. Periods P1-P8 and events E1-E8 are listed verbatim in the adjacent legend; these times are not newly collected evidence.
     title App settings incident timeline
-    02h30 : T1
-    02h34 : T2
-    02h36 : T3
-    02h39 : T4
-    02h41 : T5
-    02h45 : T6
-    02h49 : T7
-    02h55 : T8
+    P1 : E1
+    P2 : E2
+    P3 : E3
+    P4 : E4
+    P5 : E5
+    P6 : E6
+    P7 : E7
+    P8 : E8
 ```
 
-| Key | Time | Original event |
-|---|---|---|
-| T1 | 02h30 | Configuration deployment applied |
-| T2 | 02h34 | First Key Vault reference parse error |
-| T3 | 02h36 | Content share mount failures begin |
-| T4 | 02h39 | Host initialization failures increase |
-| T5 | 02h41 | Function discovery drops to zero |
-| T6 | 02h45 | Settings corrected and host restarted |
-| T7 | 02h49 | Functions rediscovered |
-| T8 | 02h55 | Invocation rate returns to baseline |
+| Key | Original period or event (verbatim) |
+|---|---|
+| P1 | 02h30 |
+| E1 | Configuration deployment applied |
+| P2 | 02h34 |
+| E2 | First Key Vault reference parse error |
+| P3 | 02h36 |
+| E3 | Content share mount failures begin |
+| P4 | 02h39 |
+| E4 | Host initialization failures increase |
+| P5 | 02h41 |
+| E5 | Function discovery drops to zero |
+| P6 | 02h45 |
+| E6 | Settings corrected and host restarted |
+| P7 | 02h49 |
+| E7 | Functions rediscovered |
+| P8 | 02h55 |
+| E8 | Invocation rate returns to baseline |
 
 ### Normal vs abnormal evidence matrix
 | Dimension | Normal | Abnormal | Interpretation |
