@@ -197,7 +197,7 @@ sequenceDiagram
     Host-->>Worker: 5
     Worker->>Func: 6
     Func-->>Client: 7
-    Note over Client,Worker: Cold-path<br/>hypothesis
+    Note over Client,Worker: Illustrative<br/>cold-path hypothesis
     Client->>FE: 8
     FE->>Worker: 9
     Worker->>Func: 10
@@ -969,3 +969,4 @@ rm -rf "labs/cold-start/artifacts"
 - [Configure monitoring for Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring)
 - [Application Insights telemetry data model](https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model-complete)
 - [Kusto Query Language overview](https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/)
+- [Event-driven scaling](https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling)
