@@ -1362,23 +1362,38 @@ gantt
     axisFormat  T+%Ss
 
     section Baseline
-    All plans healthy                                :done, b1, 0, 30
+    b1 Healthy                                       :done, b1, 0, 30
 
     section Fault Injection Window
-    RBAC removal                                     :done, f1, 30, 30
-    Identity removal                                 :done, f2, 90, 30
-    DNS break ("FC1/EP1/S1")                           :done, f3, 150, 30
-    Network break ("FC1/EP1/S1")                       :done, f4, 210, 30
+    f1 RBAC removal                                  :done, f1, 30, 30
+    f2 Identity removal                              :done, f2, 90, 30
+    f3 DNS break                                     :done, f3, 150, 30
+    f4 Network break                                 :done, f4, 210, 30
 
     section Distinct Emergence
-    FC1 fast timeout behavior                        :crit, e1, 120, 120
-    EP1/S1 cache-masked identity interval            :active, e2, 120, 180
-    Y1 generic 502 behavior                           :crit, e3, 150, 90
-    EP1 page differentiation visible                 :active, e4, 180, 120
+    e1 FC1 timeout                                   :crit, e1, 120, 120
+    e2 EP1/S1 cache                                  :active, e2, 120, 180
+    e3 Y1 502                                        :crit, e3, 150, 90
+    e4 EP1 pages                                     :active, e4, 180, 120
 
     section Recovery
-    Controls restored + validation probes            :done, r1, 360, 120
+    r1 Restore                                       :done, r1, 360, 120
 ```
+
+Task IDs link the short chart labels to the full labels below. Intervals are unchanged.
+
+| Task ID | Full timeline label |
+|---|---|
+| b1 | All plans healthy |
+| f1 | RBAC removal |
+| f2 | Identity removal |
+| f3 | DNS break ("FC1/EP1/S1") |
+| f4 | Network break ("FC1/EP1/S1") |
+| e1 | FC1 fast timeout behavior |
+| e2 | EP1/S1 cache-masked identity interval |
+| e3 | Y1 generic 502 behavior |
+| e4 | EP1 page differentiation visible |
+| r1 | Controls restored + validation probes |
 
 ### Evidence Chain: Why This Proves the Hypothesis
 
