@@ -149,25 +149,33 @@ flowchart TD
 
 <!-- diagram-id: incident-timeline-model -->
 ```mermaid
-%%{init: {'gantt': {'useWidth': 460, 'leftPadding': 90, 'rightPadding': 30, 'fontSize': 16, 'sectionFontSize': 16, 'barHeight': 32, 'barGap': 10, 'topPadding': 55}, 'themeCSS': '.grid .tick text { font-size: 16px !important; }'}}%%
+%%{init: {"gantt":{"fontSize":16,"sectionFontSize":16,"leftPadding":95,"rightPadding":35,"barHeight":24,"barGap":10},"theme":"base","themeVariables":{"doneTaskBkgColor":"#e2e8f0","critBkgColor":"#fed7aa","taskBkgColor":"#e2e8f0"},"themeCSS":".grid .tick text{font-size:16px;fill:var(--md-default-fg-color);} .section{opacity:0;} .titleText{font-size:14px;fill:var(--md-default-fg-color);} .sectionTitle{fill:var(--md-default-fg-color);} .taskTextOutsideLeft,.taskTextOutsideRight{fill:var(--md-default-fg-color)!important;} .taskText{fill:#14202e!important;}"}}%%
 gantt
     accTitle: Historical walkthrough incident windows
     accDescr: Historical walkthrough model with baseline from 03:00 to 03:10, fault injection and evidence collection starting at 03:10, and fix and recovery verification starting at 03:20. The one-minute actions overlap ten-minute collection windows. These times and done markers are not a new execution or evidence for the NOT_RUN Golden scenario.
-    title Incident windows
+    title Deployment Success but Runtime Failure Timeline
     dateFormat  HH:mm
     axisFormat  %H:%M
     tickInterval 10minute
     section Baseline
-    A1                                 :done, a1, 03:00, 10m
+    T1                                 :done, a1, 03:00, 10m
     section Incident
-    B1                                 :done, b1, 03:10, 1m
-    B2                                 :done, b2, 03:10, 10m
+    T2                                 :done, b1, 03:10, 1m
+    T3                                 :done, b2, 03:10, 10m
     section Recovery
-    C1                                 :done, c1, 03:20, 1m
-    C2                                 :done, c2, 03:20, 10m
+    T4                                 :done, c1, 03:20, 1m
+    T5                                 :done, c2, 03:20, 10m
 ```
 
-**Reading key — Deployment Success but Runtime Failure Timeline:** A1 = baseline deploy and verify; B1 = fault injection; B2 = evidence collection; C1 = fix applied; C2 = recovery verification. Bars preserve the historical walkthrough's starts, durations and overlaps; they do not record a new Golden run.
+**Reading key — Deployment Success but Runtime Failure Timeline:** Bars preserve the historical walkthrough's starts, durations and overlaps; they do not record a new Golden run.
+
+| Key | Original task label |
+|---|---|
+| T1 | Baseline deploy and verify |
+| T2 | Fault injection |
+| T3 | Evidence collection |
+| T4 | Fix applied |
+| T5 | Recovery verification |
 
 ## 2) Hypothesis
 
@@ -923,7 +931,7 @@ Deployment transport remained healthy throughout the run, but runtime mismatch p
 
 <!-- diagram-id: evidence-timeline -->
 ```mermaid
-%%{init: {'gantt': {'useWidth': 460, 'leftPadding': 90, 'rightPadding': 30, 'fontSize': 16, 'sectionFontSize': 16, 'barHeight': 32, 'barGap': 10, 'topPadding': 55}, 'themeCSS': '.grid .tick text { font-size: 16px !important; }'}}%%
+%%{init: {"gantt":{"fontSize":16,"sectionFontSize":16,"leftPadding":95,"rightPadding":35,"barHeight":24,"barGap":10},"theme":"base","themeVariables":{"doneTaskBkgColor":"#e2e8f0","critBkgColor":"#fed7aa","taskBkgColor":"#e2e8f0"},"themeCSS":".grid .tick text{font-size:16px;fill:var(--md-default-fg-color);} .section{opacity:0;} .titleText{font-size:14px;fill:var(--md-default-fg-color);} .sectionTitle{fill:var(--md-default-fg-color);} .taskTextOutsideLeft,.taskTextOutsideRight{fill:var(--md-default-fg-color)!important;} .taskText{fill:#14202e!important;}"}}%%
 gantt
     accTitle: Historical walkthrough evidence windows
     accDescr: UTC windows copied from the historical walkthrough: baseline deploy and verify at 03:00 for ten minutes; runtime mismatch injection at 03:10 for one minute and incident capture for ten minutes; runtime correction and redeploy at 03:20 for one minute and recovery verification for ten minutes. Done markers preserve the existing model, not new Golden validation.
@@ -932,16 +940,24 @@ gantt
     axisFormat  %H:%M
     tickInterval 10minute
     section Baseline
-    E1                                  :done, e1, 03:00, 10m
+    T1                                  :done, e1, 03:00, 10m
     section Incident
-    E2                                  :done, e2, 03:10, 1m
-    E3                                  :done, e3, 03:10, 10m
+    T2                                  :done, e2, 03:10, 1m
+    T3                                  :done, e3, 03:10, 10m
     section Recovery
-    E4                                  :done, e4, 03:20, 1m
-    E5                                  :done, e5, 03:20, 10m
+    T4                                  :done, e4, 03:20, 1m
+    T5                                  :done, e5, 03:20, 10m
 ```
 
-**Reading key:** E1 = baseline deploy + verify; E2 = runtime mismatch injection; E3 = incident evidence capture; E4 = runtime correction + redeploy; E5 = recovery verification. The UTC windows and completion markers repeat historical material, not validation of the NOT_RUN Golden scenario.
+**Reading key:** The UTC windows and completion markers repeat historical material, not validation of the NOT_RUN Golden scenario.
+
+| Key | Original task label |
+|---|---|
+| T1 | Baseline deploy + verify |
+| T2 | Runtime mismatch injection |
+| T3 | Incident evidence capture |
+| T4 | Runtime correction + redeploy |
+| T5 | Recovery verification |
 
 ### Evidence chain: why this proves the hypothesis
 
