@@ -25,8 +25,9 @@ content_sources:
     - id: end-to-end-telemetry-sequence
       type: sequenceDiagram
       source: self-generated
-      justification: End to end telemetry sequence, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Logical telemetry order for the retained processing-delay experiment; handler-specific trace details come from this page, not a measured checkpoint exchange or a new Azure run.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reliable-event-processing
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
@@ -45,8 +46,9 @@ content_sources:
     - id: 3-6-triage-decision-flow-used-during-live-response
       type: flowchart
       source: self-generated
-      justification: Triage decision flow used during live response, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Historical diagnostic routing with delivered-event enqueue age distinguished from unmeasured durable checkpoint lag; branches suggest investigations, not confirmed causes.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs-trigger
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
@@ -55,7 +57,7 @@ content_sources:
     - id: evidence-timeline
       type: gantt
       source: self-generated
-      justification: Evidence timeline, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Visualization of the historical UTC bins and control timestamps retained in this page's execution ledger; Microsoft Learn supplies platform context, not verification of these historical measurements.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
@@ -124,6 +126,8 @@ This lab uses a controlled delay toggle in `eventhub_lag_processor` to create an
 <!-- diagram-id: failure-progression-model -->
 ```mermaid
 flowchart TD
+    accTitle: Historical processing-delay progression
+    accDescr: Retained lab model from steady ingress through injected delay, older delivered events, incident declaration and delay reset. This is not a new run or proof of durable checkpoint lag or ordered partition drain.
     A[Steady Event Hub ingestion at 199 eps] --> B[Function pulls batches from 4 partitions]
     B --> C[delayMs set to 2500 in processor]
     C --> D[Per-batch processing duration rises]
@@ -139,21 +143,34 @@ flowchart TD
 
 <!-- diagram-id: end-to-end-telemetry-sequence -->
 ```mermaid
+%%{init: {'sequence': {'actorMargin': 5, 'width': 35, 'diagramMarginX': 5, 'messageMargin': 25, 'noteMargin': 5}}}%%
 sequenceDiagram
-    participant Prod as Producer
-    participant EH as Event Hub
-    participant Func as eventhub_lag_processor
-    participant Store as Checkpoint Store
-    participant AI as App Insights / Logs
+    accTitle: Processing-delay telemetry reading order
+    accDescr: Logical send, batch, processing, trace and operator-reading sequence for the retained lab. Participant and message keys are expanded below; no checkpoint write or checkpoint measurement is depicted.
+    participant Prod as P
+    participant EH as EH
+    participant Func as F
+    participant Store as CS
+    participant AI as AI
+    participant Operator as O
 
-    Prod->>EH: Send events (199 eps)
-    EH->>Func: Deliver batch
-    Func->>Func: Process batch (delay 0 or 2500)
-    Func->>AI: Emit batch trace before handler returns
-    Note over Func,Store: Host manages checkpoints#59; handler does not read durable position
-    Note over Func,AI: AppRequests records invocation duration#59; historical trace name was CheckpointDelta
-    AI-->>Operator: Duration, enqueue age, batchSize trends#59; no checkpoint delta
+    Prod->>EH: 1. Send<br/>199 eps
+    EH->>Func: 2. Batch
+    Func->>Func: 3. Process<br/>0 / 2500 ms
+    Func->>AI: 4. Trace<br/>before return
+    Note over Func,Store: 5. Checkpoints<br/>not read
+    Note over Func,AI: 6. Duration<br/>trace name
+    AI-->>Operator: 7. Trends<br/>No delta
 ```
+
+**Reading key:** P = Producer; EH = Event Hub; F = `eventhub_lag_processor`;
+CS = Checkpoint Store; AI = App Insights / Logs; O = Operator (telemetry reader).
+Steps 1–4 retain sending at `199 eps`, batch delivery, processing with delay `0` or
+`2500 ms`, and batch-trace emission before the handler returns. Note 5 separates
+host-managed checkpoints from the handler, which does not read durable position.
+Note 6 retains `AppRequests` invocation duration and the historical trace name
+`CheckpointDelta`. Step 7 reads duration, enqueue age and `batchSize` trends, not
+a checkpoint delta. This is logical telemetry order, not a transport trace.
 
 ### Experiment phases used in this run
 
@@ -212,6 +229,8 @@ sequenceDiagram
 <!-- diagram-id: causal-chain -->
 ```mermaid
 flowchart TD
+    accTitle: Retained processing-delay evidence chain
+    accDescr: Historical control timestamps and telemetry values connect the baseline, injected delay and recovery interpretation. The final state explicitly leaves checkpoint delta unknown; historical backlog labels mean delivered-event enqueue age as defined above.
     A[delayMs=0 baseline] --> B[proc ~5-6ms and backlog ~0.1s]
     B --> C[delayMs=2500 set at 13:28:29]
     C --> D[request avg rises to ~2559-2566ms]
@@ -791,16 +810,32 @@ az monitor log-analytics query \
 <!-- diagram-id: 3-6-triage-decision-flow-used-during-live-response -->
 ```mermaid
 flowchart TD
-    A[Checkpoint lag alert] --> B{Request duration rising?}
-    B -->|No| C[Inspect producer anomaly and partition ownership]
-    B -->|Yes| D{Checkpoint backlog age rising too?}
-    D -->|No| E["Inspect parsing/log completeness"]
-    D -->|Yes| F{Was delay or heavy logic changed?}
-    F -->|Yes| G[Rollback delay or optimize handler]
-    F -->|No| H[Investigate dependencies and retries]
-    G --> I[Confirm mixed recovery bin then drain progression]
+    accTitle: Processing-delay triage decisions
+    accDescr: Historical lag-alert routing preserves each Yes and No outcome: producer and ownership checks, parsing checks, handler rollback or optimization, dependency and retry investigation, then recovery checks on the two mitigation paths. Enqueue age is not a durable checkpoint measurement.
+    A(["A: Historical<br/>lag alert"]) --> B{"Request duration<br/>rising?"}
+    B -->|No| C["C: Inspect producer<br/>and ownership"]
+    B -->|Yes| D{"Enqueue age<br/>rising too?"}
+    D -->|No| E["Inspect parsing/<br/>log completeness"]
+    D -->|Yes| F{"Was delay or<br/>heavy logic changed?"}
+    F -->|Yes| G["Rollback delay or<br/>optimize handler"]
+    F -->|No| H["Investigate dependencies<br/>and retries"]
+    G --> I(["I: Confirm mixed recovery<br/>then drain progression"])
     H --> I
+    %% Layout-only links tier the branches; they add no diagnostic steps or arrows.
+    C ~~~ D
+    E ~~~ F
+    G ~~~ H
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I neutral;
 ```
+
+**Reading key:** A retains the historical “checkpoint lag alert” entry point,
+not evidence that checkpoint lag was measured. C checks producer anomalies and
+partition ownership. The age decision uses delivered-event enqueue age (Query B),
+not durable checkpoint age; see the evidence-boundary warning above. I retains
+the mixed recovery-bin and drain-progression check, interpreted using Query D:
+decreasing event age does not establish ordered partition drain. Each branch is
+an investigation path, not a confirmed root cause.
 
 ## 4) Experiment Log
 
@@ -927,22 +962,35 @@ Recovery drain snippets:
 
 <!-- diagram-id: evidence-timeline -->
 ```mermaid
+%%{init: {'gantt': {'fontSize': 16, 'sectionFontSize': 16, 'leftPadding': 65, 'rightPadding': 25, 'barHeight': 25}, 'themeVariables': {'fontSize': '16px'}}}%%
 gantt
-    title Event Hub Checkpoint Lag Evidence Timeline (UTC)
+    accTitle: Historical processing-delay evidence timeline
+    accDescr: UTC baseline, incident and recovery bins and delay-control milestones from the retained execution ledger. Short task keys are expanded below. All original start times, durations and statuses remain; this is not new Azure validation or a checkpoint-lag measurement.
+    title Processing-delay evidence (UTC)
     dateFormat  HH:mm:ss
     axisFormat  %H:%M
+    tickInterval 4minute
     section Baseline
-    Baseline 2-minute bins captured              :done, b1, 13:12:00, 4m
+    b1                                          :done, b1, 13:12:00, 4m
     section Incident
-    Delay set to 2500                            :milestone, i0, 13:28:29, 0s
-    Transition bin (mixed)                       :crit, i1, 13:28:00, 2m
-    Full incident bin                            :crit, i2, 13:30:00, 2m
-    Sustained incident bin                        :crit, i3, 13:32:00, 2m
+    i0                                          :milestone, i0, 13:28:29, 0s
+    i1                                          :crit, i1, 13:28:00, 2m
+    i2                                          :crit, i2, 13:30:00, 2m
+    i3                                          :crit, i3, 13:32:00, 2m
     section Recovery
-    Delay reset to 0                             :milestone, r0, 13:34:26, 0s
-    Mixed recovery bin                            :done, r1, 13:34:00, 2m
-    Drain evidence point                          :milestone, r2, 13:35:06, 0s
+    r0                                          :milestone, r0, 13:34:26, 0s
+    r1                                          :done, r1, 13:34:00, 2m
+    r2                                          :milestone, r2, 13:35:06, 0s
 ```
+
+**Timeline key (historical UTC window):** b1 = baseline 2-minute bins captured
+(`13:12`–`13:16`); i0 = delay set to `2500 ms` (`13:28:29`);
+i1 = mixed transition bin (`13:28`–`13:30`); i2 = full incident bin
+(`13:30`–`13:32`); i3 = sustained incident bin (`13:32`–`13:34`);
+r0 = delay reset to `0 ms` (`13:34:26`); r1 = mixed recovery bin
+(`13:34`–`13:36`); r2 = drain evidence point (`13:35:06`).
+Bars represent query bins and diamonds represent control/evidence timestamps;
+the recovery point does not certify zero checkpoint lag.
 
 ### Evidence Chain: Why this proves the hypothesis
 
@@ -1026,6 +1074,8 @@ If this is a shared troubleshooting environment, keep resources and only disable
 
 ## Sources
 
+- https://learn.microsoft.com/en-us/azure/azure-functions/functions-reliable-event-processing
+- https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs-trigger
 - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs
 - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
 - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
