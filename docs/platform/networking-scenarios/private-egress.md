@@ -20,6 +20,9 @@ content_sources:
       justification: "VNet integration pattern from MSLearn networking documentation"
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-create-vnet
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/configure-networking-how-to
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
 content_validation:
   status: verified
   last_reviewed: 2026-09-11
@@ -63,32 +66,59 @@ The Networking blade shows the baseline state before VNet integration is configu
 <!-- diagram-id: private-egress-architecture -->
 ```mermaid
 flowchart TD
-    INET[Internet] -->|HTTPS| FA[Function App]
-    
-    subgraph VNET["VNet"]
-        subgraph INT_SUB["Integration Subnet"]
-            FA
+    accTitle: Public ingress with private Storage egress
+    accDescr: Public HTTPS reaches the Function app outside the customer VNet. Outbound integration connects to separate Blob, Queue, Table and File private endpoints. Managed identity token acquisition and Storage RBAC permissions are separate from network connectivity; endpoint requirements depend on the plan and workload.
+    client(["Internet<br/>HTTPS caller"])
+    app_runtime["Function App<br/>Managed compute"]
+    storage_db[("Storage Account")]
+    identity{{"Managed identity<br/>Storage RBAC required"}}
+    subgraph vnet_fn["Customer VNet"]
+        subgraph subnet_int_fn["Integration Subnet"]
+            vnet_integration[["VNet integration<br/>Outbound only"]]
         end
-        subgraph PE_SUB["Private Endpoint Subnet"]
-            PE_BLOB[PE: blob]
-            PE_QUEUE[PE: queue]
-            PE_TABLE[PE: table]
-            PE_FILE[PE: file]
+        subgraph subnet_pe_fn["Private Endpoint Subnet"]
+            pe_blob[["PE: blob"]]
+            pe_queue[["PE: queue"]]
+            pe_table[["PE: table"]]
+            pe_file[["PE: file"]]
         end
     end
-    
-    PE_BLOB --> ST[Storage Account]
-    PE_QUEUE --> ST
-    PE_TABLE --> ST
-    PE_FILE --> ST
-    
-    FA -.->|Managed Identity| MI[RBAC]
-    MI --> ST
-    
-    style FA fill:#0078d4,color:#fff
-    style VNET fill:#E8F5E9,stroke:#4CAF50
-    style ST fill:#FFF3E0
+    client -->|"[Configured] HTTPS"| app_runtime
+    app_runtime -.->|"[Configured] Token acquisition"| identity
+    app_runtime -->|"[Configured] Outbound"| vnet_integration
+    vnet_integration -->|"[Configured] Private IP"| pe_blob
+    vnet_integration -->|"[Configured] Private IP"| pe_queue
+    vnet_integration -->|"[Configured] Private IP"| pe_table
+    vnet_integration -->|"[Configured] Private IP"| pe_file
+    pe_blob -->|"[Configured] Private Link"| storage_db
+    pe_queue -->|"[Configured] Private Link"| storage_db
+    pe_table -->|"[Configured] Private Link"| storage_db
+    pe_file -->|"[Configured] Private Link"| storage_db
+    %% Layout-only links tier alternatives; no connection or step is added.
+    identity ~~~ vnet_integration
+    pe_blob ~~~ pe_queue
+    pe_queue ~~~ pe_table
+    pe_table ~~~ pe_file
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e;
+    classDef bandMuted fill:#ffffff,stroke:#707e93,stroke-width:1.5px,stroke-dasharray:4 3,color:#14202e;
+    classDef netBox fill:transparent,stroke:#287ce4,stroke-width:2px,stroke-dasharray:6 3;
+    class client,storage_db baseNeutral;
+    class app_runtime,vnet_integration,pe_blob,pe_queue,pe_table,pe_file focusActive;
+    class identity bandMuted;
+    class vnet_fn,subnet_int_fn,subnet_pe_fn netBox;
+    linkStyle default stroke-width:2px;
 ```
+
+**Reading key:** Solid arrows show initiated connections; the dotted identity
+arrow summarizes token acquisition through the app's local identity endpoint,
+not a network relay through RBAC. Storage permissions remain required separately
+(see Step 8). Only integration and private-endpoint interfaces occupy the
+customer subnets, not the app or Storage service. The four Storage subresources
+remain distinct; which are required depends on hosting and workload
+([Functions networking](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options),
+[secured storage](https://learn.microsoft.com/en-us/azure/azure-functions/configure-networking-how-to),
+[managed identities](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)).
 
 ## Supported Plans
 
@@ -591,6 +621,8 @@ curl --request GET "https://$APP_NAME.azurewebsites.net/api/health"
 
 ## Sources
 
+- [Secured storage with Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/configure-networking-how-to)
+- [Managed identities in App Service and Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)
 - [Azure Functions networking options (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)
 - [Create a function with VNet integration (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-create-vnet)
 - [Integrate your app with an Azure virtual network (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/app-service/overview-vnet-integration)
