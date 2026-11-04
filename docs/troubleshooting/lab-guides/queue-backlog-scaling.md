@@ -405,6 +405,15 @@ invocations or business commits. The REST receive operation's visibility paramet
 and the Functions failure-delay setting below are different layers, not a single
 end-to-end processing deadline.
 
+At the storage-service layer, if the current receive invisibility period expires
+without renewal or deletion, another consumer can receive the message while the
+original consumer is still processing it
+([Get Messages](https://learn.microsoft.com/en-us/rest/api/storageservices/get-messages#remarks),
+[Queue trigger peek lock](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger#peek-lock)).
+This is not a prediction that a Functions invocation lasting over 30 seconds will
+overlap: the configured `visibilityTimeout` is the delay after failed processing,
+not the invocation's processing lease.
+
 Documented [Queue trigger behavior](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger#poison-messages)
 uses **`maxDequeueCount` default 5 (including the first attempt)** and
 **`<queue>-poison`**. The Functions host/extension adds the poison message after
@@ -418,7 +427,7 @@ delivery schedule. A host crash cannot apply that setting and instead leaves the
 service's ten-minute invisibility timeout. This recipe does not inject a crash;
 an unexpected restart invalidates `run.sequence` rather than being misclassified
 as the declared transient exception. See the
-[host.json settings](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue#host-json-settings).
+[host.json settings](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue#host-json).
 
 The [Functions retry-source table](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages#retries)
 assigns Queue retries to the binding extension and `host.json`, not function-level
