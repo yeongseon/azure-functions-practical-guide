@@ -174,9 +174,8 @@ flowchart TD
                 pe_site_s[["S site PE"]]
             end
         end
-        %% Reverse syntax preserves inbound arrowheads while ranking the app above its PE.
-        app_runtime_s <-- "[Configured]<br/>Inbound" --- pe_site_s
-        pe_site_s <-- "[Configured]<br/>HTTPS" --- client_s
+        client_s -->|"[Configured]<br/>HTTPS"| pe_site_s
+        pe_site_s -->|"[Configured]<br/>Inbound"| app_runtime_s
         app_runtime_s -.->|"[Configured]<br/>Identity"| identity_s
         app_runtime_s -.->|"[Configured]<br/>Setting"| config_s
         app_runtime_s -.->|"[Configured]<br/>DNS"| dns_s
@@ -187,12 +186,11 @@ flowchart TD
         identity_s ~~~ config_s
         config_s ~~~ dns_s
         dns_s ~~~ vnet_integration_s
-        pe_storage_s ~~~ pe_site_s
     end
     %% Layout-only plan order; these invisible links are not inter-plan traffic.
     storage_db_fc ~~~ app_runtime_ep
     storage_db_ep ~~~ app_runtime_y
-    storage_db_y ~~~ app_runtime_s
+    storage_db_y ~~~ client_s
     classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
     classDef bandMuted fill:#ffffff,stroke:#707e93,stroke-width:1.5px,stroke-dasharray:4 3,color:#14202e;
     classDef netBox fill:transparent,stroke:#287ce4,stroke-width:2px,stroke-dasharray:6 3;
