@@ -31,6 +31,7 @@ content_sources:
       source: self-generated
       justification: Flow view of hosting plan architecture where startup and scale behavior change, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan#prewarmed-instances
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
@@ -151,6 +152,7 @@ content_sources:
       source: self-generated
       justification: Durable state machine view, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/durable-task/common/durable-task-error-handling
         - https://learn.microsoft.com/en-us/azure/durable-task/common/durable-task-instance-management
         - https://learn.microsoft.com/en-us/azure/durable-task/durable-functions/durable-functions-azure-storage-provider
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
@@ -237,7 +239,7 @@ Azure Functions does not have one runtime shape. The failure domain changes mate
 
 <!-- diagram-id: 1-hosting-plan-architecture-where-startup-and-scale-behavior-change -->
 ```mermaid
-%%{init: {'flowchart': {'nodeSpacing': 10}}}%%
+%%{init: {'flowchart': {'nodeSpacing': 10, 'padding': 5}}}%%
 flowchart TD
     accTitle: Hosting plan diagnostic routing
     accDescr: Illustrative routing by hosting plan to four candidate failure points, not proof of an incident cause. HTTP front-end routing and non-HTTP trigger sources are alternatives, not a mandatory Azure Front Door deployment.
@@ -250,7 +252,7 @@ flowchart TD
 
     D -. FP-PLAN-01 .-> D1("Cold start after<br/>idle or scale-out")
     E -. FP-PLAN-02 .-> E1("Trigger-specific scale<br/>behavior and networking<br/>assumptions")
-    F -. FP-PLAN-03 .-> F1("Prewarmed capacity<br/>insufficient for burst")
+    F -. FP-PLAN-03 .-> F1("Prewarmed HTTP capacity<br/>insufficient for burst")
     G -. FP-PLAN-04 .-> G1("Too few instances or<br/>noisy-neighbor within plan")
     %% Layout-only links serialize categories; they add no diagnostic steps or arrows.
     D1 ~~~ E
@@ -284,15 +286,15 @@ Most Azure Functions incidents begin before user code runs. The event must first
 
 <!-- diagram-id: 2-trigger-and-binding-architecture-where-invocations-begin-or-stall -->
 ```mermaid
-%%{init: {'flowchart': {'nodeSpacing': 10}}}%%
+%%{init: {'flowchart': {'nodeSpacing': 10, 'padding': 5}}}%%
 flowchart TD
     accTitle: Trigger and binding diagnostic routing
     accDescr: Illustrative logical diagnostic map preserving HTTP, Queue and Service Bus, Event Hubs, Blob and Event Grid, and Timer paths. Arrows group responsibilities, not network hops or a universal execution order. Input bindings can supply data before user code executes; output bindings write results. Failure points are candidates to investigate, not confirmed causes.
     A(["Event source<br/>or caller"]) --> B{Trigger type}
-    B -->|HTTP| C["Functions front end<br/>and host routing"]
-    B -->|"Queue / Service Bus"| D["Listener polls or<br/>receives messages"]
-    B -->|Event Hubs| E["Partition processor<br/>and checkpoint store"]
-    B -->|"Blob / Event Grid"| F["Event delivery or<br/>storage scan path"]
+    B -->|HTTP| C["C: HTTP routing"]
+    B -->|"Queue /<br/>Service Bus"| D["D: Message listener"]
+    B -->|"Event Hubs"| E["E: Partitions"]
+    B -->|"Blob /<br/>Event Grid"| F["F: Delivery / scan"]
     B -->|Timer| G["Schedule monitor"]
     C --> H[Functions host]
     D --> H
@@ -302,14 +304,14 @@ flowchart TD
     H --> I[Language worker]
     I --> J[Function code]
     J --> K["Input and<br/>output bindings"]
-    K --> L["Storage, Service Bus,<br/>Event Hubs, Cosmos DB,<br/>HTTP APIs"]
+    K --> L["L: Destinations"]
 
     C -. FP-TRIG-01 .-> C1("HTTP path issue")
     D -. FP-TRIG-02 .-> D1("Listener issue")
-    E -. FP-TRIG-03 .-> E1("Partition lag or<br/>checkpoint delay")
+    E -. FP-TRIG-03 .-> E1("E1: Lag / delay")
     F -. FP-TRIG-04 .-> F1("Delivery issue")
-    H -. FP-TRIG-05 .-> H1("Host cannot<br/>initialize listener")
-    K -. FP-TRIG-06 .-> K1("Binding write/read<br/>failure")
+    H -. FP-TRIG-05 .-> H1("H1: Listener init")
+    K -. FP-TRIG-06 .-> K1("K1: Binding failure")
     %% Layout-only links serialize alternatives; they add no diagnostic steps or arrows.
     C1 ~~~ D
     D1 ~~~ E
@@ -322,6 +324,17 @@ flowchart TD
 ```
 
 **Reading key:** Solid arrows associate logical roles, not universal transport or binding-resolution order; dotted FP arrows identify candidates, not proven causes. FP-TRIG-01 covers HTTP authentication, routing or host availability; FP-TRIG-02 covers Queue or Service Bus listener authentication/backlog; FP-TRIG-04 covers the Blob delivery path or Event Grid subscription. Input bindings can read before function code runs; output bindings write results.
+
+| Display key | Complete label |
+|---|---|
+| C | Functions front end and host routing |
+| D | Listener polls or receives messages |
+| E | Partition processor and checkpoint store |
+| F | Event delivery or storage scan path |
+| L | Storage, Service Bus, Event Hubs, Cosmos DB, HTTP APIs |
+| E1 / FP-TRIG-03 | Partition lag or checkpoint delay |
+| H1 / FP-TRIG-05 | Host cannot initialize listener |
+| K1 / FP-TRIG-06 | Binding write/read failure |
 
 ### Request flow examples by trigger type
 
@@ -553,6 +566,9 @@ flowchart TD
     D1 ~~~ E
     E1 ~~~ F
     G1 ~~~ J
+    %% Layout-only links tier the three alternatives; they add no diagnostic steps or arrows.
+    K1 ~~~ H
+    H ~~~ I
     classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
     class A,B,C,D,E,F,G,H,I,J,K,C1,D1,E1,G1,K1 baseNeutral;
 ```
@@ -575,24 +591,39 @@ flowchart TD
 stateDiagram-v2
     accTitle: Durable conceptual waiting and outcome states
     accDescr: Illustrative diagnostic state model retaining activity, timer and external-event waits, completion, failure and termination. WaitingFor states are conceptual, not runtimeStatus values. Failure arrows identify possible diagnostic paths, not a guarantee that storage outages, poison messages or repeated activity failures set orchestration status to Failed; recovery and exception handling affect the outcome.
-    state "Waiting for<br/>activity" as WaitingForActivity
-    state "Waiting for<br/>timer" as WaitingForTimer
-    state "Waiting for<br/>external event" as WaitingForExternalEvent
+    state "WA" as WaitingForActivity
+    state "WT" as WaitingForTimer
+    state "WE" as WaitingForExternalEvent
     [*] --> Pending
-    Pending --> Running: orchestration<br/>starts
-    Running --> WaitingForActivity: schedule<br/>activity
-    WaitingForActivity --> Running: activity result<br/>written
-    Running --> WaitingForTimer: durable timer<br/>created
-    WaitingForTimer --> Running: timer fires
-    Running --> WaitingForExternalEvent: external event<br/>expected
-    WaitingForExternalEvent --> Running: event received
-    Running --> Completed: final output<br/>stored
+    Pending --> Running: 1
+    Running --> WaitingForActivity: 2
+    WaitingForActivity --> Running: 3
+    Running --> WaitingForTimer: 4
+    WaitingForTimer --> Running: 5
+    Running --> WaitingForExternalEvent: 6
+    WaitingForExternalEvent --> Running: 7
+    Running --> Completed: 8
     Running --> Failed: F1
     WaitingForActivity --> Failed: F2
-    WaitingForExternalEvent --> Terminated: manual terminate
+    WaitingForExternalEvent --> Terminated: 9
 ```
 
-**Reading key:** WaitingForActivity, WaitingForTimer and WaitingForExternalEvent are conceptual waiting states, not `runtimeStatus` values. F1 retains the diagnostic path “unhandled exception or storage failure”; F2 retains “repeated activity failure or poison state.” These are investigation candidates, not a guarantee of `Failed`: storage outages can stall progress, and exception handling/retry policy affects the final outcome. The diagram is not an exhaustive runtime state machine.
+**Reading key:** WaitingForActivity, WaitingForTimer and WaitingForExternalEvent are conceptual waiting states, not `runtimeStatus` values. F1 represents an unhandled orchestrator exception; F2 represents an activity failure propagated to and left unhandled by the orchestrator after any configured retries. Storage failures or problematic messages can instead stall progress and do not by themselves establish `Failed`. The diagram is not an exhaustive runtime state machine.
+
+| Display key | Complete label |
+|---|---|
+| WA | WaitingForActivity — Waiting for activity |
+| WT | WaitingForTimer — Waiting for timer |
+| WE | WaitingForExternalEvent — Waiting for external event |
+| 1 | Pending → Running: orchestration starts |
+| 2 | Running → WaitingForActivity: schedule activity |
+| 3 | WaitingForActivity → Running: activity result written |
+| 4 | Running → WaitingForTimer: durable timer created |
+| 5 | WaitingForTimer → Running: timer fires |
+| 6 | Running → WaitingForExternalEvent: external event expected |
+| 7 | WaitingForExternalEvent → Running: event received |
+| 8 | Running → Completed: final output stored |
+| 9 | WaitingForExternalEvent → Terminated: manual terminate |
 
 ### Durable troubleshooting matrix
 
@@ -632,17 +663,17 @@ flowchart TD
     accTitle: Azure service integration diagnostic routing
     accDescr: Illustrative routing from five integration categories to candidate failure points. Host storage, streaming input, messaging, document data and output events remain separate; this is a diagnostic association map, not a network transport diagram or observed deployment.
     A(["Function invocation"]) --> B{Integration type}
-    B -->|Host storage| C["Azure Storage<br/>account"]
-    B -->|Streaming input| D[Event Hubs]
+    B -->|"Host<br/>storage"| C["Azure Storage<br/>account"]
+    B -->|"Streaming<br/>input"| D[Event Hubs]
     B -->|Messaging| E[Service Bus]
-    B -->|Document data| F[Cosmos DB]
-    B -->|Output events| G["Event Grid or<br/>HTTP API"]
+    B -->|"Document<br/>data"| F[Cosmos DB]
+    B -->|"Output<br/>events"| G["Event Grid or<br/>HTTP API"]
 
-    C -. FP-INT-01 .-> C1("Host lease, checkpoint,<br/>or auth failure")
-    D -. FP-INT-02 .-> D1("Checkpoint lag or<br/>consumer auth failure")
-    E -. FP-INT-03 .-> E1("Lock loss, dead-letter<br/>growth, auth failure")
-    F -. FP-INT-04 .-> F1("429 throttling, lease<br/>issue, auth failure")
-    G -. FP-INT-05 .-> G1("Delivery or downstream<br/>API failure")
+    C -. FP-INT-01 .-> C1("C1: Storage issue")
+    D -. FP-INT-02 .-> D1("D1: Consumer issue")
+    E -. FP-INT-03 .-> E1("E1: Message issue")
+    F -. FP-INT-04 .-> F1("F1: Data issue")
+    G -. FP-INT-05 .-> G1("G1: Output issue")
     %% Layout-only links serialize categories; they add no diagnostic steps or arrows.
     C1 ~~~ D
     D1 ~~~ E
@@ -651,6 +682,14 @@ flowchart TD
     classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
     class A,B,C,D,E,F,G,C1,D1,E1,F1,G1 baseNeutral;
 ```
+
+| Display key / candidate | Complete diagnostic label |
+|---|---|
+| C1 / FP-INT-01 | Host lease, checkpoint, or auth failure |
+| D1 / FP-INT-02 | Checkpoint lag or consumer auth failure |
+| E1 / FP-INT-03 | Lock loss, dead-letter growth, auth failure |
+| F1 / FP-INT-04 | 429 throttling, lease issue, auth failure |
+| G1 / FP-INT-05 | Delivery or downstream API failure |
 
 ### Integration failure mapping
 
