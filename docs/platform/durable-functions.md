@@ -22,18 +22,22 @@ content_sources:
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-task-hubs
+        - https://learn.microsoft.com/en-us/azure/durable-task/common/programming-model-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-storage-providers
     - id: function-chaining
       type: flowchart
       source: self-generated
       justification: Flow view of the function chaining pattern, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
+        - https://learn.microsoft.com/en-us/azure/durable-task/common/durable-task-sequence
     - id: fan-out-fan-in
       type: flowchart
       source: self-generated
       justification: Flow view of the fan-out/fan-in pattern, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-task-hubs
     - id: async-http-apis
       type: sequenceDiagram
       source: self-generated
@@ -54,6 +58,8 @@ content_sources:
       justification: Interaction sequence for the human interaction pattern, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
+        - https://learn.microsoft.com/en-us/azure/durable-task/common/durable-task-human-interaction
+        - https://learn.microsoft.com/en-us/azure/durable-task/common/durable-task-external-events
 content_validation:
   status: verified
   last_reviewed: 2026-07-05
@@ -97,16 +103,30 @@ Orchestrations, activities, and entities all persist their progress to a **task 
 <!-- diagram-id: durable-architecture -->
 ```mermaid
 flowchart TD
-    CLIENT["Client Function\n(any trigger)\nstart_new / signal"] --> ORC["Orchestrator Function\ndeterministic workflow logic"]
-    ORC -->|"call_activity()"| ACT["Activity Functions\nunits of work"]
-    ORC -->|"call_entity() / signal_entity()"| ENT["Entity Functions\nstateful objects"]
-    ORC --> HUB["Task Hub\ninstance state, history, messages"]
+    accTitle: Durable Functions roles and persistence
+    accDescr: Logical client, orchestrator, activity and entity roles share task-hub persistence through a storage provider. Arrows summarize coordination and runtime-managed state, not direct application checkpoint writes or network hops.
+    CLIENT["Client<br/>Any trigger"] --> ORC["Orchestrator<br/>Deterministic logic"]
+    ORC -->|"1"| ACT["Activities<br/>Units of work"]
+    ORC -->|"2"| ENT["Entities<br/>Stateful objects"]
+    ORC --> HUB["Task hub"]
     ACT --> HUB
     ENT --> HUB
-    HUB --> STORE["Storage Provider\nAzure Storage / Netherite / MSSQL / Durable Task Scheduler"]
-    style ORC fill:#0078d4,color:#fff
-    style HUB fill:#107c10,color:#fff
+    HUB --> STORE[("Storage provider")]
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class CLIENT,ORC,ACT,ENT,HUB,STORE baseNeutral;
 ```
+
+**Reading key:** This is a logical role map, not a transport topology. Persistence
+arrows summarize work committed by the runtime, not storage I/O in orchestrator code.
+
+| Figure key | Meaning |
+|---|---|
+| Client | Client function using `start_new` or signal operations; any trigger can initiate it. |
+| Orchestrator | Orchestrator function defining deterministic workflow logic. |
+| 1 | `call_activity()` schedules activity functions, the units of work. |
+| 2 | `call_entity()` / `signal_entity()` interact with entity functions, the stateful objects. |
+| Task hub | Instance state, history and messages persisted through the runtime. |
+| Storage provider | Azure Storage, Netherite, MSSQL or Durable Task Scheduler; alternatives, not successive stages. |
 
 ## Application Patterns
 
@@ -119,6 +139,8 @@ Execute a sequence of functions in a defined order, passing the output of one st
 <!-- diagram-id: function-chaining -->
 ```mermaid
 flowchart TD
+    accTitle: Function chaining in activity order
+    accDescr: Illustrative validate, charge, fulfill and notify activities execute in sequence from Start to Return result. Each activity finishes before the next is scheduled.
     START["Start"] --> F1["call_activity\nvalidate"]
     F1 --> F2["call_activity\ncharge"]
     F2 --> F3["call_activity\nfulfill"]
@@ -135,6 +157,8 @@ Run many activities in parallel, then aggregate the results once all of them com
 <!-- diagram-id: fan-out-fan-in -->
 ```mermaid
 flowchart TD
+    accTitle: Parallel activities with fan-in aggregation
+    accDescr: The orchestrator schedules Activity 1, Activity 2 and Activity N in parallel. Their results converge at task_all for aggregation before returning a summary.
     ORC["Orchestrator"] --> F1["Activity 1"]
     ORC --> F2["Activity 2"]
     ORC --> F3["Activity N"]
@@ -151,20 +175,31 @@ Coordinate the state of a long-running operation with external HTTP clients. The
 
 <!-- diagram-id: async-http-apis -->
 ```mermaid
+%%{init: {"sequence": {"width": 90, "actorMargin": 20, "diagramMarginX": 10, "wrap": false}}}%%
 sequenceDiagram
-    participant Cli as External Client
-    participant St as Starter (HTTP)
-    participant Orc as Orchestrator
-    Cli->>St: POST /api/start
+    accTitle: Start and poll an asynchronous HTTP workflow
+    accDescr: An external client posts to an HTTP starter, which starts an orchestration and returns 202 with a status URL. The client polls the built-in status endpoint while running and receives 200 with output on the illustrated successful completion path.
+    participant Cli as Client
+    participant St as HTTP
+    participant Orc as Workflow
+    Cli->>St: POST start
     St->>Orc: start_new()
-    St-->>Cli: 202 Accepted + statusQueryGetUri
+    St-->>Cli: 202 + URL
     loop until complete
-        Cli->>St: GET statusQueryGetUri
+        Cli->>St: GET status
         St-->>Cli: 202 Running
     end
-    Cli->>St: GET statusQueryGetUri
-    St-->>Cli: 200 OK + output
+    Cli->>St: GET status
+    St-->>Cli: 200 + output
 ```
+
+| Figure key | Meaning |
+|---|---|
+| Client / HTTP / Workflow | External client; HTTP starter plus built-in management endpoints; orchestrator function. HTTP groups endpoint roles, not a single starter handler processing status polls. |
+| POST start | Illustrative `POST /api/start` to the starter. |
+| 202 + URL | `202 Accepted` plus `statusQueryGetUri`. |
+| GET status / 202 Running | Poll `statusQueryGetUri`; `202` while the orchestration is running. |
+| 200 + output | `200 OK` with output on successful completion; HTTP status alone is not proof of orchestration success. |
 
 The `create_check_status_response` helper produces these management URLs automatically. See [HTTP features](https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-http-features).
 
@@ -175,6 +210,8 @@ Run a recurring polling loop inside a workflow — for example, wait for an exte
 <!-- diagram-id: monitor-pattern -->
 ```mermaid
 flowchart TD
+    accTitle: Monitor with a durable polling interval
+    accDescr: Check status and test the condition. The no branch waits on a durable timer and continues as new with a fresh history before checking again; the yes branch takes action and completes.
     START["Start monitor"] --> CHECK["call_activity\ncheck status"]
     CHECK --> COND{"Condition met?"}
     COND -->|"no"| TIMER["create_timer\nsleep interval"]
@@ -192,19 +229,30 @@ Pause a workflow until a person (or external system) responds, with a timeout as
 
 <!-- diagram-id: human-interaction -->
 ```mermaid
+%%{init: {"sequence": {"width": 90, "actorMargin": 20, "diagramMarginX": 10, "wrap": false}}}%%
 sequenceDiagram
-    participant Orc as Orchestrator
+    accTitle: Human response or durable timeout
+    accDescr: An orchestrator requests approval through an activity and waits for an external event alongside a durable timer. It processes an approval arriving before timeout, or escalates or applies a default when the timer wins. Messages summarize logical API operations, not direct network calls to orchestrator code.
+    participant Orc as Workflow
     participant Act as Activity
     participant App as Approver
-    Orc->>Act: request approval
-    Note over Orc: wait_for_external_event + durable timer (timeout)
-    App->>Orc: raise_event approval decision
-    alt event before timeout
-        Orc->>Orc: process approval
-    else timeout fires
-        Orc->>Orc: escalate or apply default
+    Orc->>Act: Request<br/>approval
+    Note over Orc: Wait: event<br/>or timer
+    App->>Orc: Raise decision
+    alt event first
+        Orc->>Orc: Process<br/>approval
+    else timer first
+        Orc->>Orc: Escalate<br/>or default
     end
 ```
+
+| Figure key | Meaning |
+|---|---|
+| Workflow / Activity / Approver | Orchestrator function; approval-request activity; responding person or external system. |
+| Wait: event or timer | Race `wait_for_external_event` against a durable timer (timeout). |
+| Raise decision | `raise_event` sends the approval decision through a durable client or the built-in HTTP API, not a direct call to orchestrator code. |
+| Event first / Process approval | Event before timeout: process the approval. |
+| Timer first / Escalate or default | Timeout fires first: escalate or apply the default. |
 
 ### 6. Aggregator (Stateful Entities)
 
@@ -281,3 +329,7 @@ For scaling internals, see [Scaling Behavior](scaling.md); for failure handling 
 - [Durable Functions HTTP features (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-http-features)
 - [Orchestrator code constraints (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-code-constraints)
 - [Eternal orchestrations (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-eternal-orchestrations)
+- [Durable programming model (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/durable-task/common/programming-model-overview)
+- [Function chaining (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/durable-task/common/durable-task-sequence)
+- [Human interaction and timeouts (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/durable-task/common/durable-task-human-interaction)
+- [External events (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/durable-task/common/durable-task-external-events)
