@@ -19,8 +19,9 @@ content_sources:
     - id: replay-growth-model-used-in-this-lab
       type: flowchart
       source: self-generated
-      justification: Flow view of replay growth model used in this lab, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative replay-growth contrast for this lab, using documented replay and history-reset behavior; performance outcomes are not newly validated.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/durable-task/durable-functions/durable-functions-azure-storage-provider
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-orchestrations
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-best-practice-reference
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-eternal-orchestrations
@@ -30,8 +31,9 @@ content_sources:
     - id: test-topology-and-evidence-channels
       type: sequenceDiagram
       source: self-generated
-      justification: Interaction sequence for test topology and evidence channels, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Logical six-role lab exchange sequence with framework-mediated scheduling and persistence; not a direct orchestrator I/O trace or a new Azure execution.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/durable-task/durable-functions/durable-functions-azure-storage-provider
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-orchestrations
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-best-practice-reference
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-eternal-orchestrations
@@ -41,7 +43,7 @@ content_sources:
     - id: time-compression-view-of-the-run
       type: gantt
       source: self-generated
-      justification: Timeline view of time compression view of the run, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Visualization of the existing experiment-phase table and its approximate durations; Microsoft Learn explains the mechanism, not the historical times or evidence trust.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-orchestrations
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-best-practice-reference
@@ -52,7 +54,7 @@ content_sources:
     - id: causal-chain
       type: flowchart
       source: self-generated
-      justification: Flow view of causal chain, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Visualization of the existing lab hypothesis and reported phase contrasts; preserves historical interpretation without independent recertification.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-orchestrations
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-best-practice-reference
@@ -74,7 +76,7 @@ content_sources:
     - id: evidence-timeline
       type: gantt
       source: self-generated
-      justification: Evidence timeline, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Visualization of the existing experiment ledger, request bins and reset interval; Microsoft Learn does not establish these historical measurements or evidence trust.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-orchestrations
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-best-practice-reference
@@ -133,38 +135,65 @@ Durable Functions orchestrators are deterministic and replay event history every
 <!-- diagram-id: replay-growth-model-used-in-this-lab -->
 ```mermaid
 flowchart TD
-    A[Large orchestration loop] --> B[History grows each iteration]
-    B --> C[Every wake-up replays prior history]
-    C --> D["Replay CPU/time per execution increases"]
-    D --> E[Orchestrator request duration rises]
-    E --> F[Executions per time window drop]
-    F --> G[Wall-clock completion inflates]
-    H[ContinueAsNew every N] --> I[History reset]
-    I --> J[Replay cost returns to low baseline]
-    J --> K[Throughput recovers]
+    accTitle: Lab replay growth and history reset model
+    accDescr: Illustrative contrast between growing replay work in a large loop and periodic history reset. The two chains describe this lab model, not a guarantee of slowdown or recovery for every workload.
+    A["Large orchestration<br/>loop"] --> B["History grows<br/>each iteration"]
+    B --> C["Default replay:<br/>prior history"]
+    C --> D["Replay CPU/time<br/>per execution rises"]
+    D --> E["Orchestrator request<br/>duration rises"]
+    E --> F["Executions per<br/>time window drop"]
+    F --> G["Wall-clock<br/>completion inflates"]
+    H["ContinueAsNew<br/>every N"] --> I["History reset"]
+    I --> J["Replay cost returns<br/>to low baseline"]
+    J --> K["Throughput recovers"]
+    %% Layout-only link tiers the contrast; it adds no causal step or arrow.
+    G ~~~ H
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J,K baseNeutral;
+    linkStyle default stroke-width:2px;
 ```
+
+**Reading key:** The upper chain models growing replay cost; the lower chain models periodic history reset, not an action caused by the upper endpoint. [Default replay and caching](https://learn.microsoft.com/en-us/azure/durable-task/durable-functions/durable-functions-azure-storage-provider#orchestrator-function-replay) depend on the provider and supported configuration; [ContinueAsNew resets history](https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-eternal-orchestrations#how-continue-as-new-works). The performance contrast is this lab's model, not a new experiment.
 
 ### Test topology and evidence channels
 
 <!-- diagram-id: test-topology-and-evidence-channels -->
 ```mermaid
+%%{init: {"sequence": {"actorMargin": 8, "width": 32, "height": 32, "diagramMarginX": 4, "messageMargin": 18, "boxMargin": 2, "mirrorActors": false}}}%%
 sequenceDiagram
-    participant Operator as Lab Operator
-    participant Start as HTTP Starter
-    participant Orch as Durable Orchestrator
-    participant Act as Durable Activity
-    participant Hub as Durable Task Hub (Storage)
-    participant AI as Application Insights
+    accTitle: Lab work and evidence sequence
+    accDescr: Six logical roles retain the eight exchanges in order. O is the operator, S the HTTP starter, R orchestration, A activity, H Storage task hub, and T Application Insights. Numbers refer to the adjacent message key; framework-mediated operations are not direct orchestrator code I/O.
+    participant Operator as O
+    participant Start as S
+    participant Orch as R
+    participant Act as A
+    participant Hub as H
+    participant AI as T
 
-    Operator->>Start: POST /api/durable/start-replay-lab
-    Start->>Orch: Start instance with input
-    Orch->>Hub: Read history and schedule work
-    Orch->>Act: call replay_lab_activity
-    Act-->>Orch: Return tiny payload
-    Orch->>AI: Emit ReplayIteration traces every 50 iterations
-    Orch->>Hub: Append new durable events
-    Operator->>AI: Query requests and traces
+    Operator->>Start: 1
+    Start->>Orch: 2
+    Orch->>Hub: 3
+    Orch->>Act: 4
+    Act-->>Orch: 5
+    Orch->>AI: 6
+    Orch->>Hub: 7
+    Operator->>AI: 8
 ```
+
+**Role key:** O = Lab Operator; S = HTTP Starter; R = Durable Orchestrator (logical orchestration role); A = Durable Activity; H = Durable Task Hub (Azure Storage); T = Application Insights. Solid arrows are requests/actions; the dashed arrow returns the activity payload.
+
+| Message | Exchange retained from the lab sequence |
+|---|---|
+| 1 | Operator sends `POST /api/durable/start-replay-lab`. |
+| 2 | Starter starts an instance with input. |
+| 3 | Read history and schedule work, mediated by the Durable runtime. |
+| 4 | Orchestrator calls `replay_lab_activity` through the framework. |
+| 5 | Activity returns a tiny payload. |
+| 6 | Emit `ReplayIteration` traces every 50 iterations (lab instrumentation). |
+| 7 | Append new durable events through the framework. |
+| 8 | Operator queries `requests` and `traces`. |
+
+**Takeaway:** This is the lab's logical exchange order, not a network trace. The [framework dispatcher commits scheduled actions and history](https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-orchestrations#reliability); the [Azure Storage provider loads history and transports work through task-hub queues](https://learn.microsoft.com/en-us/azure/durable-task/durable-functions/durable-functions-azure-storage-provider). R → H summarizes those runtime-mediated operations, not direct Storage I/O from orchestrator code.
 
 ### Experiment phases
 
@@ -219,17 +248,22 @@ Replay incidents and storage authorization failures can both present as "Durable
 
 <!-- diagram-id: time-compression-view-of-the-run -->
 ```mermaid
+%%{init: {"gantt": {"fontSize": 16, "sectionFontSize": 16, "leftPadding": 85, "rightPadding": 15}}}%%
 gantt
-    title Durable Replay Storm Experiment Timeline (UTC)
+    accTitle: Recorded three-phase run timeline
+    accDescr: Historical UTC baseline, incident, and recovery bars retain their original start times and approximate durations. B, I, and R refer to the adjacent workload key; this is not evidence of a new run.
+    title Replay run (UTC)
     dateFormat  HH:mm:ss
     axisFormat  %H:%M
     section Baseline
-    50 iterations no reset                 :done, b1, 12:28:36, 5s
+    B :done, b1, 12:28:36, 5s
     section Incident
-    2000 iterations no ContinueAsNew       :crit, i1, 12:29:22, 26m
+    I :crit, i1, 12:29:22, 26m
     section Recovery
-    2000 iterations ContinueAsNew=250      :done, r1, 12:56:18, 5m
+    R :done, r1, 12:56:18, 5m
 ```
+
+**Workload key (historical run):** B = 50 iterations, no reset; I = 2000 iterations, no `ContinueAsNew`; R = 2000 iterations, `ContinueAsNew` every 250. Bars retain the approximate 5s / 26m / 5m spans; the experiment-phase table above retains exact recorded endpoints.
 
 ### Ground truth summary used in this document
 
@@ -250,16 +284,25 @@ gantt
 <!-- diagram-id: causal-chain -->
 ```mermaid
 flowchart TD
-    A[No ContinueAsNew] --> B[History size increases continuously]
-    B --> C[Replay work per wake-up increases]
-    C --> D[Orchestrator duration increases]
-    D --> E[Executions per 2-minute bin decrease]
-    E --> F[Total wall-clock completion inflates]
-    G[ContinueAsNew every 250] --> H[History reset seven times]
-    H --> I[Replay cost repeatedly returns to low baseline]
-    I --> J[Orchestrator duration returns to ~45-47ms]
-    J --> K[2000-iteration run completes in ~5 minutes]
+    accTitle: Recorded lab causal interpretation
+    accDescr: Two chains retain the lab's no-reset slowdown interpretation and every-250 reset interpretation, including seven resets, about 45 to 47 milliseconds and about five minutes for 2000 iterations. These summarize the existing record without independently validating it.
+    A["No ContinueAsNew"] --> B["History size<br/>keeps increasing"]
+    B --> C["Replay work per<br/>wake-up increases"]
+    C --> D["Orchestrator<br/>duration increases"]
+    D --> E["Executions per<br/>2-minute bin decrease"]
+    E --> F["Total wall-clock<br/>completion inflates"]
+    G["ContinueAsNew<br/>every 250"] --> H["History reset<br/>seven times"]
+    H --> I["Replay cost repeatedly<br/>returns to low baseline"]
+    I --> J["Orchestrator duration<br/>returns to ~45-47ms"]
+    J --> K["2000 iterations<br/>complete in ~5 minutes"]
+    %% Layout-only link tiers the contrast; it adds no causal step or arrow.
+    F ~~~ G
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J,K baseNeutral;
+    linkStyle default stroke-width:2px;
 ```
+
+**Reading key:** The chains summarize the existing lab interpretation, not a new causal finding. The gap between chains does not imply a causal arrow; compare the competing hypotheses and falsification criteria below before applying this interpretation to another incident.
 
 ### Competing hypotheses and disproof criteria
 
@@ -651,18 +694,29 @@ az monitor log-analytics query \
 <!-- diagram-id: 3-9-decision-flow-during-live-troubleshooting -->
 ```mermaid
 flowchart TD
-    A[Durable orchestration slowdown detected] --> B{Host indexing healthy?}
-    B -->|No| C[Check managed identity + storage RBAC]
-    C --> D[Fix missing Table role if absent]
-    B -->|Yes| E{Activity duration increasing?}
-    E -->|Yes| F["Investigate activity logic/dependencies"]
-    E -->|No| G[Investigate replay growth pattern]
-    G --> H{ContinueAsNew configured?}
-    H -->|No| I[Apply periodic ContinueAsNew]
-    H -->|Yes| J[Tune batch size and checkpoint cadence]
-    I --> K[Re-run and compare 2-minute bins]
+    accTitle: Durable slowdown troubleshooting decisions
+    accDescr: Illustrative triage retains all Yes and No branches. Unhealthy indexing leads to identity and storage RBAC checks and a missing Table role fix; rising activity duration leads to activity investigation; otherwise inspect replay growth, choose periodic ContinueAsNew or tuning, then rerun and compare two-minute bins. Branches guide investigation, not proof of cause.
+    A(["Durable orchestration<br/>slowdown detected"]) --> B{"Host indexing<br/>healthy?"}
+    B -->|No| C["Check managed identity<br/>and storage RBAC"]
+    C --> D(["Fix missing Table role<br/>if absent"])
+    B -->|Yes| E{"Activity duration<br/>increasing?"}
+    E -->|Yes| F(["Investigate activity<br/>logic/dependencies"])
+    E -->|No| G["Investigate replay<br/>growth pattern"]
+    G --> H{"ContinueAsNew<br/>configured?"}
+    H -->|No| I["Apply periodic<br/>ContinueAsNew"]
+    H -->|Yes| J["Tune batch size<br/>and checkpoint cadence"]
+    I --> K(["Re-run and compare<br/>2-minute bins"])
     J --> K
+    %% Layout-only links tier branches; they add no diagnostic steps or arrows.
+    D ~~~ E
+    F ~~~ G
+    I ~~~ J
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J,K baseNeutral;
+    linkStyle default stroke-width:2px;
 ```
+
+**Reading key:** Diamonds ask Yes/No questions; rectangles are checks or actions; rounded endpoints finish a branch. This is a triage aid, not proof that flat activity duration establishes replay as the cause. Retain the competing-hypothesis and falsification checks in section 2.
 
 ## 4) Experiment Log
 
@@ -871,23 +925,28 @@ Final verdict: **Hypothesis supported**.
 
 <!-- diagram-id: evidence-timeline -->
 ```mermaid
+%%{init: {"gantt": {"fontSize": 16, "sectionFontSize": 16, "leftPadding": 85, "rightPadding": 15}}}%%
 gantt
-    title Durable Replay Storm Evidence Timeline (EP1)
+    accTitle: Recorded EP1 evidence milestones
+    accDescr: Historical UTC milestones and spans retain baseline, incident and recovery times, the approximately 356 and 641 millisecond incident bins, and the ContinueAsNew interval. Short keys expand immediately below; no new run or evidence certification is claimed.
+    title EP1 evidence (UTC)
     dateFormat  HH:mm:ss
     axisFormat  %H:%M
     section Baseline
-    Baseline start                                 :milestone, m1, 12:28:36, 0s
-    Baseline complete                              :milestone, m2, 12:28:41, 0s
+    B start :milestone, m1, 12:28:36, 0s
+    B end :milestone, m2, 12:28:41, 0s
     section Incident
-    Incident start                                 :milestone, m3, 12:29:22, 0s
-    Orchestrator avg reaches ~356ms (mid incident) :crit, i1, 12:36:00, 2m
-    Orchestrator avg reaches ~641ms (peak)         :crit, i2, 12:52:00, 2m
-    Incident complete                              :milestone, m4, 12:55:28, 0s
+    I start :milestone, m3, 12:29:22, 0s
+    Mid :crit, i1, 12:36:00, 2m
+    Peak :crit, i2, 12:52:00, 2m
+    I end :milestone, m4, 12:55:28, 0s
     section Recovery
-    Recovery start                                 :milestone, m5, 12:56:18, 0s
-    ContinueAsNew sequence active                  :done, r1, 12:56:20, 4m
-    Recovery complete                              :milestone, m6, 13:01:21, 0s
+    R start :milestone, m5, 12:56:18, 0s
+    Reset :done, r1, 12:56:20, 4m
+    R end :milestone, m6, 13:01:21, 0s
 ```
+
+**Evidence key (existing record):** B = Baseline; I = Incident; R = Recovery; start/end = phase start/completion milestones. Mid = orchestrator average reaches ~356ms in the mid-incident bin; Peak = ~641ms peak bin; Reset = `ContinueAsNew` sequence active. Both incident bins retain 2-minute spans and Reset retains its approximate 4-minute span; exact reset traces remain in section 4.5. This diagram does not recertify the historical evidence.
 
 ### Evidence Chain: Why This Proves the Hypothesis
 
