@@ -62,6 +62,8 @@ A Linux Dedicated Function App running the .NET 8 isolated worker on a B1 App Se
 <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
+    accTitle: Linux Dedicated B1 .NET 8 first deployment
+    accDescr: Tutorial stage order from B1 plan and app creation through dotnet publish, Core Tools deployment, the reference project's 16-function indexing check and HTTP validation; not a new execution result.
     A["az appservice plan create B1"] --> B[az functionapp create]
     B --> C[dotnet publish]
     C --> D[func azure functionapp publish]
