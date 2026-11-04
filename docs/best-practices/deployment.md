@@ -444,8 +444,8 @@ flowchart TD
 ```
 
 **Reading key:** The four plan branches are alternatives, not sequential deploys.
-Windows Y1, EP and Dedicated use the supported slot path shown here; Linux Y1
-uses an isolated app, and FC1 has no slots. “Promote artifact” is a pipeline
+Windows Y1 and EP use the slot path shown here; Dedicated requires a slot-capable App Service tier (Standard, Premium or Isolated), otherwise validate in an isolated app. Linux Y1 uses an isolated app, and FC1 has no slots.
+“Promote artifact” is a pipeline
 decision, not a Flex slot swap. Recovery at I follows the guarded procedure above;
 configuration restoration requires proven drift, and Flex recovery uses another
 deployment rather than an automatic platform undo.
