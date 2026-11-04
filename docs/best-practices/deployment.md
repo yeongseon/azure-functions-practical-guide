@@ -15,21 +15,25 @@ content_sources:
     - id: recommended-rollback-order
       type: flowchart
       source: self-generated
-      justification: Flow view of recommended rollback order, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative release-validation and guarded recovery decisions; the ordering is this guide's recommendation, not an automatic platform rollback algorithm.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
         - https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-rollback-deployments
     - id: recommended-rollback-order-2
       type: flowchart
       source: self-generated
-      justification: Flow view of recommended rollback order 2, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative incident recovery decisions with verified slot contents, retained artifacts and scoped configuration recovery; not an Azure-executed recovery trace.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
         - https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-rollback-deployments
     - id: post-deploy
       type: flowchart
       source: self-generated
-      justification: Flow view of post deploy, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative plan-specific package deployment and validation choices; promotion and recovery are pipeline decisions, not universal slot operations.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
         - https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
@@ -269,43 +273,101 @@ Choose rollback path based on plan capabilities.
 <!-- diagram-id: recommended-rollback-order -->
 ```mermaid
 flowchart TD
-    A[Deploy artifact to staging slot or isolated preprod app] --> B[Run health and trigger-aware smoke tests]
-    B --> C{Validation passed}
-    C -->|Yes| D[Swap to production or promote artifact]
-    D --> E[Monitor telemetry guard window]
-    E --> F{Regression detected}
-    F -->|No| G[Keep release and close deployment]
-    F -->|Yes| H[Execute rollback path]
+    accTitle: Release validation and guarded rollback
+    accDescr: Illustrative release flow. Failed validation or a detected regression leads to guarded recovery; no regression keeps the release. Recovery checks verified slot contents and settings, then a validated retained artifact, or investigation without speculative writes. After artifact redeployment, only proven configuration drift is restored before validation. Letter keys below retain the full step wording.
+    A(["A: Stage artifact"]) --> B["B: Health and<br/>trigger smoke tests"]
+    B --> C{"C: Validation<br/>passed?"}
+    C -->|Yes| D["D: Swap or<br/>promote artifact"]
+    D --> E["E: Telemetry<br/>guard window"]
+    E --> F{"F: Regression<br/>detected?"}
+    F -->|No| G(["G: Keep release;<br/>close deployment"])
+    F -->|Yes| H["H: Rollback path"]
     C -->|No| H
-    H --> I{Supported slot with verified prior contents and settings?}
-    I -->|Yes| J[Approved swap-back]
-    I -->|No| R{Retained artifact validated and available?}
-    R -->|Yes| K[Redeploy last-known-good artifact]
-    R -->|No| N[Investigate or escalate without speculative writes]
-    K --> L{Scoped diff proves configuration drift?}
-    L -->|Yes| M[Restore only proven keys or properties from captured prior state]
-    L -->|No| O[Post-rollback validation]
-    J --> O[Post-rollback validation]
+    H --> I{"I: Supported slot;<br/>prior state verified?"}
+    I -->|Yes| J["J: Approved<br/>swap-back"]
+    I -->|No| R{"R: Validated artifact<br/>available?"}
+    R -->|Yes| K["K: Redeploy<br/>known-good artifact"]
+    R -->|No| N(["N: Investigate / escalate;<br/>no speculative writes"])
+    K --> L{"L: Proven<br/>config drift?"}
+    L -->|Yes| M["M: Scoped restore<br/>from prior state"]
+    L -->|No| O(["O: Post-rollback<br/>validation"])
+    J --> O
     M --> O
+    %% Layout-only links tier branches; they add no recovery steps or arrows.
+    G ~~~ H
+    J ~~~ R
+    N ~~~ K
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J,R,K,N,L,M,O neutral;
 ```
+
+**Reading key:** Diamonds ask questions; stadiums mark the start or an outcome.
+This is an illustrative release workflow, subject to the scoped recovery procedure
+above: failed preproduction validation alone does not authorize a production
+swap-back or configuration write.
+
+| Key | Full step or decision |
+|---|---|
+| A | Deploy artifact to staging slot or isolated preprod app |
+| B | Run health and trigger-aware smoke tests |
+| C | Validation passed |
+| D | Swap to production or promote artifact |
+| E | Monitor telemetry guard window |
+| F | Regression detected |
+| G | Keep release and close deployment |
+| H | Execute rollback path |
+| I | Supported slot with verified prior contents and settings? |
+| J | Approved swap-back |
+| R | Retained artifact validated and available? |
+| K | Redeploy last-known-good artifact |
+| N | Investigate or escalate without speculative writes |
+| L | Scoped diff proves configuration drift? |
+| M | Restore only proven keys or properties from captured prior state |
+| O | Post-rollback validation |
 
 <!-- diagram-id: recommended-rollback-order-2 -->
 ```mermaid
 flowchart TD
-    A[Production issue after deployment] --> B{Supported slot with verified prior contents and settings?}
-    B -->|Yes| C[Approved swap-back]
-    B -->|No| D{Is prior artifact validated and available?}
-    D -->|Yes| E[Redeploy prior artifact]
-    D -->|No| F[Investigate or escalate without speculative writes]
-    C --> G[Validate recovery metrics]
-    E --> K{Scoped diff proves configuration drift?}
-    K -->|Yes| L[Restore only proven keys or properties from captured prior state]
+    accTitle: Production incident rollback decisions
+    accDescr: Illustrative incident flow: use an approved swap-back only with a supported slot and verified prior contents and settings; otherwise check the validated prior artifact or investigate without speculative writes. After redeployment, restore only proven configuration drift. Validate recovery metrics, close if stable, or escalate for diagnostics. Letter keys below retain the full step wording.
+    A(["A: Production issue<br/>after deployment"]) --> B{"B: Supported slot;<br/>prior state verified?"}
+    B -->|Yes| C["C: Approved<br/>swap-back"]
+    B -->|No| D{"D: Validated artifact<br/>available?"}
+    D -->|Yes| E["E: Redeploy<br/>prior artifact"]
+    D -->|No| F(["F: Investigate / escalate;<br/>no speculative writes"])
+    C --> G["G: Validate<br/>recovery metrics"]
+    E --> K{"K: Proven<br/>config drift?"}
+    K -->|Yes| L["L: Scoped restore<br/>from prior state"]
     K -->|No| G
     L --> G
-    G --> H{Service stable?}
-    H -->|Yes| I[Close rollback action]
-    H -->|No| J[Escalate incident and deep-dive diagnostics]
+    G --> H{"H: Service stable?"}
+    H -->|Yes| I(["I: Close<br/>rollback action"])
+    H -->|No| J(["J: Escalate incident;<br/>deep-dive diagnostics"])
+    %% Layout-only links tier branches; they add no recovery steps or arrows.
+    C ~~~ D
+    F ~~~ E
+    I ~~~ J
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,K,L,H,I,J neutral;
 ```
+
+**Reading key:** Follow Yes/No answers, not the vertical alignment of outcomes.
+Use the full conditions below and the scoped recovery procedure above before a write.
+
+| Key | Full step or decision |
+|---|---|
+| A | Production issue after deployment |
+| B | Supported slot with verified prior contents and settings? |
+| C | Approved swap-back |
+| D | Is prior artifact validated and available? |
+| E | Redeploy prior artifact |
+| F | Investigate or escalate without speculative writes |
+| G | Validate recovery metrics |
+| K | Scoped diff proves configuration drift? |
+| L | Restore only proven keys or properties from captured prior state |
+| H | Service stable? |
+| I | Close rollback action |
+| J | Escalate incident and deep-dive diagnostics |
 
 ## Common Mistakes / Anti-Patterns
 
@@ -357,20 +419,50 @@ flowchart TD
 <!-- diagram-id: post-deploy -->
 ```mermaid
 flowchart TD
-    A[Commit and Build] --> B{Hosting plan}
-    B -->|Windows Y1| C[ZIP deploy to staging slot + run-from-package]
-    B -->|Linux Y1| L[Remote build or external package URL in isolated app]
+    accTitle: Plan-specific deployment and validation
+    accDescr: Illustrative package deployment choices for Windows Consumption, Linux Consumption, Flex Consumption, Premium and Dedicated. Four plan branches converge on health and smoke validation. Yes leads to swap or artifact promotion and a telemetry gate; No leads to the scoped recovery procedure, not an unconditional configuration restore. Letter keys below retain the full step wording.
+    A(["A: Commit and build"]) --> B{"B: Hosting plan"}
+    B -->|Windows Y1| C["C: ZIP to staging;<br/>run-from-package"]
+    B -->|Linux Y1| L["L: Remote build /<br/>package URL"]
     L --> F
-    B -->|FC1| D[func publish or One Deploy]
-    B -->|EP or Dedicated| E[ZIP deploy to staging slot + warm + test]
-    C --> F[Health and smoke validation]
+    B -->|FC1| D["D: func publish<br/>or One Deploy"]
+    B -->|EP or Dedicated| E["E: ZIP to staging;<br/>warm and test"]
+    C --> F["F: Health and<br/>smoke validation"]
     D --> F
     E --> F
-    F --> G{Validation passed}
-    G -->|Yes| H[Swap or promote artifact]
-    G -->|No| I[Rollback artifact or config]
-    H --> J[Post-deploy telemetry gate]
+    F --> G{"G: Validation<br/>passed?"}
+    G -->|Yes| H["H: Swap or<br/>promote artifact"]
+    G -->|No| I(["I: Artifact / config<br/>recovery; see procedure"])
+    H --> J(["J: Post-deploy<br/>telemetry gate"])
+    %% Layout-only links tier plan branches; they add no deployment steps or arrows.
+    C ~~~ L
+    L ~~~ D
+    D ~~~ E
+    I ~~~ H
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,L,D,E,F,G,H,I,J neutral;
 ```
+
+**Reading key:** The four plan branches are alternatives, not sequential deploys.
+Windows Y1, EP and Dedicated use the supported slot path shown here; Linux Y1
+uses an isolated app, and FC1 has no slots. “Promote artifact” is a pipeline
+decision, not a Flex slot swap. Recovery at I follows the guarded procedure above;
+configuration restoration requires proven drift, and Flex recovery uses another
+deployment rather than an automatic platform undo.
+
+| Key | Full step or decision |
+|---|---|
+| A | Commit and Build |
+| B | Hosting plan |
+| C | ZIP deploy to staging slot + run-from-package |
+| L | Remote build or external package URL in isolated app |
+| D | func publish or One Deploy |
+| E | ZIP deploy to staging slot + warm + test |
+| F | Health and smoke validation |
+| G | Validation passed |
+| H | Swap or promote artifact |
+| I | Rollback artifact or config — subject to the scoped recovery procedure above |
+| J | Post-deploy telemetry gate |
 
 ## See Also
 
