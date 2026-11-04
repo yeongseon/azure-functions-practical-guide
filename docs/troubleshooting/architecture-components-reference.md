@@ -311,7 +311,7 @@ flowchart TD
     C --> D["Function invocation"]
     D --> E(["Output binding or<br/>HTTP response"])
 
-    F(["Queue message"]) --> G["Queue trigger listener"]
+    F(["Storage Queue<br/>message"]) --> G["Queue trigger listener"]
     G --> H["Dequeue and<br/>set invisibility"]
     H --> I["Function invocation"]
     I --> J(["Delete on success;<br/>retry or poison handling"])
