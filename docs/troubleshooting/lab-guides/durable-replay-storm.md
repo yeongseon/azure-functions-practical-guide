@@ -248,22 +248,31 @@ Replay incidents and storage authorization failures can both present as "Durable
 
 <!-- diagram-id: time-compression-view-of-the-run -->
 ```mermaid
-%%{init: {"gantt": {"fontSize": 16, "sectionFontSize": 16, "leftPadding": 85, "rightPadding": 15}}}%%
+%%{init: {"gantt":{"fontSize":16,"sectionFontSize":16,"leftPadding":95,"rightPadding":35,"barHeight":24,"barGap":10},"theme":"base","themeVariables":{"doneTaskBkgColor":"#e2e8f0","critBkgColor":"#fed7aa","taskBkgColor":"#e2e8f0"},"themeCSS":".grid .tick text{font-size:16px;fill:var(--md-default-fg-color);} .section{opacity:0;} .titleText{font-size:14px;fill:var(--md-default-fg-color);} .sectionTitle{fill:var(--md-default-fg-color);} .taskTextOutsideLeft,.taskTextOutsideRight{fill:var(--md-default-fg-color)!important;} .taskText{fill:#14202e!important;}"}}%%
 gantt
     accTitle: Recorded three-phase run timeline
-    accDescr: Historical UTC baseline, incident, and recovery bars retain their original start times and approximate durations. B, I, and R refer to the adjacent workload key; this is not evidence of a new run.
-    title Replay run (UTC)
+    accDescr: Historical UTC baseline, incident, and recovery bars retain their original start times and approximate durations. T1, T2, and T3 refer to the adjacent workload key; this is not evidence of a new run.
+    title Durable Replay Storm Experiment Timeline (UTC)
     dateFormat  HH:mm:ss
     axisFormat  %H:%M
+    tickInterval 10minute
     section Baseline
-    B :done, b1, 12:28:36, 5s
+    T1 :done, b1, 12:28:36, 5s
     section Incident
-    I :crit, i1, 12:29:22, 26m
+    T2 :crit, i1, 12:29:22, 26m
     section Recovery
-    R :done, r1, 12:56:18, 5m
+    T3 :done, r1, 12:56:18, 5m
 ```
 
-**Workload key (historical run):** B = 50 iterations, no reset; I = 2000 iterations, no `ContinueAsNew`; R = 2000 iterations, `ContinueAsNew` every 250. Bars retain the approximate 5s / 26m / 5m spans; the experiment-phase table above retains exact recorded endpoints.
+**Workload key (historical run):**
+
+| Key | Original task label |
+|---|---|
+| T1 | 50 iterations no reset |
+| T2 | 2000 iterations no ContinueAsNew |
+| T3 | 2000 iterations ContinueAsNew=250 |
+
+Bars retain the approximate 5s / 26m / 5m spans; the experiment-phase table above retains exact recorded endpoints.
 
 ### Ground truth summary used in this document
 
@@ -925,28 +934,43 @@ Final verdict: **Hypothesis supported**.
 
 <!-- diagram-id: evidence-timeline -->
 ```mermaid
-%%{init: {"gantt": {"fontSize": 16, "sectionFontSize": 16, "leftPadding": 85, "rightPadding": 15}}}%%
+%%{init: {"gantt":{"fontSize":16,"sectionFontSize":16,"leftPadding":95,"rightPadding":35,"barHeight":24,"barGap":10},"theme":"base","themeVariables":{"doneTaskBkgColor":"#e2e8f0","critBkgColor":"#fed7aa","taskBkgColor":"#e2e8f0"},"themeCSS":".grid .tick text{font-size:16px;fill:var(--md-default-fg-color);} .section{opacity:0;} .titleText{font-size:14px;fill:var(--md-default-fg-color);} .sectionTitle{fill:var(--md-default-fg-color);} .taskTextOutsideLeft,.taskTextOutsideRight{fill:var(--md-default-fg-color)!important;} .taskText{fill:#14202e!important;}"}}%%
 gantt
     accTitle: Recorded EP1 evidence milestones
     accDescr: Historical UTC milestones and spans retain baseline, incident and recovery times, the approximately 356 and 641 millisecond incident bins, and the ContinueAsNew interval. Short keys expand immediately below; no new run or evidence certification is claimed.
-    title EP1 evidence (UTC)
+    title Durable Replay Storm Evidence Timeline (EP1)
     dateFormat  HH:mm:ss
     axisFormat  %H:%M
+    tickInterval 10minute
     section Baseline
-    B start :milestone, m1, 12:28:36, 0s
-    B end :milestone, m2, 12:28:41, 0s
+    T1 :milestone, m1, 12:28:36, 0s
+    T2 :milestone, m2, 12:28:41, 0s
     section Incident
-    I start :milestone, m3, 12:29:22, 0s
-    Mid :crit, i1, 12:36:00, 2m
-    Peak :crit, i2, 12:52:00, 2m
-    I end :milestone, m4, 12:55:28, 0s
+    T3 :milestone, m3, 12:29:22, 0s
+    T4 :crit, i1, 12:36:00, 2m
+    T5 :crit, i2, 12:52:00, 2m
+    T6 :milestone, m4, 12:55:28, 0s
     section Recovery
-    R start :milestone, m5, 12:56:18, 0s
-    Reset :done, r1, 12:56:20, 4m
-    R end :milestone, m6, 13:01:21, 0s
+    T7 :milestone, m5, 12:56:18, 0s
+    T8 :done, r1, 12:56:20, 4m
+    T9 :milestone, m6, 13:01:21, 0s
 ```
 
-**Evidence key (existing record):** B = Baseline; I = Incident; R = Recovery; start/end = phase start/completion milestones. Mid = orchestrator average reaches ~356ms in the mid-incident bin; Peak = ~641ms peak bin; Reset = `ContinueAsNew` sequence active. Both incident bins retain 2-minute spans and Reset retains its approximate 4-minute span; exact reset traces remain in section 4.5. This diagram does not recertify the historical evidence.
+**Evidence key (existing record):**
+
+| Key | Original task label |
+|---|---|
+| T1 | Baseline start |
+| T2 | Baseline complete |
+| T3 | Incident start |
+| T4 | Orchestrator avg reaches ~356ms (mid incident) |
+| T5 | Orchestrator avg reaches ~641ms (peak) |
+| T6 | Incident complete |
+| T7 | Recovery start |
+| T8 | ContinueAsNew sequence active |
+| T9 | Recovery complete |
+
+Both incident bins retain 2-minute spans and T8 retains its approximate 4-minute span; exact reset traces remain in section 4.5. This diagram does not recertify the historical evidence.
 
 ### Evidence Chain: Why This Proves the Hypothesis
 
