@@ -15,17 +15,19 @@ content_sources:
     - id: 1-2-cross-plan-architecture-map
       type: flowchart
       source: self-generated
-      justification: Flow view of cross plan architecture map, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Intended FC1, EP1, Y1 and S1 lab configurations; identity, DNS, inbound site access and outbound storage paths are distinct, not a new deployment observation.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
         - https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/configure-networking-how-to
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-private-endpoint
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
     - id: 2-2-causal-chain
       type: flowchart
       source: self-generated
-      justification: Flow view of causal chain, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Logical stages of the lab hypothesis; plan-specific symptoms and timing require the lab evidence, not source review alone.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
@@ -35,7 +37,7 @@ content_sources:
     - id: evidence-timeline
       type: gantt
       source: self-generated
-      justification: Evidence timeline, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Visualization of the existing page's baseline, injection, emergence and recovery intervals; Microsoft Learn supports the networking context, not these task times or execution provenance.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
@@ -94,89 +96,124 @@ In real incidents, teams often transfer a successful Premium or Dedicated triage
 
 <!-- diagram-id: 1-2-cross-plan-architecture-map -->
 ```mermaid
-flowchart TB
-    subgraph FC1[FC1 Flex Consumption]
-        FCAPP[Function App FC1]
-        FCVNET[VNet Integration]
-        FCMI[User-assigned Managed Identity]
-        FCST[Storage Account allowSharedKeyAccess false]
-        FCBLOB[Private Endpoint blob]
-        FCQUEUE[Private Endpoint queue]
-        FCTABLE[Private Endpoint table]
-        FCFILE[Private Endpoint file]
-        FCDNS[Private DNS Zones]
-        FCAPP --> FCVNET
-        FCAPP --> FCMI
-        FCAPP --> FCST
-        FCVNET --> FCBLOB
-        FCVNET --> FCQUEUE
-        FCVNET --> FCTABLE
-        FCVNET --> FCFILE
-        FCBLOB --> FCDNS
-        FCQUEUE --> FCDNS
-        FCTABLE --> FCDNS
-        FCFILE --> FCDNS
+flowchart TD
+    accTitle: Four hosting-plan lab configurations
+    accDescr: Intended FC1 Flex Consumption, EP1 Premium, Y1 Consumption and S1 Dedicated configurations. Dotted arrows describe identity, settings and DNS; solid arrows show outbound storage access or separate inbound S1 site access. Plan groups are logical comparisons, not subnets; apps are outside the integration and private-endpoint subnets.
+    subgraph FC1["FC1 Flex<br/>Consumption"]
+        app_runtime_fc["FC1: Function app"]
+        identity_fc{{"User-assigned<br/>managed identity"}}
+        dns_fc{{"FC DNS zones"}}
+        storage_db_fc[("FC Storage<br/>Shared key disabled")]
+        subgraph vnet_fc["FC customer VNet"]
+            subgraph subnet_int_fc["Integration subnet"]
+                vnet_integration_fc[["Outbound integration"]]
+            end
+            subgraph subnet_pe_fc["PE subnet"]
+                pe_storage_fc[["FC Storage PEs<br/>blob / queue<br/>table / file"]]
+            end
+        end
+        app_runtime_fc -.->|"[Configured]<br/>Identity"| identity_fc
+        app_runtime_fc -.->|"[Configured]<br/>DNS"| dns_fc
+        app_runtime_fc -->|"[Configured]<br/>Outbound"| vnet_integration_fc
+        vnet_integration_fc -->|"[Configured]<br/>Connect"| pe_storage_fc
+        pe_storage_fc -->|"[Configured]<br/>Private Link"| storage_db_fc
+        %% Layout-only tiers; no new transport or diagnostic steps.
+        identity_fc ~~~ dns_fc
+        dns_fc ~~~ vnet_integration_fc
     end
-
-    subgraph EP1[EP1 Premium]
-        EPAPP[Function App EP1]
-        EPVNET[VNet Integration]
-        EPMI[System-assigned Managed Identity]
-        EPST[Storage Account]
-        EPBLOB[Private Endpoint blob]
-        EPQUEUE[Private Endpoint queue]
-        EPTABLE[Private Endpoint table]
-        EPFILE[Private Endpoint file for content share]
-        EPCONTENT[vnetContentShareEnabled true]
-        EPDNS[Private DNS Zones]
-        EPAPP --> EPVNET
-        EPAPP --> EPMI
-        EPAPP --> EPST
-        EPAPP --> EPCONTENT
-        EPVNET --> EPBLOB
-        EPVNET --> EPQUEUE
-        EPVNET --> EPTABLE
-        EPVNET --> EPFILE
-        EPBLOB --> EPDNS
-        EPQUEUE --> EPDNS
-        EPTABLE --> EPDNS
-        EPFILE --> EPDNS
+    subgraph EP1["EP1 Premium"]
+        app_runtime_ep["EP1: Function app"]
+        identity_ep{{"System-assigned<br/>managed identity"}}
+        config_ep["EP content setting"]
+        dns_ep{{"EP DNS zones"}}
+        storage_db_ep[("EP Storage")]
+        subgraph vnet_ep["EP customer VNet"]
+            subgraph subnet_int_ep["Integration subnet"]
+                vnet_integration_ep[["Outbound integration"]]
+            end
+            subgraph subnet_pe_ep["PE subnet"]
+                pe_storage_ep[["EP Storage PEs<br/>blob / queue<br/>table / file"]]
+            end
+        end
+        app_runtime_ep -.->|"[Configured]<br/>Identity"| identity_ep
+        app_runtime_ep -.->|"[Configured]<br/>Setting"| config_ep
+        app_runtime_ep -.->|"[Configured]<br/>DNS"| dns_ep
+        app_runtime_ep -->|"[Configured]<br/>Outbound"| vnet_integration_ep
+        vnet_integration_ep -->|"[Configured]<br/>Connect"| pe_storage_ep
+        pe_storage_ep -->|"[Configured]<br/>Private Link"| storage_db_ep
+        %% Layout-only tiers; no new transport or diagnostic steps.
+        identity_ep ~~~ config_ep
+        config_ep ~~~ dns_ep
+        dns_ep ~~~ vnet_integration_ep
     end
-
-    subgraph Y1[Y1 Consumption]
-        YAPP[Function App Y1]
-        YMI[System-assigned Managed Identity]
-        YST[Storage Account Public Endpoints]
-        YCFG[AzureWebJobsStorage__accountName]
-        YAPP --> YMI
-        YAPP --> YST
-        YAPP --> YCFG
+    subgraph Y1["Y1 Consumption"]
+        app_runtime_y["Y1: Function app"]
+        identity_y{{"System-assigned<br/>managed identity"}}
+        config_y["Y host-storage setting"]
+        storage_db_y[("Y Storage<br/>Public endpoints")]
+        app_runtime_y -.->|"[Configured]<br/>Identity"| identity_y
+        app_runtime_y -.->|"[Configured]<br/>Setting"| config_y
+        app_runtime_y -->|"[Configured]<br/>Storage"| storage_db_y
+        %% Layout-only tiers; no new transport or diagnostic steps.
+        identity_y ~~~ config_y
+        config_y ~~~ storage_db_y
     end
-
-    subgraph S1[Dedicated S1]
-        SAPP[Function App S1]
-        SVNET[VNet Integration]
-        SMI[System-assigned Managed Identity]
-        SST[Storage Account]
-        SBLOB[Private Endpoint blob]
-        SQUEUE[Private Endpoint queue]
-        STABLE[Private Endpoint table]
-        SSITE[Site Private Endpoint]
-        SRUN[Run From Package no file PE]
-        SDNS[Private DNS Zones]
-        SAPP --> SVNET
-        SAPP --> SMI
-        SAPP --> SST
-        SAPP --> SRUN
-        SVNET --> SBLOB
-        SVNET --> SQUEUE
-        SVNET --> STABLE
-        SVNET --> SSITE
-        SBLOB --> SDNS
-        SQUEUE --> SDNS
-        STABLE --> SDNS
+    subgraph S1["S1 Dedicated"]
+        client_s(["Private HTTPS caller"])
+        app_runtime_s["S1: Function app"]
+        identity_s{{"System-assigned<br/>managed identity"}}
+        config_s["S package setting"]
+        dns_s{{"S DNS zones"}}
+        storage_db_s[("S Storage")]
+        subgraph vnet_s["S customer VNet"]
+            subgraph subnet_int_s["Integration subnet"]
+                vnet_integration_s[["Outbound integration"]]
+            end
+            subgraph subnet_pe_s["PE subnet"]
+                pe_storage_s[["S Storage PEs<br/>blob / queue / table"]]
+            end
+        end
+        subgraph subnet_site_s["Site PE subnet"]
+            pe_site_s[["S site PE"]]
+        end
+        client_s -->|"[Configured]<br/>HTTPS"| pe_site_s
+        pe_site_s -->|"[Configured]<br/>Inbound"| app_runtime_s
+        app_runtime_s -.->|"[Configured]<br/>Identity"| identity_s
+        app_runtime_s -.->|"[Configured]<br/>Setting"| config_s
+        app_runtime_s -.->|"[Configured]<br/>DNS"| dns_s
+        app_runtime_s -->|"[Configured]<br/>Outbound"| vnet_integration_s
+        vnet_integration_s -->|"[Configured]<br/>Connect"| pe_storage_s
+        pe_storage_s -->|"[Configured]<br/>Private Link"| storage_db_s
+        %% Layout-only tiers; no new transport or diagnostic steps.
+        identity_s ~~~ config_s
+        config_s ~~~ dns_s
+        dns_s ~~~ vnet_integration_s
     end
+    %% Layout-only plan order; these invisible links are not inter-plan traffic.
+    storage_db_fc ~~~ app_runtime_ep
+    storage_db_ep ~~~ app_runtime_y
+    storage_db_y ~~~ client_s
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    classDef bandMuted fill:#ffffff,stroke:#707e93,stroke-width:1.5px,stroke-dasharray:4 3,color:#14202e;
+    classDef netBox fill:transparent,stroke:#287ce4,stroke-width:2px,stroke-dasharray:6 3;
+    class app_runtime_fc,app_runtime_ep,app_runtime_y,app_runtime_s,client_s,storage_db_fc,storage_db_ep,storage_db_y,storage_db_s,vnet_integration_fc,vnet_integration_ep,vnet_integration_s,pe_storage_fc,pe_storage_ep,pe_storage_s,pe_site_s baseNeutral;
+    class identity_fc,identity_ep,identity_y,identity_s,dns_fc,dns_ep,dns_s,config_ep,config_y,config_s bandMuted;
+    class vnet_fc,vnet_ep,vnet_s,subnet_int_fc,subnet_int_ep,subnet_int_s,subnet_pe_fc,subnet_pe_ep,subnet_pe_s,subnet_site_s netBox;
+    linkStyle default stroke-width:2px;
 ```
+
+**Reading key:** These are the four configurations described by this lab, not a record of a new run or a minimum endpoint list for every app. PEs are private-endpoint interfaces, not the Storage service itself. Solid arrows follow the connection initiator; dotted arrows summarize identity/configuration or app-initiated name resolution, not data flowing through DNS.
+
+| Key | Configuration and relationship retained |
+|---|---|
+| FC | FC1 Flex Consumption; user-assigned managed identity; Storage `allowSharedKeyAccess: false`; separate `blob`, `queue`, `table`, `file` PEs and corresponding private DNS zones. The file PE is retained from this lab configuration, not a Flex requirement. |
+| EP | EP1 Premium; system-assigned identity; separate `blob`, `queue`, `table`, `file` PEs; file PE serves the content share. `EP content setting` = `vnetContentShareEnabled: true`. |
+| Y | Y1 Consumption; system-assigned identity; Storage public endpoints. `Y host-storage setting` = `AzureWebJobsStorage__accountName`. |
+| S | S1 Dedicated; system-assigned identity; separate `blob`, `queue`, `table` PEs; `S package setting` = run-from-package, no file PE in this configuration. Site PE is a separate inbound path, not an outbound integration target. Its subnet is drawn separately to separate ingress from storage egress, not to assert an additional VNet. |
+| DNS | FC/EP/S DNS nodes stand for the private zones corresponding to the enumerated Storage services, linked to each VNet. App lookup resolves the service hostname to its PE IP. |
+| Identity | Logical use of the assigned identity via the app's managed-identity endpoint, not a direct app-to-Entra network hop or Azure Files identity authentication. |
+
+For FC1, EP1 and this multitenant S1 configuration, VNet integration provides outbound connectivity; it does not deploy the app into the integration subnet. Integration and PE subnets are separate; DNS zones are linked rather than subnet-contained ([networking options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options), [Storage PEs](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints)). The private S1 HTTPS caller keeps the app hostname for TLS while connecting through the site PE ([site private endpoints](https://learn.microsoft.com/en-us/azure/app-service/overview-private-endpoint)); its DNS lookup is omitted from this storage-focused comparison.
 
 ### 1.3 Asymmetric Feature Matrix
 
@@ -222,12 +259,16 @@ The rest of the guide is organized to produce those answers with repeatable evid
 <!-- diagram-id: 2-2-causal-chain -->
 ```mermaid
 flowchart TD
-    A[Apply same fault class to FC1 EP1 Y1 S1] --> B[Plan-specific infrastructure path activated]
-    B --> C[Different token lifecycle and dependency startup behavior]
-    C --> D[Different external symptom shape]
-    D --> E[Different monitoring signatures]
-    E --> F[Different triage branch required]
-    F --> G[Need plan-specific runbook]
+    accTitle: Cross-plan fault hypothesis chain
+    accDescr: The lab hypothesis links fault class, plan-specific infrastructure, token lifecycle and startup dependencies, external symptoms, monitoring, triage and runbooks. This is a proposed causal chain, not new execution evidence.
+    A["Apply same fault class<br/>to FC1 EP1 Y1 S1"] --> B["Plan-specific infrastructure<br/>path activated"]
+    B --> C["Different token lifecycle<br/>and dependency startup behavior"]
+    C --> D["Different external<br/>symptom shape"]
+    D --> E["Different monitoring signatures"]
+    E --> F["Different triage branch required"]
+    F --> G["Need plan-specific runbook"]
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G neutral;
 ```
 
 ### 2.3 Proof criteria
@@ -1312,7 +1353,10 @@ Dedicated behavior contrast:
 
 <!-- diagram-id: evidence-timeline -->
 ```mermaid
+%%{init: {'gantt': {'fontSize': 14, 'sectionFontSize': 14}}}%%
 gantt
+    accTitle: Hosting Plan Security Matrix Fault Timeline
+    accDescr: Existing page timeline with Baseline, Fault Injection Window, Distinct Emergence and Recovery sections. All original tasks and relative time values are retained; this migration does not establish run provenance or revalidate timing.
     title Hosting Plan Security Matrix Fault Timeline
     dateFormat  X
     axisFormat  T+%Ss
@@ -1408,3 +1452,5 @@ az group delete --name "$RG_S1" --yes --no-wait
 - [Private endpoints for Azure Storage](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints)
 - [Azure Functions hosting options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
 - [Secure storage account access from Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/configure-networking-how-to)
+- [App Service private endpoints](https://learn.microsoft.com/en-us/azure/app-service/overview-private-endpoint)
+- [Managed identities for App Service and Azure Functions](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)
