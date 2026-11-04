@@ -22,7 +22,7 @@ FENCE: Final = re.compile(r"<!-- diagram-id: ([\w-]+) -->\n```mermaid\n(.*?)\n``
 NODE: Final = re.compile(r'^\s*(\w+)(\[\[|\[\(|\(\[|\{\{|\[|>)("[^"]+")(\]\]|\)\]|\]\)|\}\}|\])$')
 EDGE: Final = re.compile(r'^\s*(\w+) (-->|-\.->|==>|~~~)(?:\|"([^"\n]+)"\|)? (\w+)$')
 CONTAINER: Final = re.compile(r'^\s*subgraph (\w+)\["([^"]+)"\]$')
-STYLE: Final = re.compile(r"^\s*linkStyle (\d+(?:,\d+)*) (.+);$")
+STYLE: Final = re.compile(r"^\s*linkStyle (\d+(?:,\d+)*) ([^;]+);$")
 CLAIM: Final = re.compile(r"\[(?:Configured|Illustrative|Inferred|Observed)\] \S.*")
 FAULT: Final = re.compile(r"\[FAULT / (?:Illustrative|Inferred|Observed)\] \S.*")
 PALETTE: Final = {
@@ -130,23 +130,43 @@ def topology_problems(code: str) -> list[str]:
 
 
 def sequence_problems(code: str) -> list[str]:
+    """Accept only the declared host/worker pair and one ordered exchange."""
     problems: list[str] = []
     participants: list[str] = []
     messages: list[tuple[str, str, str]] = []
     for line in code.splitlines()[3:]:
-        if match := re.fullmatch(r"    participant (\w+) as [^\s;][^;]*", line):
+        if ";" in line:
+            problems.append("sequence requires one statement per line")
+        elif "%%" in line or "\t" in line:
+            problems.append("unsupported sequence comment or tab")
+        elif match := re.fullmatch(r"    participant ([a-z_]+) as \S.*", line):
             participants.append(match[1])
-        elif match := re.fullmatch(r"    (\w+)(?:->>|-->>)(\w+): (.*)", line):
-            messages.append((match[1], match[2], match[3]))
+            if messages:
+                problems.append("participant after sequence message")
+        elif match := re.fullmatch(r"    ([a-z_]+)(->>|-->>)([a-z_]+): (.*)", line):
+            source, arrow, target, label = match.groups()
+            messages.append((source, arrow, target))
+            if source not in participants or target not in participants:
+                problems.append("undeclared sequence endpoint")
+            if not CLAIM.fullmatch(label):
+                problems.append("missing sequence claim or description")
         else:
             problems.append("unsupported sequence statement")
     if len(participants) != len(set(participants)):
         problems.append("duplicate participant")
-    for source, target, label in messages:
-        if source not in participants or target not in participants:
-            problems.append("undeclared sequence endpoint")
-        if not CLAIM.fullmatch(label):
-            problems.append("missing sequence claim or description")
+    if participants != ["app_runtime", "language_worker"]:
+        problems.append("sequence participant IDs or declaration order differ")
+    expected = [("app_runtime", "->>", "language_worker"), ("language_worker", "-->>", "app_runtime")]
+    for purpose, relationship in zip(("invocation", "completion"), expected, strict=True):
+        count = messages.count(relationship)
+        if count == 0:
+            problems.append(f"essential sequence relationship: {purpose}")
+        elif count > 1:
+            problems.append(f"duplicate sequence relationship: {purpose}")
+    if any(message not in expected for message in messages):
+        problems.append("unexpected sequence relationship")
+    if len(messages) == 2 and set(messages) == set(expected) and messages != expected:
+        problems.append("sequence exchange order differs")
     return problems
 
 
@@ -189,6 +209,8 @@ def template_problems(text: str) -> list[str]:
         for position, keyword in enumerate(("accTitle", "accDescr"), 1):
             if len(lines) <= position or not re.fullmatch(rf"    {keyword}: \S.*", lines[position]):
                 problems.append(f"missing or empty {keyword}")
+            elif any(token in lines[position] for token in ((";", "%%", "\t") if name == SEQUENCE else ("%%", "\t"))):
+                problems.append("unsupported accessible header separator")
         if "[Observed]" in code or "/ Observed]" in code:
             # This synthetic family has no retained lab artifact: fail closed.
             problems.append("Observed without retained artifact")
@@ -278,6 +300,42 @@ def test_committed_templates() -> None:
     ('    app_runtime -->|"[Configured] Host state / keys"| storage_db', '', "essential relationship: host storage"),
     ('    vnet_integration -->|"[Configured] Connect to PE IP"| pe_storage', '', "essential relationship: integration to PE"),
     ('    pe_storage -->|"[Configured] Private Link to Blob"| storage_db', '', "essential relationship: PE to storage"),
+    ('[Illustrative] Invoke function', '[Illustrative] Invoke function; app_runtime->>ghost: [Illustrative] Extra', "sequence requires one statement per line"),
+    ('as Functions host', 'as Functions host; participant ghost as Extra', "sequence requires one statement per line"),
+    ('    app_runtime->>language_worker: [Illustrative] Invoke function\n', '', "essential sequence relationship: invocation"),
+    ('\n    language_worker-->>app_runtime: [Illustrative] Complete invocation', '', "essential sequence relationship: completion"),
+    ('\n    app_runtime->>language_worker: [Illustrative] Invoke function\n    language_worker-->>app_runtime: [Illustrative] Complete invocation', '', "essential sequence relationship: invocation"),
+    ('\n    app_runtime->>language_worker: [Illustrative] Invoke function\n    language_worker-->>app_runtime: [Illustrative] Complete invocation', '', "essential sequence relationship: completion"),
+    ('app_runtime->>language_worker:', 'language_worker->>app_runtime:', "essential sequence relationship: invocation"),
+    ('language_worker-->>app_runtime:', 'app_runtime-->>language_worker:', "essential sequence relationship: completion"),
+    ('app_runtime->>language_worker:', 'app_runtime-->>language_worker:', "essential sequence relationship: invocation"),
+    ('language_worker-->>app_runtime:', 'language_worker->>app_runtime:', "essential sequence relationship: completion"),
+    ('[Illustrative] Invoke function', '[Illustrative] Invoke function %% hidden', "unsupported sequence comment or tab"),
+    ('[Illustrative] Invoke function', '[Illustrative] Invoke\tfunction', "unsupported sequence comment or tab"),
+    ('as Functions host', 'as Functions host %% hidden', "unsupported sequence comment or tab"),
+    ('as Functions host', 'as Functions\thost', "unsupported sequence comment or tab"),
+    ('    participant app_runtime as Functions host', '    participant аpp_runtime as Functions host', "sequence participant IDs or declaration order differ"),
+    ('    app_runtime->>language_worker:', '    аpp_runtime->>language_worker:', "unsupported sequence statement"),
+    ('    app_runtime->>language_worker:', '    participant ghost as Extra\n    app_runtime->>language_worker:', "sequence participant IDs or declaration order differ"),
+    ('    app_runtime->>language_worker: [Illustrative] Invoke function', '    app_runtime->>language_worker: [Illustrative] Invoke function\n    app_runtime->>language_worker: [Illustrative] Invoke function', "duplicate sequence relationship: invocation"),
+    ('    language_worker-->>app_runtime: [Illustrative] Complete invocation', '    language_worker-->>app_runtime: [Illustrative] Complete invocation\n    language_worker-->>app_runtime: [Illustrative] Complete invocation', "duplicate sequence relationship: completion"),
+    ('[Illustrative] Complete invocation', '[Illustrative] Complete invocation\n    language_worker->>app_runtime: [Illustrative] Extra', "unexpected sequence relationship"),
+    ('    app_runtime->>language_worker: [Illustrative] Invoke function\n    language_worker-->>app_runtime: [Illustrative] Complete invocation', '    language_worker-->>app_runtime: [Illustrative] Complete invocation\n    app_runtime->>language_worker: [Illustrative] Invoke function', "sequence exchange order differs"),
+    ('    participant language_worker as Isolated worker\n    app_runtime->>language_worker: [Illustrative] Invoke function', '    app_runtime->>language_worker: [Illustrative] Invoke function\n    participant language_worker as Isolated worker', "participant after sequence message"),
+    ('    accTitle: Isolated worker - logical invocation exchange', '    accTitle: Isolated worker - logical invocation exchange; participant ghost as Extra', "unsupported accessible header separator"),
+    ('accDescr: Premium queue polling', 'accDescr: Premium %% queue polling', "unsupported accessible header separator"),
+    ('accDescr: Premium queue polling', 'accDescr: Premium\tqueue polling', "unsupported accessible header separator"),
+    ('    app_runtime->>language_worker:', '\tapp_runtime->>language_worker:', "unsupported sequence comment or tab"),
+    ('linkStyle 4 stroke:#da495d,stroke-width:3px;', 'linkStyle 4 stroke:#da495d,stroke-width:3px; app_runtime --> ghost;\n    linkStyle 4 stroke:#da495d,stroke-width:3px;', "unsupported topology line"),
+    *[(
+        '    app_runtime->>language_worker:',
+        '    ' + statement + '\n    app_runtime->>language_worker:',
+        "unsupported sequence statement",
+    ) for statement in (
+        'Note over app_runtime: Extra', 'activate app_runtime\n    deactivate app_runtime',
+        'loop Extra\n    end', 'alt Extra\n    else Other\n    end',
+        'autonumber', 'autonumber\n    autonumber', 'sequenceDiagram',
+    )],
 ])
 def test_rejects_mutated_templates(old: str, new: str, diagnostic: str) -> None:
     # Given: a single in-memory defect in the committed page.
@@ -288,6 +346,45 @@ def test_rejects_mutated_templates(old: str, new: str, diagnostic: str) -> None:
     problems = template_problems(mutated)
     # Then: its specific rule fires, not merely an incidental parser failure.
     assert diagnostic in problems
+
+
+@pytest.mark.parametrize("prefix", [
+    'scale_controller[', 'app_runtime -->', 'subgraph vnet_fn[', 'end',
+    'linkStyle 6 ', 'classDef baseNeutral ', 'class ',
+])
+@pytest.mark.parametrize("separator", ["; ", " "])
+def test_rejects_second_topology_statement(prefix: str, separator: str) -> None:
+    # Given: a complete view, with balanced containers and an extra statement.
+    text = PAGE.read_text(encoding="utf-8")
+    code = dict(FENCE.findall(text))["functions-v1-network-storage-failure"]
+    line = next(line for line in code.splitlines() if line.strip().startswith(prefix))
+    mutated = code.replace(line, line + separator + 'app_runtime --> ghost;', 1)
+    # When: the same family guard inspects the otherwise unchanged page.
+    problems = template_problems(text.replace(code, mutated))
+    # Then: statement recognition rejects the appended command itself.
+    assert "unsupported topology line" in problems
+
+
+def test_rejects_empty_sequence_body() -> None:
+    # Given: valid headers but no participants or messages.
+    text = PAGE.read_text(encoding="utf-8")
+    code = dict(FENCE.findall(text))[SEQUENCE]
+    mutated = text.replace(code, '\n'.join(code.splitlines()[:3]))
+    # When: the family guard inspects the empty sequence.
+    problems = template_problems(mutated)
+    # Then: an invocation exchange is mandatory.
+    assert "essential sequence relationship: invocation" in problems
+    assert "essential sequence relationship: completion" in problems
+
+
+def test_accepts_sequence_description_with_trailing_spaces() -> None:
+    # Given: a claim-prefixed description, not an exact prose fixture.
+    text = PAGE.read_text(encoding="utf-8")
+    mutated = text.replace('[Illustrative] Invoke function', '[Configured] Dispatch work   ', 1)
+    # When: the same bounded family guard inspects ordinary trailing whitespace.
+    problems = template_problems(mutated)
+    # Then: description wording and trailing spaces do not alter the exchange.
+    assert problems == []
 
 
 def test_rejects_storage_service_inside_balanced_subnet() -> None:
