@@ -13,6 +13,20 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/manage-connections#grant-permissions-to-an-identity
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to#configure-deployment-settings
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/storage/common/storage-network-security
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/storage/common/storage-network-security-limitations
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/troubleshoot/azure/azure-storage/blobs/authentication/storage-troubleshoot-403-errors
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/storagebloblogs
   diagrams:
     - id: 1-1-storage-dependency-model-for-azure-functions
       type: flowchart
@@ -423,6 +437,102 @@ Only RBAC is intentionally faulted here. DNS, network-path and Storage firewall
 are competing explanations checked without changing them. A future experiment
 that injects one of those faults needs its own predeclaration/run ID and isolated
 rollback; this definition authorizes no broad firewall/DNS automation.
+
+#### Firewall-fault control predeclaration (separate offline variant)
+
+[Not Proven] With the same **FC1 / Linux / Functions v4 / Python v2 / Timer**
+scope, denying the host account's public endpoint may prevent host Blob access
+and listener startup while host RBAC, DNS and TCP/TLS remain unchanged. This
+variant is **NOT_RUN / NOT_TESTED**; it has no assigned run identity or captures.
+It is a separate design, not an additional fault in the RBAC run above.
+
+Keep the [storage-role matrix](#scope-and-storage-role-matrix): host **Storage
+Blob Data Owner**, plus **Storage Table Data Contributor** for diagnostic events;
+no Queue role is needed for this Timer-only workload. These are the
+[documented host/Timer permissions](https://learn.microsoft.com/en-us/azure/azure-functions/manage-connections#grant-permissions-to-an-identity),
+not the historical four-role set. The host/deployment distinction follows
+[Functions storage considerations](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations)
+and [Flex deployment settings](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to#configure-deployment-settings).
+Separate deployment account/identity is an experiment control, not a platform
+requirement; Flex can otherwise default to the host account.
+
+Reuse the [ownership and collection prerequisites](#ownership-topology-and-validity-prerequisites),
+[phase bounds](#baseline-one-fault-recovery-procedure) and
+[retained-evidence layout](#golden-run-identity-and-retained-evidence-no-captures-yet),
+with these variant-specific controls frozen before any authorized future run:
+
+1. **Baseline/control:** host Blob requests must use the permitted **public**
+    endpoint with `publicNetworkAccess=Enabled`. Before baseline collection,
+    establish `networkAcls.defaultAction=Deny` and the specific permitted
+    public-endpoint path: [disabling public access through Portal, PowerShell or
+    Azure CLI also sets defaultAction to Deny](https://learn.microsoft.com/en-us/azure/storage/common/storage-network-security-limitations).
+    Freeze the complete network configuration, retaining effective firewall rules,
+    exceptions and actual caller path. No host Blob private endpoint/fallback may
+    bypass the target. Keep diagnostic Table access on a fixed, approved Table
+    private endpoint and DNS path, and export Blob resource logs to a separate
+    Log Analytics destination. [Storage firewall rules](https://learn.microsoft.com/en-us/azure/storage/common/storage-network-security)
+    govern public access; [private endpoints](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints)
+    are service-specific and remain reachable when public access is
+    disabled. If this topology or collection health cannot be established, stop.
+2. **Single fault:** change only the run-owned **host account's**
+    `publicNetworkAccess` from `Enabled` to `Disabled`. Keep every assignment,
+    identity selector, DNS record, route, NSG rule, deployment setting and package
+    fixed. Do not remove any role or alter an allowlist as a second intervention.
+    Use a reviewed update method whose captured diff changes only
+    `publicNetworkAccess`; any additional change invalidates the single-property
+    intervention. Retain the change receipt; use the same restart/window/probe
+    protocol as above. Table private-endpoint access must remain healthy.
+3. **Recovery:** restore that property to its captured baseline value, leaving
+    original rules and all permissions untouched. Apply the same observation
+    protocol and ownership-restricted cleanup receipt, restoring the network
+    property even if collection fails. For this variant, network-property
+    restoration replaces the RBAC-assignment restoration step in the shared
+    cleanup receipt; verify all role assignments are unchanged. If an update
+    changed other network properties, restore the complete captured baseline and
+    record the isolation failure. Recovered Blob operations and Timer
+    occurrences are `recovery`, not a unique-cause certificate.
+
+##### Compact causal test matrix
+
+Each row names one intervention or read-only competing-explanation control;
+never combine injected faults. All entries are predictions, not observations.
+DNS/path/deployment fault injection remains outside these two variants.
+
+| Explanation / evidence role | Single intervention or control | Expected specific observable | Negative control / falsifying outcome |
+|---|---|---|---|
+| Host Storage firewall / `discriminating` | Disable host-account public access only; restore it for recovery | Same host-identity Blob operation changes from success to `403` with `AuthorizationFailure`, correlated with caller/path and the network-property receipt | DNS endpoint and TCP 443/TLS still succeed; host Blob Data Owner and deployment access stay fixed. A correlated authorized operation through the same public path counters the bounded prediction; private-path success does not. |
+| Host data-plane RBAC / `discriminating` | Remove and restore only the inventoried host Blob Data Owner assignment, as above | Same OAuth principal/operation returns permission-specific denial such as `AuthorizationPermissionMismatch` with permitted network path | Firewall, DNS and TCP/TLS stay fixed. Authorization of that same operation is the existing `fault.authorization` counter; a different principal or SAS failure is not. |
+| DNS / `discriminating` alternative | No configuration write; repeat the identical app-context lookup | Positive resolver failure or resolution to an unintended endpoint changes the DNS result; [private-endpoint DNS](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints#dns-changes-for-private-endpoints) must resolve to the intended private address when that path is selected | Roles/network policy must not change. Wrong public resolution followed by a firewall 403 is a mixed DNS/firewall explanation, not isolated RBAC or the declared firewall fault. |
+| Transport / `discriminating` alternative | No configuration write; repeat the identical TCP/TLS probe | Intended DNS resolution succeeds but endpoint-correlated TCP timeout/refusal or TLS failure replaces a successful connection | Resolver, roles and firewall configuration stay fixed. TCP success alone does not establish Storage authorization; a timeout alone does not identify a particular NSG/route. |
+| Flex deployment storage / `control` | No configuration write; compare the fixed deployment selector and package-access evidence | Retain `functionAppConfig.deployment.storage` container, authentication type and selected identity; correlate package access to the **deployment** account, whose identity keeps Storage Blob Data Contributor | Host settings/identity and active package digest must not change. Deployment-account denial or selector drift invalidates isolation, not host RBAC. A deployment receipt alone does not prove runtime package access or listener readiness. |
+
+The error families above follow the [Storage 403 diagnostic guide](https://learn.microsoft.com/en-us/troubleshoot/azure/azure-storage/blobs/authentication/storage-troubleshoot-403-errors):
+`AuthorizationFailure` is consistent with network restrictions;
+`AuthorizationPermissionMismatch` can also mean SAS permissions. Neither code
+alone proves the proposed cause. Listener-unable-to-start and host storage-unhealthy
+messages remain `symptom`; HTTP 403 remains `supporting`, as in the
+[existing observations table](#predeclared-observations-and-disproof).
+
+For `run.collection`, freeze the same app, host Blob account/service, selected
+principal, harmless operation/object and phase intervals across collectors. In
+[StorageBlobLogs](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/storagebloblogs),
+retain sanitized `TimeGenerated`, `AccountName`, `ServiceType`, `OperationName`,
+`AuthenticationType`, `RequesterObjectId`, `CallerIpAddress`, `StatusCode`,
+`StatusText`, `ClientRequestId`, `Uri`, `ObjectKey` and relevant
+`AuthorizationDetails` when populated. Match `ClientRequestId` to the probe's
+`x-ms-client-request-id`, together with account, operation/object and time window.
+Retain the response `x-ms-request-id` and `x-ms-error-code` separately; do not assume
+an undocumented server-ID mapping. Rejected requests may not populate every
+identity/policy field. Missing matching
+logs, probe context or unchanged Table diagnostics makes attribution undecidable;
+use the existing outcome rules, not absence-as-disproof.
+
+Keep `storage-scenario.json` and its tests unchanged: their `fault.config-diff`
+expects `one-host-assignment-only`, and `fault.firewall` expects the path to remain
+permitted. Firewall denial is counter-evidence there, not a firewall-variant PASS.
+Before a future firewall run, freeze this separate predeclaration and raw-to-signal
+mapping under its own fresh run identity; do not replay its captures against the
+RBAC assertions or claim this prose supplies executable collectors.
 
 #### Predeclared observations and disproof
 
@@ -1292,9 +1402,11 @@ az group delete \
 - [Host connections and identity permission table](https://learn.microsoft.com/en-us/azure/azure-functions/manage-connections#grant-permissions-to-an-identity)
 - [Flex deployment storage settings](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to#configure-deployment-settings)
 - [Storage network security](https://learn.microsoft.com/en-us/azure/storage/common/storage-network-security)
+- [Storage firewall guidelines and limitations](https://learn.microsoft.com/en-us/azure/storage/common/storage-network-security-limitations)
 - [Storage private endpoints and DNS](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints)
 - [Troubleshoot Storage 403 errors](https://learn.microsoft.com/en-us/troubleshoot/azure/azure-storage/blobs/authentication/storage-troubleshoot-403-errors)
 - [Monitor Blob Storage](https://learn.microsoft.com/en-us/azure/storage/blobs/monitor-blob-storage)
+- [StorageBlobLogs field reference](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/storagebloblogs)
 - [Azure Functions storage considerations](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations)
 - [Azure Functions trigger and binding concepts](https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings)
 - [Enable managed identity for Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial)
