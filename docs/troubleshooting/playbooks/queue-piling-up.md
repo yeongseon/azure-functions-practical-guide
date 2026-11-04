@@ -62,7 +62,7 @@ flowchart TD
     B -->|Yes| C("H2 hypothesis:<br/>Poison-message loop")
     C --> K(["Mitigate retries;<br/>quarantine poison<br/>payload class"])
     B -->|No| D{"Scale events<br/>visible?"}
-    %% Invisible layout anchors keep later decisions below mitigation leaves.
+    %% Layout-only links serialize branches; they add no diagnostic steps or arrows.
     K ~~~ D
     D -->|No| E("H1 hypothesis:<br/>Scale-out not keeping up")
     E --> L(["Mitigate capacity and<br/>scale constraints"])
@@ -81,7 +81,7 @@ flowchart TD
     linkStyle default stroke-width:2px;
 ```
 
-**Takeaway:** Follow the Yes/No evidence checks (diamonds) to candidate H1–H4 hypotheses (rounded boxes), then mitigation endpoints (stadiums) or further configuration checks (rectangle); this illustrative triage order is not a confirmed root cause.
+**Takeaway:** Diamonds route Yes/No checks to candidate H1–H4 hypotheses (rounded boxes) and mitigation endpoints (stadiums), or to further configuration checks (rectangle); validate candidates against the evidence and disproof sections below.
 
 This playbook assumes enqueue is healthy and focuses on why consumers cannot drain.
 
