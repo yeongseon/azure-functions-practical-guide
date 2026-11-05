@@ -80,6 +80,8 @@ def topology_problems(code: str) -> list[str]:
                 problems.append("service inside customer container")
         elif match := EDGE.fullmatch(line):
             source, arrow, label, target = match.groups()
+            if containers:
+                problems.append("edge inside customer container")
             edges.append((source, arrow, label or "", target))
             if arrow != "~~~" and not (FAULT if arrow == "==>" else CLAIM).fullmatch(label or ""):
                 problems.append("missing edge claim or fault prefix")
@@ -385,6 +387,28 @@ def test_accepts_sequence_description_with_trailing_spaces() -> None:
     problems = template_problems(mutated)
     # Then: description wording and trailing spaces do not alter the exchange.
     assert problems == []
+
+
+@pytest.mark.parametrize("edge_prefix", [
+    '    app_runtime -->|"[Configured] Invoke function"|',
+    '    client ~~~',
+])
+def test_rejects_edge_inside_balanced_vnet(edge_prefix: str) -> None:
+    # Given: move an existing edge just inside the balanced customer VNet.
+    text = PAGE.read_text(encoding="utf-8")
+    code = dict(FENCE.findall(text))["functions-v1-network-storage-normal"]
+    edge = next(line for line in code.splitlines() if line.startswith(edge_prefix))
+    moved = code.replace(edge + "\n", "", 1).replace(
+        '    end\n    scale_controller -.->',
+        edge + '\n    end\n    scale_controller -.->',
+        1,
+    )
+    assert moved != code, "mutation must still exercise its target"
+    # When: the family guard processes implicit endpoint containment.
+    problems = template_problems(text.replace(code, moved, 1))
+    # Then: neither semantic edges nor layout anchors may imply membership.
+    assert "edge inside customer container" in problems
+    assert "unbalanced container" not in problems
 
 
 def test_rejects_storage_service_inside_balanced_subnet() -> None:
