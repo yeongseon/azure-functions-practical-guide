@@ -21,19 +21,23 @@ content_sources:
     - id: what-you-ll-build
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Tutorial-specific local Python host and Azurite relationship, not a deployed Premium architecture.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-develop-local
     - id: what-you-ll-build-2
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build 2, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Local Python setup and HTTP check order for this tutorial, not validation of Premium hosting behavior.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-develop-local
 ---
 # 01 - Run Locally (Premium)
 
@@ -72,6 +76,8 @@ export LOCATION="koreacentral"
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
+    accTitle: Python local host and Azurite for the Premium track
+    accDescr: The local machine starts the Python Functions host on port 7071 in this example. The host uses Azurite with the illustrated UseDevelopmentStorage=true setting; this local relationship does not represent Premium networking or warm instances.
     DEV[Local Machine] --> HOST[Functions Host :7071]
     HOST --> AZURITE[Azurite Local Storage]
 ```
@@ -79,6 +85,8 @@ flowchart TD
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart TD
+    accTitle: Local Python setup for the Premium track
+    accDescr: Prepare a Python virtual environment and dependencies, configure local settings and Azurite host storage, run func host start, then check the sample health and info HTTP endpoints. The arrows show tutorial task order, not validation of Premium scaling or warm-instance behavior.
     A[Python venv + dependencies] --> B[Local settings]
     B --> C[Azurite host storage]
     C --> D[func host start]

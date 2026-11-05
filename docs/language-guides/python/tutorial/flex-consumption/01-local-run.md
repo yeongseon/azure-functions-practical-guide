@@ -21,19 +21,23 @@ content_sources:
     - id: what-you-ll-build
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Tutorial-specific local Python host and Azurite relationship, not a deployed Flex Consumption architecture.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-event-grid-blob-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-develop-local
     - id: what-you-ll-build-2
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build 2, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Local Python preparation and sample HTTP route map, not validation of Flex Consumption hosting behavior.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-event-grid-blob-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-develop-local
 ---
 # 01 - Run Locally (Flex Consumption)
 
@@ -50,7 +54,7 @@ Run the Function App locally with Azure Functions Core Tools so you can validate
 
 ## What You'll Build
 
-You will run the Python reference Function App locally with Azurite, validate HTTP routes, and verify Flex Consumption-specific behavior before cloud deployment.
+You will run the Python reference Function App locally with Azurite and test its HTTP routes; these local checks do not verify Flex Consumption hosting behavior.
 
 !!! info "Infrastructure Context"
     **Plan**: Flex Consumption (FC1) — **Network**: Full private network (VNet + Private Endpoints)
@@ -60,6 +64,8 @@ You will run the Python reference Function App locally with Azurite, validate HT
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
+    accTitle: Python local host and Azurite for the Flex Consumption track
+    accDescr: The local machine starts the Python Functions host on port 7071 in this example. The host uses Azurite with the illustrated UseDevelopmentStorage=true setting; this local relationship does not represent Flex Consumption networking or scaling.
     DEV[Local Machine] --> HOST[Functions Host :7071]
     HOST --> AZURITE[Azurite Local Storage]
 ```
@@ -67,6 +73,8 @@ flowchart TD
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart TD
+    accTitle: Local Python preparation and routes for the Flex Consumption track
+    accDescr: The developer shell prepares a Python virtual environment with dependencies and starts Azurite. The prepared Python environment runs the Functions host on port 7071, where this sample exposes /api/health and /api/info. The branches show local preparation and HTTP route associations, not deployed Flex Consumption behavior.
     Dev[Developer Shell] --> Venv[Python venv + dependencies]
     Dev --> Azurite[Azurite local storage]
     Venv --> Host[Functions host :7071]

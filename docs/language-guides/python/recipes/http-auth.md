@@ -14,6 +14,8 @@ content_sources:
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/security-concepts
         - https://learn.microsoft.com/en-us/azure/app-service/overview-authentication-authorization
+        - https://learn.microsoft.com/en-us/azure/azure-functions/function-keys-how-to
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-http-webhook-trigger
 ---
 # HTTP Authentication
 
@@ -24,12 +26,16 @@ This recipe covers authentication and authorization for Azure Functions HTTP tri
 <!-- diagram-id: authentication-flow -->
 ```mermaid
 flowchart TD
+    accTitle: Configured Easy Auth bearer-token flow
+    accDescr: The client obtains a provider token and sends a bearer request to configured Easy Auth before Python code. This example requires authentication and selects 401 or login redirect for unauthenticated requests; other Easy Auth settings and manual JWT validation are not this path.
     CLIENT[Client App] --> TOKEN[Identity Provider Token Issuance]
     TOKEN --> REQUEST[Bearer Token in HTTP Request]
     REQUEST --> EASYAUTH[Easy Auth on Function App]
     EASYAUTH -->|Valid| FUNC[Python Function Code]
     EASYAUTH -->|Invalid or Missing| DENY[401 or Redirect]
 ```
+
+**Reading key:** This is the platform-authentication path, not a combination of all strategies below. [Easy Auth validates configured provider tokens before application code](https://learn.microsoft.com/en-us/azure/app-service/overview-authentication-authorization); the illustrated 401/redirect rejection assumes authentication is required. [Functions keys](https://learn.microsoft.com/en-us/azure/azure-functions/function-keys-how-to) are separate shared-secret checks: `anonymous` requires no key, `function` accepts a function or host key, and `admin` requires the master key. `anonymous` does not bypass configured Easy Auth; the manual JWT example instead performs token validation in Python code.
 
 ## Authorization Levels
 
