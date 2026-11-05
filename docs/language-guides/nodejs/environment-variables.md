@@ -21,6 +21,8 @@ This reference lists key environment and app settings for Azure Functions Node.j
 <!-- diagram-id: topic-command-groups -->
 ```mermaid
 flowchart TD
+    accTitle: Node.js guide settings categories
+    accDescr: Settings are grouped into Runtime, Node worker and Observability topics. Arrows identify reference categories, not a startup sequence or automatic settings synchronization.
     A[Settings] --> B[Runtime]
     A --> C[Node worker]
     A --> D[Observability]
