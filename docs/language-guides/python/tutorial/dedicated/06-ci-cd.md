@@ -87,18 +87,18 @@ flowchart TD
     accDescr: Dedicated B1 through P3v3 context, not networking configured by this CI/CD page. App compute is outside outbound integration; four Storage endpoints and DNS zones are expanded in the key. Identity, telemetry, package mode and Always On are associations, not data-transit hops. Public ingress depends on app access configuration.
     client(["Internet"])
     app_runtime["Function App<br/>Dedicated B1–P3v3<br/>Linux · Python 3.11"]
-    identity{{"Optional system MI<br/>Microsoft Entra ID"}}
+    identity{{"System MI<br/>Entra ID"}}
     telemetry>"Application<br/>Insights"]
-    RFP["Local ZIP option<br/>Package mode: R"]
-    ALWAYS_ON["Fixed capacity<br/>Always On: A"]
+    RFP["ZIP option R"]
+    ALWAYS_ON["Always On A"]
     subgraph DNS["Private DNS zones"]
         dns_fn{{"Blob · Queue<br/>Table · File"}}
     end
     subgraph vnet_fn["VNet"]
-        subgraph INT_SUB["<div style='width:170px;text-align:right'>Integration<br/>subnet</div>"]
+        subgraph INT_SUB["<div style='width:130px;text-align:right'>Integration<br/>subnet</div>"]
             vnet_integration[["Outbound<br/>integration"]]
         end
-        subgraph PE_SUB["<div style='width:130px;text-align:left'>PE<br/>subnet</div>"]
+        subgraph PE_SUB["<div style='width:100px;text-align:left'>PE<br/>subnet</div>"]
             pe_storage[["Storage PEs<br/>blob · queue<br/>table · file"]]
         end
     end
@@ -108,7 +108,7 @@ flowchart TD
     app_runtime -.->|"[Configured]<br/>Telemetry"| telemetry
     app_runtime -.->|"[Illustrative]<br/>Package option"| RFP
     app_runtime -.->|"[Illustrative]<br/>Configuration"| ALWAYS_ON
-    pe_storage -.->|"[Illustrative]<br/>Zone groups"| dns_fn
+    dns_fn -.->|"[Illustrative]<br/>VNet link"| vnet_fn
     app_runtime -->|"[Illustrative]<br/>Outbound"| vnet_integration
     vnet_integration -->|"[Illustrative]<br/>Each PE"| pe_storage
     pe_storage -->|"[Illustrative]<br/>Each service"| storage_db
@@ -121,7 +121,7 @@ flowchart TD
     class client,app_runtime,identity,telemetry,RFP,ALWAYS_ON,dns_fn,vnet_integration,pe_storage,storage_db baseNeutral;
 ```
 
-**Reading key:** Solid arrows show intended request/data access; dotted arrows are associations. The private network is **optional illustrative context**, not an assertion that these steps configure it. Outbound VNet integration does not deploy compute into its subnet; DNS zone groups associate endpoints with zones, not endpoint-originated DNS queries ([integration](https://learn.microsoft.com/en-us/azure/app-service/overview-vnet-integration), [Storage endpoints](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints)).
+**Reading key:** Solid arrows show intended request/data access; dotted arrows are associations. The private network is **optional illustrative context**, not an assertion that these steps configure it. Outbound VNet integration does not deploy compute into its subnet. The DNS link targets the VNet boundary; the table retains endpoint-to-zone-group associations, not endpoint-originated DNS queries ([integration](https://learn.microsoft.com/en-us/azure/app-service/overview-vnet-integration), [Storage endpoints](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints)).
 
 | Key | Context / qualification |
 |---|---|
