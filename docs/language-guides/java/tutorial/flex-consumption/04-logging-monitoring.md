@@ -26,6 +26,8 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
 ---
 # 04 - Logging and Monitoring (Flex Consumption)
 
@@ -50,10 +52,14 @@ You will instrument Java handlers with structured logs, route telemetry to Appli
 <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
-    A[ExecutionContext logger] --> B[FunctionAppLogs]
+    accTitle: Flex Consumption tutorial Java logging overview
+    accDescr: Default Java application-log route for this Flex Consumption tutorial: ExecutionContext logger through the Functions host to Application Insights when integration is enabled, supporting dashboards and alerts. Filtering and sampling can exclude entries; this is not a FunctionAppLogs forwarding pipeline.
+    A[ExecutionContext logger] --> B[Functions host]
     B --> C[Application Insights]
     C --> D[Dashboards and alerts]
 ```
+
+**Takeaway:** For the default Java logging route, the Functions host forwards application logs to configured Application Insights. `FunctionAppLogs` is a separate resource-log table collected through optional diagnostic settings, not an intermediary in this route ([logging configuration](https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring#custom-application-logs), [resource logs](https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions#azure-monitor-resource-logs)).
 
 ## Steps
 

@@ -29,6 +29,8 @@ In v4, functions are registered directly in code with APIs such as `app.http()` 
 <!-- diagram-id: main-content -->
 ```mermaid
 flowchart TD
+    accTitle: Node.js guide seven-step tutorial path
+    accDescr: The guide's reading path is 01 Local Run, 02 First Deploy, 03 Configuration, 04 Logging and Monitoring, 05 Infrastructure as Code, 06 CI/CD and 07 Extending Triggers, in that order. This is navigation, not a universal deployment procedure.
     A[01 Local Run] --> B[02 First Deploy]
     B --> C[03 Configuration]
     C --> D[04 Logging & Monitoring]
