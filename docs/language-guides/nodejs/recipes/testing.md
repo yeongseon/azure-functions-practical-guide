@@ -25,6 +25,8 @@ In the Node.js v4 model a function handler is a plain async function that receiv
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Direct-handler Jest unit test for a Node.js HTTP function
+    accDescr: The illustrative test constructs an HttpRequest and stub context, calls the exported handler directly and checks the returned status and body. It exercises local handler behavior, not Functions host routing or live binding integration.
     TEST[Jest test] --> BUILD[Build HttpRequest + stub context]
     BUILD --> CALL[Call handler directly]
     CALL --> ASSERT[Assert status + body]
