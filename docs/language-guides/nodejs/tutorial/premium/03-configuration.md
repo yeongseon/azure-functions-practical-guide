@@ -26,6 +26,9 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node
         - https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-node
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
 ---
 # 03 - Configuration (Premium)
 
@@ -53,21 +56,31 @@ You will also tune host-level timeout behavior appropriate for the Premium plan 
 !!! info "Infrastructure Context"
     **Plan**: Premium (EP1) | **Config model**: `siteConfig.appSettings` (classic)
 
-    Premium uses the classic `siteConfig.appSettings` model — all settings are managed via `az functionapp config appsettings set`. Unlike Flex Consumption, there are no platform-managed settings that block manual updates.
+    Premium stores app settings in `siteConfig.appSettings`; this tutorial configures the host timeout separately in `host.json`.
 
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
+    accTitle: Node.js Premium EP1 configuration categories
+    accDescr: Azure CLI updates app settings on the Premium EP1 app. R, N and H classify runtime settings, the Node.js heap example and the separate host.json timeout; the adjacent key gives their full names.
     CLI[az CLI] -->|appsettings set| FA[Function App\nPremium EP1]
-    FA --> RUNTIME["Runtime Config\n• FUNCTIONS_WORKER_RUNTIME=node\n• FUNCTIONS_EXTENSION_VERSION=~4"]
-    FA --> NODE["Node.js Config\n• --max-old-space-size=4096"]
-    FA --> HOST["host.json\n• functionTimeout=-1"]
+    FA --> RUNTIME["R: Runtime config"]
+    FA --> NODE["N: Node.js config"]
+    FA --> HOST["H: host.json"]
+    %% Layout-only links tier categories; they add no configuration steps or semantic arrows.
+    RUNTIME ~~~ NODE
+    NODE ~~~ HOST
 
     style FA fill:#ff8c00,color:#fff
-    style RUNTIME fill:#E3F2FD
-    style NODE fill:#E8F5E9
-    style HOST fill:#FFF3E0
 ```
+
+| Key | Configuration shown |
+|---|---|
+| R | Runtime Config: app settings `FUNCTIONS_WORKER_RUNTIME=node` and `FUNCTIONS_EXTENSION_VERSION=~4`. The latter selects Functions runtime 4.x, not the Node.js programming-model version. |
+| N | Node.js Config: `--max-old-space-size=4096`, passed through `languageWorkers__node__arguments`, is the tutorial's heap-limit example, not a recommendation for EP1's available memory. |
+| H | `host.json`: `functionTimeout=-1` permits unbounded execution subject to platform shutdowns and the separate HTTP response limit. It is not set by the depicted `appsettings set` command. |
+
+**Reading key:** App-to-category arrows classify configuration; they are not execution steps or network requests. Size the Node.js heap limit to the selected plan instance.
 
 | CLI element | Explanation |
 |---|---|
@@ -227,3 +240,6 @@ The table confirms required Node.js worker settings are applied to the deployed 
 - [Azure Functions Node.js developer guide (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node)
 - [Create your first Azure Function with Core Tools (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-node)
 - [Azure Functions hosting options (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
+- [App settings reference (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings)
+- [host.json reference (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json)
+- [Premium hosting and memory considerations (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan)

@@ -23,6 +23,10 @@ content_sources:
       source: self-generated
       justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node
         - https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-node
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
@@ -56,27 +60,40 @@ Deploy a Node.js Function App to an Elastic Premium plan (`EP1`) with always-war
 !!! info "Infrastructure Context"
     **Plan**: Premium (EP1) | **Network**: Public (VNet optional) | **Always warm**: ✅
 
-    Premium deploys with pre-warmed instances, Azure Files content share for deployment, and optional VNet integration. Storage uses connection string authentication by default.
+    This Linux EP1 workflow uses the default Azure Files content share and connection-string storage settings. Premium's default prewarmed buffer is one instance for HTTP scale-out, distinct from the plan's minimum one active billed instance. VNet integration is optional and is not provisioned on this page.
 
-    <!-- diagram-id: what-you-ll-build -->
+<!-- diagram-id: what-you-ll-build -->
 ```mermaid
+%%{init: {"flowchart": {"nodeSpacing": 10, "rankSpacing": 60, "padding": 8, "subGraphTitleMargin": {"top": 8, "bottom": 24}}}}%%
 flowchart TD
-    INET[Internet] -->|HTTPS| FA[Function App\nPremium EP1\nLinux Node.js 20]
-
-    subgraph PLAN["Elastic Premium Plan"]
-        FA
-        WARM["Pre-warmed instances\nMin: 1"]
+    accTitle: Node.js 20 Linux Premium EP1 public topology
+    accDescr: Internet HTTPS reaches the Node.js 20 Linux app in its Elastic Premium plan. Prewarmed instances are a default one-instance HTTP buffer, separate from minimum billed capacity. Storage retains the default Azure Files content share; Application Insights is off-path. System-assigned identity is optional and not assigned by the CLI steps.
+    client(["Internet"])
+    subgraph PLAN["<div style='width:230px;text-align:right'>Elastic<br/>Premium Plan</div>"]
+        app_runtime["Function App<br/>Premium EP1<br/>Linux Node.js 20"]
+        WARM["HTTP prewarm<br/>Default: 1"]
+        app_runtime -.->|"[Configured]<br/>HTTP buffer"| WARM
     end
-
-    FA --> ST["Storage Account\nAzure Files content share"]
-    FA --> AI[Application Insights]
-    FA -.->|System-Assigned MI| ENTRA[Microsoft Entra ID]
-
-    style FA fill:#ff8c00,color:#fff
-    style PLAN fill:#E8F5E9,stroke:#4CAF50
-    style ST fill:#FFF3E0
-    style WARM fill:#FFF3E0,stroke:#FF9800
+    storage_db[("Storage Account<br/>Azure Files<br/>Content share")]
+    telemetry>"Application<br/>Insights"]
+    identity{{"Microsoft Entra ID<br/>System-assigned MI<br/>Optional"}}
+    client -->|"[Configured] HTTPS"| app_runtime
+    app_runtime -->|"[Configured]<br/>Connection string"| storage_db
+    app_runtime -.->|"[Configured]<br/>Telemetry"| telemetry
+    app_runtime -.->|"[Illustrative]<br/>Optional identity"| identity
+    %% Layout-only tiers; add no requests or deployment steps.
+    WARM ~~~ storage_db
+    storage_db ~~~ telemetry
+    telemetry ~~~ identity
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e;
+    classDef bandMuted fill:#ffffff,stroke:#707e93,stroke-width:1.5px,stroke-dasharray:4 3,color:#14202e;
+    class client,storage_db,WARM baseNeutral;
+    class app_runtime focusActive;
+    class telemetry,identity bandMuted;
 ```
+
+**Reading key:** Solid arrows show configured HTTPS/data access; dotted arrows show HTTP capacity, telemetry or optional identity, not additional request hops. The HTTP prewarm default of one is not the plan's minimum active billed instance or an app always-ready setting. The default Files content-share connection string differs from optional identity-based host storage; documented deployments can avoid the Files dependency. The CLI steps do not assign identity; when configured, token acquisition uses the app's local identity endpoint ([Premium](https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan), [storage](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations), [identity](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)).
 
 ## Steps
 
@@ -365,6 +382,10 @@ The output confirms that Azure indexed your function definitions and the app ser
 - [Recipes Index](../../recipes/index.md)
 
 ## Sources
+- [Premium capacity settings](https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan)
+- [Functions storage considerations](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations)
+- [Functions monitoring](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)
+- [App managed identity](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)
 - [Azure Functions Node.js developer guide (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node)
 - [Create your first Azure Function with Core Tools (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-node)
 - [Azure Functions hosting options (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)

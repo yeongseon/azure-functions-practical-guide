@@ -26,6 +26,8 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node
         - https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-node
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan#always-on
 ---
 # 07 - Extending Triggers (Dedicated)
 
@@ -43,29 +45,33 @@ Add queue, timer, and blob triggers with the Node.js v4 APIs and deploy to Dedic
 - Understand Always On requirements for non-HTTP triggers on Dedicated plans.
 
 !!! info "Infrastructure Context"
-    **Plan**: Dedicated (B1) | **Triggers**: HTTP + Timer + Queue + Blob + EventHub | **Always On**: ✅ (required)
+    **Plan**: Dedicated (B1) | **Triggers**: HTTP + Timer + Queue + Blob + EventHub | **Always On**: Enable for reliable non-HTTP triggering
 
-    Dedicated plans **require** Always On for non-HTTP triggers. Without it, the app may idle after 20 minutes and miss timer/queue/blob events. The reference app includes 20 functions across all trigger types.
+    Enable [Always On](https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan#always-on) for reliable non-HTTP triggering on Dedicated hosting. Without it, the app may idle; an HTTP request or portal access can wake it. The reference app includes 20 functions across all trigger types.
 
-    <!-- diagram-id: what-you-ll-build -->
+<!-- diagram-id: what-you-ll-build -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 10}}}%%
 flowchart TD
-    TIMER["⏰ Timer Trigger\nscheduledCleanup\ntimerLab"] -->|CRON schedule| FA[Function App\nDedicated B1]
-    QUEUE["📨 Queue Trigger\nqueueProcessor"] -->|Queue message| FA
-    BLOB["📦 Blob Trigger\nblobProcessor"] -->|Blob event| FA
-    HTTP["🌐 HTTP Triggers\nhelloHttp, health\ninfo, logLevels"] -->|HTTPS| FA
-    EH["📡 EventHub Trigger\neventhubLagProcessor"] -->|Event stream| FA
+    accTitle: Node.js Dedicated trigger overview and Always On
+    accDescr: Conceptual timer, queue, blob, HTTP and Event Hub trigger paths to the Node.js v4 Dedicated B1 app and its Always On setting. Enable Always On for reliable non-HTTP triggering; an idled app without it can wake on an HTTP request or portal access. Source arrows associate independent triggers with the app, not a network topology or sequential execution; the Always On arrow identifies configuration, not app output.
+    TIMER["Timer Trigger<br/>scheduledCleanup<br/>timerLab"] -->|"CRON<br/>schedule"| FA["Function App<br/>Dedicated B1"]
+    QUEUE["Queue Trigger<br/>queueProcessor"] -->|"Queue<br/>message"| FA
+    BLOB["Blob Trigger<br/>blobProcessor"] -->|"Blob<br/>event"| FA
+    HTTP["HTTP Triggers<br/>helloHttp, health<br/>info, logLevels"] -->|HTTPS| FA
+    EH["EventHub Trigger<br/>eventhubLagProcessor"] -->|"Event<br/>stream"| FA
 
-    FA --> ALWAYS["Always On ✅\nKeeps app warm\nfor non-HTTP triggers"]
+    FA --> ALWAYS["Always On<br/>Keeps app warm<br/>Enable for reliable<br/>non-HTTP triggering"]
+    %% Layout-only links tier independent sources; no execution steps or arrows added.
+    TIMER ~~~ QUEUE
+    QUEUE ~~~ BLOB
+    BLOB ~~~ HTTP
+    HTTP ~~~ EH
 
-    style FA fill:#ff8c00,color:#fff
-    style ALWAYS fill:#E8F5E9,stroke:#4CAF50
-    style TIMER fill:#E3F2FD
-    style QUEUE fill:#E3F2FD
-    style BLOB fill:#E3F2FD
-    style HTTP fill:#E3F2FD
-    style EH fill:#E3F2FD
+    classDef default fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
 ```
+
+**Reading key:** These are independent trigger-to-app associations, not network initiator paths or an execution sequence. The final arrow identifies the app's Always On setting, not a downstream service.
 
 ## Steps
 
@@ -84,8 +90,8 @@ flowchart TD
     });
     ```
 
-    !!! tip "Always On required for timers"
-        On Dedicated plans, timer triggers only fire if Always On is enabled. Without it, the app may idle and miss scheduled executions.
+    !!! tip "Always On for reliable timers"
+        Enable Always On for reliable timer triggering on Dedicated hosting. Without it, an idle app can miss scheduled executions until an HTTP request or portal access wakes it.
 
 2. Add queue trigger.
 
@@ -213,7 +219,7 @@ flowchart TD
 
 6. Review Dedicated trigger-specific notes.
 
-    - **Always On**: Required for timer, queue, blob, and EventHub triggers. Without it, Dedicated apps idle after ~20 minutes.
+    - **Always On**: Enable for reliable timer, queue, blob, and EventHub triggering on Dedicated hosting; otherwise the app may idle until an HTTP request or portal access wakes it.
     - **EventHub placeholder**: Set `EventHubConnection__fullyQualifiedNamespace=placeholder.servicebus.windows.net` to allow indexing without a real EventHub.
     - **Queue connection**: `QueueStorage` app setting must contain a valid storage connection string for `queueProcessor` to index.
     - **No auto-scale**: Dedicated plans do not scale automatically based on queue depth or event backlog. For auto-scaling workloads, use Premium or Consumption.
@@ -224,7 +230,7 @@ The host output confirms all triggers are indexed and available. Verify:
 
 - `az functionapp function list` shows all 20 functions with language `node`
 - HTTP endpoints return expected responses
-- Timer triggers (`scheduledCleanup`, `timerLab`) are listed — they will fire on schedule only if Always On is enabled
+- Timer triggers (`scheduledCleanup`, `timerLab`) are listed — enable Always On for reliable scheduled triggering on Dedicated hosting
 
 ## See Also
 - [Tutorial Overview & Plan Chooser](../index.md)
@@ -237,3 +243,5 @@ The host output confirms all triggers are indexed and available. Verify:
 - [Azure Functions Node.js developer guide (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node)
 - [Create your first Azure Function with Core Tools (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-node)
 - [Azure Functions hosting options (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
+- [Dedicated hosting and Always On (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan#always-on)
+- [Azure Functions triggers and bindings (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings)
