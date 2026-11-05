@@ -10,7 +10,7 @@ content_sources:
     - id: start-here
       type: flowchart
       source: self-generated
-      justification: Flow view of start here, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Editorial navigation map of this guide's sections, not Azure architecture or a platform-imposed prerequisite chain; Microsoft Learn sources provide platform background, not this reading order.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
@@ -28,11 +28,15 @@ Use this section to answer three questions quickly:
 <!-- diagram-id: start-here -->
 ```mermaid
 flowchart TD
+    accTitle: Start Here navigation through this guide
+    accDescr: Suggested reading route through this guide's sections: Overview, Learning Paths, Hosting Options, Repository Map, then Platform and Language Guides. Arrows are navigation suggestions, not Azure architecture, platform-imposed prerequisites or an ordering guarantee.
     A[Overview] --> B[Learning Paths]
     B --> C[Hosting Options]
     C --> D[Repository Map]
     D --> E[Platform and Language Guides]
 ```
+
+**Takeaway:** Use the arrows as a suggested route through this guide's sections, not Azure architecture, an Azure-imposed prerequisite chain or an ordering guarantee; follow the links below for your goal.
 
 ## Pages in this section
 

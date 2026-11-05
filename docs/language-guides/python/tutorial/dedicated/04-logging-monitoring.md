@@ -25,27 +25,53 @@ content_sources:
     - id: what-you-ll-build
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Python Linux plan-specific infrastructure context with full adjacent reading key; not deployment evidence.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring#application-insights
         - https://learn.microsoft.com/en-us/azure/app-service/overview-vnet-integration
         - https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint
         - https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/alerts-metric-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+        - https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/streaming-logs
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/app/create-workspace-resource
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-access-restrictions#app-access
+        - https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
+        - https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints
+        - https://learn.microsoft.com/en-us/azure/azure-functions/opentelemetry-howto
+        - https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions-reference
     - id: what-you-ll-build-2
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build 2, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Python plan-specific monitoring verification relationships; analysis arrows are not network-transit claims.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring#application-insights
         - https://learn.microsoft.com/en-us/azure/app-service/overview-vnet-integration
         - https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint
         - https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/alerts-metric-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+        - https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/streaming-logs
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/app/create-workspace-resource
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-access-restrictions#app-access
+        - https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
+        - https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints
+        - https://learn.microsoft.com/en-us/azure/azure-functions/opentelemetry-howto
+        - https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions-reference
 ---
 # 04 - Logging & Monitoring (Dedicated)
 
-This tutorial enables monitoring for a Dedicated Function App with Application Insights and Log Analytics queries. Dedicated plans are always running, so telemetry volume and baseline cost are predictable and continuous.
+This tutorial enables monitoring for a Dedicated Function App with Application Insights and Log Analytics queries. Fixed plan capacity does not guarantee continuous telemetry; enable Always On for reliable non-HTTP triggering.
 
 ## Prerequisites
 
@@ -69,61 +95,83 @@ You will connect the Dedicated Function App to workspace-based Application Insig
 !!! info "Infrastructure Context"
     **Plan**: Dedicated (B1) | **Network**: Public internet in this tutorial | **VNet**: Supported by platform, not configured here
 
-    The app runs on a fixed App Service Plan (always on, no scale-to-zero). Basic B1 supports App Service VNet integration and private endpoints, but this guide uses Standard (S1+) for private networking scenarios to provide scale headroom, deployment slots, and a production-oriented validation path.
+    The app uses fixed App Service plan capacity. Private networking is optional context, not configured by this monitoring page; enable Always On for reliable non-HTTP triggering.
 
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 10, 'rankSpacing': 70, 'padding': 8, 'subGraphTitleMargin': {'top': 8, 'bottom': 32}}}}%%
 flowchart TD
-    INET[Internet] -->|HTTPS| FA[Function App\nDedicated B1-P3v3\nLinux Python 3.11]
-
-    subgraph VNET["VNet 10.0.0.0/16"]
-        subgraph INT_SUB["Integration Subnet 10.0.1.0/24\nDelegation: Microsoft.Web/serverFarms"]
-            FA
+    accTitle: Python 3.11 Linux Dedicated optional Storage topology
+    accDescr: Dedicated B1 through P3v3 context, not networking configured by this monitoring page. App compute is outside outbound integration; four Storage endpoints and DNS zones are expanded in the key. Identity, telemetry, package mode and Always On are associations, not data-transit hops. Public ingress depends on app access configuration.
+    client(["Internet"])
+    app_runtime["Function App<br/>Dedicated D<br/>Linux · Python 3.11"]
+    identity{{"System MI<br/>Entra ID"}}
+    telemetry>"Application<br/>Insights"]
+    RFP["ZIP option R"]
+    ALWAYS_ON["Always On A"]
+    subgraph DNS["Private DNS zones"]
+        dns_fn{{"Blob · Queue<br/>Table · File"}}
+    end
+    subgraph vnet_fn["VNet"]
+        subgraph INT_SUB["<div style='width:130px;text-align:right'>Integration<br/>subnet</div>"]
+            vnet_integration[["Outbound<br/>integration"]]
         end
-        subgraph PE_SUB["Private Endpoint Subnet 10.0.2.0/24"]
-            PE_BLOB[PE: blob]
-            PE_QUEUE[PE: queue]
-            PE_TABLE[PE: table]
-            PE_FILE[PE: file]
+        subgraph PE_SUB["<div style='width:100px;text-align:left'>PE<br/>subnet</div>"]
+            pe_storage[["Storage PEs<br/>blob · queue<br/>table · file"]]
         end
     end
-
-    PE_BLOB --> ST["Storage Account"]
-    PE_QUEUE --> ST
-    PE_TABLE --> ST
-    PE_FILE --> ST
-
-    subgraph DNS[Private DNS Zones]
-        DNS_BLOB[privatelink.blob.core.windows.net]
-        DNS_QUEUE[privatelink.queue.core.windows.net]
-        DNS_TABLE[privatelink.table.core.windows.net]
-        DNS_FILE[privatelink.file.core.windows.net]
-    end
-
-    PE_BLOB -.-> DNS_BLOB
-    PE_QUEUE -.-> DNS_QUEUE
-    PE_TABLE -.-> DNS_TABLE
-    PE_FILE -.-> DNS_FILE
-
-    FA -.->|System-Assigned MI| ENTRA[Microsoft Entra ID]
-    FA --> AI[Application Insights]
-
-    RFP["📦 Local ZIP alternative: WEBSITE_RUN_FROM_PACKAGE=1\nDo not force for remote build"] -.- FA
-    ALWAYS_ON["⚙️ Always On: true\nFixed capacity"] -.- FA
-
-    style FA fill:#5c2d91,color:#fff
-    style VNET fill:#E8F5E9,stroke:#4CAF50
-    style ST fill:#FFF3E0
-    style DNS fill:#E3F2FD
+    storage_db[("Storage account")]
+    client -->|"[Illustrative]<br/>HTTPS if H"| app_runtime
+    app_runtime -.->|"[Illustrative]<br/>Identity"| identity
+    app_runtime -.->|"[Configured]<br/>Telemetry"| telemetry
+    app_runtime -.->|"[Illustrative]<br/>ZIP R"| RFP
+    app_runtime -.->|"[Illustrative]<br/>Setting A"| ALWAYS_ON
+    dns_fn -.->|"[Illustrative]<br/>VNet link"| vnet_fn
+    app_runtime -->|"[Illustrative]<br/>Outbound"| vnet_integration
+    vnet_integration -->|"[Illustrative]<br/>Each PE"| pe_storage
+    pe_storage -->|"[Illustrative]<br/>Each service"| storage_db
+    %% Layout-only tiers; add no requests, diagnostic steps or visible arrows.
+    identity ~~~ telemetry
+    telemetry ~~~ RFP
+    RFP ~~~ ALWAYS_ON
+    ALWAYS_ON ~~~ dns_fn
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class client,app_runtime,identity,telemetry,RFP,ALWAYS_ON,dns_fn,vnet_integration,pe_storage,storage_db baseNeutral;
 ```
+
+**Reading key:** Solid arrows show intended request/data access; dotted arrows are associations. The private network is **optional illustrative context**, not an assertion that these steps configure it. Outbound VNet integration does not deploy compute into its subnet. The DNS link targets the VNet boundary; the table retains endpoint-to-zone-group associations, not endpoint-originated DNS queries ([integration](https://learn.microsoft.com/en-us/azure/app-service/overview-vnet-integration), [Storage endpoints](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints)).
+
+| Key | Context / qualification |
+|---|---|
+| D | Dedicated B1–P3v3 plan range retained from the original context; this page uses B1 |
+| H | Public HTTPS is available only when app public-network access and access restrictions permit it; a prerequisite deployment with a site private endpoint can change that default |
+| VNet / integration / PE subnet | `10.0.0.0/16` / `10.0.1.0/24` / `10.0.2.0/24`; delegation `Microsoft.Web/serverFarms` |
+| R | Local ready-to-run ZIP alternative: `WEBSITE_RUN_FROM_PACKAGE=1`; do not force this setting for remote build |
+| A | Enable `Always On: true` for reliable non-HTTP triggering on Dedicated; fixed plan capacity alone does not prevent app idling |
+| Identity | Optional system-assigned identity in Microsoft Entra ID; token acquisition uses the app-local identity endpoint, not direct app-to-Entra transit |
+
+The bundled endpoints and zones expand into four independent service associations, not serial hops:
+
+| Endpoint → Storage service | Associated private DNS zone |
+|---|---|
+| `PE_BLOB` → Blob | `privatelink.blob.core.windows.net` |
+| `PE_QUEUE` → Queue | `privatelink.queue.core.windows.net` |
+| `PE_TABLE` → Table | `privatelink.table.core.windows.net` |
+| `PE_FILE` → File | `privatelink.file.core.windows.net` |
+
+These are contextual choices, not a universal four-endpoint requirement. See [Dedicated Always On](https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan#always-on), [package configuration](https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push), [identity](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity) and [app access defaults](https://learn.microsoft.com/en-us/azure/app-service/overview-access-restrictions#app-access).
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart TD
+    accTitle: Python Dedicated monitoring verification
+    accDescr: Configured Application Insights supports telemetry analysis. The metric alert is associated with the Function App because Step 6 scopes Http5xx to that resource, not Application Insights. These are monitoring associations, not network transit.
     A[Function App telemetry] --> B[Application Insights]
     B --> C[Log Analytics queries]
-    B --> D[Metric alert rule]
+    A --> D[Metric alert rule]
 ```
+
+**Monitoring distinction:** The small map groups telemetry analysis and the Function App's platform-metric alert; it does not route `Http5xx` through Application Insights. Default Python `logging` uses worker → Functions host → configured Application Insights with filtering/sampling, while the reference app's separate distro setup is not depicted as a mandatory host bypass ([Python logging](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python#logging-and-monitoring), [configuration](https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring)). Workspace-based telemetry is stored in the linked workspace; diagnostic-settings `FunctionAppLogs` is a different collection route ([workspace](https://learn.microsoft.com/en-us/azure/azure-monitor/app/create-workspace-resource), [resource logs](https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions#azure-monitor-resource-logs)). Built-in streaming is single-instance where supported and enabled; Live Metrics is separate ([streaming](https://learn.microsoft.com/en-us/azure/azure-functions/streaming-logs)).
 
 ## Steps
 
@@ -327,6 +375,21 @@ Monitoring is now in place with logs, queries, and alerts. Next you will codify 
 - [Recipes Index](../../recipes/index.md)
 
 ## Sources
+
+- [Functions OpenTelemetry configuration](https://learn.microsoft.com/en-us/azure/azure-functions/opentelemetry-howto)
+- [Functions monitoring data reference](https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions-reference)
+
+- [functions-reference-python](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python)
+- [configure-monitoring](https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring)
+- [streaming-logs](https://learn.microsoft.com/en-us/azure/azure-functions/streaming-logs)
+- [functions-networking-options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)
+- [storage-considerations](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations)
+- [dedicated-plan](https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan)
+- [create-workspace-resource](https://learn.microsoft.com/en-us/azure/azure-monitor/app/create-workspace-resource)
+- [overview-managed-identity](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)
+- [overview-access-restrictions](https://learn.microsoft.com/en-us/azure/app-service/overview-access-restrictions#app-access)
+- [deployment-zip-push](https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push)
+- [storage-private-endpoints](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints)
 
 - [Monitor Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)
 - [Application Insights for Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring#application-insights)
