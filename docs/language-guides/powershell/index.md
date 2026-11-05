@@ -11,7 +11,7 @@ content_sources:
     - id: powershell-language-guide
       type: flowchart
       source: self-generated
-      justification: Flow view of powershell language guide, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Documentation-navigation map of the tutorial tracks, recipes and runtime/reference pages listed here; not an Azure architecture or plan-support matrix.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-powershell
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
@@ -24,6 +24,8 @@ This guide maps Azure Functions platform concepts to the PowerShell programming 
 <!-- diagram-id: powershell-language-guide -->
 ```mermaid
 flowchart TD
+    accTitle: PowerShell language guide navigation
+    accDescr: Documentation-navigation map, not an Azure architecture. Tutorial Overview points to Consumption, Flex Consumption, Premium and Dedicated tracks, Recipes, and Runtime and Reference. Invisible links arrange the destinations only; they add no reading prerequisites or product relationships.
     A[Tutorial Overview]
     A --> B[Consumption Track]
     A --> C[Flex Consumption Track]
@@ -31,6 +33,12 @@ flowchart TD
     A --> E[Dedicated Track]
     A --> F[Recipes]
     A --> G[Runtime and Reference]
+    %% Layout-only links tier destinations; no additional navigation arrows or prerequisites.
+    B ~~~ C
+    C ~~~ D
+    D ~~~ E
+    E ~~~ F
+    F ~~~ G
 ```
 
 !!! tip "Architecture first"

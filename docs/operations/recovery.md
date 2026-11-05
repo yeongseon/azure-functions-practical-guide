@@ -19,6 +19,9 @@ content_sources:
       source: self-generated
       justification: Recovery decision flow, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-site-updates
+        - https://learn.microsoft.com/en-us/azure/app-service/deploy-staging-slots
+        - https://learn.microsoft.com/en-us/azure/reliability/reliability-functions
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
         - https://learn.microsoft.com/en-us/azure/well-architected/reliability/disaster-recovery
         - https://learn.microsoft.com/en-us/azure/storage/common/storage-redundancy
@@ -30,6 +33,10 @@ content_sources:
       source: self-generated
       justification: Flow view of regional recovery planning, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/reliability/reliability-functions
+        - https://learn.microsoft.com/en-us/azure/traffic-manager/traffic-manager-routing-methods
+        - https://learn.microsoft.com/en-us/azure/frontdoor/routing-methods
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/app/app-map
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
         - https://learn.microsoft.com/en-us/azure/well-architected/reliability/disaster-recovery
         - https://learn.microsoft.com/en-us/azure/storage/common/storage-redundancy
@@ -157,22 +164,47 @@ Use this decision path to choose rollback, failover, or rebuild.
 <!-- diagram-id: recovery-decision-flow -->
 ```mermaid
 flowchart TD
-    A[Incident detected] --> B[Assess scope and impact]
+    accTitle: Recovery strategy decision flow
+    accDescr: Illustrative runbook choice, not a guaranteed diagnosis. A deployment-related incident checks available slots and healthy dependencies before slot-swap rollback or redeployment. Other incidents check regional or shared dependencies before operator-designed regional failover or rebuild. Every action leads to health and SLO verification, then closure with follow-up if validated or escalation to the next strategy otherwise. Slot support and regional readiness are qualified in the reading key.
+    A["Incident detected"] --> B["Assess scope<br/>and impact"]
     B --> C{Deployment related?}
-    C -->|Yes| D{Slots available and healthy dependencies?}
-    D -->|Yes| E[Rollback via slot swap]
-    D -->|No| F[Redeploy last known good artifact]
-    C -->|No| G{Regional or shared dependency issue?}
-    G -->|Yes| H[Execute regional failover]
-    G -->|No| I[Rebuild app or infra component]
-    E --> J[Verify health and SLOs]
+    C -->|Yes| D{"Slots available and<br/>healthy dependencies?"}
+    D -->|Yes| E["Rollback via<br/>slot swap"]
+    D -->|No| F["Redeploy last known<br/>good artifact"]
+    C -->|No| G{"Regional or shared<br/>dependency issue?"}
+    G -->|Yes| H["Execute regional<br/>failover"]
+    G -->|No| I["Rebuild app or<br/>infra component"]
+    E --> J["Verify health<br/>and SLOs"]
     F --> J
     H --> J
     I --> J
     J --> K{Recovery validated?}
-    K -->|Yes| L[Close incident and start follow-up]
-    K -->|No| M[Escalate and run next strategy]
+    K -->|Yes| L["Close incident and<br/>start follow-up"]
+    K -->|No| M["Escalate and run<br/>next strategy"]
+    %% Layout-only links tier alternatives; they add no recovery steps or arrows.
+    E ~~~ F
+    F ~~~ G
+    H ~~~ I
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J,K,L,M baseNeutral;
 ```
+
+**Reading key:** This is an illustrative strategy order, not an exhaustive cause
+classifier. “Slots available” includes plan/OS support, a known-good slot and
+compatible binding settings: use the slot path for Windows Consumption, Elastic
+Premium, or Dedicated on Standard/Premium/Isolated tiers. Flex Consumption and
+Linux Consumption use the no-slot path here. [Reversing a swap](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots#roll-back-a-swap)
+can restore the previous app, but swaps can terminate running executions and do
+not guarantee zero downtime. For [Flex recovery](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-site-updates#how-do-i-roll-back-a-site-update),
+redeploy previous code/configuration as another site update using its supported
+deployment mechanism (default Recreate or opt-in RollingUpdate), not a slot swap
+or an assumption that Scenario B's command works on every plan.
+
+“Regional failover” means executing an **operator-designed** recovery plan after
+checking the secondary app, dependencies and data readiness. [Azure Functions is
+a single-region service](https://learn.microsoft.com/en-us/azure/reliability/reliability-functions#resilience-to-region-wide-failures):
+it provides no built-in cross-region failover for an app. Moving compute alone
+does not repair a shared dependency or establish data consistency.
 
 ### Scenario A: deployment regression with slots available
 1. Confirm release timing aligns with error spike.
@@ -181,7 +213,8 @@ flowchart TD
 4. Execute health checks and smoke tests.
 5. Pause further releases until root cause is documented.
 
-For Premium and Dedicated plans, deployment slots are the fastest rollback path.
+Where the plan supports slots and a compatible known-good slot is ready, reversing
+the swap is a rollback option; use the plan/OS qualifications in the reading key.
 
 ```bash
 az functionapp deployment slot swap \
@@ -285,16 +318,37 @@ Multi-region failover architecture:
 <!-- diagram-id: regional-recovery-planning -->
 ```mermaid
 flowchart TD
-    U[Clients] --> E[Edge Routing]
-    E --> TM[Traffic Manager or Front Door]
-    TM --> P[Primary Region Function App]
-    TM --> S[Secondary Region Function App]
-    P --> SP[(Primary Storage)]
-    S --> SS[(Secondary Storage)]
-    P --> AP[(Application Insights)]
+    accTitle: Regional recovery resource planning
+    accDescr: Illustrative planning associations from clients through the edge-routing choice of Traffic Manager or Front Door to primary and secondary region function apps, each with its own storage. Both apps report to a configured shared Application Insights resource used by the operations dashboard. Arrows are not packet hops, storage replication, or a guarantee that both apps process traffic simultaneously; see the reading key.
+    U[Clients] --> E["Edge Routing"]
+    E --> TM["Traffic Manager<br/>or Front Door"]
+    TM --> P["Primary Region<br/>Function App"]
+    TM --> S["Secondary Region<br/>Function App"]
+    P --> SP[("Primary<br/>Storage")]
+    S --> SS[("Secondary<br/>Storage")]
+    P --> AP[("Application<br/>Insights")]
     S --> AP
-    AP --> O[Operations Dashboard]
+    AP --> O["Operations<br/>Dashboard"]
 ```
+
+**Planning key:** Edge Routing is the role implemented by the named service, not
+an additional appliance. These are logical planning associations:
+[Traffic Manager selects endpoints in DNS responses](https://learn.microsoft.com/en-us/azure/traffic-manager/traffic-manager-routing-methods),
+whereas [Front Door forwards HTTP/HTTPS requests](https://learn.microsoft.com/en-us/azure/frontdoor/routing-methods).
+For HTTP workloads, priorities can implement active-passive failover; routing to
+both eligible regions can implement active-active, subject to health, priority,
+latency and weighting configuration. Two outgoing arrows alone do not select a
+mode. Non-HTTP trigger failover requires a trigger/dependency-specific design,
+not just this client-routing layer.
+
+Primary Storage and Secondary Storage represent per-region resources, not an
+automatic replication pair. Define data synchronization and RPO separately;
+[GRS/GZRS replicate asynchronously within a storage account](https://learn.microsoft.com/en-us/azure/storage/common/storage-redundancy#redundancy-in-a-secondary-region)
+and can lose recent writes during a regional disaster, rather than automatically
+synchronizing two separately provisioned accounts. Shared Application Insights
+is an illustrative monitoring choice, configured for both apps; distinguish them
+with [cloud role names](https://learn.microsoft.com/en-us/azure/azure-monitor/app/app-map#understand-components).
+It is not a second telemetry region or a monitoring-availability guarantee.
 
 Concrete failover patterns:
 
@@ -427,6 +481,12 @@ If recovery does not stabilize service, apply these controls.
 - [Troubleshooting Methodology](../troubleshooting/methodology.md)
 
 ## Sources
+- [Azure Functions reliability and custom multiregion solutions](https://learn.microsoft.com/en-us/azure/reliability/reliability-functions)
+- [Flex Consumption site updates and recovery](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-site-updates)
+- [App Service staging tiers](https://learn.microsoft.com/en-us/azure/app-service/deploy-staging-slots)
+- [Traffic Manager routing methods](https://learn.microsoft.com/en-us/azure/traffic-manager/traffic-manager-routing-methods)
+- [Front Door routing methods](https://learn.microsoft.com/en-us/azure/frontdoor/routing-methods)
+- [Application Insights components and roles](https://learn.microsoft.com/en-us/azure/azure-monitor/app/app-map)
 - [Reliability in Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices)
 - [Business continuity and disaster recovery for Azure applications](https://learn.microsoft.com/en-us/azure/well-architected/reliability/disaster-recovery)
 - [Azure Storage redundancy options](https://learn.microsoft.com/en-us/azure/storage/common/storage-redundancy)

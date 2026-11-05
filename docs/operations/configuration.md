@@ -95,6 +95,8 @@ Choose configuration layers by scope and change frequency:
 <!-- diagram-id: when-to-use -->
 ```mermaid
 flowchart TB
+    accTitle: Configuration scopes
+    accDescr: Read from app settings for environment values and secrets through host.json and binding-specific extension configuration to function-level options where supported. This is a scope-reading order, not a universal override-precedence algorithm.
     A["App Settings<br/>Environment and secrets"] --> B["host.json<br/>Host runtime defaults"]
     B --> C["Extension Config<br/>Binding-specific behavior"]
     C --> D["Function-level Config<br/>Per-function overrides"]
@@ -327,6 +329,8 @@ Use a controlled workflow for every production configuration update.
 <!-- diagram-id: configuration-change-management-workflow -->
 ```mermaid
 flowchart TD
+    accTitle: Configuration change management workflow
+    accDescr: Illustrative operational workflow. Propose a change with a ticket and risk assessment, obtain peer and platform-owner review, deploy to staging then production, verify health, logs and dependencies, and document the baseline and evidence. Staging does not imply deployment-slot support.
     A["Propose change<br/>Ticket and risk assessment"] --> B["Review<br/>Peer and platform owner approval"]
     B --> C["Deploy<br/>Staging then production"]
     C --> D["Verify<br/>Health, logs, and dependency checks"]

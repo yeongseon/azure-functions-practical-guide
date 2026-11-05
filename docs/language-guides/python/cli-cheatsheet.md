@@ -12,7 +12,7 @@ content_sources:
     - id: cli-cheatsheet
       type: flowchart
       source: self-generated
-      justification: Flow view of cli cheatsheet, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Reading order for this guide's CLI reference stages, not an executed deployment or a guarantee of command support on every hosting plan; Microsoft Learn provides tooling background.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local
         - https://learn.microsoft.com/en-us/cli/azure/functionapp
@@ -25,6 +25,8 @@ Quick reference for the most commonly used commands when developing, deploying, 
 <!-- diagram-id: cli-cheatsheet -->
 ```mermaid
 flowchart TD
+    accTitle: Python CLI reference workflow
+    accDescr: Reading map for the stages listed on this page: initialize, develop locally, test settings, deploy, then monitor. Command labels identify reference topics, not a record of execution or a guarantee that every listed command supports every hosting plan.
     A[Initialize project] --> B[Develop locally with func host start]
     B --> C[Test and validate settings]
     C --> D[Deploy with func azure functionapp publish]

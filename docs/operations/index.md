@@ -34,6 +34,8 @@ Use it to deploy, configure, monitor, alert, and recover production workloads.
 <!-- diagram-id: scope -->
 ```mermaid
 flowchart TD
+    accTitle: Operations guide lifecycle
+    accDescr: Deploy, Monitor, Alert and Recover are the operating lifecycle this guide uses to organize its pages, not a built-in Azure product pipeline.
     A[Deploy] --> B[Monitor]
     B --> C[Alert]
     C --> D[Recover]
