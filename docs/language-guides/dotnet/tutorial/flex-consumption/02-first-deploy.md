@@ -21,8 +21,11 @@ content_sources:
     - id: what-you-ll-build
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Public-only Linux FC1 deployment-storage and telemetry relationships for this .NET 8 tutorial, not an observed network trace.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
         - https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
@@ -68,27 +71,42 @@ You will provision a Linux Flex Consumption Function App for .NET 8 isolated wor
 !!! info "Infrastructure Context"
     **Plan**: Flex Consumption (FC1) | **Network**: VNet integration supported | **Storage auth**: SystemAssigned MI
 
-    Flex Consumption uses blob-based deployment storage with managed identity authentication, unlike Consumption which uses Azure Files with connection strings.
+    This Linux Flex Consumption tutorial configures system-assigned managed identity for Blob deployment storage; that authentication choice is not a requirement for every Flex app. Flex does not depend on an Azure Files content share. Consumption storage differs by OS and deployment method; Linux Consumption can use Blob package storage ([storage considerations](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations)).
 
-    <!-- diagram-id: what-you-ll-build -->
+<!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
-    INET[Internet] -->|HTTPS| FA[Function App\nFlex Consumption FC1\nLinux .NET 8 isolated]
-
-    FA -->|"SystemAssigned MI"| ST[Storage Account\nBlob deployment]
-    FA --> AI[Application Insights]
-
-    subgraph STORAGE[Storage Services]
-        ST --- DEPLOY["Blob Container\napp-package"]
+    accTitle: Linux Flex Consumption .NET 8 public deployment topology
+    accDescr: Internet HTTPS calls reach this FC1 app. Its configured system-assigned identity authorizes Blob deployment access; Application Insights receives configured telemetry. The storage-services boundary groups the account and app-package container, not a customer subnet.
+    client(["Internet"])
+    app_runtime["Function App<br/>Flex Consumption FC1<br/>Linux .NET 8 isolated"]
+    telemetry>"Application<br/>Insights"]
+    subgraph STORAGE["Storage Services"]
+        storage_db[("Storage Account<br/>Blob deployment")]
+        DEPLOY[("Blob Container<br/>app-package")]
     end
-
-    style FA fill:#0078d4,color:#fff
-    style STORAGE fill:#FFF3E0
+    client -->|"[Configured]<br/>HTTPS"| app_runtime
+    app_runtime -->|"[Configured]<br/>SystemAssigned MI"| storage_db
+    app_runtime -.->|"[Configured]<br/>Telemetry"| telemetry
+    storage_db -.->|"[Configured]<br/>Contains"| DEPLOY
+    %% Layout-only tier: adds no request or deployment step.
+    telemetry ~~~ storage_db
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e;
+    classDef bandMuted fill:#ffffff,stroke:#707e93,stroke-width:1.5px,stroke-dasharray:4 3,color:#14202e;
+    class client,storage_db,DEPLOY baseNeutral;
+    class app_runtime focusActive;
+    class telemetry bandMuted;
+    linkStyle default stroke-width:2px;
 ```
+
+**Reading key:** Solid arrows show request/deployment access; dotted arrows show off-path telemetry or container membership, not data transiting Application Insights. `[Configured]` describes this tutorial's intended setup, not a newly observed deployment. The `SystemAssigned MI` label names deployment-storage authentication; it does not assert identity-based host storage. No VNet integration or private endpoint is configured on this page ([Flex deployment settings](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to#configure-deployment-settings), [monitoring](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)).
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart TD
+    accTitle: Linux Flex Consumption .NET 8 deployment steps
+    accDescr: Tutorial order retains variables and login, resource group and storage, deployment container, FC1 app, Storage Blob Data Contributor, placeholder settings, output-directory build and publish, and endpoint validation; not a new execution result.
     A[Set variables + login] --> B[Create RG + storage]
     B --> C[Create deployment container]
     C --> D[Create function app]

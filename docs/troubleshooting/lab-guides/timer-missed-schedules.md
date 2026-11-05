@@ -15,7 +15,7 @@ content_sources:
     - id: failure-progression-model
       type: flowchart
       source: self-generated
-      justification: Flow view of failure progression model, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Reading model for the page's historical Y1 two-minute timer stop/restart sequence; not a new execution or independent confirmation of the retained results.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-timer
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
@@ -25,7 +25,7 @@ content_sources:
     - id: evidence-timeline
       type: gantt
       source: self-generated
-      justification: Evidence timeline, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Visualization of the page's historical Y1 timer windows; Microsoft Learn supplies timer semantics, not these timestamps or independent verification of the lab.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-timer
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
@@ -71,6 +71,8 @@ This lab validates that behavior with production evidence from `labshared-func` 
 <!-- diagram-id: failure-progression-model -->
 ```mermaid
 flowchart TD
+    accTitle: Y1 two-minute timer lab - stop and restart progression
+    accDescr: Reading model for the historical lab sequence from regular timer fires through intentional app stop, invocation gaps, restart, past-due fire and normal cadence. It does not assert new observed evidence.
     A[Timer trigger configured at 2-minute interval] --> B[Regular schedule fires]
     B --> C[App stopped intentionally]
     C --> D[Scheduled windows pass without active host]
@@ -434,20 +436,31 @@ The stop command was issued at 07:23:43 but the 07:24:00 timer still fired (the 
 
 <!-- diagram-id: evidence-timeline -->
 ```mermaid
+%%{init: {"gantt":{"fontSize":16,"sectionFontSize":16,"leftPadding":95,"rightPadding":35,"barHeight":24,"barGap":10},"theme":"base","themeVariables":{"doneTaskBkgColor":"#e2e8f0","critBkgColor":"#fed7aa","taskBkgColor":"#e2e8f0"},"themeCSS":".grid .tick text{font-size:16px;fill:var(--md-default-fg-color);} .section{opacity:0;} .titleText{font-size:14px;fill:var(--md-default-fg-color);} .sectionTitle{fill:var(--md-default-fg-color);} .taskTextOutsideLeft,.taskTextOutsideRight{fill:var(--md-default-fg-color)!important;} .taskText{fill:#14202e!important;}"}}%%
 gantt
     title Timer Missed Schedules Evidence Timeline
+    accTitle: Timer Missed Schedules Evidence Timeline
+    accDescr: Five historical Y1 lab windows from 07:18 through 07:46, keyed T1 to T5 in the adjacent legend. Bars retain minute-resolution windows; the stop command timestamp is 07:23:43, not an exact bar boundary.
     dateFormat  HH:mm
     axisFormat  %H:%M
+    tickInterval 10minute
     section Baseline
-    Baseline fires (07:18-07:24)     :done, t1, 07:18, 6m
+    T1                              :done, t1, 07:18, 6m
     section Trigger
-    App stopped (07:23:43)           :done, t2, 07:23, 1m
+    T2                              :done, t2, 07:23, 1m
     section Incident
-    Missed windows (07:26-07:40)     :done, t3, 07:26, 14m
+    T3                              :done, t3, 07:26, 14m
     section Recovery
-    App restart + isPastDue fire     :done, t4, 07:40, 2m
-    Normal schedule resumed          :done, t5, 07:42, 4m
+    T4                              :done, t4, 07:40, 2m
+    T5                              :done, t5, 07:42, 4m
 ```
+
+**Timer Missed Schedules Evidence Timeline.** Task key (UTC): T1 — Baseline
+fires (07:18–07:24); T2 — App stop command issued (07:23:43), shown in the 07:23–07:24
+window; T3 — Missed windows (07:26–07:40); T4 — App restart + `isPastDue` fire,
+07:40–07:42; T5 — Normal schedule resumed, 07:42–07:46. Bars preserve the
+historical page's minute-resolution windows, not exact event boundaries or a
+new validation of the Y1 lab.
 
 ### Evidence chain: why this proves the hypothesis
 

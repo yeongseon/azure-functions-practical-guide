@@ -26,6 +26,7 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
 ---
 # 07 - Extending with Triggers (Flex Consumption)
 
@@ -49,9 +50,11 @@ You will add queue, blob, and timer triggers to a .NET isolated worker Function 
 <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
-    A[Queue message] --> B["[QueueTrigger] handler"]
-    C[Blob upload] --> D["[BlobTrigger] handler"]
-    E[Schedule] --> F["[TimerTrigger] handler"]
+    accTitle: Flex Consumption .NET isolated trigger paths
+    accDescr: Conceptual paths for this Flex Consumption tutorial: queue message to QueueTrigger handler, blob upload to BlobTrigger handler, and schedule to TimerTrigger handler; each leads to outputs and logs. Flex Consumption requires the Event Grid-based Blob trigger; the arrows do not prescribe polling, HTTP ingress, shared instances or delivery guarantees, and do not validate the samples below.
+    A[Queue message] --> B["[QueueTrigger]<br/>handler"]
+    C[Blob upload] --> D["[BlobTrigger]<br/>handler"]
+    E[Schedule] --> F["[TimerTrigger]<br/>handler"]
     B --> G[Outputs and logs]
     D --> G
     F --> G

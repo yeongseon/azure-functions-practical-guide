@@ -11,11 +11,27 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-query-overview
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-azure-and-service-bus-queues-compared-contrasted
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/storage/queues/storage-queues-introduction
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/rest/api/storageservices/get-messages
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/rest/api/storageservices/peek-messages
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-idempotent
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages
+    - type: mslearn-adapted
+      url: https://learn.microsoft.com/en-us/python/api/azure-storage-blob/azure.storage.blob.blobclient#azure-storage-blob-blobclient-upload-blob
   diagrams:
     - id: failure-progression-model-for-this-incident
       type: flowchart
       source: self-generated
-      justification: Flow view of failure progression model for this incident, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Summary of the historical Y1 burst reported on this page; Learn supports queue-trigger and scaling concepts, not the recorded timings or a new Azure validation.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
@@ -25,7 +41,7 @@ content_sources:
     - id: timeline-view
       type: gantt
       source: self-generated
-      justification: Timeline view, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Timeline of the historical burst reported on this page, not a platform timing guarantee or new execution evidence.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
@@ -35,7 +51,7 @@ content_sources:
     - id: hypothesis-decision-flow
       type: flowchart
       source: self-generated
-      justification: Hypothesis decision flow, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Historical lab diagnostic routing, not an exhaustive classifier; Learn supports queue retry and scaling concepts, not proof of the historical causal verdict.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
@@ -45,7 +61,7 @@ content_sources:
     - id: evidence-timeline
       type: sequenceDiagram
       source: self-generated
-      justification: Interaction sequence for evidence timeline, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Experiment-log summary of the historical Y1 burst and reported telemetry, not an internal host-worker protocol or new execution evidence.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
@@ -55,7 +71,7 @@ content_sources:
     - id: evidence-timeline-2
       type: sequenceDiagram
       source: self-generated
-      justification: Interaction sequence for evidence timeline 2, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Expected-evidence summary of the historical Y1 burst and reported telemetry, not an internal host-worker protocol or new execution evidence.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
@@ -143,12 +159,16 @@ These values are emitted in the `message` column of `traces` and must be parsed 
 <!-- diagram-id: failure-progression-model-for-this-incident -->
 ```mermaid
 flowchart TD
-    A[Burst injection starts\n08:23:09 UTC] --> B[2000 messages injected\nends 08:23:31 UTC]
-    B --> C[Single Y1 instance processes queue]
-    C --> D[Per-minute throughput ramps up\n25 -> 518]
+    accTitle: Historical Y1 queue burst progression
+    accDescr: Summary of the reported burst, from injection through single-instance processing and rising message age to drain completion; not a new lab run.
+    A["Burst injection starts<br/>08:23:09 UTC"] --> B["2000 messages injected<br/>ends 08:23:31 UTC"]
+    B --> C["Single Y1 instance<br/>processes queue"]
+    C --> D["Per-minute throughput<br/>ramps up: 25 → 518"]
     D --> E[Backlog age increases over time]
-    E --> F[Drain completes ~08:30:29 UTC]
+    E --> F["Drain completes<br/>~08:30:29 UTC"]
     F --> G[No retry and no poison]
+    classDef neutral fill:#f2f4f8,stroke:#707e93,color:#14202e;
+    class A,B,C,D,E,F,G neutral;
 ```
 
 ### Why this scenario matters
@@ -162,17 +182,29 @@ flowchart TD
 
 <!-- diagram-id: timeline-view -->
 ```mermaid
+%%{init: {"gantt":{"fontSize":16,"sectionFontSize":16,"leftPadding":95,"rightPadding":35,"barHeight":24,"barGap":10},"theme":"base","themeVariables":{"doneTaskBkgColor":"#e2e8f0","critBkgColor":"#fed7aa","taskBkgColor":"#e2e8f0"},"themeCSS":".grid .tick text{font-size:16px;fill:var(--md-default-fg-color);} .section{opacity:0;} .titleText{font-size:14px;fill:var(--md-default-fg-color);} .sectionTitle{fill:var(--md-default-fg-color);} .taskTextOutsideLeft,.taskTextOutsideRight{fill:var(--md-default-fg-color)!important;} .taskText{fill:#14202e!important;}"}}%%
 gantt
+    accTitle: Queue Backlog Burst and Drain (UTC, 2026-04-07)
+    accDescr: Historical injection, drain and completion sections retain their reported start times and durations; the adjacent key gives exact seconds. This is not a new run.
     title Queue Backlog Burst and Drain (UTC, 2026-04-07)
     dateFormat  HH:mm:ss
-    axisFormat  %H:%M:%S
+    axisFormat  %H:%M
+    tickInterval 2minute
     section Injection
-    Producer sends 2000 messages   :done, inj, 08:23:09, 22s
+    T1 :done, inj, 08:23:09, 22s
     section Drain
-    Single-instance drain phase    :done, drn, 08:23:09, 7m20s
+    T2 :done, drn, 08:23:09, 7m20s
     section Completion
-    Queue reaches fully drained    :done, fin, 08:30:29, 1s
+    T3 :done, fin, 08:30:29, 1s
 ```
+
+**Timeline key — Queue Backlog Burst and Drain (UTC, 2026-04-07):**
+
+| Key | Historical task | Start (UTC) | Duration |
+|---|---|---|---|
+| T1 | Producer sends 2000 messages | 08:23:09 | 22s |
+| T2 | Single-instance drain phase | 08:23:09 | 7m20s |
+| T3 | Queue reaches fully drained | 08:30:29 | 1s |
 
 ## 2) Hypothesis
 
@@ -203,20 +235,28 @@ If a high-burst queue workload is injected into Y1 Consumption with steady 5-sec
 <!-- diagram-id: hypothesis-decision-flow -->
 ```mermaid
 flowchart TD
-    A[Backlog observed] --> B{Any retries or poison?}
-    B -->|No, dequeueCount=1| C{"Any dependency calls/failures?"}
-    B -->|Yes| X[Investigate poison loop path]
-    C -->|No| D{Scaled out beyond one instance?}
-    C -->|Yes| Y[Investigate dependency bottleneck]
-    D -->|No| E[Confirm single-instance burst absorption]
-    D -->|Yes| Z[Investigate post-scale throughput mismatch]
+    accTitle: Historical Y1 backlog hypothesis decisions
+    accDescr: Three Yes or No checks route the reported backlog to poison, dependency or post-scale investigations, or confirmation of single-instance burst absorption. Interpret with this lab's evidence and competing hypotheses, not as a universal classifier.
+    A([Backlog observed]) --> B{"Any retries<br/>or poison?"}
+    B -->|"No, dequeueCount=1"| C{"Any dependency<br/>calls/failures?"}
+    B -->|Yes| X(["Investigate poison<br/>loop path"])
+    C -->|No| D{"Scaled out beyond<br/>one instance?"}
+    C -->|Yes| Y(["Investigate dependency<br/>bottleneck"])
+    D -->|No| E(["Confirm single-instance<br/>burst absorption"])
+    D -->|Yes| Z(["Investigate post-scale<br/>throughput mismatch"])
+    %% Layout-only links tier the outcomes; they add no diagnostic steps or arrows.
+    X ~~~ C
+    Y ~~~ D
+    Z ~~~ E
+    classDef neutral fill:#f2f4f8,stroke:#707e93,color:#14202e;
+    class A,B,C,D,X,Y,E,Z neutral;
 ```
 
 ## 3) Runbook
 
 ### Golden scenario: retry, poison and durable work (offline definition)
 
-[Not Proven] On **Linux Consumption (Y1), Functions v4, Python v2**, declared
+[Not Proven] On **Linux Consumption (Y1), Functions v4, Python 3.11 (v2 model)**, declared
 per-message failures should cause Storage Queue redelivery and poison handling,
 while a conditional durable write should prevent duplicate effects for a stable
 work key. This is a bounded experiment, not an exactly-once delivery guarantee,
@@ -335,7 +375,12 @@ same ordering to baseline, fault and recovery below.
     phase ordering. Enqueue only
     `baseline-001` in normal mode after readiness. Require its delivery, one
     committed record, successful invocation and correlated runtime delete before
-    fault injection. All validity controls must be eligible; stop on missing data.
+    fault injection. Establish pre-injection eligibility through the configuration,
+    access/query checks and positive baseline delivery/Queue/Blob samples. No
+    exception sample is expected from normal baseline work; retain positive
+    exception-path samples during the declared fault phase before evaluating
+    `collection` as valid. Stop on missing baseline prerequisites; later collection
+    gaps leave the control unresolved, not implicitly valid.
 3. **Fault:** confirm the same package/configuration and use that shared sequence.
     Enqueue the
     transient, poison and redelivery keys with their fixed modes, retaining all
@@ -373,22 +418,61 @@ timings**, not exact processing, propagation or readiness times. No timings exis
 | Acknowledgement | Successful runtime `DeleteMessage` service operation correlated to the committed source work | An invocation success or empty queue peek does not prove deletion; missing acknowledgement is INCONCLUSIVE, not successful processing or contradiction. |
 | Recovery | New normal work commits/deletes, prior keys stay stable, no poison replay | Restart or status probe success without durable commit cannot establish recovery. |
 
+#### Documented delivery semantics and limits
+
+Storage Queues provide [at-least-once delivery, without built-in duplicate detection](https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-azure-and-service-bus-queues-compared-contrasted#foundational-capabilities).
+[Retrieving a message](https://learn.microsoft.com/en-us/rest/api/storageservices/get-messages#remarks)
+makes it temporarily invisible, not deleted; it can become available for another
+delivery if it remains undeleted. The service sets `DequeueCount` to 1 on the first
+dequeue and increments it on subsequent dequeues. This is not a count of successful
+invocations or business commits. The REST receive operation's visibility parameter
+and the Functions failure-delay setting below are different layers, not a single
+end-to-end processing deadline.
+
+At the storage-service layer, if the current receive invisibility period expires
+without renewal or deletion, another consumer can receive the message while the
+original consumer is still processing it
+([Get Messages](https://learn.microsoft.com/en-us/rest/api/storageservices/get-messages#remarks),
+[Queue trigger peek lock](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger#peek-lock)).
+This is not a prediction that a Functions invocation lasting over 30 seconds will
+overlap: the configured `visibilityTimeout` is the delay after failed processing,
+not the invocation's processing lease.
+
 Documented [Queue trigger behavior](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger#poison-messages)
 uses **`maxDequeueCount` default 5 (including the first attempt)** and
-**`<queue>-poison`**. `DequeueCount` counts dequeues, not SDK calls or committed
-effects. On success the runtime deletes the message. On ordinary invocation
+**`<queue>-poison`**. The Functions host/extension adds the poison message after
+failed processing exhausts this budget; it is not Storage Queue service automatic
+dead-lettering or a business commit. This run expects `work-items-poison` and leaves
+triage/replay to a separately approved action, not an automatic recovery path.
+On success the runtime deletes the message. On ordinary invocation
 failure it applies `visibilityTimeout` (default zero; explicitly 30 seconds here).
 Polling/processing can delay observation beyond 30 seconds; it is not a fixed
 delivery schedule. A host crash cannot apply that setting and instead leaves the
 service's ten-minute invisibility timeout. This recipe does not inject a crash;
 an unexpected restart invalidates `run.sequence` rather than being misclassified
 as the declared transient exception. See the
-[host.json settings](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue#host-json-settings).
+[host.json settings](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue#host-json).
 
-Platform redelivery, in-code application retries and SDK transport retries are
-different counters/budgets. Poison handling is queue-specific, not proof of an
-exactly-once downstream effect. Only the atomic record-as-effect design is tested;
-no inference extends to a separate external business operation or future delivery.
+The [Functions retry-source table](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages#retries)
+assigns Queue retries to the binding extension and `host.json`, not function-level
+retry policies. Platform redelivery, in-code application retries and SDK transport
+retries therefore have different counters/budgets.
+
+**Eventual delivery is not eventual business success:** visibility expiry makes
+work eligible again, not guaranteed to finish within this lab's window. Persistent
+processing failure can end in poison handling rather than a commit. Also retain
+the actual message expiry/TTL: [Queue Storage messages default to seven days when
+TTL is omitted](https://learn.microsoft.com/en-us/azure/storage/queues/storage-queues-introduction#queue-storage-concepts),
+so unbounded retention must not be assumed. No result here promises completion
+after the observation window.
+
+[Idempotent handling](https://learn.microsoft.com/en-us/azure/azure-functions/functions-idempotent)
+is required because repeated input must preserve the same business outcome.
+In this experiment, a commit followed by failure before acknowledgement deliberately
+permits duplicate delivery; the stable `run_id/work_item_id` conditional record
+must still represent one effect. **Exactly-once delivery or a general exactly-once
+business-effect guarantee is unsupported.** Only this record-as-effect contract
+and its bounded observations are at issue, not separate external operations.
 
 All nine validity prerequisites are **control roles**: ownership, baseline,
 versions/settings, activated built artifact, work identity, collection paths,
@@ -747,6 +831,43 @@ SAS URLs, connection strings, authorization headers, pop receipts and customer
 content before publication. Restricted originals remain in an approved private
 location, never Git. Synthetic fixture clocks and labels cannot fill capture gaps.
 
+#### Raw artifact checklist by assertion
+
+[Not Proven] The following specifies what a future authorized run must retain in
+the layout above; none has been collected. Assertion IDs are the existing JSON
+IDs, not new predicates. Reuse an artifact across rows through `mapping.json`
+rather than duplicating captures or replacing raw records with a summary label.
+
+| Assertion IDs | Raw artifacts and collection point | What they establish / cannot establish |
+|---|---|---|
+| `ownership`, `isolation` | Approved inventory/permissions, queue and sink pre-run inventory, consumer/producer inventory and adapted source in `identity.json`/`predeclaration.json`; retain effective retry settings with each phase's configuration. | Bounds ownership and declared fault modes; a quiet queue alone cannot exclude another consumer. |
+| `versions`, `artifact` | Host startup/bundle inventory, exact resolved versions, effective settings, built-package digest and release-marker startup/invocation lines in `config-and-versions` and `built-activation`. | Binds behavior to the frozen package and environment; source hash alone cannot identify activated bytes. |
+| `sequencing` | Deployment/configuration acceptance, restart request/completion receipts, host indexing/listener-ready lines, producer acceptance and observation timestamps in each phase's restart receipts and logs. | Establishes phase order; a successful restart does not establish cause or recovery. |
+| `work-identity` | Producer send receipts: work key, mode, exact submitted body SHA-256, source message ID, send acceptance UTC and service insertion/expiry times where available; join to handler delivery records. | Links business identity to service identity; producer `enqueuedUtc` is not service insertion or first dequeue time. |
+| `collection` | Pre-injection diagnostic/sampling/filter configuration and access/query checks for all paths; positive baseline delivery/Queue/Blob samples; positive exception samples from the declared fault phase. Retain exact queries/windows and collection-error responses. | Baseline checks establish eligibility to inject, not final exception-path coverage. Evaluate this control only after fault collection; missing records with an unhealthy path cannot establish absence. |
+| `baseline` | Baseline host readiness lines plus producer receipt, delivery-start/invocation outcome, authoritative Blob record/read and correlated successful runtime queue deletion. | Exercises the complete control path, not just HTTP status or function inventory. |
+| `failure`, `retry` | `deliveries` and `exceptions-and-results`: source ID, `dequeueCount`, invocation ID, mode/key, release/worker identity, delivery-start UTC, exception type and host completion/failure lines for every attempt; Queue receive/visibility-update service operations where available. | Distinguishes transient counts 1/2/3 and their outcomes; a count gap cannot reconstruct an unretained attempt, and an exception is not a sink read. |
+| `poison` | Five source delivery/failure records; non-consuming `work-items-poison` peek response with poison message ID, body/hash, insertion/expiry time, its own dequeue count and observation UTC; host poison-handling lines and correlated Queue add/delete service operations. Keep an explicit source-ID -> poison-ID mapping via the producer's body hash and run/work key. | Links the failed original payload to a new poison item; do not assume the poison body contains the original service ID or that its count equals five. Pair with sink reads to decide no commit. |
+| `redelivery` | First commit receipt/read and deliberate failed invocation; subsequent delivery of the same source ID with a new invocation ID, count 2, existing-record read and host outcome. | Demonstrates delivery repetition after commit; repeated logs alone cannot establish duplicate effects. |
+| `sink`, `business-effect` | Reviewed conditional-create source/tests; Blob operation responses/service logs and authoritative run-container inventory/reads in `durable-work-records`: key, matching body/digest, commit time, ETag and service request ID, including existing-key reads and poison-key lookup results. | Tests the record-as-entire-effect contract within the window; a duplicate-rejection log or marker alone cannot prove durable work or arbitrary external effects. |
+| `acknowledgement` | Queue service deletion records: operation, success status, service time/request correlation and sanitized source-message locator, joined to handler outcome and committed work. Establish the join with baseline first. | Separates runtime acknowledgement from invocation success and from poison-path source removal. If diagnostics cannot identify the deleted source safely, retain the gap rather than claim acknowledgement. |
+| `probe`, `restore` | Status-probe request/response separately; recovery item's delivery, commit/read, runtime deletion and rereads of prior records/retained poison item. | Shows new normal work and stable prior effects; HTTP 200 without these records is not recovery. |
+| `cleanup` | Ownership-scoped target inventory, cleanup/restoration inputs, completion/failure receipts and remaining-resource inventory in `cleanup/`. | Records teardown independently; asynchronous acceptance alone is not completion. |
+
+For timing, retain **insertion**, **first dequeue** and **every redelivery** as
+separate fields. Collect insertion/expiry from [Queue trigger metadata](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger#metadata).
+Keep the corresponding receive-operation time if diagnostics expose it, and each
+handler's delivery-start UTC; a handler timestamp is only a first-observed bound
+after dequeue, not the exact service dequeue time. Preserve `time_next_visible`
+when exposed, without interpreting it as an actual retry timestamp. A
+[peek](https://learn.microsoft.com/en-us/rest/api/storageservices/peek-messages#remarks)
+does not increment dequeue count and returns only visible messages; its response
+does not include next-visible time. Retain the poison insertion time separately
+from first peek observation and from the original message's insertion time.
+Mark unavailable fields unknown, never reconstruct them from the 30-second setting.
+These requirements refine collection for the existing assertions; the fixture and
+synthetic tests remain unchanged because no expected outcome or verdict rule changes.
+
 ### Historical burst evidence (unchanged)
 
 ### Run context
@@ -842,19 +963,34 @@ Age interpretation:
 <!-- diagram-id: evidence-timeline -->
 ```mermaid
 sequenceDiagram
+    %%{init: {'sequence': {'width': 60, 'actorMargin': 10, 'diagramMarginX': 8, 'noteMargin': 5, 'messageMargin': 20}}}%%
+    accTitle: Historical Y1 burst evidence timeline
+    accDescr: Four roles summarize the experiment log in its original message and note order. Numbered exchanges and notes are expanded in the adjacent key; this is not a host-worker protocol or new lab evidence.
     participant Producer
-    participant Queue as work-items
-    participant Func as labshared-func (single instance)
-    participant AI as App Insights
+    participant Queue
+    participant Func as App
+    participant AI as Insights
 
-    Producer->>Queue: Inject 2000 messages (08:23:09-08:23:31)
-    Func->>Queue: Start dequeue and processing
-    Func->>AI: QueueProcessed traces (dequeueCount=1)
-    Note over Func,AI: DistinctInstances remains 1
-    Func->>AI: requests success=true for all invocations
-    Note over Queue,Func: Per-minute throughput ramps 25 -> 518
-    Note over Queue: Queue fully drained around 08:30:29
+    Producer->>Queue: 1. Inject
+    Func->>Queue: 2. Process
+    Func->>AI: 3. Traces
+    Note over Func,AI: 4. One instance
+    Func->>AI: 5. Success
+    Note over Queue,Func: 6. Throughput
+    Note over Queue: 7. Drained
 ```
+
+**Reading key (historical summary):** Producer = burst producer; Queue = `work-items`;
+App = `labshared-func` (single Y1 instance); Insights = Application Insights.
+App summarizes the application role, not separate host, listener or language-worker transports.
+
+1. Inject 2000 messages (`08:23:09–08:23:31 UTC`).
+2. Start dequeue and processing.
+3. `QueueProcessed` traces (`dequeueCount=1`).
+4. `DistinctInstances` remains `1`.
+5. `requests` has `success=true` for all invocations in this historical summary.
+6. Per-minute throughput ramps `25 → 518`.
+7. Queue fully drained around `08:30:29 UTC`.
 
 ### Final verdict for this run
 
@@ -901,19 +1037,34 @@ sequenceDiagram
 <!-- diagram-id: evidence-timeline-2 -->
 ```mermaid
 sequenceDiagram
+    %%{init: {'sequence': {'width': 60, 'actorMargin': 10, 'diagramMarginX': 8, 'noteMargin': 5, 'messageMargin': 20}}}%%
+    accTitle: Historical Y1 burst expected-evidence timeline
+    accDescr: Four roles summarize the historical expected-evidence sequence in its original message and note order. The adjacent key expands all seven numbered entries; the unexecuted Golden retry scenario is separate.
     participant Producer
-    participant Queue as work-items
-    participant Func as labshared-func (single instance)
-    participant AI as App Insights
+    participant Queue
+    participant Func as App
+    participant AI as Insights
 
-    Producer->>Queue: Inject 2000 messages (08:23:09-08:23:31)
-    Func->>Queue: Start dequeue and processing
-    Func->>AI: QueueProcessed traces (dequeueCount=1)
-    Note over Func,AI: DistinctInstances remains 1
-    Func->>AI: requests success=true for all invocations
-    Note over Queue,Func: Per-minute throughput ramps 25 → 518
-    Note over Queue: Queue fully drained around 08:30:29
+    Producer->>Queue: 1. Inject
+    Func->>Queue: 2. Process
+    Func->>AI: 3. Traces
+    Note over Func,AI: 4. One instance
+    Func->>AI: 5. Success
+    Note over Queue,Func: 6. Throughput
+    Note over Queue: 7. Drained
 ```
+
+**Reading key (historical summary, not the Golden retry scenario):** Producer = burst producer;
+Queue = `work-items`; App = `labshared-func` (single Y1 instance); Insights = Application Insights.
+App summarizes the application role, not separate host, listener or language-worker transports.
+
+1. Inject 2000 messages (`08:23:09–08:23:31 UTC`).
+2. Start dequeue and processing.
+3. `QueueProcessed` traces (`dequeueCount=1`).
+4. `DistinctInstances` remains `1`.
+5. `requests` has `success=true` for all invocations in this historical summary.
+6. Per-minute throughput ramps `25 → 518`.
+7. Queue fully drained around `08:30:29 UTC`.
 
 ### Evidence chain: why this proves the conclusion
 
@@ -976,6 +1127,12 @@ If using shared resources (`rg-lab-y1-shared`), skip deletion and only clear tes
 
 - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
 - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue
+- https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-azure-and-service-bus-queues-compared-contrasted
+- https://learn.microsoft.com/en-us/azure/storage/queues/storage-queues-introduction
+- https://learn.microsoft.com/en-us/rest/api/storageservices/get-messages
+- https://learn.microsoft.com/en-us/rest/api/storageservices/peek-messages
+- https://learn.microsoft.com/en-us/azure/azure-functions/functions-idempotent
+- https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages
 - https://learn.microsoft.com/en-us/python/api/azure-storage-blob/azure.storage.blob.blobclient#azure-storage-blob-blobclient-upload-blob
 - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
 - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale

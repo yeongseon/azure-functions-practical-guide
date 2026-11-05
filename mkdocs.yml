@@ -611,4 +611,6 @@ nav:
   - Contributing:
     - contributing/index.md
     - Documentation Content Contract: contributing/content-contract.md
+    - Diagram Render Audit: contributing/diagram-render-audit.md
     - contributing/cross-guide-baseline.md
+    - Tutorial Screenshot Inventory: contributing/tutorial-screenshot-inventory.md

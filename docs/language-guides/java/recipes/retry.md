@@ -33,12 +33,19 @@ Queue Storage, Blob Storage, and Service Bus triggers do **not** use retry polic
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Runtime retry policy decisions for supported Java triggers
+    accDescr: Execution without an uncaught exception succeeds. An uncaught exception checks the retry budget; remaining retries wait according to the configured strategy and repeat execution, while an exhausted budget ends in failure. Both Yes and No branches of each decision remain explicit. This is a finite-policy logical flow, not a universal checkpoint protocol.
     EXEC[Function execution] --> ERR{Uncaught exception?}
-    ERR -->|No| DONE[Success: checkpoint/commit]
-    ERR -->|Yes| COUNT{retryCount < max?}
-    COUNT -->|Yes| WAIT[Wait per strategy] --> EXEC
-    COUNT -->|No| FAIL[Give up: execution fails]
+    ERR -->|No| DONE[Success]
+    ERR -->|Yes| COUNT{"Retries<br/>remaining?"}
+    COUNT -->|Yes| WAIT["Wait per<br/>strategy"] --> EXEC
+    COUNT -->|No| FAIL["Give up:<br/>execution fails"]
+    %% Layout-only links tier the outcomes; they add no decisions or semantic arrows.
+    DONE ~~~ COUNT
+    WAIT ~~~ FAIL
 ```
+
+**Reading key:** For a finite runtime policy, “Retries remaining?” means `retryCount < maxRetryCount`; `-1` instead requests indefinite retries. This flow applies to the supported Timer, Event Hubs, Cosmos DB and Kafka policies, subject to their extension requirements, not Queue Storage or Service Bus binding retries. Fixed delay waits a constant interval; exponential backoff alone adds small randomization. “Success” does not promise a checkpoint/commit for every trigger: Event Hubs checkpoints wait until the execution's retry policy finishes. The retry budget is best-effort across instance failures, as described below.
 
 ## Fixed Delay
 

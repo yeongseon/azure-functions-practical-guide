@@ -49,6 +49,8 @@ A .NET 8 isolated worker Function App with 16 functions that runs locally, retur
 <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
+    accTitle: Flex Consumption tutorial .NET isolated local HTTP workflow
+    accDescr: Illustrative local HTTP workflow in this Flex Consumption tutorial: dotnet build, func start, HTTP trigger endpoint, HttpRequest using this sample's ASP.NET Core integration, then IActionResult response. Arrows summarize build, startup and request handling, not Azure Flex scaling, networking or non-HTTP trigger compatibility validation; ASP.NET Core integration is this sample's choice.
     A[dotnet build] --> B[func start]
     B --> C[HTTP Trigger endpoint]
     C --> D[HttpRequest via ASP.NET Core]

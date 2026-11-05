@@ -36,10 +36,10 @@
 | [ベストプラクティス](https://yeongseon.dev/azure-functions-python/practical-guide/best-practices/) | ホスティング選択、トリガー、スケーリング、信頼性、セキュリティ、デプロイ | 包括적 |
 | [言語別ガイド](https://yeongseon.dev/azure-functions-python/practical-guide/language-guides/) | Python、Node.js、Java、および .NET のステップバイステップチュートリアル | 包括的 |
 | [運用](https://yeongseon.dev/azure-functions-python/practical-guide/operations/) | デプロイ、モニタリング、アラート、コスト最適化、リカバリ | 包括的 |
-| [トラブルシューティング](https://yeongseon.dev/azure-functions-python/practical-guide/troubleshooting/) | プレイブック、KQL クエリ、方法論、およびハンズオンラボ | ラボ検証済み |
+| [トラブルシューティング](https://yeongseon.dev/azure-functions-python/practical-guide/troubleshooting/) | プレイブック、KQL クエリ、方法論、およびハンズオンラボ | 過去のラボ記録あり |
 | [リファレンス](https://yeongseon.dev/azure-functions-python/practical-guide/reference/) | CLI チートシート、host.json、プラットフォームの制限 | 包括的 |
 
-**状態の凡例**: **ラボ検証済み** = 包括的 + 再現可能なラボによりガイダンスを実証済み · **包括的** = セクション全体が完了し、MSLearn で検証済みの本番環境対応 · **公開済み** = コアコンテンツは配置済みで、現在拡張中 · **進行中** = コンテンツの一部が作成済みで、活発に開発中 · **計画中** = プレースホルダーであり、コンテンツは未着手
+**状態の凡例**: **過去のラボ記録あり** = 報告された過去のラボ観察記録を伴う包括的なガイダンス (証拠の信頼性は未検証。[検証証拠の監査](https://yeongseon.dev/azure-functions-python/practical-guide/reference/validation-evidence-audit/)を参照) · **包括的** = セクション全体が完了し、MSLearn で検証済みの本番環境対応 · **公開済み** = コアコンテンツは配置済みで、現在拡張中 · **進行中** = コンテンツの一部が作成済みで、活発に開発中 · **計画中** = プレースホルダーであり、コンテンツは未着手
 
 ## ホスティング範囲
 

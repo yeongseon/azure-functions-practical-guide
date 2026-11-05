@@ -26,6 +26,7 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
 ---
 # 04 - Logging and Monitoring (Flex Consumption)
 
@@ -49,10 +50,14 @@ You will instrument .NET isolated worker handlers with structured logs via `ILog
 <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
-    A["ILogger<T> in handler"] --> B[FunctionAppLogs]
+    accTitle: Flex Consumption .NET isolated logging overview
+    accDescr: With the worker telemetry registration and Application Insights connection configured in this tutorial, handler logs can be exported to Application Insights for dashboards and alerts. This is not a FunctionAppLogs forwarding pipeline or a guarantee that every log level is collected.
+    A["ILogger<T> in handler"] --> B[Worker telemetry]
     B --> C[Application Insights]
     C --> D[Dashboards and alerts]
 ```
+
+**Takeaway:** This Flex Consumption tutorial configures isolated-worker telemetry for Application Insights. `FunctionAppLogs` is a separate resource-log table collected through optional diagnostic settings, not an intermediary required by this worker export ([monitoring reference](https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions#azure-monitor-resource-logs)).
 
 ## Steps
 
