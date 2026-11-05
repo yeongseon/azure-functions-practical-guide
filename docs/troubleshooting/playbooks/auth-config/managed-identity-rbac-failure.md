@@ -25,7 +25,7 @@ content_sources:
     - id: failure-progression-model
       type: sequenceDiagram
       source: self-generated
-      justification: Interaction sequence for failure progression model, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative token-success then authorization-failure sequence; internal assertion exchange, retry and listener impact are scenario abstractions, not a platform protocol or retained execution trace.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
         - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
@@ -35,7 +35,7 @@ content_sources:
     - id: identity-authorization-map
       type: flowchart
       source: self-generated
-      justification: Flow view of identity authorization map, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Conceptual identity, permission-model and SDK-scope examples based on the cited guidance; role examples are not automatic grants or an exhaustive trigger-permissions list.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
         - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
@@ -45,7 +45,7 @@ content_sources:
     - id: host-startup-correlation
       type: timeline
       source: self-generated
-      justification: Timeline view of host startup correlation, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Existing incident-scenario periods and event text retained for correlation; Microsoft Learn supports identity and authorization concepts, not these timestamps or an independently reproduced run.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
         - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
@@ -88,30 +88,56 @@ The goal is to restore trigger execution and outbound dependency access quickly,
 ### Decision Flow
 <!-- diagram-id: decision-flow -->
 ```mermaid
+%%{init: {"flowchart":{"nodeSpacing":10,"padding":5}}}%%
 flowchart TD
-    A[Auth failures or listener startup errors] --> B{Managed identity enabled?}
-    B -->|No| C[Enable identity and restart host]
-    B -->|Yes| D{Correct principal assigned to app?}
-    D -->|No| E[Attach expected user-assigned identity]
-    D -->|Yes| F{Required RBAC role present?}
-    F -->|No| G[Create missing role assignment]
-    F -->|Yes| H{Role assignment recently changed?}
-    H -->|Yes| I[Wait 5-10 min and refresh token path]
-    H -->|No| J{Target is Key Vault?}
-    J -->|Yes| K{Vault auth mode aligned?}
-    K -->|No| L[Align RBAC vs access policy model]
-    K -->|Yes| M{Audience and scope correct?}
+    accTitle: Managed identity diagnostic decisions
+    accDescr: Illustrative Yes-No checks for identity selection, roles, recent changes, vault permission model and token scope. Branches select investigations or actions, not proven diagnoses; verify against the disproof sections.
+    A(["A: Auth / listener<br/>startup errors"]) --> B{"B: Identity<br/>enabled?"}
+    B -->|No| C("C: Enable / restart")
+    B -->|Yes| D{"D: Principal<br/>correct?"}
+    D -->|No| E("E: Attach identity")
+    D -->|Yes| F{"F: Role<br/>present?"}
+    F -->|No| G("G: Assign role")
+    F -->|Yes| H{"H: Recent<br/>change?"}
+    H -->|Yes| I("I: Wait / retest")
+    H -->|No| J{"J: Key<br/>Vault?"}
+    J -->|Yes| K{"K: Mode<br/>aligned?"}
+    K -->|No| L("L: Align model")
+    K -->|Yes| M{"M: Scope<br/>correct?"}
     J -->|No| M
-    M -->|No| N[Fix token scope and SDK settings]
-    M -->|Yes| O[Check network and service-side deny]
-    C --> P[Verify dependency success recovery]
+    M -->|No| N("N: Scope /<br/>SDK fix")
+    M -->|Yes| O("O: Network /<br/>deny")
+    C --> P(["P: Verify recovery"])
     E --> P
     G --> P
     I --> P
     L --> P
     N --> P
     O --> P
+    %% Layout-only links serialize checks; they add no diagnostic steps or arrows.
+    C ~~~ D
+    E ~~~ F
+    G ~~~ H
+    I ~~~ J
+    L ~~~ M
+    N ~~~ O
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P neutral;
 ```
+
+**Reading key:** Diamonds ask questions; rounded boxes suggest actions to validate against the competing hypotheses below. The final stadium asks for dependency recovery evidence, not merely a successful identity update.
+
+| Key | Check or action |
+|---|---|
+| A / B | Authentication failures or listener startup errors / managed identity enabled? |
+| C / D | Enable identity and restart host / correct principal assigned to the app? |
+| E / F / G | Attach expected user-assigned identity / required RBAC role present? / create missing role assignment. |
+| H / I | Role assignment recently changed? / allow propagation, examine the token path and retest. |
+| J / K / L | Target is Key Vault? / vault authorization mode aligned? / align RBAC versus access policy model. |
+| M / N | Audience and scope correct? / fix token scope and SDK settings. |
+| O / P | Check network and service-side deny / verify dependency success recovery. |
+
+**Propagation caveat:** Distinguish ordinary RBAC assignment propagation from managed-identity group or role membership caching; a 5–10 minute retest interval is not a universal recovery deadline. Managed-identity backend caches can delay group or role membership changes for around 24 hours; their tokens cannot be forcibly refreshed before expiration. A host restart does not establish that backend authorization has refreshed ([RBAC propagation guidance](https://learn.microsoft.com/en-us/azure/role-based-access-control/troubleshooting#symptom---role-assignment-changes-are-not-being-detected), [managed identity guidance](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity#configure-the-target-resource)).
 
 ### Severity guidance
 | Condition | Severity | Action priority |
@@ -132,37 +158,71 @@ flowchart TD
 ### Failure progression model
 <!-- diagram-id: failure-progression-model -->
 ```mermaid
+%%{init: {"sequence":{"width":60,"actorMargin":10,"diagramMarginX":0,"wrap":true}}}%%
 sequenceDiagram
-    participant H as Functions Host
-    participant M as Managed Identity Endpoint
-    participant A as Azure AD Token Service
-    participant R as Target Resource
-    H->>M: Request token for resource scope
-    M->>A: Exchange identity assertion
-    A-->>M: Access token
-    M-->>H: Access token returned
-    H->>R: Call dependency with bearer token
-    R-->>H: 403 AuthorizationPermissionMismatch
-    H->>H: Retry policy executes
-    H-->>H: Listener startup may fail if trigger auth blocked
+    accTitle: Token acquisition before authorization failure
+    accDescr: Illustrative eight-message sequence preserving host, managed identity endpoint, token service and target resource roles. Internal exchange and retry details are teaching abstractions; listener failure is conditional on trigger authorization being blocked.
+    participant H as H
+    participant M as M
+    participant A as A
+    participant R as R
+    H->>M: S1
+    M->>A: S2
+    A-->>M: S3
+    M-->>H: S4
+    H->>R: S5
+    R-->>H: S6
+    H->>H: S7
+    H-->>H: S8
 ```
+
+**Participants:** H = Functions Host; M = Managed Identity Endpoint; A = Microsoft Entra token service (formerly Azure AD); R = Target Resource. These are logical roles, not a network-hop specification.
+
+| Message | Meaning in this illustrative sequence |
+|---|---|
+| S1 | Request token for resource scope. |
+| S2 | Exchange identity assertion (illustrative internal exchange). |
+| S3 | Access token. |
+| S4 | Access token returned. |
+| S5 | Call dependency with bearer token. |
+| S6 | `403 AuthorizationPermissionMismatch` (the depicted resource error, not a universal 403 code). |
+| S7 | Retry policy executes in this scenario. |
+| S8 | Listener startup may fail if trigger authorization is blocked. |
 
 ### Identity authorization map
 <!-- diagram-id: identity-authorization-map -->
 ```mermaid
 flowchart TD
-    F[Function App] --> I[System-assigned MI]
-    F --> U[User-assigned MI]
-    I --> RBAC1[Role Assignment: Storage Blob Data Contributor]
-    U --> RBAC2[Role Assignment: Azure Service Bus Data Receiver]
+    accTitle: Identity and authorization examples
+    accDescr: Conceptual examples for system-assigned and user-assigned identities, Key Vault permission-model alternatives and SDK audience selection. The adjacent key expands role names; assignments are examples, not automatic permissions or a complete trigger-role prescription.
+    F["Function App"] --> I["System-assigned MI"]
+    F --> U["User-assigned MI"]
+    I --> RBAC1["R-B: Blob role"]
+    U --> RBAC2["R-S: Service Bus role"]
     I --> KV[Key Vault]
     KV --> MODE{Permission model}
-    MODE -->|RBAC| R1[Key Vault Secrets User or Reader]
-    MODE -->|Access Policy| P1["Get/List secret policy"]
-    F --> SDK[DefaultAzureCredential]
-    SDK --> AUD[Resource audience or scope]
-    AUD --> TARGET["Storage / Service Bus / Key Vault"]
+    MODE -->|RBAC| R1["R-K: Secrets User"]
+    MODE -->|Access Policy| P1["Get/List secret<br/>policy"]
+    F --> SDK["SDK credential"]
+    SDK --> AUD["Resource audience<br/>or scope"]
+    AUD --> TARGET["Storage / Service Bus<br/>/ Key Vault"]
+    %% Layout-only tiers add no authorization grants or transport hops.
+    RBAC1 ~~~ U
+    RBAC2 ~~~ KV
+    R1 ~~~ P1
+    P1 ~~~ SDK
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class F,I,U,RBAC1,RBAC2,KV,MODE,R1,P1,SDK,AUD,TARGET neutral;
 ```
+
+| Key | Example configuration |
+|---|---|
+| R-B | Role assignment: `Storage Blob Data Contributor`. |
+| R-S | Role assignment: `Azure Service Bus Data Receiver`. |
+| R-K | `Key Vault Secrets User` for secret values. `Key Vault Reader` reads metadata, not secret contents. |
+| SDK credential | `DefaultAzureCredential`; verify which identity its credential chain actually selects. |
+
+**Takeaway:** Identity attachment, target permissions and token audience are separate checks. The Blob role example is not an exhaustive Blob-trigger permission list; check the trigger-specific requirements. For Key Vault secret reads, Reader is not an alternative to Secrets User; the Get/List access-policy branch remains an example, not a minimum-permissions prescription ([Key Vault roles](https://learn.microsoft.com/en-us/azure/key-vault/general/rbac-guide), [identity connections](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference), [.NET credential chain](https://learn.microsoft.com/en-us/dotnet/api/azure.identity.defaultazurecredential)).
 
 ## 2. Common Misreadings
 | Misreading | Why incorrect | Correct interpretation |
@@ -414,17 +474,39 @@ If timeout and DNS errors dominate while 401/403 are sparse, treat auth findings
 ### Host startup correlation
 <!-- diagram-id: host-startup-correlation -->
 ```mermaid
+%%{init: {"timeline":{"padding":8,"disableMulticolor":true},"theme":"base","fontSize":60,"themeVariables":{"fontSize":"16px"},"themeCSS":".timeline-node text{font-size:60px;fill:#14202e;} .timeline-node .node-bkg{fill:#e2e8f0;} .eventWrapper{filter:none;} text:not([dy]){font-size:60px;text-anchor:middle;fill:var(--md-default-fg-color);} .lineWrapper line{stroke:var(--md-default-fg-color);}"}}%%
 timeline
+    accTitle: Managed identity auth incident timeline with periods P1-P8 and events E1-E8 listed in the adjacent legend
+    accDescr: Eight existing scenario periods from 01h00 through 01h40 in their original order. Periods P1-P8 and events E1-E8 are listed verbatim in the adjacent legend; correlation does not recertify an execution or prove causation.
     title Managed identity auth incident timeline
-    01h00 : RBAC assignment removed accidentally
-    01h03 : First 403 in dependencies
-    01h05 : Listener startup warnings appear
-    01h12 : Incident declared SEV-1
-    01h14 : Role assignment restored
-    01h20 : Auth failures decline after propagation
-    01h25 : Invocations recover
-    01h40 : Monitoring confirms steady state
+    P1 : E1
+    P2 : E2
+    P3 : E3
+    P4 : E4
+    P5 : E5
+    P6 : E6
+    P7 : E7
+    P8 : E8
 ```
+
+| Key | Original period or event (verbatim) |
+|---|---|
+| P1 | 01h00 |
+| E1 | RBAC assignment removed accidentally |
+| P2 | 01h03 |
+| E2 | First 403 in dependencies |
+| P3 | 01h05 |
+| E3 | Listener startup warnings appear |
+| P4 | 01h12 |
+| E4 | Incident declared SEV-1 |
+| P5 | 01h14 |
+| E5 | Role assignment restored |
+| P6 | 01h20 |
+| E6 | Auth failures decline after propagation |
+| P7 | 01h25 |
+| E7 | Invocations recover |
+| P8 | 01h40 |
+| E8 | Monitoring confirms steady state |
 
 ### Normal vs abnormal comparison
 | Dimension | Normal | Abnormal | Interpretation |
