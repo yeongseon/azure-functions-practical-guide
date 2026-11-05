@@ -14,6 +14,8 @@ content_sources:
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-grid
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-grid-trigger
+        - https://learn.microsoft.com/en-us/azure/event-grid/event-schema-blob-storage
 ---
 # Event Grid Trigger
 
@@ -34,12 +36,14 @@ Common use cases with Azure Functions:
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Event Grid recipe event flow
+    accDescr: Logical event flow from a generic source through a custom or system topic to a Python function app, followed by illustrative downstream processing; an event subscription must be configured.
     SRC[Event Source] --> EG[Event Grid Topic or System Topic]
     EG --> FA[Function App]
     FA --> DOWN[Downstream Service]
 ```
 
-Solid arrows show runtime data/event flow. Dashed arrows show identity and authentication.
+Solid arrows show logical event/data flow, not a network topology. The downstream service is illustrative application work; the examples below log received events. An [Event Grid trigger requires an event subscription](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-grid-trigger); [Blob Storage can be its event source](https://learn.microsoft.com/en-us/azure/event-grid/event-schema-blob-storage), rather than a blob payload passing through Event Grid.
 
 ## Prerequisites
 
