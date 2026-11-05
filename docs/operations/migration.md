@@ -75,8 +75,8 @@ flowchart TD
 | Path | Scope and qualification |
 |---|---|
 | 1 — Consumption Y1 → Flex Consumption FC1 | Create a new Linux app after checking supported language/version and region; Windows workloads must be Linux-compatible. Flex has no deployment slots, so this is not a slot swap. See [Consumption-to-Flex migration](https://learn.microsoft.com/en-us/azure/azure-functions/migration/migrate-plan-consumption-to-flex). |
-| 2 — .NET in-process → isolated worker | The [C# migration guide](https://learn.microsoft.com/en-us/azure/azure-functions/migrate-dotnet-to-isolated-model) assumes Functions runtime 4.x and states that in-process support ends November 10, 2026; it is not already retired at this source review. |
-| 3 — Python v1 → v2 | These are [Python programming models](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python#programming-model): `function.json` definitions become decorators, not a Python language-version or Functions runtime-version upgrade. |
+| 2 — .NET in-process → isolated worker | This is an application execution-model migration, not necessarily a hosting-plan change. Follow the [.NET migration recipe](../language-guides/dotnet/recipes/migrate-to-isolated.md) for runtime, dependency and support-lifecycle requirements. |
+| 3 — Python v1 → v2 | This is an application programming-model migration, not a hosting-plan or Functions runtime-version upgrade. Follow the [Python programming-model guide](../language-guides/python/v2-programming-model.md) for implementation changes. |
 | 4 — Premium and Dedicated app cutover | Treat the original “swap” label as migration between separately deployed apps with workload-specific traffic/trigger cutover, not a cross-plan deployment-slot swap or promised in-place SKU change. [Plan migration](https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-use-azure-function-app-settings#plan-migration) does not support direct migration to Dedicated. |
 
 ## Prerequisites
@@ -125,7 +125,7 @@ flowchart TD
 
 ### Path 2: .NET In-Process → Isolated Worker
 
-- **Motivation.** Support for the .NET in-process model ends November 10, 2026, according to the [migration guide](https://learn.microsoft.com/en-us/azure/azure-functions/migrate-dotnet-to-isolated-model); migrate C# apps to the isolated worker model using that guide's runtime and dependency checks.
+- **Motivation.** Address application execution-model support requirements; use the [.NET migration recipe](../language-guides/dotnet/recipes/migrate-to-isolated.md) for the applicable support lifecycle, runtime checks and dependency changes.
 - **Breaking-change summary.**
 
     | Area | In-process | Isolated worker |
