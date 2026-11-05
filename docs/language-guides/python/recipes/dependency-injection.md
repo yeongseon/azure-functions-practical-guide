@@ -21,6 +21,8 @@ The Python v2 programming model does not provide a dependency injection (DI) con
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Python module-level client reuse
+    accDescr: Illustrative Python v2 pattern with two paths joining at the client connection pool. Module import creates the module-level client; a triggered function callable uses that client for connection reuse within its worker process. Globals are not guaranteed to persist across executions or be shared across worker processes.
     LOAD[Module import] --> INIT[Create client at module scope]
     INIT --> POOL[Client holds connection pool]
     TRIG[Trigger invocation] --> FUNC[Function callable]
