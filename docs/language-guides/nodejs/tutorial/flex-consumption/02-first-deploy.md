@@ -23,6 +23,9 @@ content_sources:
       source: self-generated
       justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node
         - https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-node
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
@@ -68,27 +71,42 @@ You will provision a Linux Function App on the Flex Consumption plan, publish yo
 !!! info "Infrastructure Context"
     **Plan**: Flex Consumption (FC1) | **Network**: VNet integration supported | **Storage auth**: SystemAssigned MI
 
-    Flex Consumption uses blob-based deployment storage with managed identity authentication, unlike Consumption which uses Azure Files with connection strings.
+    This Linux FC1 tutorial chooses system-assigned managed identity for Blob deployment storage; Flex deployment authentication can also use a connection string. Flex does not depend on an Azure Files content share. Consumption storage differs by OS and deployment method: Linux Consumption can use Blob package storage.
 
-    <!-- diagram-id: what-you-ll-build -->
+<!-- diagram-id: what-you-ll-build -->
 ```mermaid
+%%{init: {"flowchart": {"nodeSpacing": 10, "rankSpacing": 60, "padding": 8, "subGraphTitleMargin": {"top": 8, "bottom": 24}}}}%%
 flowchart TD
-    INET[Internet] -->|HTTPS| FA[Function App\nFlex Consumption FC1\nLinux Node.js 20]
-
-    FA -->|"SystemAssigned MI"| ST[Storage Account\nBlob deployment]
-    FA --> AI[Application Insights]
-
-    subgraph STORAGE[Storage Services]
-        ST --- DEPLOY["Blob Container\napp-package"]
+    accTitle: Node.js 20 Linux FC1 public deployment storage
+    accDescr: Internet HTTPS reaches the Flex Consumption FC1 Linux Node.js 20 app. This tutorial selects system-assigned identity for Blob deployment access; Application Insights is off-path telemetry. The Storage Services boundary contains the account and app-package Blob container; no VNet is provisioned in this figure.
+    client(["Internet"])
+    app_runtime["Function App<br/>Flex Consumption FC1<br/>Linux Node.js 20"]
+    telemetry>"Application<br/>Insights"]
+    subgraph STORAGE["<div style='width:180px;text-align:left'>Storage<br/>Services</div>"]
+        storage_db[("Storage Account<br/>Blob deployment")]
+        DEPLOY[("Blob Container<br/>app-package")]
+        storage_db -.->|"[Configured]<br/>Contains"| DEPLOY
     end
-
-    style FA fill:#0078d4,color:#fff
-    style STORAGE fill:#FFF3E0
+    client -->|"[Configured] HTTPS"| app_runtime
+    app_runtime -->|"[Configured]<br/>SystemAssigned MI"| storage_db
+    app_runtime -.->|"[Configured]<br/>Telemetry"| telemetry
+    %% Layout-only tier; adds no requests or deployment steps.
+    DEPLOY ~~~ telemetry
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e;
+    classDef bandMuted fill:#ffffff,stroke:#707e93,stroke-width:1.5px,stroke-dasharray:4 3,color:#14202e;
+    class client,storage_db,DEPLOY baseNeutral;
+    class app_runtime focusActive;
+    class telemetry bandMuted;
 ```
+
+**Reading key:** Solid arrows identify the configured HTTPS caller and deployment-storage access; dotted arrows identify account/container membership and telemetry, not transport through Application Insights. SystemAssigned MI is this tutorial's deployment choice, not a universal Flex authentication requirement ([deployment settings](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to#configure-deployment-settings)).
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart TD
+    accTitle: Node.js Flex Consumption first-deployment steps
+    accDescr: Tutorial order from variables and login through resource group, Storage, deployment container, app creation, placeholder settings and Core Tools publishing to endpoint validation; not a new verification result.
     A[Set variables + login] --> B[Create RG + storage]
     B --> C[Create deployment container]
     C --> D[Create function app]
@@ -301,6 +319,9 @@ Hello endpoint response:
 
 ## Sources
 
+- [Functions storage considerations](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations)
+- [Manage Flex Consumption deployment](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to)
+- [Functions monitoring](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)
 - [Azure Functions Node.js developer guide (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node)
 - [Create your first Azure Function with Core Tools (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-node)
 - [Azure Functions Flex Consumption plan (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan)
