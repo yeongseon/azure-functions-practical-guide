@@ -15,23 +15,28 @@ content_sources:
     - id: when-to-use
       type: graph
       source: self-generated
-      justification: Flow view of when to use, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative operating-cost categories, not a universal list of billing meters; plan-specific compute and configured storage/network services are qualified beside the figure.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
         - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/cost-logs
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-consumption-costs
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
     - id: break-even-analysis
       type: graph
       source: self-generated
-      justification: Flow view of break even analysis, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative volume-band plan-consideration heuristic, not a calculated break-even or price quotation; original branches retained with plan-specific billing qualifications.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
         - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/cost-logs
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-consumption-costs
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
 content_validation:
   status: verified
   last_reviewed: 2026-09-11
@@ -63,24 +68,38 @@ Azure Functions on Consumption and Flex Consumption offers cost-effective server
 
 ## When to Use
 
-Azure Functions serverless pricing means you pay only for what you use — but ancillary services (storage, Application Insights, networking) can silently exceed function compute costs. Understanding the full cost picture prevents budget surprises.
+Compute billing depends on the hosting plan and, for Flex Consumption, the billing mode. Ancillary services (storage, Application Insights, networking) can also contribute to operating costs.
+
+**Pricing scope:** All monetary amounts and free-grant quantities retained on this page are illustrative assumptions, not current quotes or guaranteed entitlements. Check the selected plan, billing mode, region, currency, OS and offer against the current pricing pages linked by [Learn's billing guide](https://learn.microsoft.com/en-us/azure/azure-functions/functions-consumption-costs#consumption-based-costs). Consumption, Flex Consumption and Premium do not share one rate or grant model.
 
 <!-- diagram-id: when-to-use -->
 ```mermaid
 graph TD
-    A[Azure Functions Total Cost] --> B[Compute Cost]
+    accTitle: Azure Functions operating-cost categories
+    accDescr: Illustrative category tree. Total cost includes compute, storage, monitoring and configured networking services. Compute meters depend on the plan; storage shows Blob, Queue and Table operations and file shares where used; monitoring shows ingestion and retention; networking shows outbound transfer and configured network services. This is not a universal bill of materials.
+    A["Azure Functions<br/>Total Cost"] --> B[Compute Cost]
     A --> C[Storage Cost]
     A --> D[Monitoring Cost]
     A --> E[Networking Cost]
-    B --> B1["Executions × $0.20/million"]
-    B --> B2[GB-seconds × $0.000016]
-    C --> C1["Blob/Queue/Table operations"]
-    C --> C2[File share for deployment]
-    D --> D1[Application Insights ingestion]
-    D --> D2[Log Analytics retention]
-    E --> E1[Outbound data transfer]
-    E --> E2[VNet integration baseline]
+    B --> B1["Execution-count cost<br/>Where billed"]
+    B --> B2["Time and memory cost<br/>Plan-specific"]
+    C --> C1["Blob/Queue/Table<br/>operations"]
+    C --> C2["File share deployment<br/>Where used"]
+    D --> D1["Application Insights<br/>ingestion"]
+    D --> D2["Log Analytics<br/>retention"]
+    E --> E1["Outbound data<br/>transfer"]
+    E --> E2["VNet-related services<br/>Where configured"]
+    %% Layout-only links tier categories and leaves; they add no cost relationships.
+    B1 ~~~ B2
+    B2 ~~~ C
+    C1 ~~~ C2
+    C2 ~~~ D
+    D1 ~~~ D2
+    D2 ~~~ E
+    E1 ~~~ E2
 ```
+
+**Reading key:** B1/B2 summarize [plan-specific compute billing](https://learn.microsoft.com/en-us/azure/azure-functions/functions-consumption-costs): legacy Consumption bills executions and memory/time; Flex on-demand bills executions and provisioned memory/time with its own grants, while Flex always-ready also has baseline billing and no free grants. [Premium](https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan#billing) bills allocated cores and memory over time, with no execution charge. C2 applies only where a deployment uses Azure Files; Flex uses Blob deployment storage. E2 means costs of configured network services, not a universal VNet-integration baseline fee.
 
 ## Portal Walkthrough
 
@@ -194,15 +213,30 @@ Price examples in this section are approximate as of 2026-04 and can change over
 <!-- diagram-id: break-even-analysis -->
 ```mermaid
 graph TD
-    A[Monthly Executions] --> B{Volume?}
-    B -->|< 1M| C[Consumption: $0]
-    B -->|1M - 10M| D[Consumption: $0.20 - $2.00]
-    B -->|10M - 50M| E[Consumption: $2 - $10]
-    B -->|> 50M + cold start concerns| F[Consider Premium: ~$175 baseline]
-    B -->|Any + VNet required| G[Flex Consumption or Premium]
+    accTitle: Illustrative monthly-volume plan considerations
+    accDescr: Monthly executions lead to a volume check. The original illustrative bands below one million, one to ten million and ten to fifty million each point to Consumption; above fifty million with cold-start concerns points to considering Premium; any volume requiring a VNet points to Flex Consumption or Premium. Bands overlap and are not calculated price or break-even thresholds; compare full workload costs and plan support.
+    A["Monthly Executions"] --> B{Volume?}
+    B -->|V1| C["Consumption<br/>Illustrative band"]
+    B -->|V2| D["Consumption<br/>Illustrative band"]
+    B -->|V3| E["Consumption<br/>Illustrative band"]
+    B -->|V4| F["Consider Premium<br/>Estimate baseline"]
+    B -->|V5| G["Flex Consumption<br/>or Premium"]
+    %% Layout-only links tier outcomes; they add no decision steps or arrows.
+    C ~~~ D
+    D ~~~ E
+    E ~~~ F
+    F ~~~ G
 ```
 
-**Rule of thumb**: Premium breaks even with Consumption at roughly **50-100 million executions/month** depending on execution duration and memory usage. Below that threshold, Consumption is cheaper.
+| Branch key | Original illustrative condition |
+|---|---|
+| V1 | < 1M |
+| V2 | 1M - 10M |
+| V3 | 10M - 50M |
+| V4 | > 50M + cold start concerns |
+| V5 | Any + VNet required |
+
+**Takeaway:** These retained volume bands are illustrative, not a break-even calculation or a guarantee that Consumption is cheapest. Include execution duration, memory, concurrency, grant eligibility and ancillary costs. Premium has a billed minimum instance allocation; Flex has separate on-demand and always-ready billing. The VNet branch lists the original Flex/Premium choices, not every hosting option; Flex is Linux-only. See [consumption-based costs](https://learn.microsoft.com/en-us/azure/azure-functions/functions-consumption-costs) and [networking options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options).
 
 ### When to Upgrade to Premium
 
@@ -396,3 +430,6 @@ union requests, traces, exceptions, dependencies
 - [Azure Functions Scaling (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
 - [Flex Consumption Plan (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan)
 - [Application Insights pricing (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/cost-logs)
+- [Estimating consumption-based costs](https://learn.microsoft.com/en-us/azure/azure-functions/functions-consumption-costs)
+- [Storage considerations](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations)
+- [Networking options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)
