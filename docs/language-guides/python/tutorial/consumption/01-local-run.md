@@ -21,19 +21,21 @@ content_sources:
     - id: what-you-ll-build
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Tutorial-specific local Python host and Azurite relationship, not a deployed Consumption architecture.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local
         - https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-develop-local
     - id: what-you-ll-build-2
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build 2, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Local Python setup and HTTP check order for this tutorial, not validation of Consumption hosting behavior.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local
         - https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-develop-local
 ---
 # 01 - Run Locally (Consumption)
 
@@ -63,6 +65,8 @@ You will run the Python Functions app locally from `apps/python`, load local set
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
+    accTitle: Python local host and Azurite for the Consumption track
+    accDescr: The local machine starts the Python Functions host on port 7071 in this example. The host uses Azurite with the illustrated UseDevelopmentStorage=true setting; this local relationship does not represent deployed Consumption infrastructure.
     DEV["Local Machine"] --> HOST["Functions Host :7071"]
     HOST --> AZURITE["Azurite Local Storage"]
 ```
@@ -70,6 +74,8 @@ flowchart TD
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart TD
+    accTitle: Local Python setup for the Consumption track
+    accDescr: Activate a Python virtual environment, install dependencies from apps/python/requirements.txt with pip, copy the local settings example, start the Functions host in apps/python, then call the sample /api/health endpoint locally. These are preparation and HTTP testing steps, not verification of Consumption scaling.
     A[Activate Python venv] --> B["Install deps from apps/python/requirements.txt"]
     B --> C[Copy local settings example]
     C --> D["Start Functions host in apps/python"]
@@ -168,4 +174,3 @@ You now have local parity and can deploy to Azure Consumption (Y1).
 
 !!! warning "Legacy hosting path"
     Consumption plan (Y1) content is provided for existing workloads and compatibility scenarios. For most new serverless applications, prefer [Flex Consumption](../flex-consumption/01-local-run.md).
-

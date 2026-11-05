@@ -23,6 +23,12 @@ content_sources:
       source: self-generated
       justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-infrastructure-as-code
         - https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/
         - https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan
@@ -31,6 +37,7 @@ content_sources:
       source: self-generated
       justification: Flow view of what you ll build 2, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-infrastructure-as-code
         - https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/
         - https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan
@@ -54,35 +61,58 @@ You will deploy storage, a Linux Consumption plan, and a Python Function App via
 !!! info "Infrastructure Context"
     **Plan**: Consumption (Y1) | **Network**: Public internet only | **VNet**: ❌ Not supported
 
-    Consumption has no VNet integration or private endpoint support. All traffic flows over the public internet. Storage uses connection string authentication.
+    Consumption has no outbound VNet integration or inbound app private endpoint support. This example uses public endpoints; the standalone snippet uses a host-storage connection string, while the repository template configures identity-based host storage.
 
-    <!-- diagram-id: what-you-ll-build -->
+<!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
-    INET[Internet] -->|HTTPS| FA[Function App\nConsumption Y1\nLinux Python 3.11]
-
-    FA -->|System-Assigned MI| ENTRA[Microsoft Entra ID]
-    FA -->|"AzureWebJobsStorage__accountName\n+ connection string"| ST[Storage Account\npublic access]
-    FA --> AI[Application Insights]
-
-    subgraph STORAGE[Storage Services]
-        ST --- FS[Azure Files\ncontent share]
+    accTitle: Python Linux Consumption Y1 infrastructure topology
+    accDescr: The Python 3.11 tutorial configuration uses public app and storage endpoints, system-assigned identity and Application Insights. Host-storage identity and the template's Files connection settings are distinct. Identity is a logical association, not a direct Entra network hop; this is not deployment evidence or a runtime-version recommendation.
+    INET([Internet]) -->|"[Configured] 1"| FA["Function App<br/>Consumption Y1<br/>Linux Python 3.11"]
+    FA -.->|"[Configured] 2"| ENTRA{{"Microsoft<br/>Entra ID"}}
+    FA -.->|"[Configured] 3"| AI>"Application<br/>Insights"]
+    FA -->|"[Configured] 4"| ST[("Storage account<br/>Public endpoint")]
+    subgraph STORAGE["<div style='width:180px;text-align:left'>Storage<br/>Services</div>"]
+        ST
+        FS[("Azure Files<br/>Template share")]
     end
-
-    NO_VNET["⚠️ No VNet integration\nNo private endpoints"] -. limitation .- FA
-
-    style FA fill:#0078d4,color:#fff
-    style NO_VNET fill:#FFF3E0,stroke:#FF9800
-    style STORAGE fill:#FFF3E0
+    ST -.->|"[Configured] 5"| FS
+    FA -.->|"[Configured] 6"| NO_VNET["No VNet integration<br/>No app private endpoint"]
+    %% Layout-only tiers; add no network hops, dependencies or visible arrows.
+    ENTRA ~~~ AI
+    AI ~~~ ST
+    FS ~~~ NO_VNET
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e;
+    classDef netBox fill:transparent,stroke:#287ce4,stroke-width:2px,stroke-dasharray:6 3;
+    class INET,ENTRA,AI,ST,FS,NO_VNET baseNeutral;
+    class FA focusActive;
+    class STORAGE netBox;
 ```
+
+**Reading key:** Solid arrows show request/data access; dotted arrows identify identity, telemetry, configuration or a limitation, not extra data-transit hops. Python 3.11 is the template default, not a recommendation to change your runtime.
+
+| Key | Relationship retained or clarified |
+|---|---|
+| 1 | HTTPS requests to the public Consumption app endpoint. |
+| 2 | System-assigned managed identity in Microsoft Entra ID; token retrieval uses the app's managed-identity endpoint. |
+| 3 | Telemetry to configured Application Insights, separate from request handling. |
+| 4 | Host storage: the repository template uses `AzureWebJobsStorage__accountName` and `AzureWebJobsStorage__credential=managedidentity`; the standalone snippet below instead uses `AzureWebJobsStorage` with a connection string. These are alternative host connections, not combined credentials. |
+| 5 | The repository template creates an Azure Files content share in the same account and supplies `WEBSITE_CONTENTSHARE` / `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING` with shared-key access enabled. This template inventory does not imply Linux Consumption remote-build output runs from Files; that output is stored in Blob storage ([deployment technologies](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies)). |
+| 6 | Consumption lacks outbound VNet integration and inbound app private endpoints ([networking options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)). |
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart TD
+    accTitle: Python Consumption Bicep resources and validation
+    accDescr: The template defines storage, a Linux Y1 plan and a Function App, followed by CLI metadata validation. The fan-out is a resource map, not a serial creation order; ARM resolves dependencies and can provision independent resources in parallel. No successful Azure execution is asserted.
     A[Bicep template] --> B[Storage account]
-    A --> C[Linux Consumption plan Y1]
+    A --> C["Linux Consumption<br/>plan Y1"]
     A --> D[Function App]
     D --> E[CLI validation]
+    %% Layout-only tiers; add no provisioning dependency or visible arrow.
+    B ~~~ C
+    C ~~~ D
 ```
 
 ## Steps
@@ -277,3 +307,8 @@ Automate deployments in CI/CD with GitHub Actions.
 - [Bicep for Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-infrastructure-as-code)
 - [Bicep language reference](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/)
 - [Azure Functions Consumption plan](https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan)
+- [Python version and operating-system support](https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages)
+- [Storage considerations](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations)
+- [Networking options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)
+- [Managed identities](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)
+- [Functions monitoring](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)
