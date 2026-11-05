@@ -15,8 +15,10 @@ content_sources:
     - id: failure-progression-model
       type: flowchart
       source: self-generated
-      justification: Flow view of failure progression model, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Proposed progression for this EP1 Linux Python blob-buffering lab; the proof and disproof criteria below govern the hypothesis, not this model alone.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/recover-python-functions
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
@@ -25,8 +27,10 @@ content_sources:
     - id: causal-chain
       type: flowchart
       source: self-generated
-      justification: Flow view of causal chain, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Hypothesis map for this EP1 Linux Python blob-buffering lab; exit 137 is a candidate memory-failure signal, not standalone proof of OOM.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/recover-python-functions
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
@@ -35,7 +39,7 @@ content_sources:
     - id: evidence-timeline
       type: gantt
       source: self-generated
-      justification: Evidence timeline, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Visualization of this page's EP1 lab windows, not dates or measured outcomes supplied by Microsoft Learn and not a new Azure execution.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
@@ -91,6 +95,8 @@ Because this lab uses EP1, thresholds should match EP1 capacity characteristics,
 <!-- diagram-id: failure-progression-model -->
 ```mermaid
 flowchart TD
+    accTitle: EP1 Python blob lab - proposed failure progression
+    accDescr: Model linking blob buffering and overlapping invocations to memory pressure, Python worker failure, host-managed worker restart, impact and remediation. Read the proof and disproof criteria; this is not a new lab result.
     A[Blob load increases] --> B[Function buffers payload in memory]
     B --> C[Concurrent invocations overlap]
     C --> D[Private Bytes climbs rapidly]
@@ -130,6 +136,8 @@ If the Python blob function buffers full payloads in memory while high concurren
 <!-- diagram-id: causal-chain -->
 ```mermaid
 flowchart TD
+    accTitle: EP1 Python blob lab - memory hypothesis
+    accDescr: Proposed buffering-to-recovery chain for this Linux Python lab. Correlate memory, worker lifecycle and impact before accepting the OOM hypothesis; exit 137 alone is not proof.
     A[In-memory blob buffering] --> B[High per-invocation memory cost]
     B --> C[Concurrent invocation overlap]
     C --> D[Private Bytes enters critical band]
@@ -645,21 +653,31 @@ Final verdict: **Hypothesis supported**.
 
 <!-- diagram-id: evidence-timeline -->
 ```mermaid
+%%{init: {"gantt":{"fontSize":16,"sectionFontSize":16,"leftPadding":95,"rightPadding":35,"barHeight":24,"barGap":10},"theme":"base","themeVariables":{"doneTaskBkgColor":"#e2e8f0","critBkgColor":"#fed7aa","taskBkgColor":"#e2e8f0"},"themeCSS":".grid .tick text{font-size:16px;fill:var(--md-default-fg-color);} .section{opacity:0;} .titleText{font-size:14px;fill:var(--md-default-fg-color);} .sectionTitle{fill:var(--md-default-fg-color);} .taskTextOutsideLeft,.taskTextOutsideRight{fill:var(--md-default-fg-color)!important;} .taskText{fill:#14202e!important;}"}}%%
 gantt
     title OOM Lab Evidence Timeline (EP1)
+    accTitle: OOM Lab Evidence Timeline (EP1)
+    accDescr: Six page-defined lab windows, from baseline at 01:30 to recovery ending at 02:40. O1 to O6 map to the adjacent task legend; no new execution is asserted.
     dateFormat  HH:mm
     axisFormat  %H:%M
+    tickInterval 15minute
     section Baseline
-    Baseline capture                :done, b1, 01:30, 15m
+    O1                              :done, b1, 01:30, 15m
     section Load
-    Load phase 1 (moderate)         :done, l1, 01:45, 15m
-    Load phase 2 (high)             :done, l2, 02:00, 15m
+    O2                              :done, l1, 01:45, 15m
+    O3                              :done, l2, 02:00, 15m
     section Incident
-    OOM crash-loop window           :done, i1, 02:15, 10m
+    O4                              :done, i1, 02:15, 10m
     section Recovery
-    Remediation applied             :done, r1, 02:25, 1m
-    Recovery validation             :done, r2, 02:25, 15m
+    O5                              :done, r1, 02:25, 1m
+    O6                              :done, r2, 02:25, 15m
 ```
+
+**OOM Lab Evidence Timeline (EP1).** Task key (UTC): O1 — Baseline capture,
+01:30–01:45; O2 — Load phase 1 (moderate), 01:45–02:00; O3 — Load phase 2
+(high), 02:00–02:15; O4 — OOM crash-loop window, 02:15–02:25; O5 — Remediation
+applied, 02:25–02:26; O6 — Recovery validation, 02:25–02:40. These are the
+page's lab windows, not a new execution or independent evidence verification.
 
 ### Evidence Chain: Why This Proves the Hypothesis
 
@@ -701,6 +719,8 @@ az group delete --name "$RG" --yes --no-wait
 
 ## Sources
 
+- https://learn.microsoft.com/en-us/azure/azure-functions/recover-python-functions
+- https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
 - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
 - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
 - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring

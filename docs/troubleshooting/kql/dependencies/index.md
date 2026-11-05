@@ -22,13 +22,17 @@ KQL queries for analyzing outbound dependency failures and queue processing late
 <!-- diagram-id: dependency-queries -->
 ```mermaid
 flowchart TD
-    A[Dependency signals] --> B[Failure rate by target]
-    A --> C[Status code distribution]
-    A --> D[Queue latency metrics]
-    B --> E[Identify failing dependency]
+    accTitle: Dependency query navigation map
+    accDescr: Dependency signals branch into failure rate by target, status code distribution, and queue latency metrics; all three views lead to identifying a failing dependency. Arrows group query views, not proof of a root cause.
+    A[Dependency signals] --> B[Failure rate<br/>by target]
+    A --> C[Status code<br/>distribution]
+    A --> D[Queue latency<br/>metrics]
+    B --> E[Identify failing<br/>dependency]
     C --> E
     D --> E
 ```
+
+**Takeaway:** Use the three query views together; the arrows organize this query pack, not a causal verdict. The queue-metrics view requires the custom instrumentation described below.
 
 ## Dependency call failures
 
