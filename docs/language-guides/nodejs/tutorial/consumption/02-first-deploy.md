@@ -76,7 +76,7 @@ flowchart TD
     subgraph STORAGE["<div style='width:180px;text-align:left'>Storage<br/>Services</div>"]
         storage_db[("Storage Account<br/>Public endpoint")]
         storage_files[("Azure Files<br/>Content share<br/>Windows default")]
-        storage_db -.->|"[Configured]<br/>Windows context"| storage_files
+        storage_db -.->|"[Illustrative]<br/>Windows context"| storage_files
     end
     client -->|"[Configured] HTTPS"| app_runtime
     app_runtime -->|"[Configured]<br/>Connection string"| storage_db
