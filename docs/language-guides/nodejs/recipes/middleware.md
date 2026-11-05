@@ -25,6 +25,8 @@ The Node.js v4 programming model provides **invocation hooks** that run before a
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Node.js v4 invocation hooks
+    accDescr: Illustrative successful invocation with registered preInvocation and postInvocation hooks around the function handler. Response returned denotes the invocation result, not an HTTP response for every trigger; this is Node.js app.hook ordering, not nested .NET middleware.
     REQ[Trigger fires] --> PRE[preInvocation hook]
     PRE --> FUNC[Function handler]
     FUNC --> POST[postInvocation hook]
