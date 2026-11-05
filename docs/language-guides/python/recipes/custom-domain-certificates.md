@@ -14,6 +14,7 @@ content_sources:
       based_on:
         - https://learn.microsoft.com/en-us/azure/app-service/app-service-web-tutorial-custom-domain
         - https://learn.microsoft.com/en-us/azure/app-service/configure-ssl-certificate
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
     - id: architecture-2
       type: flowchart
       source: self-generated
@@ -21,16 +22,21 @@ content_sources:
       based_on:
         - https://learn.microsoft.com/en-us/azure/app-service/app-service-web-tutorial-custom-domain
         - https://learn.microsoft.com/en-us/azure/app-service/configure-ssl-certificate
+        - https://learn.microsoft.com/en-us/azure/app-service/configure-ssl-bindings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
 ---
 # Custom Domains and Certificates
 
-Azure Function Apps support custom domains similarly to Azure App Service. On the Consumption and Flex Consumption plans, custom domain mapping supports CNAME records only.
+Azure Function Apps support custom domains similarly to Azure App Service. For this Python v2 recipe, the app runs on Linux; the figures summarize DNS and TLS configuration, not a packet-by-packet request sequence.
 
 ## Architecture
 
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Function app custom-domain DNS relationships
+    accDescr: Logical map linking a client, public DNS, address mapping, TXT asuid ownership verification and the function app. DNS records resolve a name rather than forward application traffic; TXT is verification metadata, not a request path. Use the record type supported by the hosting plan.
     CLIENT[Client] --> DNS[Public DNS]
     DNS --> CNAME[CNAME or A record]
     DNS --> TXT[TXT asuid verification]
@@ -40,11 +46,15 @@ flowchart TD
 <!-- diagram-id: architecture-2 -->
 ```mermaid
 flowchart TD
+    accTitle: Function app custom-domain TLS configuration
+    accDescr: Logical configuration map of a client HTTPS request, custom domain, certificate binding, function app and HTTPS-only redirection. The redirect node describes the policy for separate HTTP requests, not another step for the HTTPS request. Certificate provisioning depends on the hosting plan.
     C[Client HTTPS Request] --> DOMAIN[Custom Domain]
     DOMAIN --> TLS[TLS Certificate Binding]
     TLS --> FA[Function App]
     FA --> REDIRECT[HTTP to HTTPS Redirect]
 ```
+
+**Reading key:** TXT verifies ownership; it does not carry application requests. For Linux Consumption, custom-domain mapping uses CNAME; Premium and Dedicated support CNAME or A records. A CNAME subdomain is the example used here. TLS binding secures that hostname; HTTPS-only redirects HTTP requests separately. [Functions hosting/certificate support](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale#certificates) lists managed certificates for Consumption, Flex Consumption, Premium and Dedicated, subject to certificate prerequisites. Flex uses [site-scoped certificates](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan#considerations), rather than the webspace-scoped model used by the other three plans; do not assume the CLI provisioning steps below apply to Flex unchanged. For Dedicated in App Service Environment, [free App Service managed certificates are excluded](https://learn.microsoft.com/en-us/azure/app-service/configure-ssl-certificate#create-a-free-managed-certificate).
 
 ## Prerequisites
 
@@ -53,7 +63,7 @@ flowchart TD
 - Premium or Dedicated plan recommended for broader custom domain options.
 - Azure CLI authenticated with permissions for the resource group.
 
-> **Note:** Consumption and Flex Consumption plans support CNAME-based custom domains; root/apex domain scenarios typically require plan and DNS provider capabilities that support A/ALIAS-style mapping.
+> **Note:** This recipe uses a CNAME-based subdomain; do not infer root/apex support from that example. Consumption supports CNAME only; Premium and Dedicated also support A records.
 
 ## Configure Custom Domain
 
@@ -142,12 +152,12 @@ az functionapp update \
 
 | Feature | Consumption | Flex Consumption | Premium | Dedicated |
 |---------|-------------|------------------|---------|-----------|
-| Custom domain | CNAME only | CNAME only | Full (A + CNAME) | Full |
-| Managed certificate | Yes | No | Yes | Yes |
-| IP-based SSL | No | No | Yes | Yes |
+| Custom domain | CNAME only | CNAME subdomain example | A + CNAME | A + CNAME |
+| Managed certificate | Yes, subject to prerequisites | Yes, site-scoped | Yes, subject to prerequisites | Yes, subject to prerequisites; free ASMC excludes ASE |
+| IP-based SSL | No | Yes, per hosting limits | Yes | Standard tier or higher |
 
-!!! note "Flex Consumption certificate limitations"
-    Certificate features such as loading certificates via `WEBSITE_LOAD_CERTIFICATES`, managed certificates, App Service certificates, and `endToEndEncryptionEnabled` are not currently supported in Flex Consumption.
+!!! note "Flex Consumption certificate model"
+    Current Microsoft Learn documents site-scoped certificates, including managed and App Service certificates, and end-to-end TLS for Flex Consumption. Certificate access from code uses a per-certificate toggle rather than `WEBSITE_LOAD_CERTIFICATES`. Follow the [Flex configuration guidance](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to#configure-site-scoped-certificates) for provisioning instead of assuming the webspace certificate commands are interchangeable.
 
 ## Verification
 

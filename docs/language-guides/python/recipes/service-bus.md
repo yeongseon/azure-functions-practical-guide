@@ -11,6 +11,7 @@ content_sources:
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus-trigger
+        - https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-dead-letter-queues
 ---
 # Service Bus
 
@@ -21,12 +22,20 @@ This recipe covers integrating Azure Service Bus with Azure Functions Python v2 
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
-    PROD[Producers] --> SBQ[(Service Bus Queue/Topic)]
+    accTitle: Service Bus processing and dead-letter outcome
+    accDescr: Producers send to Service Bus; a queue or topic subscription supplies the trigger for function processing and application output. Service Bus moves messages to the entity's dead-letter queue when the delivery limit is exceeded, not through the output binding.
+    PROD[Producers] --> SBQ[("Service Bus<br/>Queue/Topic")]
     SBQ --> TRIG[Service Bus Trigger]
     TRIG --> FA[Function App]
-    FA --> DLQ[(Dead-Letter Queue)]
+    SBQ --> DLQ[(Dead-Letter Queue)]
     FA --> OUT[Service Bus Output]
 ```
+
+**Reading key:** Arrows show logical message-processing stages, not network
+connection initiators. For topics, the trigger receives from a subscription;
+its DLQ belongs to that subscription. The DLQ arrow shows the broker's
+[maximum-delivery-count outcome](https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-dead-letter-queues#maximum-delivery-count),
+not an application send or a dead-letter action on every exception.
 
 ## Prerequisites
 
@@ -50,7 +59,11 @@ When using an identity-based connection, grant the function app's managed identi
 
 ## Queue Trigger
 
-The trigger fires as messages arrive. Message settlement (complete, abandon, dead-letter) is handled automatically based on whether the function succeeds or raises.
+For the Python v2 `func.ServiceBusMessage` trigger shown here, with automatic
+completion enabled, the runtime completes a message on successful execution and
+abandons it on an exception. Abandonment or lock expiry permits redelivery;
+Service Bus moves the message to the queue's or subscription's DLQ when its
+delivery count exceeds `maxDeliveryCount`.
 
 ```python
 import azure.functions as func
@@ -158,3 +171,4 @@ Tune concurrency and prefetch in `host.json`:
 - [Azure Service Bus bindings for Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus)
 - [Azure Service Bus trigger for Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus-trigger)
 - [Azure Service Bus output binding for Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus-output)
+- [Service Bus dead-letter queues (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-dead-letter-queues)
