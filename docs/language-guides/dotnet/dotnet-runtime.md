@@ -31,6 +31,8 @@ This reference covers runtime versions, worker configuration, target framework c
 <!-- diagram-id: supported-runtimes-and-models -->
 ```mermaid
 flowchart TD
+    accTitle: .NET runtime and worker model relationships
+    accDescr: .NET 8 LTS and .NET 9 STS point to the isolated worker model. The separate in-process branch points to .NET 8 only. This figure shows a subset of the versions listed in the preceding table; arrows indicate version and model relationships, not invocation order.
     A[.NET 8 LTS] --> B[Isolated worker]
     C[.NET 9 STS] --> B
     D[In-process] --> E[.NET 8 only]

@@ -46,22 +46,36 @@ Use it when performance degradation is user-visible, even if failure rate is sti
 ### Troubleshooting decision flow
 <!-- diagram-id: troubleshooting-decision-flow -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 10, 'rankSpacing': 35}}}%%
 flowchart TD
-    A[Latency alert or customer report] --> B{Mostly first request after idle?}
-    B -->|Yes| H1[H1 Cold start delays]
-    B -->|No| C{One dependency target has high p95?}
-    C -->|Yes| H2[H2 Slow downstream dependency]
-    C -->|No| D{Traffic grows but completion lags?}
-    D -->|Yes| H3[H3 Concurrency saturation]
-    D -->|No| E{Worker restart or pressure traces?}
-    E -->|Yes| H4[H4 Plan-level resource limits]
-    E -->|No| F[Correlate operation_Id end-to-end]
-    H1 --> G[Mitigate and verify p95 improvement]
+    accTitle: High latency troubleshooting decision flow
+    accDescr: Illustrative triage, not a confirmed root-cause classifier. Mostly first requests after idle selects H1 cold start delays; otherwise high p95 for one dependency target selects H2 slow downstream dependency. Otherwise traffic growth with completion lag selects H3 concurrency saturation; otherwise worker restart or pressure traces selects H4 plan-level resource limits. The final No branch correlates operation_Id end-to-end. All four hypotheses and the correlation route converge on mitigation and verification of p95 improvement; use the evidence and disproof sections before attributing a cause.
+    A(["Symptom: Latency alert<br/>or customer report"]) --> B{"Mostly first<br/>request after<br/>idle?"}
+    B -->|Yes| H1("H1 hypothesis:<br/>Cold start delays")
+    B -->|No| C{"One dependency<br/>target has<br/>high p95?"}
+    C -->|Yes| H2("H2 hypothesis:<br/>Slow downstream<br/>dependency")
+    C -->|No| D{"Traffic grows<br/>but completion<br/>lags?"}
+    D -->|Yes| H3("H3 hypothesis:<br/>Concurrency saturation")
+    D -->|No| E{"Worker restart<br/>or pressure<br/>traces?"}
+    E -->|Yes| H4("H4 hypothesis:<br/>Plan-level<br/>resource limits")
+    E -->|No| F["Correlate operation_Id<br/>end-to-end"]
+    H1 --> G(["Mitigate and verify<br/>p95 improvement"])
     H2 --> G
     H3 --> G
     H4 --> G
     F --> G
+    %% Layout-only links tier candidates; they add no diagnostic steps or arrows.
+    H1 ~~~ C
+    H2 ~~~ D
+    H3 ~~~ E
+    H4 ~~~ F
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H1,H2,H3,H4 baseNeutral;
+    linkStyle default stroke-width:2px;
 ```
+
+**Takeaway:** Diamonds route Yes/No checks to candidate H1–H4 hypotheses (rounded boxes), or to end-to-end correlation (rectangle); every route reaches the shared mitigation and p95 verification endpoint (stadium). This illustrative triage prioritizes investigation, not confirmed causes: validate candidates against the evidence and disproof sections below.
+
 ### Scope and severity
 | Indicator | Sev 3 | Sev 2 | Sev 1 |
 |---|---|---|---|

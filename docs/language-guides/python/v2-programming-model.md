@@ -28,6 +28,8 @@ This document provides a deep dive into the Python v2 programming model for Azur
 <!-- diagram-id: python-v2-programming-model -->
 ```mermaid
 flowchart TD
+    accTitle: Python v2 discovery-to-invocation reading flow
+    accDescr: Illustrative reading order from decorators in function_app.py and blueprints through worker indexing, host metadata, and a trigger and route map to worker invocations. Arrows summarize stages, not exact worker-host protocol messages or network hops.
     A[Decorators in function_app.py and blueprints] --> B[Python worker indexes functions]
     B --> C[Function metadata registered with host]
     C --> D[Azure Functions host builds trigger and route map]
