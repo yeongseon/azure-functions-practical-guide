@@ -66,14 +66,15 @@ You will create a GitHub Actions workflow that installs Python dependencies and 
 
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 10, 'rankSpacing': 60, 'padding': 8}}}%%
 flowchart TD
     accTitle: Python 3.11 Linux Consumption Y1 storage context
     accDescr: Public HTTPS and host-storage access for the Linux Y1 example. System identity is optional context, telemetry is separate, and Azure Files is retained as Windows Consumption context rather than a Linux content dependency. No Azure execution is asserted.
     client(["Internet"])
     app_runtime["Function App<br/>Consumption Y1<br/>Linux · Python 3.11"]
-    identity{{"Optional system MI<br/>Microsoft Entra ID"}}
+    identity{{"Optional system MI<br/>Entra ID"}}
     telemetry>"Application<br/>Insights"]
-    NO_VNET["No VNet integration<br/>No app private endpoint"]
+    NO_VNET["No VNet integration<br/>No app PE"]
     subgraph STORAGE["Storage services"]
         storage_db[("Storage account<br/>Public endpoints")]
         FS[("Azure Files<br/>Windows context")]
