@@ -180,6 +180,10 @@
       el.style.cursor = "pointer";
       el.addEventListener("click", function (e) {
         e.stopPropagation();
+        // A diagram that is already inside the overlay must not re-open it: releasing a drag
+        // fires a click on the moved host, which used to close and re-open the overlay and
+        // reset the scale and pan.
+        if (el.closest("#" + OVERLAY_ID)) return;
         openDiagram(el);
       });
     });

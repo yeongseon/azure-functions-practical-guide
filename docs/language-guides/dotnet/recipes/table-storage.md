@@ -19,6 +19,8 @@ Read and write Azure Table Storage entities with the `TableInput` and `TableOutp
 <!-- diagram-id: table-storage -->
 ```mermaid
 flowchart TD
+    accTitle: Table input and output relationships for the .NET isolated recipe
+    accDescr: A trigger invokes the function; TableInput supplies an entity read from a table and TableOutput writes an entity to a table. These are binding data relationships, not a transaction or network-call sequence.
     A[Trigger] --> B[Function]
     B -->|TableOutput| C[(Table: entity written)]
     D[(Table: entity read)] -->|TableInput| B
