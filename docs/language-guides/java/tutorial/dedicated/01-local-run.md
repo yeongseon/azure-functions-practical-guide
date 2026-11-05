@@ -50,6 +50,8 @@ You will clone the Java reference application, build it with Maven, and run all 
 <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
+    accTitle: Dedicated tutorial Java local workflow
+    accDescr: Illustrative local workflow for this Dedicated tutorial: clone the reference app, build with Maven, start the local Functions host, then test local endpoints. Arrows show procedure order, not deployment or validation of Azure Dedicated behavior.
     A[Clone reference app] --> B[Maven build]
     B --> C[Start Functions host]
     C --> D[Test local endpoints]
