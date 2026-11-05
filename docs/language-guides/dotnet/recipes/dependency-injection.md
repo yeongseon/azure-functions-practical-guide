@@ -21,6 +21,8 @@ The .NET isolated worker model uses the standard .NET dependency injection (DI) 
 <!-- diagram-id: dependency-injection -->
 ```mermaid
 flowchart TD
+    accTitle: Service registration and constructor injection in the .NET isolated worker
+    accDescr: Program.cs accesses IServiceCollection, registers Singleton, Scoped, or Transient services, and builds IHost. A function class constructor receives an injected service instance. This is a conceptual registration and resolution flow for the isolated worker, not the in-process startup model or a service-lifetime timing diagram.
     PROG[Program.cs] --> SC[IServiceCollection]
     SC --> REG[Register services: Singleton/Scoped/Transient]
     REG --> HOST[Build IHost]

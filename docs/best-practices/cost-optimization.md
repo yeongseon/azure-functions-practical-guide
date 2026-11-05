@@ -9,17 +9,21 @@ content_sources:
     - id: alert-policy-examples
       type: flowchart
       source: self-generated
-      justification: Flow view of alert policy examples, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative cost-incident triage policy using documented budget notifications and telemetry cost controls; the routing is not automatic Azure behavior.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-consumption-costs
         - https://learn.microsoft.com/en-us/azure/azure-functions/pricing
+        - https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring
+        - https://learn.microsoft.com/en-us/azure/cost-management-billing/costs/tutorial-acm-create-budgets
     - id: governance
       type: flowchart
       source: self-generated
-      justification: Flow view of governance, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative shortlist of four hosting-plan candidates and follow-up controls, not an exhaustive selection rule or a common scaling API across plans.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-consumption-costs
         - https://learn.microsoft.com/en-us/azure/azure-functions/pricing
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring
 content_validation:
   status: verified
   last_reviewed: 2026-09-11
@@ -253,16 +257,25 @@ Operational cost control requires continuous monitoring, not monthly review.
 <!-- diagram-id: alert-policy-examples -->
 ```mermaid
 flowchart TD
-    A[Budget threshold breached] --> B[Open cost incident]
-    B --> C{Driver signal}
-    C -->|App Insights ingestion spike| D[Check sampling, cap, noisy traces]
-    C -->|Storage transaction surge| E[Inspect AzureWebJobsStorage listeners and sharing]
-    C -->|Queue age grows at scale cap| F[Recalculate max instance and dependency budget]
+    accTitle: Cost incident triage by driver signal
+    accDescr: Illustrative policy routes a budget breach through opening an incident to ingestion, storage transaction or queue-age investigations. All three paths converge on control changes and escalation if the forecast still exceeds budget.
+    A([Budget threshold breached]) --> B[Open cost incident]
+    B --> C{Driver<br/>signal}
+    C -->|App Insights<br/>ingestion spike| D[Check sampling,<br/>cap, noisy traces]
+    C -->|Storage transaction<br/>surge| E[Inspect<br/>AzureWebJobsStorage<br/>listeners and sharing]
+    C -->|Queue age grows<br/>at scale cap| F[Recalculate<br/>max instance and<br/>dependency budget]
     D --> G[Apply control changes]
     E --> G
     F --> G
-    G --> H[Escalate if forecast still exceeds budget]
+    G --> H([Escalate if forecast<br/>still exceeds budget])
+    %% Layout-only links tier the investigations; they add no steps or semantic arrows.
+    D ~~~ E
+    E ~~~ F
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H neutral;
 ```
+
+**Reading key:** The three named branches select investigations, not confirmed causes; they converge on control changes. This is an illustrative incident policy, not automatic budget enforcement: [budget alerts notify without stopping consumption](https://learn.microsoft.com/en-us/azure/cost-management-billing/costs/tutorial-acm-create-budgets).
 
 ## Common Mistakes / Anti-Patterns
 
@@ -316,19 +329,29 @@ flowchart TD
 <!-- diagram-id: governance -->
 ```mermaid
 flowchart TD
-    A[Start with workload shape] --> B{Private networking required?}
-    B -->|No| C{Low or bursty volume?}
-    C -->|Yes| D[Consumption]
-    C -->|No| E[Dedicated]
-    B -->|Yes| F{Always-on low latency required?}
-    F -->|Yes| G[Premium]
-    F -->|No| H[Flex Consumption]
-    D --> I[Set scale limit and sampling]
+    accTitle: Hosting-plan candidates and cost governance
+    accDescr: Illustrative shortlist preserves the private-networking, volume and always-on latency Yes and No branches leading to Consumption, Dedicated, Premium or Flex Consumption. Each candidate leads to plan-specific scale controls, sampling and cost monitoring; the shortlist is not exhaustive.
+    A([Start with<br/>workload shape]) --> B{Private networking<br/>required?}
+    B -->|No| C{Low or<br/>bursty volume?}
+    C -->|Yes| D([Consumption])
+    C -->|No| E([Dedicated])
+    B -->|Yes| F{Always-on low<br/>latency required?}
+    F -->|Yes| G([Premium])
+    F -->|No| H([Flex Consumption])
+    D --> I[Set scale limit<br/>and sampling]
     E --> I
     G --> I
     H --> I
-    I --> J[Monitor budget, telemetry, storage transactions]
+    I --> J[Monitor budget, telemetry,<br/>storage transactions]
+    %% Layout-only links tier the candidates; they add no decisions or semantic arrows.
+    D ~~~ E
+    E ~~~ F
+    G ~~~ H
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J neutral;
 ```
+
+**Reading key:** Diamonds retain the six Yes/No branches; rounded outcomes are candidates, not exclusive plan capabilities. [Hosting guidance](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale) recommends Flex Consumption for new serverless apps; Flex also offers always-ready instances, and Dedicated also supports private networking. Interpret “scale limit” per plan: Dedicated uses manual scaling or autoscale, not the event-driven app limit. Review [sampling configuration](https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring) for the telemetry pipeline in use.
 
 ## See Also
 
@@ -342,3 +365,6 @@ flowchart TD
 
 - [Azure Functions Consumption plan costs (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-consumption-costs)
 - [Azure Functions pricing (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/pricing)
+- [Configure monitoring for Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring)
+- [Create and manage budgets](https://learn.microsoft.com/en-us/azure/cost-management-billing/costs/tutorial-acm-create-budgets)
+- [Azure Functions scale and hosting](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)

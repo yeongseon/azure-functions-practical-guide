@@ -24,6 +24,8 @@ Quick reference for Java Azure Functions operational workflows.
 <!-- diagram-id: topic-command-groups -->
 ```mermaid
 flowchart TD
+    accTitle: Java guide troubleshooting reading flow
+    accDescr: The illustrated investigation proceeds from Symptom to Hypothesis, Evidence, Fix and Validation; these are reading stages, not exhaustive diagnostic branches or proof that a proposed fix succeeds.
     A[Symptom] --> B[Hypothesis]
     B --> C[Evidence]
     C --> D[Fix]

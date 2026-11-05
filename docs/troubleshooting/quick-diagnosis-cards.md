@@ -123,6 +123,8 @@ Use these when you have 60 seconds to classify the failure before opening the de
 <!-- diagram-id: card-1-slow-first-invocation-cold-start -->
 ```mermaid
 graph TD
+    accTitle: Slow first invocation triage reading map
+    accDescr: Illustrative reading order from slow first invocation to the first query, platform segment and playbook in this card. This is not proof of cold start.
     A[Slow first invocation] --> B[First Query]
     B --> C[Platform Segment]
     C --> D[Playbook]
@@ -176,6 +178,8 @@ az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "Ap
 <!-- diagram-id: card-2-trigger-failures-by-trigger-type -->
 ```mermaid
 graph TD
+    accTitle: Trigger failure triage reading map
+    accDescr: Illustrative reading order from a trigger not firing to trigger type, source evidence and listener traces. The diamond identifies trigger type; this abbreviated map has no Yes or No branches.
     A[Trigger not firing] --> B{Trigger type}
     B --> C[Source evidence]
     C --> D[Listener traces]
@@ -235,6 +239,8 @@ az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "Ap
 <!-- diagram-id: card-3-binding-and-extension-errors -->
 ```mermaid
 graph TD
+    accTitle: Binding and extension error triage reading map
+    accDescr: Illustrative reading order from binding errors to indexing traces, a candidate configuration mismatch and an authentication or extension fix to investigate. The mismatch is not a confirmed cause.
     A[Binding errors] --> B[Indexing traces]
     B --> C[Config mismatch]
     C --> D[Auth or extension fix]
@@ -289,6 +295,8 @@ az functionapp config show --resource-group "$RG" --name "$APP_NAME" --output js
 <!-- diagram-id: card-4-timeout-execution-limit-exceeded -->
 ```mermaid
 graph TD
+    accTitle: Timeout triage reading map
+    accDescr: Illustrative reading order from a timeout symptom to a duration query, plan limit check and timeout playbook. The map does not assert a universal execution limit.
     A[Timeout symptom] --> B[Duration query]
     B --> C[Plan limit check]
     C --> D[Timeout playbook]
@@ -341,6 +349,8 @@ az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "Ap
 <!-- diagram-id: card-5-memory-or-cpu-exhaustion -->
 ```mermaid
 graph TD
+    accTitle: Memory and CPU pressure triage reading map
+    accDescr: Illustrative reading order from worker slowdown to metrics, restart or crash traces and the resource-pressure playbook. Slowdown alone is not a confirmed resource diagnosis.
     A[Worker slowdown] --> B[Metrics]
     B --> C[Restart or crash traces]
     C --> D[Resource-pressure playbook]
@@ -394,6 +404,8 @@ az monitor metrics list --resource "/subscriptions/$SUBSCRIPTION_ID/resourceGrou
 <!-- diagram-id: card-6-deployment-succeeded-but-functions-broke -->
 ```mermaid
 graph TD
+    accTitle: Post-deployment failure triage reading map
+    accDescr: Illustrative reading order from failure after deployment to Activity Log, startup and indexing traces and the deployment playbook. Timing alone does not establish deployment as the cause.
     A[Failure after deploy] --> B[Activity Log]
     B --> C[Startup and indexing traces]
     C --> D[Deployment playbook]
@@ -449,6 +461,8 @@ az functionapp config appsettings list --resource-group "$RG" --name "$APP_NAME"
 <!-- diagram-id: card-7-scale-out-not-keeping-up -->
 ```mermaid
 graph TD
+    accTitle: Scaling backlog triage reading map
+    accDescr: Illustrative reading order from growing backlog to invocation trend, scale signals and the queue or event-hub playbook. Backlog alone is not proof of a scaling fault.
     A[Backlog grows] --> B[Invocation trend]
     B --> C[Scale signals]
     C --> D[Queue or event-hub playbook]
