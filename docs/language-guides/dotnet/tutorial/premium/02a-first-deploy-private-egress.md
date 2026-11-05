@@ -78,7 +78,7 @@ Deploy a .NET 8 isolated worker Function App to an Elastic Premium plan (`EP1`) 
 
 <!-- diagram-id: what-you-ll-build -->
 ```mermaid
-%%{init: {'flowchart': {'nodeSpacing': 10, 'rankSpacing': 35, 'padding': 8}}}%%
+%%{init: {'flowchart': {'nodeSpacing': 10, 'rankSpacing': 70, 'padding': 8, 'subGraphTitleMargin': {'top': 8, 'bottom': 32}}}}%%
 flowchart TD
     accTitle: Linux EP1 .NET 8 network and Storage topology
     accDescr: Intended public HTTPS and separate private site ingress, outbound integration to four Storage endpoints, system identity, telemetry and warm capacity. Integration does not deploy the app into the subnet. Endpoint and DNS bundles expand in the adjacent key; historical blocked provisioning remains unchanged.
@@ -91,22 +91,22 @@ flowchart TD
         dns_fn{{"Blob · Queue<br/>Table · File"}}
     end
     subgraph vnet_fn["VNet"]
-        subgraph subnet_int_fn["Integration subnet"]
+        subgraph subnet_int_fn["<div style='width:170px;text-align:right'>Integration<br/>subnet</div>"]
             vnet_integration[["Outbound<br/>integration"]]
         end
-        subgraph subnet_pe_fn["PE subnet"]
+        subgraph subnet_pe_fn["<div style='width:130px;text-align:left'>PE<br/>subnet</div>"]
             pe_storage[["Storage PEs<br/>blob · queue<br/>table · file"]]
         end
     end
     storage_db[("Storage account<br/>Settings: S")]
-    subgraph STORAGE["Content Backend"]
+    subgraph STORAGE["<div style='width:160px;text-align:left'>Content<br/>Backend</div>"]
         SHARE[("Azure Files<br/>content share")]
     end
     client -->|"[Configured]<br/>HTTPS"| app_runtime
     app_runtime -.->|"[Configured]<br/>Token"| identity
     app_runtime -.->|"[Configured]<br/>Telemetry"| telemetry
     app_runtime -.->|"[Configured]<br/>Capacity"| WARM
-    dns_fn -.->|"[Configured]<br/>VNet link"| vnet_integration
+    dns_fn -.->|"[Configured]<br/>VNet link"| vnet_fn
     app_runtime -->|"[Configured]<br/>Outbound"| vnet_integration
     vnet_integration -->|"[Configured]<br/>Each PE"| pe_storage
     pe_storage -->|"[Configured]<br/>Each service"| storage_db
@@ -124,7 +124,7 @@ flowchart TD
     linkStyle default stroke-width:2px;
 ```
 
-**Reading key (Linux EP1):** Solid arrows show intended request/data access; dotted arrows show local token acquisition, telemetry, capacity, the VNet DNS-link association or membership, not transport through those roles. VNet integration is outbound-only and does not deploy the app into its integration subnet. The site private endpoint from Step8 is a **separate inbound** path, summarized in the smaller diagram below the historical verification section; it is not one of the Storage endpoints. Public access is not disabled merely by creating a site PE. The DNS-link arrow terminates at the integration role for layout, not a DNS-query hop ([networking](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options), [private ingress](https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint)).
+**Reading key (Linux EP1):** Solid arrows show intended request/data access; dotted arrows show local token acquisition, telemetry, capacity, the VNet DNS-link association or membership, not transport through those roles. VNet integration is outbound-only and does not deploy the app into its integration subnet. The site private endpoint from Step8 is a **separate inbound** path, summarized in the smaller diagram below the historical verification section; it is not one of the Storage endpoints. Public access is not disabled merely by creating a site PE. The DNS-link arrow terminates at the VNet boundary, not the integration role or a DNS-query hop ([Storage PE/DNS](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints), [networking](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options), [private ingress](https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint)).
 
 | Key | Tutorial configuration / meaning |
 |---|---|
