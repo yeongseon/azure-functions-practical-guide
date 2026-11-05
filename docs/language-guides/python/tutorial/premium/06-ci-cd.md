@@ -99,7 +99,7 @@ flowchart TD
     app_runtime -.->|"[Illustrative]<br/>Identity"| identity
     app_runtime -.->|"[Configured]<br/>Telemetry"| telemetry
     app_runtime -.->|"[Illustrative]<br/>HTTP buffer"| warm_capacity
-    pe_storage -.->|"[Illustrative]<br/>Zone groups"| dns_fn
+    dns_fn -.->|"[Illustrative]<br/>VNet link"| vnet_fn
     app_runtime -->|"[Illustrative]<br/>Outbound"| vnet_integration
     vnet_integration -->|"[Illustrative]<br/>Each PE"| pe_storage
     pe_storage -->|"[Illustrative]<br/>Each service"| storage_db
@@ -113,7 +113,7 @@ flowchart TD
     class client,app_runtime,identity,telemetry,warm_capacity,dns_fn,vnet_integration,pe_storage,storage_db,SHARE baseNeutral;
 ```
 
-**Reading key:** Solid arrows are intended request/data access; dotted arrows are identity, telemetry, capacity, zone-group or membership associations. `[Illustrative]` identifies surrounding infrastructure choices, not a deployment performed here. Outbound integration does not deploy the app into its subnet; identity acquisition uses the app-local token endpoint, not direct app-to-Entra transit ([networking](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options), [identity](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)).
+**Reading key:** Solid arrows are intended request/data access; dotted arrows are identity, telemetry, capacity, VNet-link or membership associations. `[Illustrative]` identifies surrounding infrastructure choices, not a deployment performed here. Outbound integration does not deploy the app into its subnet; identity acquisition uses the app-local token endpoint, not direct app-to-Entra transit. The DNS link targets the actual VNet boundary ([networking](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options), [identity](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)).
 
 | Key | Context / qualification |
 |---|---|
