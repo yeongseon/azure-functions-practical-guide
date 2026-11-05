@@ -78,15 +78,7 @@ Insights connection string is removed; **Both set** means both settings are
 present. Configure provider-required authentication as well. The arrows summarize
 configuration choices, not telemetry passing through a common exporter.
 
-Worker setup is separate: follow the [language-specific instructions](https://learn.microsoft.com/en-us/azure/azure-functions/opentelemetry-howto#enable-opentelemetry-in-your-app)
-for .NET isolated, Java, JavaScript/TypeScript, Python, PowerShell or Go.
-C# in-process is unsupported. PowerShell worker OpenTelemetry output to
-Application Insights is unsupported (worker logs are still forwarded by the host,
-but distributed tracing is not supported there); Go worker middleware exports
-through OTLP, requiring a forwarding pipeline to reach Azure Monitor.
-The host setting alone does not establish worker instrumentation or support for
-every runtime/hosting-plan combination; check the selected language and deployment
-requirements rather than inferring them from this destination view.
+Worker setup is separate: follow the [instrumentation and destination requirements for your application](https://learn.microsoft.com/en-us/azure/azure-functions/opentelemetry-howto#enable-opentelemetry-in-your-app) and the relevant [language guide](../language-guides/index.md). The host setting alone does not configure worker instrumentation or guarantee that worker telemetry supports every destination, runtime or hosting-plan combination shown in this logical view.
 
 ## Procedure
 
