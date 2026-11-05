@@ -62,17 +62,20 @@ You will configure runtime and host settings for a Linux Consumption Function Ap
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
+    accTitle: Node.js Linux Consumption Y1 configuration surfaces
+    accDescr: Azure CLI updates app settings and site configuration on the Consumption Y1 app. The configuration list distinguishes worker and Functions runtime settings from the linuxFxVersion site property.
     CLI["Azure CLI"] -->|"appsettings set"| FA[Function App\nConsumption Y1]
     CLI -->|"config set"| FA
-    FA -->|reads| SETTINGS["App Settings\n• FUNCTIONS_WORKER_RUNTIME\n• FUNCTIONS_EXTENSION_VERSION\n• linuxFxVersion"]
+    FA -->|reads| SETTINGS["Configuration<br/>App settings:<br/>FUNCTIONS_WORKER_RUNTIME<br/>FUNCTIONS_EXTENSION_VERSION<br/>Site property: linuxFxVersion"]
 
     style FA fill:#0078d4,color:#fff
-    style SETTINGS fill:#E3F2FD
 ```
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart TD
+    accTitle: Node.js Linux Consumption configuration task order
+    accDescr: Set app settings, select linuxFxVersion, configure the host timeout, then validate effective configuration. These are tutorial tasks, not automatic propagation or evidence of an Azure run.
     A[Set app settings] --> B[Set linuxFxVersion]
     B --> C[Configure host timeout]
     C --> D[Validate effective config]
