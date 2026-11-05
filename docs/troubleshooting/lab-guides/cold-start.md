@@ -17,7 +17,7 @@ content_sources:
     - id: 1-1-cold-start-phase-model
       type: flowchart
       source: self-generated
-      justification: Flow view of cold start phase model, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative phase order separating compute allocation, host and language worker startup; callouts summarize the historical lab interpretation, not independently timed platform phases.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
@@ -28,8 +28,9 @@ content_sources:
     - id: 1-5-timeline-diagram
       type: sequenceDiagram
       source: self-generated
-      justification: Interaction sequence for timeline diagram, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative six-role cold/warm timeline retaining the reported lab timings; internal platform messages and provisioning attribution are conceptual, not a captured protocol or recertified experiment.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
@@ -39,8 +40,9 @@ content_sources:
     - id: 2-2-causal-chain
       type: flowchart
       source: self-generated
-      justification: Flow view of causal chain, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Visual statement of the lab's falsifiable provisioning hypothesis with historical host/client values retained; source review does not prove allocation timing or revalidate the lab result.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
@@ -50,7 +52,7 @@ content_sources:
     - id: 3-10-decision-logic-during-triage
       type: flowchart
       source: self-generated
-      justification: Flow view of decision logic during triage, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Diagnostic synthesis retaining all warm/host/idle/scale branches and follow-up checks; classifications require the adjacent proof/disproof criteria and are not deterministic platform verdicts.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
@@ -61,7 +63,7 @@ content_sources:
     - id: evidence-timeline
       type: graph
       source: self-generated
-      justification: Flow view of evidence timeline, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Reading order for the lab's historical evidence and reported verdict; values and classification are retained without new execution or independent evidence certification.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
@@ -109,17 +111,37 @@ Cold start in Azure Functions is not a single runtime metric. It is a chain of p
 <!-- diagram-id: 1-1-cold-start-phase-model -->
 ```mermaid
 flowchart TD
-    A[Trigger: first request after idle, restart, scale-out, host move] --> B[Platform worker allocation]
-    B --> C["Site assignment and container/runtime bring-up"]
-    C --> D[Functions host initialization]
-    D --> E[Language worker initialization]
-    E --> F[Trigger listener and route readiness]
-    F --> G[First invocation executes]
-    G --> H[Steady warm execution]
-    B --> B1[Potential dominant delay on FC1 full idle]
-    D --> D1[Often sub-second in healthy cases]
-    G --> G1[Client sees combined elapsed path]
+    accTitle: Which phases contribute to first-hit latency?
+    accDescr: Illustrative phase model separating allocated compute, Functions host, language worker, listener readiness and invocation. Side boxes summarize the lab interpretation, not separately measured platform timings.
+    A["A. Startup trigger"] --> B["B. Allocate compute"]
+    B --> C["C. Assign site<br/>Bring up runtime"]
+    C --> D["D. Initialize host"]
+    D --> E["E. Initialize<br/>language worker"]
+    E --> F["F. Listener and<br/>route readiness"]
+    F --> G["G. First invocation"]
+    G --> H["H. Warm execution"]
+    B --> B1["B1. Potential delay"]
+    D --> D1["D1. Healthy cases"]
+    G --> G1["G1. Client timing"]
+    %% Layout-only anchors tier callouts; they add no startup steps or arrows.
+    B1 ~~~ C
+    D1 ~~~ E
+    G1 ~~~ H
 ```
+
+| Figure key | Full phase or lab interpretation |
+|---|---|
+| A | First request after idle, restart, scale-out, or host move. |
+| B / B1 | Platform worker allocation; potential dominant delay on FC1 full idle. |
+| C | Site assignment and container/runtime bring-up. |
+| D / D1 | Functions host initialization; often sub-second in the reported healthy cases, not a platform guarantee. |
+| E | Language worker initialization, distinct from allocated compute in B. |
+| F | Trigger listener and route readiness. |
+| G / G1 | First invocation executes; client sees the combined elapsed path. |
+| H | Steady warm execution. |
+
+**Takeaway:** Read the arrows as a conceptual phase order, not a measured platform protocol; phases may overlap. [Hosting guidance](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale#cold-start-behavior) documents cold-start and provisioning delay, not the lab's phase-by-phase attribution.
+
 ### 1.2 Platform cold start vs app cold start
 | Scope | What changed | Dominant latency source | Typical evidence | Operational meaning |
 |---|---|---|---|---|
@@ -158,26 +180,42 @@ Interpretation rule for this lab:
 ### 1.5 Timeline diagram
 <!-- diagram-id: 1-5-timeline-diagram -->
 ```mermaid
+%%{init: {'sequence': {'width': 25, 'actorMargin': 10, 'diagramMarginX': 5, 'messageMargin': 20, 'noteMargin': 5}}}%%
 sequenceDiagram
-    participant Client as External Client
-    participant FE as Azure Front End
-    participant Scale as Scale Controller
-    participant Worker as FC1 Worker
-    participant Host as Functions Host
-    participant Func as HTTP Function
-    Client->>FE: First request after idle
-    FE->>Scale: Need available worker
-    Scale->>Worker: Allocate/provision worker
-    Worker->>Host: Start host process
-    Host-->>Worker: Host started ("363ms / 453ms observed")
-    Worker->>Func: Route first invocation
-    Func-->>Client: HTTP 200 (30.485s observed in full idle case)
-    Note over Client,Worker: Full idle cold path dominated by worker provisioning
-    Client->>FE: Warm follow-up request
-    FE->>Worker: Route to warm instance
-    Worker->>Func: Execute function
-    Func-->>Client: HTTP 200 (67-99ms observed)
+    accTitle: How do the reported cold and warm requests compare?
+    accDescr: Illustrative FC1 timeline with six distinct roles and the original cold-then-warm exchange order. Numbered messages refer to the adjacent key. Historical client and host timings are retained, not newly validated; internal handoffs are conceptual rather than captured protocol messages.
+    participant Client as C
+    participant FE as FE
+    participant Scale as S
+    participant Worker as W
+    participant Host as H
+    participant Func as F
+    Client->>FE: 1
+    FE->>Scale: 2
+    Scale->>Worker: 3
+    Worker->>Host: 4
+    Host-->>Worker: 5
+    Worker->>Func: 6
+    Func-->>Client: 7
+    Note over Client,Worker: Illustrative<br/>cold-path hypothesis
+    Client->>FE: 8
+    FE->>Worker: 9
+    Worker->>Func: 10
+    Func-->>Client: 11
 ```
+
+| Figure key | Role or exchange |
+|---|---|
+| C / FE / S | External client / Azure front end / scale controller. |
+| W / H / F | FC1 worker (allocated compute) / Functions host / HTTP function; W is not the language worker process. |
+| 1 / 2 / 3 | First request after idle / need available worker / allocate or provision worker. |
+| 4 / 5 | Start host process / host started: reported `363ms / 453ms`. |
+| 6 / 7 | Route first invocation / HTTP 200: reported `30.485s` in the full-idle case. |
+| Cold-path hypothesis | The lab attributes the full-idle cold path predominantly to worker provisioning; this is not a separately timed allocation trace. |
+| 8 / 9 / 10 / 11 | Warm follow-up request / route to warm instance / execute function / HTTP 200: reported `67-99ms`. |
+
+**Takeaway:** Numbers identify exchanges, not measured durations. The six roles and cold/warm ordering remain distinct. The internal front-end/controller/worker handoffs are illustrative: [event-driven scaling](https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling#runtime-scaling) describes scaling responsibility, not this exact message protocol. The historical timings and lab verdict below are unchanged.
+
 ### 1.6 Warm-up and mitigation controls
 | Control | Plan availability | What it does | Cold-start impact | Notes for this lab |
 |---|---|---|---|---|
@@ -213,15 +251,30 @@ Authoritative links are listed in [Sources](#sources).
 <!-- diagram-id: 2-2-causal-chain -->
 ```mermaid
 flowchart TD
-    A[Idle period with no active instance] --> B[First request arrives]
-    B --> C[Platform allocates worker]
-    C --> D[Host starts quickly once worker available]
-    D --> E[Function invocation executes]
-    E --> F[Client receives response]
-    C --> C1[Potential long delay window]
-    D --> D1["Observed 363ms / 453ms host start"]
-    F --> F1[Observed ~30.5s full-idle client latency]
+    accTitle: What causal hypothesis does the lab test?
+    accDescr: The lab hypothesis separates worker allocation from host startup and response latency. Callouts retain the historical host-start and client values; arrows express the hypothesis, not proof of an allocation bottleneck.
+    A["A. Idle<br/>No active instance"] --> B["B. First request"]
+    B --> C["C. Allocate worker"]
+    C --> D["D. Quick host start"]
+    D --> E["E. Execute invocation"]
+    E --> F["F. Client response"]
+    C --> C1["C1. Potential delay"]
+    D --> D1["D1. Host timing"]
+    F --> F1["F1. Client timing"]
+    %% Layout-only anchors tier callouts; they add no causal steps or arrows.
+    C1 ~~~ D
+    D1 ~~~ E
 ```
+
+| Figure key | Hypothesis stage or historical value |
+|---|---|
+| A / B / C | Idle period with no active instance / first request arrives / platform allocates worker. |
+| C1 | Potential long delay window. |
+| D / D1 | Host starts quickly once worker is available; reported host start `363ms / 453ms`. |
+| E / F / F1 | Function invocation executes / client receives response / reported full-idle client latency `~30.5s`. |
+
+**Takeaway:** Compare this proposed chain with the proof and disproof criteria below; the reported timing gap alone is not a direct measurement of worker allocation. [Cold-start guidance](https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling#cold-start) supports added scale-from-zero latency, not a universal provisioning-dominant diagnosis.
+
 ### 2.3 Proof criteria
 All criteria below should be satisfied to support the hypothesis:
 
@@ -568,17 +621,39 @@ Use this checklist while triaging:
 <!-- diagram-id: 3-10-decision-logic-during-triage -->
 ```mermaid
 flowchart TD
-    A[User reports first-hit latency spike] --> B{Warm requests also slow?}
-    B -->|No| C{Host startup traces healthy and quick?}
-    B -->|Yes| D[Investigate sustained regression path]
-    C -->|Yes| E{Idle or scale event present in same window?}
-    C -->|No| F["Investigate host/app startup regression"]
-    E -->|Idle full cold| G[Classify as provisioning-dominant cold start]
-    E -->|Scale-out only| H[Classify as elastic warm-up latency]
-    E -->|Neither| I[Check dependency latency and retries]
-    D --> J[Correlate dependencies, exceptions, concurrency]
-    F --> K[Review startup code, extension load, config]
+    accTitle: Which evidence routes first-hit latency triage?
+    accDescr: Follow every Yes and No branch from warm-request latency and host startup traces, then distinguish full idle, scale-out only and neither. Classification leaves are diagnostic candidates to test against the lab proof and disproof criteria, not new incident verdicts.
+    A(["A. First-hit spike"]) --> B{"B. Warm requests<br/>also slow?"}
+    B -->|No| C{"C. Healthy and<br/>quick host traces?"}
+    B -->|Yes| D("D. Sustained regression")
+    C -->|Yes| E{"E. Idle or scale<br/>in same window?"}
+    C -->|No| F("F. Startup regression")
+    E -->|Idle full cold| G(["G. Provisioning-dominant"])
+    E -->|Scale-out only| H(["H. Elastic warm-up"])
+    E -->|Neither| I(["I. Dependencies / retries"])
+    D --> J(["J. Correlate signals"])
+    F --> K(["K. Review startup"])
+    %% Layout-only anchors tier outcomes; they add no diagnostic steps or arrows.
+    J ~~~ C
+    K ~~~ E
+    G ~~~ H
+    H ~~~ I
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J,K neutral;
 ```
+
+| Figure key | Full triage meaning |
+|---|---|
+| A / B | User reports first-hit latency spike / are warm requests also slow? |
+| C / E | Are host startup traces healthy and quick? / is an idle or scale event present in the same window? |
+| D / J | Investigate sustained regression; correlate dependencies, exceptions, and concurrency. |
+| F / K | Investigate host/app startup regression; review startup code, extension load, and configuration. |
+| G | Classify as provisioning-dominant cold start, subject to the existing proof/disproof criteria. |
+| H | Classify as elastic warm-up latency, subject to the existing proof/disproof criteria. |
+| I | Check dependency latency and retries. |
+
+**Takeaway:** Diamonds ask evidence questions, rounded boxes identify investigation paths, and stadiums mark the symptom or next outcome. All Yes/No and idle/scale/neither branches are retained. Apply the [disproof criteria](#24-disproof-criteria) before adopting a classification; [monitoring guidance](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring) describes the telemetry, not a deterministic diagnosis from one signal.
+
 ---
 ## 4) Experiment Log (Artifact-Based)
 This section records a complete evidence chain using the FC1 run profile already captured in this repository context.
@@ -820,6 +895,8 @@ Use this section as a validation rubric while running the lab.
 <!-- diagram-id: evidence-timeline -->
 ```mermaid
 graph TD
+    accTitle: Which historical evidence leads to the reported verdict?
+    accDescr: Evidence-reading order from warm baseline through idle, first hit, host traces, scale-event band and recovery to the lab's reported provisioning-dominant verdict. Values and verdict are historical and unchanged; this is not a new experiment or a timestamped platform trace.
     A[Baseline Warm Capture] --> B[Idle Window ~13m]
     B --> C[First Hit: 30.485s]
     C --> D["Host Traces: 363ms / 453ms"]
@@ -892,3 +969,4 @@ rm -rf "labs/cold-start/artifacts"
 - [Configure monitoring for Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring)
 - [Application Insights telemetry data model](https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model-complete)
 - [Kusto Query Language overview](https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/)
+- [Event-driven scaling](https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling)
