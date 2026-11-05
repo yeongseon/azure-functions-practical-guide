@@ -4,7 +4,7 @@ content_sources:
     - id: powershell-recipes
       type: graph
       source: self-generated
-      justification: Category view of the PowerShell recipes, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Navigation map of this guide's PowerShell recipe pages, not an Azure architecture; categories match the headings below, with Microsoft Learn sources providing platform background.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-powershell
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
@@ -19,12 +19,20 @@ Use these documents when you already understand the platform basics and need pra
 <!-- diagram-id: powershell-recipes -->
 ```mermaid
 graph TD
+    accTitle: PowerShell recipe page categories
+    accDescr: Maps this guide's recipe pages, not an Azure architecture. PowerShell Recipes branches to HTTP, Storage and Messaging, Security, Scheduling, Orchestration, and API and Quality; arrows indicate page categories, not service connections.
     A[PowerShell Recipes] --> B[HTTP]
-    A --> C[Storage & Messaging]
+    A --> C["Storage &<br/>Messaging"]
     A --> D[Security]
     A --> E[Scheduling]
     A --> F[Orchestration]
     A --> G[API & Quality]
+    %% Layout-only links tier categories; they add no navigation relationships or arrows.
+    B ~~~ C
+    C ~~~ D
+    D ~~~ E
+    E ~~~ F
+    F ~~~ G
 ```
 
 !!! tip "Pair recipes with platform guidance"
