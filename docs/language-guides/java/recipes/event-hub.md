@@ -21,6 +21,8 @@ This recipe demonstrates Java Event Hubs trigger and output bindings — consumi
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Java Event Hubs trigger and output flow
+    accDescr: Producers publish to Event Hub partitions, followed by Java EventHubTrigger processing in the function app and EventHubOutput downstream publishing. These are logical binding stages, not a separate trigger-worker service outside the app or a trace of connection initiators.
     PROD[Event Producers] --> EH[(Event Hub Partitions)]
     EH --> TRIG[EventHubTrigger worker]
     TRIG --> FA[Function App]

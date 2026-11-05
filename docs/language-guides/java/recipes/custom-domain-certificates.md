@@ -24,6 +24,8 @@ This recipe focuses on platform configuration for custom domains and TLS certifi
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Custom hostname and uploaded certificate dependencies
+    accDescr: Conceptual configuration dependencies: public DNS to hostname binding and uploaded certificate to SSL binding, both converging on the Function App endpoint. This is not a DNS query sequence or a plan-independent command recipe.
     DNS[Public DNS zone] --> HOSTNAME[Function App hostname binding]
     CERT[Uploaded certificate] --> SSL[SSL binding]
     HOSTNAME --> APP[Function App endpoint]
