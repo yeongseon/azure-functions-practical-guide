@@ -13,7 +13,7 @@ content_sources:
 ---
 # Middleware
 
-The Python v2 programming model has **no built-in middleware pipeline**. Unlike the .NET isolated worker or the Node.js v4 hook system, there is no runtime-provided way to wrap every function invocation. The idiomatic alternative is a plain Python decorator that you apply above the function's trigger decorator, giving you the same cross-cutting behavior — logging, timing, error handling — with standard language features.
+This recipe implements cross-cutting logging, timing and error handling with a plain Python decorator applied **below** the HTTP trigger decorator, as shown in the example. It is application code around the handler, not a built-in invocation middleware pipeline. The [Python v2 developer reference](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python) documents trigger decorators and separate ASGI/WSGI HTTP-framework integration; those adapters are not the wrapper shown here.
 
 ## Prerequisites
 
@@ -24,6 +24,8 @@ The Python v2 programming model has **no built-in middleware pipeline**. Unlike 
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Illustrative Python HTTP handler wrapper flow
+    accDescr: Successful synchronous HTTP example: the trigger invokes the custom decorator's pre-logic, the function body returns, post-logic runs and the response is returned. The wrapper is application Python code, not a platform middleware stage; the example re-raises errors after finally logic.
     REQ[Trigger fires] --> DEC[Wrapper decorator: pre-logic]
     DEC --> FUNC[Function body]
     FUNC --> POST[Wrapper decorator: post-logic]

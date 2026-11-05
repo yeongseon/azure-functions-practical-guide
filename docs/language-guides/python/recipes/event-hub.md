@@ -21,6 +21,8 @@ This recipe covers integrating Azure Event Hubs with Azure Functions Python v2 â
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Event Hubs recipe processing flow
+    accDescr: Logical flow from producers through Event Hub partitions and the Event Hubs trigger to a Python function app, with illustrative downstream-store and Event Hubs output paths; the page demonstrates consuming and publishing in separate handlers.
     PROD[Event Producers] --> EH[(Event Hub Partitions)]
     EH --> TRIG[Event Hubs Trigger]
     TRIG --> FA[Function App]

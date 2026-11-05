@@ -14,6 +14,8 @@ content_sources:
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-http-webhook
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-http-webhook-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/security-concepts
 ---
 # HTTP API Patterns
 
@@ -26,6 +28,8 @@ This recipe covers the essential HTTP API patterns for Azure Functions Python v2
 <!-- diagram-id: request-flow -->
 ```mermaid
 flowchart TD
+    accTitle: Illustrative Python HTTP API request flow
+    accDescr: A client request passes an optional gateway and HTTP trigger, application validation, business logic and storage before a response returns to the client. This is logical processing order, not a configured deployment or a database sending an HTTP response.
     CLIENT[HTTP Client] --> APIM[Optional API Gateway]
     APIM --> FUNC[Azure Functions HTTP Trigger]
     FUNC --> AUTH[Auth and Validation]
@@ -34,6 +38,8 @@ flowchart TD
     STORE --> RESP[HTTP Response]
     RESP --> CLIENT
 ```
+
+**Reading key:** Gateway, authentication and persistent storage are illustrative extension points, not services configured by the in-memory CRUD example. Here, “Auth and Validation” means application checks; configured platform authentication and Functions key checks precede handler execution, rather than running inside that stage ([security guidance](https://learn.microsoft.com/en-us/azure/azure-functions/security-concepts)). In Python v2, the [`route` decorator](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-http-webhook-trigger#decorators) configures the HTTP route and key authorization level.
 
 ## Route Parameters
 
