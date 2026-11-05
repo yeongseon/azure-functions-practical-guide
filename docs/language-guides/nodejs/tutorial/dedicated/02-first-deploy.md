@@ -72,7 +72,7 @@ flowchart TD
     subgraph PLAN["<div style='width:230px;text-align:right'>App Service Plan<br/>B1 Basic</div>"]
         app_runtime["Function App<br/>Dedicated B1<br/>Linux Node.js 20"]
         ALWAYS["Always On<br/>Recommended"]
-        app_runtime -.->|"[Configured]<br/>Recommendation"| ALWAYS
+        app_runtime -.->|"[Illustrative]<br/>Recommendation"| ALWAYS
     end
     storage_db[("Storage Account<br/>Blob + Queue")]
     telemetry>"Application<br/>Insights"]
