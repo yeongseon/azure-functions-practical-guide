@@ -125,16 +125,38 @@ Azure Functions supports four main hosting models:
 <!-- diagram-id: hosting-plans-at-a-glance -->
 ```mermaid
 flowchart TD
-    A[Workload Requirement] --> B{Scale to zero required?}
-    B -->|Yes| C{Private networking required?}
-    B -->|No| D{Existing App Service estate?}
-    C -->|No| E[Flex by default; Consumption for legacy needs]
-    C -->|Yes| F[Flex Consumption]
-    D -->|Yes| G[Dedicated]
-    D -->|No| H{Low-latency warm baseline needed?}
-    H -->|Yes| I[Premium]
-    H -->|No| J[Dedicated or Premium]
+    accTitle: Hosting plan requirements decision flow
+    accDescr: When scale-to-zero is required, private networking leads to Flex Consumption; without private networking, Flex is the default candidate and Consumption is reserved for legacy needs. Without scale-to-zero, existing App Service estate leads to Dedicated; otherwise warm baseline requirements lead to Premium or Dedicated or Premium. These are selection heuristics, not a complete capability test.
+    A(["Workload Requirement"])
+    B{"Scale to zero<br/>required?"}
+    C{"Private networking<br/>required?"}
+    D{"Existing App Service<br/>estate?"}
+    E(["Flex by default;<br/>Consumption for legacy needs"])
+    F(["Flex Consumption"])
+    G(["Dedicated"])
+    H{"Low-latency warm<br/>baseline needed?"}
+    I(["Premium"])
+    J(["Dedicated or Premium"])
+    A --> B
+    B -->|Yes| C
+    B -->|No| D
+    C -->|No| E
+    C -->|Yes| F
+    D -->|Yes| G
+    D -->|No| H
+    H -->|Yes| I
+    H -->|No| J
+    %% Layout-only links tier alternatives; they add no decisions or semantic arrows.
+    E ~~~ F
+    F ~~~ D
+    G ~~~ H
+    I ~~~ J
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J baseNeutral;
+    linkStyle default stroke-width:2px;
 ```
+
+**Takeaway:** Follow the Yes/No labels to a candidate plan, then check the plan/OS capability matrix and workload constraints below; this is a selection heuristic, not a guarantee of latency or compatibility.
 
 ### Consumption plan (classic)
 
@@ -416,18 +438,42 @@ If you need both serverless cost behavior and private networking, Flex is usuall
 <!-- diagram-id: workflow-flowchart -->
 ```mermaid
 flowchart TD
-    A[Start: Define workload requirements] --> B{Need scale-to-zero?}
-    B -->|No| C{Need strict low latency?}
-    B -->|Yes| D{"Need VNet/private endpoints?"}
-    D -->|No| E[Flex by default; Consumption for legacy needs]
-    D -->|Yes| F{Accept one app per plan?}
-    F -->|Yes| G[Choose Flex Consumption]
-    F -->|No| H[Choose Premium]
+    accTitle: Hosting selection workflow and requirement trade-offs
+    accDescr: Workload requirements branch on scale-to-zero, strict latency, private networking, one app per plan and existing App Service capacity. All Yes and No outcomes remain. The scale-to-zero path to Premium is a requirement trade-off: Premium keeps a billed warm baseline and does not scale to zero.
+    A(["Start: Define<br/>workload requirements"])
+    B{"Need<br/>scale-to-zero?"}
+    C{"Need strict<br/>low latency?"}
+    D{"Need VNet/<br/>private endpoints?"}
+    E(["Flex by default;<br/>Consumption for legacy needs"])
+    F{"Accept one app<br/>per plan?"}
+    G(["Choose Flex Consumption"])
+    H(["Choose Premium"])
+    I{"Have existing<br/>App Service capacity?"}
+    J(["Choose Dedicated"])
+    K(["Choose Premium or Dedicated<br/>by cost model"])
+    A --> B
+    B -->|No| C
+    B -->|Yes| D
+    D -->|No| E
+    D -->|Yes| F
+    F -->|Yes| G
+    F -->|No| H
     C -->|Yes| H
-    C -->|No| I{Have existing App Service capacity?}
-    I -->|Yes| J[Choose Dedicated]
-    I -->|No| K[Choose Premium or Dedicated by cost model]
+    C -->|No| I
+    I -->|Yes| J
+    I -->|No| K
+    %% Layout-only links tier alternatives; they add no decisions or semantic arrows.
+    C ~~~ D
+    E ~~~ F
+    G ~~~ H
+    H ~~~ I
+    J ~~~ K
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J,K baseNeutral;
+    linkStyle default stroke-width:2px;
 ```
+
+**Takeaway:** These choices are candidates, not a guarantee that every earlier requirement is satisfied. The scale-to-zero → private networking → no one-app-per-plan path reaches Premium only if you relax scale-to-zero: [Premium retains at least one billed instance](https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan#billing). If scale-to-zero is non-negotiable, revisit that trade-off rather than treating Premium as a match.
 
 ### Troubleshooting matrix
 

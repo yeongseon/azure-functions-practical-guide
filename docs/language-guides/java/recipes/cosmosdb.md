@@ -24,11 +24,15 @@ This recipe shows Java bindings for Azure Cosmos DB trigger, input, and output p
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
-    API[HTTP Trigger] --> OUT[@CosmosDBOutput]
-    OUT --> COSMOS[(Cosmos DB Container)]
+    accTitle: Java Cosmos DB recipe binding paths
+    accDescr: Conceptual Java annotation-model paths for Cosmos DB for NoSQL with the 4.x binding extension: HTTP trigger to output and input bindings, output to container and container to change trigger. The dotted managed-identity association represents a configured authentication option, not a network hop or an automatic permission grant.
+    API["HTTP<br/>Trigger"] --> OUT[@CosmosDBOutput]
+    OUT --> COSMOS[("Cosmos DB<br/>Container")]
     COSMOS --> TRIGGER[@CosmosDBTrigger]
     API --> IN[@CosmosDBInput]
-    MI[Managed Identity] -.-> COSMOS
+    MI["Managed<br/>Identity"] -.-> COSMOS
+    %% Layout-only link tiers the identity association; it adds no operation or semantic arrow.
+    MI ~~~ API
 ```
 
 ## Prerequisites

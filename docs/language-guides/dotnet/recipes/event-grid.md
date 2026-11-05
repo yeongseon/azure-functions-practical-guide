@@ -22,6 +22,8 @@ Subscribe to Event Grid events and route them into isolated worker handlers.
 <!-- diagram-id: event-grid -->
 ```mermaid
 flowchart TD
+    accTitle: Conceptual service-access flow on the Event Grid recipe
+    accDescr: Trigger to function to binding or SDK to Azure service. This generic logical flow preserves binding and SDK alternatives; it does not specify an Event Grid delivery protocol, subscription-validation exchange, or extension version.
     A[Trigger] --> B[Function]
     B --> C[Binding or SDK]
     C --> D[Azure service]

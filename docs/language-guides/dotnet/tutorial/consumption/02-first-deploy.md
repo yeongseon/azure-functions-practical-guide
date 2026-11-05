@@ -49,6 +49,8 @@ A Linux Consumption Function App running the .NET 8 isolated worker, deployed fr
 <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
+    accTitle: Linux Consumption .NET 8 first deployment
+    accDescr: Tutorial stage order from dotnet publish and Core Tools deployment to the Consumption app, the reference project's 16-function indexing check and HTTP endpoint validation; not a new execution result.
     A[dotnet publish] --> B[func azure functionapp publish]
     B --> C[Consumption Function App]
     C --> D[16 functions indexed]

@@ -22,6 +22,8 @@ Build robust HTTP APIs with `HttpRequestData` and `HttpResponseData` in .NET iso
 <!-- diagram-id: http-api-patterns -->
 ```mermaid
 flowchart TD
+    accTitle: Conceptual service-access flow on the HTTP API recipe
+    accDescr: Trigger to function to binding or SDK to Azure service. This generic logical flow preserves binding and SDK alternatives; it is not an HTTP request-response sequence or a diagram of isolated-worker HTTP integration modes.
     A[Trigger] --> B[Function]
     B --> C[Binding or SDK]
     C --> D[Azure service]

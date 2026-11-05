@@ -12,7 +12,7 @@ content_sources:
     - id: hands-on-labs
       type: graph
       source: self-generated
-      justification: Flow view of hands on labs, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Navigation map of this page's five diagnostic categories and ten linked labs; not a platform dependency graph or evidence of lab execution.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
         - https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring
@@ -26,21 +26,35 @@ Run labs in a non-production environment and treat them like live incidents: det
 <!-- diagram-id: hands-on-labs -->
 ```mermaid
 graph TD
+    accTitle: Hands-on lab categories
+    accDescr: Navigation map grouping ten labs under Performance, Storage and Identity, Network, Execution and Runtime, and Event Processing. Category membership does not classify execution status or evidence trust; use the linked lab tables below.
     A[Hands-on Labs] --> B[Performance]
     A --> C["Storage / Identity"]
     A --> D[Network]
-    A --> E["Execution / Runtime"]
-    A --> F[Event Processing]
+    A --> E["Execution /<br/>Runtime"]
+    A --> F["Event<br/>Processing"]
     B --> B1[Cold Start]
-    B --> B2[Queue Backlog Scaling]
-    C --> C1[Storage Access Failure]
-    C --> C2[Managed Identity Auth]
-    D --> D1["DNS / VNet Resolution"]
-    E --> E1[Out of Memory Crash]
-    E --> E2[Deployment Not Running]
-    E --> E3[Durable Replay Storm]
-    F --> F1[Timer Missed Schedules]
-    F --> F2[Event Hub Checkpoint Lag]
+    B --> B2["Queue Backlog<br/>Scaling"]
+    C --> C1["Storage Access<br/>Failure"]
+    C --> C2["Managed Identity<br/>Auth"]
+    D --> D1["DNS / VNet<br/>Resolution"]
+    E --> E1["Out of Memory<br/>Crash"]
+    E --> E2["Deployment<br/>Not Running"]
+    E --> E3["Durable Replay<br/>Storm"]
+    F --> F1["Timer Missed<br/>Schedules"]
+    F --> F2["Event Hub<br/>Checkpoint Lag"]
+    %% Layout-only category tiers; no new membership or prerequisite arrows.
+    B1 ~~~ B2
+    B2 ~~~ C
+    C1 ~~~ C2
+    C2 ~~~ D
+    D1 ~~~ E
+    E1 ~~~ E2
+    E2 ~~~ E3
+    E3 ~~~ F
+    F1 ~~~ F2
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,B1,B2,C1,C2,D1,E1,E2,E3,F1,F2 neutral;
 ```
 
 ## How Labs Work
