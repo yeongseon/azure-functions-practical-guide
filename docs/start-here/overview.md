@@ -28,37 +28,34 @@ content_sources:
     - id: overview-what-is-azure-functions
       type: flowchart
       source: self-generated
-      justification: Flow view of overview what is azure functions, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Conceptual orientation to event-triggered execution, optional input/output bindings and function-app membership; not an execution-order or transport diagram. The Function App arrow denotes membership, not event delivery.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
-        - https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scenarios
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-compare-logic-apps-ms-flow-webjobs
-        - https://learn.microsoft.com/en-us/azure/architecture/guide/technology-choices/compute-comparison
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-dotnet-class-library
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference
 ---
 # Overview: What is Azure Functions
 
 Azure Functions is a serverless compute service for running event-driven code in Azure.
 
-Instead of managing servers, you define functions that are executed by triggers (such as HTTP requests, queue messages, timers, or events), and Azure manages runtime hosting and scale behavior.
+Instead of managing servers, you define functions that are executed by triggers (such as HTTP requests, queue messages, timers, or events); hosting and scaling behavior depend on the hosting plan.
 
 This page summarizes the fundamentals from Microsoft Learn and maps them to decisions you will make in this guide.
 
 <!-- diagram-id: overview-what-is-azure-functions -->
 ```mermaid
 flowchart TD
+    accTitle: Azure Functions core concepts
+    accDescr: An event source connects through a trigger to an Azure function. Optional input bindings supply data, and optional output bindings write data. The Function App arrow denotes the function's membership in its app, not another execution step. This conceptual view does not specify transport or execution ordering; scaling depends on the hosting plan.
     E[Event Source] --> T[Trigger]
     T --> F[Azure Function]
     B1[Input Binding] --> F
     F --> B2[Output Binding]
     F --> A[Function App]
 ```
+
+Read this as a concept map: bindings are optional, and the Function App arrow means membership, not event delivery or an execution-order guarantee. Hosting and scaling vary by plan; see [hosting options](hosting-options.md).
 
 ## Portal Walkthrough
 
@@ -222,6 +219,7 @@ Those decisions influence architecture, cost profile, cold-start behavior, and o
 
 ## Sources
 
+- [Azure Functions development concepts](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference)
 - [Azure Functions overview](https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview)
 - [Triggers and bindings](https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings)
 - [Azure Functions scale and hosting options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
