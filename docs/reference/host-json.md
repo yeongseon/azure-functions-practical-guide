@@ -8,7 +8,7 @@ content_sources:
     - id: host-json-reference
       type: flowchart
       source: self-generated
-      justification: Flow view of host json reference, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Reference map of the selected host.json property groups shown on this page, not runtime execution order or Azure architecture.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
 ---
@@ -19,6 +19,8 @@ The `host.json` file configures the Azure Functions runtime behaviour. It lives 
 <!-- diagram-id: host-json-reference -->
 ```mermaid
 flowchart TD
+    accTitle: host.json reference property map
+    accDescr: host.json connects to version, logging, extensions, functionTimeout and concurrency; extensions connects to http and queues. These are selected reference groups, not execution stages or Azure components.
     H[host.json] --> V[version]
     H --> L[logging]
     H --> E[extensions]
@@ -26,7 +28,12 @@ flowchart TD
     H --> C[concurrency]
     E --> HTTP[http]
     E --> Q[queues]
+    %% Layout-only tiers: add no property relationship or execution stage.
+    V ~~~ L ~~~ E ~~~ T ~~~ C
+    HTTP ~~~ Q
 ```
+
+**Reading key:** Arrows group the selected properties, not execution stages. For Functions 2.x and later, `host.json` contains host configuration options for a function app instance and applies locally and in Azure; individual options have plan, trigger or language constraints. An app setting named `AzureFunctionsJobHost__path__to__setting` overrides the corresponding `host.json` setting; local app-setting overrides belong in `local.settings.json` → `Values`. See the [host.json reference and override pattern](https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json#override-hostjson-values).
 
 ## Complete Annotated Example
 
