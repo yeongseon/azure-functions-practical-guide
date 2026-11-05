@@ -12,6 +12,8 @@ content_sources:
       source: self-generated
       justification: Flow view of architecture, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-cosmosdb-v2-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/manage-connections
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-cosmosdb-v2
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
 ---
@@ -24,6 +26,8 @@ This recipe covers integrating Azure Cosmos DB with Azure Functions Python v2 us
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Python Cosmos DB access and identity relationships
+    accDescr: Logical relationship map of the HTTP trigger or Cosmos DB binding, function app, Cosmos DB, managed identity and Microsoft Entra ID. Solid arrows summarize execution and data access; dotted arrows summarize optional identity-based authentication, not separate network hops. An input binding alone does not trigger a function.
     SRC[HTTP Trigger or Cosmos DB Binding] --> FA[Function App]
     FA --> COSMOS[Azure Cosmos DB]
     FA -.-> MI[Managed Identity]
@@ -32,6 +36,8 @@ flowchart TD
 ```
 
 Solid arrows show runtime data/event flow. Dashed arrows show identity and authentication.
+
+**Reading key:** These Python v2 examples are HTTP-triggered; their Cosmos DB input/output bindings read or write data rather than start execution. A separately configured [Cosmos DB trigger](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-cosmosdb-v2-trigger) reads the change feed for inserts and updates, not deletions; this figure does not add that trigger to the examples. The identity path applies when an [identity-based connection](https://learn.microsoft.com/en-us/azure/azure-functions/manage-connections) and data permissions are configured, not when the connection-string example is used.
 
 ## Prerequisites
 
