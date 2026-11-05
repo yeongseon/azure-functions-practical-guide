@@ -21,19 +21,32 @@ content_sources:
     - id: what-you-ll-build
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Logical Linux EP1 Storage context with conditional public ingress, distinct authorization/telemetry/capacity associations and four expanded endpoint-zone mappings.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots#swap-slots
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-access-restrictions#app-access
+        - https://learn.microsoft.com/en-us/azure/storage/blobs/anonymous-read-access-prevent
+        - https://learn.microsoft.com/en-us/azure/storage/common/shared-key-authorization-prevent
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
     - id: what-you-ll-build-2
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build 2, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Conceptual Python Premium staging, smoke-test and swap stages; the key distinguishes the diagram order from the embedded YAML and does not certify dependency packaging.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots#swap-slots
+        - https://learn.microsoft.com/en-us/azure/azure-functions/python-build-options
+        - https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure-openid-connect
 ---
 # 06 - CI/CD (Premium)
 
@@ -54,68 +67,86 @@ Build a GitHub Actions pipeline for Azure Functions Premium, then add safe produ
 !!! info "Infrastructure Context"
     **Plan**: Premium (EP1) | **Network**: VNet + Private Endpoints | **Always warm**: ✅
 
-    Premium deploys with VNet integration (delegated subnet), a private endpoint for inbound access, private DNS zone, and pre-warmed instances. Storage uses connection string or identity-based authentication.
+    This context combines outbound integration and separate Storage endpoints. A prerequisite site private endpoint affects public ingress (H below). Identity-based host storage is distinct from the default Azure Files content-share connection string; prewarmed instances buffer HTTP scale-out rather than defining the plan's minimum/maximum capacity.
 
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 10, 'rankSpacing': 70, 'padding': 8, 'subGraphTitleMargin': {'top': 8, 'bottom': 32}}}}%%
 flowchart TD
-    INET[Internet] -->|HTTPS| FA[Function App\nPremium EP1\nLinux Python 3.11]
-
-    subgraph VNET["VNet 10.0.0.0/16"]
-        subgraph INT_SUB["Integration Subnet 10.0.1.0/24\nDelegation: Microsoft.Web/serverFarms"]
-            FA
+    accTitle: Python 3.11 Linux Premium EP1 Storage context
+    accDescr: Premium network context with app compute outside outbound integration and four Storage endpoint and DNS mappings expanded in the key. Public HTTPS after a prerequisite site private endpoint requires publicNetworkAccess explicitly Enabled (H). Identity, telemetry and HTTP prewarm capacity are not data-transit hops. The Files share is this context's content backend, not a universal requirement.
+    client(["Internet"])
+    app_runtime["Function App<br/>Premium EP1<br/>Linux · Python 3.11"]
+    identity{{"System MI<br/>Microsoft Entra ID"}}
+    telemetry>"Application<br/>Insights"]
+    warm_capacity["HTTP prewarm<br/>Capacity: W"]
+    subgraph DNS["Private DNS zones"]
+        dns_fn{{"Blob · Queue<br/>Table · File"}}
+    end
+    subgraph vnet_fn["VNet"]
+        subgraph INT_SUB["<div style='width:170px;text-align:right'>Integration<br/>subnet</div>"]
+            vnet_integration[["Outbound<br/>integration"]]
         end
-        subgraph PE_SUB["Private Endpoint Subnet 10.0.2.0/24"]
-            PE_BLOB[PE: blob]
-            PE_QUEUE[PE: queue]
-            PE_TABLE[PE: table]
-            PE_FILE[PE: file]
+        subgraph PE_SUB["<div style='width:130px;text-align:left'>PE<br/>subnet</div>"]
+            pe_storage[["Storage PEs<br/>blob · queue<br/>table · file"]]
         end
     end
-
-    PE_BLOB --> ST["Storage Account\nallowPublicAccess: false\nallowSharedKeyAccess: true"]
-    PE_QUEUE --> ST
-    PE_TABLE --> ST
-    PE_FILE --> ST
-
-    subgraph DNS[Private DNS Zones]
-        DNS_BLOB[privatelink.blob.core.windows.net]
-        DNS_QUEUE[privatelink.queue.core.windows.net]
-        DNS_TABLE[privatelink.table.core.windows.net]
-        DNS_FILE[privatelink.file.core.windows.net]
+    storage_db[("Storage account<br/>Settings: S")]
+    subgraph STORAGE["<div style='width:200px;text-align:left'>Content<br/>backend</div>"]
+        SHARE[("Azure Files<br/>content share")]
     end
-
-    PE_BLOB -.-> DNS_BLOB
-    PE_QUEUE -.-> DNS_QUEUE
-    PE_TABLE -.-> DNS_TABLE
-    PE_FILE -.-> DNS_FILE
-
-    FA -.->|System-Assigned MI| ENTRA[Microsoft Entra ID]
-    FA --> AI[Application Insights]
-
-    subgraph STORAGE[Content Backend]
-        SHARE[Azure Files\ncontent share]
-    end
-    ST --- SHARE
-
-    WARM["🔥 Pre-warmed instances\nMin: 1, Max: 20-100"] -.- FA
-
-    style FA fill:#ff8c00,color:#fff
-    style VNET fill:#E8F5E9,stroke:#4CAF50
-    style ST fill:#FFF3E0
-    style DNS fill:#E3F2FD
-    style WARM fill:#FFF3E0,stroke:#FF9800
+    client -->|"[Illustrative]<br/>HTTPS if H"| app_runtime
+    app_runtime -.->|"[Illustrative]<br/>Identity"| identity
+    app_runtime -.->|"[Configured]<br/>Telemetry"| telemetry
+    app_runtime -.->|"[Illustrative]<br/>HTTP buffer"| warm_capacity
+    pe_storage -.->|"[Illustrative]<br/>Zone groups"| dns_fn
+    app_runtime -->|"[Illustrative]<br/>Outbound"| vnet_integration
+    vnet_integration -->|"[Illustrative]<br/>Each PE"| pe_storage
+    pe_storage -->|"[Illustrative]<br/>Each service"| storage_db
+    %% Membership stops at the content boundary, not through its title to SHARE.
+    storage_db -.->|"[Illustrative]<br/>Contains"| STORAGE
+    %% Layout-only tiers; add no requests, diagnostic steps or visible arrows.
+    identity ~~~ telemetry
+    telemetry ~~~ warm_capacity
+    warm_capacity ~~~ dns_fn
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class client,app_runtime,identity,telemetry,warm_capacity,dns_fn,vnet_integration,pe_storage,storage_db,SHARE baseNeutral;
 ```
+
+**Reading key:** Solid arrows are intended request/data access; dotted arrows are identity, telemetry, capacity, zone-group or membership associations. `[Illustrative]` identifies surrounding infrastructure choices, not a deployment performed here. Outbound integration does not deploy the app into its subnet; identity acquisition uses the app-local token endpoint, not direct app-to-Entra transit ([networking](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options), [identity](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)).
+
+| Key | Context / qualification |
+|---|---|
+| H | After a site private endpoint, public HTTPS requires `publicNetworkAccess: Enabled` and permitting access restrictions. With the property unset (`null`), adding that endpoint disables public ingress by default; the prerequisite Premium Bicep does not explicitly enable it |
+| VNet / integration / PE subnet | `10.0.0.0/16` / `10.0.1.0/24` / `10.0.2.0/24`; delegation `Microsoft.Web/serverFarms` |
+| S | Intended anonymous-Blob restriction: `allowBlobPublicAccess: false`; `allowSharedKeyAccess: true`. Anonymous-Blob blocking is distinct from disabling public networking |
+| W | Premium minimum active billed instance: 1; default prewarmed HTTP buffer: 1; Linux regional maximum scale-out: 20–100, Korea Central: 20. These are different settings, not prewarm minimum/maximum |
+| Content / identity | Default Azure Files content access uses its connection string; supported identity-based host storage and Storage RBAC are separate. No-Files deployment alternatives exist |
+
+The bundles retain **four distinct endpoints and four zones**, with endpoint → matching service access and endpoint → zone-group association:
+
+| Endpoint → Storage service | Associated private DNS zone |
+|---|---|
+| `PE_BLOB` → Blob | `privatelink.blob.core.windows.net` |
+| `PE_QUEUE` → Queue | `privatelink.queue.core.windows.net` |
+| `PE_TABLE` → Table | `privatelink.table.core.windows.net` |
+| `PE_FILE` → File | `privatelink.file.core.windows.net` |
+
+These are independent service paths, not serial hops or a universal endpoint requirement. Use normal Storage hostnames with appropriate private DNS resolution; secured Premium content storage also needs content-share routing. Private ingress and deployment runners need appropriate network/DNS reachability; the conditional public arrow is not a way around disabled public ingress ([Storage endpoints](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints), [storage](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations), [app access](https://learn.microsoft.com/en-us/azure/app-service/overview-access-restrictions#app-access), [Premium capacity](https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan), [deployment networking](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies#secured-virtual-networks)).
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart TD
+    accTitle: Python Premium conceptual staging and swap stages
+    accDescr: A push to main or manual dispatch starts the embedded workflow with no path filter. The diagram groups OIDC login, runner dependency installation, staging deployment, smoke test and production swap conceptually; the YAML installs dependencies before login. These are intended stages, not successful execution or a zero-downtime guarantee.
     A[Push to main] --> B[OIDC Azure login]
     B --> C[Install Python dependencies]
     C --> D[Deploy to staging slot]
     D --> E[Smoke test]
     E --> F[Swap staging to production]
 ```
+
+**Build distinction:** A global runner install does not put dependencies into the deployment package's `.python_packages/lib/site-packages`. The embedded action does not request remote build; configure a supported Python build/package strategy before relying on this pipeline. A slot swap does not repair missing dependencies or guarantee zero downtime ([Python build options](https://learn.microsoft.com/en-us/azure/azure-functions/python-build-options), [slots](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots)).
 
 ## Steps
 
@@ -364,3 +395,16 @@ Syncing triggers...
 - [Deploy to Azure Functions using GitHub Actions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions)
 - [Deployment slots for Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots)
 - [Swap deployment slots](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots#swap-slots)
+- [Python build and dependency packaging](https://learn.microsoft.com/en-us/azure/azure-functions/python-build-options)
+- [Supported languages and operating systems](https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages)
+- [Functions networking options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)
+- [Storage endpoints and DNS](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints)
+- [Functions storage considerations](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations)
+- [Managed identities](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)
+- [Premium capacity](https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan)
+- [App access defaults](https://learn.microsoft.com/en-us/azure/app-service/overview-access-restrictions#app-access)
+- [Anonymous Blob access](https://learn.microsoft.com/en-us/azure/storage/blobs/anonymous-read-access-prevent)
+- [Shared-key authorization](https://learn.microsoft.com/en-us/azure/storage/common/shared-key-authorization-prevent)
+- [Deployment technologies](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies)
+- [GitHub OIDC authentication](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure-openid-connect)
+- [Application Insights integration](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)
