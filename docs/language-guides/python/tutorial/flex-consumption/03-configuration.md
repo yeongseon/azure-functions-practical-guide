@@ -116,7 +116,7 @@ flowchart TD
 |---|---|
 | H | Public HTTPS requires app public access to be enabled and permitted by access restrictions. This figure shows Storage endpoints, not a site private endpoint. If a separate site endpoint is added with `publicNetworkAccess` unset, public ingress defaults to disabled. |
 | VNet / integration / PE subnet | `10.0.0.0/16` / `10.0.1.0/24` / `10.0.2.0/24`; integration delegation `Microsoft.App/environments`. |
-| S | The production template's module maps `allowPublicAccess: false` to Storage `publicNetworkAccess: Disabled`; `allowSharedKeyAccess: false` selects identity-based access. These are separate network and authorization controls. |
+| S | The production template's module maps `allowPublicAccess: false` to Storage `publicNetworkAccess: Disabled`; `allowSharedKeyAccess: false` rejects Shared Key authorization. The app's host and deployment settings separately configure its managed identity. Network access and authorization are separate controls ([Shared Key](https://learn.microsoft.com/en-us/azure/storage/common/shared-key-authorization-prevent)). |
 | Host identity | This tutorial chooses `AzureWebJobsStorage__accountName`, `AzureWebJobsStorage__credential=managedidentity` and `AzureWebJobsStorage__clientId` for its UAMI. Host storage can instead use a connection string; UAMI selection can also use `__managedIdentityResourceId`, not both selectors. |
 | Runtime / deployment | Python name/version come from `functionAppConfig.runtime`; `FUNCTIONS_WORKER_RUNTIME` is not set on Flex. Blob deployment storage has its own `functionAppConfig.deployment.storage` authentication configuration, which can use a connection string or managed identity. Flex has no Azure Files content-share dependency. |
 
