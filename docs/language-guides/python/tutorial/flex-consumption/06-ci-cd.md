@@ -93,7 +93,7 @@ flowchart TD
     client -->|"[Illustrative]<br/>Public HTTPS"| app_runtime
     app_runtime -.->|"[Illustrative]<br/>Identity"| identity
     app_runtime -.->|"[Configured]<br/>Telemetry"| telemetry
-    pe_storage -.->|"[Illustrative]<br/>Zone groups"| dns_fn
+    dns_fn -.->|"[Illustrative]<br/>VNet link"| vnet_fn
     app_runtime -->|"[Illustrative]<br/>Outbound"| vnet_integration
     vnet_integration -->|"[Illustrative]<br/>Each PE"| pe_storage
     pe_storage -->|"[Illustrative]<br/>Each service"| storage_db
@@ -105,7 +105,7 @@ flowchart TD
     class client,app_runtime,identity,telemetry,dns_fn,vnet_integration,pe_storage,storage_db,BLOB_CTR baseNeutral;
 ```
 
-**Reading key:** Solid arrows are intended request/data access; dotted arrows are identity, telemetry, zone-group or membership associations. `[Illustrative]` marks surrounding network choices, not configuration executed by this page. VNet integration is outbound-only and does not deploy compute into its subnet ([networking](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)).
+**Reading key:** Solid arrows are intended request/data access; dotted arrows are identity, telemetry, VNet-link or membership associations. `[Illustrative]` marks surrounding network choices, not configuration executed by this page. VNet integration is outbound-only and does not deploy compute into its subnet; the DNS link targets the actual VNet boundary ([networking](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)).
 
 | Key | Context / qualification |
 |---|---|
