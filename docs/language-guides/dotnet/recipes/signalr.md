@@ -11,6 +11,8 @@ content_sources:
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-signalr-service
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-signalr-service-input
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-signalr-service-output
+        - https://learn.microsoft.com/en-us/azure/azure-signalr/signalr-concept-serverless-development-config
 ---
 # SignalR Service
 
@@ -21,14 +23,18 @@ This recipe covers adding real-time messaging to Azure Functions .NET isolated w
 <!-- diagram-id: signalr -->
 ```mermaid
 flowchart TD
+    accTitle: SignalR negotiate and broadcast relationships for the .NET isolated recipe
+    accDescr: In this serverless-mode recipe, the browser uses the negotiate function's connection-information binding and connects to SignalR Service over the depicted WebSocket transport. The broadcast function uses the output binding to send through the service to the client. Binding arrows show logical relationships, not a token-generation request sequence.
     CLIENT[Browser Client] --> NEG[Negotiate Function]
-    NEG --> INFO[SignalRConnectionInfoInput]
+    NEG --> INFO["Connection info<br/>input binding"]
     INFO --> SR[(Azure SignalR Service)]
     CLIENT -->|WebSocket| SR
     PUB[Broadcast Function] --> OUT[SignalROutput]
     OUT --> SR
     SR -->|push| CLIENT
 ```
+
+**Reading key:** `SignalRConnectionInfoInput` supplies the service URL and access token returned by the negotiate function. Its arrow to the service identifies what the connection information is for, not a claim that every negotiation makes a network request to generate a token. WebSocket is the connection depicted here, not a requirement for every SignalR client transport.
 
 ## Prerequisites
 
@@ -132,3 +138,4 @@ return new SignalRMessageAction("newMessage")
 - [Azure Functions SignalR Service bindings (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-signalr-service)
 - [SignalR Service input binding (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-signalr-service-input)
 - [SignalR Service output binding (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-signalr-service-output)
+- [Develop and configure Azure Functions with SignalR Service (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-signalr/signalr-concept-serverless-development-config)
