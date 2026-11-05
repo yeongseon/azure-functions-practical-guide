@@ -65,6 +65,8 @@ You will run the Node.js v4 Functions app locally from `apps/nodejs`, install de
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
+    accTitle: Consumption tutorial Node.js local host and storage map
+    accDescr: Illustrative local development associations for this Node.js v4 programming-model tutorial: local machine, Core Tools host on port 7071 and configured storage. Azurite is local; a storage connection string can target an Azure account. Arrows do not show deployment or validate Azure Consumption behavior.
     DEV["Local Machine"] --> HOST["Functions Host :7071"]
     HOST --> STORAGE["Local Storage\n(Azurite or connection string)"]
 ```
@@ -72,6 +74,8 @@ flowchart TD
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart TD
+    accTitle: Consumption tutorial Node.js local setup task order
+    accDescr: Illustrative procedure for the Node.js v4 programming-model reference app: npm install in apps/nodejs, copy local settings, start the Core Tools host, then test the local hello endpoint. Arrows show task order, not successful execution or Azure Consumption validation.
     A["npm install in apps/nodejs"] --> B[Copy local settings example]
     B --> C["Start Functions host"]
     C --> D["Test /api/hello locally"]
@@ -175,4 +179,3 @@ You now have local parity and can deploy to Azure Consumption (Y1).
 
 !!! warning "Legacy hosting path"
     Consumption plan (Y1) content is provided for existing workloads and compatibility scenarios. For most new serverless applications, prefer [Flex Consumption](../flex-consumption/01-local-run.md).
-
