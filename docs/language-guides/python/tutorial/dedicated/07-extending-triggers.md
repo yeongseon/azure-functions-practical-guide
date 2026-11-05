@@ -29,6 +29,11 @@ content_sources:
       source: self-generated
       justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
+        - https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-timer
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
@@ -40,6 +45,7 @@ content_sources:
       source: self-generated
       justification: Flow view of what you ll build 2, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-timer
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
@@ -71,57 +77,78 @@ You will add timer, blob, and queue-triggered functions under `apps/python/bluep
 !!! info "Infrastructure Context"
     **Plan**: Dedicated (B1) | **Network**: Public internet in this tutorial | **VNet**: Supported by platform, not configured here
 
-    The app runs on a fixed App Service Plan (always on, no scale-to-zero). Basic B1 supports App Service VNet integration and private endpoints, but this guide uses Standard (S1+) for private networking scenarios to provide scale headroom, deployment slots, and a production-oriented validation path.
+    The app uses fixed App Service Plan capacity, not event-driven scale-to-zero; enable Always On for reliable non-HTTP triggering. Basic B1 supports App Service VNet integration and private endpoints, but this guide uses Standard (S1+) for private networking scenarios to provide scale headroom, deployment slots, and a production-oriented validation path.
 
-    <!-- diagram-id: what-you-ll-build -->
+<!-- diagram-id: what-you-ll-build -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 10, 'rankSpacing': 70, 'padding': 8, 'subGraphTitleMargin': {'top': 8, 'bottom': 32}}}}%%
 flowchart TD
-    INET[Internet] -->|HTTPS| FA[Function App\nDedicated B1-P3v3\nLinux Python 3.11]
-
-    subgraph VNET["VNet 10.0.0.0/16"]
-        subgraph INT_SUB["Integration Subnet 10.0.1.0/24\nDelegation: Microsoft.Web/serverFarms"]
-            FA
+    accTitle: Python Dedicated app and optional private Storage context
+    accDescr: Linux Python 3.11 Dedicated app outside its outbound integration subnet. Optional private Storage context retains four distinct endpoints and DNS zones in the adjacent key; identity, telemetry, Always On and deployment settings are not data-transit hops. This tutorial uses public networking; the private extension is not configured by these trigger steps.
+    client(["Internet"])
+    app_runtime["Function App<br/>Dedicated<br/>Runtime: A"]
+    identity{{"Entra ID<br/>System MI"}}
+    telemetry>"Application<br/>Insights"]
+    ALWAYS_ON["Always On<br/>true · fixed capacity"]
+    RFP["Local ZIP<br/>Settings: R"]
+    subgraph DNS["Private DNS zones"]
+        dns_fn{{"Blob · Queue<br/>Table · File"}}
+    end
+    subgraph vnet_fn["VNet (optional)"]
+        subgraph subnet_int_fn["<div style='width:170px;text-align:right'>Integration<br/>subnet</div>"]
+            vnet_integration[["Outbound<br/>integration"]]
         end
-        subgraph PE_SUB["Private Endpoint Subnet 10.0.2.0/24"]
-            PE_BLOB[PE: blob]
-            PE_QUEUE[PE: queue]
-            PE_TABLE[PE: table]
-            PE_FILE[PE: file]
+        subgraph subnet_pe_fn["<div style='width:130px;text-align:left'>PE<br/>subnet</div>"]
+            pe_storage[["Storage PEs<br/>blob · queue<br/>table · file"]]
         end
     end
-
-    PE_BLOB --> ST["Storage Account"]
-    PE_QUEUE --> ST
-    PE_TABLE --> ST
-    PE_FILE --> ST
-
-    subgraph DNS[Private DNS Zones]
-        DNS_BLOB[privatelink.blob.core.windows.net]
-        DNS_QUEUE[privatelink.queue.core.windows.net]
-        DNS_TABLE[privatelink.table.core.windows.net]
-        DNS_FILE[privatelink.file.core.windows.net]
-    end
-
-    PE_BLOB -.-> DNS_BLOB
-    PE_QUEUE -.-> DNS_QUEUE
-    PE_TABLE -.-> DNS_TABLE
-    PE_FILE -.-> DNS_FILE
-
-    FA -.->|System-Assigned MI| ENTRA[Microsoft Entra ID]
-    FA --> AI[Application Insights]
-
-    RFP["📦 Local ZIP alternative: WEBSITE_RUN_FROM_PACKAGE=1\nDo not force for remote build"] -.- FA
-    ALWAYS_ON["⚙️ Always On: true\nFixed capacity"] -.- FA
-
-    style FA fill:#5c2d91,color:#fff
-    style VNET fill:#E8F5E9,stroke:#4CAF50
-    style ST fill:#FFF3E0
-    style DNS fill:#E3F2FD
+    storage_db[("Storage account")]
+    client -->|"[Configured]<br/>HTTPS"| app_runtime
+    app_runtime -.->|"[Illustrative]<br/>Optional identity"| identity
+    app_runtime -.->|"[Configured]<br/>Telemetry"| telemetry
+    app_runtime -.->|"[Configured]<br/>Reliability setting"| ALWAYS_ON
+    app_runtime -.->|"[Illustrative]<br/>Deployment option"| RFP
+    dns_fn -.->|"[Illustrative]<br/>VNet link"| vnet_fn
+    app_runtime -->|"[Illustrative]<br/>If integrated"| vnet_integration
+    vnet_integration -->|"[Illustrative]<br/>Each PE"| pe_storage
+    pe_storage -->|"[Illustrative]<br/>Each service"| storage_db
+    %% Layout-only tiers; add no requests, diagnostic steps or visible arrows.
+    identity ~~~ telemetry
+    telemetry ~~~ ALWAYS_ON
+    ALWAYS_ON ~~~ RFP
+    RFP ~~~ dns_fn
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e;
+    classDef bandMuted fill:#ffffff,stroke:#707e93,stroke-width:1.5px,stroke-dasharray:4 3,color:#14202e;
+    class client,storage_db,ALWAYS_ON,RFP baseNeutral;
+    class app_runtime,vnet_integration,pe_storage focusActive;
+    class identity,telemetry,dns_fn bandMuted;
 ```
+
+**Reading key (Dedicated):** The optional private-network extension is context, not a result of these public-network trigger steps. Solid arrows show intended request/data access; dotted arrows show configuration, identity, telemetry or VNet-link associations, not transit. Outbound VNet integration does not deploy app compute into the integration subnet ([networking](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)).
+
+| Key | Configuration / meaning |
+|---|---|
+| A / App | Dedicated B1 through P3v3, Linux Python 3.11; this tutorial starts on B1, not an ASE deployment |
+| VNet / integration / PE subnet | `10.0.0.0/16` / `10.0.1.0/24` / `10.0.2.0/24`; delegation `Microsoft.Web/serverFarms` |
+| R | Local ZIP alternative `WEBSITE_RUN_FROM_PACKAGE=1`; do not force this setting for a remote build ([deployment](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies)) |
+| Always On | Enable for reliable non-HTTP triggering on Dedicated hosting; an idled app without it can wake on an HTTP request or portal access ([Dedicated](https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan#always-on)) |
+| Entra ID / System MI | Microsoft Entra ID / optional system-assigned managed identity; tokens come from the app's local identity endpoint, not a direct app-to-Entra network hop ([identity](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)) |
+
+The bundled endpoint and DNS nodes expand to **four distinct paths**, not serial Storage services. Each row retains endpoint → Storage service and the endpoint's DNS zone-group association; zones are outside and linked to the VNet ([Storage endpoints/DNS](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints)).
+
+| Endpoint → Storage service | Private DNS zone |
+|---|---|
+| `PE_BLOB` → Blob | `privatelink.blob.core.windows.net` |
+| `PE_QUEUE` → Queue | `privatelink.queue.core.windows.net` |
+| `PE_TABLE` → Table | `privatelink.table.core.windows.net` |
+| `PE_FILE` → File | `privatelink.file.core.windows.net` |
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart TD
+    accTitle: Python Dedicated timer blob and queue trigger associations
+    accDescr: Three independent trigger sources associate with the Dedicated app, not sequential executions or network initiator paths. The timer sample uses 0 */5 * * * *, every fifth minute; the blob sample uses polling and the queue sample reads jobs.
     A[Timer trigger] --> D[Dedicated Function App]
     B[Blob upload] --> D
     C[Queue message] --> D
@@ -304,6 +331,11 @@ You now have a full Dedicated track implementation with HTTP, timer, blob, and q
 
 ## Sources
 
+- [Functions networking options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)
+- [Storage private endpoints and DNS](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints)
+- [App Service and Functions managed identity](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)
+- [Dedicated hosting and Always On](https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan#always-on)
+- [Functions deployment technologies](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies)
 - [Azure Functions triggers and bindings concepts](https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings)
 - [Timer trigger for Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-timer)
 - [Blob trigger for Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger)
