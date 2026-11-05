@@ -34,9 +34,11 @@ Entities are ideal for aggregation (counters, running totals), fan-in of high-vo
 <!-- diagram-id: entity-lifecycle -->
 ```mermaid
 flowchart TD
-    CLIENT["Client Function\nsignalEntity() / readEntityState()"] -->|"signal (one-way)"| ENT["Entity Function\nCounter@key\noperations run serially"]
-    ORC["Orchestrator Function\ncallEntity()"] -->|"call (two-way)"| ENT
-    ENT -->|"setState()"| STORE["Durable Store\npersisted entity state"]
+    accTitle: Node.js Durable Entity access and persisted state
+    accDescr: Logical view of a Counter entity. A client signals an operation without waiting for its result; an orchestrator calls and waits for a response. Operations for one entity run serially. setState updates entity state, which the runtime persists after execution. The store-to-client arrow represents reading committed state with readEntityState, not a store-initiated connection.
+    CLIENT["Client Function<br/>signalEntity() /<br/>readEntityState()"] -->|"signal (one-way)"| ENT["Entity Function<br/>Counter@key<br/>operations run serially"]
+    ORC["Orchestrator Function<br/>callEntity()"] -->|"call (two-way)"| ENT
+    ENT -->|"setState()"| STORE["Durable Store<br/>persisted entity state"]
     STORE -->|"readEntityState()"| CLIENT
 ```
 

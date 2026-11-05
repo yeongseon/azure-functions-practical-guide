@@ -29,6 +29,8 @@ Java functions are declared with `@FunctionName` and trigger/binding annotations
 <!-- diagram-id: main-content -->
 ```mermaid
 flowchart TD
+    accTitle: Java guide seven-step tutorial path
+    accDescr: The guide's reading path is 01 Local Run, 02 First Deploy, 03 Configuration, 04 Logging and Monitoring, 05 Infrastructure as Code, 06 CI/CD and 07 Extending Triggers, in that order; this is navigation, not a universal deployment procedure.
     A[01 Local Run] --> B[02 First Deploy]
     B --> C[03 Configuration]
     C --> D[04 Logging & Monitoring]
