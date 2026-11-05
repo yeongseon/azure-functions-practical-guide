@@ -49,6 +49,8 @@ You will define a complete Consumption environment in Bicep (storage account, Y1
 <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
+    accTitle: Consumption .NET isolated infrastructure workflow
+    accDescr: Illustrative task order for this Linux Consumption tutorial: Bicep template, resource-group deployment, Function App with the configured Y1 plan and storage, then build and publish from the output directory. Arrows summarize tutorial stages, not resource creation order or evidence of a successful Azure deployment.
     A[Bicep template] --> B[az deployment group create]
     B --> C[Function App + Plan + Storage]
     C --> D["Build + publish from output dir"]

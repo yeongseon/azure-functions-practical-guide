@@ -35,6 +35,8 @@ Best Practices in this guide are intentionally execution-focused: hosting plan c
 <!-- diagram-id: best-practices -->
 ```mermaid
 flowchart TD
+    accTitle: How the guide sections fit together
+    accDescr: Guide navigation from Platform, explaining how it works, to Best Practices, choosing and configuring safely, to Operations, running at day-2, and Troubleshooting, recovering quickly. Arrows show reading relationships, not Azure runtime steps.
     P["Platform<br/>how it works"] --> B["Best Practices<br/>how to choose and configure safely"]
     B --> O["Operations<br/>how to run at day-2"]
     O --> T["Troubleshooting<br/>how to recover quickly"]
@@ -109,6 +111,8 @@ Rationale:
 <!-- diagram-id: reading-order-recommendation -->
 ```mermaid
 flowchart TD
+    accTitle: Recommended best-practices reading order
+    accDescr: Editorial reading sequence: Hosting; Triggers and Bindings; Scaling; Reliability; Networking; Security; Deployment; Cost; Anti-Patterns. The nine numbered stages are a guide reading order, not an execution protocol.
     H[1. Hosting] --> TB[2. Triggers and Bindings]
     TB --> S[3. Scaling]
     S --> R[4. Reliability]
