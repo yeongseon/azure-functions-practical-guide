@@ -21,19 +21,43 @@ content_sources:
     - id: what-you-ll-build
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Python Linux plan-specific infrastructure context with full adjacent reading key; not deployment evidence.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
         - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-query-overview
         - https://learn.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+        - https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/streaming-logs
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/app/create-workspace-resource
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-access-restrictions#app-access
+        - https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
+        - https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints
+        - https://learn.microsoft.com/en-us/azure/azure-functions/opentelemetry-howto
+        - https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions-reference
     - id: what-you-ll-build-2
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build 2, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Python plan-specific monitoring verification relationships; analysis arrows are not network-transit claims.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
         - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-query-overview
         - https://learn.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+        - https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/streaming-logs
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/app/create-workspace-resource
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-access-restrictions#app-access
+        - https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
+        - https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints
+        - https://learn.microsoft.com/en-us/azure/azure-functions/opentelemetry-howto
+        - https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions-reference
 ---
 # 04 - Logging and Monitoring (Flex Consumption)
 
@@ -52,66 +76,81 @@ Set up observability for your Flex Consumption app so you can verify deployments
 You will generate real requests and exception telemetry from a Flex Consumption app and validate the data path in Application Insights.
 
 !!! info "Infrastructure Context"
-    **Plan**: Flex Consumption (FC1) | **Network**: Full private network | **VNet**: ✅
+    **Plan**: Flex Consumption (FC1) | **Network**: Private Storage context | **VNet**: ✅
 
-    FC1 deploys with VNet integration, private endpoints for all storage services, private DNS zones, and user-assigned managed identity. Storage uses identity-based authentication (no shared keys).
+    The figure retains an illustrative private Storage context with user-assigned identity; this monitoring page does not provision it. Four Storage endpoints and disabled shared keys are scenario choices, not Flex requirements.
 
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 10, 'rankSpacing': 70, 'padding': 8, 'subGraphTitleMargin': {'top': 8, 'bottom': 32}}}}%%
 flowchart TD
-    INET[Internet] -->|HTTPS| FA[Function App\nFlex Consumption FC1\nLinux Python 3.11]
-
-    subgraph VNET["VNet 10.0.0.0/16"]
-        subgraph INT_SUB["Integration Subnet 10.0.1.0/24\nDelegation: Microsoft.App/environments"]
-            FA
+    accTitle: Python 3.11 Linux Flex Consumption FC1 Storage context
+    accDescr: Public app ingress and a private Storage scenario, with compute outside outbound integration. Four distinct Storage endpoints and DNS zones are expanded in the key; runtime identity and RBAC are authorization, not a path through identity to Storage. Deployment uses a Blob container; the File endpoint is not a Flex content dependency. No Azure run is asserted.
+    client(["Internet"])
+    app_runtime["Function App<br/>Flex Consumption FC1<br/>Linux · Python 3.11"]
+    identity{{"Runtime user MI<br/>Authorization: I"}}
+    telemetry>"Application<br/>Insights"]
+    subgraph DNS["Private DNS zones"]
+        dns_fn{{"Blob · Queue<br/>Table · File"}}
+    end
+    subgraph vnet_fn["VNet"]
+        subgraph INT_SUB["<div style='width:170px;text-align:right'>Integration<br/>subnet</div>"]
+            vnet_integration[["Outbound<br/>integration"]]
         end
-        subgraph PE_SUB["Private Endpoint Subnet 10.0.2.0/24"]
-            PE_BLOB[PE: blob]
-            PE_QUEUE[PE: queue]
-            PE_TABLE[PE: table]
-            PE_FILE[PE: file]
+        subgraph PE_SUB["<div style='width:130px;text-align:left'>PE<br/>subnet</div>"]
+            pe_storage[["Storage PEs<br/>blob · queue<br/>table · file"]]
         end
     end
-
-    PE_BLOB --> ST["Storage Account\nallowPublicAccess: false\nallowSharedKeyAccess: false"]
-    PE_QUEUE --> ST
-    PE_TABLE --> ST
-    PE_FILE --> ST
-
-    subgraph DNS[Private DNS Zones]
-        DNS_BLOB[privatelink.blob.core.windows.net]
-        DNS_QUEUE[privatelink.queue.core.windows.net]
-        DNS_TABLE[privatelink.table.core.windows.net]
-        DNS_FILE[privatelink.file.core.windows.net]
+    storage_db[("Storage account<br/>Settings: S")]
+    subgraph DEPLOY["Deployment"]
+        BLOB_CTR[("Blob container<br/>deployment-packages")]
     end
-
-    PE_BLOB -.-> DNS_BLOB
-    PE_QUEUE -.-> DNS_QUEUE
-    PE_TABLE -.-> DNS_TABLE
-    PE_FILE -.-> DNS_FILE
-
-    FA -.->|User-Assigned MI| UAMI[Managed Identity]
-    UAMI -->|RBAC| ST
-    FA --> AI[Application Insights]
-
-    subgraph DEPLOY[Deployment]
-        BLOB_CTR[Blob Container\ndeployment-packages]
-    end
-    ST --- BLOB_CTR
-
-    style FA fill:#107c10,color:#fff
-    style VNET fill:#E8F5E9,stroke:#4CAF50
-    style ST fill:#FFF3E0
-    style DNS fill:#E3F2FD
+    client -->|"[Illustrative]<br/>Public HTTPS"| app_runtime
+    app_runtime -.->|"[Illustrative]<br/>Identity"| identity
+    app_runtime -.->|"[Configured]<br/>Telemetry"| telemetry
+    dns_fn -.->|"[Illustrative]<br/>VNet link"| vnet_fn
+    app_runtime -->|"[Illustrative]<br/>Outbound"| vnet_integration
+    vnet_integration -->|"[Illustrative]<br/>Each PE"| pe_storage
+    pe_storage -->|"[Illustrative]<br/>Each service"| storage_db
+    storage_db -.->|"[Illustrative]<br/>Contains"| DEPLOY
+    %% Layout-only tiers; add no requests, diagnostic steps or visible arrows.
+    identity ~~~ telemetry
+    telemetry ~~~ dns_fn
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class client,app_runtime,identity,telemetry,dns_fn,vnet_integration,pe_storage,storage_db,BLOB_CTR baseNeutral;
 ```
+
+**Reading key:** Solid arrows are intended request/data access; dotted arrows are identity, telemetry, VNet-link or membership associations. `[Illustrative]` marks surrounding network choices, not configuration executed by this page. VNet integration is outbound-only and does not deploy compute into its subnet; the DNS link targets the actual VNet boundary ([networking](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)).
+
+| Key | Context / qualification |
+|---|---|
+| VNet / integration / PE subnet | `10.0.0.0/16` / `10.0.1.0/24` / `10.0.2.0/24`; Flex delegation `Microsoft.App/environments` |
+| S | The repository Storage module maps `allowPublicAccess: false` to `publicNetworkAccess: Disabled` and firewall default Deny. Separately, `allowBlobPublicAccess: false` blocks anonymous Blob access, and `allowSharedKeyAccess: false` disables Shared Key authorization. These are this context's settings, not universal Flex requirements |
+| I | Runtime user-assigned managed identity requires appropriate Storage RBAC roles; token acquisition uses the app-local identity endpoint. This is authorization, not a Storage data-transit hop |
+| Deployment | `deployment-packages` is the contextual Blob container name; check the app's selected deployment container. Direct upload to a container alone is not deployment |
+
+Each bundle expands into **four distinct endpoints and four zones**, with endpoint → matching service access and endpoint → zone-group association:
+
+| Endpoint → Storage service | Associated private DNS zone |
+|---|---|
+| `PE_BLOB` → Blob | `privatelink.blob.core.windows.net` |
+| `PE_QUEUE` → Queue | `privatelink.queue.core.windows.net` |
+| `PE_TABLE` → Table | `privatelink.table.core.windows.net` |
+| `PE_FILE` → File | `privatelink.file.core.windows.net` |
+
+The File path is optional context, not a Flex content-share requirement. Clients retain normal Storage hostnames with DNS resolution to the private endpoint IPs; endpoint creation alone does not block public Storage access ([Storage endpoints](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints), [storage](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations), [identity](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity), [deployment](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies)).
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart TD
+    accTitle: Python Flex Consumption monitoring verification
+    accDescr: HTTP requests reach the FC1 app, which uses configured Application Insights. The final CLI KQL box denotes analysis of collected telemetry, not a query initiated by Application Insights or proof of successful collection.
     Client[HTTP requests] --> Func[Flex Function App]
     Func --> AI[Application Insights]
     AI --> KQL[KQL queries via Azure CLI]
 ```
+
+**Reading the monitoring flow:** The connection-string setting selects Application Insights. For default Python `logging`, the worker forwards records through the Functions host, subject to filtering/sampling; a configured worker exporter is a separate choice, not implied by the FC1 label ([Python reference](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python#logging-and-monitoring), [configuration](https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring)). KQL analyzes workspace-based telemetry in the linked Log Analytics workspace, not a required `FunctionAppLogs` intermediate ([workspace storage](https://learn.microsoft.com/en-us/azure/azure-monitor/app/create-workspace-resource), [resource-log routing](https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions#azure-monitor-resource-logs)).
 
 ## Steps
 
@@ -314,6 +353,20 @@ Expected output:
 - [Recipes Index](../../recipes/index.md)
 
 ## Sources
+
+- [Functions OpenTelemetry configuration](https://learn.microsoft.com/en-us/azure/azure-functions/opentelemetry-howto)
+- [Functions monitoring data reference](https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions-reference)
+
+- [functions-reference-python](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python)
+- [configure-monitoring](https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring)
+- [streaming-logs](https://learn.microsoft.com/en-us/azure/azure-functions/streaming-logs)
+- [functions-networking-options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)
+- [storage-considerations](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations)
+- [create-workspace-resource](https://learn.microsoft.com/en-us/azure/azure-monitor/app/create-workspace-resource)
+- [overview-managed-identity](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)
+- [overview-access-restrictions](https://learn.microsoft.com/en-us/azure/app-service/overview-access-restrictions#app-access)
+- [deployment-zip-push](https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push)
+- [storage-private-endpoints](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints)
 
 - [Monitor Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions)
 - [Azure Monitor Logs query overview](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-query-overview)

@@ -8,7 +8,7 @@ content_sources:
     - id: top-level-navigation-model
       type: flowchart
       source: self-generated
-      justification: Flow view of top level navigation model, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Editorial map of this repository's seven intent-based sections listed on this page, not an Azure architecture or prerequisite sequence. The Learn landing page provides subject context, not this repository's navigation arrangement.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/
 ---
@@ -35,6 +35,8 @@ This structure aligns with the top-level sections in `mkdocs.yml`; some topics (
 <!-- diagram-id: top-level-navigation-model -->
 ```mermaid
 flowchart TD
+    accTitle: This repository's top-level navigation
+    accDescr: Repository points to Start Here, Platform, Best Practices, Language Guides, Operations, Troubleshooting and Reference. These are this guide's seven intent-based areas, not Azure components or a required reading sequence. Invisible links arrange the destinations only; they add no navigation arrows or prerequisites.
     R[Repository] --> S1[Start Here]
     R --> S2[Platform]
     R --> S3[Best Practices]
@@ -42,7 +44,16 @@ flowchart TD
     R --> S5[Operations]
     R --> S6[Troubleshooting]
     R --> S7[Reference]
+    %% Layout-only links tier destinations; no additional navigation arrows or prerequisites.
+    S1 ~~~ S2
+    S2 ~~~ S3
+    S3 ~~~ S4
+    S4 ~~~ S5
+    S5 ~~~ S6
+    S6 ~~~ S7
 ```
+
+This map shows this repository's sections, not Azure architecture or a required reading order; choose a section by your goal.
 
 ## Section map
 
