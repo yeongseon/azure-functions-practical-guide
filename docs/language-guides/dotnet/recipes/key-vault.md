@@ -22,6 +22,8 @@ Access Key Vault secrets from functions with managed identity and least-privileg
 <!-- diagram-id: key-vault -->
 ```mermaid
 flowchart TD
+    accTitle: Generic trigger to Azure service flow
+    accDescr: A trigger invokes a function, with a binding or SDK as alternative service-access mechanisms. This generic view is not a Key Vault binding or an app-setting Key Vault reference-resolution sequence.
     A[Trigger] --> B[Function]
     B --> C[Binding or SDK]
     C --> D[Azure service]
