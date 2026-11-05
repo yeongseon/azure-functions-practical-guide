@@ -26,6 +26,7 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node
         - https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-node
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions
 ---
 # 06 - CI/CD (Dedicated)
 
@@ -49,6 +50,8 @@ Automate build and deployment with GitHub Actions and environment gates.
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
+    accTitle: Node.js Dedicated B1 tutorial deployment and verification flow
+    accDescr: A push to main starts the embedded GitHub Actions workflow on ubuntu-latest, followed by npm ci, tests if present, package deployment with the Functions action, and verification through Application Insights or log streaming. The two output arrows identify verification channels, not two mandatory deployment steps or evidence of success; the embedded workflow has no path filter.
     GH[GitHub\nmain branch] -->|push| GA[GitHub Actions\nubuntu-latest]
     GA -->|npm ci + test| BUILD[Build Package]
     BUILD -->|functions-action| FA[Function App\nDedicated B1]
@@ -194,3 +197,4 @@ The log stream confirms the deployed function starts and handles requests succes
 - [Azure Functions Node.js developer guide (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node)
 - [Create your first Azure Function with Core Tools (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-node)
 - [Azure Functions hosting options (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
+- [GitHub Actions deployment (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions)
