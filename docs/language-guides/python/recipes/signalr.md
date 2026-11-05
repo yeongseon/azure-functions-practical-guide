@@ -11,6 +11,8 @@ content_sources:
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-signalr-service
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-signalr-service-input
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-signalr-service-output
+        - https://learn.microsoft.com/en-us/azure/azure-signalr/signalr-concept-serverless-development-config
 ---
 # SignalR Service
 
@@ -21,14 +23,22 @@ This recipe covers adding real-time messaging to Azure Functions Python v2 with 
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
-    CLIENT[Browser Client] --> NEG[negotiate Function]
-    NEG --> INFO[SignalRConnectionInfo Input]
-    INFO --> SR[(Azure SignalR Service)]
+    accTitle: Serverless SignalR negotiation and broadcast roles
+    accDescr: The browser calls negotiate to obtain a service URL and token, then connects to SignalR Service. The broadcast function uses the output binding to send through the service to connected clients. The input-to-service arrow associates connection information with its target service, not a persistent function-to-service client connection.
+    CLIENT["Browser<br/>Client"] --> NEG["negotiate<br/>Function"]
+    NEG --> INFO["SignalRConnectionInfo<br/>Input"]
+    INFO --> SR[("Azure SignalR<br/>Service")]
     CLIENT -->|WebSocket| SR
-    PUB[broadcast Function] --> OUT[SignalR Output]
+    PUB["broadcast<br/>Function"] --> OUT["SignalR<br/>Output"]
     OUT --> SR
     SR -->|push| CLIENT
 ```
+
+**Reading key:** This is a role/flow map, not a network-hop sequence. The input
+binding generates the service URL and token returned by `negotiate`; `INFO → SR`
+identifies that target service. The browser opens the depicted WebSocket to the
+service, not to the function. Output messages go through the service to clients
+of the configured hub. See the [serverless connection steps](https://learn.microsoft.com/en-us/azure/azure-signalr/signalr-concept-serverless-development-config#configuring-a-client-connection).
 
 ## Prerequisites
 
