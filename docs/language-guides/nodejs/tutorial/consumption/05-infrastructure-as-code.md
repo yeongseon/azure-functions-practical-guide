@@ -23,6 +23,7 @@ content_sources:
       source: self-generated
       justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-infrastructure-as-code
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node
         - https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
@@ -59,20 +60,25 @@ You will deploy a repeatable Consumption infrastructure stack with Bicep and val
 
     Bicep deploys all resources into a single resource group with public internet access only.
 
-    <!-- diagram-id: what-you-ll-build -->
+<!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
-    BICEP["Bicep Template\ninfra/consumption/main.bicep"] -->|"az deployment group create"| RG[Resource Group]
-    RG --> PLAN["App Service Plan\nY1 Dynamic"]
+    accTitle: Node.js Linux Consumption infrastructure configuration map
+    accDescr: Illustrative resource-group provisioning and configuration associations for the Node.js 20 Linux Y1 example, including plan, storage and Application Insights. Arrows do not represent network hops or serial resource creation, and do not prove successful deployment. The runtime label describes the tutorial configuration, not a current support recommendation.
+    BICEP["Bicep Template<br/>infra/consumption/main.bicep"] -->|"az deployment<br/>group create"| RG[Resource Group]
+    RG --> PLAN["App Service Plan<br/>Y1 Dynamic"]
     RG --> ST["Storage Account"]
-    RG --> FA["Function App\nLinux Node.js 20"]
-    RG --> AI["Application Insights"]
+    RG --> FA["Function App<br/>Linux Node.js 20"]
+    RG --> AI["Application<br/>Insights"]
     FA --> PLAN
     FA --> ST
     FA --> AI
 
-    style BICEP fill:#f39c12,color:#fff
-    style FA fill:#0078d4,color:#fff
+    %% Layout-only tiers; add no provisioning dependencies or visible arrows.
+    PLAN ~~~ ST
+    ST ~~~ AI
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class BICEP,RG,PLAN,ST,FA,AI baseNeutral;
 ```
 
 | CLI element | Explanation |
@@ -86,6 +92,8 @@ flowchart TD
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart TD
+    accTitle: Node.js Consumption infrastructure tutorial task order
+    accDescr: Illustrative tutorial stages: review the Bicep template, request a resource-group deployment, verify provisioning, then publish Node.js code with Core Tools. This is a task order, not serial resource creation or evidence of successful Azure execution.
     A[Review Bicep template] --> B["az deployment group create"]
     B --> C[Verify provisioning]
     C --> D[Publish code]

@@ -26,6 +26,8 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-event-grid-blob-trigger
     - id: what-you-ll-build-2
       type: flowchart
       source: self-generated
@@ -62,20 +64,26 @@ You will add timer, queue, and blob triggers to a Node.js v4 app and verify that
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
-    TIMER["Timer\n(CRON schedule)"] --> FA[Function App\nFlex Consumption FC1]
-    QUEUE["Storage Queue\nwork-items"] --> FA
-    BLOB["Blob Container\nuploads/{name}"] --> FA
-    FA --> PROCESSED["Blob Container\nprocessed/{name}"]
+    accTitle: Node.js Flex Consumption trigger overview
+    accDescr: Conceptual timer, work-items queue and uploads blob paths to a Node.js v4 Function App on Flex Consumption FC1. Flex Blob triggers require the Event Grid source and an event subscription; the sample below omits this setup. The processed blob path is an optional output binding, not implemented by that logging-only sample; source arrows are trigger associations, not network initiators or HTTP ingress.
+    TIMER["Timer<br/>(CRON schedule)"] --> FA["Function App<br/>Flex Consumption FC1"]
+    QUEUE["Storage Queue<br/>work-items"] --> FA
+    BLOB["Blob Container<br/>uploads/{name}<br/>Event Grid source"] --> FA
+    FA -->|Optional output binding| PROCESSED["Blob Container<br/>processed/{name}"]
+    %% Layout-only links tier independent sources; no execution steps or arrows added.
+    TIMER ~~~ QUEUE
+    QUEUE ~~~ BLOB
 
-    style FA fill:#0078d4,color:#fff
-    style TIMER fill:#E8F5E9
-    style QUEUE fill:#FFF3E0
-    style BLOB fill:#E3F2FD
+    classDef default fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
 ```
+
+**Reading key:** Arrows associate independent triggers with the Flex Consumption app, not network paths or sequential executions. Flex requires the [Event Grid-based Blob trigger](https://learn.microsoft.com/en-us/azure/azure-functions/functions-event-grid-blob-trigger): `source: 'EventGrid'` in `app.storageBlob` and an event subscription, which this tutorial's sample/setup currently omit. The `processed/{name}` destination illustrates an optional [output binding](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node); the sample below only logs and does not write that output.
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart TD
+    accTitle: Node.js Flex Consumption trigger tutorial steps
+    accDescr: Tutorial order on Flex Consumption: add timer, queue and blob triggers, create storage resources, then deploy and verify indexing. This procedure does not establish that the incomplete Event Grid Blob setup below works.
     A[Add timer trigger] --> B[Add queue trigger]
     B --> C[Add blob trigger]
     C --> D[Create storage resources]
@@ -266,3 +274,5 @@ az group delete --name "$RG" --yes --no-wait
 - [Azure Functions Node.js developer guide (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node)
 - [Azure Functions triggers and bindings (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings)
 - [Azure Functions Flex Consumption plan (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan)
+- [Azure Blob storage trigger (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger)
+- [Event Grid-based Blob trigger setup (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-event-grid-blob-trigger)
