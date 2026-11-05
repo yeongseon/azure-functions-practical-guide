@@ -23,6 +23,7 @@ content_sources:
       source: self-generated
       justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node
         - https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-node
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
@@ -55,6 +56,8 @@ Initialize, run, and verify a Node.js v4 app on your machine before cloud deploy
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
+    accTitle: Dedicated tutorial Node.js local HTTP development map
+    accDescr: Illustrative startup and HTTP handling for this Node.js v4 programming-model sample: the developer starts the Core Tools host on port 7071 with func start and uses curl to call helloHttp at GET /api/hello. The Local Development boundary contains the host and function, not an Azure hosting plan. Arrows summarize local commands and handling; they do not validate Dedicated Always On, networking or scaling.
     DEV[Developer Machine] -->|func start| HOST[Local Functions Host\nPort 7071]
 
     subgraph LOCAL["Local Development"]
