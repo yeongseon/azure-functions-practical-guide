@@ -12,7 +12,7 @@ content_sources:
     - id: cli-cheatsheet
       type: flowchart
       source: self-generated
-      justification: Flow view of cli cheatsheet, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Navigation map of this page's command groups, not Azure architecture or a guaranteed command execution order.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local
         - https://learn.microsoft.com/en-us/cli/azure/functionapp
@@ -25,6 +25,8 @@ Quick reference for the most commonly used commands when developing, deploying, 
 <!-- diagram-id: cli-cheatsheet -->
 ```mermaid
 flowchart TD
+    accTitle: CLI cheatsheet command-group map
+    accDescr: This page's Local dev, Deploy, Configure, Monitor and Troubleshoot topics, with func and az functionapp labels. Arrows organize reference topics, not Azure architecture or a guaranteed command execution order.
     A[Local dev] --> B[Deploy]
     B --> C[Configure]
     C --> D[Monitor]
