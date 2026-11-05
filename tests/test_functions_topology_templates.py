@@ -107,6 +107,8 @@ def topology_problems(code: str) -> list[str]:
         problems.append("duplicate node")
     if len(container_ids) != len(set(container_ids)) or set(container_ids) & set(nodes):
         problems.append("duplicate container")
+    if set(nodes + container_ids) - {member for member, _ in assignments}:
+        problems.append("missing class assignment")
     for member, class_name in assignments:
         if member not in nodes + container_ids:
             problems.append("undeclared class member")
@@ -387,6 +389,31 @@ def test_accepts_sequence_description_with_trailing_spaces() -> None:
     problems = template_problems(mutated)
     # Then: description wording and trailing spaces do not alter the exchange.
     assert problems == []
+
+
+@pytest.mark.parametrize("member", [
+    "all", *BASE, "dns_fn", "vnet_integration", "pe_storage",
+    "vnet_fn", "subnet_int_fn", "subnet_pe_fn",
+])
+def test_rejects_missing_class_assignment(member: str) -> None:
+    # Given: remove all assignments or only one declared component's membership.
+    text = PAGE.read_text(encoding="utf-8")
+    code = dict(FENCE.findall(text))["functions-v1-network-storage-normal"]
+    lines: list[str] = []
+    for line in code.splitlines():
+        if match := re.fullmatch(r"\s*class (\w+(?:,\w+)*) (\w+);", line):
+            members = [name for name in match[1].split(",") if member != "all" and name != member]
+            if members:
+                lines.append(f"    class {','.join(members)} {match[2]};")
+        else:
+            lines.append(line)
+    mutated = "\n".join(lines)
+    assert mutated != code, "mutation must still exercise its target"
+    # When: the family guard processes retained class definitions without coverage.
+    problems = template_problems(text.replace(code, mutated, 1))
+    # Then: missing node or container styling is rejected, not a syntax defect.
+    assert "missing class assignment" in problems
+    assert "unsupported topology line" not in problems
 
 
 @pytest.mark.parametrize("edge_prefix", [
