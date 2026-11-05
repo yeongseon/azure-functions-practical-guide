@@ -49,9 +49,11 @@ You will add queue, blob, and timer triggers to a .NET isolated worker Function 
 <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
-    A[Queue message] --> B["[QueueTrigger] handler"]
-    C[Blob upload] --> D["[BlobTrigger] handler"]
-    E[Schedule] --> F["[TimerTrigger] handler"]
+    accTitle: Consumption .NET isolated trigger paths
+    accDescr: Conceptual paths for this Consumption tutorial: queue message to QueueTrigger handler, blob upload to BlobTrigger handler, and schedule to TimerTrigger handler; each leads to outputs and logs. These are separate trigger relationships, not HTTP ingress, a shared-instance boundary or delivery guarantees.
+    A[Queue message] --> B["[QueueTrigger]<br/>handler"]
+    C[Blob upload] --> D["[BlobTrigger]<br/>handler"]
+    E[Schedule] --> F["[TimerTrigger]<br/>handler"]
     B --> G[Outputs and logs]
     D --> G
     F --> G
