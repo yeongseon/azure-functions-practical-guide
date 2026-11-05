@@ -23,7 +23,7 @@ This recipe demonstrates Java Service Bus queue and topic triggers with output b
 ```mermaid
 flowchart TD
     accTitle: Java Service Bus input and possible processing outcomes
-    accDescr: Producers publish to a queue or topic; functions consume queue or topic-subscription messages. The QueueTrigger label identifies the queue example; the topic example uses ServiceBusTopicTrigger. Function App to dead-letter and output paths summarize possible outcomes, not unconditional writes or a network-call sequence.
+    accDescr: Producers publish to a queue or topic; functions consume queue or topic-subscription messages. The ServiceBusQueueTrigger label identifies the queue example; the topic example uses ServiceBusTopicTrigger. Function App to dead-letter and output paths summarize possible outcomes, not unconditional writes or a network-call sequence.
     PROD[Producers] --> SBQ[(Service Bus Queue/Topic)]
     SBQ --> TRIG[ServiceBusQueueTrigger worker]
     TRIG --> FA[Function App]
