@@ -10,10 +10,15 @@ content_sources:
     - id: troubleshooting
       type: flowchart
       source: self-generated
-      justification: Flow view of troubleshooting, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative language-agnostic triage categories and shared investigation outcome; not an exhaustive diagnostic classifier or a promise that every tool or setting applies to every hosting plan.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-develop-local
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
 ---
 # Troubleshooting
 
@@ -22,15 +27,30 @@ This reference covers the most common issues encountered when developing and dep
 <!-- diagram-id: troubleshooting -->
 ```mermaid
 flowchart TD
-    A[Incident detected] --> B{Symptom type}
-    B --> C[Startup or deploy issue]
-    B --> D[Runtime or dependency issue]
-    B --> E[Networking or identity issue]
-    C --> F[Check logs and app settings]
+    accTitle: Functions incident triage categories
+    accDescr: Illustrative triage, not a deterministic diagnosis. The symptom-type diamond branches to startup or deployment, runtime or dependency, and networking or identity issues. All three lead to checking logs and app settings, then applying mitigation and verifying. Categories can overlap; use plan, OS, trigger and instrumentation qualifications in the adjacent key. No Yes or No branch exists in this categorical flow.
+    A["Incident detected"] --> B{"Symptom type"}
+    B --> C["Startup or<br/>deploy issue"]
+    B --> D["Runtime or<br/>dependency issue"]
+    B --> E["Networking or<br/>identity issue"]
+    C --> F["Check logs and<br/>app settings"]
     D --> F
     E --> F
-    F --> G[Apply mitigation and verify]
+    F --> G["Apply mitigation<br/>and verify"]
+    %% Layout-only links tier categories; they add no diagnostic branches or steps.
+    C ~~~ D
+    D ~~~ E
 ```
+
+**Triage key:** The diagram is language-agnostic; the existing implementation examples below focus on Python. Choose an investigation category, not a proven cause; symptoms can cross categories, and all routes retain the same investigation and verification outcome.
+
+| Branch | What to investigate before choosing a mitigation |
+|---|---|
+| Startup or deploy | Check startup/deployment evidence and the [deployment method for the app's plan and OS](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies). Flex uses package deployment and requests remote build through the deployment operation, not legacy build app settings; do not apply one plan's deployment settings to another. |
+| Runtime or dependency | Use [collected execution, exception and dependency telemetry](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring); integration, instrumentation, log filters and sampling affect coverage. A dependency symptom is not automatically an application-code failure, and missing telemetry does not establish health. |
+| Networking or identity | Separate [inbound access from outbound connectivity](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options), then check applicable DNS/routing/access configuration and [identity plus target-service permissions](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity#configure-the-target-resource). Consumption does not support outbound VNet integration; Flex, Premium and supported Dedicated configurations have plan-specific networking paths. A 403 alone does not establish missing RBAC. |
+
+**Shared investigation:** “Check logs and app settings” includes [category-specific diagnostic guidance](https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics), not just changing settings or restarting. Built-in log streaming is single-instance and unavailable on Linux Consumption; [Application Insights Live Metrics](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring#streaming-logs) is a separate configured option with supported-feature limits. Apply an evidence-supported mitigation, then verify the affected trigger/dependency outcome; the final node does not guarantee recovery.
 
 ## Portal Walkthrough
 
@@ -569,3 +589,8 @@ See also: [Networking operations](../platform/networking.md) for the full Privat
 ## Sources
 - [Python v2 Programming Model (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python)
 - [Develop Azure Functions Locally (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-develop-local)
+- [Functions diagnostics (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics)
+- [Plan-specific deployment technologies (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies)
+- [Functions monitoring and streaming logs (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)
+- [Functions networking options (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)
+- [Managed identities and target permissions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)
