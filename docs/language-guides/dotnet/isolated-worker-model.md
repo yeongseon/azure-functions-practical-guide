@@ -28,6 +28,8 @@ The isolated worker model runs your function code in a separate process from the
 <!-- diagram-id: why-isolated-worker-is-the-default -->
 ```mermaid
 flowchart TD
+    accTitle: .NET isolated worker logical invocation path
+    accDescr: The Functions host runtime communicates over a gRPC worker channel with a separate .NET isolated worker process, which executes function methods. Arrows show a logical invocation path, not a trigger-specific scenario or a complete protocol trace.
     A[Functions Host Runtime] --> B[gRPC worker channel]
     B --> C[.NET isolated worker process]
     C --> D[Function methods]
