@@ -22,10 +22,12 @@ KQL queries for analyzing function execution patterns, failures, and exception t
 <!-- diagram-id: execution-queries -->
 ```mermaid
 graph TD
-    A[Execution queries] --> B[Summary by function]
-    A --> C[Failed invocation details]
-    A --> D[Exception trends]
-    B --> E[Pinpoint failing function]
+    accTitle: Execution query navigation map
+    accDescr: Three query views on this page, summary by function, failed invocation details and exception trends, converge on the aim of pinpointing a failing function. Arrows group query views by purpose, not execution order or proof of root cause.
+    A[Execution queries] --> B[Summary<br/>by function]
+    A --> C[Failed invocation<br/>details]
+    A --> D[Exception<br/>trends]
+    B --> E[Pinpoint failing<br/>function]
     C --> E
     D --> E
 ```
