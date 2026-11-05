@@ -17,6 +17,7 @@ content_sources:
       source: self-generated
       justification: Decision flow, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus
         - https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
@@ -27,6 +28,7 @@ content_sources:
       source: self-generated
       justification: Flow view of failure progression timeline, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus
         - https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
@@ -37,6 +39,8 @@ content_sources:
       source: self-generated
       justification: Flow view of broker to function bottleneck map, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus
         - https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
@@ -72,24 +76,38 @@ This playbook separates broker-side pressure from function-side bottlenecks, the
 <!-- diagram-id: decision-flow -->
 ```mermaid
 flowchart TD
-    A[Alert: trigger lag increasing] --> B{Broker type?}
-    B -->|Event Hub| C[Check partition lag distribution]
-    B -->|Service Bus| D["Check active/dead-letter counts"]
-    C --> E{Lag uniform across partitions?}
-    E -->|No| F[Hot partition or partition-key skew]
-    E -->|Yes| G[Global throughput bottleneck]
-    D --> H{Dead-letter growth?}
-    H -->|Yes| I[Poison message handling issue]
-    H -->|No| J[Slow processing or lock churn]
-    G --> K{Dependency latency elevated?}
-    K -->|Yes| L[External bottleneck]
-    K -->|No| M["Batch/concurrency misconfiguration"]
-    J --> N{Max batch or prefetch tuned?}
-    N -->|No| O[Adjust extension settings]
-    N -->|Yes| P[Investigate code path and serialization]
-    I --> Q[Quarantine poison payloads]
-    L --> R[Fail fast and circuit-break slow dependency]
+    accTitle: Event Hub and Service Bus lag decision flow
+    accDescr: Illustrative triage, not confirmed causes. Event Hub checks partition distribution, then dependency latency for uniform lag. Service Bus checks dead-letter growth, then batch or prefetch tuning. Every branch retains its candidate and next action; validate against the evidence and disproof sections.
+    A(["Alert: trigger lag<br/>increasing"]) --> B{"Broker type?"}
+    B -->|Event Hub| C["Check partition lag<br/>distribution"]
+    B -->|Service Bus| D["Check active and<br/>dead-letter counts"]
+    C --> E{"Lag uniform<br/>across partitions?"}
+    E -->|No| F("Candidate: hot partition<br/>or partition-key skew")
+    E -->|Yes| G("Candidate: global<br/>throughput bottleneck")
+    D --> H{"Dead-letter<br/>growth?"}
+    H -->|Yes| I("Candidate: poison<br/>message handling issue")
+    H -->|No| J("Candidate: slow processing<br/>or lock churn")
+    G --> K{"Dependency<br/>latency elevated?"}
+    K -->|Yes| L("Candidate:<br/>external bottleneck")
+    K -->|No| M("Candidate: batch/concurrency<br/>misconfiguration")
+    J --> N{"Max batch or<br/>prefetch tuned?"}
+    N -->|No| O(["Adjust extension<br/>settings"])
+    N -->|Yes| P(["Investigate code path<br/>and serialization"])
+    I --> Q(["Quarantine<br/>poison payloads"])
+    L --> R(["Fail fast and circuit-break<br/>slow dependency"])
+    %% Layout-only links serialize branches; they add no diagnostic steps or arrows.
+    F ~~~ G
+    R ~~~ M
+    M ~~~ D
+    Q ~~~ J
+    O ~~~ P
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R neutral;
 ```
+
+**Reading key:** Diamonds ask questions; rounded boxes suggest candidates, not verdicts; stadiums mark the alert or actions. Follow each broker branch independently and test candidates against Section 6, including the dead-letter reason before quarantining payloads.
+
+**Scope for these three figures:** On Consumption, Flex Consumption, Premium and Dedicated (including ASE), record the deployed trigger extension version before tuning. [Event Hubs 5.x/6.x](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs#hostjson-settings) uses `maxEventBatchSize`; 3.x/4.x uses `eventProcessorOptions.maxBatchSize`. For [Service Bus 5.x](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus#hostjson-settings), `maxConcurrentCalls` applies only to single-message, non-session processing; `maxAutoLockRenewalDuration` applies to single-message processing, not batches; session handling uses separate concurrency settings. These are configuration checks, not a recommendation to copy one setting across modes or plans.
 
 ### Severity guidance
 | Condition | Severity | Action priority |
@@ -326,6 +344,8 @@ If no timeout/cancellation signatures appear, checkpoint blockage likely origina
 <!-- diagram-id: failure-progression-timeline -->
 ```mermaid
 flowchart TD
+    accTitle: Illustrative trigger lag failure progression
+    accDescr: A possible incident progression from producer pressure and dependency slowdown to delayed progress, lag and retry-related risk. Checkpoints refer to Event Hubs; lock renewal and broker dead-lettering refer to Service Bus, not Event Hubs. This is not a retained incident timeline.
     A[Producer rate increases] --> B[Batch pulled by trigger]
     B --> C[Processing slows from dependency latency]
     C --> D["Checkpoint/settlement delayed"]
@@ -334,20 +354,31 @@ flowchart TD
     F --> G[Dead-letter and SLA breach risk]
 ```
 
+**Takeaway:** This is a possible escalation, not an inevitable chain. For the plans and extension versions above, read checkpoint delay as Event Hubs progress and settlement, locks and broker dead-lettering as Service Bus concerns. With a configured [Event Hubs execution retry policy](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages#retry-policies), checkpoint writing waits until that policy finishes; retries do not prove a poison payload.
+
 ### Broker-to-Function Bottleneck Map
 <!-- diagram-id: broker-to-function-bottleneck-map -->
 ```mermaid
 flowchart TD
-    A["Event Hub / Service Bus broker"] --> B[Trigger extension fetch]
-    B --> C[Function execution]
-    C --> D[Dependency calls]
-    D --> E["Message settlement/checkpoint"]
-    E --> F[Offset advances]
-    C --> G{"Duration exceeds lock/timeout budget?"}
-    G -->|Yes| H[Redelivery or timeout]
-    H --> I[Lag increases]
-    G -->|No| J[Steady drain]
+    accTitle: Broker-to-function bottleneck checks
+    accDescr: Logical processing stages, not network initiator arrows. Broker fetch, execution and dependency calls lead to settlement or checkpoint progress. The duration check retains Yes to possible redelivery or timeout and increased lag, and No to steady drain under the illustrated assumptions.
+    A["Event Hub / Service Bus<br/>broker"] --> B["Trigger extension<br/>fetch"]
+    B --> C["Function execution"]
+    C --> D["Dependency calls"]
+    D --> E["Message settlement<br/>or checkpoint"]
+    E --> F["Offset advances /<br/>message completes"]
+    C --> G{"Duration exceeds<br/>lock/timeout budget?"}
+    G -->|Yes| H("Possible redelivery<br/>or timeout")
+    H --> I(["Lag increases"])
+    G -->|No| J(["Steady drain"])
+    %% Layout-only links serialize branches; they add no diagnostic steps or arrows.
+    F ~~~ G
+    I ~~~ J
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J neutral;
 ```
+
+**Takeaway:** Arrows show logical work and diagnostic order, not broker-initiated network connections. Offset advancement is Event Hubs-specific; Service Bus completes messages instead. Apply the version/mode scope above: Service Bus lock budgets differ from the [plan-dependent `functionTimeout`](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale#function-app-timeout-duration). The No branch assumes successful processing and sufficient capacity; being within a time budget alone does not establish steady drain.
 
 ### Correlation Queries for Fast Triage
 #### Lag slope versus processing duration
@@ -530,6 +561,8 @@ az functionapp deployment source config-zip --name <app-name> --resource-group <
 - [Timeout / Execution Time Limit Exceeded](./timeout-execution-limit.md)
 
 ## Sources
+- [Azure Functions error handling and retries](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages)
+- [Function app timeout duration by hosting plan](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale#function-app-timeout-duration)
 - [Azure Functions Event Hubs trigger and bindings](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs)
 - [Azure Functions Service Bus trigger and bindings](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus)
 - [Monitor Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data)

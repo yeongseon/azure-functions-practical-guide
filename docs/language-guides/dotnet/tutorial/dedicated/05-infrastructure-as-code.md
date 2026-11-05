@@ -52,6 +52,8 @@ You will define a complete Dedicated environment in Bicep (storage account, B1 A
 <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
+    accTitle: Dedicated .NET isolated infrastructure workflow
+    accDescr: Illustrative task order for this Linux Dedicated tutorial: Bicep template, resource-group deployment, Function App with the configured B1 App Service Plan and storage, then build and publish from the output directory. Arrows summarize tutorial stages, not resource creation order or evidence of a successful Azure deployment.
     A[Bicep template] --> B[az deployment group create]
     B --> C[Function App + App Service Plan + Storage]
     C --> D["Build + publish from output dir"]

@@ -14,6 +14,7 @@ content_sources:
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
         - https://learn.microsoft.com/en-us/cli/azure/functionapp
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
 ---
 # host.json Reference
 
@@ -24,6 +25,8 @@ Quick reference for Java Azure Functions operational workflows.
 <!-- diagram-id: topic-command-groups -->
 ```mermaid
 flowchart TD
+    accTitle: Java guide host.json setting categories
+    accDescr: The example groups extensions.http, logging and functionTimeout under host.json; arrows indicate configuration categories, not execution order. Valid timeout values depend on the hosting plan.
     A[host.json] --> B[extensions.http]
     A --> C[logging]
     A --> D[functionTimeout]
@@ -69,3 +72,4 @@ Example baseline:
 
 - [Azure Functions Java developer guide (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java)
 - [Azure Functions CLI reference (Microsoft Learn)](https://learn.microsoft.com/en-us/cli/azure/functionapp)
+- [host.json reference (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json)

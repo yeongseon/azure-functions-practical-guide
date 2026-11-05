@@ -26,6 +26,8 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-java
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-develop-local
 ---
 # 03 - Configuration (Premium)
 
@@ -50,6 +52,8 @@ You will standardize Java runtime app settings for Premium, keep environment-spe
 <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
+    accTitle: Premium Java configuration workflow
+    accDescr: Illustrative workflow for this Elastic Premium tutorial, from local.settings.json through Azure app settings, the Functions host, Java worker startup and function method behavior. Arrows summarize configuration tasks and runtime roles, not automatic upload of the local file, a configuration precedence rule or validation of the plan-specific settings shown below.
     A[local.settings.json] --> B[App Settings in Azure]
     B --> C[Functions host]
     C --> D[Java worker startup]
@@ -256,3 +260,5 @@ WEBSITE_CONTENTAZUREFILECONNECTIONSTRING DefaultEndpointsProtocol=https;AccountN
 - [Azure Functions Java developer guide (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java)
 - [Azure Functions hosting options (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
 - [Create a Java function with Azure Functions Core Tools (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-java)
+- [App settings reference (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings)
+- [Local development and settings (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-develop-local)
