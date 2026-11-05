@@ -19,6 +19,8 @@ Manage small pieces of explicit, addressable state with Durable Entities in the 
 <!-- diagram-id: durable-entities -->
 ```mermaid
 flowchart TD
+    accTitle: Keyed Durable Entity operations and persisted state
+    accDescr: Conceptual flow from a client or orchestrator to a Counter entity identified by key, then persisted state and client state-read APIs. The final arrow groups state with its query APIs; it does not mean persistence automatically initiates a read or that orchestrators use those client APIs.
     A[Client / Orchestrator] --> B[Entity Counter@key]
     B --> C[State persisted in Durable Store]
     C --> D[readEntityState / GetEntityAsync]
