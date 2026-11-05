@@ -22,6 +22,8 @@ Use Cosmos DB bindings and SDK patterns from isolated worker functions.
 <!-- diagram-id: cosmos-db -->
 ```mermaid
 flowchart TD
+    accTitle: Conceptual service-access flow on the Cosmos DB recipe
+    accDescr: Trigger to function to binding or SDK to Azure service. This generic logical flow does not specify change-feed behavior, extension versions, or consistency guarantees; binding and SDK access are alternatives.
     A[Trigger] --> B[Function]
     B --> C[Binding or SDK]
     C --> D[Azure service]

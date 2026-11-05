@@ -24,6 +24,8 @@ This recipe uses App Service Authentication (Easy Auth) with Java HTTP triggers,
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Java HTTP authentication and authorization stages
+    accDescr: Successful HTTP path with Microsoft Entra sign-in and configured Easy Auth before the Java HTTP trigger, followed by identity-header reading and application authorization logic. ANONYMOUS removes the trigger's function-key requirement, not configured platform authentication; this view omits rejection paths and does not assert hosting-plan support.
     CLIENT[Client with Microsoft Entra sign-in] --> EASYAUTH[Easy Auth on Function App]
     EASYAUTH --> FUNC[HTTP Trigger authLevel=ANONYMOUS]
     FUNC --> CLAIMS[Read Easy Auth identity headers]

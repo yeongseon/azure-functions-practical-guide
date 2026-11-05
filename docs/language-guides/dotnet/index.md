@@ -29,6 +29,8 @@ The isolated model gives clearer dependency boundaries, independent .NET version
 <!-- diagram-id: main-content -->
 ```mermaid
 flowchart TD
+    accTitle: .NET guide seven-step tutorial path
+    accDescr: The guide's illustrated path is 01 Local Run, 02 First Deploy, 03 Configuration, 04 Logging and Monitoring, 05 Infrastructure as Code, 06 CI/CD and 07 Extending Triggers, in that order.
     A[01 Local Run] --> B[02 First Deploy]
     B --> C[03 Configuration]
     C --> D[04 Logging & Monitoring]

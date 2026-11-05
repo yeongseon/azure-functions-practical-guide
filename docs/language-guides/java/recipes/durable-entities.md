@@ -32,9 +32,11 @@ Entities are ideal for aggregation (counters, running totals), fan-in of high-vo
 <!-- diagram-id: entity-lifecycle -->
 ```mermaid
 flowchart TD
-    CLIENT["Client Function\nsignalEntity() / getEntityMetadata()"] -->|"signal (one-way)"| ENT["Entity Function\nCounter@key\noperations run serially"]
-    ORC["Orchestrator Function\ncallEntity() / signalEntity()"] -->|"call (two-way)"| ENT
-    ENT -->|"state persisted"| STORE["Durable Store\npersisted entity state"]
+    accTitle: Java Durable Entity access and persisted state
+    accDescr: Logical view of a Counter entity. A client signals an operation without waiting for its result; an orchestrator can call and wait for a response or signal without waiting. Operations for one entity run serially and the runtime persists state. The store-to-client arrow represents reading committed state with getEntityMetadata and readStateAs, not a store-initiated connection.
+    CLIENT["Client Function<br/>signalEntity() /<br/>getEntityMetadata()"] -->|"signal (one-way)"| ENT["Entity Function<br/>Counter@key<br/>operations run serially"]
+    ORC["Orchestrator Function<br/>callEntity() /<br/>signalEntity()"] -->|"call (two-way)"| ENT
+    ENT -->|"state persisted"| STORE["Durable Store<br/>persisted entity state"]
     STORE -->|"readStateAs()"| CLIENT
 ```
 

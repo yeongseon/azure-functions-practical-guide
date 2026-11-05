@@ -26,6 +26,8 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-develop-local
 ---
 # 03 - Configuration (Flex Consumption)
 
@@ -50,6 +52,8 @@ You will standardize Java runtime app settings for Flex Consumption, understand 
 <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
+    accTitle: Flex Consumption Java configuration workflow
+    accDescr: Illustrative workflow for this Flex Consumption tutorial, from local.settings.json through Azure app settings, the Functions host, Java worker startup and function method behavior. Arrows summarize configuration tasks and runtime roles, not automatic upload of the local file, runtime stack selection through app settings, a configuration precedence rule or validation of the JVM options shown below.
     A[local.settings.json] --> B[App Settings in Azure]
     B --> C[Functions host]
     C --> D[Java worker startup]
@@ -214,3 +218,5 @@ EventHubConnection                      Endpoint=sb://placeholder.servicebus.win
 - [Azure Functions Java developer guide (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java)
 - [Azure Functions hosting options (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
 - [Azure Functions Flex Consumption plan (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan)
+- [App settings reference (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings)
+- [Local development and settings (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-develop-local)

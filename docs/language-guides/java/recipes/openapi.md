@@ -10,6 +10,7 @@ content_sources:
       justification: Flow view of architecture, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-openapi-definition
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-http-webhook-output
 ---
 # OpenAPI and Swagger
 
@@ -20,9 +21,11 @@ Unlike the .NET isolated worker, the Java worker has no first-class, Microsoft-s
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
-    FUNC[HTTP trigger functions] --> APIM[API Management import]
-    APIM --> GEN[Generated OpenAPI definition]
-    SPEC[Hand-authored openapi.json] --> SERVE[HTTP function serves /openapi.json]
+    accTitle: OpenAPI authoring and presentation paths for Java HTTP functions
+    accDescr: One path imports HTTP functions into API Management to generate an OpenAPI definition. The separate illustrative path serves a hand-authored openapi.json from a Java HTTP function for a Swagger UI page. Arrows organize authoring and presentation relationships, not runtime network calls.
+    FUNC["HTTP trigger<br/>functions"] --> APIM["API Management<br/>import"]
+    APIM --> GEN["Generated OpenAPI<br/>definition"]
+    SPEC["Hand-authored<br/>openapi.json"] --> SERVE["HTTP function serves<br/>/openapi.json"]
     SERVE --> UI[Swagger UI page]
 ```
 
@@ -78,3 +81,4 @@ Serve a minimal HTML page from another HTTP function that loads Swagger UI from 
 ## Sources
 
 - [Expose serverless APIs from HTTP endpoints using Azure API Management (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-openapi-definition)
+- [Azure Functions HTTP output bindings (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-http-webhook-output)

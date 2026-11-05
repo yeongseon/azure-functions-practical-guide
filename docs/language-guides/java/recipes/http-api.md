@@ -24,10 +24,12 @@ This recipe shows production-ready Java HTTP trigger patterns: route parameters,
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Java HTTP API processing and logging
+    accDescr: A client invokes the Java HTTP trigger; application logic validates route, query and body values and builds a JSON response with HTTP status. The dotted Application Insights branch represents configured logging, not an extra response-processing stage or automatic input validation.
     CLIENT[Client] --> API[HTTP Trigger Function]
-    API --> VALIDATE[Validate route, query, body]
-    VALIDATE --> RESPONSE[JSON Response + HTTP status]
-    API -.-> APPINSIGHTS[Application Insights Logs]
+    API --> VALIDATE[Validate route,<br/>query, body]
+    VALIDATE --> RESPONSE[JSON Response<br/>+ HTTP status]
+    API -.-> APPINSIGHTS[Application Insights<br/>Logs]
 ```
 
 ## Prerequisites
