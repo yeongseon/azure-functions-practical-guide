@@ -186,6 +186,7 @@ flowchart TD
     %% Layout-only tiers; add no requests or visible arrows.
     identity ~~~ telemetry
     telemetry ~~~ NO_VNET
+    NO_VNET ~~~ storage_db
     classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
     class client,app_runtime,identity,telemetry,NO_VNET,storage_db,FS baseNeutral;
 ```
@@ -356,8 +357,8 @@ flowchart TD
     client -->|"[Illustrative]<br/>HTTPS if H"| app_runtime
     app_runtime -.->|"[Illustrative]<br/>Identity"| identity
     app_runtime -.->|"[Illustrative]<br/>Telemetry"| telemetry
-    app_runtime -.->|"[Illustrative]<br/>Package option"| RFP
-    app_runtime -.->|"[Illustrative]<br/>Configuration"| ALWAYS_ON
+    app_runtime -.->|"[Illustrative]<br/>Option R"| RFP
+    app_runtime -.->|"[Illustrative]<br/>Setting A"| ALWAYS_ON
     dns_fn -.->|"[Illustrative]<br/>VNet link"| vnet_fn
     app_runtime -->|"[Illustrative]<br/>Outbound"| vnet_integration
     vnet_integration -->|"[Illustrative]<br/>Each PE"| pe_storage
