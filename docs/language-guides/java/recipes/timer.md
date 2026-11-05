@@ -24,10 +24,14 @@ This recipe uses Java timer triggers with NCRONTAB schedules, past-due handling,
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Java timer schedule, work and telemetry relationships
+    accDescr: The configured NCRONTAB schedule drives the Java TimerTrigger and scheduled work, followed by execution logs and metrics when monitoring is configured. This is a logical recipe overview, not the timer's internal scheduling or storage-lock protocol.
     SCHEDULE[NCRONTAB schedule] --> TIMER[@TimerTrigger]
     TIMER --> WORK[Scheduled work]
     WORK --> LOGS[Execution logs and metrics]
 ```
+
+**Reading key:** The six-field NCRONTAB setting below includes seconds and uses UTC unless a supported time-zone override is configured. `WEBSITE_TIME_ZONE` is supported on Windows hosting and Linux Premium/Dedicated, not Linux Consumption or Flex Consumption. Unlike examples for some other languages, Java's `@TimerTrigger` annotation does not support `runOnStartup` or `useMonitor=true`; do not infer a startup invocation setting from this schedule flow.
 
 ## Prerequisites
 

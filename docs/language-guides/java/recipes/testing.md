@@ -25,6 +25,8 @@ A Java Azure Functions handler is an ordinary method, so you test it with JUnit 
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Direct-method unit-test stages for a Java function
+    accDescr: This illustrative JUnit test flow mocks request and context, calls the Java handler directly and identifies status and body as assertion targets. It does not invoke the Functions host or JVM worker and does not validate HTTP routing or binding integration.
     TEST[JUnit test] --> MOCK[Mock request + context]
     MOCK --> CALL[Call handler directly]
     CALL --> ASSERT[Assert status + body]
