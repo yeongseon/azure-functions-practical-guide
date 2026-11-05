@@ -55,10 +55,10 @@ flowchart TD
     accTitle: Migration path reading map
     accDescr: The current hosting model leads to this guide's Migration Decision Matrix and four alternative paths, each converging on verification and rollback or troubleshooting. These are not Yes or No branches; use the adjacent path key for hosting, language and runtime qualifications.
     S["Current hosting<br/>model"] --> M{"Migration<br/>Decision Matrix"}
-    M --> PA1["Path 1: Consumption Y1<br/>to Flex Consumption FC1<br/>New Linux app"]
-    M --> PA2["Path 2: .NET In-Process<br/>to Isolated Worker"]
-    M --> PA3["Path 3: Python v1 to v2<br/>Programming model"]
-    M --> PA4["Path 4: Premium and<br/>Dedicated app cutover"]
+    M --> PA1["Path 1<br/>Y1 to FC1<br/>New Linux app"]
+    M --> PA2["Path 2: .NET<br/>In-process<br/>to isolated"]
+    M --> PA3["Path 3: Python<br/>Models v1 to v2"]
+    M --> PA4["Path 4: Premium<br/>and Dedicated<br/>App cutover"]
     %% Layout-only links tier alternatives; they add no migration steps or arrows.
     PA1 ~~~ PA2
     PA2 ~~~ PA3
@@ -67,7 +67,7 @@ flowchart TD
     PA2 --> V
     PA3 --> V
     PA4 --> V
-    V --> RB["Rollback / Troubleshooting"]
+    V --> RB["Rollback /<br/>Troubleshooting"]
 ```
 
 **Path key:** The diamond points to the matrix below, not a Yes/No test.
