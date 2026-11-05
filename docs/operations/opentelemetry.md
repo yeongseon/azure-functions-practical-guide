@@ -12,6 +12,7 @@ content_sources:
       justification: Flow view of OpenTelemetry export paths, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/opentelemetry-howto
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json#telemetrymode
 content_validation:
   status: verified
   last_reviewed: 2026-07-17
@@ -32,7 +33,7 @@ content_validation:
 ---
 # OpenTelemetry Export
 
-Azure Functions can export logs and traces in OpenTelemetry (OTLP) format instead of relying solely on the Application Insights SDK. This lets you send the same host and worker telemetry to Application Insights, to any OTLP-compliant backend (Datadog, New Relic, Grafana), or to both. This page covers enabling and operating OpenTelemetry export in production.
+Azure Functions can export logs and traces using OpenTelemetry instead of relying solely on the default Application Insights SDK path. The host can send telemetry to Application Insights, an OTLP-compliant backend, or both; worker export requires language-specific instrumentation and has destination limitations described below. The host.json reference marks `telemetryMode` as **preview**; assess that status before production use.
 
 !!! tip "Related Guide"
     For the day-2 monitoring workflow with Application Insights, see [Monitoring](monitoring.md).
@@ -56,12 +57,36 @@ Stay with the default Application Insights SDK path if you only need Azure Monit
 <!-- diagram-id: opentelemetry-export-flow -->
 ```mermaid
 flowchart TD
-    HOST[Functions host telemetry] --> MODE{telemetryMode = OpenTelemetry?}
-    WORKER[Worker process telemetry] --> MODE
-    MODE -->|App Insights conn string| AI[Application Insights]
-    MODE -->|OTLP endpoint set| OTLP[OTLP-compliant backend]
-    MODE -->|Both set| BOTH[Both endpoints]
+    accTitle: OpenTelemetry export destination choices
+    accDescr: Logical configuration view of host telemetry and separately instrumented worker telemetry. With telemetryMode set to OpenTelemetry, the host sends to Application Insights with its connection string, an OTLP backend with its endpoint, or both when both are set. Worker destinations depend on language-specific setup; see the reading key. This is not a shared exporter pipeline or a complete Yes/No decision tree.
+    HOST["Functions host<br/>telemetry"] --> MODE{"telemetryMode =<br/>OpenTelemetry?"}
+    WORKER["Worker process<br/>telemetry"] --> MODE
+    MODE -->|AI only| AI["Application<br/>Insights"]
+    MODE -->|OTLP only| OTLP["OTLP-compliant<br/>backend"]
+    MODE -->|Both set| BOTH["Both endpoints"]
+    %% Layout-only links tier destinations; they add no export paths or decisions.
+    AI ~~~ OTLP
+    OTLP ~~~ BOTH
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class HOST,WORKER,MODE,AI,OTLP,BOTH baseNeutral;
 ```
+
+**Reading key:** With `telemetryMode` enabled, **AI only** means
+`APPLICATIONINSIGHTS_CONNECTION_STRING` is set without an OTLP endpoint;
+**OTLP only** means `OTEL_EXPORTER_OTLP_ENDPOINT` is set and the Application
+Insights connection string is removed; **Both set** means both settings are
+present. Configure provider-required authentication as well. The arrows summarize
+configuration choices, not telemetry passing through a common exporter.
+
+Worker setup is separate: follow the [language-specific instructions](https://learn.microsoft.com/en-us/azure/azure-functions/opentelemetry-howto#enable-opentelemetry-in-your-app)
+for .NET isolated, Java, JavaScript/TypeScript, Python, PowerShell or Go.
+C# in-process is unsupported. PowerShell worker OpenTelemetry output to
+Application Insights is unsupported (worker logs are still forwarded by the host,
+but distributed tracing is not supported there); Go worker middleware exports
+through OTLP, requiring a forwarding pipeline to reach Azure Monitor.
+The host setting alone does not establish worker instrumentation or support for
+every runtime/hosting-plan combination; check the selected language and deployment
+requirements rather than inferring them from this destination view.
 
 ## Procedure
 
@@ -127,4 +152,5 @@ Enabling OpenTelemetry in both the host and the app code gives better trace/log 
 ## Sources
 
 - [Use OpenTelemetry with Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/opentelemetry-howto)
+- [host.json telemetryMode reference (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json#telemetrymode)
 - [Monitor Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)
