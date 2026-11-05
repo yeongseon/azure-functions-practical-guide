@@ -17,7 +17,7 @@ content_sources:
     - id: scenario-overview
       type: flowchart
       source: self-generated
-      justification: Flow view of scenario overview, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Comparison of four guide reference patterns; arrows describe requirement changes, not in-place migration operations or exclusive plan features.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
@@ -25,11 +25,15 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-create-vnet
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference?tabs=blob#configure-an-identity-based-connection
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
     - id: scenario-a-public-serverless-consumption-y1
       type: flowchart
       source: self-generated
-      justification: Flow view of scenario a public serverless consumption y1, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Public Y1 reference variant with connection-string Storage and telemetry; identity context does not establish Application Insights authentication.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
@@ -39,8 +43,11 @@ content_sources:
     - id: scenario-b-private-serverless-flex-consumption-fc1
       type: flowchart
       source: self-generated
-      justification: Flow view of scenario b private serverless flex consumption fc1, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Intended FC1 outbound Storage relationships; four endpoints expand in the immediate service key, with identity authorization separate from transport, not an observed deployment.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
@@ -50,8 +57,13 @@ content_sources:
     - id: scenario-c-private-enterprise-premium-ep
       type: flowchart
       source: self-generated
-      justification: Flow view of scenario c private enterprise premium ep, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Intended EP1–EP3 outbound Storage and Files-content relationships; individual endpoints and authentication/routing scope remain in the immediate key, not deployment evidence.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
+        - https://learn.microsoft.com/en-us/azure/azure-functions/configure-networking-how-to
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-access-restrictions#app-access
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
@@ -61,8 +73,12 @@ content_sources:
     - id: scenario-d-fixed-capacity-dedicated-asp
       type: flowchart
       source: self-generated
-      justification: Flow view of scenario d fixed capacity dedicated asp, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Optional private Storage egress for multitenant Dedicated B1–P3v3 reference hosting; four endpoints retain their mappings without implying a universal Files dependency or ASE placement.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
+        - https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
@@ -100,6 +116,8 @@ This page compares the reference deployment patterns used in this guide across t
 <!-- diagram-id: scenario-overview -->
 ```mermaid
 flowchart TD
+    accTitle: Four Azure Functions deployment scenarios
+    accDescr: Comparison of this guide's public Consumption Y1, private-storage Flex Consumption FC1, Premium EP and fixed-capacity Dedicated ASP patterns. Arrows mark conceptual changes in requirements, not supported in-place plan migrations; Flex also offers always-ready instances.
     subgraph PUBLIC["Scenario A: Public Serverless"]
         A1[Consumption Y1] --- A2[No VNet]
         A2 --- A3[Connection string]
@@ -124,6 +142,8 @@ flowchart TD
     PRIVATE_SL -->|"Add warm instances"| PRIVATE_EP
     PRIVATE_EP -->|"Fixed capacity"| FIXED
 ```
+
+**Reading key:** These are reference-pattern comparisons, not an in-place migration procedure. “Add warm instances” identifies the Premium pattern here, not a feature exclusive to Premium: Flex also offers always-ready instances. Consumption connection strings, Premium content shares and Dedicated run-from-package are the depicted choices, not universal plan requirements ([hosting](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale), [Flex](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan), [storage](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations)).
 
 ## Portal Walkthrough
 
@@ -190,13 +210,17 @@ The simplest deployment pattern. No VNet, no private endpoints, public storage a
 <!-- diagram-id: scenario-a-public-serverless-consumption-y1 -->
 ```mermaid
 flowchart TD
+    accTitle: Scenario A — Public Serverless on Consumption Y1
+    accDescr: Internet HTTPS reaches the Consumption Y1 app, which accesses public Storage and sends off-path Application Insights telemetry. Connection-string access is this depicted variant; system-assigned identity context is retained in the reading key, not asserted as telemetry authentication.
     INET[Internet] -->|HTTPS| FA[Function App\nConsumption Y1]
     FA -->|Connection string| ST[Storage Account\npublic access]
-    FA -->|System MI| AI[Application Insights]
+    FA -.->|Telemetry| AI[Application Insights]
 
-    style FA fill:#E3F2FD
-    style ST fill:#FFF3E0
+    style FA fill:#E3F2FD,color:#14202e
+    style ST fill:#FFF3E0,color:#14202e
 ```
+
+**Reading key:** Public Storage access still needs authorization; the connection string is this figure's variant, not a Consumption requirement. The app's system-assigned managed identity (`System MI` in the original reference pattern) is separate context: assigning identity alone does not configure Application Insights authentication. The dotted Insights arrow denotes telemetry, not a request-processing hop ([storage](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations), [identity](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity), [monitoring](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)).
 
 **When to use**: Development, prototyping, low-traffic workloads without compliance requirements.
 
@@ -206,37 +230,52 @@ flowchart TD
 
 ## Scenario B — Private Serverless (Flex Consumption FC1)
 
-Full network isolation with identity-based storage access and blob-container deployment.
+Private Storage egress with identity-based access and blob-container deployment; the depicted HTTP ingress remains public, not fully isolated.
 
 <!-- diagram-id: scenario-b-private-serverless-flex-consumption-fc1 -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 10, 'rankSpacing': 65, 'padding': 8, 'subGraphTitleMargin': {'top': 8, 'bottom': 32}}}}%%
 flowchart TD
-    INET[Internet] -->|HTTPS| FA[Function App\nFlex Consumption FC1]
-
-    subgraph VNET[VNet 10.0.0.0/16]
-        subgraph INT_SUB[Integration Subnet\nMicrosoft.App/environments]
-            FA
+    accTitle: Scenario B — Private Serverless on Flex Consumption FC1
+    accDescr: Public HTTPS ingress and intended private Storage egress for FC1. App compute is outside the integration subnet; outbound integration reaches four distinct Storage endpoints expanded in the adjacent key. User-assigned identity and RBAC are authorization context, not transport hops.
+    client(["Internet"])
+    app_runtime["Function App<br/>Flex Consumption<br/>FC1"]
+    identity{{"User-assigned MI<br/>Storage RBAC"}}
+    subgraph vnet_fn["VNet"]
+        subgraph subnet_int_fn["<div style='width:170px;text-align:right'>Integration<br/>subnet</div>"]
+            vnet_integration[["Outbound<br/>integration"]]
         end
-        subgraph PE_SUB[Private Endpoint Subnet]
-            PE_BLOB[PE: blob]
-            PE_QUEUE[PE: queue]
-            PE_TABLE[PE: table]
-            PE_FILE[PE: file]
+        subgraph subnet_pe_fn["<div style='width:130px;text-align:left'>PE<br/>subnet</div>"]
+            pe_storage[["Storage PEs<br/>1–4 in key"]]
         end
     end
-
-    PE_BLOB --> ST[Storage Account\npublic access disabled]
-    PE_QUEUE --> ST
-    PE_TABLE --> ST
-    PE_FILE --> ST
-
-    FA -.->|User-Assigned MI| UAMI[Managed Identity]
-    UAMI -->|RBAC| ST
-
-    style FA fill:#E3F2FD
-    style ST fill:#FFF3E0
-    style VNET fill:#E8F5E9,stroke:#4CAF50
+    storage_db[("Storage account<br/>Public access: S")]
+    client -->|"[Configured]<br/>HTTPS"| app_runtime
+    app_runtime -.->|"[Configured]<br/>Identity"| identity
+    app_runtime -->|"[Configured]<br/>Outbound"| vnet_integration
+    vnet_integration -->|"[Configured]<br/>Each PE"| pe_storage
+    pe_storage -->|"[Configured]<br/>Each service"| storage_db
+    %% Layout-only tier; adds no requests, resources or visible arrows.
+    identity ~~~ vnet_integration
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e;
+    classDef bandMuted fill:#ffffff,stroke:#707e93,stroke-width:1.5px,stroke-dasharray:4 3,color:#14202e;
+    class client,storage_db baseNeutral;
+    class app_runtime,vnet_integration,pe_storage focusActive;
+    class identity bandMuted;
+    linkStyle default stroke-width:2px;
 ```
+
+**Reading key (FC1):** Solid arrows show intended access, dotted identity shows the app's local token-acquisition context, not data passing through an identity resource. RBAC grants the identity permission for the selected Storage operations; the figure does not specify a role or prove access. VNet integration is outbound-only and does not deploy the app into the integration subnet; Flex uses subnet-dedicated shared gateways. The VNet address `10.0.0.0/16` is illustrative; integration delegation is `Microsoft.App/environments` ([networking](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options), [identity](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)).
+
+| PE key | Distinct endpoint → service in the Storage account |
+|---|---|
+| 1 (`PE_BLOB`) | Blob; includes the configured deployment-container path |
+| 2 (`PE_QUEUE`) | Queue |
+| 3 (`PE_TABLE`) | Table |
+| 4 (`PE_FILE`) | File; retained scenario endpoint, not a Flex content-share requirement |
+
+Each row expands integration → endpoint → matching service, not four serial hops. Select endpoints for the services the workload uses: Flex deployment uses Blob and does not depend on an Azure Files content share; Queue/Table usage depends on features such as Azure Storage-backed Durable Functions. A File endpoint does not imply identity-authenticated Files mounting. **S** retains the intended disabled-public-Storage variant: explicitly configure Storage public-network restrictions; creating a PE alone does not disable public access. Normal Storage hostnames must resolve to PE IPs from the app's network using appropriate DNS; DNS resources are not drawn ([Storage endpoints](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints), [storage by plan](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations)).
 
 **When to use**: Production serverless workloads that require network isolation and identity-based storage.
 
@@ -250,33 +289,50 @@ VNet-integrated with always-warm instances, private endpoints, and Azure Files c
 
 <!-- diagram-id: scenario-c-private-enterprise-premium-ep -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 10, 'rankSpacing': 65, 'padding': 8, 'subGraphTitleMargin': {'top': 8, 'bottom': 32}}}}%%
 flowchart TD
-    INET[Internet] -->|HTTPS| FA[Function App\nPremium EP1-EP3]
-
-    subgraph VNET[VNet 10.0.0.0/16]
-        subgraph INT_SUB[Integration Subnet\nMicrosoft.Web/serverFarms]
-            FA
+    accTitle: Scenario C — Private Enterprise on Premium EP
+    accDescr: Public HTTPS ingress and intended private Storage egress for EP1–EP3, including the Azure Files content-share path. App compute is outside the integration subnet; four distinct endpoints expand in the adjacent key. System identity is a logical association, not Files content-share authentication.
+    client(["Internet"])
+    app_runtime["Function App<br/>Premium EP1–EP3"]
+    identity{{"System MI<br/>Microsoft Entra ID"}}
+    subgraph vnet_fn["VNet"]
+        subgraph subnet_int_fn["<div style='width:170px;text-align:right'>Integration<br/>subnet</div>"]
+            vnet_integration[["Outbound<br/>integration"]]
         end
-        subgraph PE_SUB[Private Endpoint Subnet]
-            PE_BLOB[PE: blob]
-            PE_QUEUE[PE: queue]
-            PE_TABLE[PE: table]
-            PE_FILE[PE: file]
+        subgraph subnet_pe_fn["<div style='width:130px;text-align:left'>PE<br/>subnet</div>"]
+            pe_storage[["Storage PEs<br/>1–4 in key"]]
         end
     end
-
-    PE_BLOB --> ST[Storage Account\npublic access disabled]
-    PE_QUEUE --> ST
-    PE_TABLE --> ST
-    PE_FILE --> ST
-
-    FA -.->|System MI| ENTRA[Microsoft Entra ID]
-    FA -->|Content share mount| ST
-
-    style FA fill:#E3F2FD
-    style ST fill:#FFF3E0
-    style VNET fill:#E8F5E9,stroke:#4CAF50
+    storage_db[("Storage account<br/>Public access: S<br/>Files content share")]
+    client -->|"[Configured]<br/>HTTPS"| app_runtime
+    app_runtime -.->|"[Configured]<br/>Identity"| identity
+    app_runtime -->|"[Configured]<br/>Outbound"| vnet_integration
+    vnet_integration -->|"[Configured]<br/>Each PE"| pe_storage
+    pe_storage -->|"[Configured]<br/>Each service"| storage_db
+    %% Layout-only tier; adds no requests, resources or visible arrows.
+    identity ~~~ vnet_integration
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e;
+    classDef bandMuted fill:#ffffff,stroke:#707e93,stroke-width:1.5px,stroke-dasharray:4 3,color:#14202e;
+    class client,storage_db baseNeutral;
+    class app_runtime,vnet_integration,pe_storage focusActive;
+    class identity bandMuted;
+    linkStyle default stroke-width:2px;
 ```
+
+**Reading key (EP1–EP3):** Solid arrows show intended access; the dotted system-identity association summarizes the app's local token endpoint, not a direct app-to-Entra network hop. Outbound VNet integration does not deploy the app into its integration subnet. The original `10.0.0.0/16` VNet address is illustrative; integration delegation is `Microsoft.Web/serverFarms` ([networking](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options), [identity](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)).
+
+| PE key | Distinct endpoint → service in the Storage account |
+|---|---|
+| 1 (`PE_BLOB`) | Blob |
+| 2 (`PE_QUEUE`) | Queue; needed for Azure Storage-backed Durable Functions |
+| 3 (`PE_TABLE`) | Table |
+| 4 (`PE_FILE`) | File; the depicted app → integration → File PE → content-share mount |
+
+These are separate service paths, not serial hops. This Premium variant uses the default Azure Files content share and its connection string, distinct from optional identity-based host storage; secured content storage also needs content-share routing. Learn's secured-storage example configures File/Blob/Table, plus Queue for Durable Functions; deployments without the Files dependency also exist. **S** means explicitly disable public Storage network access, not that PEs automatically disable it. Appropriate DNS must resolve normal Storage hostnames to PE IPs from the app network; DNS resources are not drawn ([secured storage](https://learn.microsoft.com/en-us/azure/azure-functions/configure-networking-how-to), [storage](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations), [Storage endpoints](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints)).
+
+The public HTTPS arrow is the depicted ingress variant, not private app ingress. If a separate site private endpoint is added and `publicNetworkAccess` is unset (`null`), public app access becomes disabled by default; retaining public HTTPS then requires explicitly `Enabled`, subject to site restrictions ([app access](https://learn.microsoft.com/en-us/azure/app-service/overview-access-restrictions#app-access)).
 
 **When to use**: Enterprise workloads that need warm instances (no cold start), VNet integration, and private storage.
 
@@ -290,32 +346,48 @@ Traditional App Service plan with fixed compute, full VNet support, and run-from
 
 <!-- diagram-id: scenario-d-fixed-capacity-dedicated-asp -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 10, 'rankSpacing': 65, 'padding': 8, 'subGraphTitleMargin': {'top': 8, 'bottom': 32}}}}%%
 flowchart TD
-    INET[Internet] -->|HTTPS| FA[Function App\nDedicated B1-P3v3]
-
-    subgraph VNET[VNet 10.0.0.0/16]
-        subgraph INT_SUB[Integration Subnet\nMicrosoft.Web/serverFarms]
-            FA
+    accTitle: Scenario D — Fixed Capacity on Dedicated ASP
+    accDescr: Public HTTPS and the optional private Storage egress variant for multitenant Dedicated B1–P3v3 hosting, not App Service Environment placement. Compute is outside the integration subnet; four private endpoints expand in the adjacent key. System identity is not a data-transit hop.
+    client(["Internet"])
+    app_runtime["Function App<br/>Dedicated B1–P3v3"]
+    identity{{"System MI<br/>Microsoft Entra ID"}}
+    subgraph vnet_fn["VNet"]
+        subgraph subnet_int_fn["<div style='width:170px;text-align:right'>Integration<br/>subnet</div>"]
+            vnet_integration[["Outbound<br/>integration"]]
         end
-        subgraph PE_SUB[Private Endpoint Subnet]
-            PE_BLOB[PE: blob]
-            PE_QUEUE[PE: queue]
-            PE_TABLE[PE: table]
-            PE_FILE[PE: file]
+        subgraph subnet_pe_fn["<div style='width:130px;text-align:left'>PE<br/>subnet</div>"]
+            pe_storage[["Storage PEs<br/>1–4 in key"]]
         end
     end
-
-    PE_BLOB --> ST[Storage Account]
-    PE_QUEUE --> ST
-    PE_TABLE --> ST
-    PE_FILE --> ST
-
-    FA -.->|System MI| ENTRA[Microsoft Entra ID]
-
-    style FA fill:#E3F2FD
-    style ST fill:#FFF3E0
-    style VNET fill:#E8F5E9,stroke:#4CAF50
+    storage_db[("Storage account")]
+    client -->|"[Configured]<br/>HTTPS"| app_runtime
+    app_runtime -.->|"[Configured]<br/>Identity"| identity
+    app_runtime -->|"[Configured]<br/>Outbound"| vnet_integration
+    vnet_integration -->|"[Configured]<br/>Each PE"| pe_storage
+    pe_storage -->|"[Configured]<br/>Each service"| storage_db
+    %% Layout-only tier; adds no requests, resources or visible arrows.
+    identity ~~~ vnet_integration
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e;
+    classDef bandMuted fill:#ffffff,stroke:#707e93,stroke-width:1.5px,stroke-dasharray:4 3,color:#14202e;
+    class client,storage_db baseNeutral;
+    class app_runtime,vnet_integration,pe_storage focusActive;
+    class identity bandMuted;
+    linkStyle default stroke-width:2px;
 ```
+
+**Reading key (Dedicated ASP):** This shows the optional regional-integration variant on supported multitenant Dedicated tiers, not an App Service Environment. Integration is outbound-only and does not deploy the app into its subnet; the system-identity association summarizes local token acquisition, not direct Entra transport. `10.0.0.0/16` is an illustrative VNet range; the integration subnet is delegated to `Microsoft.Web/serverFarms` ([networking](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options), [identity](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)).
+
+| PE key | Distinct endpoint → service in the Storage account |
+|---|---|
+| 1 (`PE_BLOB`) | Blob |
+| 2 (`PE_QUEUE`) | Queue |
+| 3 (`PE_TABLE`) | Table |
+| 4 (`PE_FILE`) | File; retained illustrative endpoint, not required by run-from-package |
+
+Each row expands integration → endpoint → matching service. Dedicated apps do not have Premium's default Files content-share dependency; retain only the endpoints the selected features use (for example, Azure Storage-backed Durable Functions uses Blob/Queue/Table). For private-only Storage access, configure public-network restrictions separately and ensure normal Storage hostnames resolve to PE IPs; private DNS integration may be provisioned during PE creation. The fixed-capacity/run-from-package pattern remains a choice, not a claim that Dedicated cannot use manual scale or autoscale ([storage](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations), [Dedicated](https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan), [Storage endpoints](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints)).
 
 **When to use**: Workloads with predictable load, existing App Service plans, or requirements for dedicated compute (compliance, GPU, large VM sizes).
 
@@ -349,6 +421,13 @@ Before deploying any scenario, verify:
 
 ## Sources
 
+- [Storage considerations by hosting plan](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations)
+- [Storage private endpoints and DNS](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints)
+- [Managed identities for Functions and App Service](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)
+- [Secured storage configuration](https://learn.microsoft.com/en-us/azure/azure-functions/configure-networking-how-to)
+- [Dedicated hosting](https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan)
+- [App access and public-network defaults](https://learn.microsoft.com/en-us/azure/app-service/overview-access-restrictions#app-access)
+- [Functions monitoring](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)
 - [Azure Functions hosting options (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
 - [Azure Functions networking options (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)
 - [Azure Functions Flex Consumption plan (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan)
