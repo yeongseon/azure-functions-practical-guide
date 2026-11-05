@@ -8,6 +8,7 @@ content_sources:
       based_on:
         - https://learn.microsoft.com/en-us/azure/storage/common/storage-network-security
         - https://learn.microsoft.com/en-us/azure/azure-functions/manage-connections
+        - https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints
   references:
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/storage/common/storage-network-security
@@ -64,18 +65,29 @@ The two independent axes of Functions-to-Storage connectivity:
 <!-- diagram-id: platform-storage-connectivity-axes -->
 ```mermaid
 flowchart TD
-    FA["Function App host"] --> AX1["Authentication axis: key or managed identity"]
-    FA --> AX2["Network axis: endpoint choice"]
-    AX1 --> CM["Combination Matrix: plan x endpoint"]
+    accTitle: Functions storage connectivity axes
+    accDescr: Reading map, not network traffic. The Function App host has independent authentication (key or managed identity) and network (public, service or private endpoint) axes. Both lead to the plan-by-endpoint combination matrix, then host startup impact and DNS and connectivity verification. Endpoint choices are alternatives, not successive network hops.
+    FA["Function App host"] --> AX1["Authentication axis:<br/>key or<br/>managed identity"]
+    FA --> AX2["Network axis:<br/>endpoint choice"]
+    AX1 --> CM["Combination Matrix:<br/>plan x endpoint"]
     AX2 --> PE1["Public Endpoint"]
     AX2 --> PE2["Service Endpoint"]
     AX2 --> PE3["Private Endpoint"]
-    PE1 --> CM["Combination Matrix: plan x endpoint"]
+    PE1 --> CM
     PE2 --> CM
     PE3 --> CM
-    CM --> HS["Host Startup Impact"]
-    HS --> DNS["DNS and Connectivity Verification"]
+    CM --> HS["Host Startup<br/>Impact"]
+    HS --> DNS["DNS and Connectivity<br/>Verification"]
+    %% Layout-only links tier the axes and alternatives; they add no steps or semantic arrows.
+    AX1 ~~~ AX2
+    PE1 ~~~ PE2
+    PE2 ~~~ PE3
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class FA,AX1,AX2,PE1,PE2,PE3,CM,HS,DNS baseNeutral;
+    linkStyle default stroke-width:2px;
 ```
+
+**Takeaway:** Authentication and network access must both permit storage access. Arrows organize this page's reading path, not traffic: public, service, and private endpoints are alternatives, followed by the plan matrix, startup impact, and verification.
 
 ## 1. Storage Roles in Azure Functions
 

@@ -17,6 +17,7 @@ content_sources:
       source: self-generated
       justification: Decision flow, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
         - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
@@ -27,6 +28,7 @@ content_sources:
       source: self-generated
       justification: Flow view of failure progression timeline, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
         - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
@@ -72,24 +74,38 @@ This playbook isolates whether the timeout is caused by hard platform enforcemen
 <!-- diagram-id: decision-flow -->
 ```mermaid
 flowchart TD
-    A[Alert: timeout or execution limit exceeded] --> B{Trigger type?}
-    B -->|HTTP| C{Duration near 230s?}
-    C -->|Yes| D[Suspect upstream load balancer idle timeout]
-    C -->|No| E[Check functionTimeout and code duration]
-    B -->|"Queue/Event/Timer"| F{Duration near host or plan limit?}
-    F -->|Yes| G[Plan or host timeout boundary reached]
-    F -->|No| H[Investigate downstream dependency latency]
-    G --> I{Retries increasing?}
-    I -->|Yes| J[Backlog and duplicate risk]
-    I -->|No| K[Single-run overage or spike]
-    H --> L{Cold start or scale-in event?}
-    L -->|Yes| M[Graceful shutdown may interrupt run]
-    L -->|No| N[Dependency bottleneck dominates]
-    D --> O[Move HTTP work to async pattern]
-    E --> P[Refactor and split long-running unit]
-    J --> Q[Pause intake and drain safely]
-    N --> R[Tune client timeouts and retries]
+    accTitle: Timeout and execution-limit diagnostic flow
+    accDescr: Illustrative triage, not proof of a cause. HTTP checks the response boundary near 230 seconds or host configuration. Queue, Event and Timer paths check execution limits, retries, dependencies and lifecycle events. All Yes and No branches retain their original candidates and mitigation endpoints; verify candidates with logs and disproof checks.
+    A(["Alert: timeout or<br/>execution limit exceeded"]) --> B{"Trigger type?"}
+    B -->|HTTP| C{"Duration<br/>near 230s?"}
+    C -->|Yes| D("Suspect upstream<br/>load balancer idle timeout")
+    C -->|No| E["Check functionTimeout<br/>and code duration"]
+    B -->|"Queue/Event/Timer"| F{"Duration near<br/>host or plan limit?"}
+    F -->|Yes| G("Candidate: plan or host<br/>timeout boundary reached")
+    F -->|No| H["Investigate downstream<br/>dependency latency"]
+    G --> I{"Retries<br/>increasing?"}
+    I -->|Yes| J("Backlog and<br/>duplicate risk")
+    I -->|No| K("Single-run overage<br/>or spike")
+    H --> L{"Cold start or<br/>scale-in event?"}
+    L -->|Yes| M("Check whether graceful<br/>shutdown interrupted run")
+    L -->|No| N("Candidate: dependency<br/>bottleneck dominates")
+    D --> O(["Move HTTP work<br/>to async pattern"])
+    E --> P(["Refactor and split<br/>long-running unit"])
+    J --> Q(["Pause intake and<br/>drain safely"])
+    N --> R(["Tune client timeouts<br/>and retries"])
+    %% Layout-only links serialize branches; they add no diagnostic steps or arrows.
+    O ~~~ E
+    P ~~~ F
+    Q ~~~ K
+    K ~~~ H
+    M ~~~ N
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R neutral;
 ```
+
+**Reading key:** Diamonds ask questions, rounded boxes hold candidates or risks, rectangles request checks, and stadiums mark the alert/actions. A cold start is not itself evidence of shutdown: the lifecycle branch requires matching host cancellation/shutdown logs. A near-230s HTTP failure is a response-path clue, not proof that function execution stopped.
+
+**Scope for these three figures:** Use the [Functions host timeout rules](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale#function-app-timeout-duration) for Consumption, Flex Consumption, Premium or Dedicated (including ASE); HTTP response limits and execution limits are separate. Retry outcomes depend on the trigger and configured policy, not the plan alone. For Event Hubs, [function-level retries](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages#retry-policies) require a supported extension/runtime combination (for .NET isolated, Event Hubs extension 5.2.0+); Service Bus redelivery is binding/broker behavior, not that Event Hubs execution retry policy. Record the deployed extension version and processing mode before applying the Queue/Event/Timer branch.
 
 ### Severity guidance
 | Condition | Severity | Action priority |
@@ -325,6 +341,8 @@ If shutdown markers are not present near failed invocations, interruption is mor
 <!-- diagram-id: failure-progression-timeline -->
 ```mermaid
 flowchart TD
+    accTitle: Illustrative timeout and retry amplification
+    accDescr: A possible dependency-slowdown scenario approaches a configured functionTimeout, raises a timeout exception and, when an applicable retry policy runs, increases concurrent load and backlog risk. This is not a measured incident or a guarantee that every trigger retries.
     A[Dependency latency increase] --> B[Function duration rises]
     B --> C[Approaches functionTimeout]
     C --> D[Timeout exception]
@@ -333,22 +351,34 @@ flowchart TD
     F --> G[Backlog and SLA breach]
 ```
 
+**Takeaway:** Read the chain conditionally: a configured execution timeout must be exceeded, and an applicable retry mechanism must actually run. On the plans and version scope above, the retry stage is not automatic for every trigger; concurrent load and SLA impact are scenario risks, not measured outcomes.
+
 ### Timeout Boundary Map
 <!-- diagram-id: timeout-boundary-map -->
 ```mermaid
 flowchart TD
-    A[Invocation starts] --> B{Trigger type}
-    B -->|HTTP| C[Upstream idle boundary around 230s]
-    B -->|Non-HTTP| D[host.json functionTimeout applies]
-    D --> E{Hosting plan cap}
-    E -->|Consumption| F["Default 5m / Max 10m"]
-    E -->|Premium| G["Default 30m / Max unlimited"]
-    E -->|Dedicated| H["Default 30m / Max unlimited"]
-    C --> I[Client sees timeout]
-    F --> J[Runtime cancellation]
+    accTitle: HTTP response and function execution timeout boundaries
+    accDescr: HTTP response timeout and non-HTTP execution settings are distinct diagnostic paths, not exclusive constraints. The three original plan branches retain their defaults and maxima. Runtime cancellation means a configured finite execution timeout was exceeded, not that an unbounded setting guarantees uninterrupted execution. The adjacent key includes Flex Consumption and lifecycle qualifications.
+    A(["Invocation starts"]) --> B{"Trigger type"}
+    B -->|HTTP| C["Upstream idle boundary<br/>around 230s"]
+    B -->|Non-HTTP| D["host.json<br/>functionTimeout applies"]
+    D --> E{"Hosting plan cap"}
+    E -->|Consumption| F["Default 5m /<br/>Max 10m"]
+    E -->|Premium| G["Default 30m /<br/>Max unbounded"]
+    E -->|Dedicated| H["Default 30m /<br/>Max unbounded"]
+    C --> I(["Client sees timeout"])
+    F --> J(["Runtime cancellation<br/>if timeout exceeded"])
     G --> J
     H --> J
+    %% Layout-only links serialize alternatives; they add no runtime steps or arrows.
+    I ~~~ D
+    F ~~~ G
+    G ~~~ H
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J neutral;
 ```
+
+**Boundary key:** The three plan branches show execution-timeout settings, not guaranteed run lifetimes. [Consumption defaults to 5 minutes with a 10-minute maximum; Flex Consumption and Premium default to 30 minutes with an unbounded maximum; Dedicated (including ASE) defaults to 30 minutes with an unbounded maximum when Always On is enabled](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale#function-app-timeout-duration). `functionTimeout` also applies to HTTP execution: the HTTP branch highlights the separate 230-second response limit, independent of trigger extension version. For Flex Consumption/Premium, scale-in grace is 60 minutes and platform-update grace is 10 minutes; unbounded execution settings do not prevent lifecycle interruption. The cancellation endpoint applies when a finite configured timeout is exceeded, not merely when an invocation starts.
 
 ### Correlation Queries for Fast Triage
 #### Timeout burst by operation and instance
@@ -447,8 +477,7 @@ Use these three queries together when initial evidence is conflicting. If timeou
 ```
 
 !!! warning "Plan restriction"
-    `functionTimeout: "-1"` (unlimited) applies only to Premium and Dedicated plans.
-    Consumption plans have a hard 10-minute maximum; Flex Consumption allows up to 4 hours.
+    `functionTimeout: "-1"` (unbounded) is available on Flex Consumption, Premium and Dedicated (including ASE; enable Always On for Dedicated). Consumption has a hard 10-minute maximum. Unbounded execution is not a promise of uninterrupted execution; see the lifecycle qualifications in the [hosting timeout reference](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale#function-app-timeout-duration).
 
 3. Cap per-invocation work size (batch splitting, pagination, checkpoint boundaries) so each unit finishes well below timeout envelope.
 4. Execute rapid dependency health check and fail fast for slow downstream calls to avoid consuming full timeout budget:
@@ -508,6 +537,7 @@ az functionapp deployment source config-zip --name <app-name> --resource-group <
 - [Event Hub / Service Bus Trigger Lag](./event-hub-service-bus-lag.md)
 
 ## Sources
+- [Azure Functions error handling and retries](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages)
 - [Azure Functions hosting options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
 - [Azure Functions host.json reference](https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json)
 - [Improve performance and reliability of Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability)

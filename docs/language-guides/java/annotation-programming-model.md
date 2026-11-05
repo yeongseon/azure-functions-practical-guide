@@ -24,6 +24,8 @@ This deep dive explains how Java functions are declared, discovered, and execute
 <!-- diagram-id: main-content -->
 ```mermaid
 flowchart TD
+    accTitle: Java annotation declaration and invocation stages
+    accDescr: Java classes and methods use FunctionName and trigger and binding annotations to define metadata used by the Functions host for invocation and execution. Arrows show logical stages, not network hops or a trigger-specific protocol.
     A[Java class and method] --> B["@FunctionName"]
     B --> C[Trigger and binding annotations]
     C --> D[Functions host metadata index]

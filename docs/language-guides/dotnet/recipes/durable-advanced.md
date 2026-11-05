@@ -25,6 +25,8 @@ This recipe covers advanced Durable Functions patterns for .NET (isolated worker
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Sub-orchestration composition in .NET
+    accDescr: A parent calls sub-orchestrators A and B using CallSubOrchestratorAsync. Each sub-orchestrator calls activities and returns to the parent. Arrows show logical calls and returns, not network connections.
     PARENT[Parent orchestrator] -->|CallSubOrchestratorAsync| SUB1[Sub-orchestrator A]
     PARENT -->|CallSubOrchestratorAsync| SUB2[Sub-orchestrator B]
     SUB1 --> ACT1[Activities]
