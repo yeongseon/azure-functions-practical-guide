@@ -23,6 +23,9 @@ content_sources:
       source: self-generated
       justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node
         - https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-node
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
@@ -58,30 +61,45 @@ You will provision a Linux Function App on the Consumption plan, publish your No
 !!! info "Infrastructure Context"
     **Plan**: Consumption (Y1) | **Network**: Public internet only | **VNet**: ❌ Not supported
 
-    Consumption has no VNet integration or private endpoint support. All traffic flows over the public internet. Storage uses connection string authentication.
+    Consumption (Y1) supports neither outbound VNet integration nor a private endpoint for the app. This tutorial uses public endpoints and connection-string storage authentication. Linux Consumption can use Blob package storage; the Azure Files default applies to Windows Consumption, not the Linux deployment shown here.
 
-    <!-- diagram-id: what-you-ll-build -->
+<!-- diagram-id: what-you-ll-build -->
 ```mermaid
+%%{init: {"flowchart": {"nodeSpacing": 10, "rankSpacing": 60, "padding": 8, "subGraphTitleMargin": {"top": 8, "bottom": 24}}}}%%
 flowchart TD
-    INET[Internet] -->|HTTPS| FA[Function App\nConsumption Y1\nLinux Node.js 20]
-
-    FA -->|connection string| ST[Storage Account\npublic access]
-    FA --> AI[Application Insights]
-
-    subgraph STORAGE[Storage Services]
-        ST --- FS[Azure Files\ncontent share]
+    accTitle: Node.js 20 Linux Consumption public deployment
+    accDescr: Internet HTTPS reaches the Y1 Linux Node.js 20 app, which accesses public Storage with a connection string and sends off-path Application Insights telemetry. The Storage group retains Azure Files as Windows Consumption context, not a Linux content-share requirement. Y1 has no outbound VNet integration or app private endpoint.
+    client(["Internet"])
+    app_runtime["Function App<br/>Consumption Y1<br/>Linux Node.js 20"]
+    telemetry>"Application<br/>Insights"]
+    limitations["No VNet integration<br/>No app private endpoint"]
+    subgraph STORAGE["<div style='width:180px;text-align:left'>Storage<br/>Services</div>"]
+        storage_db[("Storage Account<br/>Public endpoint")]
+        storage_files[("Azure Files<br/>Content share<br/>Windows default")]
+        storage_db -.->|"[Configured]<br/>Windows context"| storage_files
     end
-
-    NO_VNET["⚠️ No VNet integration\nNo private endpoints"] -. limitation .- FA
-
-    style FA fill:#0078d4,color:#fff
-    style NO_VNET fill:#FFF3E0,stroke:#FF9800
-    style STORAGE fill:#FFF3E0
+    client -->|"[Configured] HTTPS"| app_runtime
+    app_runtime -->|"[Configured]<br/>Connection string"| storage_db
+    app_runtime -.->|"[Configured]<br/>Telemetry"| telemetry
+    app_runtime -.->|"[Configured]<br/>Y1 limitations"| limitations
+    %% Layout-only tiers; add no requests or deployment steps.
+    storage_files ~~~ telemetry
+    telemetry ~~~ limitations
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e;
+    classDef bandMuted fill:#ffffff,stroke:#707e93,stroke-width:1.5px,stroke-dasharray:4 3,color:#14202e;
+    class client,storage_db,storage_files baseNeutral;
+    class app_runtime focusActive;
+    class telemetry,limitations bandMuted;
 ```
+
+**Reading key:** Solid arrows show configured request/data access; dotted arrows show telemetry, plan limitations or the Windows account/content-share association, not additional request hops. The Windows Files node preserves the cross-OS storage context; this Linux workflow can use Blob package storage ([storage](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations), [networking](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)).
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart TD
+    accTitle: Node.js Consumption first-deployment steps
+    accDescr: Tutorial stage order from variables and login through resource group, Storage, app creation, placeholder settings and Core Tools publishing to endpoint validation; not an executed deployment trace.
     A[Set variables + login] --> B[Create RG + storage]
     B --> C[Create function app]
     C --> D[Set placeholder settings]
@@ -277,6 +295,9 @@ Hello endpoint response:
 
 ## Sources
 
+- [Functions storage considerations](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations)
+- [Functions networking options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)
+- [Functions monitoring](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)
 - [Azure Functions Node.js developer guide (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node)
 - [Create your first Azure Function with Core Tools (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-node)
 - [Azure Functions hosting options (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
