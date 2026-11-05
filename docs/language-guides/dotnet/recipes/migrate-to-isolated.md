@@ -36,6 +36,8 @@ The .NET in-process model is retired: support for the in-process model ends on 1
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: .NET in-process to isolated worker migration path
+    accDescr: Functions 4.x migration checklist from project and package updates through Program.cs, signatures, configuration review, local tests and deployment. Convert HTTP types when applicable to the chosen HTTP integration; reviewing host.json does not mean every app needs changes.
     START[In-process app] --> PROJ[Update project file and TFM]
     PROJ --> PKG[Swap NuGet packages]
     PKG --> HOST[Add Program.cs host builder]

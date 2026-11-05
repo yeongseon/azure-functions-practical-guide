@@ -22,6 +22,8 @@ Host-level runtime settings for .NET isolated worker function apps.
 <!-- diagram-id: host-json-reference -->
 ```mermaid
 flowchart TD
+    accTitle: host.json reference reading flow
+    accDescr: The illustrated workflow proceeds from Configuration to Build, Deploy and Observe.
     A[Configuration] --> B[Build]
     B --> C[Deploy]
     C --> D[Observe]

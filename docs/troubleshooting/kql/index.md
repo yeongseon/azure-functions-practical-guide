@@ -16,7 +16,7 @@ content_sources:
     - id: kql-tables-quick-reference
       type: graph
       source: self-generated
-      justification: Flow view of kql tables quick reference, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Editorial navigation map of this library's four query categories and ten query topics, not a telemetry pipeline or a measured incident. Microsoft Learn sources provide the KQL and telemetry context, not this category taxonomy.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-query-overview
         - https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model
@@ -79,21 +79,51 @@ let appName = "func-myapp-prod";
 <!-- diagram-id: kql-tables-quick-reference -->
 ```mermaid
 graph TD
+    accTitle: KQL query library category map
+    accDescr: Navigation map from this library to execution, scaling, dependency and correlation queries. The ten keyed query topics are expanded in the adjacent legend. Arrows mean category membership, not execution order, telemetry transport or a confirmed diagnosis.
     A[KQL Query Library] --> B[Execution Queries]
     A --> C[Scaling Queries]
     A --> D[Dependency Queries]
     A --> E[Correlation Queries]
-    B --> B1[Function execution summary]
-    B --> B2[Failed invocations with error details]
-    B --> B3[Exception trends]
-    C --> C1[Cold start analysis]
-    C --> C2[Scaling events timeline]
-    C --> C3["Host startup/shutdown events"]
-    D --> D1[Dependency call failures]
-    D --> D2[Queue processing latency]
-    E --> E1[Single invocation correlation]
-    E --> E2[Latency vs error correlation]
+    B --> B1["B1: Execution<br/>summary"]
+    B --> B2["B2: Failed<br/>invocations"]
+    B --> B3["B3: Exception<br/>trends"]
+    C --> C1["C1: Cold start<br/>analysis"]
+    C --> C2["C2: Scaling<br/>timeline"]
+    C --> C3["C3: Host<br/>lifecycle"]
+    D --> D1["D1: Dependency<br/>failures"]
+    D --> D2["D2: Queue<br/>latency"]
+    E --> E1["E1: Invocation<br/>correlation"]
+    E --> E2["E2: Latency vs<br/>error correlation"]
+    %% Layout-only links tier categories and topics; they add no query steps or semantic arrows.
+    B1 ~~~ B2
+    B2 ~~~ B3
+    B3 ~~~ C
+    C1 ~~~ C2
+    C2 ~~~ C3
+    C3 ~~~ D
+    D1 ~~~ D2
+    D2 ~~~ E
+    E1 ~~~ E2
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,B1,B2,B3,C1,C2,C3,D1,D2,E1,E2 baseNeutral;
+    linkStyle default stroke-width:2px;
 ```
+
+**Reading key:** Arrows group query topics by category; they do not prescribe an investigation order or establish a diagnosis. Use the keys below to read each shortened label.
+
+| Key | Full query topic |
+|---|---|
+| B1 | Function execution summary |
+| B2 | Failed invocations with error details |
+| B3 | Exception trends |
+| C1 | Cold start analysis |
+| C2 | Scaling events timeline |
+| C3 | Host startup/shutdown events |
+| D1 | Dependency call failures |
+| D2 | Queue processing latency |
+| E1 | Single invocation correlation |
+| E2 | Latency vs error correlation |
 
 ## Query Categories
 

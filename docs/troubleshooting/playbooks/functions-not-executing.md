@@ -15,13 +15,14 @@ content_sources:
     - id: decision-flow
       type: flowchart
       source: self-generated
-      justification: Decision flow, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative triage ordering synthesized from the cited monitoring, trigger and disable-setting guidance; branches select candidate investigations, not confirmed causes.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
         - https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
         - https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/
         - https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model-complete
+        - https://learn.microsoft.com/en-us/azure/azure-functions/disable-function
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
@@ -51,21 +52,44 @@ Primary objective: restore safe execution quickly while collecting enough eviden
 <!-- diagram-id: decision-flow -->
 ```mermaid
 flowchart TD
-    A["Functions not executing"] --> B{"Enabled state healthy?"}
-    B -->|No| C["Remove disable setting and restart"]
-    B -->|Yes| D{"Listener starts?"}
-    D -->|No| E["Fix trigger auth/connection/binding"]
-    D -->|Yes| F{"Source events present?"}
-    F -->|No| G["Fix publisher/schedule/subscription"]
+    accTitle: Non-executing functions diagnostic decision flow
+    accDescr: Illustrative triage order, not confirmed causes. Check enabled state, listener startup, source events and host stability. Each No branch selects its keyed candidate action; the final Yes branch checks deployment or configuration regression. All five actions lead to invocation recovery verification. Use the adjacent action key and the evidence and disproof sections before choosing a mitigation.
+    A(["Functions not<br/>executing"]) --> B{"Enabled<br/>state healthy?"}
+    B -->|No| C("C: Disable<br/>setting")
+    B -->|Yes| D{"Listener<br/>starts?"}
+    D -->|No| E("E: Trigger<br/>setup")
+    D -->|Yes| F{"Source events<br/>present?"}
+    F -->|No| G("G: Source<br/>delivery")
     F -->|Yes| H{"Host stable?"}
-    H -->|No| I["Investigate restart loop/runtime init"]
-    H -->|Yes| J["Check deployment/config regression"]
-    C --> K["Verify invocation recovery"]
+    H -->|No| I("I: Host<br/>lifecycle")
+    H -->|Yes| J("J: Release/<br/>config")
+    C --> K(["Verify invocation<br/>recovery"])
     E --> K
     G --> K
     I --> K
     J --> K
+    %% Layout-only links tier the branches; they add no diagnostic steps or arrows.
+    C ~~~ D
+    E ~~~ F
+    G ~~~ H
+    I ~~~ J
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J,K neutral;
 ```
+
+**Reading key:** The start symptom leads through Yes/No checks (diamonds) to
+candidate actions (rounded boxes), then to the shared recovery check (stadium).
+Use the action key below with the competing hypotheses and disproof in sections
+3 and 6; a branch selects an investigation, not a confirmed root cause.
+
+| Action key | Investigation or candidate mitigation |
+|---|---|
+| C — Disable setting | Remove the unintended disable setting and restart; see H1. |
+| E — Trigger setup | Fix trigger authentication, connection or binding configuration; see H2/H4. |
+| G — Source delivery | Fix the publisher, schedule or subscription as applicable to the trigger; see H5. |
+| I — Host lifecycle | Investigate a restart loop or runtime initialization failure; see H3. |
+| J — Release/config | Check deployment or configuration regression; see H6. |
+
 ### Severity guidance
 | Condition | Severity | Action priority |
 |---|---|---|
@@ -557,3 +581,4 @@ Recovery criteria:
 - [Azure Functions trigger and binding concepts](https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings)
 - [Kusto Query Language overview](https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/)
 - [Application Insights telemetry data model](https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model-complete)
+- [Disable or re-enable a function](https://learn.microsoft.com/en-us/azure/azure-functions/disable-function)

@@ -52,6 +52,8 @@ You will define a complete Premium environment in Bicep (storage account, EP1 pl
 <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
+    accTitle: Premium .NET isolated infrastructure workflow
+    accDescr: Illustrative task order for this Linux Premium tutorial: Bicep template, resource-group deployment, Function App with the configured EP1 plan and storage, then build and publish from the output directory. Arrows summarize tutorial stages, not resource creation order or evidence of a successful Azure deployment.
     A[Bicep template] --> B[az deployment group create]
     B --> C[Function App + EP1 Plan + Storage]
     C --> D["Build + publish from output dir"]

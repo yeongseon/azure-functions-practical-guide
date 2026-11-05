@@ -22,6 +22,8 @@ Implement blob trigger and blob output scenarios for ingestion and transformatio
 <!-- diagram-id: blob-storage -->
 ```mermaid
 flowchart TD
+    accTitle: Conceptual service-access flow on the Blob Storage recipe
+    accDescr: Trigger to function to binding or SDK to Azure service. This generic logical flow does not specify a Blob trigger implementation, extension version, or network protocol; binding and SDK access are alternatives.
     A[Trigger] --> B[Function]
     B --> C[Binding or SDK]
     C --> D[Azure service]
