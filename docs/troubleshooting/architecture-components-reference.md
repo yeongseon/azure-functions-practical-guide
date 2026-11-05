@@ -65,6 +65,8 @@ content_sources:
       source: self-generated
       justification: Request flow examples by trigger type, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-http-webhook-trigger
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
@@ -302,20 +304,28 @@ flowchart TD
 <!-- diagram-id: request-flow-examples-by-trigger-type -->
 ```mermaid
 flowchart TD
-    A[HTTP client] --> B[Functions endpoint]
-    B --> C[Host route table]
-    C --> D[Function invocation]
-    D --> E[Output binding or HTTP response]
+    accTitle: Logical processing stages by trigger type
+    accDescr: Three separate illustrative stage paths compare HTTP routing and response, Storage Queue listener and visibility-based processing with delete, retry or poison handling, and Event Hubs processing with partition ownership and checkpoints. Arrows show logical stage order, not connection initiators or a guaranteed internal protocol; the paths are not connected to one another.
+    A(["HTTP client"]) --> B["Functions endpoint"]
+    B --> C["Host route table"]
+    C --> D["Function invocation"]
+    D --> E(["Output binding or<br/>HTTP response"])
 
-    F[Queue message] --> G[Queue trigger listener]
-    G --> H[Dequeue and lock]
-    H --> I[Function invocation]
-    I --> J["Checkpoint / delete / poison handling"]
+    F(["Storage Queue<br/>message"]) --> G["Queue trigger listener"]
+    G --> H["Dequeue and<br/>set invisibility"]
+    H --> I["Function invocation"]
+    I --> J(["Delete on success;<br/>retry or poison handling"])
 
-    K[Event Hub event] --> L[Event processor]
-    L --> M[Partition ownership]
-    M --> N[Function invocation]
-    N --> O[Checkpoint write]
+    K(["Event Hub event"]) --> L["Event processor"]
+    L --> M["Partition ownership"]
+    M --> N["Function invocation"]
+    N --> O(["Checkpoint write"])
+    %% Layout-only links stack independent paths; they add no processing steps or arrows.
+    E ~~~ F
+    J ~~~ K
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J,K,L,M,N,O baseNeutral;
+    linkStyle default stroke-width:2px;
 ```
 
 ### Trigger and binding diagnostic routing
@@ -366,17 +376,26 @@ flowchart TD
 <!-- diagram-id: scale-out-decision-flow -->
 ```mermaid
 flowchart TD
-    A[Queue depth, partition lag, HTTP demand, concurrency pressure] --> B{Trigger-specific thresholds crossed?}
-    B -->|No| C[Remain at current size]
-    B -->|Yes| D{Hosting plan can add instances now?}
-    D -->|No| E[Delay, throttle, or stay capped]
-    D -->|Yes| F[Provision instance]
-    F --> G[Load Functions host]
-    G --> H[Replay config and start listeners]
-    H --> I[Begin invocations]
-    I --> J{Backlog falling?}
-    J -->|Yes| K[Stabilize]
-    J -->|No| L[Need more scale or dependency fix]
+    accTitle: Scale-out checks and instance readiness
+    accDescr: Illustrative event-driven scale-out sketch for Flex Consumption, Premium and legacy Consumption, not Dedicated App Service scaling. Demand, trigger-specific thresholds and available capacity lead to keeping size, a delay or cap, or instance startup. After invocations begin, falling backlog leads to stabilization; otherwise investigate further scale or dependencies. The stages are conceptual, not a documented internal protocol or a root-cause verdict.
+    A(["Queue depth, partition lag,<br/>HTTP demand,<br/>concurrency pressure"]) --> B{"Trigger-specific<br/>thresholds crossed?"}
+    B -->|No| C(["Remain at<br/>current size"])
+    B -->|Yes| D{"Hosting plan can add<br/>instances now?"}
+    D -->|No| E(["Delay, throttle,<br/>or stay capped"])
+    D -->|Yes| F["Provision instance"]
+    F --> G["Load Functions host"]
+    G --> H["Replay config and<br/>start listeners"]
+    H --> I["Begin invocations"]
+    I --> J{"Backlog falling?"}
+    J -->|Yes| K(["Stabilize"])
+    J -->|No| L(["Need more scale<br/>or dependency fix"])
+    %% Layout-only links tier alternatives; they add no decisions, steps or arrows.
+    C ~~~ D
+    E ~~~ F
+    K ~~~ L
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J,K,L baseNeutral;
+    linkStyle default stroke-width:2px;
 ```
 
 ### Scale troubleshooting matrix

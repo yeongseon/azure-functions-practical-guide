@@ -12,11 +12,12 @@ content_sources:
     - id: main-content
       type: flowchart
       source: self-generated
-      justification: Flow view of main content, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Compatibility reading map retaining the depicted historical Node.js versions and Functions runtime v4; adjacent text distinguishes those versions from current support.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local
+        - https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages
 ---
 # Node.js Runtime
 
@@ -27,11 +28,15 @@ This reference describes Node.js runtime support, worker settings, and dependenc
 <!-- diagram-id: main-content -->
 ```mermaid
 flowchart TD
-    A[Node 18 LTS] --> D[Supported]
+    accTitle: Node.js versions and Functions runtime v4
+    accDescr: Compatibility reading map linking the depicted Node 18, Node 20 and Node 22 versions to version support and Functions runtime v4. Node 18 and 20 are historical entries, not currently supported versions; consult the adjacent support qualification.
+    A[Node 18 LTS] --> D["Version<br/>support"]
     B[Node 20 LTS] --> D
-    C[Node 22 Current] --> D
+    C[Node 22 GA] --> D
     D --> E[Functions runtime v4]
 ```
+
+**Takeaway:** The arrows relate language versions to Functions runtime v4; they are not execution steps. The diagram retains Node 18 and 20 as historical entries, not current recommendations. [Current Functions language support](https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages) lists Node.js 22 and 24 as GA; Node.js 22 is the last version supported on Linux Consumption. The older table and configuration examples below need a separate runtime-guidance refresh.
 
 ### Supported Node.js Versions
 
@@ -102,6 +107,7 @@ az functionapp config set --name $APP_NAME --resource-group $RG --linux-fx-versi
 - [Troubleshooting](troubleshooting.md)
 
 ## Sources
+- [Supported languages in Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages)
 - [Azure Functions Node.js developer guide (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node)
 - [Azure Functions hosting options (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
 - [Azure Functions Core Tools (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local)

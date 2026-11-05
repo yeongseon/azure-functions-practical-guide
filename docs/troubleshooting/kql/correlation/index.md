@@ -14,6 +14,7 @@ content_sources:
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-monitor/app/correlation
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
 ---
 # Correlation Queries
 
@@ -22,6 +23,8 @@ KQL queries for correlating signals across telemetry sources to connect symptoms
 <!-- diagram-id: correlation-queries -->
 ```mermaid
 flowchart TD
+    accTitle: Telemetry correlation investigation workflow
+    accDescr: Illustrative investigation order, not a confirmed root cause or telemetry transport path. Collect OperationId, query AppRequests, join dependencies, join exceptions and traces, build a timeline, then validate the root-cause hypothesis.
     A[Collect OperationId] --> B[Query AppRequests]
     B --> C[Join dependencies]
     C --> D[Join exceptions and traces]
@@ -162,5 +165,6 @@ restarts
 
 ## Sources
 
+- [Analyze Azure Functions telemetry](https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data)
 - [Application Insights telemetry correlation](https://learn.microsoft.com/en-us/azure/azure-monitor/app/correlation)
 - [Monitor Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)
