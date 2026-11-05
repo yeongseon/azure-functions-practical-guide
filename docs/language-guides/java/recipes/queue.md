@@ -14,6 +14,8 @@ content_sources:
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-output
 ---
 # Queue Storage Integration
 
@@ -24,11 +26,15 @@ This recipe demonstrates Java queue trigger and queue output bindings with retry
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Java Storage queue enqueue, processing and poison outcomes
+    accDescr: In this recipe, HTTP enqueue writes work-items, the QueueTrigger function processes messages and QueueOutput writes results. The poison edge summarizes a possible failed-processing outcome, not direct queue-to-queue forwarding or a copy of every message.
     API[HTTP enqueue] --> QUEUE[(work-items queue)]
     QUEUE --> TRIGGER[@QueueTrigger worker]
     TRIGGER --> RESULT[@QueueOutput results queue]
     QUEUE --> POISON[(work-items-poison queue)]
 ```
+
+**Reading key:** With the default `maxDequeueCount` of 5 shown below, five total failed processing attempts (including the first) lead to `work-items-poison`. The results path uses the configured Java `@QueueOutput` binding; the poison path is runtime handling of failed queue processing.
 
 ## Prerequisites
 
@@ -144,3 +150,5 @@ az storage message peek \
 
 - [Azure Queue storage bindings for Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue)
 - [Azure Functions host.json reference (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json)
+- [Queue trigger and poison messages (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger)
+- [Queue output binding (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-output)

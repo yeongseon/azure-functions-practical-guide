@@ -11,6 +11,7 @@ content_sources:
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus-trigger
+        - https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-dead-letter-queues
 ---
 # Service Bus Integration
 
@@ -21,12 +22,16 @@ This recipe demonstrates Java Service Bus queue and topic triggers with output b
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Java Service Bus input and possible processing outcomes
+    accDescr: Producers publish to a queue or topic; functions consume queue or topic-subscription messages. The ServiceBusQueueTrigger label identifies the queue example; the topic example uses ServiceBusTopicTrigger. Function App to dead-letter and output paths summarize possible outcomes, not unconditional writes or a network-call sequence.
     PROD[Producers] --> SBQ[(Service Bus Queue/Topic)]
     SBQ --> TRIG[ServiceBusQueueTrigger worker]
     TRIG --> FA[Function App]
     FA --> DLQ[(Dead-Letter Queue)]
     FA --> OUT[ServiceBusQueueOutput]
 ```
+
+**Reading key:** The Java single-message trigger examples use automatic settlement: successful processing completes the message and failed processing abandons it. Under PeekLock, abandon or lock expiry increments delivery count; exceeding the source queue's or subscription's maximum delivery count moves the message to that entity's dead-letter subqueue. The output path represents a configured `@ServiceBusQueueOutput`, not an automatic consequence of receiving a message. The examples below do not configure session processing; session support must be checked against the installed extension and Java annotation version.
 
 ## Prerequisites
 
@@ -134,3 +139,4 @@ public class ServiceBusFunctions {
 - [Azure Service Bus bindings for Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus)
 - [Azure Service Bus trigger for Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus-trigger)
 - [Azure Service Bus output binding for Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus-output)
+- [Service Bus dead-letter queues (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-dead-letter-queues)
