@@ -23,6 +23,10 @@ content_sources:
       source: self-generated
       justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node
         - https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-node
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
@@ -58,25 +62,38 @@ Provision resources and publish your first Node.js v4 function app to an App Ser
 
     Dedicated deploys on a traditional App Service Plan. Unlike Premium, there are no pre-warmed instances or elastic scaling — you get a fixed compute allocation. Storage uses connection string authentication by default. No content file share is required (`WEBSITE_RUN_FROM_PACKAGE=1`).
 
-    <!-- diagram-id: what-you-ll-build -->
+<!-- diagram-id: what-you-ll-build -->
 ```mermaid
+%%{init: {"flowchart": {"nodeSpacing": 10, "rankSpacing": 60, "padding": 8, "subGraphTitleMargin": {"top": 8, "bottom": 24}}}}%%
 flowchart TD
-    INET[Internet] -->|HTTPS| FA[Function App\nDedicated B1\nLinux Node.js 20]
-
-    subgraph PLAN["App Service Plan\nB1 Basic"]
-        FA
-        ALWAYS["Always On ✅"]
+    accTitle: Node.js 20 Linux Dedicated B1 public topology
+    accDescr: HTTPS reaches the Node.js 20 Linux app in a B1 Basic App Service plan, with Blob and Queue Storage and off-path Application Insights. Always On is recommended for reliable non-HTTP triggering, not enabled by these CLI steps. System-assigned identity is an optional association, also not assigned by these steps.
+    client(["Internet"])
+    subgraph PLAN["<div style='width:230px;text-align:right'>App Service Plan<br/>B1 Basic</div>"]
+        app_runtime["Function App<br/>Dedicated B1<br/>Linux Node.js 20"]
+        ALWAYS["Always On<br/>Recommended"]
+        app_runtime -.->|"[Configured]<br/>Recommendation"| ALWAYS
     end
-
-    FA --> ST["Storage Account\nBlob + Queue"]
-    FA --> AI[Application Insights]
-    FA -.->|System-Assigned MI| ENTRA[Microsoft Entra ID]
-
-    style FA fill:#ff8c00,color:#fff
-    style PLAN fill:#E3F2FD,stroke:#1976D2
-    style ST fill:#FFF3E0
-    style ALWAYS fill:#FFF3E0,stroke:#FF9800
+    storage_db[("Storage Account<br/>Blob + Queue")]
+    telemetry>"Application<br/>Insights"]
+    identity{{"Microsoft Entra ID<br/>System-assigned MI<br/>Optional"}}
+    client -->|"[Configured] HTTPS"| app_runtime
+    app_runtime -->|"[Configured]<br/>Connection string"| storage_db
+    app_runtime -.->|"[Configured]<br/>Telemetry"| telemetry
+    app_runtime -.->|"[Illustrative]<br/>Optional identity"| identity
+    %% Layout-only tiers; add no requests or deployment steps.
+    ALWAYS ~~~ storage_db
+    storage_db ~~~ telemetry
+    telemetry ~~~ identity
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e;
+    classDef bandMuted fill:#ffffff,stroke:#707e93,stroke-width:1.5px,stroke-dasharray:4 3,color:#14202e;
+    class client,storage_db,ALWAYS baseNeutral;
+    class app_runtime focusActive;
+    class telemetry,identity bandMuted;
 ```
+
+**Reading key:** Solid arrows show the initiating caller/app's access; dotted arrows show telemetry, the Always On recommendation or optional identity, not data transit. Enable Always On for reliable non-HTTP triggering on Dedicated hosting; an idled app can also wake on an HTTP request or Portal access. The CLI steps below do not enable Always On or assign identity. If identity is configured, tokens come from the app's local identity endpoint, not a direct app-to-Entra network hop ([Dedicated](https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan#always-on), [identity](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)).
 
 ## Steps
 
@@ -668,6 +685,10 @@ The output confirms that Azure indexed your function definitions and the app ser
 - [Recipes Index](../../recipes/index.md)
 
 ## Sources
+- [Dedicated hosting and Always On](https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan)
+- [Functions storage considerations](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations)
+- [Functions monitoring](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)
+- [App managed identity](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)
 - [Azure Functions Node.js developer guide (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node)
 - [Create your first Azure Function with Core Tools (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-node)
 - [Azure Functions hosting options (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
