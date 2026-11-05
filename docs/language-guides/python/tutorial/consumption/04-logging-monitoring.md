@@ -21,19 +21,43 @@ content_sources:
     - id: what-you-ll-build
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Python Linux plan-specific infrastructure context with full adjacent reading key; not deployment evidence.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
         - https://learn.microsoft.com/en-us/cli/azure/monitor/app-insights?view=azure-cli-latest
         - https://learn.microsoft.com/en-us/cli/azure/webapp/log
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+        - https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/streaming-logs
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/app/create-workspace-resource
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-access-restrictions#app-access
+        - https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
+        - https://learn.microsoft.com/en-us/azure/azure-functions/opentelemetry-howto
+        - https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions-reference
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
     - id: what-you-ll-build-2
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build 2, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Python plan-specific monitoring verification relationships; analysis arrows are not network-transit claims.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
         - https://learn.microsoft.com/en-us/cli/azure/monitor/app-insights?view=azure-cli-latest
         - https://learn.microsoft.com/en-us/cli/azure/webapp/log
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+        - https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/streaming-logs
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/app/create-workspace-resource
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-access-restrictions#app-access
+        - https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
+        - https://learn.microsoft.com/en-us/azure/azure-functions/opentelemetry-howto
+        - https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions-reference
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
 ---
 # 04 - Logging and Monitoring (Consumption)
 
@@ -49,40 +73,57 @@ Set up baseline observability for a Consumption (Y1) Function App with Applicati
 
 ## What You'll Build
 
-You will connect the Function App to Application Insights, generate sample traffic, and verify request telemetry and live logs for a Linux Consumption deployment.
+You will connect the Function App to Application Insights, generate sample traffic, and verify request telemetry and use the separate Live Metrics view for a Linux Consumption deployment.
 
 !!! info "Infrastructure Context"
     **Plan**: Consumption (Y1) | **Network**: Public internet only | **VNet**: ❌ Not supported
 
-    Consumption has no VNet integration or private endpoint support. All traffic flows over the public internet. Storage uses connection string authentication.
+    Linux Consumption has no outbound VNet integration or app private endpoints. This example uses public Storage endpoints and a host-storage connection string; Azure Files below is Windows context, not a Linux content dependency.
 
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 10, 'rankSpacing': 60, 'padding': 8}}}%%
 flowchart TD
-    INET[Internet] -->|HTTPS| FA[Function App\nConsumption Y1\nLinux Python 3.11]
-
-    FA -->|System-Assigned MI| ENTRA[Microsoft Entra ID]
-    FA -->|"AzureWebJobsStorage__accountName\n+ connection string"| ST[Storage Account\npublic access]
-    FA --> AI[Application Insights]
-
-    subgraph STORAGE[Storage Services]
-        ST --- FS[Azure Files\ncontent share]
+    accTitle: Python 3.11 Linux Consumption Y1 storage context
+    accDescr: Public HTTPS and host-storage access for the Linux Y1 example. System identity is optional context, telemetry is separate, and Azure Files is retained as Windows Consumption context rather than a Linux content dependency. No Azure execution is asserted.
+    client(["Internet"])
+    app_runtime["Function App<br/>Consumption Y1<br/>Linux · Python 3.11"]
+    identity{{"Optional system MI<br/>Entra ID"}}
+    telemetry>"Application<br/>Insights"]
+    NO_VNET["No VNet integration<br/>No app PE"]
+    subgraph STORAGE["Storage services"]
+        storage_db[("Storage account<br/>Public endpoints")]
+        FS[("Azure Files<br/>Windows context")]
     end
-
-    NO_VNET["⚠️ No VNet integration\nNo private endpoints"] -. limitation .- FA
-
-    style FA fill:#0078d4,color:#fff
-    style NO_VNET fill:#FFF3E0,stroke:#FF9800
-    style STORAGE fill:#FFF3E0
+    client -->|"[Configured]<br/>HTTPS"| app_runtime
+    app_runtime -->|"[Configured]<br/>Host storage"| storage_db
+    app_runtime -.->|"[Illustrative]<br/>Identity"| identity
+    app_runtime -.->|"[Configured]<br/>Telemetry"| telemetry
+    app_runtime -.->|"[Configured]<br/>Limitation"| NO_VNET
+    storage_db -.->|"[Illustrative]<br/>Files context"| FS
+    %% Layout-only tiers; add no requests, diagnostic steps or visible arrows.
+    identity ~~~ telemetry
+    telemetry ~~~ NO_VNET
+    NO_VNET ~~~ storage_db
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class client,app_runtime,storage_db,FS,identity,telemetry,NO_VNET baseNeutral;
 ```
+
+**Reading key:** Solid arrows are request/data access; dotted arrows are contextual associations, not a route through identity or telemetry. `AzureWebJobsStorage` holds this example's connection string; `AzureWebJobsStorage__accountName` instead belongs to identity-based host configuration, not an additional connection-string component. The optional system identity uses the app-local token endpoint. Azure Files content shares apply to Windows Consumption context; this Linux remote-build path stores its package in Blob storage ([storage](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations), [identity](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity), [deployment](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies)).
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart TD
+    accTitle: Python Linux Consumption monitoring verification
+    accDescr: Request telemetry is collected in configured Application Insights and queried by CLI. Live Metrics is a separate near-real-time view, not built-in log tailing, which Linux Consumption does not support.
     A[Function App requests] --> B[Application Insights]
     B --> C[CLI query for recent requests]
-    A --> D[Live log tail]
+    B --> D[Live Metrics]
 ```
+
+**Python telemetry:** With the default built-in integration enabled, Python `logging` records follow worker → Functions host → Application Insights, subject to filtering and sampling; `APPLICATIONINSIGHTS_CONNECTION_STRING` selects the destination ([Python reference](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python#logging-and-monitoring), [configuration](https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring)). Workspace-based Application Insights stores telemetry in its linked Log Analytics workspace; `FunctionAppLogs` instead belongs to diagnostic-settings resource logs, not an intermediate worker-log hop ([workspace](https://learn.microsoft.com/en-us/azure/azure-monitor/app/create-workspace-resource), [resource logs](https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions#azure-monitor-resource-logs)).
+
+This describes the default route, not every exporter in the reference app: `apps/python/config/telemetry.py` also attempts Azure Monitor distro setup with a named logger when a connection string is present. Python OpenTelemetry requires its own worker instrumentation/settings; it is not enabled merely by renaming a destination box ([Functions OpenTelemetry](https://learn.microsoft.com/en-us/azure/azure-functions/opentelemetry-howto)).
 
 ## Steps
 
@@ -170,7 +211,9 @@ az monitor app-insights query \
 !!! tip "Telemetry ingestion delay"
     Application Insights has a 2-5 minute ingestion delay. If Step 5 returns empty results immediately after Step 4, wait a few minutes and retry.
 
-### Step 6 - Stream host logs from CLI
+### Step 6 - Live monitoring on Linux Consumption
+
+Built-in log streaming is unavailable on Linux Consumption. Use the connected Application Insights Live Metrics view instead; the retained log-tail command and historical excerpt below are not supported verification for this Linux plan ([streaming methods](https://learn.microsoft.com/en-us/azure/azure-functions/streaming-logs)).
 
 ```bash
 az webapp log tail \
@@ -187,9 +230,9 @@ az webapp log tail \
 
 
 !!! tip "Cold start and log streaming"
-    On Consumption (Y1), the app may be cold (scaled to zero) when you start log streaming. Send a request to the health endpoint first to wake the app, then start the log tail. Press `Ctrl+C` to stop streaming.
+    A Linux Consumption app can scale to zero; generate requests for live observations. Waking it does not enable the unsupported built-in log-tail method.
 
-Use log streaming and Application Insights for diagnostics on Linux Consumption.
+Use Application Insights queries and its separate Live Metrics view for this Linux Consumption scenario.
 ## Verification
 
 Application Insights query output excerpt:
@@ -225,6 +268,21 @@ Use Infrastructure as Code to make this setup repeatable.
 - [Recipes Index](../../recipes/index.md)
 
 ## Sources
+
+- [Functions deployment technologies](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies)
+
+- [Functions OpenTelemetry configuration](https://learn.microsoft.com/en-us/azure/azure-functions/opentelemetry-howto)
+- [Functions monitoring data reference](https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions-reference)
+
+- [functions-reference-python](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python)
+- [configure-monitoring](https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring)
+- [streaming-logs](https://learn.microsoft.com/en-us/azure/azure-functions/streaming-logs)
+- [functions-networking-options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)
+- [storage-considerations](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations)
+- [create-workspace-resource](https://learn.microsoft.com/en-us/azure/azure-monitor/app/create-workspace-resource)
+- [overview-managed-identity](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)
+- [overview-access-restrictions](https://learn.microsoft.com/en-us/azure/app-service/overview-access-restrictions#app-access)
+- [deployment-zip-push](https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push)
 
 - [Monitor Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions)
 - [Application Insights query with Azure CLI](https://learn.microsoft.com/en-us/cli/azure/monitor/app-insights?view=azure-cli-latest)
