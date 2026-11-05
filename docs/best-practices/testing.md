@@ -3,8 +3,12 @@ content_sources:
   diagrams:
     - id: bp-testing-overview
       type: flowchart
-      source: mslearn-adapted
-      mslearn_url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-test-a-function
+      source: self-generated
+      justification: Editorial testing-practice map synthesized from local-development, emulator and reliability guidance; not a prescribed test-pyramid ratio or evidence of executed tests.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local
+        - https://learn.microsoft.com/en-us/azure/storage/common/storage-use-azurite
+        - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
   references:
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-test-a-function
@@ -42,12 +46,14 @@ This page's baseline at a glance — the recommended practices and the validatio
 <!-- diagram-id: bp-testing-overview -->
 ```mermaid
 flowchart TD
-    T["Testing Azure Functions"]
-    P1["Adopt a Test Pyramid for Functions"]
-    P2["Design for Testability"]
-    P3["Emulate Locally with Azurite"]
-    P4["Integrate Tests into CI"]
-    V["Validation Checklist"]
+    accTitle: Testing practices and validation checklist
+    accDescr: Four recommended practices branch from Testing Azure Functions and each contributes to the Validation Checklist: adopt a test pyramid, design for testability, emulate locally with Azurite, and integrate tests into CI. These are parallel practice categories, not a runtime sequence or results of executed tests.
+    T["Testing<br/>Azure Functions"]
+    P1["Adopt a Test<br/>Pyramid for Functions"]
+    P2["Design for<br/>Testability"]
+    P3["Emulate Locally<br/>with Azurite"]
+    P4["Integrate Tests<br/>into CI"]
+    V["Validation<br/>Checklist"]
     T --> P1
     T --> P2
     T --> P3
@@ -56,7 +62,15 @@ flowchart TD
     P2 --> V
     P3 --> V
     P4 --> V
+    %% Layout-only links tier practice categories; they add no test steps or semantic arrows.
+    P1 ~~~ P2
+    P2 ~~~ P3
+    P3 ~~~ P4
+    classDef neutral fill:#edf2f7,stroke:#64748b,color:#172033
+    class T,P1,P2,P3,P4,V neutral
 ```
+
+**Reading key:** Each practice feeds the checklist independently; vertical placement does not prescribe execution order. [Azurite](https://learn.microsoft.com/en-us/azure/storage/common/storage-use-azurite) emulates Blob, Queue and Table services (Table support is preview), not every trigger or Azure networking, scaling and authentication behavior. Use the [local host guidance](https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local) for trigger-specific testing; local success is not deployed-platform validation.
 
 ## Why This Matters
 
@@ -125,6 +139,7 @@ Bias toward many fast, isolated tests and few slow, deployed ones:
 ## Sources
 
 - [Strategies for testing your code in Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-test-a-function)
+- [Azure Functions performance and reliability (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability)
 - [Use the Azurite emulator for local Azure Storage development (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/storage/common/storage-use-azurite)
 - [Develop Azure Functions locally using Core Tools (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local)
 - [Azure Service Bus emulator for local testing (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/service-bus-messaging/test-locally-with-service-bus-emulator)
