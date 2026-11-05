@@ -21,6 +21,8 @@ Azure Functions limits vary by hosting plan and affect throughput, latency, time
 <!-- diagram-id: topic-command-groups -->
 ```mermaid
 flowchart TD
+    accTitle: Node.js guide hosting-plan limit categories
+    accDescr: Limits groups Timeout, Scale, Memory and Networking as reference categories for Consumption, Flex Consumption, Premium and Dedicated hosting. Arrows do not imply shared values across plans, Node.js heap sizes, or uninterrupted execution with an unbounded timeout.
     A[Limits] --> B[Timeout]
     A --> C[Scale]
     A --> D[Memory]
