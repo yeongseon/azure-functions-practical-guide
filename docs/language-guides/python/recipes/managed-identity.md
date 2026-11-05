@@ -32,12 +32,12 @@ Managed Identity lets your Azure Functions app authenticate to other Azure servi
 flowchart TD
     accTitle: Configured app identity and resource relationships
     accDescr: The function app has a configured managed identity represented in Entra ID and separate application data paths to Blob, Queue, Cosmos DB and Key Vault. Dotted links denote identity and resource-permission associations, not data transit or automatic connections.
-    FA[Function App] -.-> MI[Managed Identity]
-    MI -.-> ENTRA[Microsoft Entra ID]
-    FA --> BLOB[Blob Storage]
-    FA --> QUEUE[Queue Storage]
-    FA --> COSMOS[Cosmos DB]
-    FA --> KV[Key Vault]
+    FA[Function<br/>App] -.-> MI[Managed<br/>Identity]
+    MI -.-> ENTRA[Microsoft<br/>Entra ID]
+    FA --> BLOB[Blob<br/>Storage]
+    FA --> QUEUE[Queue<br/>Storage]
+    FA --> COSMOS[Cosmos<br/>DB]
+    FA --> KV[Key<br/>Vault]
     MI -.-> BLOB
     MI -.-> QUEUE
     MI -.-> COSMOS
