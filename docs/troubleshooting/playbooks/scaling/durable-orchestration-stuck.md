@@ -35,8 +35,9 @@ content_sources:
     - id: signal-snapshot-2
       type: sequenceDiagram
       source: self-generated
-      justification: Interaction sequence for signal snapshot 2, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative logical sequence with an activity failure caught before an application wait; runtime-mediated activity scheduling and persistence are not direct orchestrator network calls.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-error-handling
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-code-constraints
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-http-api
@@ -82,25 +83,39 @@ Stuck orchestrations are often misclassified as platform outages. In many cases,
 ### Decision Flow
 <!-- diagram-id: decision-flow -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 10, 'rankSpacing': 35}}}%%
 flowchart TD
-    A[Incident: orchestration instances not completing] --> B{Instances still Running?}
-    B -->|Yes| C[Check lastUpdatedTime and execution age]
-    B -->|No| D[Investigate terminal failures]
-    C --> E{History growth high or replay events elevated?}
-    E -->|Yes| F["Replay storm / history bloat path"]
-    E -->|No| G{Waiting for external event?}
-    G -->|Yes| H[Validate event source delivery]
-    G -->|No| I{Activity failures present?}
-    I -->|Yes| J[Retry policy missing or exhausted]
-    I -->|No| K{Non-determinism traces present?}
-    K -->|Yes| L[Fix orchestrator determinism violations]
-    K -->|No| M["Check host scale/concurrency and dependencies"]
-    F --> N["Mitigate: continue-as-new/partition/history reduction"]
+    accTitle: Noncompleting Durable orchestration triage
+    accDescr: Illustrative Yes/No triage preserves terminal-failure, replay, external-event, activity-failure, determinism and host/dependency paths. Branches guide investigation, not confirmed causes.
+    A(["Incident: instances<br/>not completing"]) --> B{"Still Running?"}
+    B -->|Yes| C["Check lastUpdatedTime<br/>and execution age"]
+    B -->|No| D(["Investigate<br/>terminal failures"])
+    C --> E{"History/replay<br/>elevated?"}
+    E -->|Yes| F("Candidate:<br/>replay storm or<br/>history bloat")
+    E -->|No| G{"Waiting for<br/>external event?"}
+    G -->|Yes| H["Validate event<br/>source delivery"]
+    G -->|No| I{"Activity failures?"}
+    I -->|Yes| J["Check retry policy:<br/>missing or exhausted?"]
+    I -->|No| K{"Non-determinism<br/>traces?"}
+    K -->|Yes| L["Fix orchestrator<br/>determinism violations"]
+    K -->|No| M["Check host scale,<br/>concurrency,<br/>dependencies"]
+    F --> N(["History options:<br/>continue-as-new,<br/>partition, reduce"])
     H --> N
     J --> N
     L --> N
     M --> N
+    %% Layout-only links tier branches; they add no diagnostic steps or arrows.
+    D ~~~ E
+    F ~~~ G
+    H ~~~ I
+    J ~~~ K
+    L ~~~ M
+    M ~~~ N
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J,K,L,M,N neutral;
 ```
+
+**Reading key:** “History/replay elevated?” asks whether history growth is high or replay events are elevated. “History options” means continue-as-new, partitioning and history reduction. Diamonds route checks to candidate causes or next actions; validate them against Section 6. The shared mitigation endpoint lists history-management options, not a remedy for every branch: missing events require delivery checks, and determinism violations require code correction.
 
 ### Severity guidance
 | Condition | Severity | Action priority |
@@ -121,32 +136,45 @@ flowchart TD
 <!-- diagram-id: signal-snapshot -->
 ```mermaid
 flowchart TD
-    A[Orchestrator starts] --> B[Load history from storage]
-    B --> C[Replay deterministic steps]
+    accTitle: Durable replay path and progress check
+    accDescr: Illustrative replay path from history loading through activity scheduling and persistence. The progress check branches to continuation or a replay, wait or failure investigation while status remains Running.
+    A[Orchestrator starts] --> B["Load history<br/>from storage"]
+    B --> C["Replay<br/>deterministic steps"]
     C --> D[Schedule activity]
     D --> E[Persist state]
     E --> F{Progressing?}
     F -->|Yes| G[Continue workflow]
-    F -->|No| H["Stuck in replay/wait/failure loop"]
-    H --> I[Instance remains Running]
+    F -->|No| H["Stuck in replay,<br/>wait or failure loop"]
+    H --> I["Instance remains<br/>Running"]
+    %% Layout-only link tiers outcomes; it adds no diagnostic steps or arrows.
+    G ~~~ H
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I neutral;
 ```
+
+**Takeaway:** This is an illustrative replay path, not evidence that a particular instance is stuck; compare status, history and task completion using the [troubleshooting checks](https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-troubleshooting-guide).
 
 <!-- diagram-id: signal-snapshot-2 -->
 ```mermaid
+%%{init: {'sequence': {'diagramMarginX': 4, 'actorMargin': 8, 'width': 60, 'wrap': true, 'messageMargin': 30}}}%%
 sequenceDiagram
+    accTitle: Caught activity failure followed by an application wait
+    accDescr: Illustrative logical sequence retaining caller, app, orchestrator, activity and storage roles. A caught activity failure is followed by an application wait with Running state, not an automatic consequence of missing retries.
     participant Client as Caller
-    participant Func as Function App
-    participant Orchestrator as Durable Orchestrator
-    participant Activity as Activity Function
-    participant Store as Durable Storage
-    Client->>Func: Start orchestration
-    Func->>Store: Persist start event
-    Orchestrator->>Store: Load/replay history
-    Orchestrator->>Activity: Invoke activity
-    Activity-->>Orchestrator: Failure without retry policy
-    Orchestrator->>Store: Persist Running state updates
-    Note over Orchestrator,Store: Instance appears alive but no business progress
+    participant Func as App
+    participant Orchestrator as Orch.
+    participant Activity as Activity
+    participant Store as Store
+    Client->>Func: Start<br/>orchestration
+    Func->>Store: Persist<br/>start event
+    Orchestrator->>Store: Load/replay<br/>history
+    Orchestrator->>Activity: Invoke<br/>activity
+    Activity-->>Orchestrator: Failure without<br/>retry policy
+    Orchestrator->>Store: Caught failure:<br/>persist Running<br/>wait
+    Note over Orchestrator,Store: Instance appears alive<br/>but no business progress
 ```
+
+**Reading key:** App = Function App; Orch. = Durable Orchestrator; Activity = Activity Function; Store = Durable Storage. Storage and activity arrows summarize runtime-mediated operations, not direct network I/O in orchestrator code. This example assumes the application catches the activity failure and then waits; an unhandled failure is not made `Running` merely by omitting retries ([error handling](https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-error-handling), [code constraints](https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-code-constraints)).
 
 ## 2. Common Misreadings
 | Misreading | Why incorrect | Correct interpretation |
@@ -441,6 +469,8 @@ Capacity tuning hints:
 <!-- diagram-id: 7-likely-root-cause-patterns -->
 ```mermaid
 flowchart TD
+    accTitle: History growth and replay pressure progression
+    accDescr: Illustrative history-growth scenario retains all seven stages from normal workflow start through increasing replay cost, slowing business progress, long Running age and backlog with SLA breach.
     A[Workflow starts normally] --> B[History grows each iteration]
     B --> C[Replay cost increases]
     C --> D[Execution slices consumed by replay]
@@ -448,6 +478,8 @@ flowchart TD
     E --> F[Instance remains Running for hours]
     F --> G[Backlog and SLA breach]
 ```
+
+**Takeaway:** Read this as a candidate history-growth progression, not a measured incident timeline or proof that long-running instances necessarily breach an SLA.
 
 ## 8. Immediate Mitigations
 1. Check runtime status for oldest instances and terminate or restart only those violating execution SLO.
@@ -541,6 +573,7 @@ flowchart TD
 - [Out of memory / worker crash playbook](./out-of-memory-worker-crash.md)
 
 ## Sources
+- [Durable activity error handling and retries](https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-error-handling)
 - [Durable Functions overview](https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview)
 - [Durable orchestrations and deterministic code constraints](https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-code-constraints)
 - [Durable Functions instance management APIs](https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-http-api)

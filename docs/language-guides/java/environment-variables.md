@@ -14,6 +14,7 @@ content_sources:
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
         - https://learn.microsoft.com/en-us/cli/azure/functionapp
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-develop-local
 ---
 # Environment Variables
 
@@ -24,6 +25,8 @@ Quick reference for Java Azure Functions operational workflows.
 <!-- diagram-id: topic-command-groups -->
 ```mermaid
 flowchart TD
+    accTitle: Java guide settings and behavior
+    accDescr: Conceptual settings-to-behavior path through Java worker startup. local.settings.json is used locally; required Azure app settings are configured separately, not automatically published by this arrow.
     A[local.settings.json] --> B[App Settings]
     B --> C[Java worker startup]
     C --> D[Function behavior]
@@ -80,3 +83,4 @@ az functionapp config appsettings set --name $APP_NAME --resource-group $RG --se
 
 - [Azure Functions Java developer guide (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java)
 - [Azure Functions CLI reference (Microsoft Learn)](https://learn.microsoft.com/en-us/cli/azure/functionapp)
+- [Local settings and synchronization (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-develop-local#local-settings-file)

@@ -22,6 +22,8 @@ Configure HTTPS custom domains, managed certificates, and secure endpoint polici
 <!-- diagram-id: custom-domain-and-certificates -->
 ```mermaid
 flowchart TD
+    accTitle: Generic service-access flow on the custom-domain recipe
+    accDescr: Trigger to function to binding or SDK to Azure service. This is a conceptual invocation and service-access path, not a DNS, certificate-provisioning, TLS-handshake, or hosting-plan support diagram.
     A[Trigger] --> B[Function]
     B --> C[Binding or SDK]
     C --> D[Azure service]

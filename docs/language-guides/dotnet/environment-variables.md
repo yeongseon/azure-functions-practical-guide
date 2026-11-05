@@ -22,6 +22,8 @@ Reference of key app settings for .NET isolated worker apps.
 <!-- diagram-id: environment-variables -->
 ```mermaid
 flowchart TD
+    accTitle: Environment variables reading flow
+    accDescr: The illustrated workflow proceeds from Configuration to Build, Deploy and Observe.
     A[Configuration] --> B[Build]
     B --> C[Deploy]
     C --> D[Observe]
