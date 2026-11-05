@@ -10,6 +10,7 @@ content_sources:
       justification: Flow view of architecture, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-openapi-definition
+        - https://learn.microsoft.com/en-us/azure/azure-functions/openapi-apim-integrate-visual-studio
 ---
 # OpenAPI and Swagger
 
@@ -20,10 +21,12 @@ The .NET isolated worker model has a mature, first-class OpenAPI story through t
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
-    ATTR[OpenApi attributes on functions] --> EXT[OpenApi extension]
-    EXT --> DOC[Generated openapi.json/v3.json]
-    EXT --> UI[Hosted Swagger UI endpoint]
-    DOC --> APIM[Optional: import into API Management]
+    accTitle: OpenAPI extension document and UI relationships
+    accDescr: Illustrative configured .NET isolated-worker HTTP recipe: attributes feed the OpenAPI extension, which exposes a document and Swagger UI; the document can optionally be imported into API Management. This is not a built-in feature of every function or a package-only configuration guarantee.
+    ATTR[OpenApi attributes<br/>on functions] --> EXT[OpenApi extension]
+    EXT --> DOC[Generated<br/>openapi.json/v3.json]
+    EXT --> UI[Hosted Swagger<br/>UI endpoint]
+    DOC --> APIM[Optional: import into<br/>API Management]
 ```
 
 ## Install the Extension
@@ -95,3 +98,4 @@ For a production API gateway, import the generated definition into Azure API Man
 ## Sources
 
 - [Expose serverless APIs from HTTP endpoints using Azure API Management (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-openapi-definition)
+- [Create serverless APIs using Azure Functions and API Management](https://learn.microsoft.com/en-us/azure/azure-functions/openapi-apim-integrate-visual-studio)

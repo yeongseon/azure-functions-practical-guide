@@ -14,6 +14,7 @@ content_sources:
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
         - https://learn.microsoft.com/en-us/cli/azure/functionapp
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
 ---
 # Platform Limits
 
@@ -24,6 +25,8 @@ Quick reference for Java Azure Functions operational workflows.
 <!-- diagram-id: topic-command-groups -->
 ```mermaid
 flowchart TD
+    accTitle: Java guide hosting-plan limit categories
+    accDescr: Scale limits, execution timeout and memory profile depend on the chosen Consumption, Flex Consumption, Premium or Dedicated plan. This category map does not equate instance memory with JVM heap or promise uninterrupted execution for an unbounded timeout setting.
     A[Hosting plan] --> B[Scale limits]
     A --> C[Execution timeout]
     A --> D[Memory profile]
@@ -46,3 +49,4 @@ flowchart TD
 
 - [Azure Functions Java developer guide (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java)
 - [Azure Functions CLI reference (Microsoft Learn)](https://learn.microsoft.com/en-us/cli/azure/functionapp)
+- [Hosting-plan limits and timeout qualifications (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale#timeout)

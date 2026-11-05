@@ -22,6 +22,8 @@ Design queue-driven background processing with retries, dead-letter strategy, an
 <!-- diagram-id: queue -->
 ```mermaid
 flowchart TD
+    accTitle: Generic trigger to service relationship
+    accDescr: A trigger invokes a function with a binding or SDK as alternative ways to access an Azure service. This generic view is not a Storage queue receive, retry or poison-message sequence and does not equate Storage queues with Service Bus.
     A[Trigger] --> B[Function]
     B --> C[Binding or SDK]
     C --> D[Azure service]
