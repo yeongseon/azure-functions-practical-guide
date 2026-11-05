@@ -26,9 +26,12 @@ Multiple language guides (Python, Node.js, Java, .NET) share the same tutorial s
 
 <!-- diagram-id: why-this-baseline-exists -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 20, 'rankSpacing': 35}}}%%
 flowchart TD
+    accTitle: Shared baseline and reference language guides
+    accDescr: The cross-guide baseline informs the reference language and Languages B, C and D. The reference language also provides a template for each of those three guides.
     Baseline["Cross-Guide Baseline<br/>(this document)"]
-    Baseline --> ReferenceLanguage["Reference Language<br/>reference implementation"]
+    Baseline --> ReferenceLanguage["Reference Language<br/>reference<br/>implementation"]
     Baseline --> LanguageB["Language B"]
     Baseline --> LanguageC["Language C"]
     Baseline --> LanguageD["Language D"]
@@ -36,6 +39,10 @@ flowchart TD
     ReferenceLanguage -.->|template for| LanguageB
     ReferenceLanguage -.->|template for| LanguageC
     ReferenceLanguage -.->|template for| LanguageD
+
+    %% Layout-only links tier the guides; they add no stages or semantic arrows.
+    LanguageB ~~~ LanguageC
+    LanguageC ~~~ LanguageD
 
     style Baseline fill:#0078d4,color:#fff
     style ReferenceLanguage fill:#107c10,color:#fff

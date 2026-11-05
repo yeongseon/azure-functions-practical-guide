@@ -23,6 +23,8 @@ Azure Functions PowerShell uses a **file-based programming model**. Each functio
 <!-- diagram-id: powershell-programming-model -->
 ```mermaid
 flowchart TD
+    accTitle: PowerShell programming model - bindings and script execution
+    accDescr: Logical flow from function.json trigger and binding declarations to host metadata reading, trigger input parameters, run.ps1 execution and Push-OutputBinding output values. Arrows show conceptual stages, not network hops or a measured execution trace.
     A[function.json defines trigger and bindings] --> B[Host reads binding metadata]
     B --> C[Trigger fires and binds inputs to param block]
     C --> D[run.ps1 executes]

@@ -15,7 +15,7 @@ content_sources:
     - id: troubleshooting-decision-flow
       type: flowchart
       source: self-generated
-      justification: Troubleshooting decision flow, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative investigation order for this playbook, not a confirmed root-cause classifier; synthesized from the cited Microsoft Learn monitoring and configuration guidance.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
         - https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
@@ -55,21 +55,46 @@ Function invocations fail repeatedly with `5xx`, listener startup errors, retry 
 <!-- diagram-id: troubleshooting-decision-flow -->
 ```mermaid
 flowchart TD
-    A[Incident: Functions failing with errors] --> B{Failures start after deploy or config change?}
-    B -->|Yes| H4[H4 Deployment regression]
-    B -->|No| C{Dominant failure signal}
-    C -->|403 or Unauthorized| H1[H1 Auth failures to downstream resources]
-    C -->|Long duration then fail| H2[H2 Function timeout reached]
-    C -->|Worker crash or runtime errors| H3[H3 Memory pressure or runtime mismatch]
+    accTitle: Failing Function executions diagnostic decision flow
+    accDescr: Illustrative investigation order, not confirmed causes. A deployment or configuration change routes to H4; otherwise classify the dominant signal. Authorization errors route to H1, long duration then failure to H2, worker or runtime errors to H3, and mixed signals to baseline evidence. Then check host storage health, rising durations and worker churn; Yes routes to H1, H2 and H3 respectively, while the final No routes to H4. Use the evidence and disproof sections to test these hypotheses.
+    A(["Functions failing<br/>with errors"]) --> B{"B: After<br/>change?"}
+    B -->|Yes| H4("H4: Deployment<br/>hypothesis")
+    B -->|No| C{"Dominant<br/>failure signal"}
+    C -->|S1| H1("H1: Auth<br/>hypothesis")
+    C -->|S2| H2("H2: Timeout<br/>hypothesis")
+    C -->|S3| H3("H3: Worker<br/>hypothesis")
     C -->|Mixed signals| D[Collect baseline evidence]
-    D --> E{Host says AzureWebJobsStorage unhealthy?}
+    D --> E{"E: Host storage<br/>unhealthy?"}
     E -->|Yes| H1
-    E -->|No| F{Durations climbing toward timeout ceiling?}
+    E -->|No| F{"Durations climbing<br/>toward timeout ceiling?"}
     F -->|Yes| H2
-    F -->|No| G{Worker restarts and runtime churn?}
+    F -->|No| G{"G: Worker<br/>churn?"}
     G -->|Yes| H3
     G -->|No| H4
+    %% Layout-only links tier the hypotheses; they add no diagnostic steps or arrows.
+    G ~~~ H1
+    H1 ~~~ H2
+    H2 ~~~ H3
+    H3 ~~~ H4
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H1,H2,H3,H4 neutral;
+    linkStyle default stroke-width:2px;
 ```
+
+**Reading key:** Diamonds ask diagnostic questions; rounded H1–H4 boxes are candidate hypotheses, not confirmed causes. Follow the labelled branch, then use section 6 to validate or disprove the candidate.
+
+| Key | Full meaning |
+|---|---|
+| B | Did failures start after a deployment or configuration change? |
+| S1 | `403` or `Unauthorized`. |
+| S2 | Long duration then fail. |
+| S3 | Worker crash or runtime errors. |
+| E | Does the host say `AzureWebJobsStorage` is unhealthy? This routes to investigating H1, not a finding of authorization failure. |
+| G | Worker restarts and runtime churn? |
+| H1 | Auth failures to downstream resources. |
+| H2 | Function timeout reached. |
+| H3 | Memory pressure or runtime mismatch. |
+| H4 | Deployment regression. |
 
 ## 2. Common Misreadings
 
