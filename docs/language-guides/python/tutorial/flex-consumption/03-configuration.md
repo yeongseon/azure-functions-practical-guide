@@ -21,8 +21,16 @@ content_sources:
     - id: what-you-ll-build
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Intended Python Linux FC1 private Storage configuration, with distinct endpoint and DNS mappings in the adjacent key; identity is authorization, not a transport hop or execution result.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/manage-connections
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-access-restrictions#app-access
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#connecting-to-host-storage-with-an-identity
@@ -54,65 +62,89 @@ You will configure a deployed Flex Consumption app to use identity-based host st
 !!! info "Infrastructure Context"
     **Plan**: Flex Consumption (FC1) | **Network**: Full private network | **VNet**: ✅
 
-    FC1 deploys with VNet integration, private endpoints for all storage services, private DNS zones, and user-assigned managed identity. Storage uses identity-based authentication (no shared keys).
+    The production Bicep context uses outbound VNet integration, four Storage private endpoints, linked private DNS zones and a user-assigned managed identity with shared keys disabled. These are this example's choices, not prerequisites of every FC1 app, and the settings-only steps below do not provision the network. VNet integration does not deploy app compute into the integration subnet.
 
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 10, 'rankSpacing': 70, 'padding': 8, 'subGraphTitleMargin': {'top': 8, 'bottom': 32}}}}%%
 flowchart TD
-    INET[Internet] -->|HTTPS| FA[Function App\nFlex Consumption FC1\nLinux Python 3.11]
-
-    subgraph VNET["VNet 10.0.0.0/16"]
-        subgraph INT_SUB["Integration Subnet 10.0.1.0/24\nDelegation: Microsoft.App/environments"]
-            FA
+    accTitle: Python 3.11 Linux Flex Consumption FC1 configuration context
+    accDescr: Intended private Storage context for this FC1 example, not a deployment result. The app is outside the outbound integration subnet. Four distinct Storage endpoints and DNS zones are expanded in the key; user-assigned identity and RBAC are authorization associations, not data-transit hops. Blob deployment storage is separate from host storage configuration.
+    client(["Internet"])
+    app_runtime["Function App<br/>FC1 · Linux<br/>Python 3.11"]
+    identity{{"User-assigned<br/>managed identity"}}
+    telemetry>"Application<br/>Insights"]
+    subgraph DNS["Private DNS zones"]
+        dns_fn{{"Blob · Queue<br/>Table · File"}}
+    end
+    subgraph vnet_fn["VNet"]
+        subgraph subnet_int_fn["<div style='width:170px;text-align:right'>Integration<br/>subnet</div>"]
+            vnet_integration[["Outbound<br/>integration"]]
         end
-        subgraph PE_SUB["Private Endpoint Subnet 10.0.2.0/24"]
-            PE_BLOB[PE: blob]
-            PE_QUEUE[PE: queue]
-            PE_TABLE[PE: table]
-            PE_FILE[PE: file]
+        subgraph subnet_pe_fn["<div style='width:130px;text-align:left'>PE<br/>subnet</div>"]
+            pe_storage[["Storage PEs<br/>blob · queue<br/>table · file"]]
         end
     end
-
-    PE_BLOB --> ST["Storage Account\nallowPublicAccess: false\nallowSharedKeyAccess: false"]
-    PE_QUEUE --> ST
-    PE_TABLE --> ST
-    PE_FILE --> ST
-
-    subgraph DNS[Private DNS Zones]
-        DNS_BLOB[privatelink.blob.core.windows.net]
-        DNS_QUEUE[privatelink.queue.core.windows.net]
-        DNS_TABLE[privatelink.table.core.windows.net]
-        DNS_FILE[privatelink.file.core.windows.net]
+    storage_db[("Storage account<br/>Settings: S")]
+    subgraph DEPLOY["<div style='width:200px;text-align:left'>Deployment</div>"]
+        BLOB_CTR[("Blob container<br/>deployment-packages")]
     end
-
-    PE_BLOB -.-> DNS_BLOB
-    PE_QUEUE -.-> DNS_QUEUE
-    PE_TABLE -.-> DNS_TABLE
-    PE_FILE -.-> DNS_FILE
-
-    FA -.->|User-Assigned MI| UAMI[Managed Identity]
-    UAMI -->|RBAC| ST
-    FA --> AI[Application Insights]
-
-    subgraph DEPLOY[Deployment]
-        BLOB_CTR[Blob Container\ndeployment-packages]
-    end
-    ST --- BLOB_CTR
-
-    style FA fill:#107c10,color:#fff
-    style VNET fill:#E8F5E9,stroke:#4CAF50
-    style ST fill:#FFF3E0
-    style DNS fill:#E3F2FD
+    client -->|"[Configured]<br/>HTTPS if H"| app_runtime
+    app_runtime -.->|"[Configured]<br/>Identity"| identity
+    app_runtime -.->|"[Configured]<br/>Telemetry"| telemetry
+    identity -.->|"[Configured]<br/>RBAC permission"| storage_db
+    dns_fn -.->|"[Configured]<br/>VNet link"| vnet_fn
+    app_runtime -->|"[Configured]<br/>Outbound"| vnet_integration
+    vnet_integration -->|"[Configured]<br/>Each PE"| pe_storage
+    pe_storage -->|"[Configured]<br/>Each service"| storage_db
+    storage_db -.->|"[Configured]<br/>Contains"| DEPLOY
+    %% Layout-only tiers; add no requests or configuration steps.
+    identity ~~~ telemetry
+    telemetry ~~~ dns_fn
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e;
+    classDef bandMuted fill:#ffffff,stroke:#707e93,stroke-width:1.5px,stroke-dasharray:4 3,color:#14202e;
+    class client,storage_db,BLOB_CTR baseNeutral;
+    class app_runtime,vnet_integration,pe_storage focusActive;
+    class identity,telemetry,dns_fn bandMuted;
+    linkStyle default stroke-width:2px;
 ```
+
+**Reading key (Linux FC1):** Solid arrows show intended request/data access; dotted arrows show identity, permissions, telemetry, VNet-link association or membership. RBAC grants access to the identity; data does not traverse the identity node. Token acquisition uses the app's local identity endpoint ([identity](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)). The bundled endpoints are parallel service paths, not serial hops.
+
+| Key | Full configuration / qualification |
+|---|---|
+| H | Public HTTPS requires app public access to be enabled and permitted by access restrictions. This figure shows Storage endpoints, not a site private endpoint. If a separate site endpoint is added with `publicNetworkAccess` unset, public ingress defaults to disabled. |
+| VNet / integration / PE subnet | `10.0.0.0/16` / `10.0.1.0/24` / `10.0.2.0/24`; integration delegation `Microsoft.App/environments`. |
+| S | The production template's module maps `allowPublicAccess: false` to Storage `publicNetworkAccess: Disabled`; `allowSharedKeyAccess: false` selects identity-based access. These are separate network and authorization controls. |
+| Host identity | This tutorial chooses `AzureWebJobsStorage__accountName`, `AzureWebJobsStorage__credential=managedidentity` and `AzureWebJobsStorage__clientId` for its UAMI. Host storage can instead use a connection string; UAMI selection can also use `__managedIdentityResourceId`, not both selectors. |
+| Runtime / deployment | Python name/version come from `functionAppConfig.runtime`; `FUNCTIONS_WORKER_RUNTIME` is not set on Flex. Blob deployment storage has its own `functionAppConfig.deployment.storage` authentication configuration, which can use a connection string or managed identity. Flex has no Azure Files content-share dependency. |
+
+The four distinct endpoint → service and endpoint → DNS zone-group associations remain enumerated below. DNS zones are external to and linked to the VNet; clients use normal Storage hostnames resolving to PE IPs for this path. File is retained as optional workload access, not an FC1 content requirement.
+
+| Endpoint → Storage service | Private DNS zone |
+|---|---|
+| `PE_BLOB` → Blob | `privatelink.blob.core.windows.net` |
+| `PE_QUEUE` → Queue | `privatelink.queue.core.windows.net` |
+| `PE_TABLE` → Table | `privatelink.table.core.windows.net` |
+| `PE_FILE` → File | `privatelink.file.core.windows.net` |
+
+Sources: [network/delegation](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options), [Storage endpoints/DNS](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints), [host connections](https://learn.microsoft.com/en-us/azure/azure-functions/manage-connections), [settings](https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings), [Flex deployment](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to#configure-deployment-settings), [storage](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations), [app access](https://learn.microsoft.com/en-us/azure/app-service/overview-access-restrictions#app-access).
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart TD
-    Bicep["Bicep/ARM config"] --> App[Function App on FC1]
-    App --> Runtime[functionAppConfig.runtime]
-    App --> Storage[AzureWebJobsStorage__* settings]
-    Storage --> UAMI[User-assigned managed identity]
+    accTitle: Python Flex Consumption configuration associations
+    accDescr: Bicep or ARM configures the FC1 app, its runtime properties and host storage settings, which select a user-assigned identity in this example. Arrows are configuration associations, not data-transit hops or execution order; runtime and host storage are separate configuration surfaces.
+    Bicep["Bicep/ARM config"] --> App["Function App<br/>on FC1"]
+    App --> Runtime["R: runtime<br/>properties"]
+    App --> Storage["S: host storage<br/>settings"]
+    Storage --> UAMI["User-assigned<br/>managed identity"]
+    %% Layout-only tier; adds no configuration dependency or semantic arrow.
+    Runtime ~~~ Storage
 ```
+
+R = `functionAppConfig.runtime`; S = the `AzureWebJobsStorage__*` settings expanded in the preceding key. All four configuration relationships are retained; the invisible tier is only for layout.
 
 ## Steps
 
