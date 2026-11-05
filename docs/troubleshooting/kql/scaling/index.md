@@ -22,6 +22,8 @@ KQL queries for analyzing cold starts, scaling behavior, and host lifecycle even
 <!-- diagram-id: scaling-queries -->
 ```mermaid
 flowchart TD
+    accTitle: Scaling query reading map
+    accDescr: Read from cold start query through scaling events timeline, host startup and shutdown, and instance count trend to scaling diagnosis. Arrows show this page's query reading order, not causal proof or a recorded incident result.
     A[Cold start query] --> B[Scaling events timeline]
     B --> C[Host startup and shutdown]
     C --> D[Instance count trend]
