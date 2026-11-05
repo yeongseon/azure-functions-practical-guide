@@ -25,6 +25,8 @@ Azure Functions handlers in the Python v2 model are ordinary Python callables, s
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Local Python handler unit-test steps
+    accDescr: In the local pytest process, construct an HttpRequest, call the Python handler directly, and assert response status and body. This host-free unit test does not execute a deployed Azure function or test runtime binding integration.
     TEST[pytest test] --> BUILD[Build func.HttpRequest]
     BUILD --> CALL[Call handler directly]
     CALL --> ASSERT[Assert status + body]

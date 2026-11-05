@@ -23,6 +23,8 @@ A timer trigger fires on a schedule defined by an NCRONTAB expression. Unlike HT
 <!-- diagram-id: overview -->
 ```mermaid
 flowchart TD
+    accTitle: Timer schedule and task logging stages
+    accDescr: Logical stages from the NCRONTAB schedule through the runtime timer invocation to background work and, when configured, Application Insights logging. For each timer function, the storage lock coordinates a single active timer across scaled-out app instances; logging is not an ingestion guarantee.
     SCHED[NCRONTAB Schedule] --> RUNTIME[Functions Runtime Scheduler]
     RUNTIME --> TRIGGER[Timer Trigger Invocation]
     TRIGGER --> TASK[Background Task Execution]
