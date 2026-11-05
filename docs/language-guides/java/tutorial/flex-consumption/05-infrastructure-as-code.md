@@ -23,6 +23,7 @@ content_sources:
       source: self-generated
       justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-infrastructure-as-code
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
         - https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
@@ -31,6 +32,7 @@ content_sources:
       source: self-generated
       justification: Flow view of what you ll build 2, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-infrastructure-as-code
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
         - https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
@@ -60,19 +62,24 @@ You will deploy the complete Flex Consumption infrastructure stack from Bicep, i
 
     The production Bicep template at `infra/flex-consumption/main.bicep` includes full VNet integration, private endpoints, and DNS zones.
 
-    <!-- diagram-id: what-you-ll-build -->
+<!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
-    BICEP["Bicep Template\ninfra/flex-consumption/main.bicep"] -->|"az deployment group create"| RG[Resource Group]
-    RG --> MI["User-Assigned\nManaged Identity"]
-    RG --> PLAN["App Service Plan\nFC1 FlexConsumption"]
-    RG --> ST["Storage Account\n(no shared key)"]
-    RG --> FA["Function App\nLinux Java 17"]
+    accTitle: Java Linux FC1 infrastructure configuration map
+    accDescr: Illustrative resource-group provisioning and configuration map for this Java 17 Linux FC1 tutorial. The shown user-assigned identity and identity-authenticated storage without shared keys are this example's configuration, not a requirement for every Flex app or evidence that permissions and host settings are complete. Arrows are logical provisioning and configuration associations, not network hops or serial creation order.
+    BICEP["Bicep Template<br/>infra/flex-consumption/<br/>main.bicep"] -->|"az deployment<br/>group create"| RG[Resource Group]
+    RG --> MI["User-Assigned<br/>Managed Identity"]
+    RG --> PLAN["App Service Plan<br/>FC1 FlexConsumption"]
+    RG --> ST["Storage Account<br/>(no shared key)"]
+    RG --> FA["Function App<br/>Linux Java 17"]
     FA --> PLAN
     FA -->|MI auth| ST
 
-    style BICEP fill:#f39c12,color:#fff
-    style FA fill:#0078d4,color:#fff
+    %% Layout-only tiers; add no resource dependencies, steps or visible arrows.
+    MI ~~~ PLAN
+    PLAN ~~~ ST
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class BICEP,RG,MI,PLAN,ST,FA baseNeutral;
 ```
 
 | CLI element | Explanation |
@@ -86,6 +93,8 @@ flowchart TD
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart TD
+    accTitle: Java Linux Flex Consumption infrastructure workflow
+    accDescr: Illustrative task order for this Java 17 Linux FC1 tutorial: Bicep template, resource-group deployment, configured Function App with plan and storage, then build and publish from the Maven staging directory. Arrows summarize tutorial stages, not resource creation order or successful Azure execution.
     A[Bicep template] --> B[az deployment group create]
     B --> C[Function App + Plan + Storage]
     C --> D["Build + publish from staging dir"]

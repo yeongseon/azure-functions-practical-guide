@@ -21,16 +21,23 @@ content_sources:
     - id: what-you-ll-build
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Intended Linux FC1 private Storage topology for this .NET 8 tutorial; grouped endpoints retain individual service and DNS mappings in the adjacent key, not an observed deployment.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to
+        - https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
         - https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-develop-local
     - id: what-you-ll-build-2
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build 2, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Linux FC1 outbound Blob path overview; private endpoint precedes the Storage service, not a deployment verification result.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints
         - https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-develop-local
@@ -66,65 +73,87 @@ You will provision a Flex Consumption Function App with Azure CLI, publish .NET 
 !!! info "Infrastructure Context"
     **Plan**: Flex Consumption (FC1) | **Network**: Full private network | **VNet**: ✅
 
-    FC1 deploys with VNet integration, private endpoints for all storage services, private DNS zones, and user-assigned managed identity. Storage uses identity-based authentication (no shared keys).
+    This Linux FC1 tutorial configures outbound VNet integration, four Storage private endpoints and DNS zones, and user-assigned identity for host/deployment storage. These are scenario choices, not requirements for every Flex app. Public HTTP ingress remains separate from private Storage access.
 
-    <!-- diagram-id: what-you-ll-build -->
+<!-- diagram-id: what-you-ll-build -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 10, 'rankSpacing': 70, 'padding': 8, 'subGraphTitleMargin': {'top': 8, 'bottom': 32}}}}%%
 flowchart TD
-    INET[Internet] -->|HTTPS| FA[Function App\nFlex Consumption FC1\nLinux .NET 8 isolated]
-
-    subgraph VNET["VNet 10.0.0.0/16"]
-        subgraph INT_SUB["Integration Subnet 10.0.1.0/24\nDelegation: Microsoft.App/environments"]
-            FA
+    accTitle: Linux FC1 .NET 8 private Storage topology
+    accDescr: Intended public HTTPS ingress and private Storage access for this Flex tutorial. Outbound integration does not deploy app compute into the integration subnet. Four separate Storage endpoints and DNS zones are grouped by service in the adjacent key; identity and telemetry are not transit hops.
+    client(["Internet"])
+    app_runtime["Function App<br/>FC1 · Linux<br/>.NET 8 isolated"]
+    identity{{"User-assigned MI<br/>Storage RBAC"}}
+    telemetry>"Application<br/>Insights"]
+    subgraph DNS["Private DNS zones"]
+        dns_fn{{"Blob · Queue<br/>Table · File"}}
+    end
+    subgraph vnet_fn["VNet"]
+        subgraph subnet_int_fn["<div style='width:170px;text-align:right'>Integration<br/>subnet</div>"]
+            vnet_integration[["Outbound<br/>integration"]]
         end
-        subgraph PE_SUB["Private Endpoint Subnet 10.0.2.0/24"]
-            PE_BLOB[PE: blob]
-            PE_QUEUE[PE: queue]
-            PE_TABLE[PE: table]
-            PE_FILE[PE: file]
+        subgraph subnet_pe_fn["<div style='width:130px;text-align:left'>PE<br/>subnet</div>"]
+            pe_storage[["Storage PEs<br/>blob · queue<br/>table · file"]]
         end
     end
-
-    PE_BLOB --> ST["Storage Account\nallowPublicAccess: false\nallowSharedKeyAccess: false"]
-    PE_QUEUE --> ST
-    PE_TABLE --> ST
-    PE_FILE --> ST
-
-    subgraph DNS[Private DNS Zones]
-        DNS_BLOB[privatelink.blob.core.windows.net]
-        DNS_QUEUE[privatelink.queue.core.windows.net]
-        DNS_TABLE[privatelink.table.core.windows.net]
-        DNS_FILE[privatelink.file.core.windows.net]
+    storage_db[("Storage account<br/>Settings: S")]
+    subgraph DEPLOY["<div style='width:200px;text-align:left'>Deployment</div>"]
+        BLOB_CTR[("Blob container<br/>deployment-packages")]
     end
-
-    PE_BLOB -.-> DNS_BLOB
-    PE_QUEUE -.-> DNS_QUEUE
-    PE_TABLE -.-> DNS_TABLE
-    PE_FILE -.-> DNS_FILE
-
-    FA -.->|User-Assigned MI| UAMI[Managed Identity]
-    UAMI -->|RBAC| ST
-    FA --> AI[Application Insights]
-
-    subgraph DEPLOY[Deployment]
-        BLOB_CTR[Blob Container\ndeployment-packages]
-    end
-    ST --- BLOB_CTR
-
-    style FA fill:#0078d4,color:#fff
-    style VNET fill:#E8F5E9,stroke:#4CAF50
-    style ST fill:#FFF3E0
-    style DNS fill:#E3F2FD
+    client -->|"[Configured]<br/>HTTPS"| app_runtime
+    app_runtime -.->|"[Configured]<br/>Identity"| identity
+    app_runtime -.->|"[Configured]<br/>Telemetry"| telemetry
+    dns_fn -.->|"[Configured]<br/>VNet link"| vnet_fn
+    app_runtime -->|"[Configured]<br/>Outbound"| vnet_integration
+    vnet_integration -->|"[Configured]<br/>Each PE"| pe_storage
+    pe_storage -->|"[Configured]<br/>Each service"| storage_db
+    storage_db -.->|"[Configured]<br/>Contains"| BLOB_CTR
+    %% Layout-only tiers; no additional requests or diagnostic steps.
+    identity ~~~ telemetry
+    telemetry ~~~ dns_fn
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e;
+    classDef bandMuted fill:#ffffff,stroke:#707e93,stroke-width:1.5px,stroke-dasharray:4 3,color:#14202e;
+    class client,storage_db,BLOB_CTR baseNeutral;
+    class app_runtime,vnet_integration,pe_storage focusActive;
+    class identity,telemetry,dns_fn bandMuted;
+    linkStyle default stroke-width:2px;
 ```
+
+**Reading key (Linux FC1):** Solid arrows show intended request/data access; dotted arrows show identity, telemetry, the VNet DNS-link association or membership, not transport through those roles. Arrows name the initiator or association owner. VNet integration is outbound-only and does not deploy the app into the integration subnet. Flex uses subnet-dedicated shared gateways, not one interface per app instance. The DNS zones are linked to the VNet, not hosted inside it; the link arrow terminates at the VNet boundary, not a DNS-query hop ([networking](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options), [Flex integration](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to#configure-virtual-network-integration)).
+
+| Key | Tutorial configuration / meaning |
+|---|---|
+| VNet / integration / PE subnet | `10.0.0.0/16` / `10.0.1.0/24` / `10.0.2.0/24`; integration delegation `Microsoft.App/environments` |
+| S | `allowBlobPublicAccess: false`, `allowSharedKeyAccess: false`, `defaultAction: Deny` as configured in Steps3/10; anonymous-Blob blocking is not public-network disabling |
+| Identity / RBAC | User-assigned identity selected for host/deployment storage; token retrieval uses the app's local identity endpoint; RBAC authorizes supported identity-based operations, not network transit |
+| Deployment | `deployment-packages` is the container created in Step9; verify the separate deployment-storage selection in Step13 |
+
+The bundled `pe_storage` node represents **four distinct endpoints**, not one shared endpoint or serial services. Each row expands integration → endpoint → the matching Storage service and the corresponding endpoint → DNS zone-group association:
+
+| Endpoint → Storage service | Linked private DNS zone |
+|---|---|
+| `PE_BLOB` → Blob | `privatelink.blob.core.windows.net` |
+| `PE_QUEUE` → Queue | `privatelink.queue.core.windows.net` |
+| `PE_TABLE` → Table | `privatelink.table.core.windows.net` |
+| `PE_FILE` → File | `privatelink.file.core.windows.net` |
+
+These are this tutorial's provisioned endpoints, not a universal four-endpoint requirement. Flex does not depend on an Azure Files content share; a File PE alone does not establish identity-authenticated Files use. Clients retain normal Storage hostnames; with the appropriate private DNS resolution configured for their network, those hostnames resolve to PE IPs ([Storage endpoints/DNS](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints), [storage considerations](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations), [identity](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)).
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart TD
-    Internet[Internet Client] --> App[Function App\nFlex Consumption FC1\nLinux]
-    App --> VNet["VNet Integration Subnet\nDelegation: Microsoft.App/environments"]
-    VNet --> Backend[Private Backend\nStorage Account]
-    Backend --> PE[Blob Private Endpoint]
+    accTitle: Linux FC1 public ingress and private Blob path
+    accDescr: Conceptual path from an Internet client to the Linux Flex app, then outbound integration to a Blob private endpoint and the Storage backend. The endpoint precedes Storage access; no deployment success is asserted.
+    Internet(["Internet Client"]) -->|"[Configured] HTTPS"| App["Function App<br/>Flex Consumption FC1<br/>Linux"]
+    App -->|"[Configured] Outbound"| VNet[["VNet Integration Subnet"]]
+    VNet -->|"[Configured] Private IP"| PE[["Blob Private Endpoint"]]
+    PE -->|"[Configured] Private Link"| Backend[("Private Backend<br/>Storage Account")]
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class Internet,App,VNet,PE,Backend baseNeutral;
 ```
+
+**Takeaway:** For this Linux FC1 path, integration uses the `Microsoft.App/environments` delegation shown in the topology key. The app initiates private Blob access through the endpoint, not Storage initiating a connection back to its endpoint. This is a path overview, not a successful execution trace ([Storage private endpoints](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints)).
 
 ## Steps
 

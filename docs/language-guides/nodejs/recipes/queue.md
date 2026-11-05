@@ -14,6 +14,8 @@ content_sources:
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node
 ---
 # Queue Processing
 
@@ -24,11 +26,15 @@ This recipe shows real queue-triggered background processing with queue output b
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Node.js orders queue processing and possible outcomes
+    accDescr: An HTTP or API producer enqueues orders for the storageQueue handler. The processed-orders path represents the configured output binding; the orders-poison path represents runtime handling after repeated processing failures, not an output written by every handler invocation. These are logical processing relationships, not network-call order.
     PRODUCER["HTTP/API Producer"] --> INQ[orders Queue]
     INQ --> WORKER[storageQueue Trigger]
-    WORKER --> RESULT[processed-orders Queue Output]
-    WORKER --> FAIL[orders-poison after retries]
+    WORKER --> RESULT["processed-orders<br/>Queue Output"]
+    WORKER --> FAIL["orders-poison<br/>after retries"]
 ```
+
+**Reading key:** With the default `maxDequeueCount` of 5, five total failed processing attempts, including the first, lead to `orders-poison`. The `processed-orders` path uses this recipe's `output.storageQueue` binding and `context.extraOutputs.set`; poison handling belongs to the runtime, not that output binding.
 
 ## Prerequisites
 
@@ -119,3 +125,5 @@ When the handler keeps failing for the same message, Azure Functions moves the m
 ## Sources
 - [Azure Queue Storage bindings for Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue)
 - [Azure Functions error handling and retries (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages)
+- [Azure Queue storage trigger (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger)
+- [Azure Functions Node.js developer reference (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node)

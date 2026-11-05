@@ -11,6 +11,7 @@ content_sources:
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs-output
 ---
 # Event Hubs
 
@@ -21,6 +22,8 @@ This recipe covers integrating Azure Event Hubs with Azure Functions Node.js v4 
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Node.js Event Hubs input and downstream paths
+    accDescr: Producers feed Event Hub partitions, then the Event Hubs trigger invokes the Node.js function app, with paths to a downstream store and Event Hubs output. These are conceptual data-flow relationships; the store is illustrative, and the branches do not promise transactional writes or depict connection initiators.
     PROD[Event Producers] --> EH[(Event Hub Partitions)]
     EH --> TRIG[Event Hubs Trigger]
     TRIG --> FA[Function App]

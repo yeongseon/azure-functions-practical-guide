@@ -10,6 +10,7 @@ content_sources:
       justification: Flow view of architecture, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-openapi-definition
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node
 ---
 # OpenAPI and Swagger
 
@@ -20,9 +21,11 @@ Unlike the .NET isolated worker, the Node.js v4 model has no first-class, Micros
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
-    FUNC[HTTP trigger functions] --> APIM[API Management import]
-    APIM --> GEN[Generated OpenAPI definition]
-    SPEC[Hand-authored openapi.json] --> SERVE[HTTP function serves /openapi.json]
+    accTitle: OpenAPI authoring and presentation paths for Node.js HTTP functions
+    accDescr: Importing HTTP functions into API Management can generate an OpenAPI definition. The separate illustrative path serves a hand-authored openapi.json from a Node.js v4 HTTP function for a Swagger UI page. Arrows organize authoring and presentation relationships, not runtime network calls.
+    FUNC["HTTP trigger<br/>functions"] --> APIM["API Management<br/>import"]
+    APIM --> GEN["Generated OpenAPI<br/>definition"]
+    SPEC["Hand-authored<br/>openapi.json"] --> SERVE["HTTP function serves<br/>/openapi.json"]
     SERVE --> UI[Swagger UI page]
 ```
 
@@ -89,3 +92,4 @@ app.http("docs", {
 ## Sources
 
 - [Expose serverless APIs from HTTP endpoints using Azure API Management (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-openapi-definition)
+- [Azure Functions Node.js developer reference (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node)
