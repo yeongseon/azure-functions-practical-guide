@@ -49,6 +49,8 @@ You will standardize .NET isolated worker app settings for Flex Consumption, kee
 <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
+    accTitle: Flex Consumption .NET isolated configuration workflow
+    accDescr: Illustrative workflow for this Flex Consumption tutorial, from local.settings.json through Azure app settings, the Functions host, isolated worker startup and function behavior. Arrows summarize configuration tasks and runtime roles, not automatic upload of the local file, runtime stack selection through app settings or a configuration precedence rule.
     A[local.settings.json] --> B[App Settings in Azure]
     B --> C[Functions host]
     C --> D[dotnet-isolated worker startup]

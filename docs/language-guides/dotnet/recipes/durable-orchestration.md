@@ -22,6 +22,8 @@ Coordinate long-running workflows with Durable Functions in .NET isolated worker
 <!-- diagram-id: durable-orchestration -->
 ```mermaid
 flowchart TD
+    accTitle: General trigger and service-access flow
+    accDescr: A trigger invokes a function, which accesses an Azure service through a binding or SDK. This generic conceptual flow does not depict Durable orchestration scheduling, activities or replay.
     A[Trigger] --> B[Function]
     B --> C[Binding or SDK]
     C --> D[Azure service]
