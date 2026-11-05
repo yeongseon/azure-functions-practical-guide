@@ -26,6 +26,8 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-continuous-deployment
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
     - id: what-you-ll-build-2
       type: flowchart
       source: self-generated
@@ -34,6 +36,8 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-continuous-deployment
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
 ---
 # 06 - CI/CD (Flex Consumption)
 
@@ -63,6 +67,8 @@ You will create a GitHub Actions workflow for Flex Consumption deployment and co
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
+    accTitle: Node.js Flex Consumption FC1 tutorial deployment overview
+    accDescr: A developer push to main starts the embedded GitHub Actions workflow, which depicts publish-profile authentication and a remote-build request for apps/nodejs on Flex Consumption FC1. These are the example's intended deployment relationships, not a physical network topology, a cold-start performance guarantee or evidence of success; the embedded workflow has no path filter.
     GH["GitHub Actions"] -->|"publish profile\n+ remote build"| FA[Function App\nFlex Consumption FC1]
     DEV["Developer"] -->|"git push"| GH
 
@@ -73,6 +79,8 @@ flowchart TD
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart TD
+    accTitle: Node.js Flex Consumption tutorial CI/CD setup order
+    accDescr: Create the workflow YAML, store its secrets, push to main to trigger the embedded workflow, then validate the deployment. This is the intended setup and verification order for the Flex Consumption example, not proof of complete authentication configuration or successful deployment.
     A[Create workflow YAML] --> B[Store secrets]
     B --> C[Push to trigger]
     C --> D[Validate deployment]
@@ -217,3 +225,5 @@ az monitor app-insights query \
 - [Azure Functions Node.js developer guide (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node)
 - [Continuous deployment for Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-continuous-deployment)
 - [Azure Functions Flex Consumption plan (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan)
+- [GitHub Actions deployment (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions)
+- [Deployment technologies (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies)
