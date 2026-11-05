@@ -12,6 +12,7 @@ content_sources:
       source: self-generated
       justification: Flow view of architecture, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/event-grid/system-topics
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-grid-trigger
         - https://learn.microsoft.com/en-us/cli/azure/eventgrid/event-subscription?view=azure-cli-latest
 ---
@@ -24,6 +25,8 @@ This recipe uses `app.eventGrid()` (not HTTP trigger emulation) to handle native
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Node.js Event Grid event routing
+    accDescr: Logical Storage event routing through a system topic and event subscription to the Node.js v4 eventGrid trigger and application handler. Arrows show conceptual stages, not separate network hops or a subscription-validation exchange.
     SOURCE[Storage Account Event Source] --> TOPIC[Event Grid System Topic]
     TOPIC --> SUB[Event Subscription]
     SUB --> FUNC[eventGrid Trigger]
@@ -152,6 +155,7 @@ For identity-based authentication (extension 3.3.x or higher), set a `connection
 - [Queue Processing](queue.md)
 
 ## Sources
+- [Event Grid system topics (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/event-grid/system-topics)
 - [Event Grid trigger for Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-grid-trigger)
 - [Event Grid output binding for Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-grid-output)
 - [Create Event Grid subscriptions with Azure CLI (Microsoft Learn)](https://learn.microsoft.com/en-us/cli/azure/eventgrid/event-subscription?view=azure-cli-latest)

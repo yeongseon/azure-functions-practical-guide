@@ -52,6 +52,8 @@ A Java Azure Functions app built with Maven annotations, validated locally with 
 <!-- diagram-id: steps -->
 ```mermaid
 flowchart TD
+    accTitle: Flex Consumption tutorial Java local workflow
+    accDescr: Illustrative local workflow for this Flex Consumption tutorial: clone the reference app, build with Maven, start the local Functions host, then test local endpoints. Arrows show procedure order, not deployment or validation of Azure Flex Consumption behavior.
     A[Clone reference app] --> B[Build with Maven]
     B --> C[Start Functions host]
     C --> D[Test local endpoints]

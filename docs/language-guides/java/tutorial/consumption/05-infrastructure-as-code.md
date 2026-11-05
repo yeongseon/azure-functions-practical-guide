@@ -23,6 +23,8 @@ content_sources:
       source: self-generated
       justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-infrastructure-as-code
+        - https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-java
@@ -50,6 +52,8 @@ You will define a complete Consumption environment in Bicep (storage account, Y1
 <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
+    accTitle: Java Linux Consumption infrastructure workflow
+    accDescr: Illustrative task order for this Java 17 Linux Y1 tutorial: Bicep template, resource-group deployment, configured Function App with plan and storage, then build and publish from the Maven staging directory. Arrows summarize tutorial stages, not resource creation order or successful Azure execution.
     A[Bicep template] --> B[az deployment group create]
     B --> C[Function App + Plan + Storage]
     C --> D["Build + publish from staging dir"]
