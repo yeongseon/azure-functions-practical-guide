@@ -16,7 +16,7 @@ content_sources:
     - id: what-this-section-covers
       type: flowchart
       source: self-generated
-      justification: Flow view of what this section covers, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Documentation reading path through five topics listed on this page; not an Azure architecture or product-dependency diagram.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
@@ -35,6 +35,8 @@ Use this section before implementation to choose the right operating model for y
 <!-- diagram-id: what-this-section-covers -->
 ```mermaid
 flowchart TD
+    accTitle: Platform section reading path
+    accDescr: Documentation structure, not an Azure architecture. Read Hosting, Scaling, Triggers and Bindings, Networking, then Security; arrows indicate reading order, not product relationships.
     A[Hosting]
     A --> B[Scaling]
     B --> C[Triggers and Bindings]
