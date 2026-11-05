@@ -183,7 +183,10 @@ def relationship_problems(name: str, code: str) -> list[str]:
         ("poll", "trigger_listener" if trigger else "app_runtime", "==>" if trigger and failure else "-->", "client"),
         ("invoke", "app_runtime", "-->", "language_worker"),
         ("scale", "scale_controller", "-.->", "app_runtime"),
+        ("demand monitoring", "scale_controller", "-.->", "client"),
     ]
+    if trigger:
+        expected.append(("listener ownership", "app_runtime", "-.->", "trigger_listener"))
     if network:
         expected.extend([
             ("DNS", "app_runtime", "-.->", "dns_fn"),
@@ -389,6 +392,26 @@ def test_accepts_sequence_description_with_trailing_spaces() -> None:
     problems = template_problems(mutated)
     # Then: description wording and trailing spaces do not alter the exchange.
     assert problems == []
+
+
+@pytest.mark.parametrize(("name", "relationship"), [
+    *((name, ("scale_controller", "client", "demand monitoring")) for name in VIEWS),
+    *((name, ("app_runtime", "trigger_listener", "listener ownership")) for name in VIEWS if "-trigger-" in name),
+])
+def test_rejects_missing_control_relationship(name: str, relationship: tuple[str, str, str]) -> None:
+    # Given: delete one monitoring or ownership edge, retaining every other line.
+    text = PAGE.read_text(encoding="utf-8")
+    code = dict(FENCE.findall(text))[name]
+    source, target, purpose = relationship
+    edge = next(
+        line for line in code.splitlines()
+        if (match := EDGE.fullmatch(line)) and (match[1], match[2], match[4]) == (source, "-.->", target)
+    )
+    mutated = code.replace(edge + "\n", "", 1)
+    # When: the family guard checks the otherwise intact topology variant.
+    problems = template_problems(text.replace(code, mutated, 1))
+    # Then: the required relationship itself is reported as missing.
+    assert f"essential relationship: {purpose}" in problems
 
 
 @pytest.mark.parametrize("member", [
