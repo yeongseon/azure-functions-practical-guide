@@ -28,6 +28,7 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
         - https://learn.microsoft.com/en-us/azure/app-service/overview-hosting-plans
 ---
 # 06 - CI/CD (Dedicated)
@@ -52,6 +53,8 @@ You will configure a GitHub Actions pipeline that builds and deploys a .NET isol
 <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
+    accTitle: CI/CD stage order for the .NET isolated Dedicated tutorial
+    accDescr: A push to main that changes files matching apps/dotnet/** starts GitHub Actions, followed by dotnet build and publish, the Functions deployment action and a smoke test. This summarizes the tutorial's intended code-deployment workflow for Dedicated hosting, not authentication prerequisites, OS-specific deployment mechanics, a slot swap or evidence of a successful release.
     A[Push to main] --> B[GitHub Actions]
     B --> C[dotnet build + publish]
     C --> D[azure/functions-action]
@@ -219,4 +222,5 @@ Hello endpoint response:
 - [Azure Functions .NET isolated worker guide (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide)
 - [Azure Functions hosting options (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
 - [Continuous delivery with GitHub Actions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions)
+- [Deployment technologies in Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies)
 - [Azure App Service plans overview (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/app-service/overview-hosting-plans)
