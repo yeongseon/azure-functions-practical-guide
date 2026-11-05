@@ -66,20 +66,26 @@ You will add timer, queue, and blob triggers to a Node.js v4 app and verify that
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
-    TIMER["Timer\n(CRON schedule)"] --> FA[Function App\nConsumption Y1]
-    QUEUE["Storage Queue\nwork-items"] --> FA
-    BLOB["Blob Container\nuploads/{name}"] --> FA
-    FA --> PROCESSED["Blob Container\nprocessed/{name}"]
+    accTitle: Node.js Consumption trigger overview
+    accDescr: Conceptual timer, work-items queue and uploads blob paths to a Node.js v4 Function App on Consumption Y1. The processed blob path is an optional output binding, not implemented by the logging-only blob sample below; source arrows identify triggers, not network initiators or HTTP ingress.
+    TIMER["Timer<br/>(CRON schedule)"] --> FA["Function App<br/>Consumption Y1"]
+    QUEUE["Storage Queue<br/>work-items"] --> FA
+    BLOB["Blob Container<br/>uploads/{name}"] --> FA
+    FA -->|Optional output binding| PROCESSED["Blob Container<br/>processed/{name}"]
+    %% Layout-only links tier independent sources; no execution steps or arrows added.
+    TIMER ~~~ QUEUE
+    QUEUE ~~~ BLOB
 
-    style FA fill:#0078d4,color:#fff
-    style TIMER fill:#E8F5E9
-    style QUEUE fill:#FFF3E0
-    style BLOB fill:#E3F2FD
+    classDef default fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
 ```
+
+**Reading key:** Arrows associate independent triggers with the Consumption app; they are not network paths or a sequence of trigger executions. The `processed/{name}` destination illustrates an optional [output binding](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node); the blob sample below only logs and does not write that output.
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart TD
+    accTitle: Node.js Consumption trigger tutorial steps
+    accDescr: Tutorial order on Consumption: add timer, queue and blob triggers, create storage resources, then deploy and verify indexing. This is a procedure, not an execution trace.
     A[Add timer trigger] --> B[Add queue trigger]
     B --> C[Add blob trigger]
     C --> D[Create storage resources]
