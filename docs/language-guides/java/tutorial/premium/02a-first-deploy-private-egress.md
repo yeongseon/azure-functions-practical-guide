@@ -34,6 +34,7 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
         - https://learn.microsoft.com/en-us/azure/app-service/configure-vnet-integration-enable
         - https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-access-restrictions#app-access
     - id: deployment-verification-results
       type: flowchart
       source: self-generated
@@ -88,7 +89,7 @@ Deploy a Java Function App to an Elastic Premium plan (`EP1`) with VNet integrat
 %%{init: {'flowchart': {'nodeSpacing': 10, 'rankSpacing': 70, 'padding': 8, 'subGraphTitleMargin': {'top': 8, 'bottom': 32}}}}%%
 flowchart TD
     accTitle: Java 17 Linux EP1 private Storage topology
-    accDescr: Intended public HTTPS and private Storage relationships for this Premium tutorial. Outbound integration does not deploy app compute into the integration subnet. Four distinct Storage endpoints and DNS zones are expanded in the key; identity, telemetry and HTTP prewarm capacity are not data-transit hops. The separate site endpoint appears in the later path map.
+    accDescr: Private Storage relationships for this Premium tutorial; public HTTPS after the site endpoint is added requires publicNetworkAccess explicitly Enabled (H). Outbound integration does not deploy app compute into the integration subnet. Four distinct Storage endpoints and DNS zones are expanded in the key; identity, telemetry and HTTP prewarm capacity are not data-transit hops. The separate site endpoint appears in the later path map.
     client(["Internet"])
     app_runtime["Function App<br/>EP1 · Linux<br/>Java 17"]
     identity{{"System MI<br/>Microsoft Entra ID"}}
@@ -109,7 +110,7 @@ flowchart TD
     subgraph STORAGE["<div style='width:200px;text-align:left'>Content<br/>backend</div>"]
         SHARE[("Azure Files<br/>content share")]
     end
-    client -->|"[Configured]<br/>HTTPS"| app_runtime
+    client -->|"[Configured]<br/>HTTPS if H"| app_runtime
     app_runtime -.->|"[Configured]<br/>Identity"| identity
     app_runtime -.->|"[Configured]<br/>Telemetry"| telemetry
     app_runtime -.->|"[Configured]<br/>HTTP buffer"| warm_capacity
@@ -117,7 +118,8 @@ flowchart TD
     app_runtime -->|"[Configured]<br/>Outbound"| vnet_integration
     vnet_integration -->|"[Configured]<br/>Each PE"| pe_storage
     pe_storage -->|"[Configured]<br/>Each service"| storage_db
-    storage_db -.->|"[Configured]<br/>Contains"| SHARE
+    %% Membership targets the content boundary, not a path through its title to SHARE.
+    storage_db -.->|"[Configured]<br/>Contains"| STORAGE
     %% Layout-only tiers; add no requests, diagnostic steps or visible arrows.
     identity ~~~ telemetry
     telemetry ~~~ warm_capacity
@@ -136,6 +138,7 @@ flowchart TD
 
 | Key | Tutorial configuration / meaning |
 |---|---|
+| H | Public HTTPS after Step 8 requires `publicNetworkAccess: Enabled`, subject to site access restrictions; this tutorial does not explicitly enable it |
 | VNet / integration / PE subnet | `10.20.0.0/16` / `10.20.1.0/24` / `10.20.2.0/24`; delegation `Microsoft.Web/serverFarms` |
 | S | `allowBlobPublicAccess: false`, shared-key access allowed; anonymous-Blob blocking does not disable public networking |
 | W | Premium minimum active billed instance: 1; default prewarmed HTTP buffer: 1; Linux regional maximum scale-out: 20–100, Korea Central: 20. These are different settings, not prewarm minimum/maximum |
@@ -150,7 +153,7 @@ The bundled `pe_storage` node represents **four distinct endpoints**. Each row e
 | `PE_TABLE` → Table | `privatelink.table.core.windows.net` |
 | `PE_FILE` → File | `privatelink.file.core.windows.net` |
 
-Clients retain normal Storage hostnames; with appropriate private DNS resolution configured for their network, these resolve to PE IPs. Private content-share routing must also be configured for secured Premium content storage. The separate site endpoint in Step 8 controls inbound access; it does not itself disable public access ([Storage endpoints/DNS](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints), [storage](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations), [Premium capacity](https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan), [site endpoint](https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint)).
+Clients retain normal Storage hostnames; with appropriate private DNS resolution configured for their network, these resolve to PE IPs. Private content-share routing must also be configured for secured Premium content storage. With `publicNetworkAccess` unset (`null`), adding the site endpoint in Step 8 disables public ingress by default. The Internet → app HTTPS arrow is conditional on explicitly setting `publicNetworkAccess: Enabled` (H), which this tutorial does not do; use the private-client → site endpoint → app path shown below for private ingress ([app access](https://learn.microsoft.com/en-us/azure/app-service/overview-access-restrictions#app-access), [Storage endpoints/DNS](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints), [storage](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations), [Premium capacity](https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan), [site endpoint](https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint)).
 
 ## Steps
 
@@ -831,3 +834,4 @@ flowchart TD
 - [Azure Functions Premium plan](https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan)
 - [Integrate your app with an Azure virtual network](https://learn.microsoft.com/en-us/azure/app-service/configure-vnet-integration-enable)
 - [Use private endpoints for Azure App Service apps](https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint)
+- [App Service app access and public-network defaults](https://learn.microsoft.com/en-us/azure/app-service/overview-access-restrictions#app-access)
