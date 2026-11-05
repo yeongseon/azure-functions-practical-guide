@@ -30,6 +30,7 @@ content_sources:
       source: self-generated
       justification: Security boundary and identity flow, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
         - https://learn.microsoft.com/en-us/azure/azure-functions/security-concepts
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
@@ -316,39 +317,65 @@ Operational notes:
 <!-- diagram-id: common-mistakes-anti-patterns -->
 ```mermaid
 flowchart TD
-    A[Create new secret version in Key Vault] --> B[Validate Function managed identity access]
-    B --> C{Access check passed}
-    C -->|No| R1[Fix RBAC or network path]
+    accTitle: Secret rotation checks and rollback
+    accDescr: Illustrative rotation procedure. Retry identity access after correcting RBAC or networking; refresh the app and smoke-test dependencies before disabling the old secret. Failed validation leads to rollback.
+    A["Create new secret version<br/>in Key Vault"] --> B["Validate Function managed<br/>identity access"]
+    B --> C{"Access check<br/>passed?"}
+    C -->|No| R1["Fix RBAC or<br/>network path"]
     R1 --> B
-    C -->|Yes| D[Trigger planned app refresh or restart]
-    D --> E[Run dependency authentication smoke tests]
-    E --> F{Validation passed}
-    F -->|No| G[Rollback to previous secret version]
-    F -->|Yes| H[Disable old secret version]
-    H --> I[Close rotation change record]
+    C -->|Yes| D["Trigger planned app<br/>refresh or restart"]
+    D --> E["Run dependency authentication<br/>smoke tests"]
+    E --> F{"Validation<br/>passed?"}
+    F -->|No| G["Rollback to previous<br/>secret version"]
+    F -->|Yes| H["Disable old<br/>secret version"]
+    H --> I["Close rotation<br/>change record"]
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,R1,D,E,F,G,H,I baseNeutral;
 ```
 
 ### Security boundary and identity flow
 
 <!-- diagram-id: security-boundary-and-identity-flow -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 80}}}%%
 flowchart TD
-    Caller[Client or service caller] --> Ingress[Function endpoint\nHTTP trigger]
+    accTitle: Alternative HTTP security controls and dependency policies
+    accDescr: Conceptual relationship map, not a network route or token protocol. Token and shared-key controls lead to function execution; managed identity supports access to Key Vault, Storage, Service Bus and Event Hubs. The Policies dependency group denotes network policy scope, not VNet containment. The token and key branches illustrate alternative configurations, not automatic fallback; a function key does not bypass required Easy Auth or gateway token validation.
+    Caller["Client or<br/>service caller"] --> Ingress["Function endpoint<br/>HTTP trigger"]
     Ingress --> Auth{Auth control}
-    Auth -->|"User/API token"| AppAuth[App Service Auth or APIM JWT]
-    Auth -->|Function key fallback| KeyGate[Shared key gate]
+    Auth -->|"User/API token"| AppAuth["App Service Auth<br/>or APIM JWT"]
+    Auth -->|"Function key<br/>fallback"| KeyGate["Shared key gate"]
     AppAuth --> Code[Function execution]
     KeyGate --> Code
-    Code --> MI[Managed Identity token request]
+    Code --> MI["Managed identity<br/>token-backed access"]
     MI --> KV[Key Vault]
     MI --> ST[Storage account]
-    MI --> SB["Service Bus / Event Hubs"]
-    subgraph NetworkBoundary[Network boundary]
+    MI --> SB["Service Bus /<br/>Event Hubs"]
+    subgraph NetworkBoundary["Policies"]
         KV
         ST
         SB
     end
+    %% Layout-only links tier the dependency list; no extra steps or semantic arrows.
+    KV ~~~ ST
+    ST ~~~ SB
+    %% Layout-only anchor offsets the dependency group from the incoming paths.
+    Code ~~~ SB
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class Caller,Ingress,Auth,AppAuth,KeyGate,Code,MI,KV,ST,SB baseNeutral;
 ```
+
+**Reading key:** Arrows connect security responsibilities, not packet hops.
+**Managed identity token-backed access** summarizes obtaining a token through the app's managed-identity endpoint and using
+it on a resource call; the identity service does not forward data requests.
+The **Policies** group contains dependencies whose network access policies must be
+checked independently of identity permissions; it does not place these services
+inside one VNet. See [managed identity](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)
+and [network security](https://learn.microsoft.com/en-us/azure/azure-functions/security-concepts#network-security).
+
+The token and key branches illustrate alternative configurations, not automatic fallback; a function key does not bypass required Easy Auth or gateway token validation.
+See [function keys](https://learn.microsoft.com/en-us/azure/azure-functions/function-keys-how-to)
+and [App Service Authentication](https://learn.microsoft.com/en-us/azure/app-service/overview-authentication-authorization#how-it-works).
 
 ### Practical hardening commands (long flags only)
 
@@ -449,3 +476,4 @@ az role assignment create \
 - [App settings reference for Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings)
 - [Use Key Vault references for App Service and Functions](https://learn.microsoft.com/en-us/azure/app-service/app-service-key-vault-references)
 - [Function keys in Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/function-keys-how-to)
+- [Managed identities for App Service and Azure Functions](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)

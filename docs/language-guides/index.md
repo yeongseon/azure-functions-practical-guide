@@ -33,11 +33,18 @@ Use this section after reading platform fundamentals so you can apply the same a
 <!-- diagram-id: language-guides -->
 ```mermaid
 flowchart TD
+    accTitle: Language guide navigation map
+    accDescr: This guide's language sections are Python, Node.js, .NET, Java and PowerShell. Each arrow leads from the Language Guides index to a language section; the vertical arrangement does not prescribe a learning order between languages.
     LG[Language Guides] --> P[Python]
     LG --> N[Node.js]
     LG --> D[.NET]
     LG --> J[Java]
     LG --> PS[PowerShell]
+    %% Layout-only links tier the destinations; they add no reading steps or semantic arrows.
+    P ~~~ N
+    N ~~~ D
+    D ~~~ J
+    J ~~~ PS
 ```
 
 !!! tip "Platform-first, then language"
