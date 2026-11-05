@@ -23,6 +23,11 @@ content_sources:
       source: self-generated
       justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
         - https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-python
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
@@ -31,6 +36,8 @@ content_sources:
       source: self-generated
       justification: Flow view of what you ll build 2, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
         - https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-python
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
@@ -72,27 +79,38 @@ You will provision a Linux Function App on the Flex Consumption plan, publish yo
 !!! info "Infrastructure Context"
     **Plan**: Flex Consumption (FC1) | **Network**: VNet integration supported | **Storage auth**: SystemAssigned MI
 
-    Flex Consumption uses blob-based deployment storage with managed identity authentication, unlike Consumption which uses Azure Files with connection strings.
+    This Linux FC1 tutorial selects system-assigned managed identity for Blob deployment storage; Flex also supports connection-string deployment authentication. Flex has no Azure Files content-share dependency. Host storage authentication is separate from deployment storage; Linux Consumption can also store packages in Blob storage.
 
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
+%%{init: {"flowchart": {"nodeSpacing": 10, "rankSpacing": 60, "padding": 8, "subGraphTitleMargin": {"top": 8, "bottom": 24}}}}%%
 flowchart TD
-    INET[Internet] -->|HTTPS| FA[Function App\nFlex Consumption FC1\nLinux Python 3.11]
-
-    FA -->|"SystemAssigned MI"| ST[Storage Account\nBlob deployment]
-    FA --> AI[Application Insights]
-
-    subgraph STORAGE[Storage Services]
-        ST --- DEPLOY["Blob Container\napp-package"]
+    accTitle: Python 3.11 Linux FC1 public deployment storage
+    accDescr: Public HTTPS reaches this Flex app. Deployment storage uses the tutorial-selected system-assigned identity; Application Insights is off-path telemetry. The Storage Services group contains the account and app-package Blob container, not a VNet.
+    client(["Internet"])
+    app_runtime["Function App<br/>Flex Consumption FC1<br/>Linux Python 3.11"]
+    telemetry>"Application<br/>Insights"]
+    subgraph STORAGE["<div style='width:180px;text-align:left'>Storage<br/>Services</div>"]
+        storage_db[("Storage Account<br/>Blob deployment")]
+        DEPLOY[("Blob Container<br/>app-package")]
+        storage_db -.->|"[Configured]<br/>Contains"| DEPLOY
     end
-
-    style FA fill:#0078d4,color:#fff
-    style STORAGE fill:#FFF3E0
+    client -->|"[Configured] HTTPS"| app_runtime
+    app_runtime -->|"[Configured]<br/>SystemAssigned MI"| storage_db
+    app_runtime -.->|"[Configured]<br/>Telemetry"| telemetry
+    %% Layout-only tier; adds no requests or deployment steps.
+    DEPLOY ~~~ telemetry
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class client,app_runtime,storage_db,DEPLOY,telemetry baseNeutral;
 ```
+
+**Reading key:** Solid arrows show HTTPS and authenticated deployment-storage access; dotted arrows show membership and telemetry. The MI label is authentication, not an identity-service transit hop or a universal Flex requirement. Core Tools requests remote build for Python and the processed package resides in `app-package`; this does not prove host-storage permissions or trigger execution ([deployment settings](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to#configure-deployment-settings), [deployment](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies)).
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart TD
+    accTitle: Python Flex Consumption first-deployment tasks
+    accDescr: Tutorial order from variables and login through resource group, storage, container, app, role assignment and propagation wait, settings, publishing and endpoint checks. Waiting is a task, not proof that RBAC propagated; endpoint checks do not prove every trigger executed.
     A[Set variables + login] --> B[Create RG + storage]
     B --> C[Create deployment container]
     C --> D[Create function app]
@@ -346,6 +364,12 @@ Hello endpoint response:
 
 ## Sources
 
+- [Python versions and OS support](https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages)
+- [Functions storage](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations)
+- [Manage Flex Consumption](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to)
+- [Functions deployment](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies)
+- [Functions monitoring](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)
+- [App managed identity](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)
 - [Azure Functions Python developer guide (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python)
 - [Create your first Azure Function with Core Tools (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-python)
 - [Azure Functions Flex Consumption plan (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan)
