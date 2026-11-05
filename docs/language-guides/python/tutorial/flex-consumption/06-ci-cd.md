@@ -21,19 +21,28 @@ content_sources:
     - id: what-you-ll-build
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Logical Linux FC1 private Storage context; bundled endpoints preserve four independent service and DNS mappings without treating runtime identity as transit.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions
         - https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure-openid-connect
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages
+        - https://learn.microsoft.com/en-us/azure/storage/blobs/anonymous-read-access-prevent
+        - https://learn.microsoft.com/en-us/azure/storage/common/shared-key-authorization-prevent
     - id: what-you-ll-build-2
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build 2, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Intended OIDC login, Python package deployment and verification stages of the embedded FC1 example, not execution evidence.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions
         - https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure-openid-connect
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
+        - https://learn.microsoft.com/en-us/azure/azure-functions/python-build-options
 ---
 # 06 - CI/CD (Flex Consumption)
 
@@ -52,67 +61,82 @@ Automate build and deployment for your Flex Consumption Function App with GitHub
 You will configure OIDC-based GitHub Actions deployment to a Flex Consumption Function App and validate deployment telemetry without relying on Kudu.
 
 !!! info "Infrastructure Context"
-    **Plan**: Flex Consumption (FC1) | **Network**: Full private network | **VNet**: ✅
+    **Plan**: Flex Consumption (FC1) | **Network**: Public ingress / private Storage context | **VNet**: ✅
 
-    FC1 deploys with VNet integration, private endpoints for all storage services, private DNS zones, and user-assigned managed identity. Storage uses identity-based authentication (no shared keys).
+    The figure retains a private Storage scenario with outbound integration, four service endpoints/DNS zones and runtime user-assigned identity. This is not a universal FC1 configuration: Flex uses a Blob deployment container, does not depend on Azure Files content storage and has no deployment slots. The pipeline's federated service principal is separate from the runtime identity.
 
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 10, 'rankSpacing': 70, 'padding': 8, 'subGraphTitleMargin': {'top': 8, 'bottom': 32}}}}%%
 flowchart TD
-    INET[Internet] -->|HTTPS| FA[Function App\nFlex Consumption FC1\nLinux Python 3.11]
-
-    subgraph VNET["VNet 10.0.0.0/16"]
-        subgraph INT_SUB["Integration Subnet 10.0.1.0/24\nDelegation: Microsoft.App/environments"]
-            FA
+    accTitle: Python 3.11 Linux Flex Consumption FC1 Storage context
+    accDescr: Public app ingress and a private Storage scenario, with compute outside outbound integration. Four distinct Storage endpoints and DNS zones are expanded in the key; runtime identity and RBAC are authorization, not a path through identity to Storage. Deployment uses a Blob container; the File endpoint is not a Flex content dependency. No Azure run is asserted.
+    client(["Internet"])
+    app_runtime["Function App<br/>Flex Consumption FC1<br/>Linux · Python 3.11"]
+    identity{{"Runtime user MI<br/>Authorization: I"}}
+    telemetry>"Application<br/>Insights"]
+    subgraph DNS["Private DNS zones"]
+        dns_fn{{"Blob · Queue<br/>Table · File"}}
+    end
+    subgraph vnet_fn["VNet"]
+        subgraph INT_SUB["<div style='width:170px;text-align:right'>Integration<br/>subnet</div>"]
+            vnet_integration[["Outbound<br/>integration"]]
         end
-        subgraph PE_SUB["Private Endpoint Subnet 10.0.2.0/24"]
-            PE_BLOB[PE: blob]
-            PE_QUEUE[PE: queue]
-            PE_TABLE[PE: table]
-            PE_FILE[PE: file]
+        subgraph PE_SUB["<div style='width:130px;text-align:left'>PE<br/>subnet</div>"]
+            pe_storage[["Storage PEs<br/>blob · queue<br/>table · file"]]
         end
     end
-
-    PE_BLOB --> ST["Storage Account\nallowPublicAccess: false\nallowSharedKeyAccess: false"]
-    PE_QUEUE --> ST
-    PE_TABLE --> ST
-    PE_FILE --> ST
-
-    subgraph DNS[Private DNS Zones]
-        DNS_BLOB[privatelink.blob.core.windows.net]
-        DNS_QUEUE[privatelink.queue.core.windows.net]
-        DNS_TABLE[privatelink.table.core.windows.net]
-        DNS_FILE[privatelink.file.core.windows.net]
+    storage_db[("Storage account<br/>Settings: S")]
+    subgraph DEPLOY["Deployment"]
+        BLOB_CTR[("Blob container<br/>deployment-packages")]
     end
-
-    PE_BLOB -.-> DNS_BLOB
-    PE_QUEUE -.-> DNS_QUEUE
-    PE_TABLE -.-> DNS_TABLE
-    PE_FILE -.-> DNS_FILE
-
-    FA -.->|User-Assigned MI| UAMI[Managed Identity]
-    UAMI -->|RBAC| ST
-    FA --> AI[Application Insights]
-
-    subgraph DEPLOY[Deployment]
-        BLOB_CTR[Blob Container\ndeployment-packages]
-    end
-    ST --- BLOB_CTR
-
-    style FA fill:#107c10,color:#fff
-    style VNET fill:#E8F5E9,stroke:#4CAF50
-    style ST fill:#FFF3E0
-    style DNS fill:#E3F2FD
+    client -->|"[Illustrative]<br/>Public HTTPS"| app_runtime
+    app_runtime -.->|"[Illustrative]<br/>Identity"| identity
+    app_runtime -.->|"[Configured]<br/>Telemetry"| telemetry
+    pe_storage -.->|"[Illustrative]<br/>Zone groups"| dns_fn
+    app_runtime -->|"[Illustrative]<br/>Outbound"| vnet_integration
+    vnet_integration -->|"[Illustrative]<br/>Each PE"| pe_storage
+    pe_storage -->|"[Illustrative]<br/>Each service"| storage_db
+    storage_db -.->|"[Illustrative]<br/>Contains"| DEPLOY
+    %% Layout-only tiers; add no requests, diagnostic steps or visible arrows.
+    identity ~~~ telemetry
+    telemetry ~~~ dns_fn
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class client,app_runtime,identity,telemetry,dns_fn,vnet_integration,pe_storage,storage_db,BLOB_CTR baseNeutral;
 ```
+
+**Reading key:** Solid arrows are intended request/data access; dotted arrows are identity, telemetry, zone-group or membership associations. `[Illustrative]` marks surrounding network choices, not configuration executed by this page. VNet integration is outbound-only and does not deploy compute into its subnet ([networking](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)).
+
+| Key | Context / qualification |
+|---|---|
+| VNet / integration / PE subnet | `10.0.0.0/16` / `10.0.1.0/24` / `10.0.2.0/24`; Flex delegation `Microsoft.App/environments` |
+| S | Intended anonymous-Blob restriction: `allowBlobPublicAccess: false`; `allowSharedKeyAccess: false` is this context's authentication choice, not a universal Flex requirement. Neither property means public networking is disabled |
+| I | Runtime user-assigned managed identity requires appropriate Storage RBAC roles; token acquisition uses the app-local identity endpoint. The OIDC deployment service principal is a different identity |
+| Deployment | `deployment-packages` is the contextual Blob container name; check the app's selected deployment container. Direct upload to a container alone is not deployment |
+
+Each bundle expands into **four distinct endpoints and four zones**, with endpoint → matching service access and endpoint → zone-group association:
+
+| Endpoint → Storage service | Associated private DNS zone |
+|---|---|
+| `PE_BLOB` → Blob | `privatelink.blob.core.windows.net` |
+| `PE_QUEUE` → Queue | `privatelink.queue.core.windows.net` |
+| `PE_TABLE` → Table | `privatelink.table.core.windows.net` |
+| `PE_FILE` → File | `privatelink.file.core.windows.net` |
+
+The File path is optional context, not a Flex content-share requirement. Clients retain normal Storage hostnames with DNS resolution to the private endpoint IPs; endpoint creation alone does not block public Storage access ([Storage endpoints](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints), [storage](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations), [identity](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity), [deployment](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies)).
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart TD
+    accTitle: Python Flex Consumption OIDC deployment stages
+    accDescr: The example starts on a push to main or manual dispatch, with no path filter. GitHub Actions uses federated OIDC login and the Functions action requests Python remote build, followed by separate health and Application Insights checks. This is intended stage order, not deployment success; FC1 has no slots.
     GH[GitHub Actions] --> OIDC[OIDC login to Azure]
     OIDC --> Deploy["azure/functions-action"]
     Deploy --> Flex[Function App on FC1]
     Flex --> Verify[Health endpoint + App Insights]
 ```
+
+**Build distinction:** `remote-build: true` requests installation of project `requirements.txt` in the Flex deployment build. The workflow's global runner install does not itself vendor packages into `apps/python/.python_packages` ([Python build options](https://learn.microsoft.com/en-us/azure/azure-functions/python-build-options)).
 
 ## Steps
 
@@ -322,3 +346,12 @@ Expected output:
 - [Deploy Azure Functions with GitHub Actions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions)
 - [Use OIDC with GitHub Actions and Azure](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure-openid-connect)
 - [Azure Functions deployment technologies](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies)
+- [Python build and dependency packaging](https://learn.microsoft.com/en-us/azure/azure-functions/python-build-options)
+- [Supported languages and operating systems](https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages)
+- [Functions networking options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)
+- [Storage endpoints and DNS](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints)
+- [Functions storage considerations](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations)
+- [Managed identities](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)
+- [Anonymous Blob access](https://learn.microsoft.com/en-us/azure/storage/blobs/anonymous-read-access-prevent)
+- [Shared-key authorization](https://learn.microsoft.com/en-us/azure/storage/common/shared-key-authorization-prevent)
+- [Application Insights integration](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)
