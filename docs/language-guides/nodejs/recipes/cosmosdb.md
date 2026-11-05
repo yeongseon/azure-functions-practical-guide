@@ -24,6 +24,8 @@ This recipe demonstrates real Azure Cosmos DB input/output bindings in Node.js v
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Node.js v4 Cosmos DB input and output binding relationships
+    accDescr: HTTP trigger to Node.js v4 function, with extraInputs and extraOutputs associations to Cosmos DB for NoSQL input and output bindings and their container. Arrows show binding access relationships, not the direction of returned data, a change-feed trigger, or a consistency guarantee.
     API[HTTP Trigger] --> FUNC[Node.js v4 Function]
     FUNC -->|extraInputs| COSMOSIN[Cosmos DB Input Binding]
     FUNC -->|extraOutputs| COSMOSOUT[Cosmos DB Output Binding]

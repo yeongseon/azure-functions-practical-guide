@@ -14,6 +14,7 @@ content_sources:
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-timer
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
 ---
 # Timer Jobs
 
@@ -24,11 +25,15 @@ This recipe uses `app.timer()` with NCRONTAB scheduling, demonstrates the `isPas
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Node.js scheduled maintenance and configured logging flow
+    accDescr: Logical recipe flow from an NCRONTAB schedule through the timer handler, an isPastDue diagnostic check, maintenance logic and configured Application Insights logging. The check can log a warning without skipping maintenance; this is not the timer's storage-lock protocol or a guarantee that every log reaches Application Insights.
     SCHED[NCRONTAB Schedule] --> TIMER[Timer Trigger]
     TIMER --> CHECK[isPastDue Check]
     CHECK --> JOB[Maintenance Logic]
     JOB --> LOG[App Insights Logs]
 ```
+
+**Reading key:** In the Node.js v4 `app.timer` example, `isPastDue` means the invocation is later than scheduled; it does not by itself identify why. `runOnStartup: false` avoids the extra startup invocation requested by that option, while `useMonitor: true` persists schedule occurrences. The six-field expression shown includes seconds and defaults to UTC. The `Korea Standard Time` setting below is a Windows time-zone ID; Linux Premium and Dedicated use IANA IDs instead. Linux Consumption and Flex Consumption support neither `WEBSITE_TIME_ZONE` nor `TZ`. The final node assumes Application Insights integration is configured; it is not an acknowledgement that telemetry was ingested.
 
 ## Prerequisites
 
@@ -108,3 +113,4 @@ app.timer("nightlyReconciliation", {
 ## Sources
 - [Timer trigger for Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-timer)
 - [Azure Functions app settings reference (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings)
+- [Monitor executions in Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)

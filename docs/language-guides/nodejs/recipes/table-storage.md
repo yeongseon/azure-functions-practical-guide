@@ -11,6 +11,7 @@ content_sources:
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-table
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-table-output
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-table-input
 ---
 # Table Storage
 
@@ -21,6 +22,8 @@ This recipe covers reading and writing entities in Azure Table Storage from Azur
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Node.js HTTP and Table binding data relationships
+    accDescr: HTTP invokes the function; input.table supplies an entity read from a table and output.table creates entities in a table in these Node.js v4 examples. The arrows summarize binding data relationships across the read and write examples, not one transaction or network-call sequence.
     HTTP[HTTP Request] --> FA[Function App]
     FA -->|output.table| WRITE[(Table: entity written)]
     READ[(Table: entity read)] -->|input.table| FA

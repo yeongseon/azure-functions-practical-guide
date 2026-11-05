@@ -21,6 +21,8 @@ content_sources:
 <!-- diagram-id: topic-command-groups -->
 ```mermaid
 flowchart TD
+    accTitle: Node.js guide host.json setting categories
+    accDescr: The host.json reference groups Timeout, Logging, HTTP and Concurrency topics. Arrows identify configuration categories, not execution stages or plan-independent timeout values.
     A[host.json] --> B[Timeout]
     A --> C[Logging]
     A --> D[HTTP]

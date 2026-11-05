@@ -11,6 +11,7 @@ content_sources:
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus-trigger
+        - https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-dead-letter-queues
 ---
 # Service Bus
 
@@ -21,12 +22,16 @@ This recipe covers integrating Azure Service Bus with Azure Functions Node.js v4
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Node.js Service Bus input and possible outcome relationships
+    accDescr: Producers publish to a queue or topic; the Node.js v4 app.serviceBusQueue or app.serviceBusTopic registration processes queue or topic-subscription messages. Dead-lettering and a configured output binding are possible outcomes, not unconditional actions or direct network hops from the function app.
     PROD[Producers] --> SBQ[(Service Bus Queue/Topic)]
     SBQ --> TRIG[Service Bus Trigger]
     TRIG --> FA[Function App]
     FA --> DLQ[(Dead-Letter Queue)]
     FA --> OUT[Service Bus Output]
 ```
+
+**Reading key:** The dead-letter path refers to the source queue's or subscription's dead-letter subqueue, not a separate queue written by every invocation. The output path represents a configured `output.serviceBusQueue` binding, not an automatic consequence of receiving a message.
 
 ## Prerequisites
 
@@ -50,7 +55,7 @@ When using an identity-based connection, grant the function app's managed identi
 
 ## Queue Trigger
 
-Message settlement is automatic: completing the handler settles the message, and throwing abandons it. After `maxDeliveryCount` the message is dead-lettered.
+For this single-message, non-session Node.js v4 example using ordinary bindings with automatic completion, successful execution completes the message and failed processing abandons it. Under PeekLock, abandon or lock expiry increments the delivery count; exceeding the source queue's or subscription's `maxDeliveryCount` moves the message to that entity's dead-letter subqueue. This is not the SDK-type/manual-settlement mode.
 
 ```javascript
 const { app, output } = require("@azure/functions");
@@ -135,3 +140,4 @@ app.http("enqueue", {
 - [Azure Service Bus bindings for Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus)
 - [Azure Service Bus trigger for Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus-trigger)
 - [Azure Service Bus output binding for Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus-output)
+- [Service Bus dead-letter queues (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-dead-letter-queues)

@@ -14,11 +14,16 @@ content_sources:
       based_on:
         - https://learn.microsoft.com/en-us/entra/identity/managed-identities-azure-resources/overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
+        - https://learn.microsoft.com/en-us/azure/cosmos-db/how-to-connect-role-based-access-control
     - id: rbac-structure
       type: flowchart
       source: self-generated
       justification: Flow view of rbac structure, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments
+        - https://learn.microsoft.com/en-us/azure/role-based-access-control/troubleshooting
+        - https://learn.microsoft.com/en-us/azure/cosmos-db/how-to-connect-role-based-access-control
         - https://learn.microsoft.com/en-us/entra/identity/managed-identities-azure-resources/overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
 ---
@@ -31,11 +36,19 @@ This recipe enables system-assigned managed identity, grants RBAC roles, and use
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
-    FUNC[Function App] --> MSI[System-assigned Managed Identity]
+    accTitle: Node.js managed identity and service authorization
+    accDescr: Logical relationships from the function app through its system-assigned identity and Microsoft Entra ID to Storage and Cosmos DB data-plane access. Entra issues tokens rather than forwarding application data requests; the Node.js SDK clients call the services, subject to each service's permissions.
+    FUNC[Function App] --> MSI[System-assigned<br/>Managed Identity]
     MSI --> ENTRA[Microsoft Entra ID]
-    ENTRA --> STORAGE[Azure Storage Data Plane]
-    ENTRA --> COSMOS[Azure Cosmos DB Data Plane]
+    ENTRA --> STORAGE[Azure Storage<br/>Data Plane]
+    ENTRA --> COSMOS[Azure Cosmos DB<br/>Data Plane]
 ```
+
+**Reading key:** Arrows associate the app's identity, Entra token issuance and
+service authorization; Entra is not a data-plane proxy. The Node.js SDK clients
+use credentials to call Storage and Cosmos DB. A valid token alone does not grant
+service permissions, and Cosmos DB's data-plane role assignments are separate
+from the Azure RBAC examples below.
 
 ## How RBAC Connects Identity to Resources
 
@@ -44,13 +57,23 @@ A managed identity alone does not grant access. Azure RBAC binds three elements 
 <!-- diagram-id: rbac-structure -->
 ```mermaid
 flowchart TD
-    P[Principal<br/>Who: Managed Identity or Service Principal] --> RA[Role Assignment<br/>Unique GUID per binding]
-    RD[Role Definition<br/>What: Storage Blob Data Owner, Key Vault Secrets User, etc.] --> RA
-    S[Scope<br/>Where: Subscription, Resource Group, or Resource] --> RA
+    accTitle: Azure RBAC role assignment components
+    accDescr: A principal, role definition and scope define a GUID-named role assignment. Access Granted summarizes assigned permissions, not immediate service-access success or completed permission propagation.
+    P[Principal<br/>Who] --> RA[Role Assignment<br/>Unique GUID per binding]
+    RD[Role Definition<br/>What] --> RA
+    S[Scope<br/>Where] --> RA
     RA --> ACCESS[Access Granted]
 
     style RA fill:#f5c542,stroke:#333,color:#000
 ```
+
+**Reading key:** Principal = Who: Managed Identity or Service Principal;
+Role Definition = What: Storage Blob Data Owner, Key Vault Secrets User, etc.;
+Scope = Where: Subscription, Resource Group, or Resource. These are Azure RBAC
+examples, not Cosmos DB data-plane role definitions. "Access Granted" means
+assigned permissions, not proof that a service request succeeds immediately.
+Role-assignment propagation and managed-identity group-membership caching are
+distinct possible delays; creating an assignment is not an access test.
 
 | Element | Question it answers | Example |
 |---|---|---|
@@ -205,5 +228,9 @@ app.http("identityProbe", {
 - [Cosmos DB Integration](cosmosdb.md)
 
 ## Sources
+- [Cosmos DB control-plane and native data-plane roles (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/cosmos-db/how-to-connect-role-based-access-control)
+- [App Service and Functions managed identities (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)
+- [Azure role assignment components (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments)
+- [Troubleshoot Azure RBAC propagation (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/role-based-access-control/troubleshooting)
 - [Managed identities for Azure resources (Microsoft Learn)](https://learn.microsoft.com/en-us/entra/identity/managed-identities-azure-resources/overview)
 - [Use managed identities in Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial)
