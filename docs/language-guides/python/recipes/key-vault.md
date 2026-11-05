@@ -14,6 +14,7 @@ content_sources:
       based_on:
         - https://learn.microsoft.com/en-us/azure/app-service/app-service-key-vault-references
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
 ---
 # Key Vault Integration
 
@@ -24,6 +25,8 @@ This recipe covers integrating Azure Key Vault with Azure Functions to securely 
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Configured Key Vault reference relationships
+    accDescr: Logical relationships among the Functions platform, app, managed identity, Entra ID, vault and resolved app setting. Dotted links associate identity and permissions, not data transit; solid vault-to-setting-to-app links show the secret value flow after successful platform resolution.
     PLATFORM[Azure Functions Platform] --> FA[Function App]
     FA -.-> MI[Managed Identity]
     MI -.-> ENTRA[Microsoft Entra ID]
@@ -32,7 +35,7 @@ flowchart TD
     APPSETTING --> FA
 ```
 
-Solid arrows show runtime data/event flow. Dashed arrows show identity and authentication.
+**Reading key:** This is a relationship/value-flow map, not a network request trace: the identity does not relay secret data. [Key Vault references](https://learn.microsoft.com/en-us/azure/app-service/app-service-key-vault-references) require a configured reference setting, an app identity, secret-read permission and network access to the vault; the platform resolves the reference for the app. The dotted app-to-identity and identity-to-Entra links identify the app's [managed identity](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity), and identity-to-vault identifies its required authorization. Resolution is not automatic merely because the identity exists, and a failed resolution can leave the reference string as the setting value.
 
 ## Key Vault References (Recommended)
 
