@@ -25,6 +25,8 @@ The .NET isolated worker model has a first-class middleware pipeline. Middleware
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: .NET isolated worker middleware nesting
+    accDescr: Illustrative successful isolated-worker invocation with two registered middleware layers calling and awaiting next. Pre-logic runs inward and post-logic unwinds outward; response returned is not an HTTP response for every trigger, and failures or short-circuiting can change this path.
     REQ[Trigger fires] --> M1[Middleware 1: pre-logic]
     M1 --> M2[Middleware 2: pre-logic]
     M2 --> FUNC[Function execution]

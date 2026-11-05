@@ -12,7 +12,7 @@ content_sources:
     - id: main-content
       type: flowchart
       source: self-generated
-      justification: Flow view of main content, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Logical code-first registration-to-invocation stage order retaining HTTP, Timer, Queue and Blob registration APIs; not a transport trace or exact worker protocol.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
@@ -29,8 +29,10 @@ The v4 model removes per-function `function.json` authoring for normal scenarios
 <!-- diagram-id: main-content -->
 ```mermaid
 flowchart TD
+    accTitle: Node.js v4 registration and invocation stages
+    accDescr: Logical stages from host startup and loading the app object through registering HTTP, Timer, Storage Queue and Storage Blob functions, indexing metadata, accepting trigger events and invoking the handler with context. Arrows show stage order, not network transport.
     A[Host starts] --> B["Load @azure/functions app object"]
-    B --> C[Register app.http app.timer app.storageQueue app.storageBlob]
+    B --> C["Register<br/>app.http app.timer<br/>app.storageQueue app.storageBlob"]
     C --> D[Index function metadata]
     D --> E[Accept trigger events]
     E --> F[Invoke handler with context]
