@@ -63,23 +63,27 @@ You will add queue, blob, and timer triggers to a Java Function App using annota
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
-    TIMER["Timer\n(CRON schedule)"] --> FA[Function App\nFlex Consumption FC1]
-    QUEUE["Storage Queue\nincoming-orders"] --> FA
-    BLOB["Blob Container\nuploads/{name}"] --> FA
-    FA --> LOGS["Application Insights\ntrace logs"]
+    accTitle: Java Flex Consumption trigger overview
+    accDescr: Conceptual timer, incoming-orders queue, and uploads blob paths to a Flex Consumption FC1 Function App and Application Insights trace logs; trigger arrows are associations, not HTTP ingress or network initiator paths.
+    TIMER["Timer<br/>(CRON schedule)"] --> FA["Function App<br/>Flex Consumption FC1"]
+    QUEUE["Storage Queue<br/>incoming-orders"] --> FA
+    BLOB["Blob Container<br/>uploads/{name}"] --> FA
+    FA --> LOGS["Application Insights<br/>trace logs"]
+    %% Layout-only links tier trigger sources; no execution steps or arrows added.
+    TIMER ~~~ QUEUE
+    QUEUE ~~~ BLOB
 
-    style FA fill:#0078d4,color:#fff
-    style TIMER fill:#E8F5E9
-    style QUEUE fill:#FFF3E0
-    style BLOB fill:#E3F2FD
+    classDef default fill:#eef4fb,stroke:#365a7c,color:#172b4d
 ```
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart TD
-    A[Queue message] --> B["@QueueTrigger handler"]
-    C[Blob upload] --> D["@BlobTrigger handler"]
-    E[Schedule] --> F["@TimerTrigger handler"]
+    accTitle: Java Flex Consumption annotation trigger paths
+    accDescr: Conceptual queue, blob, and timer paths to Java annotation-based handlers and outputs or logs; arrows do not specify network transport or a required output binding.
+    A[Queue message] --> B["@QueueTrigger<br/>handler"]
+    C[Blob upload] --> D["@BlobTrigger<br/>handler"]
+    E[Schedule] --> F["@TimerTrigger<br/>handler"]
     B --> G[Outputs and logs]
     D --> G
     F --> G

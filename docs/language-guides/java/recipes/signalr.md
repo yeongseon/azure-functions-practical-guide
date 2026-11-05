@@ -11,6 +11,7 @@ content_sources:
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-signalr-service
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-signalr-service-input
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-signalr-service-output
 ---
 # SignalR Service Integration
 
@@ -21,14 +22,18 @@ This recipe covers adding real-time messaging to Azure Functions Java with Azure
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: SignalR negotiation and broadcast relationships for Java functions
+    accDescr: In this serverless-mode recipe, the browser obtains connection information from the negotiate function's input binding and connects to SignalR Service over the depicted WebSocket transport. The broadcast function uses the output binding to send through the service. Binding arrows show logical relationships, not a token-generation network request sequence.
     CLIENT[Browser Client] --> NEG[negotiate Function]
-    NEG --> INFO[SignalRConnectionInfo Input]
+    NEG --> INFO["Connection info<br/>input binding"]
     INFO --> SR[(Azure SignalR Service)]
     CLIENT -->|WebSocket| SR
     PUB[broadcast Function] --> OUT[SignalR Output]
     OUT --> SR
     SR -->|push| CLIENT
 ```
+
+**Reading key:** INFO represents Java's `@SignalRConnectionInfoInput`, which supplies the service URL and access token returned by the negotiate function. Its arrow to the service identifies the connection information's purpose, not a request trace. WebSocket is the transport depicted here, not a requirement for every client transport; the broadcast path uses the configured `@SignalROutput` binding.
 
 ## Prerequisites
 

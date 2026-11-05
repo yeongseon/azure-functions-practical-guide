@@ -26,6 +26,8 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-java
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
 ---
 # 06 - CI/CD (Consumption)
 
@@ -50,6 +52,8 @@ You will configure a GitHub Actions pipeline that builds and deploys a Java Func
 <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
+    accTitle: Java Consumption tutorial CI/CD stage order
+    accDescr: A push to main that changes files matching apps/java/** starts the illustrated GitHub Actions workflow, followed by Maven build and test, publishing from the staging directory and a smoke test. This is the intended Consumption tutorial workflow, not authentication prerequisites, OS-specific deployment mechanics or evidence of a successful release.
     A[Push to main] --> B[GitHub Actions]
     B --> C[Maven build and test]
     C --> D[Publish from staging dir]
@@ -210,3 +214,5 @@ Hello endpoint response:
 - [Azure Functions Java developer guide (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java)
 - [Azure Functions hosting options (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
 - [Create a Java function with Azure Functions Core Tools (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-java)
+- [GitHub Actions deployment (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions)
+- [Deployment technologies (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies)

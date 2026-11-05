@@ -24,6 +24,8 @@ This recipe uses native Event Grid bindings in Java with `@EventGridTrigger` to 
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Java Event Grid event routing
+    accDescr: Conceptual Storage event routing through an Event Grid topic or system topic and an event subscription to the Java EventGridTrigger handler and business action. For Storage events, read the topic stage as the system topic; arrows show logical stages, not separate network hops.
     SOURCE[Storage account events] --> TOPIC["Event Grid topic/system topic"]
     TOPIC --> SUB[Event subscription]
     SUB --> FUNC[@EventGridTrigger handler]

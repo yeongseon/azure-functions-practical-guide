@@ -23,6 +23,9 @@ content_sources:
       source: self-generated
       justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-java
@@ -59,30 +62,44 @@ You will provision a Linux Consumption (Y1) Function App for Java, deploy with `
 !!! info "Infrastructure Context"
     **Plan**: Consumption (Y1) | **Network**: Public internet only | **VNet**: ❌ Not supported
 
-    Consumption has no VNet integration or private endpoint support. All traffic flows over the public internet. Storage uses connection string authentication.
+    This Linux Consumption tutorial uses public endpoints and connection-string storage authentication. Consumption does not support outbound VNet integration or a private endpoint for the function app. Its deployed code package uses Blob storage, not an Azure Files content share.
 
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
-    INET[Internet] -->|HTTPS| FA[Function App\nConsumption Y1\nLinux Java 17]
-
-    FA -->|connection string| ST[Storage Account\npublic access]
-    FA --> AI[Application Insights]
-
-    subgraph STORAGE[Storage Services]
-        ST --- FS[Azure Files\ncontent share]
+    accTitle: Java Linux Consumption public deployment topology
+    accDescr: Internet HTTPS requests reach the Linux Java 17 Consumption Y1 app. The tutorial uses connection-string access to public Storage, a Blob code package, and off-path Application Insights. The storage boundary groups services, not a network.
+    client(["Internet<br/>HTTPS caller"])
+    app_runtime["Function App<br/>Consumption Y1<br/>Linux Java 17"]
+    telemetry>"Application Insights<br/>Off-path telemetry"]
+    capabilities["Y1 limits<br/>No VNet integration<br/>No app PE"]
+    subgraph STORAGE["Storage Services"]
+        storage_db[("Storage Account<br/>Public access")]
+        storage_blob[("Blob Storage<br/>Code package")]
+        storage_db -.->|"[Configured]<br/>Package storage"| storage_blob
     end
-
-    NO_VNET["⚠️ No VNet integration\nNo private endpoints"] -. limitation .- FA
-
-    style FA fill:#0078d4,color:#fff
-    style NO_VNET fill:#FFF3E0,stroke:#FF9800
-    style STORAGE fill:#FFF3E0
+    client -->|"[Configured] HTTPS"| app_runtime
+    app_runtime -->|"[Configured]<br/>Connection string"| storage_db
+    app_runtime -.->|"[Configured]<br/>Logs"| telemetry
+    app_runtime -.->|"[Configured]<br/>Limits"| capabilities
+    %% Layout-only tiers; no requests or deployment steps added.
+    storage_blob ~~~ telemetry
+    telemetry ~~~ capabilities
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e
+    classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e
+    classDef bandMuted fill:#ffffff,stroke:#707e93,stroke-width:1.5px,stroke-dasharray:4 3,color:#14202e
+    class client,storage_db,storage_blob baseNeutral
+    class app_runtime focusActive
+    class telemetry,capabilities bandMuted
 ```
+
+**Reading key:** Solid arrows show the initiating caller or app's configured access; dotted arrows show telemetry, limits, or account/service membership, not another request hop. PE means private endpoint for the app. The Storage Services box is a grouping, not a subnet.
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart TD
+    accTitle: Java Consumption first-deployment steps
+    accDescr: Tutorial order from variables and login through resource creation, placeholder settings, Maven build and staging-directory publish to endpoint validation; not evidence that these steps were executed.
     A[Set variables + login] --> B[Create RG + storage]
     B --> C[Create function app]
     C --> D[Set placeholder settings]
@@ -309,6 +326,9 @@ Info endpoint response:
 
 ## Sources
 
+- [Functions storage considerations](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations)
+- [Functions networking options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)
+- [Functions monitoring](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)
 - [Azure Functions Java developer guide (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java)
 - [Azure Functions hosting options (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
 - [Create a Java function with Azure Functions Core Tools (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-java)
