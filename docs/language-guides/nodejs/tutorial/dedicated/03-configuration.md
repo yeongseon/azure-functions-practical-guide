@@ -78,7 +78,7 @@ flowchart TD
 | R | App setting `FUNCTIONS_WORKER_RUNTIME=node` selects the Node.js worker. |
 | E | App setting `FUNCTIONS_EXTENSION_VERSION=~4` selects Functions runtime 4.x, not the Node.js programming-model version. |
 | M | `node --max-old-space-size=4096`, passed through `languageWorkers__node__arguments`, is the tutorial's heap-limit example, not a recommendation for B1's available memory. |
-| T | `functionTimeout: -1` (unlimited/unbounded) belongs in `host.json`, not the app-settings category; it does not prevent platform shutdowns or remove the HTTP response limit. |
+| T | The tutorial sets `functionTimeout: -1` (unbounded) in `host.json`; an environment-specific override can instead use the app setting `AzureFunctionsJobHost__functionTimeout`. Unbounded execution on Dedicated requires Always On and remains subject to platform shutdowns and the separate HTTP response limit. |
 
 **Reading key:** The group classifies configuration, not physical containment or execution order. Enable Always On for reliable non-HTTP triggering on Dedicated hosting; an HTTP request or Portal access can wake an idled app without it.
 
