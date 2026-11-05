@@ -26,6 +26,7 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-continuous-deployment
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions
 ---
 # 06 - CI/CD (Premium)
 
@@ -51,19 +52,19 @@ You will define a GitHub Actions workflow that builds and deploys your Node.js F
 You will validate release health from runtime logs after the deployment finishes.
 
 !!! info "Infrastructure Context"
-    **Plan**: Premium (EP1) | **CI/CD**: GitHub Actions | **Deploy method**: `func azure functionapp publish`
+    **Plan**: Premium (EP1) | **CI/CD**: GitHub Actions | **Deploy method**: `Azure/functions-action@v1`
 
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
+    accTitle: Node.js Premium EP1 tutorial CI/CD stage order
+    accDescr: A push to main starts the embedded GitHub Actions workflow, followed by npm ci, tests if present, deployment of apps/nodejs with the Functions action, and a separate health check. This summarizes the intended Premium tutorial release flow, not a slot swap or evidence of successful execution; the embedded workflow has no path filter.
     GH[GitHub\nmain branch] -->|push| GA[GitHub Actions]
     GA -->|npm ci + test| BUILD[Build]
-    BUILD -->|func publish| FA[Function App\nPremium EP1]
+    BUILD -->|functions-action| FA[Function App\nPremium EP1]
     FA -->|health check| VERIFY[Verification]
 
-    style GH fill:#E3F2FD
     style FA fill:#ff8c00,color:#fff
-    style VERIFY fill:#E8F5E9
 ```
 
 ## Steps
@@ -198,3 +199,4 @@ Confirm:
 - [Azure Functions Node.js developer guide (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node)
 - [Continuous deployment for Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-continuous-deployment)
 - [Azure Functions hosting options (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
+- [GitHub Actions deployment (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions)
