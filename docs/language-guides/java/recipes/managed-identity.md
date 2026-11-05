@@ -14,6 +14,7 @@ content_sources:
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
         - https://learn.microsoft.com/en-us/java/api/overview/azure/identity-readme
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
     - id: rbac-structure
       type: flowchart
       source: self-generated
@@ -21,6 +22,8 @@ content_sources:
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
         - https://learn.microsoft.com/en-us/java/api/overview/azure/identity-readme
+        - https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments
+        - https://learn.microsoft.com/en-us/azure/role-based-access-control/troubleshooting
 ---
 # Managed Identity
 
@@ -31,11 +34,22 @@ This recipe configures a system-assigned managed identity and uses `DefaultAzure
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
-    FUNC[Function App] --> MSI[System-assigned managed identity]
-    MSI --> ENTRA[Microsoft Entra token endpoint]
-    FUNC --> SDK[Azure SDK with DefaultAzureCredential]
-    SDK --> SERVICE[("Storage / Key Vault / Cosmos DB")]
+    accTitle: Java managed identity and service access
+    accDescr: The function app's system-assigned identity is associated with Microsoft Entra token issuance, while its Java SDK uses DefaultAzureCredential to access Storage, Key Vault or Cosmos DB. This is a logical relationship map, not a direct app-to-Entra network trace or a guarantee of credential selection and authorization.
+    FUNC[Function App] --> MSI[System-assigned<br/>managed identity]
+    MSI --> ENTRA[Microsoft Entra<br/>token endpoint]
+    FUNC --> SDK[Azure SDK with<br/>DefaultAzureCredential]
+    SDK --> SERVICE[("Storage / Key Vault /<br/>Cosmos DB")]
+    %% Layout-only link tiers the branches; it adds no token or service request.
+    ENTRA ~~~ SDK
 ```
+
+**Reading key:** The identity/Entra branch summarizes identity association and token
+issuance; in App Service-hosted Functions, Azure Identity obtains managed-identity
+tokens through the platform's internal identity endpoint. `DefaultAzureCredential`
+can use managed identity when configured and selected by its credential chain; it
+does not unconditionally select that identity in Azure. The SDK/service branch
+still requires the target service's authorization configuration.
 
 ## How RBAC Connects Identity to Resources
 
@@ -44,13 +58,23 @@ A managed identity alone does not grant access. Azure RBAC binds three elements 
 <!-- diagram-id: rbac-structure -->
 ```mermaid
 flowchart TD
-    P[Principal<br/>Who: Managed Identity or Service Principal] --> RA[Role Assignment<br/>Unique GUID per binding]
-    RD[Role Definition<br/>What: Storage Blob Data Owner, Key Vault Secrets User, etc.] --> RA
-    S[Scope<br/>Where: Subscription, Resource Group, or Resource] --> RA
+    accTitle: Azure RBAC role assignment components
+    accDescr: Principal, role definition and scope define a GUID-named role assignment. Access Granted summarizes assigned permissions, not immediate successful service access or completed permission propagation.
+    P[Principal<br/>Who] --> RA[Role Assignment<br/>Unique GUID per binding]
+    RD[Role Definition<br/>What] --> RA
+    S[Scope<br/>Where] --> RA
     RA --> ACCESS[Access Granted]
 
     style RA fill:#f5c542,stroke:#333,color:#000
 ```
+
+**Reading key:** Principal = Who: Managed Identity or Service Principal; Role Definition =
+What: Storage Blob Data Owner, Key Vault Secrets User, etc.; Scope = Where:
+Subscription, Resource Group, or Resource. Incoming arrows identify assignment
+components, not requests. “Access Granted” denotes assigned permissions, not immediate
+successful data access: applicable conditions and propagation still matter.
+Changes to a managed identity's group or role membership can take several hours;
+this is not a fixed wait for every direct role assignment.
 
 | Element | Question it answers | Example |
 |---|---|---|
@@ -174,3 +198,6 @@ public class ManagedIdentityFunctions {
 
 - [Use managed identities in Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial)
 - [Azure Identity client library for Java (Microsoft Learn)](https://learn.microsoft.com/en-us/java/api/overview/azure/identity-readme)
+- [Managed identities in App Service and Azure Functions](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)
+- [Understand Azure role assignments](https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments)
+- [Troubleshoot Azure RBAC](https://learn.microsoft.com/en-us/azure/role-based-access-control/troubleshooting)

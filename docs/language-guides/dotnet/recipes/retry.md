@@ -40,13 +40,25 @@ Function-level retries in the isolated worker require these NuGet packages:
 
 <!-- diagram-id: architecture -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 15, 'padding': 8}}}%%
 flowchart TD
-    EXEC[Function execution] --> ERR{Uncaught exception?}
-    ERR -->|No| DONE[Success: checkpoint/commit]
-    ERR -->|Yes| COUNT{RetryCount < Max?}
-    COUNT -->|Yes| WAIT[Wait per strategy] --> EXEC
-    COUNT -->|No| FAIL[Give up: execution fails]
+    accTitle: Finite runtime retry policy decision loop
+    accDescr: For a configured finite retry limit on a supported trigger and extension, an uncaught exception leads to the retry-count check, waiting and another execution or final failure; no exception leads to success. Checkpoint or commit is trigger-specific, not an atomic transaction guarantee; this comparison does not represent minus-one unlimited retries.
+    EXEC[Function<br/>execution] --> ERR{Uncaught<br/>exception?}
+    ERR -->|No| DONE[Success:<br/>checkpoint/commit]
+    ERR -->|Yes| COUNT{RetryCount<br/>&lt; Max?}
+    COUNT -->|Yes| WAIT[Wait per<br/>strategy] --> EXEC
+    COUNT -->|No| FAIL[Give up:<br/>execution fails]
 ```
+
+**Reading key:** This loop assumes a configured finite retry limit for a supported
+Timer, Event Hubs, Cosmos DB, or Kafka trigger and compatible extension; `-1` means
+unlimited retries, not the finite comparison shown here. “Wait per strategy” means
+fixed delay or exponential backoff; the small randomization applies to exponential
+backoff, not fixed delay. “Success: checkpoint/commit” is a trigger-specific shorthand,
+not an atomic application commit: Event Hubs checkpoints wait until the retry policy
+finishes, including retry exhaustion. The instance-local retry count is best-effort,
+as explained below.
 
 ## Fixed Delay
 

@@ -22,6 +22,8 @@ Quick command reference for .NET isolated worker development, deployment, and op
 <!-- diagram-id: cli-cheatsheet -->
 ```mermaid
 flowchart TD
+    accTitle: CLI cheatsheet reading flow
+    accDescr: The illustrated workflow proceeds from Configuration to Build, Deploy and Observe.
     A[Configuration] --> B[Build]
     B --> C[Deploy]
     C --> D[Observe]

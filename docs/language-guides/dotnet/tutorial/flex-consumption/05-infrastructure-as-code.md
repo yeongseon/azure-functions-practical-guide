@@ -49,6 +49,8 @@ You will define a complete Flex Consumption environment in Bicep (storage accoun
 <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
+    accTitle: Flex Consumption .NET isolated infrastructure workflow
+    accDescr: Illustrative task order for this Linux Flex Consumption tutorial: Bicep template, resource-group deployment, storage with the configured FC1 plan and Function App, blob deployment configured for managed identity, then build and publish from the output directory. Arrows summarize tutorial stages, not resource creation order, a requirement for every Flex app to use managed identity, or evidence that the template has all required permissions and settings.
     A[Bicep template] --> B[az deployment group create]
     B --> C[Storage + Plan + Function App]
     C --> D["Blob-based deployment with MI"]
