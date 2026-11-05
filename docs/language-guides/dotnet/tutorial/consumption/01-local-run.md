@@ -49,6 +49,8 @@ A .NET 8 isolated worker Function App with 16 functions that runs locally, retur
 <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
+    accTitle: Consumption tutorial .NET isolated local HTTP workflow
+    accDescr: Illustrative local HTTP workflow in this Consumption tutorial: dotnet build, func start, HTTP trigger endpoint, HttpRequest using this sample's ASP.NET Core integration, then IActionResult response. Arrows summarize build, startup and request handling, not Azure Consumption scaling or execution-limit validation; ASP.NET Core integration is this sample's choice.
     A[dotnet build] --> B[func start]
     B --> C[HTTP Trigger endpoint]
     C --> D[HttpRequest via ASP.NET Core]
@@ -224,4 +226,3 @@ Functions:
 
 !!! warning "Legacy hosting path"
     Consumption plan (Y1) content is provided for existing workloads and compatibility scenarios. For most new serverless applications, prefer [Flex Consumption](../flex-consumption/01-local-run.md).
-
