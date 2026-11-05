@@ -23,6 +23,11 @@ content_sources:
       source: self-generated
       justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
         - https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-python
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots
@@ -31,6 +36,7 @@ content_sources:
       source: self-generated
       justification: Flow view of step 5 verify deployment, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-python
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots
@@ -62,27 +68,38 @@ You will provision a Linux Consumption (Y1) Function App, publish the Python cod
 !!! info "Infrastructure Context"
     **Plan**: Consumption (Y1) | **Network**: Public internet only | **VNet**: ❌ Not supported
 
-    Consumption has no VNet integration or private endpoint support. All traffic flows over the public internet. Storage uses connection string authentication.
+    Consumption (Y1) supports neither outbound VNet integration nor a private endpoint for the app. This tutorial selects public endpoints and connection-string host storage. Linux Consumption remote builds use Blob package storage; Azure Files is Windows Consumption context, not a Linux content-share requirement.
 
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
+%%{init: {"flowchart": {"nodeSpacing": 10, "rankSpacing": 60, "padding": 8, "subGraphTitleMargin": {"top": 8, "bottom": 24}}}}%%
 flowchart TD
-    INET[Internet] -->|HTTPS| FA[Function App\nConsumption Y1\nLinux Python 3.11]
-
-    FA -->|System-Assigned MI| ENTRA[Microsoft Entra ID]
-    FA -->|"AzureWebJobsStorage__accountName\n+ connection string"| ST[Storage Account\npublic access]
-    FA --> AI[Application Insights]
-
-    subgraph STORAGE[Storage Services]
-        ST --- FS[Azure Files\ncontent share]
+    accTitle: Python 3.11 Linux Consumption public deployment
+    accDescr: Y1 public HTTPS and connection-string host storage, with off-path telemetry. Azure Files is Windows context; system-assigned identity is an optional association not assigned by these steps. This map does not establish recovery of the historical failed deployment.
+    client(["Internet"])
+    app_runtime["Function App<br/>Consumption Y1<br/>Linux Python 3.11"]
+    identity{{"Microsoft Entra ID<br/>System MI: optional"}}
+    telemetry>"Application<br/>Insights"]
+    limitations["No VNet integration<br/>No app private endpoint"]
+    subgraph STORAGE["<div style='width:180px;text-align:left'>Storage<br/>Services</div>"]
+        storage_db[("Storage Account<br/>Public endpoint")]
+        storage_files[("Azure Files<br/>Windows context")]
+        storage_db -.->|"[Illustrative]<br/>Windows context"| storage_files
     end
-
-    NO_VNET["⚠️ No VNet integration\nNo private endpoints"] -. limitation .- FA
-
-    style FA fill:#0078d4,color:#fff
-    style NO_VNET fill:#FFF3E0,stroke:#FF9800
-    style STORAGE fill:#FFF3E0
+    client -->|"[Configured] HTTPS"| app_runtime
+    app_runtime -->|"[Configured]<br/>Connection string"| storage_db
+    app_runtime -.->|"[Illustrative]<br/>Optional identity"| identity
+    app_runtime -.->|"[Configured]<br/>Telemetry"| telemetry
+    app_runtime -.->|"[Configured]<br/>Y1 limitations"| limitations
+    %% Layout-only tiers; add no requests or deployment steps.
+    storage_files ~~~ identity
+    identity ~~~ telemetry
+    telemetry ~~~ limitations
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class client,app_runtime,storage_db,storage_files,identity,telemetry,limitations baseNeutral;
 ```
+
+**Reading key:** Solid arrows show request/data access; dotted arrows show context, identity, telemetry or limitations, not serial request hops. `AzureWebJobsStorage` connection-string authentication and `AzureWebJobsStorage__accountName` identity configuration are alternatives, not additive credentials. The optional identity summarizes authorization using the app-local token endpoint, not direct app-to-Entra transport. The Windows Files node retains the original content-share context; this Linux remote-build path stores its package in Blob storage ([storage](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations), [deployment](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies), [identity](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)).
 
 ## Steps
 
@@ -218,12 +235,17 @@ Linux Consumption uses Zip Deploy, but Kudu advanced tools are not available on 
 <!-- diagram-id: step-5-verify-deployment -->
 ```mermaid
 flowchart TD
+    accTitle: Consumption public outbound capability map
+    accDescr: Internet to the Y1 app, with public outbound paths to Storage, Application Insights and other public Azure services. This is a capability map, not a verification trace; the health request alone does not test those outbound paths. Y1 has no VNet integration path.
     A[Internet] --> B["Function App<br/>Consumption Y1"]
     B --> C[Public outbound]
     C --> D[Azure Storage]
     C --> E[Application Insights]
     C --> F[Other public Azure services]
     G[No VNet path on Y1] -. limitation .- B
+    %% Layout-only tiers; add no requests or verification steps.
+    D ~~~ E
+    E ~~~ F
 ```
 
 !!! info "Not available on Consumption"
@@ -320,6 +342,11 @@ Next, configure settings and behavior specific to Consumption using classic app 
 
 ## Sources
 
+- [Python versions and OS support](https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages)
+- [Functions storage](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations)
+- [Functions networking](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)
+- [Functions monitoring](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)
+- [App managed identity](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)
 - [Create a function app in Azure using CLI](https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-python)
 - [Azure Functions deployment technologies](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies)
 - [Deployment slots in Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots)
