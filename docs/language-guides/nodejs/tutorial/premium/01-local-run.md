@@ -23,6 +23,7 @@ content_sources:
       source: self-generated
       justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node
         - https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-node
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
@@ -58,6 +59,8 @@ You will validate the local route at `/api/hello/{name?}` and confirm the functi
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
+    accTitle: Premium tutorial Node.js local HTTP workflow
+    accDescr: Illustrative local startup and request-response stages for this Node.js v4 programming-model sample: func start launches the Core Tools host on port 7071, and calling helloHttp at GET /api/hello returns the sample JSON response. The Node.js 20 label describes the tutorial configuration, not a current support recommendation. Arrows summarize local handling, not a GET initiated by the function, successful execution evidence or Azure Premium prewarming, networking or scaling validation.
     DEV[Developer Machine] -->|func start| HOST[Core Tools Host\nNode.js 20\nPort 7071]
     HOST --> HTTP[HTTP Trigger\nhelloHttp]
     HTTP -->|GET /api/hello| RESP[JSON Response]
