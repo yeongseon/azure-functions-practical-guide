@@ -89,7 +89,7 @@ flowchart TD
     app_runtime["Function App<br/>Dedicated<br/>Runtime: A"]
     identity{{"Entra ID<br/>System MI"}}
     telemetry>"Application<br/>Insights"]
-    ALWAYS_ON["Always On<br/>true · fixed capacity"]
+    ALWAYS_ON["Always On: true<br/>Fixed capacity"]
     RFP["Local ZIP<br/>Settings: R"]
     subgraph DNS["Private DNS zones"]
         dns_fn{{"Blob · Queue<br/>Table · File"}}
@@ -104,10 +104,10 @@ flowchart TD
     end
     storage_db[("Storage account")]
     client -->|"[Configured]<br/>HTTPS"| app_runtime
-    app_runtime -.->|"[Illustrative]<br/>Optional identity"| identity
+    app_runtime -.->|"[Illustrative]<br/>Optional MI"| identity
     app_runtime -.->|"[Configured]<br/>Telemetry"| telemetry
-    app_runtime -.->|"[Configured]<br/>Reliability setting"| ALWAYS_ON
-    app_runtime -.->|"[Illustrative]<br/>Deployment option"| RFP
+    app_runtime -.->|"[Configured]<br/>Always On"| ALWAYS_ON
+    app_runtime -.->|"[Illustrative]<br/>ZIP option"| RFP
     dns_fn -.->|"[Illustrative]<br/>VNet link"| vnet_fn
     app_runtime -->|"[Illustrative]<br/>If integrated"| vnet_integration
     vnet_integration -->|"[Illustrative]<br/>Each PE"| pe_storage
