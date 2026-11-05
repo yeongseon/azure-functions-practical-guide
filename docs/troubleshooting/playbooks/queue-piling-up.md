@@ -56,20 +56,33 @@ Key portal blades for queue backlog investigation. Captures from a Consumption (
 <!-- diagram-id: 1-summary -->
 ```mermaid
 flowchart TD
-    A[Queue count and age rising] --> B{Dequeue retries or poison growth?}
-    B -->|Yes| C[H2 Poison-message loop]
-    B -->|No| D{Scale events visible?}
-    D -->|No| E[H1 Scale-out not keeping up]
-    D -->|Yes| F{"P95/P99 duration regressed?"}
-    F -->|Yes| G[H3 Per-message processing regression]
-    F -->|No| H{"Dependency latency/failure spike?"}
-    H -->|Yes| I[H4 Downstream dependency bottleneck]
-    H -->|No| J[Re-check host config, release timeline, and trigger settings]
-    C --> K[Mitigate retries and quarantine poison payload class]
-    E --> L[Mitigate capacity and scale constraints]
-    G --> M["Mitigate code/config performance regression"]
-    I --> N[Mitigate dependency contention and throttling]
+    accTitle: Queue backlog diagnostic decision flow
+    accDescr: Illustrative diagnostic flow, assuming healthy enqueue. Rising queue count and age leads to retry or poison growth: Yes selects H2 and retry mitigation; No checks scale events. No scale events selects H1 and capacity mitigation; Yes checks P95/P99 regression. Regression selects H3 and performance mitigation; otherwise check dependency latency or failures. A spike selects H4 and dependency mitigation; otherwise re-check host configuration, release timeline and trigger settings. H1-H4 are hypotheses, not confirmed causes; validate and disprove them using the evidence sections below.
+    A(["Symptom: Queue count<br/>and age rising"]) --> B{"Dequeue retries or<br/>poison growth?"}
+    B -->|Yes| C("H2 hypothesis:<br/>Poison-message loop")
+    C --> K(["Mitigate retries;<br/>quarantine poison<br/>payload class"])
+    B -->|No| D{"Scale events<br/>visible?"}
+    %% Layout-only links serialize branches; they add no diagnostic steps or arrows.
+    K ~~~ D
+    D -->|No| E("H1 hypothesis:<br/>Scale-out not keeping up")
+    E --> L(["Mitigate capacity and<br/>scale constraints"])
+    D -->|Yes| F{"P95/P99 duration<br/>regressed?"}
+    L ~~~ F
+    F -->|Yes| G("H3 hypothesis:<br/>Per-message processing<br/>regression")
+    G --> M(["Mitigate code/config<br/>performance regression"])
+    F -->|No| H{"Dependency latency<br/>or failure spike?"}
+    M ~~~ H
+    H -->|Yes| I("H4 hypothesis:<br/>Downstream dependency<br/>bottleneck")
+    I --> N(["Mitigate dependency<br/>contention and throttling"])
+    H -->|No| J["Re-check host config,<br/>release timeline and<br/>trigger settings"]
+    N ~~~ J
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J,K,L,M,N baseNeutral;
+    linkStyle default stroke-width:2px;
 ```
+
+**Takeaway:** Diamonds route Yes/No checks to candidate H1–H4 hypotheses (rounded boxes) and mitigation endpoints (stadiums), or to further configuration checks (rectangle); validate candidates against the evidence and disproof sections below.
+
 This playbook assumes enqueue is healthy and focuses on why consumers cannot drain.
 
 ## 2. Common Misreadings
