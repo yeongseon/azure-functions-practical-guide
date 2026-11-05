@@ -22,6 +22,8 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
         - https://learn.microsoft.com/en-us/azure/storage/common/storage-network-security
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
+        - https://learn.microsoft.com/en-us/azure/storage/common/shared-key-authorization-prevent
+        - https://learn.microsoft.com/en-us/azure/storage/common/storage-network-security-set-default-access
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
@@ -53,30 +55,47 @@ This playbook covers five specific issues discovered during hands-on deployment 
 <!-- diagram-id: 1-summary -->
 ```mermaid
 flowchart TD
-    A["Flex Consumption deployment failed or degraded"] --> B{"Plan creation failed?"}
-    B -->|Yes| C["H1: Used az functionapp plan create --sku FC1"]
-    B -->|No| D{"Publish failed with storage auth error?"}
-    C --> C1["Fix: Use az functionapp create --flexconsumption-location"]
-    D -->|Yes| E["H2: allowSharedKeyAccess is false"]
-    D -->|No| F{"Storage accessible from public internet?"}
-    E --> E1["Fix: az functionapp deployment config set\n--deployment-storage-auth-type UserAssignedIdentity"]
-    F -->|Yes| G["H3: --default-action Deny not set"]
-    F -->|No| H{"Host returns 503 / Error state?"}
-    G --> G1["Fix: az storage account update --default-action Deny"]
-    H -->|Yes| I["H4a: Missing trigger connection setting"]
-    H -->|No| J{"Environment value unexpected?"}
-    I --> I1["Fix: Add missing app setting for trigger binding"]
-    J -->|Yes| K["H4b: ENVIRONMENT not explicitly set"]
-    J -->|No| L["Check general deployment playbook"]
-    K --> K1["Fix: Set ENVIRONMENT app setting explicitly"]
+    accTitle: Flex Consumption deployment diagnostic decision flow
+    accDescr: Illustrative triage, not a confirmed diagnosis. From failed or degraded deployment, check plan creation, publish storage authentication, public storage access, host 503 or Error state, then unexpected environment value. Each Yes branch selects H1, H2, H3, H4a or H4b respectively and its proposed mitigation; each No continues to the next check, ending at the general deployment playbook. Validate each candidate against the evidence and disproof sections below; the adjacent key retains command and setting details.
+    A(["Symptom: Flex Consumption<br/>deployment failed<br/>or degraded"]) --> B{"Plan creation<br/>failed?"}
+    B -->|Yes| C("H1 candidate:<br/>FC1 plan command")
+    C --> C1(["Use Flex app<br/>creation command"])
+    B -->|No| D{"Publish failed with<br/>storage auth error?"}
+    %% Layout-only links serialize branches; they add no diagnostic steps or arrows.
+    C1 ~~~ D
+    D -->|Yes| E("H2 candidate:<br/>Shared Key disabled")
+    E --> E1(["Set deployment storage<br/>to user-assigned identity"])
+    D -->|No| F{"Storage accessible<br/>from public internet?"}
+    E1 ~~~ F
+    F -->|Yes| G("H3 candidate:<br/>Default Deny not set")
+    G --> G1(["Set storage default<br/>network rule to Deny"])
+    F -->|No| H{"Host returns 503<br/>or Error state?"}
+    G1 ~~~ H
+    H -->|Yes| I("H4a candidate:<br/>Missing trigger<br/>connection setting")
+    I --> I1(["Add missing trigger<br/>binding app setting"])
+    H -->|No| J{"Environment value<br/>unexpected?"}
+    I1 ~~~ J
+    J -->|Yes| K("H4b candidate:<br/>ENVIRONMENT not<br/>explicitly set")
+    K --> K1(["Set ENVIRONMENT<br/>app setting explicitly"])
+    J -->|No| L["Check general<br/>deployment playbook"]
+    K1 ~~~ L
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,C1,D,E,E1,F,G,G1,H,I,I1,J,K,K1,L baseNeutral;
+    linkStyle default stroke-width:2px;
 ```
 
-| CLI element | Explanation |
-|---|---|
-| Command(s) | `az functionapp plan create`, `az functionapp create`, `az functionapp deployment config set\n--deployment-storage-auth-type`, `az storage account update` |
-| Key flags | `--sku`, `--flexconsumption-location`, `--deployment-storage-auth-type`, `--default-action` |
-| Variables | None |
-| Expected result | Azure CLI returns provisioning details; confirm the resource name and successful provisioning state before continuing. |
+**Reading key:** Diamonds are Yes/No checks, rounded boxes are candidate hypotheses,
+stadiums are the symptom or proposed mitigations, and the rectangle is the fallback.
+The arrows select what to investigate, not a proven cause; use Section 6 to validate
+or disprove each candidate before applying its mitigation.
+
+| Key | Candidate detail retained from the flow | Proposed mitigation |
+|---|---|---|
+| H1 | Attempted `az functionapp plan create --sku FC1`. | Use `az functionapp create --flexconsumption-location`; see [Flex app creation](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to#create-a-flex-consumption-app). |
+| H2 | `allowSharedKeyAccess` is `false`; check deployment authentication too, not the flag alone. | Configure `az functionapp deployment config set --deployment-storage-auth-type UserAssignedIdentity` with the identity resource ID and required storage permissions; see [deployment settings](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to#configure-deployment-settings) and [Shared Key rejection](https://learn.microsoft.com/en-us/azure/storage/common/shared-key-authorization-prevent). |
+| H3 | `--default-action Deny` is not set. | After ensuring required access, use `az storage account update --default-action Deny` to restrict the public endpoint to allowed sources, not to guarantee private-endpoint-only access; see [default network access](https://learn.microsoft.com/en-us/azure/storage/common/storage-network-security-set-default-access). |
+| H4a | Check for a missing trigger connection setting; 503/Error alone does not confirm it. | Add the missing app setting for the trigger binding; retain the supporting/disproving checks in Section 6. |
+| H4b | Check whether the application's `ENVIRONMENT` value was explicitly set. | Set the `ENVIRONMENT` app setting explicitly; this application-specific name is distinct from the runtime's [`AZURE_FUNCTIONS_ENVIRONMENT`](https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings#azure_functions_environment). |
 
 
 ### Incident framing
@@ -624,3 +643,5 @@ az functionapp config appsettings list \
 - [Azure Functions deployment technologies](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies)
 - [Azure Storage firewalls and virtual networks](https://learn.microsoft.com/en-us/azure/storage/common/storage-network-security)
 - [Azure Functions app settings reference](https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings)
+- [Prevent Shared Key authorization](https://learn.microsoft.com/en-us/azure/storage/common/shared-key-authorization-prevent)
+- [Set default Storage public network access](https://learn.microsoft.com/en-us/azure/storage/common/storage-network-security-set-default-access)

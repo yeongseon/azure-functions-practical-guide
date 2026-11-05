@@ -21,6 +21,8 @@ This collection provides production-focused Java patterns you can lift directly 
 <!-- diagram-id: recipe-map -->
 ```mermaid
 flowchart TD
+    accTitle: Java recipe reading map
+    accDescr: Read from HTTP Layer through Storage and Data, Security and Identity, Events and Scheduling, and Edge and Domain. Arrows organize this index's topics, not required implementation dependencies or hosting-plan support.
     A[HTTP Layer] --> B[Storage and Data]
     B --> C[Security and Identity]
     C --> D[Events and Scheduling]

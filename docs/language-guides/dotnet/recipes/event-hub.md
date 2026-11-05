@@ -19,6 +19,8 @@ Consume high-throughput event streams with the Event Hubs trigger and publish ev
 <!-- diagram-id: event-hub -->
 ```mermaid
 flowchart TD
+    accTitle: Event Hubs input and downstream paths in the .NET isolated-worker recipe
+    accDescr: Event producers feed Event Hub partitions, then an EventHubTrigger function has paths to a downstream store and EventHubOutput. These are conceptual data-flow relationships for this recipe, not network-connection initiators, checkpoint timing, or a guarantee of transactional writes across both destinations.
     A[Event Producers] --> B[(Event Hub Partitions)]
     B --> C[EventHubTrigger Function]
     C --> D[Downstream Store]
