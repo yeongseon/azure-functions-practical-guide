@@ -25,6 +25,8 @@ This recipe covers advanced Durable Functions patterns for Node.js (v4 programmi
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Parent and child Durable Orchestrations
+    accDescr: A parent calls sub-orchestrators A and B with callSubOrchestrator. Each child calls activities. The child-to-parent arrows represent returning results or errors, not starting another parent orchestration. This is a logical composition view, not a network topology.
     PARENT[Parent orchestrator] -->|callSubOrchestrator| SUB1[Sub-orchestrator A]
     PARENT -->|callSubOrchestrator| SUB2[Sub-orchestrator B]
     SUB1 --> ACT1[Activities]

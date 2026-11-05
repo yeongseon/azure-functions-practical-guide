@@ -142,6 +142,8 @@ Operate controls in a fixed loop so key material, identities, and network bounda
 <!-- diagram-id: procedure -->
 ```mermaid
 flowchart TD
+    accTitle: Recurring security operations review
+    accDescr: Illustrative runbook cycle through key rotation, identity audit, network policy review and incident response, returning to key rotation. This is a recommended review order, not a platform execution sequence.
     A[Key Rotation] --> B[Identity Audit]
     B --> C[Network Policy Review]
     C --> D[Incident Response]
