@@ -14,6 +14,10 @@ content_sources:
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-develop-local
+        - https://learn.microsoft.com/en-us/azure/azure-functions/recover-python-functions
+        - https://learn.microsoft.com/en-us/azure/azure-functions/streaming-logs
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
+        - https://learn.microsoft.com/en-us/azure/azure-functions/python-build-options
 ---
 # Troubleshooting
 
@@ -22,21 +26,25 @@ This reference covers the most common issues encountered when developing and dep
 <!-- diagram-id: troubleshooting -->
 ```mermaid
 flowchart TD
-    A[Issue observed] --> B{"Startup/import failure?"}
-    B -->|Yes| C[Check az functionapp log tail]
-    B -->|No| D{"Route/config issue?"}
-    D -->|Yes| E[Validate host.json and blueprint registration]
-    D -->|No| F{"Dependency/runtime issue?"}
-    F -->|Yes| G[Validate requirements and remote build]
-    F -->|No| H[Check identity, networking, and DNS]
+    accTitle: Python v2 troubleshooting decision flow
+    accDescr: Illustrative triage. Startup or import failure leads to startup and import logs; otherwise check route or configuration, then dependencies or runtime. Yes branches select host.json and blueprint registration, or requirements and remote build; the final No branch checks identity, networking and DNS. These are investigation paths, not confirmed causes.
+    A([Issue observed]) --> B{"Startup/import<br/>failure?"}
+    B -->|Yes| C["Inspect startup<br/>and import logs"]
+    B -->|No| D{"Route/config<br/>issue?"}
+    D -->|Yes| E["Validate host.json<br/>and blueprint<br/>registration"]
+    D -->|No| F{"Dependency/runtime<br/>issue?"}
+    F -->|Yes| G["Validate requirements<br/>and remote build"]
+    F -->|No| H["Check identity,<br/>networking, and DNS"]
+    %% Layout-only links serialize outcomes; they add no diagnostic steps or arrows.
+    C ~~~ D
+    E ~~~ F
+    G ~~~ H
 ```
 
-| CLI element | Explanation |
-|---|---|
-| Command(s) | `az functionapp log tail]` |
-| Key flags | None |
-| Variables | None |
-| Expected result | Azure CLI completes successfully and returns JSON, table, or no output depending on the command; verify the next documented check before continuing. |
+**Reading key:** Follow Yes/No branches to the next investigation, not a proven root cause.
+For Python v2, inspect `function_app.py` imports and registered blueprints when functions are not discovered; the model requires Functions runtime 4.x.
+Python function apps run on Linux in Azure. For logs, use [Application Insights Live Metrics](https://learn.microsoft.com/en-us/azure/azure-functions/streaming-logs) when connected; built-in log streaming is unavailable on Linux Consumption and shows only one instance on supported plans.
+For dependencies, check `requirements.txt` and Linux/Python-version compatibility. [Remote build](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies#remote-build) uses deployment parameters on Flex Consumption, versus Oryx/build app settings on Linux Consumption, Premium and Dedicated; a compatible [prebuilt dependency package](https://learn.microsoft.com/en-us/azure/azure-functions/python-build-options#local-build) is an alternative, not a missing remote-build fault.
 
 
 ## 1. Functions Not Found After Deploy
@@ -572,5 +580,9 @@ See also: [Networking operations](../../platform/networking.md) for the full Pri
 - [Networking Operations](../../platform/networking.md)
 
 ## Sources
+- [Troubleshoot Python function apps](https://learn.microsoft.com/en-us/azure/azure-functions/recover-python-functions)
+- [Stream execution logs](https://learn.microsoft.com/en-us/azure/azure-functions/streaming-logs)
+- [Deployment technologies](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies)
+- [Python build options](https://learn.microsoft.com/en-us/azure/azure-functions/python-build-options)
 - [Python v2 Programming Model (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python)
 - [Develop Azure Functions Locally (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-develop-local)
