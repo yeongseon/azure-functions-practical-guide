@@ -41,26 +41,31 @@ This section helps you choose the right network configuration for your Azure Fun
 <!-- diagram-id: network-scenario-decision-tree -->
 ```mermaid
 flowchart TD
-    START[What are your networking requirements?] --> Q1{Need to access<br/>private resources?}
+    accTitle: Networking scenario decision guide
+    accDescr: Guide scenario selection checks private resource access, then private inbound access, then fixed outbound IP requirements. Each Yes or No branch retains its scenario and guide plan list; this is not an exhaustive networking capability classifier.
+    START(["What are your<br/>networking requirements?"]) --> Q1{Need to access<br/>private resources?}
     
-    Q1 -->|No| PUBLIC[Scenario 1: Public Only]
+    Q1 -->|No| PUBLIC["Scenario 1:<br/>Public Only"]
     Q1 -->|Yes| Q2{Need private<br/>inbound access?}
     
-    Q2 -->|No| PRIVATE_EGRESS[Scenario 2: Private Egress]
+    Q2 -->|No| PRIVATE_EGRESS["Scenario 2:<br/>Private Egress"]
     Q2 -->|Yes| Q3{Need fixed<br/>outbound IP?}
     
-    Q3 -->|No| PRIVATE_INGRESS[Scenario 3: Private Ingress]
-    Q3 -->|Yes| NAT[Scenario 4: Fixed Outbound IP]
+    Q3 -->|No| PRIVATE_INGRESS["Scenario 3:<br/>Private Ingress"]
+    Q3 -->|Yes| NAT["Scenario 4:<br/>Fixed Outbound IP"]
     
     PUBLIC --> Y1[Y1, FC1, EP, ASP]
     PRIVATE_EGRESS --> FC1_EP_ASP[FC1, EP, ASP S1+]
     PRIVATE_INGRESS --> FC1_EP_ASP2[FC1, EP, ASP S1+]
     NAT --> FC1_EP_ASP3[FC1, EP, ASP S1+]
     
-    style PUBLIC fill:#E8F5E9
-    style PRIVATE_EGRESS fill:#E3F2FD
-    style PRIVATE_INGRESS fill:#FFF3E0
-    style NAT fill:#FCE4EC
+    %% Layout-only links tier complete branches; no decisions or arrows added.
+    Y1 ~~~ Q2
+    FC1_EP_ASP ~~~ Q3
+    FC1_EP_ASP2 ~~~ NAT
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class START,Q1,Q2,Q3,PUBLIC,PRIVATE_EGRESS,PRIVATE_INGRESS,NAT,Y1,FC1_EP_ASP,FC1_EP_ASP2,FC1_EP_ASP3 baseNeutral;
+    linkStyle default stroke-width:2px;
 ```
 
 ## Network Scenario Matrix

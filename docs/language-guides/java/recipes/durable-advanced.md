@@ -25,6 +25,8 @@ This recipe covers advanced Durable Functions patterns for Java beyond the basic
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Sub-orchestration composition in Java
+    accDescr: A parent calls sub-orchestrators A and B using callSubOrchestrator. Each sub-orchestrator calls activities and returns to the parent. Arrows show logical calls and returns, not network connections.
     PARENT[Parent orchestrator] -->|callSubOrchestrator| SUB1[Sub-orchestrator A]
     PARENT -->|callSubOrchestrator| SUB2[Sub-orchestrator B]
     SUB1 --> ACT1[Activities]
