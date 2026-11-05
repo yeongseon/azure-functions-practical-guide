@@ -24,14 +24,23 @@ Azure Functions emits telemetry through two independent channels: **Azure Monito
 <!-- diagram-id: metrics-sources -->
 ```mermaid
 flowchart TD
-    A[Function App Telemetry] --> B[Azure Monitor Platform Metrics]
-    A --> C[Application Insights]
-    B --> D[Execution Metrics]
-    B --> E[Flex Consumption Metrics]
-    B --> F[Shared App Service Metrics]
-    C --> G[Traces Requests Exceptions]
-    C --> H[Live Metrics Stream]
+    accTitle: Functions platform metrics and Application Insights reference map
+    accDescr: Two reference branches distinguish plan and OS dependent Azure Monitor platform metrics from configured Application Insights telemetry and its live view. Execution, Flex Consumption and shared App Service categories do not imply universal metric availability. See the adjacent source key.
+    A["Function App<br/>Telemetry"] --> B["Azure Monitor<br/>Platform Metrics"]
+    A --> C["Application<br/>Insights"]
+    B --> D["Execution<br/>Metrics"]
+    B --> E["Flex Consumption<br/>Metrics"]
+    B --> F["Shared App Service<br/>Metrics"]
+    C --> G["Traces Requests<br/>Exceptions"]
+    C --> H["Live Metrics<br/>Stream"]
+    %% Layout-only links tier source topics; they add no signal paths or processing steps.
+    D ~~~ E
+    E ~~~ F
+    F ~~~ C
+    G ~~~ H
 ```
+
+**Source key:** Platform metrics are [automatically collected where supported](https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions#azure-monitor-platform-metrics); App Service (`Microsoft.Web/sites`) metrics are unavailable on Linux Consumption, not merely its execution counters. Flex-specific execution metrics belong to Flex Consumption; `FunctionExecutionCount`/`FunctionExecutionUnits` are not supported on Linux Premium/Dedicated. Application Insights requires configured collection: requests, dependencies, traces and `customMetrics` are telemetry tables, not interchangeable with platform metrics, and [filters, sampling](https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring) and ingestion delays affect their contents. Its live stream is a separate investigation view, not retained table history; see [Application Insights Telemetry](application-insights-telemetry.md) for instrumentation and OS caveats.
 
 ## Metric Sources
 
@@ -107,3 +116,4 @@ Because a function app is a `Microsoft.Web/sites` resource, it also publishes th
 - [Monitoring Azure Functions data reference (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions-reference)
 - [Monitor Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions)
 - [Supported metrics for Microsoft.Web/sites (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/supported-metrics/microsoft-web-sites-metrics)
+- [Configure Functions telemetry collection (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring)
