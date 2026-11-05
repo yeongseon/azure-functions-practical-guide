@@ -99,7 +99,7 @@ graph TD
     E1 ~~~ E2
 ```
 
-**Reading key:** B1/B2 summarize [plan-specific compute billing](https://learn.microsoft.com/en-us/azure/azure-functions/functions-consumption-costs): legacy Consumption bills executions and memory/time; Flex on-demand bills executions and provisioned memory/time with its own grants, while Flex always-ready also has baseline billing and no free grants. [Premium](https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan#billing) bills allocated cores and memory over time, with no execution charge. C2 applies only where a deployment uses Azure Files; Flex uses Blob deployment storage. E2 means costs of configured network services, not a universal VNet-integration baseline fee.
+**Reading key:** "Execution-count cost" and "Time and memory cost" summarize [plan-specific compute billing](https://learn.microsoft.com/en-us/azure/azure-functions/functions-consumption-costs): legacy Consumption bills executions and memory/time; Flex on-demand bills executions and provisioned memory/time with its own grants, while Flex always-ready also has baseline billing and no free grants. [Premium](https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan#billing) bills allocated cores and memory over time, with no execution charge. "File share deployment" applies only where a deployment uses Azure Files; Flex uses Blob deployment storage. "VNet-related services" means costs of configured network services, not a universal VNet-integration baseline fee.
 
 ## Portal Walkthrough
 
