@@ -607,6 +607,7 @@ nav:
       - Validation Evidence Audit: reference/validation-evidence-audit.md
       - Diagram Inventory: reference/diagram-inventory.md
       - ADR - Diagram Composition: reference/adr-diagram-composition.md
+      - Functions Topology Templates: reference/functions-topology-templates.md
   - Contributing:
     - contributing/index.md
     - Documentation Content Contract: contributing/content-contract.md

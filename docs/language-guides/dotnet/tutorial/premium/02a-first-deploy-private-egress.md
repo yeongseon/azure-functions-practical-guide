@@ -34,6 +34,7 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
         - https://learn.microsoft.com/en-us/azure/app-service/configure-vnet-integration-enable
         - https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-access-restrictions#app-access
     - id: deployment-verification-results
       type: flowchart
       source: self-generated
@@ -81,7 +82,7 @@ Deploy a .NET 8 isolated worker Function App to an Elastic Premium plan (`EP1`) 
 %%{init: {'flowchart': {'nodeSpacing': 10, 'rankSpacing': 70, 'padding': 8, 'subGraphTitleMargin': {'top': 8, 'bottom': 32}}}}%%
 flowchart TD
     accTitle: Linux EP1 .NET 8 network and Storage topology
-    accDescr: Intended public HTTPS and separate private site ingress, outbound integration to four Storage endpoints, system identity, telemetry and warm capacity. Integration does not deploy the app into the subnet. Endpoint and DNS bundles expand in the adjacent key; historical blocked provisioning remains unchanged.
+    accDescr: Public HTTPS after the site private endpoint is added requires publicNetworkAccess explicitly Enabled (H); private site ingress remains separate. Outbound integration to four Storage endpoints, system identity, telemetry and warm capacity are shown. Integration does not deploy the app into the subnet. Endpoint and DNS bundles expand in the adjacent key; historical blocked provisioning remains unchanged.
     client(["Internet"])
     app_runtime["Function App<br/>Premium EP1<br/>Linux .NET 8 isolated"]
     identity{{"System MI<br/>Entra ID"}}
@@ -102,7 +103,7 @@ flowchart TD
     subgraph STORAGE["<div style='width:160px;text-align:left'>Content<br/>Backend</div>"]
         SHARE[("Azure Files<br/>content share")]
     end
-    client -->|"[Configured]<br/>HTTPS"| app_runtime
+    client -->|"[Configured]<br/>HTTPS if H"| app_runtime
     app_runtime -.->|"[Configured]<br/>Token"| identity
     app_runtime -.->|"[Configured]<br/>Telemetry"| telemetry
     app_runtime -.->|"[Configured]<br/>Capacity"| WARM
@@ -124,10 +125,11 @@ flowchart TD
     linkStyle default stroke-width:2px;
 ```
 
-**Reading key (Linux EP1):** Solid arrows show intended request/data access; dotted arrows show local token acquisition, telemetry, capacity, the VNet DNS-link association or membership, not transport through those roles. VNet integration is outbound-only and does not deploy the app into its integration subnet. The site private endpoint from Step8 is a **separate inbound** path, summarized in the smaller diagram below the historical verification section; it is not one of the Storage endpoints. Public access is not disabled merely by creating a site PE. The DNS-link arrow terminates at the VNet boundary, not the integration role or a DNS-query hop ([Storage PE/DNS](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints), [networking](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options), [private ingress](https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint)).
+**Reading key (Linux EP1):** Solid arrows show intended request/data access; dotted arrows show local token acquisition, telemetry, capacity, the VNet DNS-link association or membership, not transport through those roles. VNet integration is outbound-only and does not deploy the app into its integration subnet. The site private endpoint from Step8 is a **separate inbound** path, summarized in the smaller diagram below the historical verification section; it is not one of the Storage endpoints. With `publicNetworkAccess` unset (`null`), adding that site PE disables public ingress by default ([app access](https://learn.microsoft.com/en-us/azure/app-service/overview-access-restrictions#app-access)). The DNS-link arrow terminates at the VNet boundary, not the integration role or a DNS-query hop ([Storage PE/DNS](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints), [networking](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options), [private ingress](https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint)).
 
 | Key | Tutorial configuration / meaning |
 |---|---|
+| H | Public HTTPS after Step8 applies only when `publicNetworkAccess` is explicitly `Enabled`, subject to site access restrictions; this tutorial does not explicitly enable it ([app access](https://learn.microsoft.com/en-us/azure/app-service/overview-access-restrictions#app-access)) |
 | VNet / integration / PE subnet | `10.20.0.0/16` / `10.20.1.0/24` / `10.20.2.0/24`; integration delegation `Microsoft.Web/serverFarms` |
 | S | `allowBlobPublicAccess: false`; shared-key content-share access permitted under the tutorial's policy-allowed scenario. Anonymous-Blob blocking is not public-network disabling |
 | Token | System-assigned managed identity from Microsoft Entra ID; acquisition through the app's local identity endpoint, not a direct app-to-Entra transport hop |
@@ -725,7 +727,7 @@ DNS zones remain outside subnet boundaries and linked to the VNet. These four en
     |-------------------|---------|
     | `az functionapp show` | Displays function app status. |
     | `--output table` | Formats output as a table. |
-    | `curl --request GET` | Tests the public HTTP endpoint. |
+    | `curl --request GET` | Tests the health endpoint: public access requires H above; from a private-network client with DNS resolving the app hostname to the site PE IP, the request uses the private endpoint ([private ingress/DNS](https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint)). |
 
     Expected output (abridged):
 
@@ -826,3 +828,4 @@ flowchart TD
 - [Azure Functions Premium plan](https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan)
 - [Integrate your app with an Azure virtual network](https://learn.microsoft.com/en-us/azure/app-service/configure-vnet-integration-enable)
 - [Use private endpoints for Azure App Service apps](https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint)
+- [App Service app access and public-network defaults](https://learn.microsoft.com/en-us/azure/app-service/overview-access-restrictions#app-access)

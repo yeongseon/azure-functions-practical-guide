@@ -24,6 +24,8 @@ This runbook-style reference captures common Node.js v4 issues with practical ch
 <!-- diagram-id: topic-command-groups -->
 ```mermaid
 flowchart TD
+    accTitle: Node.js guide troubleshooting reading flow
+    accDescr: The illustrated investigation proceeds from Issue to Evidence, Diagnosis and Fix. These are reading stages, not exhaustive diagnostic branches or proof that a proposed fix succeeds.
     A[Issue] --> B[Evidence]
     B --> C[Diagnosis]
     C --> D[Fix]

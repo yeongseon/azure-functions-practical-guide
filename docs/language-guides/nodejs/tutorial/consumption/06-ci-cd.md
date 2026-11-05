@@ -63,6 +63,8 @@ You will create a GitHub Actions workflow for Consumption deployment and confirm
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
+    accTitle: Node.js Consumption Y1 tutorial deployment overview
+    accDescr: A developer push to main starts the example GitHub Actions workflow, which deploys apps/nodejs to the Consumption Y1 function app using a publish profile. These are logical deployment relationships, not a physical network topology or evidence of a successful release; the embedded workflow has no path filter.
     GH["GitHub Actions"] -->|"publish profile"| FA[Function App\nConsumption Y1]
     DEV["Developer"] -->|"git push"| GH
 
@@ -73,6 +75,8 @@ flowchart TD
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart TD
+    accTitle: Node.js Consumption tutorial CI/CD setup order
+    accDescr: Create the workflow YAML, store its secrets, push to main to trigger the embedded workflow, then validate the deployment. This is the intended setup and verification order for the Consumption example, not a record of executed deployment or health checks.
     A[Create workflow YAML] --> B[Store secrets]
     B --> C[Push to trigger]
     C --> D[Validate deployment]
