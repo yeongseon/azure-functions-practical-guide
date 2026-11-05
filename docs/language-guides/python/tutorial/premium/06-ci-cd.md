@@ -119,7 +119,7 @@ flowchart TD
 |---|---|
 | H | After a site private endpoint, public HTTPS requires `publicNetworkAccess: Enabled` and permitting access restrictions. With the property unset (`null`), adding that endpoint disables public ingress by default; the prerequisite Premium Bicep does not explicitly enable it |
 | VNet / integration / PE subnet | `10.0.0.0/16` / `10.0.1.0/24` / `10.0.2.0/24`; delegation `Microsoft.Web/serverFarms` |
-| S | Intended anonymous-Blob restriction: `allowBlobPublicAccess: false`; `allowSharedKeyAccess: true`. Anonymous-Blob blocking is distinct from disabling public networking |
+| S | The prerequisite repository Storage module maps `allowPublicAccess: false` to `publicNetworkAccess: Disabled` and firewall default Deny. Separately, `allowBlobPublicAccess: false` blocks anonymous Blob access, while `allowSharedKeyAccess: true` permits Shared Key authorization |
 | W | Premium minimum active billed instance: 1; default prewarmed HTTP buffer: 1; Linux regional maximum scale-out: 20–100, Korea Central: 20. These are different settings, not prewarm minimum/maximum |
 | Content / identity | Default Azure Files content access uses its connection string; supported identity-based host storage and Storage RBAC are separate. No-Files deployment alternatives exist |
 
