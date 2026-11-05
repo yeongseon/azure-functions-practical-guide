@@ -26,6 +26,9 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node
         - https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-node
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
+        - https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan
 ---
 # 03 - Configuration (Dedicated)
 
@@ -50,20 +53,34 @@ Manage environment settings, runtime options, and host behavior per environment.
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
+    accTitle: Node.js Dedicated B1 configuration categories
+    accDescr: Azure CLI updates app settings on the Dedicated B1 app. The configuration group also lists Node.js heap tuning and the separate host.json timeout; R, E, M and T refer to the adjacent key.
     CLI[Azure CLI] -->|appsettings set| FA[Function App\nDedicated B1]
 
-    subgraph CONFIG["App Settings"]
-        RT["FUNCTIONS_WORKER_RUNTIME=node"]
-        EXT["FUNCTIONS_EXTENSION_VERSION=~4"]
-        MEM["node --max-old-space-size=4096"]
-        TIMEOUT["functionTimeout: -1\n(unlimited)"]
+    subgraph CONFIG["Configuration"]
+        RT["R: Worker runtime<br/>node"]
+        EXT["E: Functions runtime<br/>~4"]
+        MEM["M: Node.js heap<br/>4096 MB example"]
+        TIMEOUT["T: host.json timeout<br/>-1 (unbounded)"]
+        %% Layout-only links tier categories; they add no configuration steps or semantic arrows.
+        RT ~~~ EXT
+        EXT ~~~ MEM
+        MEM ~~~ TIMEOUT
     end
 
     FA --> CONFIG
 
     style FA fill:#ff8c00,color:#fff
-    style CONFIG fill:#E3F2FD,stroke:#1976D2
 ```
+
+| Key | Configuration shown |
+|---|---|
+| R | App setting `FUNCTIONS_WORKER_RUNTIME=node` selects the Node.js worker. |
+| E | App setting `FUNCTIONS_EXTENSION_VERSION=~4` selects Functions runtime 4.x, not the Node.js programming-model version. |
+| M | `node --max-old-space-size=4096`, passed through `languageWorkers__node__arguments`, is the tutorial's heap-limit example, not a recommendation for B1's available memory. |
+| T | `functionTimeout: -1` (unlimited/unbounded) belongs in `host.json`, not the app-settings category; it does not prevent platform shutdowns or remove the HTTP response limit. |
+
+**Reading key:** The group classifies configuration, not physical containment or execution order. Enable Always On for reliable non-HTTP triggering on Dedicated hosting; an HTTP request or Portal access can wake an idled app without it.
 
 ## Steps
 
@@ -179,3 +196,6 @@ The table confirms required Node.js worker settings are applied to the deployed 
 - [Azure Functions Node.js developer guide (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node)
 - [Create your first Azure Function with Core Tools (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-node)
 - [Azure Functions hosting options (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
+- [App settings reference (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings)
+- [host.json reference (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json)
+- [Dedicated hosting and Always On (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan)
