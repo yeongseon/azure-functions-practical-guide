@@ -21,6 +21,8 @@ Implementation-focused patterns for .NET isolated worker Azure Functions.
 <!-- diagram-id: recipe-categories -->
 ```mermaid
 flowchart TD
+    accTitle: .NET recipe categories
+    accDescr: Read the recipe groups from HTTP through Storage and Security to Advanced; arrows show this index's reading order, not required implementation dependencies.
     A[HTTP] --> B[Storage]
     B --> C[Security]
     C --> D[Advanced]

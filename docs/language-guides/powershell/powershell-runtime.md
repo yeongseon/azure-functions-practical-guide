@@ -20,6 +20,8 @@ This page covers how the Azure Functions PowerShell worker executes your code: v
 <!-- diagram-id: powershell-runtime -->
 ```mermaid
 flowchart TD
+    accTitle: PowerShell runtime - worker preparation and invocation
+    accDescr: Schematic preparation flow from worker cold start through profile.ps1, managed or bundled modules and worker readiness to run.ps1 invocation per trigger. Profile runs once per worker, or per runspace with concurrency; module loading can occur in the profile or by autoloading. This is not an exact initialization schedule or measured execution trace.
     START[Worker cold start] --> PROFILE[Run profile.ps1 once]
     PROFILE --> DEPS[Load managed or bundled modules]
     DEPS --> READY[Worker ready]
