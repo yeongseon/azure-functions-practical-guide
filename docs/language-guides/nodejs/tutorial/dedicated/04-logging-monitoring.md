@@ -50,6 +50,8 @@ Capture structured logs, query telemetry, and validate operational visibility.
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
+    accTitle: Dedicated Node.js observability overview
+    accDescr: The Dedicated B1 tutorial app uses configured Application Insights for telemetry and KQL analysis, alongside a separate application-log stream where supported and enabled. Telemetry SDK refers to the built-in host integration, not a required custom Node.js SDK. Observability groups tools, not a network boundary.
     FA[Function App\nDedicated B1] -->|Telemetry SDK| AI[Application Insights\nfunc-ndded-04100022]
     FA -->|stdout/stderr| LOGS[Log Stream\naz webapp log tail]
 
@@ -60,10 +62,9 @@ flowchart TD
     end
 
     AI --> KQL
-
-    style FA fill:#ff8c00,color:#fff
-    style MONITORING fill:#E3F2FD,stroke:#1976D2
-    style AI fill:#FFF3E0
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class FA,AI,LOGS,KQL neutral;
+    style MONITORING fill:#f2f4f8,stroke:#707e93,color:#14202e
 ```
 
 ## Steps

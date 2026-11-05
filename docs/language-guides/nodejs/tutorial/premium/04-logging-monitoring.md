@@ -26,6 +26,8 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/app/create-workspace-resource
 ---
 # 04 - Logging and Monitoring (Premium)
 
@@ -58,14 +60,18 @@ You will query recent traces to verify that runtime events are captured and sear
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
-    FA[Function App\nPremium EP1] -->|APPLICATIONINSIGHTS_CONNECTION_STRING| AI[Application Insights\nsame name as function app]
-    AI --> LAW[Log Analytics\nWorkspace]
-    USER[Developer] -->|az monitor app-insights query| AI
-
-    style FA fill:#ff8c00,color:#fff
-    style AI fill:#E3F2FD
-    style LAW fill:#FFF3E0
+    accTitle: Premium Node.js telemetry and workspace overview
+    accDescr: The Premium EP1 tutorial app sends telemetry to configured Application Insights, whose workspace-based data is stored in the associated Log Analytics workspace. A developer queries Application Insights; the connection string selects the resource, not its name.
+    FA["Function App<br/>Premium EP1"] -->|connection setting| AI["Application<br/>Insights"]
+    AI --> LAW["Log Analytics<br/>workspace"]
+    USER[Developer] -->|query| AI
+    %% Layout-only link tiers the query client; adds no operation or semantic arrow.
+    USER ~~~ FA
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class FA,AI,LAW,USER neutral;
 ```
+
+**Reading key:** Connection setting = `APPLICATIONINSIGHTS_CONNECTION_STRING`; developer query = `az monitor app-insights query`. “Same name as function app” is this tutorial's naming choice, not a Premium-plan requirement. With integration enabled, the default Node.js application-log route is worker → Functions host → Application Insights, subject to filtering and sampling ([logging configuration](https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring#custom-application-logs)). The workspace arrow summarizes storage for workspace-based Application Insights, not an additional `FunctionAppLogs` forwarding stage ([workspace integration](https://learn.microsoft.com/en-us/azure/azure-monitor/app/create-workspace-resource)).
 
 | CLI element | Explanation |
 |---|---|
