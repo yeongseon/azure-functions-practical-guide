@@ -324,11 +324,11 @@ flowchart TD
     E --> TM["Traffic Manager<br/>or Front Door"]
     TM --> P["Primary Region<br/>Function App"]
     TM --> S["Secondary Region<br/>Function App"]
-    P --> SP[(Primary Storage)]
-    S --> SS[(Secondary Storage)]
-    P --> AP[(Application Insights)]
+    P --> SP[("Primary<br/>Storage")]
+    S --> SS[("Secondary<br/>Storage")]
+    P --> AP[("Application<br/>Insights")]
     S --> AP
-    AP --> O[Operations Dashboard]
+    AP --> O["Operations<br/>Dashboard"]
 ```
 
 **Planning key:** Edge Routing is the role implemented by the named service, not
