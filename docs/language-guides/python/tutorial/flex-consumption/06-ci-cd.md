@@ -63,7 +63,7 @@ You will configure OIDC-based GitHub Actions deployment to a Flex Consumption Fu
 !!! info "Infrastructure Context"
     **Plan**: Flex Consumption (FC1) | **Network**: Public ingress / private Storage context | **VNet**: ✅
 
-    The figure retains a private Storage scenario with outbound integration, four service endpoints/DNS zones and runtime user-assigned identity. This is not a universal FC1 configuration: Flex uses a Blob deployment container, does not depend on Azure Files content storage and has no deployment slots. The pipeline's federated service principal is separate from the runtime identity.
+    The figure retains a private Storage scenario with outbound integration, four private endpoints and their DNS zones, and runtime user-assigned identity. This is not a universal FC1 configuration: Flex uses a Blob deployment container, does not depend on Azure Files content storage and has no deployment slots. The pipeline's federated service principal is separate from the runtime identity.
 
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
@@ -110,7 +110,7 @@ flowchart TD
 | Key | Context / qualification |
 |---|---|
 | VNet / integration / PE subnet | `10.0.0.0/16` / `10.0.1.0/24` / `10.0.2.0/24`; Flex delegation `Microsoft.App/environments` |
-| S | Intended anonymous-Blob restriction: `allowBlobPublicAccess: false`; `allowSharedKeyAccess: false` is this context's authentication choice, not a universal Flex requirement. Neither property means public networking is disabled |
+| S | The repository Storage module maps `allowPublicAccess: false` to `publicNetworkAccess: Disabled` and firewall default Deny. Separately, `allowBlobPublicAccess: false` blocks anonymous Blob access, and `allowSharedKeyAccess: false` disables Shared Key authorization. These are this context's settings, not universal Flex requirements |
 | I | Runtime user-assigned managed identity requires appropriate Storage RBAC roles; token acquisition uses the app-local identity endpoint. The OIDC deployment service principal is a different identity |
 | Deployment | `deployment-packages` is the contextual Blob container name; check the app's selected deployment container. Direct upload to a container alone is not deployment |
 
