@@ -11,6 +11,7 @@ content_sources:
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-table
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-table-output
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-table-input
 ---
 # Table Storage Integration
 
@@ -21,6 +22,8 @@ This recipe demonstrates reading and writing Azure Table Storage entities from J
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Java HTTP and Table input and output relationships
+    accDescr: An HTTP request invokes the function; TableInput supplies an entity read from a table and TableOutput creates an entity in a table. Arrows show binding data relationships, not a transaction or network-call sequence.
     HTTP[HTTP Request] --> FA[Function App]
     FA -->|TableOutput| WRITE[(Table: entity written)]
     READ[(Table: entity read)] -->|TableInput| FA

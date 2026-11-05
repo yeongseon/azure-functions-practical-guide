@@ -29,6 +29,7 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
         - https://learn.microsoft.com/en-us/azure/app-service/overview-hosting-plans
+        - https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan#always-on
 ---
 # 07 - Extending with Triggers (Dedicated)
 
@@ -52,9 +53,11 @@ You will add queue, blob, and timer triggers to a .NET isolated worker Function 
 <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
-    A[Queue message] --> B["[QueueTrigger] handler"]
-    C[Blob upload] --> D["[BlobTrigger] handler"]
-    E[Schedule] --> F["[TimerTrigger] handler"]
+    accTitle: Dedicated .NET isolated trigger paths
+    accDescr: Conceptual paths for this Dedicated tutorial: queue message to QueueTrigger handler, blob upload to BlobTrigger handler, and schedule to TimerTrigger handler; each leads to outputs and logs. These are separate trigger relationships, not HTTP ingress or delivery guarantees; enable Always On for reliable non-HTTP triggering on Dedicated hosting, because an idled app otherwise needs an HTTP request or portal access to wake it.
+    A[Queue message] --> B["[QueueTrigger]<br/>handler"]
+    C[Blob upload] --> D["[BlobTrigger]<br/>handler"]
+    E[Schedule] --> F["[TimerTrigger]<br/>handler"]
     B --> G[Outputs and logs]
     D --> G
     F --> G

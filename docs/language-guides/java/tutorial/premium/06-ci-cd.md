@@ -26,6 +26,8 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-java
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
 ---
 # 06 - CI/CD (Premium)
 
@@ -50,6 +52,8 @@ You will create a GitHub Actions workflow that builds the Java project with Mave
 <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
+    accTitle: Java Elastic Premium tutorial CI/CD stage order
+    accDescr: A push to main that changes files matching apps/java/** starts the illustrated GitHub Actions workflow, followed by Maven build and test, Core Tools publishing from the staging directory and a smoke test. This is the intended Elastic Premium tutorial workflow, not authentication prerequisites, a slot swap or evidence of a successful release.
     A[Push to main] --> B[GitHub Actions]
     B --> C[Maven build + test]
     C --> D["Publish from staging dir"]
@@ -240,3 +244,5 @@ Smoke test passed (HTTP 200)
 - [Azure Functions Java developer guide (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java)
 - [Azure Functions hosting options (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
 - [Create a Java function with Azure Functions Core Tools (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-java)
+- [GitHub Actions deployment (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions)
+- [Deployment technologies (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies)

@@ -62,6 +62,8 @@ A Linux Premium Function App running the .NET 8 isolated worker on an EP1 plan, 
 <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
+    accTitle: Linux Premium EP1 .NET 8 first deployment
+    accDescr: Tutorial stage order from EP1 plan and app creation through dotnet publish, Core Tools deployment, the reference project's 16-function indexing check and HTTP validation; not a new execution result.
     A[az functionapp plan create EP1] --> B[az functionapp create]
     B --> C[dotnet publish]
     C --> D[func azure functionapp publish]
