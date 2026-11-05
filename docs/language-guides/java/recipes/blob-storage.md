@@ -24,6 +24,8 @@ This recipe covers Java blob processing using trigger, input, and output binding
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Java Blob recipe processing and read paths
+    accDescr: Conceptual annotation-model paths: an incoming container leads through BlobTrigger and content transformation to BlobOutput for the processed container; a separate HTTP trigger uses BlobInput. Arrows summarize recipe relationships, not polling or Event Grid delivery internals.
     BLOBIN[(incoming container)] --> TRIGGER[@BlobTrigger]
     TRIGGER --> TRANSFORM[Transform content]
     TRANSFORM --> BLOBOUT[@BlobOutput processed container]

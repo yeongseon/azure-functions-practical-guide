@@ -76,6 +76,8 @@ For orientation and study order, start with [Start Here](start-here/index.md).
 <!-- diagram-id: learning-flow -->
 ```mermaid
 flowchart TD
+    accTitle: Suggested learning order through this guide
+    accDescr: Read Start Here, Platform, Best Practices, Language Guides, Operations, Troubleshooting, then Reference. This is the guide's suggested study order, not an Azure execution sequence; the section links above and below also allow direct navigation.
     A[Start Here] --> B[Platform]
     B --> C[Best Practices]
     C --> D[Language Guides]

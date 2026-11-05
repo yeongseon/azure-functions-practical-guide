@@ -23,6 +23,9 @@ content_sources:
       source: self-generated
       justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to#configure-deployment-settings
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
@@ -69,27 +72,41 @@ You will provision a Linux Flex Consumption Function App for Java, deploy with `
 !!! info "Infrastructure Context"
     **Plan**: Flex Consumption (FC1) | **Network**: VNet integration supported | **Storage auth**: SystemAssigned MI
 
-    Flex Consumption uses blob-based deployment storage with managed identity authentication, unlike Consumption which uses Azure Files with connection strings.
+    Flex Consumption uses Blob deployment storage and supports connection-string or managed-identity authentication. This tutorial selects a system-assigned identity; that is a configuration choice, not a requirement for every Flex app. Flex has no Azure Files content-share dependency, and Linux Consumption also supports Blob package deployment.
 
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
-    INET[Internet] -->|HTTPS| FA[Function App\nFlex Consumption FC1\nLinux Java 17]
-
-    FA -->|"SystemAssigned MI"| ST[Storage Account\nBlob deployment]
-    FA --> AI[Application Insights]
-
-    subgraph STORAGE[Storage Services]
-        ST --- DEPLOY["Blob Container\napp-package"]
+    accTitle: Java Linux Flex Consumption public deployment topology
+    accDescr: Internet HTTPS requests reach the Linux Java 17 Flex Consumption FC1 app. This tutorial configures system-assigned identity access to Blob deployment storage and off-path Application Insights. The app-package container belongs to the account; no VNet is provisioned here.
+    client(["Internet<br/>HTTPS caller"])
+    app_runtime["Function App<br/>Flex Consumption FC1<br/>Linux Java 17"]
+    telemetry>"Application Insights<br/>Off-path telemetry"]
+    subgraph STORAGE["Storage Services"]
+        storage_db[("Storage Account<br/>Blob deployment")]
+        deployment_blob[("Blob Container<br/>app-package")]
+        storage_db -.->|"[Configured] Contains"| deployment_blob
     end
-
-    style FA fill:#0078d4,color:#fff
-    style STORAGE fill:#FFF3E0
+    client -->|"[Configured] HTTPS"| app_runtime
+    app_runtime -->|"[Configured]<br/>SystemAssigned MI"| storage_db
+    app_runtime -.->|"[Configured] Telemetry"| telemetry
+    %% Layout-only tier; the container does not send telemetry.
+    deployment_blob ~~~ telemetry
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e
+    classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e
+    classDef bandMuted fill:#ffffff,stroke:#707e93,stroke-width:1.5px,stroke-dasharray:4 3,color:#14202e
+    class client,storage_db,deployment_blob baseNeutral
+    class app_runtime focusActive
+    class telemetry bandMuted
 ```
+
+**Reading key:** Solid arrows show the initiating caller or app's configured access; dotted arrows show off-path telemetry or account/container membership, not another request hop. SystemAssigned MI is this tutorial's system-assigned managed identity choice for deployment storage, not a separate network hop. No VNet is provisioned here.
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart TD
+    accTitle: Java Flex Consumption first-deployment steps
+    accDescr: Tutorial order including deployment-container creation and Storage Blob Data Contributor assignment for its selected system-assigned identity, followed by Maven build, staging-directory publish and endpoint validation; not execution evidence.
     A[Set variables + login] --> B[Create RG + storage]
     B --> C[Create deployment container]
     C --> D[Create function app]
@@ -399,6 +416,9 @@ Identity probe (confirms managed identity is active on Flex Consumption):
 
 ## Sources
 
+- [Functions storage considerations](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations)
+- [Flex deployment configuration](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to#configure-deployment-settings)
+- [Functions monitoring](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)
 - [Azure Functions Java developer guide (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java)
 - [Azure Functions hosting options (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
 - [Azure Functions Flex Consumption plan (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan)
