@@ -24,9 +24,11 @@ Quick reference for Java Azure Functions operational workflows.
 <!-- diagram-id: topic-command-groups -->
 ```mermaid
 flowchart TD
-    A[func commands] --> B[Local development]
-    C[az functionapp] --> D[Cloud operations]
-    E[mvn] --> F[Build and deploy]
+    accTitle: Java guide command groups
+    accDescr: In this Maven-based guide, func commands support local development, az functionapp covers cloud operations, and mvn covers build and deployment; these are three tool categories, not a required execution order.
+    A["func<br/>commands"] --> B["Local<br/>development"]
+    C["az<br/>functionapp"] --> D["Cloud<br/>operations"]
+    E[mvn] --> F["Build<br/>and deploy"]
 ```
 
 | CLI element | Explanation |
