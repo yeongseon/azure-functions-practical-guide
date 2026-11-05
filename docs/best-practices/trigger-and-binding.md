@@ -11,11 +11,12 @@ content_sources:
     - id: trigger-and-binding-best-practices
       type: flowchart
       source: self-generated
-      justification: Flow view of trigger and binding best practices, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Conceptual review-topic map synthesized from trigger, binding and scaling guidance; arrows organize topics, not a per-invocation execution or transport protocol.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-event-grid-blob-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
 content_validation:
   status: verified
   last_reviewed: 2026-09-11
@@ -44,6 +45,8 @@ For trigger mechanics and extension details, see [Platform: Triggers and Binding
 <!-- diagram-id: trigger-and-binding-best-practices -->
 ```mermaid
 flowchart TD
+    accTitle: Trigger and binding review topics
+    accDescr: Conceptual review map covering event source, listener, scaling signal, instance allocation, host and worker, execution, bindings and downstream service. Arrows order review topics, not runtime messages or mandatory steps for every invocation. Scaling is a separate capacity concern; input bindings are not a post-execution step.
     E[Event source] --> T[Trigger listener]
     T --> SC[Scale controller signal]
     SC --> I[Instance allocation]
@@ -52,6 +55,8 @@ flowchart TD
     F --> B["Input/Output bindings"]
     B --> D[Downstream service]
 ```
+
+**Reading key:** Read this as a topic checklist, not an invocation sequence: events do not pass through the scale controller. [Event-driven scaling](https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling) monitors demand for Flex Consumption, Premium and Consumption; Dedicated uses App Service scaling instead. Configured [input bindings](https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings) provide data to the function, while output bindings write data out; both are optional, not mandatory stages after execution. Trigger delivery and binding support depend on the trigger, extension version and hosting plan; apply the compatibility guidance below.
 
 ## Why This Matters
 
@@ -225,6 +230,7 @@ Operationally, Event Grid models provide clearer event-flow visibility and reduc
 
 ## Sources
 
+- [Event-driven scaling in Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling)
 - [Azure Functions triggers and bindings (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings)
 - [Azure Blob storage trigger for Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger)
 - [Event Grid blob trigger for Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-event-grid-blob-trigger)

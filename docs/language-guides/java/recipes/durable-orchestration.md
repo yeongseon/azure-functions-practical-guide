@@ -24,11 +24,13 @@ This recipe shows Java Durable Functions with an HTTP starter, orchestrator, and
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Java Durable Orchestration recipe roles
+    accDescr: Logical recipe map from a client through an HTTP starter to an orchestrator and its validate and process activities. The status-endpoint link associates the instance with its management interface; it does not represent orchestrator I/O.
     CLIENT[Client] --> STARTER[HTTP starter]
-    STARTER --> ORCH[Orchestrator function]
-    ORCH --> ACT1[Activity: validate]
-    ORCH --> ACT2[Activity: process]
-    ORCH --> STATUS[Durable status endpoints]
+    STARTER --> ORCH["Orchestrator<br/>function"]
+    ORCH --> ACT1["Activity:<br/>validate"]
+    ORCH --> ACT2["Activity:<br/>process"]
+    ORCH --> STATUS["Durable status<br/>endpoints"]
 ```
 
 ## Prerequisites

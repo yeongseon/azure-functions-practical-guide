@@ -24,12 +24,23 @@ This recipe combines Key Vault references in app settings with direct SDK access
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
-    FUNC[Function App] --> APPSETTINGS[App Settings Key Vault reference]
+    accTitle: Java Key Vault configuration and SDK access
+    accDescr: The function app has two logical Key Vault access paths, app-setting references and Java SecretClient with DefaultAzureCredential. The dotted managed-identity relationship denotes configured authorization, not a network request from an identity object or guaranteed access.
+    FUNC[Function App] --> APPSETTINGS[App Settings<br/>Key Vault reference]
     APPSETTINGS --> KV[(Azure Key Vault)]
-    FUNC --> SDK[SecretClient + DefaultAzureCredential]
+    FUNC --> SDK[SecretClient +<br/>DefaultAzureCredential]
     SDK --> KV
     MI[Managed Identity] -.-> KV
+    %% Layout-only links tier the alternatives; they add no access steps or semantic arrows.
+    APPSETTINGS ~~~ SDK
+    SDK ~~~ MI
 ```
+
+**Reading key:** App-setting references are resolved by the platform; `SecretClient`
+is the separate Java SDK access path. The dotted identity arrow summarizes the
+configured identity's authorization relationship, not token transport. Both paths
+need appropriate vault permissions and network access; this view does not prescribe
+a hosting-plan/OS-specific route or imply that references refresh on every invocation.
 
 ## Prerequisites
 

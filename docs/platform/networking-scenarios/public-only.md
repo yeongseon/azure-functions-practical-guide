@@ -9,9 +9,12 @@ content_sources:
     - id: public-only-architecture
       type: flowchart
       source: self-generated
-      justification: "Standard public deployment pattern from MSLearn quickstarts"
+      justification: "Illustrative public-only ingress and dependency paths synthesized from Microsoft Learn; other Azure services are a generic application-specific category, not a required dependency."
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-python
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/storage/common/storage-network-security
 content_validation:
   status: verified
   last_reviewed: 2026-09-11
@@ -52,13 +55,18 @@ This section shows the Networking blade for a Consumption (Y1) Function App — 
 <!-- diagram-id: public-only-architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Public-only Function App ingress and dependencies
+    accDescr: Illustrative public-only view with Internet HTTPS ingress to the Function App and outbound public-endpoint paths to Storage, Application Insights and other Azure services. No VNet integration or private endpoints are depicted; layout links between dependencies are not requests.
     INET[Internet] -->|HTTPS| FA[Function App]
-    FA -->|Public endpoint| ST[Storage Account]
-    FA -->|Public endpoint| AI[Application Insights]
-    FA -->|Public endpoint| OTHER[Other Azure Services]
-    
-    style FA fill:#0078d4,color:#fff
-    style ST fill:#FFF3E0
+    FA -->|Public endpoint| ST[Storage<br/>Account]
+    FA -->|Public endpoint| AI[Application<br/>Insights]
+    FA -->|Public endpoint| OTHER[Other Azure<br/>Services]
+
+    %% Layout-only links serialize dependencies; they add no requests or steps.
+    ST ~~~ AI
+    AI ~~~ OTHER
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class INET,FA,ST,AI,OTHER neutral;
 ```
 
 ## Supported Plans
