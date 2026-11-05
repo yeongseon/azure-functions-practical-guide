@@ -14,6 +14,7 @@ content_sources:
       based_on:
         - https://learn.microsoft.com/en-us/azure/app-service/app-service-web-tutorial-custom-domain
         - https://learn.microsoft.com/en-us/azure/app-service/configure-ssl-bindings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
 ---
 # Custom Domains and Certificates
 
@@ -24,6 +25,8 @@ This recipe shows production custom domain + TLS certificate binding for HTTP-tr
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Custom hostname and TLS configuration to HTTP handler
+    accDescr: Conceptual chain from public DNS through custom domain and TLS certificate binding to the Function App HTTPS endpoint and HTTP handler, not a DNS query or TLS packet route. Consumption supports CNAME only; Premium and Dedicated support CNAME or A records. This is not a plan-independent command recipe.
     DNS[Public DNS CNAME or A Record] --> DOMAIN[Custom Domain]
     DOMAIN --> TLS[TLS Certificate Binding]
     TLS --> APP[Function App HTTPS Endpoint]
@@ -165,3 +168,4 @@ app.http("healthz", {
 ## Sources
 - [Tutorial: Map an existing custom DNS name to Azure App Service (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/app-service/app-service-web-tutorial-custom-domain)
 - [Secure a custom DNS name with TLS/SSL binding in App Service (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/app-service/configure-ssl-bindings)
+- [Functions hosting-plan domain support (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
