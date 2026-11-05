@@ -11,6 +11,7 @@ content_sources:
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus-trigger
+        - https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-dead-letter-queues
 ---
 # Service Bus
 
@@ -19,17 +20,21 @@ Consume Service Bus queue and topic messages with the trigger and publish messag
 <!-- diagram-id: service-bus -->
 ```mermaid
 flowchart TD
+    accTitle: Service Bus input and outcome relationships for the .NET isolated recipe
+    accDescr: Producers publish to a queue or topic; the trigger processes queue or topic-subscription messages. The two downstream paths summarize possible dead-letter and output-binding outcomes, not unconditional actions or direct network hops.
     A[Producers] --> B[(Service Bus Queue/Topic)]
     B --> C[ServiceBusTrigger Function]
     C --> D[(Dead-Letter Queue)]
     C --> E[ServiceBusOutput]
 ```
 
+**Reading key:** The dead-letter path represents a possible outcome for the source queue or subscription, not a separate queue written by every invocation. The output path represents a configured `ServiceBusOutput` binding; it is not an automatic consequence of receiving a message.
+
 ## Topic/Command Groups
 
 ### Queue trigger
 
-Message settlement is automatic: returning settles the message, and throwing abandons it. After `maxDeliveryCount` the message is dead-lettered.
+For this single-message, non-session .NET isolated example with Service Bus extension 5.x and automatic completion enabled, successful execution completes the message; failed processing abandons it. Under PeekLock, abandon or lock expiry increments the delivery count; Service Bus moves the message to the queue's or subscription's dead-letter subqueue when the count exceeds that entity's maximum delivery count. Manual settlement requires separate configuration; session-enabled entities require `IsSessionsEnabled = true`.
 
 ```csharp
 [Function("ProcessOrder")]
@@ -116,3 +121,4 @@ Grant the managed identity the **Azure Service Bus Data Receiver** (and **Data S
 - [Azure Service Bus bindings for Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus)
 - [Azure Service Bus trigger for Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus-trigger)
 - [Azure Service Bus output binding for Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus-output)
+- [Service Bus dead-letter queues (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-dead-letter-queues)
