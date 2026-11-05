@@ -8,9 +8,11 @@ content_sources:
     - id: environment-variables
       type: flowchart
       source: self-generated
-      justification: Flow view of environment variables, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Reference map of configuration locations and the variable categories listed on this page; arrows group topics rather than define precedence or automatic pipeline synchronization.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-develop-local
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
 ---
 # Environment Variables
 
@@ -19,13 +21,21 @@ Azure Functions uses environment variables for runtime configuration, connection
 <!-- diagram-id: environment-variables -->
 ```mermaid
 flowchart TD
-    A[Configuration sources] --> B[local.settings.json for local only]
-    A --> C[Azure App Settings in function app]
-    A --> D["CI/CD pipeline variables and secrets"]
-    C --> E[Runtime variables]
-    C --> F[Monitoring variables]
-    C --> G[Python worker variables]
-    C --> H[Application-specific variables]
+    accTitle: Python configuration locations and variable categories
+    accDescr: Topic map, not a precedence chain. Local app settings use local.settings.json Values; deployed app settings are exposed as environment variables. Pipeline variables and secrets are a separate configuration topic, not automatically runtime settings. The Azure app-settings branch groups the runtime, monitoring, Python worker and application-specific categories below.
+    A["Configuration<br/>sources"] --> B["local.settings.json<br/>for local only"]
+    A --> C["Azure App Settings<br/>in function app"]
+    A --> D["CI/CD pipeline variables<br/>and secrets"]
+    C --> E["Runtime<br/>variables"]
+    C --> F["Monitoring<br/>variables"]
+    C --> G["Python worker<br/>variables"]
+    C --> H["Application-specific<br/>variables"]
+    %% Layout-only links tier topics; they add no precedence or configuration relationship.
+    B ~~~ C
+    E ~~~ F
+    F ~~~ G
+    G ~~~ H
+    H ~~~ D
 ```
 
 ## Configuration Locations

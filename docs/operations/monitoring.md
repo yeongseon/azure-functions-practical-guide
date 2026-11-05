@@ -19,6 +19,8 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview
         - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/data-platform-logs
         - https://learn.microsoft.com/en-us/azure/azure-monitor/visualize/workbooks-overview
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/fundamentals/activity-log
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/action-groups
     - id: operational-monitoring-decision-flow
       type: flowchart
       source: self-generated
@@ -28,6 +30,9 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview
         - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/data-platform-logs
         - https://learn.microsoft.com/en-us/azure/azure-monitor/visualize/workbooks-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/app/live-stream
 content_validation:
   status: verified
   last_reviewed: 2026-09-11
@@ -119,27 +124,37 @@ Use the signal that best answers the operational question.
 
 ### Monitoring architecture
 
-Azure Functions emits multiple telemetry streams:
+Use distinct signal types when investigating a function app:
 
-- **Platform metrics** in Azure Monitor (execution count, failures, instance activity).
-- **Application telemetry** in Application Insights (requests, dependencies, traces, exceptions).
-- **Activity logs** for control-plane changes.
+- **Platform metrics** in Azure Monitor depend on hosting plan, OS and metric namespace; App Service metrics are unavailable for Linux Consumption. Check the [Functions monitoring reference](https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions) for the applicable metrics.
+- **Application telemetry** in Application Insights includes collected requests, dependencies, traces and exceptions when the relevant integration/instrumentation is configured; collection and sampling affect what is available.
+- **Activity Log** records control-plane operations on the app resource, not runtime invocation logs. Its native store is separate; export to a workspace to query those events with KQL.
 
-Use all three for complete operational visibility.
+Use these complementary views; no single view establishes complete operational visibility.
 
 <!-- diagram-id: monitoring-architecture -->
 ```mermaid
 flowchart TD
-    A[Function App Runtime] --> B[Azure Monitor Metrics]
-    A --> C[Application Insights]
-    A --> D[Activity Log]
-    B --> E[Metric Alerts]
+    accTitle: Function app monitoring reading map
+    accDescr: The function app runtime is associated with platform metrics and configured Application Insights telemetry; Activity Log is the separate control-plane view of the app resource, not telemetry emitted by the runtime. Metric and log alert paths converge on a configured action group; Insights also feeds log analysis and workbooks. Arrows summarize reading relationships, not network transports.
+    A["Function App<br/>Runtime"] --> B["Azure Monitor<br/>Metrics"]
+    A --> C["Application<br/>Insights"]
+    A --> D["Activity Log<br/>Control plane"]
+    B --> E["Metric Alerts"]
     C --> F["KQL / Log Analytics"]
     C --> G[Workbooks]
-    F --> H[Log Alerts]
-    E --> I[Action Group]
+    F --> H["Log Alerts"]
+    E --> I["Action Group"]
     H --> I
+    %% Layout-only links tier views; they add no signal paths or operational steps.
+    B ~~~ C
+    C ~~~ D
+    E ~~~ F
+    F ~~~ G
+    G ~~~ H
 ```
+
+**Reading key:** These are associated monitoring views, not a runtime export pipeline. [Log Analytics uses KQL](https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions#azure-monitor-tools) to query stored logs; KQL is not another signal type. Workbooks can combine metrics and log queries. Configure alert rules with the desired [action group](https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/action-groups) to use those notifications/actions; the figure shows those two alert paths, not an exhaustive monitoring topology.
 
 ### Enable Application Insights
 
@@ -328,20 +343,28 @@ Keep request and exception data unsampled for reliable incident triage.
 <!-- diagram-id: operational-monitoring-decision-flow -->
 ```mermaid
 flowchart TD
-    A[Alert or Incident] --> B{"Availability/latency issue?"}
-    B -- Yes --> C[Check metrics first]
-    B -- No --> D[Check logs and traces]
-    C --> E{Anomaly detected?}
-    E -- Yes --> F[Run focused KQL]
-    E -- No --> G[Review Activity Log]
-    D --> H{Error signature found?}
-    H -- Yes --> I[Correlate by operation_Id]
-    H -- No --> J[Use Live Metrics and widen time range]
-    F --> K[Mitigate and tune alerts]
+    accTitle: Operational monitoring investigation decisions
+    accDescr: Illustrative triage order, not a deterministic diagnosis. Availability or latency concerns lead to metrics and anomaly checks; other concerns lead to logs and traces and an error-signature check. All Yes and No branches retain their analysis actions and converge on mitigation and alert tuning. Correlation and Live Metrics depend on collected telemetry and supported configuration; missing signals do not prove the app healthy.
+    A["Alert or Incident"] --> B{"Availability/<br/>latency issue?"}
+    B -- Yes --> C["Check metrics<br/>first"]
+    B -- No --> D["Check logs<br/>and traces"]
+    C --> E{"Anomaly<br/>detected?"}
+    E -- Yes --> F["Run focused<br/>KQL"]
+    E -- No --> G["Review<br/>Activity Log"]
+    D --> H{"Error signature<br/>found?"}
+    H -- Yes --> I["Correlate by<br/>operation_Id"]
+    H -- No --> J["Use Live Metrics<br/>and widen<br/>time range"]
+    F --> K["Mitigate and<br/>tune alerts"]
     G --> K
     I --> K
     J --> K
+    %% Layout-only links serialize alternatives; they add no decisions or actions.
+    F ~~~ G
+    G ~~~ D
+    I ~~~ J
 ```
+
+**Investigation key:** Apply the metrics branch using the plan/OS-specific signals above. [Correlate by `operation_Id`](https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data#telemetry-correlation) within collected Application Insights telemetry for the same logical operation; cross-function/dependency coverage depends on propagated context and instrumentation, not merely a hosting-plan choice. [Live Metrics](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring#streaming-logs) requires a connected Application Insights resource and a working live channel; it supports multi-instance apps and Linux Consumption, but [SDK/language feature support varies](https://learn.microsoft.com/en-us/azure/azure-monitor/app/live-stream#supported-features-table). Widen the retained-log query window separately; the live stream is not retained historical evidence.
 
 ### Operational monitoring routine
 
@@ -488,3 +511,8 @@ Rollback:
 - [Application Insights overview](https://learn.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview)
 - [Logs in Azure Monitor](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/data-platform-logs)
 - [Create and share Azure Monitor workbooks](https://learn.microsoft.com/en-us/azure/azure-monitor/visualize/workbooks-overview)
+- [Azure Activity Log](https://learn.microsoft.com/en-us/azure/azure-monitor/fundamentals/activity-log)
+- [Analyze Functions telemetry and correlation](https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data)
+- [Monitor Functions executions and streaming logs](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)
+- [Live Metrics support and limitations](https://learn.microsoft.com/en-us/azure/azure-monitor/app/live-stream)
+- [Configure action groups](https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/action-groups)

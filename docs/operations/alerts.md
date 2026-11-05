@@ -22,6 +22,8 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/alerts-log
         - https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/alerts-create-log-alert-rule
         - https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/proactive-diagnostics
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/alerts-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
 content_validation:
   status: verified
   last_reviewed: 2026-09-11
@@ -128,6 +130,8 @@ Use alert rules that are:
 <!-- diagram-id: alert-processing-flow -->
 ```mermaid
 flowchart TD
+    accTitle: Metric and log alert evaluation and configured routing
+    accDescr: Simplified first evaluation: a metric or log signal is evaluated against an alert condition. No match creates no new alert; a match can invoke a configured action group with email or SMS and webhook or ITSM receivers. Existing stateful alerts and action suppression are not shown. Platform metric availability depends on plan and OS, with Microsoft.Web/sites metrics unavailable on Linux Consumption; those platform metrics do not require Application Insights. Application Insights log alerts require the relevant collected telemetry and query scope. Delivery is not guaranteed by a matching condition alone.
     A[Metric or log signal] --> B[Alert rule evaluation]
     B --> C{Condition matched}
     C -->|No| D[No alert instance]

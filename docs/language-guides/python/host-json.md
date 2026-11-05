@@ -8,7 +8,7 @@ content_sources:
     - id: host-json-reference
       type: flowchart
       source: self-generated
-      justification: Flow view of host json reference, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Reference map of the host.json sections illustrated below, not an exhaustive schema or a settings-precedence chain; Microsoft Learn documents the corresponding host configuration.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
 ---
@@ -19,17 +19,26 @@ The `host.json` file configures the Azure Functions runtime behaviour. It lives 
 <!-- diagram-id: host-json-reference -->
 ```mermaid
 flowchart TD
-    A[host.json] --> B[Global runtime settings]
+    accTitle: host.json reference configuration sections
+    accDescr: Reference map of global runtime, logging, extensions and concurrency settings, with HTTP and queue sections under extensions and host configuration application at startup. Arrows group configuration topics, not a strict precedence order; equivalent AzureFunctionsJobHost application settings can override individual host.json values as documented below.
+    A[host.json] --> B["Global runtime<br/>settings"]
     A --> C[logging]
     A --> D[extensions]
     A --> E[concurrency]
     D --> F[http settings]
     D --> G[queue settings]
-    B --> H[Function host applies config at startup]
+    B --> H["Function host applies<br/>config at startup"]
     C --> H
     D --> H
     E --> H
+    %% Layout-only links tier sections; they add no precedence or configuration relationship.
+    B ~~~ C
+    C ~~~ D
+    F ~~~ G
+    G ~~~ E
 ```
+
+**Reading key:** This is a section map, not a precedence chain. `host.json` applies locally and in Azure; an equivalent `AzureFunctionsJobHost__path__to__setting` app setting overrides the matching property. Local app-setting values belong in `local.settings.json` under `Values`, not in a second deployed host file ([host.json overrides](https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json#override-hostjson-values), [local settings](https://learn.microsoft.com/en-us/azure/azure-functions/functions-develop-local#local-settings-file)).
 
 > **Queue settings note:** In this annotated sample, `"maxPollingInterval": "00:00:02"` and `"visibilityTimeout": "00:00:30"` are **custom overrides** for faster dequeue and retry behavior. Azure Functions defaults are `maxPollingInterval = "00:01:00"` and `visibilityTimeout = "00:00:00"`.
 
@@ -288,3 +297,4 @@ The `host.json` file is deployed with your code and applies in both local and pr
 
 ## Sources
 - [host.json Reference (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json)
+- [Local settings (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-develop-local#local-settings-file)

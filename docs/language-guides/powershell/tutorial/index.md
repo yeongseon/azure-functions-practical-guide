@@ -4,15 +4,17 @@ content_sources:
     - id: which-plan-should-i-start-with
       type: flowchart
       source: self-generated
-      justification: Flow view of the PowerShell hosting plan decision, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative routing to this guide's PowerShell tutorial tracks, not an exhaustive platform recommendation; Microsoft Learn supplies the plan capabilities and billing qualifications below.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages
     - id: powershell-plan-tracks
       type: flowchart
       source: self-generated
-      justification: Flow view of the shared seven-step journey across all PowerShell tutorial tracks, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Navigation through this guide's seven shared PowerShell tutorial steps, not an Azure runtime sequence; Microsoft Learn provides hosting and language background.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-powershell
@@ -26,28 +28,34 @@ This tutorial section provides **four independent, step-by-step tracks** — one
 <!-- diagram-id: which-plan-should-i-start-with -->
 ```mermaid
 flowchart TD
-    Start["I need to run PowerShell on Azure Functions"] --> Q1{"Need VNet / private networking?"}
+    accTitle: Choose a PowerShell tutorial hosting plan
+    accDescr: Illustrative tutorial routing, not exclusive platform capabilities. The separate existing or Windows-dependent app route leads to Consumption. The VNet question leads to billing preferences or scale-to-zero and deployment-slot questions; all four tutorial outcomes remain available as shown, subject to the plan, OS, version and billing qualifications below.
+    Start["I need to run PowerShell<br/>on Azure Functions"] --> Q1{"Need VNet /<br/>private networking?"}
 
-    Q1 -->|No| Q2{"Predictable monthly cost?"}
-    Q1 -->|Yes| Q3{"Scale to zero when idle?"}
+    Q1 -->|No| Q2{"Predictable<br/>monthly cost?"}
+    Q1 -->|Yes| Q3{"Scale to zero<br/>when idle?"}
 
-    Q2 -->|"Pay only when running"| FLEX["Flex Consumption (FC1)"]
-    Start -.->|Existing or Windows-dependent app| CONS["Consumption (Y1)"]
-    Q2 -->|"Fixed monthly budget"| DEDI["Dedicated (App Service)"]
+    Q2 -->|"Pay only<br/>when running"| FLEX["Flex Consumption<br/>(FC1)"]
+    Start -.->|"Existing or<br/>Windows-dependent app"| CONS["Consumption (Y1)"]
+    Q2 -->|"Fixed monthly<br/>budget"| DEDI["Dedicated<br/>(App Service)"]
 
     Q3 -->|Yes| FLEX
-    Q3 -->|"No — always warm"| Q4{"Need deployment slots?"}
+    Q3 -->|"No — always warm"| Q4{"Need deployment<br/>slots?"}
 
     Q4 -->|Yes| PREM["Premium (EP)"]
     Q4 -->|No| FLEX
 
-    style CONS fill:#0078d4,color:#fff
-    style FLEX fill:#107c10,color:#fff
-    style PREM fill:#ff8c00,color:#fff
-    style DEDI fill:#5c2d91,color:#fff
+    %% Layout-only links tier branches; they add no decision or semantic arrow.
+    CONS ~~~ Q1
+    DEDI ~~~ Q3
+    PREM ~~~ FLEX
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class Start,Q1,Q2,Q3,Q4,FLEX,CONS,DEDI,PREM neutral;
 ```
 
-> **Not sure yet?** Start with **Flex Consumption** — it offers scale-to-zero with VNet integration and is Microsoft's recommended default for new projects. PowerShell 7.4 runs on Flex Consumption (Linux).
+**Takeaway:** Follow these illustrative tutorial starting points, not exclusive capability tests. “Pay only when running” means **Flex on-demand compute** billing; optional always-ready instances add baseline and execution charges, so Flex can also serve the always-warm route ([Flex billing](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan#billing)). “Fixed monthly budget” refers to **Dedicated allocated compute**, not a guaranteed total bill; **Premium** keeps at least one billed plan instance even when idle ([Dedicated billing](https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan#billing), [Premium billing](https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan#billing)).
+
+> **Not sure yet?** For a new Linux-compatible serverless app, start with **Flex Consumption**, Microsoft's recommended serverless plan. Current support includes PowerShell **7.6 and 7.4 on Flex (Linux)**; **7.6** also runs on **Windows Consumption** and **Premium/Dedicated on Windows or Linux**, but not **Linux Consumption**, whose last PowerShell version is **7.4**. PowerShell 7.4 support ends **November 10, 2026**; check version support before following this guide's existing runtime pins. Windows-dependent code needs a Windows-compatible plan rather than Flex; the Consumption branch is not the only Windows option ([supported languages](https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages), [hosting options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)).
 
 ## Plan Comparison at a Glance
 
@@ -70,6 +78,8 @@ Each track contains the same seven steps. Pick your plan and follow from start t
 <!-- diagram-id: powershell-plan-tracks -->
 ```mermaid
 flowchart TD
+    accTitle: Seven shared PowerShell tutorial steps
+    accDescr: Navigation through this guide's shared steps, not an Azure runtime sequence: run locally, first deploy, configuration, logging and monitoring, infrastructure as code, CI/CD, then extending with triggers. Track-specific extra steps remain listed in the tables below.
     A[01 Run Locally] --> B[02 First Deploy]
     B --> C[03 Configuration]
     C --> D[04 Logging & Monitoring]
@@ -161,3 +171,6 @@ Traditional App Service hosting with predictable pricing. Best when you already 
 - [Azure Functions hosting options (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
 - [Flex Consumption plan (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan)
 - [PowerShell developer reference (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-powershell)
+- [Supported languages (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages)
+- [Premium plan (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan)
+- [Dedicated plan (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan)

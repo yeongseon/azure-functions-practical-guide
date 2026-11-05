@@ -15,23 +15,31 @@ content_sources:
     - id: decision-framework
       type: flowchart
       source: self-generated
-      justification: Flow view of decision framework, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative workload-choice heuristic, not an exhaustive capability or plan-eligibility classifier; all original branches and outcomes retained.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
         - https://learn.microsoft.com/en-us/azure/app-service/overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/architecture/guide/technology-choices/compute-decision-tree
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-compare-logic-apps-ms-flow-webjobs
+        - https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan
     - id: architecture-comparison
       type: graph
       source: self-generated
-      justification: Flow view of architecture comparison, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Conceptual comparison of HTTP routing, worker capacity and runtime roles; bundles retain enumerated roles in the adjacent key, not a physical co-location or wire-protocol claim across hosting plans.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
         - https://learn.microsoft.com/en-us/azure/app-service/overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/architecture/guide/technology-choices/compute-decision-tree
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-compare-logic-apps-ms-flow-webjobs
+        - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
+        - https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-hosting-plans
+        - https://learn.microsoft.com/en-us/azure/app-service/manage-automatic-scaling
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-timer
 content_validation:
   status: verified
   last_reviewed: 2026-09-11
@@ -77,10 +85,10 @@ Both services share scale units, networking primitives, and deployment mechanism
 
 | Capability | Azure Functions | Azure App Service |
 |---|---|---|
-| **Execution model** | Event-driven, trigger-based | Request-driven (HTTP), always-on |
+| **Execution model** | HTTP and non-HTTP triggers on Consumption, Flex Consumption, Premium and Dedicated; enable Always On for reliable non-HTTP triggering on Dedicated | Web/API hosting; background event processing can use WebJobs with the WebJobs SDK; Always On depends on tier/configuration |
 | **Programming model** | Functions with bindings | Full web frameworks (ASP.NET, Express, Flask, Spring) |
 | **Scale-to-zero** | Yes (Consumption, Flex Consumption) | No (minimum 1 instance) |
-| **Auto-scaling** | Built-in event-driven scaling | Manual or rule-based autoscale |
+| **Auto-scaling** | Event-driven on Consumption/Premium; per-function/group on Flex Consumption; manual/autoscale on Dedicated | Manual (Basic+), rule-based autoscale (Standard+), or HTTP automatic scaling on web-only Premium v2–v4 plans |
 | **Max execution time** | Plan-dependent `functionTimeout` (Consumption default 5 min/max 10 min, Flex default 30 min, Premium/Dedicated unbounded) with a 230-second HTTP response limit on all plans | No `functionTimeout`; request duration is governed by app/server behavior and upstream HTTP timeouts, which differ from Functions host timeout semantics |
 | **Trigger types** | HTTP, Timer, Queue, Blob, Cosmos DB, Event Hub, Event Grid, Service Bus, SignalR, Durable | HTTP only (plus WebJobs for background) |
 | **Bindings (input/output)** | Native support for 20+ services | Manual SDK integration |
@@ -98,12 +106,15 @@ Both services share scale units, networking primitives, and deployment mechanism
 
 ### Decision Framework
 
-Use the following decision tree to determine which service best fits your workload.
+Use this illustrative decision tree to shortlist a service, then check the selected hosting plan and trigger requirements; it is not an exhaustive capability matrix.
 
 <!-- diagram-id: decision-framework -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 8, 'rankSpacing': 40}}}%%
 flowchart TD
-    A[New workload] --> B{"Event-driven?<br/>Triggers beyond HTTP?"}
+    accTitle: Functions versus App Service workload decisions
+    accDescr: Illustrative service-selection heuristic retaining every original question, branch and outcome. Hosting-plan and trigger qualifications immediately below the figure apply to the suggested choices.
+    A[New workload] --> B{"Event-driven?<br/>Triggers beyond<br/>HTTP?"}
     B -->|Yes| C{"Scale-to-zero<br/>required?"}
     B -->|No| D{"Long-running<br/>processes?"}
     C -->|Yes| E["Azure Functions<br/>Consumption or Flex"]
@@ -111,16 +122,31 @@ flowchart TD
     F -->|Yes| G["Azure Functions<br/>Premium"]
     F -->|No| H["Azure Functions<br/>Dedicated"]
     D -->|Yes| I{"WebSocket or<br/>session affinity?"}
-    D -->|No| J{"Simple HTTP API<br/>or complex web app?"}
+    D -->|No| J{"Simple HTTP<br/>API or complex<br/>web app?"}
     I -->|Yes| K[App Service]
     I -->|No| L{"Background<br/>processing model?"}
     L -->|Event triggers| M["Azure Functions<br/>Dedicated"]
-    L -->|WebJobs or scheduled| K
+    L -->|"WebJobs or<br/>scheduled"| K
     J -->|"Complex web app<br/>with middleware"| K
-    J -->|Simple HTTP API| N{"Existing App<br/>Service Plan?"}
-    N -->|Yes, with spare capacity| P["Add Functions<br/>to existing plan"]
+    J -->|"Simple<br/>HTTP API"| N{"Existing App<br/>Service Plan?"}
+    N -->|"Yes, with<br/>spare capacity"| P["Add Functions<br/>to existing plan"]
     N -->|No| E
+    %% Layout-only links tier the original choices; they add no decisions or semantic arrows.
+    F ~~~ G
+    G ~~~ H
+    H ~~~ D
+    I ~~~ L
+    L ~~~ M
+    M ~~~ J
+    J ~~~ N
+    N ~~~ P
+    P ~~~ K
+    K ~~~ E
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J,K,L,M,N,P neutral;
 ```
+
+**Reading key:** Every labelled branch is a shortlist, not an exclusion of other plans. Flex Consumption also offers always-ready instances; Premium is not the only warm-baseline option. Consumption and Flex Consumption can scale to zero (Flex without an always-ready baseline); Premium keeps at least one plan instance, while Dedicated uses provisioned App Service capacity. Dedicated still supports non-HTTP triggers: enable Always On for reliable non-HTTP triggering. An existing plan must have a supported Dedicated tier and spare capacity. [Hosting comparison](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale), [Dedicated hosting](https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan).
 
 #### When to Choose Azure Functions
 
@@ -140,67 +166,67 @@ flowchart TD
 
 ### Architecture Comparison
 
-Both services run on the same App Service stamp infrastructure, but use different runtime hosts and scaling controllers.
+Compare runtime roles separately from plan-specific capacity management. The infrastructure boundary below is conceptual: Dedicated Functions can share an App Service plan with web apps; it does not assert that Consumption, Flex Consumption and Premium apps share that same worker pool.
 
 <!-- diagram-id: architecture-comparison -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 8, 'rankSpacing': 40}}}%%
 graph TB
-    subgraph "App Service Stamp (Shared Infrastructure)"
-        direction TB
-        LB[Azure Load Balancer]
-        FE[Front-End Servers]
-        LB --> FE
-
-        subgraph "App Service Workers"
-            direction LR
-            W1[Worker Instance 1]
-            W2[Worker Instance 2]
-            W3[Worker Instance N]
+    accTitle: Functions and App Service runtime comparison
+    accDescr: Conceptual hosting comparison, not physical co-location across all plans. HTTP front ends route to worker capacity; separate Functions and web runtime roles retain Queue, Event Hubs and timer examples. The adjacent key scopes scaling by plan and distinguishes listener reads from HTTP ingress.
+    subgraph HTTP["HTTP traffic"]
+        client(["Client requests"])
+    end
+    subgraph STAMP["App Service<br/>infrastructure"]
+        ingress["HTTP front ends<br/>LB + FE"]
+        subgraph WORKERS["Worker capacity"]
+            workers["Instances 1, 2, N"]
         end
-
-        FE --> W1
-        FE --> W2
-        FE --> W3
     end
-
-    SC["Scale Controller<br/>Control Plane"]
-
-    subgraph "Functions Runtime (on Worker)"
-        direction TB
-        FH[Function Host]
-        TR[Trigger Listeners]
-        FH --> TR
+    subgraph FUNCTIONS["Functions<br/>runtime"]
+        app_runtime["Function host"]
+        trigger_listener["Trigger listeners"]
     end
-
-    subgraph "App Service Runtime (on Worker)"
-        direction TB
-        WS["Web Server<br/>Kestrel / Express / Gunicorn"]
-        MW[Middleware Pipeline]
-        WS --> MW
+    subgraph WEB["Web app runtime"]
+        web_runtime["Web server"]
+        middleware["Middleware pipeline"]
     end
-
-    SC -->|"monitors events,<br/>adjusts instance count"| W1
-    W1 -.-> |"Functions App"| FH
-    W2 -.-> |"Web App"| WS
-
-    subgraph "External Triggers"
-        Q[Queue Storage]
-        EH[Event Hub]
-        TM[Timer]
+    subgraph TRIGGERS["Trigger examples"]
+        event_source[("Queue +<br/>Event Hubs")]
+        schedule["Timer schedule"]
     end
-
-    subgraph "HTTP Traffic"
-        CL[Client Requests]
-    end
-
-    Q --> TR
-    EH --> TR
-    TM --> TR
-    CL --> LB
+    scale_controller["Scale controller<br/>Dynamic plans<br/>only"]
+    client -->|"[Illustrative]<br/>HTTP"| ingress
+    ingress -->|"[Illustrative]<br/>Route"| workers
+    workers -.->|"[Illustrative]<br/>Functions"| app_runtime
+    app_runtime -.->|"[Illustrative]<br/>Owns"| trigger_listener
+    trigger_listener -->|"[Configured]<br/>Read"| event_source
+    trigger_listener -.->|"[Configured]<br/>Schedule"| schedule
+    workers -.->|"[Illustrative]<br/>Web app"| web_runtime
+    web_runtime -->|"[Illustrative]<br/>Pipeline"| middleware
+    scale_controller -.->|"[Configured]<br/>Demand"| event_source
+    scale_controller -.->|"[Configured]<br/>Capacity"| app_runtime
+    %% Layout-only tiers add no components, runtime steps or semantic arrows.
+    scale_controller ~~~ client
+    event_source ~~~ schedule
+    schedule ~~~ web_runtime
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    classDef control fill:#ffffff,stroke:#707e93,stroke-width:1.5px,stroke-dasharray:4 3,color:#14202e;
+    class client,ingress,workers,app_runtime,trigger_listener,event_source,schedule,web_runtime,middleware neutral;
+    class scale_controller control;
+    linkStyle default stroke-width:2px;
 ```
 
+| Figure key | Preserved roles and scope |
+|---|---|
+| LB + FE | Azure Load Balancer and front-end server roles bundled as a conceptual HTTP routing layer, not a documented packet-by-packet path. Client requests reach worker-hosted HTTP handlers; Queue/Event Hubs traffic does not traverse this HTTP path. |
+| Instances 1, 2, N | Original three worker examples retained as an enumerated pool. Functions and web runtimes are logical worker-hosted alternatives, not extra network hops. Dedicated apps can share a plan; other plans have their own capacity/scaling rules. |
+| Functions runtime | Function host coordinates trigger listeners. Queue listeners poll Queue Storage; Event Hubs listeners read the event stream; the timer listener follows its schedule rather than receiving an external HTTP event. These are trigger-model distinctions, not language-specific process boundaries. |
+| Web app runtime | Web server (original examples: Kestrel, Express, Gunicorn) and middleware pipeline remain separate roles. The pipeline is application-specific, not a mandatory transport component. |
+| Scale controller | Dotted demand/capacity paths summarize Consumption/Premium app-level and Flex Consumption per-function/group event-driven scaling, not event forwarding or ARM transport. HTTP, Blob (Event Grid) and Durable triggers each share their respective Flex groups. The timer example does not imply one timer invocation per worker. |
+
 !!! info "Key architectural difference"
-    Azure Functions adds a **Scale Controller** (a separate control-plane component outside the worker pool) and **trigger listeners** on top of the App Service workers. The Scale Controller monitors event sources and adjusts instance count automatically. App Service relies on manual scaling rules or Azure Monitor-based autoscale.
+    Trigger listeners belong to the Functions programming model on Consumption, Flex Consumption, Premium and Dedicated. Functions event-driven capacity management applies to Consumption, Flex Consumption and Premium, **not Dedicated**. Dedicated uses App Service manual scaling or supported rule-based autoscale. Web-only App Service plans on Premium v2–v4 can alternatively enable HTTP-traffic automatic scaling; that feature does not support a plan containing function apps. [Event-driven scaling](https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling), [App Service scaling](https://learn.microsoft.com/en-us/azure/app-service/manage-automatic-scaling).
 
 ### Migration Guidance
 
