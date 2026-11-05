@@ -23,6 +23,11 @@ content_sources:
       source: self-generated
       justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
+        - https://learn.microsoft.com/en-us/azure/azure-functions/manage-connections
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-event-grid-blob-trigger
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue
@@ -31,6 +36,10 @@ content_sources:
       source: self-generated
       justification: Flow view of what you ll build 2, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-timer
+        - https://learn.microsoft.com/en-us/azure/azure-functions/manage-connections
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-event-grid-blob-trigger
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue
@@ -55,65 +64,85 @@ You will extend the Python Flex app with timer, queue, and Event Grid-based blob
 !!! info "Infrastructure Context"
     **Plan**: Flex Consumption (FC1) | **Network**: Full private network | **VNet**: ✅
 
-    FC1 deploys with VNet integration, private endpoints for all storage services, private DNS zones, and user-assigned managed identity. Storage uses identity-based authentication (no shared keys).
+    This FC1 scenario retains outbound VNet integration, four Storage private endpoints and DNS zones, and user-assigned identity for host/deployment access. These are configuration choices, not requirements for every Flex app; HTTP ingress and Event Grid delivery remain separate from private Storage access.
 
-    <!-- diagram-id: what-you-ll-build -->
+<!-- diagram-id: what-you-ll-build -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 10, 'rankSpacing': 70, 'padding': 8, 'subGraphTitleMargin': {'top': 8, 'bottom': 32}}}}%%
 flowchart TD
-    INET[Internet] -->|HTTPS| FA[Function App\nFlex Consumption FC1\nLinux Python 3.11]
-
-    subgraph VNET["VNet 10.0.0.0/16"]
-        subgraph INT_SUB["Integration Subnet 10.0.1.0/24\nDelegation: Microsoft.App/environments"]
-            FA
+    accTitle: Python Flex Consumption private Storage context
+    accDescr: Linux Python 3.11 FC1 app outside its outbound integration subnet, with four distinct Storage endpoints and DNS zones expanded in the key. User-assigned identity and RBAC are authorization associations, not data transit. Deployment uses the retained Blob container; this is intended configuration, not a deployment result.
+    client(["Internet"])
+    app_runtime["Function App<br/>Flex Consumption FC1<br/>Linux Python 3.11"]
+    identity{{"User-assigned MI<br/>Storage RBAC"}}
+    telemetry>"Application<br/>Insights"]
+    subgraph DNS["Private DNS zones"]
+        dns_fn{{"Blob · Queue<br/>Table · File"}}
+    end
+    subgraph vnet_fn["VNet"]
+        subgraph subnet_int_fn["<div style='width:170px;text-align:right'>Integration<br/>subnet</div>"]
+            vnet_integration[["Outbound<br/>integration"]]
         end
-        subgraph PE_SUB["Private Endpoint Subnet 10.0.2.0/24"]
-            PE_BLOB[PE: blob]
-            PE_QUEUE[PE: queue]
-            PE_TABLE[PE: table]
-            PE_FILE[PE: file]
+        subgraph subnet_pe_fn["<div style='width:130px;text-align:left'>PE<br/>subnet</div>"]
+            pe_storage[["Storage PEs<br/>blob · queue<br/>table · file"]]
         end
     end
-
-    PE_BLOB --> ST["Storage Account\nallowPublicAccess: false\nallowSharedKeyAccess: false"]
-    PE_QUEUE --> ST
-    PE_TABLE --> ST
-    PE_FILE --> ST
-
-    subgraph DNS[Private DNS Zones]
-        DNS_BLOB[privatelink.blob.core.windows.net]
-        DNS_QUEUE[privatelink.queue.core.windows.net]
-        DNS_TABLE[privatelink.table.core.windows.net]
-        DNS_FILE[privatelink.file.core.windows.net]
+    storage_db[("Storage account<br/>Settings: S")]
+    subgraph DEPLOY["<div style='width:200px;text-align:left'>Deployment</div>"]
+        BLOB_CTR[("Blob container<br/>deployment-packages")]
     end
-
-    PE_BLOB -.-> DNS_BLOB
-    PE_QUEUE -.-> DNS_QUEUE
-    PE_TABLE -.-> DNS_TABLE
-    PE_FILE -.-> DNS_FILE
-
-    FA -.->|User-Assigned MI| UAMI[Managed Identity]
-    UAMI -->|RBAC| ST
-    FA --> AI[Application Insights]
-
-    subgraph DEPLOY[Deployment]
-        BLOB_CTR[Blob Container\ndeployment-packages]
-    end
-    ST --- BLOB_CTR
-
-    style FA fill:#107c10,color:#fff
-    style VNET fill:#E8F5E9,stroke:#4CAF50
-    style ST fill:#FFF3E0
-    style DNS fill:#E3F2FD
+    client -->|"[Configured]<br/>HTTPS"| app_runtime
+    app_runtime -.->|"[Configured]<br/>Identity"| identity
+    app_runtime -.->|"[Configured]<br/>Telemetry"| telemetry
+    dns_fn -.->|"[Configured]<br/>VNet link"| vnet_fn
+    app_runtime -->|"[Configured]<br/>Outbound"| vnet_integration
+    vnet_integration -->|"[Configured]<br/>Each PE"| pe_storage
+    pe_storage -->|"[Configured]<br/>Each service"| storage_db
+    storage_db -.->|"[Configured]<br/>Contains"| BLOB_CTR
+    %% Layout-only tiers; add no requests, diagnostic steps or visible arrows.
+    identity ~~~ telemetry
+    telemetry ~~~ dns_fn
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e;
+    classDef bandMuted fill:#ffffff,stroke:#707e93,stroke-width:1.5px,stroke-dasharray:4 3,color:#14202e;
+    class client,storage_db,BLOB_CTR baseNeutral;
+    class app_runtime,vnet_integration,pe_storage focusActive;
+    class identity,telemetry,dns_fn bandMuted;
 ```
+
+**Reading key (Linux FC1):** Solid arrows show intended request/data access; dotted arrows show identity, telemetry, VNet-link or membership associations, not transport. Outbound integration does not deploy app compute into the integration subnet; Flex uses shared gateways dedicated to that subnet ([networking](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)).
+
+| Key | Configuration / meaning |
+|---|---|
+| VNet / integration / PE subnet | `10.0.0.0/16` / `10.0.1.0/24` / `10.0.2.0/24`; delegation `Microsoft.App/environments` |
+| S | Intended private template configuration: `publicNetworkAccess: Disabled`, `allowSharedKeyAccess: false`; `allowPublicAccess` was the Bicep module parameter, not a Storage ARM property |
+| Identity / RBAC | User-assigned identity with Storage permissions; RBAC authorizes access, not a hop through the identity. Tokens use the app's local identity endpoint ([identity](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)) |
+| Deployment | Blob container `deployment-packages`; Flex does not depend on an Azure Files content share ([storage](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations)) |
+
+The bundled nodes retain **four distinct endpoints**, with integration → endpoint → matching Storage service and each endpoint's DNS zone-group association. DNS zones are outside and linked to the VNet; clients keep the normal Storage hostname, resolving to the endpoint's private IP when private DNS is configured ([Storage endpoints/DNS](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints)). The File endpoint is retained scenario context, not a Flex content-share requirement.
+
+| Endpoint → Storage service | Private DNS zone |
+|---|---|
+| `PE_BLOB` → Blob | `privatelink.blob.core.windows.net` |
+| `PE_QUEUE` → Queue | `privatelink.queue.core.windows.net` |
+| `PE_TABLE` → Table | `privatelink.table.core.windows.net` |
+| `PE_FILE` → File | `privatelink.file.core.windows.net` |
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart TD
-    Queue[Storage Queue: tasks] --> QueueFn[Queue trigger]
-    Blob[Blob uploads container] --> EG[Event Grid subscription]
-    EG --> BlobFn[Blob trigger source=EventGrid]
+    accTitle: Python Flex Consumption independent trigger paths
+    accDescr: The tasks queue associates with its queue trigger, uploads Blob events pass through an Event Grid subscription to the EventGrid-source Blob trigger, and the cron schedule associates with the timer trigger. These are logical trigger relationships, not HTTP ingress or sequential execution across trigger types.
+    Queue["Storage Queue:<br/>tasks"] --> QueueFn[Queue trigger]
+    Blob["Blob uploads<br/>container"] --> EG["Event Grid<br/>subscription"]
+    EG --> BlobFn["Blob trigger<br/>source=EventGrid"]
     Timer[Cron schedule] --> TimerFn[Timer trigger]
+    %% Layout-only tiers; add no trigger dependencies or visible arrows.
+    QueueFn ~~~ Blob
+    BlobFn ~~~ Timer
 ```
+
+**Takeaway:** These Python v2 samples use `@bp.queue_trigger`, `@bp.blob_trigger(source="EventGrid")` and `@bp.timer_trigger`. Flex requires the event-based Blob source **and** the subscription setup in Step 5; setting the decorator alone does not create that subscription. `connection="AzureWebJobsStorage"` selects the app setting or identity-setting prefix, not a literal connection string in source; identity connections also need appropriate settings and permissions. The timer expression `0 */5 * * * *` means every fifth minute, not every five seconds ([Blob setup](https://learn.microsoft.com/en-us/azure/azure-functions/functions-event-grid-blob-trigger), [queue connection](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger), [timer](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-timer), [connections](https://learn.microsoft.com/en-us/azure/azure-functions/manage-connections)).
 
 ## Steps
 
@@ -383,6 +412,13 @@ Expected output:
 
 ## Sources
 
+- [Functions networking options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)
+- [Storage private endpoints and DNS](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints)
+- [App Service and Functions managed identity](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)
+- [Functions storage considerations](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations)
+- [Functions connection settings](https://learn.microsoft.com/en-us/azure/azure-functions/manage-connections)
+- [Python Queue trigger](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger)
+- [Python Timer trigger](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-timer)
 - [Azure Functions trigger and binding concepts](https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings)
 - [Event Grid blob trigger for Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-event-grid-blob-trigger)
 - [Queue storage trigger for Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue)
