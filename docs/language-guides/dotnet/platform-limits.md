@@ -28,6 +28,8 @@ Plan-specific limits relevant to .NET isolated worker apps.
 <!-- diagram-id: platform-limits -->
 ```mermaid
 flowchart TD
+    accTitle: Platform limits reading flow
+    accDescr: The illustrated workflow proceeds from Configuration to Build, Deploy and Observe.
     A[Configuration] --> B[Build]
     B --> C[Deploy]
     C --> D[Observe]

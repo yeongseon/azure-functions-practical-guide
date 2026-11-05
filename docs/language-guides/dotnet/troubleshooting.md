@@ -22,6 +22,8 @@ Common .NET isolated worker problems with direct diagnosis and remediation steps
 <!-- diagram-id: troubleshooting -->
 ```mermaid
 flowchart TD
+    accTitle: Troubleshooting reading flow
+    accDescr: The illustrated workflow proceeds from Configuration to Build, Deploy and Observe.
     A[Configuration] --> B[Build]
     B --> C[Deploy]
     C --> D[Observe]
