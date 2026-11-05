@@ -16,6 +16,8 @@ content_sources:
       justification: "NAT Gateway integration pattern from MSLearn documentation"
       based_on:
         - https://learn.microsoft.com/en-us/azure/app-service/overview-nat-gateway-integration
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/nat-gateway/nat-overview
     - id: full-isolation-with-nat
       type: flowchart
       source: self-generated
@@ -23,6 +25,8 @@ content_sources:
       based_on:
         - https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint
         - https://learn.microsoft.com/en-us/azure/app-service/overview-nat-gateway-integration
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/nat-gateway/nat-overview
 content_validation:
   status: verified
   last_reviewed: 2026-09-11
@@ -63,28 +67,45 @@ The Networking blade shows the baseline outbound configuration before NAT Gatewa
 <!-- diagram-id: nat-gateway-architecture -->
 ```mermaid
 flowchart TD
-    INET[Internet] -->|HTTPS| FA[Function App]
-    
-    subgraph VNET["VNet"]
-        subgraph INT_SUB["Integration Subnet + NAT Gateway"]
-            FA --> NAT[NAT Gateway]
+    accTitle: Function app fixed outbound IP and private Blob access
+    accDescr: Public HTTPS ingress reaches the Function app outside the customer VNet. Outbound VNet integration reaches Blob over a private endpoint; external-service calls use the integration subnet's NAT Gateway public IP. The address and allowlist are illustrative.
+    client(["Internet<br/>HTTPS caller"])
+    app_runtime["Function App<br/>Managed compute"]
+    external_service(["External Service<br/>IP Allowlist: 203.0.113.10"])
+    storage_db[("Storage Account")]
+    subgraph vnet_fn["Customer VNet"]
+        subgraph subnet_int_fn["Integration [NAT Gateway]"]
+            vnet_integration[["VNet integration<br/>Outbound only"]]
         end
-        subgraph PE_SUB["Private Endpoint Subnet"]
-            PE_BLOB[PE: blob]
+        subgraph subnet_pe_fn["Private Endpoint Subnet"]
+            pe_storage[["Private Endpoint<br/>blob"]]
         end
     end
-    
-    NAT --> PIP[Public IP<br/>203.0.113.10]
-    PIP --> EXTERNAL[External Service<br/>IP Allowlist: 203.0.113.10]
-    
-    PE_BLOB --> ST[Storage Account]
-    FA --> PE_BLOB
-    
-    style FA fill:#0078d4,color:#fff
-    style VNET fill:#E8F5E9,stroke:#4CAF50
-    style NAT fill:#FCE4EC,stroke:#E91E63
-    style PIP fill:#FCE4EC,stroke:#E91E63
+    client -->|"[Configured] HTTPS"| app_runtime
+    app_runtime -->|"[Configured] Outbound"| vnet_integration
+    vnet_integration -->|"[Illustrative] NAT public IP<br/>203.0.113.10"| external_service
+    vnet_integration -->|"[Configured] Private IP"| pe_storage
+    pe_storage -->|"[Configured] Private Link"| storage_db
+    %% Layout-only link tiers the destinations; no connection or step is added.
+    storage_db ~~~ external_service
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e;
+    classDef netBox fill:transparent,stroke:#287ce4,stroke-width:2px,stroke-dasharray:6 3;
+    class client,external_service,storage_db baseNeutral;
+    class app_runtime,vnet_integration,pe_storage focusActive;
+    class vnet_fn,subnet_int_fn,subnet_pe_fn netBox;
+    linkStyle default stroke-width:2px;
 ```
+
+**Reading key:** Solid arrows show initiated connections. The Function app and
+Storage service stay outside the customer VNet. The subnet contains the plan-specific integration networking components, not the Function app's compute.
+The private endpoint sits in a separate subnet. NAT Gateway is associated
+with the integration subnet, not a routed hop. `203.0.113.10` is an illustrative
+public source IP and allowlist. Internet-bound traffic must be routed into the
+VNet for NAT egress; the Blob private path does not use that public IP
+([Functions networking](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options),
+[NAT integration](https://learn.microsoft.com/en-us/azure/app-service/overview-nat-gateway-integration),
+[NAT overview](https://learn.microsoft.com/en-us/azure/nat-gateway/nat-overview)).
 
 ## Supported Plans
 
@@ -329,25 +350,45 @@ NAT Gateway pricing:
 
 ## Combining with Private Ingress
 
-NAT Gateway can be combined with site private endpoint for full isolation:
+NAT Gateway can be combined with a site private endpoint for private ingress
+and fixed-IP public egress:
 
 <!-- diagram-id: full-isolation-with-nat -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 20, 'rankSpacing': 45, 'padding': 8}}}%%
 flowchart TD
-    CORP[Corporate Client] -->|Private IP| PE_APP[Site Private Endpoint]
-    PE_APP --> FA[Function App]
-    
-    subgraph VNET["VNet"]
-        PE_APP
-        FA --> NAT[NAT Gateway]
+    accTitle: Corporate private ingress with fixed outbound IP
+    accDescr: A corporate client initiates a private connection through the site private endpoint to the Function app outside the customer VNet. The app uses a separate outbound integration subnet with NAT Gateway for external API calls. The public source IP is illustrative; this is not an internet-disconnected deployment.
+    client(["Corporate Client"])
+    app_runtime["Function App<br/>Managed compute"]
+    external_service(["External API"])
+    subgraph vnet_fn["Customer VNet"]
+        subgraph subnet_pe_fn["PE subnet"]
+            pe_app[["Site Private Endpoint"]]
+        end
+        subgraph subnet_int_fn["Integration subnet<br/>[NAT Gateway]"]
+            vnet_integration[["VNet integration<br/>Outbound only"]]
+        end
     end
-    
-    NAT --> PIP[Public IP: 203.0.113.10]
-    PIP --> EXTERNAL[External API]
-    
-    style FA fill:#0078d4,color:#fff
-    style NAT fill:#FCE4EC,stroke:#E91E63
+    client -->|"[Configured]<br/>Private IP"| pe_app
+    pe_app -->|"[Configured]<br/>Private Link"| app_runtime
+    app_runtime -->|"[Configured]<br/>Outbound"| vnet_integration
+    vnet_integration -->|"[Illustrative]<br/>NAT public IP<br/>203.0.113.10"| external_service
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e;
+    classDef netBox fill:transparent,stroke:#287ce4,stroke-width:2px,stroke-dasharray:6 3;
+    class client,external_service baseNeutral;
+    class app_runtime,pe_app,vnet_integration focusActive;
+    class vnet_fn,subnet_int_fn,subnet_pe_fn netBox;
+    linkStyle default stroke-width:2px;
 ```
+
+**Takeaway:** The site private endpoint is inbound-only; outbound calls use VNet
+integration in a different subnet. Disable public network access for private-only
+ingress. NAT still allows initiated internet egress, so “isolation” here does not
+mean no external API connectivity
+([private endpoints](https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint),
+[NAT overview](https://learn.microsoft.com/en-us/azure/nat-gateway/nat-overview)).
 
 ## See Also
 
