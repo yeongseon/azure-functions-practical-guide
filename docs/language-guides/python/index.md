@@ -12,7 +12,7 @@ content_sources:
     - id: python-language-guide
       type: flowchart
       source: self-generated
-      justification: Flow view of python language guide, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Navigation map of this guide's Python tutorial tracks, recipes and references, not an Azure architecture; Microsoft Learn provides language and hosting background.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
@@ -27,13 +27,21 @@ If you are new to Azure Functions, this track is the fastest way to understand h
 <!-- diagram-id: python-language-guide -->
 ```mermaid
 flowchart TD
+    accTitle: Python guide tutorial and reference pages
+    accDescr: Maps this guide's pages, not an Azure architecture. Tutorial Overview branches to Consumption, Flex Consumption, Premium, Dedicated, Recipes, and Runtime and Reference; arrows are navigation categories, not service connections or a recommendation to deploy every plan.
     A[Tutorial Overview]
     A --> B[Consumption Track]
-    A --> C[Flex Consumption Track]
+    A --> C["Flex Consumption<br/>Track"]
     A --> D[Premium Track]
     A --> E[Dedicated Track]
     A --> F[Recipes]
-    A --> G[Runtime and Reference]
+    A --> G["Runtime and<br/>Reference"]
+    %% Layout-only links tier destinations; they add no navigation relationships or arrows.
+    B ~~~ C
+    C ~~~ D
+    D ~~~ E
+    E ~~~ F
+    F ~~~ G
 ```
 
 !!! tip "Architecture first"
