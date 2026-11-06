@@ -260,6 +260,26 @@ backlog alone does not establish a scaling fault.
 
 ## Networking/Storage Extension: Where Is the Private Boundary?
 
+### Shared private-dependency network topology (cross-guide)
+
+**Scope: outbound access to an Azure Storage Blob private endpoint from a hosted application.** This is the same **network-side topology** in App Service, Functions and Container Apps, not an assertion that their managed runtimes occupy the same network location. Apply the following geometry and meaning to matching published diagrams:
+
+| Common position | Network element / mandatory interpretation |
+|---|---|
+| Runtime (outside or within managed environment as appropriate) | Source of outbound connection, explicitly labeled with its service/hosting plan. **App Service multitenant** and **Functions Premium/Dedicated** runtimes remain outside customer VNet containers. A **Container Apps environment with a custom VNet** has its *dedicated environment subnet* inside the VNet; its ingress/revisions/replicas are managed/logical workload roles, not customer-deployed VMs or a second outbound integration NIC. |
+| Customer VNet / outbound-side subnet | One `Customer VNet` network container. App Service and supported Functions plans attach to a **dedicated, delegated VNet integration subnet** for outbound access; Container Apps instead uses its **dedicated environment subnet**. Never draw the Function App or web app in the integration subnet, or invent a distinct App Service-style outbound integration subnet for Container Apps. |
+| Customer VNet / destination-side subnet | A **separate private endpoint subnet** containing only the **private endpoint NIC/private IP for the downstream Blob service** (and other actual subnet resources when sourced). The target Azure Storage resource is **outside** the VNet. Do not mistake this for the service's own *inbound application* private endpoint. |
+| Linked DNS (outside VNet container in this drawing convention) | `Private DNS zone: privatelink.blob.core.windows.net [linked to VNet]`. Show a **dotted lookup** from the initiating runtime or its documented resolver path, with the **PE private IP** result in the label. A DNS lookup is not the packet/data transit path. |
+| Data path | A **solid, one-way, labeled** flow: runtime → outbound attachment/environment subnet → **Storage PE private IP** → **Private Link to Azure Storage Blob**. Show the outbound subnet as an attachment/boundary rather than an extra user-managed proxy. A failure/evidence overlay marks only the proven or explicitly illustrative failed hop. |
+
+**Reuse rules:** Keep the same nested VNet/PE boundary shape, relative network positions, Azure Storage and PE naming, neutral colors, arrow/legend taxonomy and DNS placement across the three guides. Do not require pixel-identical application/runtime boxes, or convert a decision/sequence diagram into network topology. No CIDR values in subnet titles: **plan/environment-specific size and delegation belong in adjacent sourced prose.**
+
+**Distinct inbound scenario:** A private endpoint for the **App Service/Function App** is an *inbound* NIC, independent of outbound VNet integration and in a different subnet from App Service-style integration. For **Container Apps**, an *environment-level inbound* private endpoint is supported in **workload profiles environments** with **public network access disabled**; it is **not** the downstream Storage PE, nor proof of identical VNet Integration mechanics. Legacy Functions Consumption has no regional VNet integration or inbound PE; Flex Consumption uses different delegation/requirements. Do not generalize the Premium fixture to those plans.
+
+**Grounding:** [App Service networking features](https://learn.microsoft.com/en-us/azure/app-service/networking-features), [App Service private endpoints](https://learn.microsoft.com/en-us/azure/app-service/overview-private-endpoint), [Functions networking and plan requirements](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options), [Container Apps environment networking](https://learn.microsoft.com/en-us/azure/container-apps/networking), and [Container Apps environment private endpoints](https://learn.microsoft.com/en-us/azure/container-apps/how-to-use-private-endpoint).
+
+**Review gate:** For each relevant migrated diagram, check that the actual node containment, arrow initiators, DNS/data separation, inbound-vs-outbound PE identity and plan/environment caveats follow this scene. Verify an actual narrow/desktop, light/dark rendered figure and compare the same network-side layout against a counterpart guide. A written contract alone does not certify that existing diagrams or the site are consistent.
+
 ### Normal: outbound integration reaches a Storage inbound NIC
 
 <!-- diagram-id: functions-v1-network-storage-normal -->
