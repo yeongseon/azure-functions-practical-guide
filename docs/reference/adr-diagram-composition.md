@@ -46,7 +46,7 @@ A published package offers central distribution but creates versioning, release 
 
 ## Decision Outcome
 
-### Functions-local choice — 2026-11-04 (historical)
+### Functions-local choice — 2026-11-04
 
 > This paragraph documents the earlier Functions-local choice before the cross-guide decision on 2026-11-06. The accepted shared contract below supersedes its statements that no cross-guide authoring decision had yet been made.
 
