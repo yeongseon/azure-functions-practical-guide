@@ -36,6 +36,7 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
         - https://learn.microsoft.com/en-us/azure/azure-functions/manage-connections
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-timer
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference
     - id: 1-5-failure-progression-model
       type: sequenceDiagram
       source: self-generated
@@ -147,13 +148,13 @@ Even when application code does not directly read blobs or queues, the host stil
 ```mermaid
 flowchart TD
     accTitle: Azure Functions host-storage dependency paths
-    accDescr: Illustrative logical startup stages branch at storage authentication into initialization and healthy execution, or failed probes, failed listener initialization, unhealthy host and no trigger invocations. This is not a universal startup protocol or a new lab observation.
+    accDescr: Illustrative logical startup stages branch at storage authentication, labelled access granted or access denied, into initialization and healthy execution, or failed probes, failed listener initialization, unhealthy host and no trigger invocations. This is not a universal startup protocol or a new lab observation.
     A["Function host<br/>process starts"] --> B["Resolve host-storage<br/>configuration"]
     B --> C["Authenticate to<br/>storage account"]
-    C --> D["Probe containers and<br/>coordination artifacts"]
+    C -->|"Access granted"| D["Probe containers and<br/>coordination artifacts"]
     D --> E["Initialize listeners<br/>and schedule state"]
     E --> F(["Mark host healthy;<br/>begin trigger execution"])
-    C --> G["Auth failure"]
+    C -->|"Access denied"| G["Auth failure"]
     G --> H["Storage probe failure"]
     H --> I["Listener initialization<br/>failure"]
     I --> J["Host reports unhealthy"]

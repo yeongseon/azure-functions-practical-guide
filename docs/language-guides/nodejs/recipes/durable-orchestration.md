@@ -10,10 +10,11 @@ content_sources:
     - id: architecture
       type: flowchart
       source: self-generated
-      justification: Flow view of architecture, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative logical call view of one HTTP-starter, Durable-client, orchestrator and three-activity workflow in the Node.js v4 model; shows role relationships and the recipe's call order, not hosting topology, a measured trace or parallel execution.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-node-model-upgrade
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-types-features-overview
 ---
 # Durable Orchestration
 

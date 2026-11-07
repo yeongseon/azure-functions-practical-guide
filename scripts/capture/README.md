@@ -48,6 +48,31 @@ sequences already present across the docs.
 4. Reference it in markdown with `[[[ shot("<shot-id>") ]]]`.
 5. `mkdocs build --strict` to verify it renders.
 
+## Planned first-deploy captures
+
+These entries are preparation only and remain **BLOCKED / NOT_CAPTURED** until a
+live deployment and an authorized, device-compliant human browser session are
+available. Do not add tutorial `shot()` references while the WebP files are
+missing.
+
+| Issue | Tutorial | Stable ID | Portal blade | Guide-derived expectation | Insert after capture |
+|---|---|---|---|---|---|
+| [#228](https://github.com/yeongseon/azure-functions-practical-guide/issues/228) | [`docs/language-guides/nodejs/tutorial/flex-consumption/02-first-deploy.md`](../../docs/language-guides/nodejs/tutorial/flex-consumption/02-first-deploy.md) | `node-flex-02-function-app-overview` | Function App → Overview | Linux Node.js 20 app on Flex Consumption (FC1) | Step 7 deployment validation block |
+| [#228](https://github.com/yeongseon/azure-functions-practical-guide/issues/228) | [`docs/language-guides/nodejs/tutorial/flex-consumption/02-first-deploy.md`](../../docs/language-guides/nodejs/tutorial/flex-consumption/02-first-deploy.md) | `node-flex-02-functions-list` | Function App → Functions | Functions indexed from the deployed Node.js v4 app; use only rows actually visible | Overview capture and its observed caption |
+| [#229](https://github.com/yeongseon/azure-functions-practical-guide/issues/229) | [`docs/language-guides/java/tutorial/premium/02-first-deploy.md`](../../docs/language-guides/java/tutorial/premium/02-first-deploy.md) | `java-premium-02-function-app-overview` | Function App → Overview | Linux Java 17 app on Elastic Premium (EP1) | Step 8 app-state validation block |
+| [#229](https://github.com/yeongseon/azure-functions-practical-guide/issues/229) | [`docs/language-guides/java/tutorial/premium/02-first-deploy.md`](../../docs/language-guides/java/tutorial/premium/02-first-deploy.md) | `java-premium-02-functions-list` | Function App → Functions | Functions indexed from the deployed Java app; do not preclaim a count | Overview capture and its observed caption |
+| [#230](https://github.com/yeongseon/azure-functions-practical-guide/issues/230) | [`docs/language-guides/dotnet/tutorial/premium/02-first-deploy.md`](../../docs/language-guides/dotnet/tutorial/premium/02-first-deploy.md) | `dotnet-premium-02-function-app-overview` | Function App → Overview | Linux .NET 8 isolated app on Elastic Premium (EP1) | Verification app-state block |
+| [#230](https://github.com/yeongseon/azure-functions-practical-guide/issues/230) | [`docs/language-guides/dotnet/tutorial/premium/02-first-deploy.md`](../../docs/language-guides/dotnet/tutorial/premium/02-first-deploy.md) | `dotnet-premium-02-functions-list` | Function App → Functions | Functions indexed from the deployed .NET isolated app; use only rows actually visible | Step 8 function-list verification block |
+
+For all six captures, reuse the documented authorized browser flow and apply
+`scripts/portal-capture-helpers.js`. Record the capture source, time, tool,
+authorized environment, and resource cleanup. Remove private identifiers,
+emails, avatars, secrets, keys, and connection-string values. After encoding,
+inspect the final WebP bytes for PII and accuracy, replace the planned alt text
+with observed wording, and write one observed `Purpose / Look for / Expected
+result / Next step` caption. A screenshot must not preclaim runtime fields,
+function counts, or successful states that are not visible in the final image.
+
 ## Re-capturing (drift refresh)
 
 Feed the fresh raw PNG through the diff gate instead of the optimizer:

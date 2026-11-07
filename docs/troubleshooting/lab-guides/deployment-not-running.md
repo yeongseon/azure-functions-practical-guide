@@ -15,21 +15,17 @@ content_sources:
     - id: failure-progression-model
       type: flowchart
       source: self-generated
-      justification: Illustrative failure-progression hypothesis for this walkthrough, informed by deployment, Python packaging and monitoring documentation; not a universal startup sequence or retained Azure evidence.
+      justification: Illustrative failure-progression hypothesis for this walkthrough; Learn documents ZIP deployment with host restart, the FUNCTIONS_WORKER_RUNTIME setting and the Python v1 function.json and __init__.py layout, but not this exact sequence; it is not retained Azure evidence or a universal startup order.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
-        - https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring
-        - https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
-        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-query-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
     - id: incident-timeline-model
       type: gantt
       source: self-generated
-      justification: Timeline of the historical walkthrough's phases and overlapping windows; times and done markers repeat the walkthrough, not Microsoft Learn measurements or a new Golden run.
+      justification: Gantt of the historical walkthrough's phases and overlapping windows; the 03:00-03:30 times and done markers repeat the walkthrough, not Learn measurements or a new Golden run, and Learn only informs the deployment and telemetry vocabulary of the phases.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
-        - https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring
         - https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
         - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-query-overview
     - id: causal-chain
@@ -45,21 +41,18 @@ content_sources:
     - id: step-7-triage-decision-tree
       type: flowchart
       source: self-generated
-      justification: Illustrative reading path through the historical runtime and Python v1 packaging checks; monitoring documentation informs the probes, not a deterministic diagnosis from missing telemetry.
+      justification: Illustrative reading path through the historical runtime-setting and Python v1 packaging checks; Learn documents FUNCTIONS_WORKER_RUNTIME and the function.json and __init__.py layout, and monitoring and log queries inform the probes, but missing telemetry alone is not a deterministic diagnosis.
       based_on:
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
-        - https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring
         - https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
         - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-query-overview
     - id: evidence-timeline
       type: gantt
       source: self-generated
-      justification: Timeline of the historical walkthrough's evidence and recovery windows; times and done markers preserve reported history and do not certify the NOT_RUN Golden scenario.
+      justification: Gantt of the historical walkthrough's evidence-collection and recovery windows in UTC; times and done markers preserve reported history, and Learn only informs the deployment and telemetry vocabulary; it does not certify the NOT_RUN Golden scenario.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
-        - https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring
         - https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
         - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-query-overview
 ---

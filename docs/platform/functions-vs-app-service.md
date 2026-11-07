@@ -110,26 +110,26 @@ Use this illustrative decision tree to shortlist a service, then check the selec
 
 <!-- diagram-id: decision-framework -->
 ```mermaid
-%%{init: {'flowchart': {'nodeSpacing': 8, 'rankSpacing': 40}}}%%
+%%{init: {'flowchart': {'nodeSpacing': 6, 'rankSpacing': 36, 'padding': 2}}}%%
 flowchart TD
     accTitle: Functions versus App Service workload decisions
     accDescr: Illustrative service-selection heuristic retaining every original question, branch and outcome. Hosting-plan and trigger qualifications immediately below the figure apply to the suggested choices.
-    A[New workload] --> B{"Event-driven?<br/>Triggers beyond<br/>HTTP?"}
+    A[New workload] --> B{"Event-driven?<br/>Triggers<br/>beyond HTTP?"}
     B -->|Yes| C{"Scale-to-zero<br/>required?"}
     B -->|No| D{"Long-running<br/>processes?"}
-    C -->|Yes| E["Azure Functions<br/>Consumption or Flex"]
+    C -->|Yes| E["Azure<br/>Functions<br/>Consumption<br/>or Flex"]
     C -->|No| F{"Need warm<br/>baseline?"}
-    F -->|Yes| G["Azure Functions<br/>Premium"]
-    F -->|No| H["Azure Functions<br/>Dedicated"]
-    D -->|Yes| I{"WebSocket or<br/>session affinity?"}
-    D -->|No| J{"Simple HTTP<br/>API or complex<br/>web app?"}
+    F -->|Yes| G["Azure<br/>Functions<br/>Premium"]
+    F -->|No| H["Azure<br/>Functions<br/>Dedicated"]
+    D -->|Yes| I{"WebSocket<br/>or session<br/>affinity?"}
+    D -->|No| J{"Simple HTTP<br/>API or<br/>complex<br/>web app?"}
     I -->|Yes| K[App Service]
-    I -->|No| L{"Background<br/>processing model?"}
-    L -->|Event triggers| M["Azure Functions<br/>Dedicated"]
+    I -->|No| L{"Background<br/>processing<br/>model?"}
+    L -->|"Event<br/>triggers"| M["Azure<br/>Functions<br/>Dedicated"]
     L -->|"WebJobs or<br/>scheduled"| K
-    J -->|"Complex web app<br/>with middleware"| K
-    J -->|"Simple<br/>HTTP API"| N{"Existing App<br/>Service Plan?"}
-    N -->|"Yes, with<br/>spare capacity"| P["Add Functions<br/>to existing plan"]
+    J -->|"Complex<br/>web app<br/>with<br/>middleware"| K
+    J -->|"Simple<br/>HTTP API"| N{"Existing<br/>App Service<br/>Plan?"}
+    N -->|"Yes, with<br/>spare<br/>capacity"| P["Add Functions<br/>to existing<br/>plan"]
     N -->|No| E
     %% Layout-only links tier the original choices; they add no decisions or semantic arrows.
     F ~~~ G
@@ -140,8 +140,6 @@ flowchart TD
     M ~~~ J
     J ~~~ N
     N ~~~ P
-    P ~~~ K
-    K ~~~ E
     classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
     class A,B,C,D,E,F,G,H,I,J,K,L,M,N,P neutral;
 ```
