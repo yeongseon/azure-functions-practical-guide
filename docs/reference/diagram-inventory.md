@@ -60,7 +60,7 @@ Only `python3 scripts/diagram_inventory.py --write` fills these generated blocks
 | pie | 2 |
 | sequenceDiagram | 26 |
 | stateDiagram-v2 | 1 |
-| timeline | 3 |
+| timeline | 2 |
 
 <!-- END GENERATED: diagram-inventory:type -->
 
