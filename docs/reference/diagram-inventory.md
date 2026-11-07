@@ -54,13 +54,13 @@ Only `python3 scripts/diagram_inventory.py --write` fills these generated blocks
 <!-- BEGIN GENERATED: diagram-inventory:type -->
 | Type | Count |
 |---|---:|
-| flowchart | 510 |
+| flowchart | 511 |
 | gantt | 12 |
 | graph | 22 |
 | pie | 2 |
 | sequenceDiagram | 26 |
 | stateDiagram-v2 | 1 |
-| timeline | 3 |
+| timeline | 2 |
 
 <!-- END GENERATED: diagram-inventory:type -->
 
