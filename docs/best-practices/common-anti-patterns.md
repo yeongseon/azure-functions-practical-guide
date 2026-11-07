@@ -9,17 +9,21 @@ content_sources:
     - id: why-this-matters
       type: flowchart
       source: self-generated
-      justification: Flow view of why this matters, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative failure chain, not a measured trace or a guaranteed progression, that links hosting-plan choice to downstream trigger, scaling, retry and storage risks. The related topics are discussed on the cited Microsoft Learn pages, but the sequence itself is this guide's synthesis.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
     - id: recommended-practices
       type: flowchart
       source: self-generated
-      justification: Flow view of recommended practices, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Suggested review routing from a symptom category to anti-pattern checks, not a confirmed-cause classifier or Azure diagnostic algorithm. The checks reflect guidance on long-running functions, idempotency, poison handling, storage account sharing, sampling and cold start (performance and best-practices pages), scaling behavior and instance limits (scale pages), and subnet sizing (networking options). The routing itself is this guide's synthesis.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
 content_validation:
   status: verified
   last_reviewed: 2026-09-11
