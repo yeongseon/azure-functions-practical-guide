@@ -8,19 +8,20 @@ content_sources:
       url: https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
   diagrams:
     - id: supported-java-versions
-      type: timeline
+      type: flowchart
       source: self-generated
-      justification: Timeline view of supported java versions, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Release-order view of four Java LTS versions that the Java developer guide lists for Functions 4.x. It is a subset (the supported-languages page also lists newer Java versions and plan restrictions); release years are general Java history, not Azure Functions adoption dates.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
     - id: maven-build-and-deployment
       type: flowchart
       source: self-generated
-      justification: Flow view of maven build and deployment, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Four-stage reading order from the Maven project to deployment, summarized from the Java quickstart, which runs mvn clean package and azure-functions:deploy with azure-functions-maven-plugin. It is not a network trace, and packaging alone does not deploy.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
+        - https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-java
 ---
 # Java Runtime
 
@@ -30,18 +31,15 @@ This reference captures supported Java versions, JVM/runtime settings, Maven dep
 
 <!-- diagram-id: supported-java-versions -->
 ```mermaid
-%%{init: {"timeline":{"padding":8,"disableMulticolor":true},"theme":"base","fontSize":32,"themeVariables":{"fontSize":"16px"},"themeCSS":".timeline-node text{font-size:32px;fill:#14202e;} .timeline-node .node-bkg{fill:#e2e8f0;} .eventWrapper{filter:none;} text:not([dy]){font-size:32px;text-anchor:middle;fill:var(--md-default-fg-color);} .lineWrapper line{stroke:var(--md-default-fg-color);}"}}%%
-timeline
-    accTitle: Four Java LTS generations used by Azure Functions
-    accDescr: The timeline pairs 2014 with Java 8 LTS, 2018 with Java 11 LTS, 2021 with Java 17 LTS, and 2023 with Java 21 LTS. It depicts four Java generations, not a complete current support list or the dates Azure Functions adopted them.
-    title Java runtime options for Azure Functions v4
-    2014 : Java 8 (LTS)
-    2018 : Java 11 (LTS)
-    2021 : Java 17 (LTS)
-    2023 : Java 21 (LTS)
+flowchart TD
+    accTitle: Four Java LTS releases listed as Functions v4 Java options
+    accDescr: Top to bottom, the figure orders four Java long-term-support releases by Java release year, which is general Java history and not the date Azure Functions added each version, from Java 8 in 2014 through Java 11 in 2018 and Java 17 in 2021 to Java 21 in 2023. It is a subset, not a complete current support list; arrows show release order, not an upgrade path.
+    A["Java 8 (LTS)<br/>Java release year 2014"] -->|"next LTS"| B["Java 11 (LTS)<br/>Java release year 2018"]
+    B -->|"next LTS"| C["Java 17 (LTS)<br/>Java release year 2021"]
+    C -->|"next LTS"| D["Java 21 (LTS)<br/>Java release year 2023"]
 ```
 
-**Reading note:** The figure pairs 2014 with Java 8 (LTS), 2018 with Java 11 (LTS), 2021 with Java 17 (LTS), and 2023 with Java 21 (LTS). These year markers are illustrative historical context, not Azure Functions adoption dates. The figure and table show a subset of runtime options; consult [Supported languages](https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages) for the current list and hosting restrictions.
+**Reading note:** The figure orders Java 8 (LTS, 2014), Java 11 (LTS, 2018), Java 17 (LTS, 2021), and Java 21 (LTS, 2023) by Java release year. Arrows show release order, not an upgrade path. The years are illustrative historical context, not Azure Functions adoption dates. The figure and table show a subset of runtime options; consult [Supported languages](https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages) for the current list and hosting restrictions.
 
 | Runtime | Status | Typical recommendation |
 |---------|--------|------------------------|

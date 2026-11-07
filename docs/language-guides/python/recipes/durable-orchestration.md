@@ -14,7 +14,7 @@ content_sources:
     - id: overview
       type: flowchart
       source: self-generated
-      justification: Flow view of overview, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative logical view of client, orchestrator and activity roles plus the HTTP 202 management-URL and runtime-owned status-query paths; shows logical relationships only, not hosting topology or a measured trace.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-http-features
         - https://learn.microsoft.com/en-us/azure/durable-task/durable-functions/durable-functions-http-features#async-operation-tracking
@@ -26,7 +26,7 @@ content_sources:
     - id: fan-out-fan-in-pattern
       type: sequenceDiagram
       source: self-generated
-      justification: Interaction sequence for fan out fan in pattern, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative sequence of an orchestrator scheduling several activities, waiting for all results and aggregating them; completion order and activity count are examples, not a measured trace.
       based_on:
         - https://learn.microsoft.com/en-us/azure/durable-task/common/durable-task-fan-in-fan-out
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
@@ -34,7 +34,7 @@ content_sources:
     - id: monitor-pattern
       type: flowchart
       source: self-generated
-      justification: Flow view of the monitor pattern, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative polling-loop flow in which an orchestrator checks job status, then waits on a durable timer until the job is done or a deadline passes; the polling interval and deadline are examples, not measurements.
       based_on:
         - https://learn.microsoft.com/en-us/azure/durable-task/common/durable-task-timers
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
@@ -42,7 +42,7 @@ content_sources:
     - id: human-interaction-pattern
       type: sequenceDiagram
       source: self-generated
-      justification: Interaction sequence for the human interaction pattern, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative sequence of an orchestrator waiting on an external event and a durable timeout timer, applying the decision if the event arrives first or escalating if the timer wins; not a measured trace.
       based_on:
         - https://learn.microsoft.com/en-us/azure/durable-task/common/durable-task-external-events
         - https://learn.microsoft.com/en-us/azure/durable-task/common/durable-task-timers
