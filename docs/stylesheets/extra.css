@@ -99,6 +99,9 @@
 /* Improve SVG readability in zoom overlay: follow the active palette so a diagram rendered for the dark
    palette (light edges and arrowheads) is not shown on a white panel */
 .mermaid-zoom-container .mermaid {
+  /* Let the diagram keep its natural width; the viewer scales and pans it with a transform */
+  flex: none;
+  max-width: none;
   background: var(--md-default-bg-color, #fff);
   border-radius: 8px;
   padding: 1rem;

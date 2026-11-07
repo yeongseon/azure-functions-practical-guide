@@ -8,7 +8,9 @@
   window.__mermaidZoomInstalled = true;
 
   var OVERLAY_ID = "mermaid-zoom-overlay";
-  var INITIAL_SCALE = 1.5;
+  var MAX_INITIAL_SCALE = 1.5;
+  var READABLE_SCALE = 0.75;
+  var WIDE_PROBE = 6000;
   var MAX_SCALE = 8;
   var MIN_SCALE = 0.3;
   var PADDING = 24;
@@ -90,10 +92,11 @@
     overlay.appendChild(hint);
     overlay.appendChild(closeBtn);
 
-    var scale = INITIAL_SCALE;
+    var scale = 1;
     var panX = 0;
     var panY = 0;
     var naturalW = 1;
+    var naturalW0 = null;
     var naturalH = 1;
 
     // The host is centered in the viewport, so every point is expressed
@@ -103,10 +106,33 @@
         "translate(" + panX + "px, " + panY + "px) scale(" + scale + ")";
     }
 
+    // The diagram lives in a closed shadow root, so its SVG cannot be read.
+    // Inside the overlay's flex container the host collapses to a default
+    // width, which shrinks wide diagrams far below their inline size. Recover
+    // the SVG's natural width from layout alone: the SVG keeps its aspect
+    // ratio, so a narrow probe width gives height/width, and a very wide probe
+    // (the SVG is capped at its own viewBox width) gives the natural height.
+    function naturalWidth() {
+      var cs = getComputedStyle(host);
+      var padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+      var padY = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+      function heightAt(w) {
+        host.style.width = w + "px";
+        return host.getBoundingClientRect().height - padY;
+      }
+      var narrow = 120;
+      var ratio = heightAt(narrow) / (narrow - padX);
+      var natural = heightAt(WIDE_PROBE) / ratio;
+      host.style.width = "";
+      if (!(ratio > 0) || !isFinite(natural) || natural < 40 || natural > WIDE_PROBE - padX) return null;
+      return natural + padX;
+    }
+
     function measure() {
       // Size of the host at scale 1: read it with the transform cleared.
       var current = host.style.transform;
       host.style.transform = "";
+      host.style.width = naturalW0 ? naturalW0 + "px" : "";
       var r = host.getBoundingClientRect();
       host.style.transform = current;
       naturalW = Math.max(r.width, 1);
@@ -275,7 +301,20 @@
     };
     document.body.style.overflow = "hidden";
     document.body.appendChild(overlay);
+    naturalW0 = naturalWidth();
     measure();
+    // Opening view: the whole diagram when its text stays legible; otherwise a
+    // readable minimum scale that overflows and is panned or fitted.
+    var fitS = fitScale();
+    scale = clamp(fitS >= READABLE_SCALE ? Math.min(fitS, MAX_INITIAL_SCALE) : READABLE_SCALE);
+    // When the diagram overflows, start at its leading (left/top) edge so it
+    // reads from the beginning instead of from the middle.
+    if (naturalW * scale > viewport.clientWidth) {
+      panX = PADDING - (viewport.clientWidth - naturalW * scale) / 2;
+    }
+    if (naturalH * scale > viewport.clientHeight) {
+      panY = PADDING - (viewport.clientHeight - naturalH * scale) / 2;
+    }
     apply();
     requestAnimationFrame(function () {
       overlay.classList.add("mermaid-zoom-visible");
