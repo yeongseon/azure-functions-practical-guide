@@ -15,7 +15,7 @@ content_sources:
     - id: failure-progression-model
       type: flowchart
       source: self-generated
-      justification: Flow view of failure progression model, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative sequence of the retained processing-delay experiment from steady ingress to delay reset; it states no measured cause, is not a trace, and does not claim durable checkpoint lag or ordered partition drain. Learn supplies Event Hubs trigger and batching context only.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
@@ -36,7 +36,7 @@ content_sources:
     - id: causal-chain
       type: flowchart
       source: self-generated
-      justification: Flow view of causal chain, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Retained control timestamps and telemetry values from this page's historical ledger linked to the delay hypothesis; checkpoint delta is shown as unknown. Learn supplies platform context, not verification of the historical measurements.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json

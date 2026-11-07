@@ -10,10 +10,11 @@ content_sources:
     - id: architecture
       type: flowchart
       source: self-generated
-      justification: Flow view of architecture, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Logical recipe map of an HTTP starter that schedules an orchestrator which calls activity functions and exposes status endpoints, adapted from the Learn function chaining and async HTTP API patterns. Illustrative; not a network topology, an execution trace or lab evidence.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-bindings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-http-features
 ---
 # Durable Orchestration
 

@@ -21,7 +21,7 @@ content_sources:
     - id: hosting-plans-at-a-glance
       type: flowchart
       source: self-generated
-      justification: Flow view of hosting plans at a glance, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative plan-selection heuristic (scale to zero, private networking, existing App Service estate, warm baseline) adapted from the hosting options, Flex Consumption, Premium and networking articles; not a complete capability or SLA test.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
@@ -31,7 +31,7 @@ content_sources:
     - id: workflow-flowchart
       type: flowchart
       source: self-generated
-      justification: Workflow flowchart, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative hosting-selection workflow with requirement trade-offs (scale to zero, low latency, private networking, one app per plan, existing App Service capacity) adapted from the hosting options, Flex Consumption, Premium and networking articles; Premium keeps a billed warm baseline.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan

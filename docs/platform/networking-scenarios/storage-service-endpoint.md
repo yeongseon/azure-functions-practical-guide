@@ -4,7 +4,7 @@ content_sources:
     - id: storage-service-endpoint-architecture
       type: flowchart
       source: self-generated
-      justification: "Service-endpoint access pattern synthesized from Microsoft Learn storage networking and Functions networking documentation"
+      justification: "Illustrative outbound path, not a measured trace or exhaustive firewall model: Function App outbound traffic leaves through the VNet-integration subnet, which carries the Microsoft.Storage service endpoint and is authorized by a storage virtual network rule; the storage account is still reached through its public endpoint (Selected networks, other sources denied by defaultAction). Learn supports the service-endpoint behavior and storage network rules; the Function App VNet-integration step applies to plans that support outbound VNet integration."
       based_on:
         - https://learn.microsoft.com/en-us/azure/storage/common/storage-network-security
         - https://learn.microsoft.com/en-us/azure/virtual-network/virtual-network-service-endpoints-overview

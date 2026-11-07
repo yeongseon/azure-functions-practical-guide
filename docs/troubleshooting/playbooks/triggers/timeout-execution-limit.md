@@ -15,7 +15,7 @@ content_sources:
     - id: decision-flow
       type: flowchart
       source: self-generated
-      justification: Decision flow, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative triage tree separating the HTTP response boundary (about 230 seconds) from host or plan execution timeouts, retries, dependency latency and lifecycle events for Queue, Event and Timer triggers; branches select investigations, not proven causes, and limits depend on the hosting plan.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
@@ -26,7 +26,7 @@ content_sources:
     - id: failure-progression-timeline
       type: flowchart
       source: self-generated
-      justification: Flow view of failure progression timeline, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative scenario in which dependency latency approaches functionTimeout, a timeout exception occurs and an applicable retry policy raises concurrent load; retries are conditional on the trigger and configured policy. Not a measured incident timeline.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
@@ -37,7 +37,7 @@ content_sources:
     - id: timeout-boundary-map
       type: flowchart
       source: self-generated
-      justification: Flow view of timeout boundary map, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative boundaries, where the HTTP response limit is separate from the host.json functionTimeout, whose default and maximum depend on the hosting plan (Consumption 5/10 minutes; Premium and Dedicated 30 minutes default, unbounded maximum). Flex Consumption and lifecycle grace periods are qualified in adjacent prose; not a runtime sequence.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
