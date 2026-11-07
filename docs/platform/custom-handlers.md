@@ -7,7 +7,7 @@ content_sources:
     - id: custom-handler-flow
       type: flowchart
       source: self-generated
-      justification: Flow view of the custom handler request/response protocol, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative sequence of the custom handler request/response payload protocol (trigger, host, HTTP POST to the web server, response payload, output bindings), adapted from the custom handlers article; HTTP-only proxying mode is qualified in the accessible description.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-custom-handlers
 content_validation:

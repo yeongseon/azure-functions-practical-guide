@@ -15,7 +15,7 @@ content_sources:
     - id: request-path-architecture-where-user-facing-failures-surface
       type: flowchart
       source: self-generated
-      justification: Illustrative HTTP diagnostic checkpoints and candidate failure associations, not a packet trace or a retained incident result.
+      justification: Illustrative HTTP diagnostic checkpoints and candidate failure associations, not a packet trace or a retained incident result; platform front-end and load-balancer layers are plan-dependent and not individually observable.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
@@ -112,7 +112,7 @@ Most `5xx`, timeout, DNS, and auth issues can be mapped to one of these nodes.
 ```mermaid
 flowchart TD
     accTitle: Request-path diagnostic checkpoints
-    accDescr: Illustrative HTTP diagnostic order from client and DNS to frontend, worker, code, output binding and downstream, with six candidate failure associations. Arrows are not a packet trace.
+    accDescr: Illustrative HTTP diagnostic order from client and DNS to frontend, worker, code, output binding and downstream, with six candidate failure associations. Arrows are not a packet trace, and the load balancer and frontend layers are platform-managed and vary by hosting plan.
     A["Client"] --> B["DNS"]
     B --> C["Load Balancer"]
     C --> D["Frontend"]

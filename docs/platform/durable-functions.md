@@ -18,48 +18,51 @@ content_sources:
     - id: durable-architecture
       type: flowchart
       source: self-generated
-      justification: Flow view of the Durable Functions component architecture, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Logical role map of the client, orchestrator, activity and entity function types and the task-hub/storage-provider persistence layer, synthesized from the Learn function-type, task-hub and storage-provider pages. Illustrative; arrows summarize coordination, not network hops or application-level storage writes.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-task-hubs
         - https://learn.microsoft.com/en-us/azure/durable-task/common/programming-model-overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-storage-providers
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-types-features-overview
     - id: function-chaining
       type: flowchart
       source: self-generated
-      justification: Flow view of the function chaining pattern, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative ordered activity chain (validate, charge, fulfill, notify) following the function chaining pattern in the Learn Durable Task sequence article; step names are example scenario labels, not a measured trace.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
         - https://learn.microsoft.com/en-us/azure/durable-task/common/durable-task-sequence
     - id: fan-out-fan-in
       type: flowchart
       source: self-generated
-      justification: Flow view of the fan-out/fan-in pattern, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative fan-out/fan-in shape in which an orchestrator schedules parallel activities and aggregates results once all complete, following the fan-out/fan-in pattern described in the Learn Durable Functions overview and task hub articles; activity names are generic.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-task-hubs
     - id: async-http-apis
       type: sequenceDiagram
       source: self-generated
-      justification: Interaction sequence for the async HTTP APIs pattern, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative sequence for the async HTTP API pattern, where a starter returns 202 Accepted with a status URL and the client polls the built-in status endpoint, following the Learn HTTP features article. Not a measured trace; the 200 completion path is the successful case only.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-http-features
     - id: monitor-pattern
       type: flowchart
       source: self-generated
-      justification: Flow view of the monitor pattern, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative monitor loop that checks a condition via an activity, then waits on a durable timer, and restarts with continue-as-new to keep history small, following the Learn monitor pattern and eternal orchestrations articles.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-eternal-orchestrations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-timers
     - id: human-interaction
       type: sequenceDiagram
       source: self-generated
-      justification: Interaction sequence for the human interaction pattern, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative sequence for human interaction with a timeout, where an orchestrator races an external event against a durable timer, following the Learn human interaction and external events articles. Messages are logical operations, not direct calls to orchestrator code.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
         - https://learn.microsoft.com/en-us/azure/durable-task/common/durable-task-human-interaction
         - https://learn.microsoft.com/en-us/azure/durable-task/common/durable-task-external-events
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-timers
 content_validation:
   status: verified
   last_reviewed: 2026-07-05
