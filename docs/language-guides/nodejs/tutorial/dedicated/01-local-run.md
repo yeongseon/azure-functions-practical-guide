@@ -68,9 +68,9 @@ flowchart TD
     HOST --> FUNC
     DEV -->|curl| FUNC
 
-    style HOST fill:#ff8c00,color:#fff
-    style LOCAL fill:#E8F5E9,stroke:#4CAF50
-    style FUNC fill:#FFF3E0
+    style HOST fill:#ff8c00,color:#14202e
+    style LOCAL fill:#E8F5E9,stroke:#4CAF50,color:#14202e
+    style FUNC fill:#FFF3E0,color:#14202e
 ```
 
 ## Steps
