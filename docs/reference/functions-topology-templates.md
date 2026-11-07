@@ -390,6 +390,7 @@ failure “DNS” ([network troubleshooting](https://learn.microsoft.com/en-us/a
 sequenceDiagram
     accTitle: Isolated worker - logical invocation exchange
     accDescr: Illustrative temporal exchange between host and isolated worker, not a topology, protocol trace or performance measurement.
+    %%{init: {"sequence":{"width":110,"actorMargin":30,"diagramMarginX":8,"messageMargin":28}}}%%
     participant app_runtime as Functions host
     participant language_worker as Isolated worker
     app_runtime->>language_worker: [Illustrative] Invoke function
@@ -446,10 +447,15 @@ figures at 1440 and 390 CSS pixels in `default` and `slate`, then click to zoom
 and pan. Check titles, captions, arrowheads, fault labels, container-title clearance
 and SVG viewBox; record actual observations, not just parse success. Normal/failure
 pairs retain IDs and declaration order, **not guaranteed pixel positions**: Dagre
-reflows as edges/subgraphs change. **Known limitation:** the network figures are
-not legible as full graphs at 390 CSS pixels; narrow-view acceptance remains open.
-Use a wider viewport to read them; zoom is not evidence that responsive acceptance
-has passed.
+reflows as edges/subgraphs change. **Known limitation:** the six topology
+flowcharts are not legible inline at 390 CSS pixels (measured minimum effective
+label size 5.4 to 7.0 px; the network pair is the smallest). Spacing and
+line-break experiments on the literal templates reached at most 7.5 to 8.6 px
+because three nodes share a rank, so legibility at that width would need a
+different structure, not layout tuning. Read them at a wider viewport or in the
+click-to-zoom viewer; zoom is not evidence that responsive acceptance has passed.
+The sequence template carries a restricted `%%{init}%%` spacing line and measures
+14.3 px at 390 px.
 Sequence messages use their native return-arrow convention, not topology edge
 weights. These are explicit layout/type exceptions, not Azure topology exceptions.
 Human visual approval is still required before broad migration.

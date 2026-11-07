@@ -25,6 +25,9 @@ CONTAINER: Final = re.compile(r'^\s*subgraph (\w+)\["([^"]+)"\]$')
 STYLE: Final = re.compile(r"^\s*linkStyle (\d+(?:,\d+)*) ([^;]+);$")
 CLAIM: Final = re.compile(r"\[(?:Configured|Illustrative|Inferred|Observed)\] \S.*")
 FAULT: Final = re.compile(r"\[FAULT / (?:Illustrative|Inferred|Observed)\] \S.*")
+SEQUENCE_INIT: Final = re.compile(
+    r'    %%\{init: \{"sequence":\{"width":\d{2,3},"actorMargin":\d{1,3},"diagramMarginX":\d{1,2},"messageMargin":\d{2,3}\}\}\}%%'
+)
 PALETTE: Final = {
     "baseNeutral": "fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e",
     "focusActive": "fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e",
@@ -138,8 +141,13 @@ def sequence_problems(code: str) -> list[str]:
     problems: list[str] = []
     participants: list[str] = []
     messages: list[tuple[str, str, str]] = []
+    init_lines = 0
     for line in code.splitlines()[3:]:
-        if ";" in line:
+        if SEQUENCE_INIT.fullmatch(line):
+            init_lines += 1
+            if init_lines > 1:
+                problems.append("duplicate sequence spacing directive")
+        elif ";" in line:
             problems.append("sequence requires one statement per line")
         elif "%%" in line or "\t" in line:
             problems.append("unsupported sequence comment or tab")
@@ -317,6 +325,8 @@ def test_committed_templates() -> None:
     ('language_worker-->>app_runtime:', 'app_runtime-->>language_worker:', "essential sequence relationship: completion"),
     ('app_runtime->>language_worker:', 'app_runtime-->>language_worker:', "essential sequence relationship: invocation"),
     ('language_worker-->>app_runtime:', 'language_worker->>app_runtime:', "essential sequence relationship: completion"),
+    ('    participant app_runtime as Functions host', '    %%{init: {"sequence":{"width":110,"actorMargin":30,"diagramMarginX":8,"messageMargin":28,"wrap":true}}}%%\n    participant app_runtime as Functions host', "unsupported sequence comment or tab"),
+    ('    participant app_runtime as Functions host', '    %%{init: {"sequence":{"width":110,"actorMargin":30,"diagramMarginX":8,"messageMargin":28}}}%%\n    %%{init: {"sequence":{"width":110,"actorMargin":30,"diagramMarginX":8,"messageMargin":28}}}%%\n    participant app_runtime as Functions host', "duplicate sequence spacing directive"),
     ('[Illustrative] Invoke function', '[Illustrative] Invoke function %% hidden', "unsupported sequence comment or tab"),
     ('[Illustrative] Invoke function', '[Illustrative] Invoke\tfunction', "unsupported sequence comment or tab"),
     ('as Functions host', 'as Functions host %% hidden', "unsupported sequence comment or tab"),
