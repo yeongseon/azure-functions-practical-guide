@@ -15,8 +15,9 @@ content_sources:
     - id: decision-flow
       type: flowchart
       source: self-generated
-      justification: Decision flow, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative triage tree separating terminal failure, replay or history growth, a pending external event, activity failure, determinism violations and host or dependency checks for a Durable orchestration that is not completing; branches select investigations, not proven causes.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-eternal-orchestrations
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-code-constraints
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-http-api
@@ -25,7 +26,7 @@ content_sources:
     - id: signal-snapshot
       type: flowchart
       source: self-generated
-      justification: Flow view of signal snapshot, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative replay path (history load, replay, activity scheduling, state persistence) with a progress check; not a measured trace or evidence that an instance is stuck.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-code-constraints
@@ -46,7 +47,7 @@ content_sources:
     - id: 7-likely-root-cause-patterns
       type: flowchart
       source: self-generated
-      justification: Flow view of likely root cause patterns, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative history-growth progression (history growth, rising replay cost, slowing progress, long Running age, backlog); not a measured incident timeline.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-code-constraints
@@ -156,7 +157,7 @@ flowchart TD
 
 <!-- diagram-id: signal-snapshot-2 -->
 ```mermaid
-%%{init: {'sequence': {'diagramMarginX': 4, 'actorMargin': 8, 'width': 60, 'wrap': true, 'messageMargin': 30}}}%%
+%%{init: {'sequence': {'diagramMarginX': 4, 'actorMargin': 4, 'width': 64, 'wrap': true, 'messageMargin': 30}}}%%
 sequenceDiagram
     accTitle: Caught activity failure followed by an application wait
     accDescr: Illustrative logical sequence retaining caller, app, orchestrator, activity and storage roles. A caught activity failure is followed by an application wait with Running state, not an automatic consequence of missing retries.
@@ -169,8 +170,8 @@ sequenceDiagram
     Func->>Store: Persist<br/>start event
     Orchestrator->>Store: Load/replay<br/>history
     Orchestrator->>Activity: Invoke<br/>activity
-    Activity-->>Orchestrator: Failure without<br/>retry policy
-    Orchestrator->>Store: Caught failure:<br/>persist Running<br/>wait
+    Activity-->>Orchestrator: Failure, no<br/>retry policy
+    Orchestrator->>Store: Caught failure:<br/>persist<br/>Running wait
     Note over Orchestrator,Store: Instance appears alive<br/>but no business progress
 ```
 

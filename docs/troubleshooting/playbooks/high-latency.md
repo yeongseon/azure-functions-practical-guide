@@ -13,7 +13,7 @@ content_sources:
     - id: troubleshooting-decision-flow
       type: flowchart
       source: self-generated
-      justification: Troubleshooting decision flow, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative, non-exhaustive triage order for this playbook, not a confirmed root-cause classifier or a measured trace. Cold start after idle (scale to zero), dependency telemetry and plan-level scale or resource limits are documented on Microsoft Learn; the yes/no routing between them is a self-generated investigation heuristic.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
         - https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model-complete
@@ -50,16 +50,16 @@ Use it when performance degradation is user-visible, even if failure rate is sti
 flowchart TD
     accTitle: High latency troubleshooting decision flow
     accDescr: Illustrative triage, not a confirmed root-cause classifier. Mostly first requests after idle selects H1 cold start delays; otherwise high p95 for one dependency target selects H2 slow downstream dependency. Otherwise traffic growth with completion lag selects H3 concurrency saturation; otherwise worker restart or pressure traces selects H4 plan-level resource limits. The final No branch correlates operation_Id end-to-end. All four hypotheses and the correlation route converge on mitigation and verification of p95 improvement; use the evidence and disproof sections before attributing a cause.
-    A(["Symptom: Latency alert<br/>or customer report"]) --> B{"Mostly first<br/>request after<br/>idle?"}
-    B -->|Yes| H1("H1 hypothesis:<br/>Cold start delays")
+    A(["Symptom: Latency<br/>alert or customer<br/>report"]) --> B{"Mostly<br/>first request<br/>after idle?"}
+    B -->|Yes| H1("H1 hypothesis:<br/>Cold start<br/>delays")
     B -->|No| C{"One dependency<br/>target has<br/>high p95?"}
-    C -->|Yes| H2("H2 hypothesis:<br/>Slow downstream<br/>dependency")
+    C -->|Yes| H2("H2 hypothesis:<br/>Slow<br/>downstream<br/>dependency")
     C -->|No| D{"Traffic grows<br/>but completion<br/>lags?"}
-    D -->|Yes| H3("H3 hypothesis:<br/>Concurrency saturation")
-    D -->|No| E{"Worker restart<br/>or pressure<br/>traces?"}
-    E -->|Yes| H4("H4 hypothesis:<br/>Plan-level<br/>resource limits")
-    E -->|No| F["Correlate operation_Id<br/>end-to-end"]
-    H1 --> G(["Mitigate and verify<br/>p95 improvement"])
+    D -->|Yes| H3("H3 hypothesis:<br/>Concurrency<br/>saturation")
+    D -->|No| E{"Worker<br/>restart or<br/>pressure<br/>traces?"}
+    E -->|Yes| H4("H4 hypothesis:<br/>Plan-level<br/>resource<br/>limits")
+    E -->|No| F["Correlate<br/>operation_Id<br/>end-to-end"]
+    H1 --> G(["Mitigate and<br/>verify p95<br/>improvement"])
     H2 --> G
     H3 --> G
     H4 --> G
@@ -74,7 +74,7 @@ flowchart TD
     linkStyle default stroke-width:2px;
 ```
 
-**Takeaway:** Diamonds route Yes/No checks to candidate H1–H4 hypotheses (rounded boxes), or to end-to-end correlation (rectangle); every route reaches the shared mitigation and p95 verification endpoint (stadium). This illustrative triage prioritizes investigation, not confirmed causes: validate candidates against the evidence and disproof sections below.
+**Takeaway:** Diamonds route Yes/No checks to candidate H1–H4 hypotheses (rounded boxes), or to end-to-end correlation (rectangle); every route reaches the shared mitigation and p95 verification endpoint (stadium). This illustrative, non-exhaustive triage prioritizes investigation, not confirmed causes (causes can overlap, and cold start applies only where instances scale to zero): validate candidates against the evidence and disproof sections below.
 
 ### Scope and severity
 | Indicator | Sev 3 | Sev 2 | Sev 1 |

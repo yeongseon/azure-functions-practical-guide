@@ -13,7 +13,7 @@ content_sources:
     - id: nat-gateway-architecture
       type: flowchart
       source: self-generated
-      justification: "NAT Gateway integration pattern from MSLearn documentation"
+      justification: "Illustrative fixed-outbound topology: public HTTPS ingress, outbound VNet integration with a NAT Gateway on the integration subnet for external calls, and a separate private-endpoint subnet for Blob. Drawn from the Learn pages cited; the 203.0.113.10 address is a documentation-range placeholder, not measured."
       based_on:
         - https://learn.microsoft.com/en-us/azure/app-service/overview-nat-gateway-integration
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
@@ -21,7 +21,7 @@ content_sources:
     - id: full-isolation-with-nat
       type: flowchart
       source: self-generated
-      justification: "Full private ingress and NAT egress pattern synthesized from MSLearn networking documentation"
+      justification: "Illustrative combination of a site private endpoint (inbound only) with outbound VNet integration on a separate subnet carrying a NAT Gateway for external API calls. Drawn from the Learn pages cited; the NAT public IP is a documentation-range placeholder, not measured."
       based_on:
         - https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint
         - https://learn.microsoft.com/en-us/azure/app-service/overview-nat-gateway-integration

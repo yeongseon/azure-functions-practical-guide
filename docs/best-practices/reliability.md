@@ -21,7 +21,7 @@ content_sources:
     - id: retry-safe-processing-design
       type: flowchart
       source: self-generated
-      justification: Flow view of retry safe processing design, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative application-level retry-safe design (deduplication key, failure classification, backoff, terminal recovery, atomic completion); not a universal trigger policy, since retry support and poison or dead-letter destinations are trigger-specific.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-idempotent
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages
@@ -29,7 +29,7 @@ content_sources:
     - id: message-processing-lifecycle-retry-and-poison-path
       type: flowchart
       source: self-generated
-      justification: Flow view of message processing lifecycle retry and poison path, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative message lifecycle with duplicate acknowledgement, transient retry and terminal triage with replay; recovery destinations and retry support are trigger-specific, and the transient or terminal split expresses application intent, not automatic runtime classification.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-idempotent
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages
