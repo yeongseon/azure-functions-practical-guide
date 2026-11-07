@@ -25,8 +25,10 @@ content_sources:
     - id: what-you-ll-build
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative topology of the optional Dedicated storage-networking example - outbound VNet integration, private endpoint network interfaces in a subnet, and VNet-linked Private DNS zones, not a measured trace or deployment evidence.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-overview
+        - https://learn.microsoft.com/en-us/azure/dns/private-dns-virtual-network-links
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-infrastructure-as-code
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
         - https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages
@@ -43,7 +45,7 @@ content_sources:
     - id: what-you-ll-build-2
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build 2, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Resource map of the standalone Dedicated Bicep example (B1 plan, storage, Linux Function App), arrows show template resources, not creation order.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-infrastructure-as-code
@@ -82,10 +84,10 @@ You will define and deploy a Dedicated App Service Plan, storage account, and Li
 
 <!-- diagram-id: what-you-ll-build -->
 ```mermaid
-%%{init: {'flowchart': {'nodeSpacing': 10, 'rankSpacing': 70, 'padding': 8, 'subGraphTitleMargin': {'top': 8, 'bottom': 32}}}}%%
+%%{init: {'flowchart': {'nodeSpacing': 10, 'rankSpacing': 85, 'padding': 8, 'subGraphTitleMargin': {'top': 8, 'bottom': 32}}}}%%
 flowchart TD
     accTitle: Python Dedicated app and optional private storage topology
-    accDescr: Linux Python 3.11 and B1 describe the standalone example; the repository template defaults to S1. Optional outbound integration reaches four storage private endpoints; the app is not inside that subnet. Identity and DNS associations are configuration, not data transit or deployment proof. Public HTTPS is conditional when a site private endpoint exists.
+    accDescr: Private endpoints are network interfaces in the PE subnet and Private DNS zones are VNet-linked. Linux Python 3.11 and B1 describe the standalone example; the repository template defaults to S1. Optional outbound integration reaches four storage private endpoints; the app is not inside that subnet. Identity and DNS associations are configuration, not data transit or deployment proof. Public HTTPS is conditional when a site private endpoint exists.
     INET([Internet]) -->|"[Configured]<br/>1"| FA["Function App<br/>Dedicated<br/>B1–P3v3<br/>Linux Python 3.11"]
     FA -.->|"[Configured]<br/>2"| ENTRA{{"Microsoft<br/>Entra ID"}}
     FA -.->|"[Configured]<br/>3"| AI>"Application<br/>Insights"]
@@ -95,17 +97,17 @@ flowchart TD
             INT[["Outbound<br/>integration"]]
         end
         subgraph PE_SUB["<div style='width:110px;text-align:left'>PE<br/>subnet</div>"]
-            PE[["Storage PEs<br/>1–4 in table"]]
+            PE[["Storage PE NICs<br/>1–4 in table"]]
         end
     end
     INT -->|"[Configured]<br/>5"| PE
     PE -->|"[Configured]<br/>6"| ST[("Storage account")]
-    subgraph DNS["<div style='width:150px;text-align:left'>Private DNS<br/>zones</div>"]
+    subgraph DNS["<div style='width:150px;text-align:right'>Private DNS<br/>zones<br/>VNet-linked</div>"]
         ZONES{{"Storage zones<br/>1–4 in table"}}
     end
     PE -.->|"[Configured]<br/>7"| ZONES
-    FA -.->|"[Configured]<br/>8"| RFP["Local ZIP<br/>Not remote build"]
-    FA -.->|"[Configured]<br/>9"| ALWAYS_ON["Always On: true<br/>Fixed capacity"]
+    FA -.->|"8"| RFP["Local ZIP<br/>Not remote build"]
+    FA -.->|"9"| ALWAYS_ON["Always On: true<br/>Fixed capacity"]
     %% Layout-only tiers; add no data hops, operations or visible arrows.
     ENTRA ~~~ AI
     AI ~~~ INT
@@ -120,7 +122,7 @@ flowchart TD
     class VNET,INT_SUB,PE_SUB,DNS netBox;
 ```
 
-**Reading key:** This retains the optional storage-networking view, not a claim that the standalone B1 snippet provisions it. The B1–P3v3 label identifies the original Dedicated scenario range, not an exhaustive SKU catalogue. The repository template defaults to Linux S1 / Standard; all shown Python 3.11 labels describe example configuration, not a runtime-version recommendation.
+**Reading key:** Plain numerals 8 and 9 are configured relationships like the other numbered arrows. This retains the optional storage-networking view, not a claim that the standalone B1 snippet provisions it. The B1–P3v3 label identifies the original Dedicated scenario range, not an exhaustive SKU catalogue. The repository template defaults to Linux S1 / Standard; all shown Python 3.11 labels describe example configuration, not a runtime-version recommendation.
 
 | Key | Relationship or configuration |
 |---|---|
@@ -129,7 +131,7 @@ flowchart TD
 | 3 | Telemetry to configured Application Insights, off the storage data path. |
 | 4 | Optional outbound VNet integration; it does not deploy the app into the subnet. Original example addresses: VNet `10.0.0.0/16`, integration `10.0.1.0/24`, private endpoints `10.0.2.0/24`; integration delegation `Microsoft.Web/serverFarms`. |
 | 5–6 | Outbound storage access through the four private endpoints below to their matching services in the same Storage account; the bundle is four parallel service paths, not four serial hops. |
-| 7 | Each endpoint's DNS zone-group association maps to its matching numbered zone below; these dotted links are configuration, not queries initiated by a private endpoint. Private zones are linked to the VNet, not contained in its subnets. |
+| 7 | Each endpoint's DNS zone-group association maps to its matching numbered zone below; these dotted links are configuration, not queries initiated by a private endpoint. Private zones are linked to the VNet, not contained in its subnets. Each private endpoint is a network interface that uses a private IP address from the PE subnet; zones are shown VNet-linked ([private endpoint overview](https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-overview), [virtual network links](https://learn.microsoft.com/en-us/azure/dns/private-dns-virtual-network-links)). |
 | 8 | Local ready-to-run ZIP alternative: `WEBSITE_RUN_FROM_PACKAGE=1`; do not preconfigure it for Python remote build ([deployment technologies](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies)). |
 | 9 | `alwaysOn: true` for reliable non-HTTP triggering on Dedicated hosting; fixed plan capacity is distinct from this setting ([Always On](https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan#always-on)). |
 
@@ -750,3 +752,5 @@ You now have reproducible Dedicated infrastructure in Bicep. Next you will autom
 - [Dedicated Always On](https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan#always-on)
 - [Deployment technologies](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies)
 - [Functions monitoring](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)
+- [Private endpoint overview](https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-overview)
+- [Virtual network links for private DNS zones](https://learn.microsoft.com/en-us/azure/dns/private-dns-virtual-network-links)

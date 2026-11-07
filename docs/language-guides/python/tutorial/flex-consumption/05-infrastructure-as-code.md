@@ -21,8 +21,10 @@ content_sources:
     - id: what-you-ll-build
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative topology of the Flex Consumption template - outbound VNet integration, storage private endpoint network interfaces in a subnet, VNet-linked Private DNS zones, user-assigned identity and the Blob deployment container, not a measured trace or deployment evidence.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-overview
+        - https://learn.microsoft.com/en-us/azure/dns/private-dns-virtual-network-links
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-infrastructure-as-code
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
         - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
@@ -36,7 +38,7 @@ content_sources:
     - id: what-you-ll-build-2
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build 2, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Resource map of the Flex Consumption Bicep template (FC1 plan, app with functionAppConfig and identity-based deployment storage), arrows show template resources, not creation order.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-infrastructure-as-code
         - https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview
@@ -66,30 +68,30 @@ You will validate and deploy the Flex Consumption infrastructure template, then 
 
 <!-- diagram-id: what-you-ll-build -->
 ```mermaid
-%%{init: {'flowchart': {'nodeSpacing': 10, 'rankSpacing': 70, 'padding': 8, 'subGraphTitleMargin': {'top': 8, 'bottom': 32}}}}%%
+%%{init: {'flowchart': {'nodeSpacing': 10, 'rankSpacing': 85, 'padding': 8, 'subGraphTitleMargin': {'top': 8, 'bottom': 32}}}}%%
 flowchart TD
     accTitle: Python Flex Consumption FC1 infrastructure topology
-    accDescr: Linux Python 3.11 is this template's default. Public HTTPS ingress is separate from outbound integration to four storage private endpoints. User-assigned identity and RBAC authorize storage; they are not data-transit hops. The example uses a Blob deployment container and disables shared keys, not a universal Flex authentication requirement or deployment proof.
+    accDescr: Private endpoints are network interfaces in the PE subnet and Private DNS zones are VNet-linked. Linux Python 3.11 is this template's default. Public HTTPS ingress is separate from outbound integration to four storage private endpoints. User-assigned identity and RBAC authorize storage; they are not data-transit hops. The example uses a Blob deployment container and disables shared keys, not a universal Flex authentication requirement or deployment proof.
     INET([Internet]) -->|"[Configured] 1"| FA["Function App<br/>Flex Consumption FC1<br/>Linux Python 3.11"]
     FA -.->|"[Configured] 2"| UAMI{{"User-assigned<br/>managed identity"}}
     UAMI -.->|"[Configured] 3"| ST[("Storage account<br/>Key 7")]
     FA -.->|"[Configured] 4"| AI>"Application<br/>Insights"]
     FA -->|"[Configured] 5"| INT
     subgraph VNET["VNet"]
-        subgraph INT_SUB["<div style='width:140px;text-align:right'>Integration<br/>subnet</div>"]
+        subgraph INT_SUB["<div style='width:140px;text-align:left'>Integration<br/>subnet</div>"]
             INT[["Outbound<br/>integration"]]
         end
         subgraph PE_SUB["<div style='width:110px;text-align:left'>PE<br/>subnet</div>"]
-            PE[["Storage PEs<br/>1–4 in table"]]
+            PE[["Storage PE NICs<br/>1–4 in table"]]
         end
     end
     INT -->|"[Configured] 6"| PE
     PE -->|"[Configured] 7"| ST
-    subgraph DNS["<div style='width:150px;text-align:left'>Private DNS<br/>zones</div>"]
+    subgraph DNS["<div style='width:150px;text-align:left'>Private DNS<br/>zones<br/>VNet-linked</div>"]
         ZONES{{"Storage zones<br/>1–4 in table"}}
     end
     PE -.->|"[Configured] 8"| ZONES
-    subgraph DEPLOY["<div style='width:200px;text-align:left'>Deployment</div>"]
+    subgraph DEPLOY["<div style='width:200px;text-align:right'>Deployment</div>"]
         BLOB_CTR[("Blob container<br/>deployment-packages")]
     end
     ST -.->|"[Configured] 9"| BLOB_CTR
@@ -115,7 +117,7 @@ flowchart TD
 | 4 | Telemetry to configured Application Insights, off the storage data path. |
 | 5 | Outbound VNet integration does not deploy the app into the integration subnet. Example addresses: VNet `10.0.0.0/16`, integration `10.0.1.0/24`, private endpoints `10.0.2.0/24`; Flex delegates integration to `Microsoft.App/environments`. |
 | 6–7 | Four parallel service paths through the matching storage private endpoints, not a serial chain. Repository module parameter `allowPublicAccess: false` sets Storage `publicNetworkAccess: Disabled`; `allowSharedKeyAccess: false` disables shared-key authentication. These are separate network and authentication controls. |
-| 8 | Endpoint DNS zone-group associations use matching numbered zones below; private zones are linked to the VNet, not contained in its subnets. Dotted links are configuration, not endpoint-initiated DNS queries. |
+| 8 | Endpoint DNS zone-group associations use matching numbered zones below; private zones are linked to the VNet, not contained in its subnets. Dotted links are configuration, not endpoint-initiated DNS queries. Each private endpoint is a network interface that uses a private IP address from the PE subnet; zones are shown VNet-linked ([private endpoint overview](https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-overview), [virtual network links](https://learn.microsoft.com/en-us/azure/dns/private-dns-virtual-network-links)). |
 | 9 | The same account contains `deployment-packages`. This example's `functionAppConfig.deployment.storage` selects `blobContainer` and `UserAssignedIdentity`; Flex also supports deployment-storage connection strings and system-assigned identity ([deployment settings](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to#configure-deployment-settings)). A `file` endpoint here does not imply a Flex Azure Files content-share dependency. |
 
 | Endpoint / zone key | Storage private endpoint | Matching private DNS zone |
@@ -702,3 +704,5 @@ az network vnet subnet show \
 - [Managed identities](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)
 - [Functions monitoring](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)
 - [Storage considerations](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations)
+- [Private endpoint overview](https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-overview)
+- [Virtual network links for private DNS zones](https://learn.microsoft.com/en-us/azure/dns/private-dns-virtual-network-links)
