@@ -85,8 +85,8 @@ flowchart TD
     accTitle: Python 3.11 Linux Dedicated configuration context
     accDescr: Dedicated B1 to P3v3 app outside its optional outbound integration subnet. Four distinct Storage private endpoints and DNS zones are expanded in the adjacent key. Identity, telemetry, package mode and Always On are separate associations, not data-transit hops. The networking is illustrative, not configured by this page's public B1 steps.
     client(["Internet"])
-    app_runtime["Function App<br/>Dedicated: D<br/>Linux Python 3.11"]
-    identity{{"System MI<br/>Microsoft<br/>Entra ID"}}
+    app_runtime["Function App<br/>Dedicated: D<br/>Linux<br/>Python 3.11"]
+    identity(["System MI<br/>Microsoft<br/>Entra ID"])
     telemetry>"Application<br/>Insights"]
     RFP["Package mode: R<br/>Local ZIP<br/>alternative"]
     ALWAYS_ON["Always On: true<br/>Fixed capacity"]
@@ -102,15 +102,15 @@ flowchart TD
         end
     end
     storage_db[("Storage account")]
-    client -->|"[Illustrative]<br/>HTTPS if H"| app_runtime
-    app_runtime -.->|"[Configured]<br/>Identity"| identity
+    client -->|"[Illustrative]<br/>HTTPS<br/>if H"| app_runtime
     app_runtime -.->|"[Configured]<br/>Telemetry"| telemetry
-    app_runtime -.->|"[Illustrative]<br/>Package option"| RFP
+    app_runtime -.->|"[Illustrative]<br/>Package<br/>option"| RFP
     app_runtime -.->|"[Configured]<br/>Setting"| ALWAYS_ON
+    app_runtime -.->|"[Configured]<br/>Identity"| identity
     dns_fn -.->|"[Illustrative]<br/>VNet link"| vnet_fn
     app_runtime -->|"[Illustrative]<br/>Outbound"| vnet_integration
     vnet_integration -->|"[Illustrative]<br/>Each PE"| pe_storage
-    pe_storage -->|"[Illustrative]<br/>Each service"| storage_db
+    pe_storage -->|"[Illustrative]<br/>Each<br/>service"| storage_db
     %% Layout-only tiers; add no requests or configuration steps.
     identity ~~~ telemetry
     telemetry ~~~ RFP
