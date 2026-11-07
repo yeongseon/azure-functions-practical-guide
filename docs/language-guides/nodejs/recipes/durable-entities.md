@@ -9,7 +9,7 @@ content_sources:
     - id: entity-lifecycle
       type: flowchart
       source: self-generated
-      justification: Flow view of the durable entity lifecycle, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Logical view of how a Node.js v4 client function and an orchestrator access a Counter entity, adapted from the Learn entity access model (signal is one-way, call is two-way, one entity runs operations serially, client reads return committed state). Orchestrator uses callEntity only because Learn states JavaScript does not support signaling an entity from an orchestrator. Illustrative; not a network topology or a measured trace.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-entities
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-node-model-upgrade
