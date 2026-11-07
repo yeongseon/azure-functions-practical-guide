@@ -15,7 +15,7 @@ content_sources:
     - id: decision-flow
       type: flowchart
       source: self-generated
-      justification: Illustrative triage ordering synthesized from the cited monitoring, trigger and disable-setting guidance; branches select candidate investigations, not confirmed causes.
+      justification: Illustrative, non-exhaustive triage ordering, not a confirmed root-cause classifier or a measured trace. Learn monitoring, trigger and disable-setting guidance (the AzureWebJobs.<FUNCTION_NAME>.Disabled app setting) supports the concepts; the check order and action keys are this guide's own and branches select candidate investigations, not confirmed causes.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
         - https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
@@ -80,7 +80,7 @@ flowchart TD
 **Reading key:** The start symptom leads through Yes/No checks (diamonds) to
 candidate actions (rounded boxes), then to the shared recovery check (stadium).
 Use the action key below with the competing hypotheses and disproof in sections
-3 and 6; a branch selects an investigation, not a confirmed root cause.
+3 and 6; a branch selects an investigation, not a confirmed root cause. The order is illustrative and non-exhaustive; several conditions can overlap.
 
 | Action key | Investigation or candidate mitigation |
 |---|---|

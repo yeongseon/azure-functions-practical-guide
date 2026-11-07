@@ -63,22 +63,12 @@ content_sources:
     - id: request-flow-examples-by-trigger-type
       type: flowchart
       source: self-generated
-      justification: Request flow examples by trigger type, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative, non-exhaustive comparison of logical stage order for HTTP, Storage Queue and Event Hubs triggers, drawn from the trigger binding references; arrows show stage order, not a guaranteed internal protocol or connection direction.
       based_on:
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-http-webhook-trigger
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
-        - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
-        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
-        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-diagnostics
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-cosmosdb-v2-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs-trigger
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
     - id: 3-scale-controller-and-instance-management-where-backlog-and-burst-failures-originate
       type: flowchart
       source: self-generated
@@ -99,20 +89,11 @@ content_sources:
     - id: scale-out-decision-flow
       type: flowchart
       source: self-generated
-      justification: Scale out decision flow, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Conceptual sketch of event-driven scale-out checks and instance readiness, drawn from the scale and hosting references; not a documented internal scale controller protocol and not a root-cause verdict.
       based_on:
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
-        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
-        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-diagnostics
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-cosmosdb-v2-trigger
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs-trigger
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus
     - id: 4-cold-start-flow-where-first-execution-latency-appears
       type: sequenceDiagram
       source: self-generated
