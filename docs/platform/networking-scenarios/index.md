@@ -13,9 +13,11 @@ content_sources:
     - id: network-scenario-decision-tree
       type: flowchart
       source: self-generated
-      justification: "Decision tree synthesized from MSLearn networking options documentation"
+      justification: "Guide-specific scenario selector that routes private-resource access, private inbound access and fixed outbound IP needs to this guide's four scenarios and the plans it lists for each; it is not an exhaustive classifier of Functions networking options. Plan support follows the plan-by-plan table in the Functions networking options article."
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-vnet-integration
 content_validation:
   status: verified
   last_reviewed: 2026-09-11

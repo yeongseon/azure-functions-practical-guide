@@ -10,14 +10,14 @@ content_sources:
     - id: entity-lifecycle
       type: flowchart
       source: self-generated
-      justification: Flow view of the durable entity lifecycle, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative logical API view of clients signaling entities, orchestrators calling entities, serialized per-entity execution and persisted state read back from the tracking store; not a storage-provider internals diagram or a measured trace.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-entities
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
     - id: entity-messaging
       type: sequenceDiagram
       source: self-generated
-      justification: Interaction sequence for signaling versus calling an entity, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative sequence contrasting one-way signals with two-way calls from an orchestrator, and a client reading committed state from the tracking store; message timing is not a measured trace.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-entities
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python

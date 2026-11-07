@@ -18,7 +18,7 @@ content_sources:
     - id: checklists
       type: graph
       source: self-generated
-      justification: Flow view of checklists, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Editorial navigation aid routing an incident to one of three first-response checklists; the categories are this guide's triage grouping, not a Microsoft Learn taxonomy, a measured trace or a root-cause verdict. Monitoring and Service Health documentation inform the signals the checklists use.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
         - https://learn.microsoft.com/en-us/azure/service-health/overview

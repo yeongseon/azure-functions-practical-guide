@@ -15,11 +15,12 @@ content_sources:
     - id: decision-flow
       type: flowchart
       source: self-generated
-      justification: Decision flow, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative triage order over identity attachment, role assignment, propagation delay, Key Vault permission model and token scope; a 401/403 alone does not prove a missing role, and branches select checks, not confirmed causes.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
         - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
         - https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
+        - https://learn.microsoft.com/en-us/azure/role-based-access-control/troubleshooting
         - https://learn.microsoft.com/en-us/azure/key-vault/general/rbac-guide
         - https://learn.microsoft.com/en-us/dotnet/api/azure.identity.defaultazurecredential
     - id: failure-progression-model

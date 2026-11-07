@@ -11,7 +11,7 @@ content_sources:
     - id: prerequisites
       type: flowchart
       source: self-generated
-      justification: Flow view of prerequisites, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative, non-exhaustive triage for a trigger that is not firing, where function enablement (the AzureWebJobs.<FUNCTION_NAME>.Disabled app setting) and listener startup checks are suggestions that vary by trigger type, not confirmed causes or lab evidence.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings

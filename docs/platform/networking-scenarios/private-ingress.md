@@ -11,7 +11,7 @@ content_sources:
     - id: private-ingress-architecture
       type: flowchart
       source: self-generated
-      justification: "Private endpoint ingress pattern from MSLearn networking documentation"
+      justification: "Illustrative private-ingress topology: a site private endpoint for inbound access only, public ingress disabled by configuration, and a separate outbound VNet integration subnet reaching Storage private endpoints. The app and Storage stay outside the customer VNet; endpoint requirements depend on plan and workload."
       based_on:
         - https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
@@ -58,33 +58,31 @@ The Networking blade shows the baseline state before private endpoint configurat
 
 <!-- diagram-id: private-ingress-architecture -->
 ```mermaid
-%%{init: {'flowchart': {'nodeSpacing': 10, 'rankSpacing': 35, 'padding': 4}}}%%
+%%{init: {'flowchart': {'nodeSpacing': 6, 'rankSpacing': 55, 'padding': 8}}}%%
 flowchart TD
     accTitle: Private Function app ingress and Storage egress
     accDescr: A corporate client connects through the site private endpoint to the Function app outside the customer VNet. Public ingress is disabled by configuration. Separate outbound integration reaches Blob, Queue, Table and File private endpoints; endpoint requirements depend on the hosting plan and workload.
     subgraph corp_network["Corporate / VPN"]
         client(["Internal Client"])
     end
-    app_runtime["Function App<br/>Managed<br/>compute"]
-    storage_db[("Storage<br/>Account")]
     public_client(["Internet"])
+    app_runtime["Function App<br/>Managed<br/>compute"]
     subgraph vnet_fn["Customer VNet"]
         subgraph subnet_pe_fn["PE subnet"]
-            pe_app[["Site private<br/>endpoint"]]
+            pe_app[["Site<br/>private<br/>endpoint"]]
             pe_storage[["PE: blob<br/>PE: queue<br/>PE: table<br/>PE: file"]]
         end
-        subgraph subnet_int_fn["Integration<br/>subnet"]
-            vnet_integration[["VNet<br/>integration<br/>Outbound only"]]
+        subgraph subnet_int_fn["Integration subnet"]
+            vnet_integration[["VNet<br/>integration<br/>Outbound<br/>only"]]
         end
     end
+    storage_db[("Storage<br/>Account")]
     client -->|"[Configured]<br/>Private IP"| pe_app
     pe_app -->|"[Configured]<br/>Private Link"| app_runtime
     public_client -->|"[Configured]<br/>Public ingress<br/>disabled"| app_runtime
     app_runtime -->|"[Configured]<br/>Outbound"| vnet_integration
     vnet_integration -->|"[Configured]<br/>Private IP<br/>Each endpoint"| pe_storage
     pe_storage -->|"[Configured]<br/>Private Link<br/>Each endpoint"| storage_db
-    %% Layout-only link tiers public attempt above compute; no connection added.
-    pe_app ~~~ public_client
     classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
     classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e;
     classDef stateWarn fill:#fff3e0,stroke:#ba690c,stroke-width:2px,color:#5c3200;
