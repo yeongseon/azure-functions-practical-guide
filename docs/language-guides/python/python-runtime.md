@@ -20,7 +20,7 @@ content_sources:
     - id: python-runtime
       type: flowchart
       source: self-generated
-      justification: Flow view of python runtime, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Execution-path summary of the Python scale and performance reference, which says a function without the async keyword runs in a ThreadPoolExecutor thread pool and that async functions benefit from an event loop; the host-to-worker framing is simplified. Logical stages, not a network trace, and not measured behavior.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to

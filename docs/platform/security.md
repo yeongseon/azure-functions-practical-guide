@@ -13,7 +13,7 @@ content_sources:
     - id: security-model-overview
       type: flowchart
       source: self-generated
-      justification: Flow view of security model overview, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Conceptual map of the endpoint authorization level, optional App Service Authentication and API Management, function code, managed-identity access to Azure resources and network controls; arrows relate responsibilities, not execution order or network hops. Learn supports each layer individually; the combined layering is a guide-specific summary.
       based_on:
         - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
         - https://learn.microsoft.com/en-us/azure/azure-functions/security-concepts
@@ -23,7 +23,7 @@ content_sources:
     - id: authentication-architecture-decision-tree
       type: flowchart
       source: self-generated
-      justification: Flow view of authentication architecture decision tree, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative caller-type decision guide, not a Microsoft decision tree or exhaustive threat model. Learn supports App Service Authentication for user sign-in, managed identity for service-to-service access, and JWT validation or API Management policies for protecting HTTP backends; the preference order and function-key fallback wording are this guide's recommendations.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/security-concepts
         - https://learn.microsoft.com/en-us/azure/app-service/overview-authentication-authorization
