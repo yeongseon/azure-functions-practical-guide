@@ -21,7 +21,7 @@ content_sources:
     - id: what-you-ll-build
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative topology of the template's public Consumption configuration (public app and storage endpoints, identity, telemetry, Files content share) with no outbound VNet integration or inbound app private endpoint, not a measured trace or deployment evidence.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages
         - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
@@ -35,7 +35,7 @@ content_sources:
     - id: what-you-ll-build-2
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build 2, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Resource map of the Bicep template (storage, Linux Y1 plan, Function App) and CLI validation, arrows show template resources, not creation order.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-infrastructure-as-code
@@ -65,6 +65,7 @@ You will deploy storage, a Linux Consumption plan, and a Python Function App via
 
 <!-- diagram-id: what-you-ll-build -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 10, 'rankSpacing': 70, 'padding': 8, 'subGraphTitleMargin': {'top': 8, 'bottom': 32}}}}%%
 flowchart TD
     accTitle: Python Linux Consumption Y1 infrastructure topology
     accDescr: The Python 3.11 tutorial configuration uses public app and storage endpoints, system-assigned identity and Application Insights. Host-storage identity and the template's Files connection settings are distinct. Identity is a logical association, not a direct Entra network hop; this is not deployment evidence or a runtime-version recommendation.
@@ -72,12 +73,12 @@ flowchart TD
     FA -.->|"[Configured] 2"| ENTRA{{"Microsoft<br/>Entra ID"}}
     FA -.->|"[Configured] 3"| AI>"Application<br/>Insights"]
     FA -->|"[Configured] 4"| ST[("Storage account<br/>Public endpoint")]
-    subgraph STORAGE["<div style='width:180px;text-align:left'>Storage<br/>Services</div>"]
+    subgraph STORAGE["<div style='width:180px;text-align:right'>Storage<br/>Services</div>"]
         ST
         FS[("Azure Files<br/>Template share")]
     end
     ST -.->|"[Configured] 5"| FS
-    FA -.->|"[Configured] 6"| NO_VNET["No VNet integration<br/>No app private endpoint"]
+    FA -.->|"[Configured]<br/>6"| NO_VNET["No VNet integration<br/>No app private endpoint"]
     %% Layout-only tiers; add no network hops, dependencies or visible arrows.
     ENTRA ~~~ AI
     AI ~~~ ST
