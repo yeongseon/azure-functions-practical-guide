@@ -65,9 +65,9 @@ flowchart TD
     HOST --> HTTP[HTTP Trigger\nhelloHttp]
     HTTP -->|GET /api/hello| RESP[JSON Response]
 
-    style DEV fill:#E3F2FD
-    style HOST fill:#ff8c00,color:#fff
-    style RESP fill:#E8F5E9
+    style DEV fill:#E3F2FD,color:#14202e
+    style HOST fill:#ff8c00,color:#14202e
+    style RESP fill:#E8F5E9,color:#14202e
 ```
 
 ## Steps
