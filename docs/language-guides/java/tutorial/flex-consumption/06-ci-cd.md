@@ -26,6 +26,8 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-continuous-deployment
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
     - id: what-you-ll-build-2
       type: flowchart
       source: self-generated
@@ -34,6 +36,8 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-continuous-deployment
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
 ---
 # 06 - CI/CD (Flex Consumption)
 
@@ -64,6 +68,8 @@ You will configure a GitHub Actions pipeline that builds and deploys a Java Func
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
+    accTitle: Java Flex Consumption FC1 tutorial deployment overview
+    accDescr: A developer push to main that changes files matching apps/java/** starts the illustrated GitHub Actions workflow, which depicts publishing the staging directory to the Flex Consumption FC1 function app with a publish profile. This summarizes the example's intended deployment relationship, not complete authentication configuration, a physical network topology or evidence of a successful deployment.
     GH["GitHub Actions"] -->|"publish profile\n+ staging dir"| FA[Function App\nFlex Consumption FC1]
     DEV["Developer"] -->|"git push"| GH
 
@@ -74,6 +80,8 @@ flowchart TD
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart TD
+    accTitle: Java Flex Consumption tutorial CI/CD stage order
+    accDescr: A push to main that changes files matching apps/java/** starts the illustrated GitHub Actions workflow, followed by Maven build and test, publishing from the staging directory and a smoke test. This summarizes the intended Flex Consumption stages, not proof that the publish-profile configuration is complete or that deployment and smoke testing succeeded.
     A[Push to main] --> B[GitHub Actions]
     B --> C[Maven build and test]
     C --> D[Publish from staging dir]
@@ -245,3 +253,5 @@ Hello endpoint response:
 - [Azure Functions Java developer guide (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java)
 - [Continuous deployment for Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-continuous-deployment)
 - [Azure Functions Flex Consumption plan (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan)
+- [GitHub Actions deployment (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions)
+- [Deployment technologies (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies)

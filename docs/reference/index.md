@@ -14,7 +14,7 @@ content_sources:
     - id: documents
       type: graph
       source: self-generated
-      justification: Flow view of documents, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Documentation navigation map of selected Reference pages in this guide, not Azure architecture or product dependencies.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
@@ -30,11 +30,15 @@ Quick lookup documentation for Azure Functions platform operations and diagnosti
 <!-- diagram-id: documents -->
 ```mermaid
 graph TD
+    accTitle: Reference documentation navigation
+    accDescr: Reference branches to the selected CLI Cheatsheet, host.json Reference, Environment Variables, Platform Limits and Troubleshooting pages. Arrows group this guide's documents, not Azure components, prerequisites or runtime connections.
     A[Reference] --> B[CLI Cheatsheet]
     A --> C[host.json Reference]
     A --> D[Environment Variables]
     A --> E[Platform Limits]
     A --> F[Troubleshooting]
+    %% Layout-only tiers: add no navigation destination or prerequisite relationship.
+    B ~~~ C ~~~ D ~~~ E ~~~ F
 ```
 
 | Document | Description |
@@ -47,6 +51,7 @@ graph TD
 | [Glossary](glossary.md) | Definitions of core Azure Functions terms used across this guide |
 | [Diagram Inventory](diagram-inventory.md) | Repository-wide baseline, declared sources, hosting/trigger variants, exclusions and migration owners |
 | [ADR: Diagram Composition](adr-diagram-composition.md) | Reuse options, complexity limits and dependency on the shared App Service prototype |
+| [Functions Topology Templates](functions-topology-templates.md) | Copyable typed base, trigger and private-storage views with illustrative fault overlays |
 
 ## Quick Links
 

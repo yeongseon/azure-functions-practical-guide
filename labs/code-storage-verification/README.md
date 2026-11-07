@@ -17,34 +17,18 @@ You will deploy all four plans, verify baseline settings, induce controlled misc
 
 ## Architecture Overview
 ```mermaid
-flowchart TD
-    A[Code Storage Verification Lab] --> B{Hosting Plan}
+flowchart LR
+    accTitle: Code storage contract by hosting plan
+    accDescr: Illustrative summary of the code storage and deployment settings this lab inspects for each of four hosting plans. Consumption and Premium use an Azure Files<br/>content share. Flex Consumption uses a blob container deployment setting with a user-assigned identity. Dedicated uses a package mount. Not lab evidence; the lab has not been reproduced.
+    B["Code Storage<br/>Verification Lab:<br/>which hosting<br/>plan?"]
 
-    B --> C[Consumption Y1]
-    B --> D[Flex Consumption FC1]
-    B --> E[Premium EP]
-    B --> F[Dedicated ASP]
-
-    C --> C1[Azure Files content share]
-    C --> C2[WEBSITE_CONTENTAZUREFILECONNECTIONSTRING]
-    C --> C3[WEBSITE_CONTENTSHARE]
-    C --> C4[Remote build or external package URL; never local value 1]
-
-    D --> D1[functionAppConfig.deployment.storage]
-    D --> D2[type=blobContainer]
-    D --> D3[authentication=UserAssignedIdentity]
-    D --> D4[No WEBSITE_CONTENT settings]
-
-    E --> E1[Azure Files content share]
-    E --> E2[WEBSITE_CONTENTAZUREFILECONNECTIONSTRING]
-    E --> E3[WEBSITE_CONTENTSHARE]
-    E --> E4[VNet and networking dependencies]
-
-    F --> F1[App Service filesystem package mount]
-    F --> F2[WEBSITE_RUN_FROM_PACKAGE=1]
-    F --> F3[alwaysOn=true]
-    F --> F4[No WEBSITE_CONTENT settings]
+    B --> C["<b>Consumption Y1</b><br/>Azure Files<br/>content share<br/>WEBSITE_CONTENT<br/>AZUREFILE<br/>CONNECTION<br/>STRING<br/>WEBSITE_CONTENTSHARE<br/>Remote build or<br/>external<br/>package URL;<br/>never local<br/>value 1"]
+    B --> D["<b>Flex Consumption FC1</b><br/>functionAppConfig.<br/>deployment.<br/>storage<br/>type=blobContainer<br/>authentication=<br/>UserAssigned<br/>Identity<br/>No WEBSITE_CONTENT<br/>settings"]
+    B --> E["<b>Premium EP</b><br/>Azure Files<br/>content share<br/>WEBSITE_CONTENT<br/>AZUREFILE<br/>CONNECTION<br/>STRING<br/>WEBSITE_CONTENTSHARE<br/>VNet and<br/>networking<br/>dependencies"]
+    B --> F["<b>Dedicated ASP</b><br/>App Service<br/>filesystem<br/>package mount<br/>WEBSITE_RUN_FROM_<br/>PACKAGE=1<br/>alwaysOn=true<br/>No WEBSITE_CONTENT<br/>settings"]
 ```
+
+_Illustrative summary of the per-plan code storage contract this lab inspects; it is not lab evidence and does not mean the lab has been run._
 
 ## Variables
 Use canonical variable names from the lab guide.

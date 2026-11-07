@@ -22,12 +22,16 @@ Azure Functions publishes two execution-focused platform metrics for Consumption
 <!-- diagram-id: function-execution-metrics -->
 ```mermaid
 flowchart TD
+    accTitle: Consumption execution count and resource units
+    accDescr: For the Windows Consumption billing example, invocation count supports volume trends, while execution units combine time and memory for GB-second cost estimation. The plan-support table limits applicability; this is not a guarantee of these platform metrics on every plan or OS, or an exact invoice.
     A[Function Invocation] --> B[FunctionExecutionCount]
     A --> C[FunctionExecutionUnits]
     C --> D[Execution Time x Memory]
     D --> E[GB-seconds Billing]
     B --> F[Invocation Volume Trend]
 ```
+
+**Scope key:** Read this unchanged relationship as the [Consumption billing example](https://learn.microsoft.com/en-us/azure/azure-functions/functions-consumption-costs), using platform metrics on Windows Consumption. [`Microsoft.Web/sites` metrics are unavailable on Linux Consumption](https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions-reference#metrics); `FunctionExecutionCount` and `FunctionExecutionUnits` are also unsupported on Linux Premium/Dedicated. Flex uses the separate `OnDemand*`/`AlwaysReady*` metrics. Application Insights invocation telemetry is a different signal, subject to configuration and sampling; automatic performance-counter collection is [unsupported on Linux](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring#performance-counters).
 
 ## FunctionExecutionCount
 
@@ -95,3 +99,4 @@ For Flex Consumption apps, the equivalent signals are split across always-ready 
 
 - [Monitoring Azure Functions data reference (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions-reference)
 - [Estimating Consumption plan costs (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-consumption-costs)
+- [Functions monitoring and performance-counter limits (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)

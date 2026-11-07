@@ -11,7 +11,7 @@ content_sources:
     - id: prerequisites
       type: flowchart
       source: self-generated
-      justification: Flow view of prerequisites, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative, non-exhaustive triage for a trigger that is not firing, where function enablement (the AzureWebJobs.<FUNCTION_NAME>.Disabled app setting) and listener startup checks are suggestions that vary by trigger type, not confirmed causes or lab evidence.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
@@ -79,15 +79,24 @@ EH_NAMESPACE="evh-myapp-prod"
 <!-- diagram-id: prerequisites -->
 ```mermaid
 flowchart TD
-    A[Trigger not firing] --> B["Check platform/regional incidents"]
-    B --> C[Check function enabled state]
+    accTitle: Trigger not firing first-response decisions
+    accDescr: Illustrative triage starts with platform or regional incidents and function enablement. Disabled leads to re-enabling the function by setting AzureWebJobs.<FUNCTION_NAME>.Disabled to false; enabled leads to listener startup traces. An unhealthy listener leads to auth or configuration startup checks; a healthy listener leads to source activity and publisher checks. These are suggested checks, not confirmed causes.
+    A(["Trigger not firing"]) --> B["Check platform/regional<br/>incidents"]
+    B --> C["Check function<br/>enabled state"]
     C --> D{Enabled?}
-    D -->|No| E["Re-enable function/app setting"]
-    D -->|Yes| F[Check listener startup traces]
+    D -->|No| E(["Re-enable function/app<br/>setting"])
+    D -->|Yes| F["Check listener<br/>startup traces"]
     F --> G{Listener healthy?}
-    G -->|No| H["Fix auth/config startup issue"]
-    G -->|Yes| I[Check source activity and publisher]
+    G -->|No| H(["Fix auth/config<br/>startup issue"])
+    G -->|Yes| I(["Check source activity<br/>and publisher"])
+    %% Layout-only links tier the branches; they add no diagnostic steps or arrows.
+    E ~~~ F
+    H ~~~ I
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I neutral;
 ```
+
+**Reading key:** Follow the enablement and listener-health diamonds to the next check or action; a route is not a confirmed root cause. Use the evidence checks below to test it.
 
 ## 1) Check Azure status and regional incidents
 

@@ -19,17 +19,43 @@ content_sources:
     - id: what-you-ll-build
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Python Linux plan-specific infrastructure context with full adjacent reading key; not deployment evidence.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
         - https://learn.microsoft.com/en-us/cli/azure/monitor/app-insights?view=azure-cli-latest
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+        - https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/streaming-logs
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/app/create-workspace-resource
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-access-restrictions#app-access
+        - https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
+        - https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints
+        - https://learn.microsoft.com/en-us/azure/azure-functions/opentelemetry-howto
+        - https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions-reference
     - id: what-you-ll-build-2
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build 2, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Python plan-specific monitoring verification relationships; analysis arrows are not network-transit claims.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
         - https://learn.microsoft.com/en-us/cli/azure/monitor/app-insights?view=azure-cli-latest
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+        - https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/streaming-logs
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/app/create-workspace-resource
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-access-restrictions#app-access
+        - https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
+        - https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints
+        - https://learn.microsoft.com/en-us/azure/azure-functions/opentelemetry-howto
+        - https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions-reference
 ---
 # 04 - Logging and Monitoring (Premium)
 
@@ -50,67 +76,85 @@ Enable observability for a Premium Function App using Application Insights, Log 
 !!! info "Infrastructure Context"
     **Plan**: Premium (EP1) | **Network**: VNet + Private Endpoints | **Always warm**: ✅
 
-    Premium deploys with VNet integration (delegated subnet), a private endpoint for inbound access, private DNS zone, and pre-warmed instances. Storage uses connection string or identity-based authentication.
+    The figure retains Premium network and content context, not infrastructure provisioned by this monitoring page. A prerequisite site private endpoint makes public HTTPS conditional (H); prewarmed instances buffer HTTP scale-out (W).
 
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 10, 'rankSpacing': 70, 'padding': 8, 'subGraphTitleMargin': {'top': 8, 'bottom': 32}}}}%%
 flowchart TD
-    INET[Internet] -->|HTTPS| FA[Function App\nPremium EP1\nLinux Python 3.11]
-
-    subgraph VNET["VNet 10.0.0.0/16"]
-        subgraph INT_SUB["Integration Subnet 10.0.1.0/24\nDelegation: Microsoft.Web/serverFarms"]
-            FA
+    accTitle: Python 3.11 Linux Premium EP1 Storage context
+    accDescr: Premium network context with app compute outside outbound integration and four Storage endpoint and DNS mappings expanded in the key. Public HTTPS after a prerequisite site private endpoint requires publicNetworkAccess explicitly Enabled (H). Identity, telemetry and HTTP prewarm capacity are not data-transit hops. The Files share is this context's content backend, not a universal requirement.
+    client(["Internet"])
+    app_runtime["Function App<br/>Premium EP1<br/>Linux · Python 3.11"]
+    identity{{"System MI<br/>Microsoft Entra ID"}}
+    telemetry>"Application<br/>Insights"]
+    warm_capacity["HTTP prewarm<br/>Capacity: W"]
+    subgraph DNS["Private DNS zones"]
+        dns_fn{{"Blob · Queue<br/>Table · File"}}
+    end
+    subgraph vnet_fn["VNet"]
+        subgraph INT_SUB["<div style='width:170px;text-align:right'>Integration<br/>subnet</div>"]
+            vnet_integration[["Outbound<br/>integration"]]
         end
-        subgraph PE_SUB["Private Endpoint Subnet 10.0.2.0/24"]
-            PE_BLOB[PE: blob]
-            PE_QUEUE[PE: queue]
-            PE_TABLE[PE: table]
-            PE_FILE[PE: file]
+        subgraph PE_SUB["<div style='width:130px;text-align:left'>PE<br/>subnet</div>"]
+            pe_storage[["Storage PEs<br/>blob · queue<br/>table · file"]]
         end
     end
-
-    PE_BLOB --> ST["Storage Account\nallowPublicAccess: false\nallowSharedKeyAccess: true"]
-    PE_QUEUE --> ST
-    PE_TABLE --> ST
-    PE_FILE --> ST
-
-    subgraph DNS[Private DNS Zones]
-        DNS_BLOB[privatelink.blob.core.windows.net]
-        DNS_QUEUE[privatelink.queue.core.windows.net]
-        DNS_TABLE[privatelink.table.core.windows.net]
-        DNS_FILE[privatelink.file.core.windows.net]
+    storage_db[("Storage account<br/>Settings: S")]
+    subgraph STORAGE["<div style='width:200px;text-align:left'>Content<br/>backend</div>"]
+        SHARE[("Azure Files<br/>content share")]
     end
-
-    PE_BLOB -.-> DNS_BLOB
-    PE_QUEUE -.-> DNS_QUEUE
-    PE_TABLE -.-> DNS_TABLE
-    PE_FILE -.-> DNS_FILE
-
-    FA -.->|System-Assigned MI| ENTRA[Microsoft Entra ID]
-    FA --> AI[Application Insights]
-
-    subgraph STORAGE[Content Backend]
-        SHARE[Azure Files\ncontent share]
-    end
-    ST --- SHARE
-
-    WARM["🔥 Pre-warmed instances\nMin: 1, Max: 20-100"] -.- FA
-
-    style FA fill:#ff8c00,color:#fff
-    style VNET fill:#E8F5E9,stroke:#4CAF50
-    style ST fill:#FFF3E0
-    style DNS fill:#E3F2FD
-    style WARM fill:#FFF3E0,stroke:#FF9800
+    client -->|"[Illustrative]<br/>HTTPS if H"| app_runtime
+    app_runtime -.->|"[Illustrative]<br/>Identity"| identity
+    app_runtime -.->|"[Configured]<br/>Telemetry"| telemetry
+    app_runtime -.->|"[Illustrative]<br/>HTTP buffer"| warm_capacity
+    dns_fn -.->|"[Illustrative]<br/>VNet link"| vnet_fn
+    app_runtime -->|"[Illustrative]<br/>Outbound"| vnet_integration
+    vnet_integration -->|"[Illustrative]<br/>Each PE"| pe_storage
+    pe_storage -->|"[Illustrative]<br/>Each service"| storage_db
+    %% Membership stops at the content boundary, not through its title to SHARE.
+    storage_db -.->|"[Illustrative]<br/>Contains"| STORAGE
+    %% Layout-only tiers; add no requests, diagnostic steps or visible arrows.
+    identity ~~~ telemetry
+    telemetry ~~~ warm_capacity
+    warm_capacity ~~~ dns_fn
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class client,app_runtime,identity,telemetry,warm_capacity,dns_fn,vnet_integration,pe_storage,storage_db,SHARE baseNeutral;
 ```
+
+**Reading key:** Solid arrows are intended request/data access; dotted arrows are identity, telemetry, capacity, VNet-link or membership associations. `[Illustrative]` identifies surrounding infrastructure choices, not a deployment performed here. Outbound integration does not deploy the app into its subnet; identity acquisition uses the app-local token endpoint, not direct app-to-Entra transit. The DNS link targets the actual VNet boundary ([networking](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options), [identity](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)).
+
+| Key | Context / qualification |
+|---|---|
+| H | After a site private endpoint, public HTTPS requires `publicNetworkAccess: Enabled` and permitting access restrictions. With the property unset (`null`), adding that endpoint disables public ingress by default; the prerequisite Premium Bicep does not explicitly enable it |
+| VNet / integration / PE subnet | `10.0.0.0/16` / `10.0.1.0/24` / `10.0.2.0/24`; delegation `Microsoft.Web/serverFarms` |
+| S | The prerequisite repository Storage module maps `allowPublicAccess: false` to `publicNetworkAccess: Disabled` and firewall default Deny. Separately, `allowBlobPublicAccess: false` blocks anonymous Blob access, while `allowSharedKeyAccess: true` permits Shared Key authorization |
+| W | Premium minimum active billed instance: 1; default prewarmed HTTP buffer: 1; Linux regional maximum scale-out: 20–100, Korea Central: 20. These are different settings, not prewarm minimum/maximum |
+| Content / identity | Default Azure Files content access uses its connection string; supported identity-based host storage and Storage RBAC are separate. No-Files deployment alternatives exist |
+
+The bundles retain **four distinct endpoints and four zones**, with endpoint → matching service access and endpoint → zone-group association:
+
+| Endpoint → Storage service | Associated private DNS zone |
+|---|---|
+| `PE_BLOB` → Blob | `privatelink.blob.core.windows.net` |
+| `PE_QUEUE` → Queue | `privatelink.queue.core.windows.net` |
+| `PE_TABLE` → Table | `privatelink.table.core.windows.net` |
+| `PE_FILE` → File | `privatelink.file.core.windows.net` |
+
+These are independent service paths, not serial hops or a universal endpoint requirement. Use normal Storage hostnames with appropriate private DNS resolution; secured Premium content storage also needs content-share routing. Private ingress and diagnostic clients need appropriate network/DNS reachability; the conditional public arrow is not a way around disabled public ingress ([Storage endpoints](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints), [storage](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations), [app access](https://learn.microsoft.com/en-us/azure/app-service/overview-access-restrictions#app-access), [Premium capacity](https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan), [deployment networking](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies#secured-virtual-networks)).
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart TD
+    accTitle: Python Premium monitoring verification
+    accDescr: The EP1 app uses configured Application Insights for request and trace analysis with KQL. SCM or Kudu is a separate diagnostics channel, not a telemetry forwarding hop or an idle-log guarantee.
     A[Function App Premium] --> B[Application Insights]
     B --> C[Request and trace telemetry]
     C --> D[KQL verification queries]
     A --> E[SCM or Kudu diagnostics]
 ```
+
+**Telemetry versus diagnostics:** Premium does not change Python's default worker → Functions host → Application Insights logging route. The configured connection string identifies its destination, and filtering/sampling can exclude records; a separately configured distro exporter is not shown as a default bypass ([Python logging](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python#logging-and-monitoring), [configuration](https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring)). Application Insights telemetry resides in its linked workspace, independently of diagnostic-settings `FunctionAppLogs` collection ([workspace](https://learn.microsoft.com/en-us/azure/azure-monitor/app/create-workspace-resource), [resource logs](https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions#azure-monitor-resource-logs)). SCM diagnostics and supported single-instance built-in streaming are distinct from Application Insights Live Metrics; warm capacity alone does not guarantee idle log entries ([streaming](https://learn.microsoft.com/en-us/azure/azure-functions/streaming-logs)).
 
 ## Steps
 
@@ -294,6 +338,21 @@ Timestamp                  Name    ResultCode    Duration
 - [Recipes Index](../../recipes/index.md)
 
 ## Sources
+
+- [Functions OpenTelemetry configuration](https://learn.microsoft.com/en-us/azure/azure-functions/opentelemetry-howto)
+- [Functions monitoring data reference](https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions-reference)
+
+- [functions-reference-python](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python)
+- [configure-monitoring](https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring)
+- [streaming-logs](https://learn.microsoft.com/en-us/azure/azure-functions/streaming-logs)
+- [functions-networking-options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)
+- [storage-considerations](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations)
+- [functions-premium-plan](https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan)
+- [create-workspace-resource](https://learn.microsoft.com/en-us/azure/azure-monitor/app/create-workspace-resource)
+- [overview-managed-identity](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)
+- [overview-access-restrictions](https://learn.microsoft.com/en-us/azure/app-service/overview-access-restrictions#app-access)
+- [deployment-zip-push](https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push)
+- [storage-private-endpoints](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints)
 
 - [Monitor Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions)
 - [Application Insights query with Azure CLI](https://learn.microsoft.com/en-us/cli/azure/monitor/app-insights?view=azure-cli-latest)

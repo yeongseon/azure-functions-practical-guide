@@ -15,27 +15,23 @@ content_sources:
     - id: failure-progression-model
       type: flowchart
       source: self-generated
-      justification: Flow view of failure progression model, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative failure-progression hypothesis for this walkthrough; Learn documents ZIP deployment with host restart, the FUNCTIONS_WORKER_RUNTIME setting and the Python v1 function.json and __init__.py layout, but not this exact sequence; it is not retained Azure evidence or a universal startup order.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
-        - https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring
-        - https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
-        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-query-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
     - id: incident-timeline-model
       type: gantt
       source: self-generated
-      justification: Incident timeline model, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Gantt of the historical walkthrough's phases and overlapping windows; the 03:00-03:30 times and done markers repeat the walkthrough, not Learn measurements or a new Golden run, and Learn only informs the deployment and telemetry vocabulary of the phases.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
-        - https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring
         - https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
         - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-query-overview
     - id: causal-chain
       type: flowchart
       source: self-generated
-      justification: Flow view of causal chain, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative causal hypothesis connecting this walkthrough's mismatch to service impact; deployment and Python documentation inform the model but do not establish a lab verdict.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
@@ -45,21 +41,18 @@ content_sources:
     - id: step-7-triage-decision-tree
       type: flowchart
       source: self-generated
-      justification: Flow view of step 7 triage decision tree, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative reading path through the historical runtime-setting and Python v1 packaging checks; Learn documents FUNCTIONS_WORKER_RUNTIME and the function.json and __init__.py layout, and monitoring and log queries inform the probes, but missing telemetry alone is not a deterministic diagnosis.
       based_on:
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
-        - https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring
         - https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
         - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-query-overview
     - id: evidence-timeline
       type: gantt
       source: self-generated
-      justification: Evidence timeline, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Gantt of the historical walkthrough's evidence-collection and recovery windows in UTC; times and done markers preserve reported history, and Learn only informs the deployment and telemetry vocabulary; it does not certify the NOT_RUN Golden scenario.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
-        - https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring
         - https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
         - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-query-overview
 ---
@@ -112,19 +105,29 @@ This lab keeps deployment method constant and changes only runtime or package st
 <!-- diagram-id: failure-progression-model -->
 ```mermaid
 flowchart TD
+    accTitle: Deployment failure progression hypothesis
+    accDescr: Illustrative walkthrough model, not an observed run or universal startup sequence. Runtime mismatch and invalid package branches converge on the no-functions symptom; the valid branch reaches discovery. All Yes and No outcomes are retained. Validate the hypothesis using the proof, disproof and Golden controls below.
     A[ZIP deployment succeeded] --> B[Host restart]
     B --> C[Read app settings]
-    C --> D{Runtime matches package?}
-    D -- No --> E[Worker startup mismatch]
+    C --> D{Runtime matches<br/>package?}
+    D -- No --> E[Worker startup<br/>mismatch]
     D -- Yes --> F[Indexing begins]
-    F --> G{Package structure valid?}
+    F --> G{Package structure<br/>valid?}
     G -- No --> H[Indexing errors]
     G -- Yes --> I[Functions discovered]
     E --> J[No job functions found]
     H --> J
     J --> K[No trigger registration]
-    K --> L[404 or no invocation telemetry]
+    K --> L[404 or no<br/>invocation telemetry]
+    %% Layout-only links tier the branches; they add no diagnostic steps or arrows.
+    E ~~~ F
+    I ~~~ J
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J,K,L baseNeutral;
+    linkStyle default stroke-width:2px;
 ```
+
+**Reading key:** This is the walkthrough's proposed failure path, not a verdict from a 404 or empty telemetry alone. Keep the successful discovery branch separate from the mismatch branches, and apply the proof/disproof criteria and Golden controls below.
 
 ### Investigation channels used in this lab
 
@@ -139,19 +142,33 @@ flowchart TD
 
 <!-- diagram-id: incident-timeline-model -->
 ```mermaid
+%%{init: {"gantt":{"fontSize":16,"sectionFontSize":16,"leftPadding":95,"rightPadding":35,"barHeight":24,"barGap":10},"theme":"base","themeVariables":{"doneTaskBkgColor":"#e2e8f0","critBkgColor":"#fed7aa","taskBkgColor":"#e2e8f0"},"themeCSS":".grid .tick text{font-size:16px;fill:var(--md-default-fg-color);} .section{opacity:0;} .titleText{font-size:14px;fill:var(--md-default-fg-color);} .sectionTitle{fill:var(--md-default-fg-color);} .taskTextOutsideLeft,.taskTextOutsideRight{fill:var(--md-default-fg-color)!important;} .taskText{fill:#14202e!important;}"}}%%
 gantt
+    accTitle: Historical walkthrough incident windows
+    accDescr: Historical walkthrough model with baseline from 03:00 to 03:10, fault injection and evidence collection starting at 03:10, and fix and recovery verification starting at 03:20. The one-minute actions overlap ten-minute collection windows. These times and done markers are not a new execution or evidence for the NOT_RUN Golden scenario.
     title Deployment Success but Runtime Failure Timeline
     dateFormat  HH:mm
     axisFormat  %H:%M
+    tickInterval 10minute
     section Baseline
-    Baseline deploy and verify         :done, a1, 03:00, 10m
+    T1                                 :done, a1, 03:00, 10m
     section Incident
-    Fault injection                    :done, b1, 03:10, 1m
-    Evidence collection                :done, b2, 03:10, 10m
+    T2                                 :done, b1, 03:10, 1m
+    T3                                 :done, b2, 03:10, 10m
     section Recovery
-    Fix applied                        :done, c1, 03:20, 1m
-    Recovery verification              :done, c2, 03:20, 10m
+    T4                                 :done, c1, 03:20, 1m
+    T5                                 :done, c2, 03:20, 10m
 ```
+
+**Reading key — Deployment Success but Runtime Failure Timeline:** Bars preserve the historical walkthrough's starts, durations and overlaps; they do not record a new Golden run.
+
+| Key | Original task label |
+|---|---|
+| T1 | Baseline deploy and verify |
+| T2 | Fault injection |
+| T3 | Evidence collection |
+| T4 | Fix applied |
+| T5 | Recovery verification |
 
 ## 2) Hypothesis
 
@@ -177,6 +194,8 @@ If deployment succeeds but runtime configuration or Python package structure is 
 <!-- diagram-id: causal-chain -->
 ```mermaid
 flowchart TD
+    accTitle: Deployment mismatch causal hypothesis
+    accDescr: The page's proposed chain runs from config-zip success through host startup, runtime or package mismatch, indexing failure, no registered triggers, 404 or invocation drop, and service impact. Arrows express the hypothesis to test, not a confirmed platform trace or Golden result.
     A[config-zip success] --> B[Host startup]
     B --> C[Runtime or package mismatch]
     C --> D[Function indexing failure]
@@ -717,18 +736,29 @@ timestamp                    total  failures  p95Ms   failRatePercent
 <!-- diagram-id: step-7-triage-decision-tree -->
 ```mermaid
 flowchart TD
-    A[Deployment succeeded] --> B{Functions discovered in traces?}
-    B -- Yes --> C[Check downstream dependencies and code logic]
+    accTitle: Deployment discovery triage checks
+    accDescr: Illustrative triage reading path. Discovery in traces leads to dependency and code checks; otherwise check the runtime setting, then Python v1 package completeness, then exceptions and imports. Runtime and package corrections and import investigation converge on redeploy and restart, followed by discovery and request verification. Missing telemetry alone is not a diagnosis; use the Golden controls and disproof criteria.
+    A[Deployment succeeded] --> B{Functions discovered<br/>in traces?}
+    B -- Yes --> C[Check downstream<br/>dependencies and<br/>code logic]
     B -- No --> D{Runtime setting correct?}
-    D -- No --> E[Set FUNCTIONS_WORKER_RUNTIME correctly]
-    D -- Yes --> F{Python v1 package complete?}
-    F -- No --> G[Fix __init__.py and function.json]
+    D -- No --> E[Set runtime correctly<br/>E]
+    D -- Yes --> F{Python v1 package<br/>complete?}
+    F -- No --> G[Fix package files<br/>G]
     F -- Yes --> H[Inspect exceptions and imports]
     E --> I[Redeploy and restart]
     G --> I
     H --> I
-    I --> J[Verify Functions found + request success]
+    I --> J[Verify Functions found<br/>and request success]
+    %% Layout-only links tier the branches; they add no diagnostic steps or arrows.
+    C ~~~ D
+    E ~~~ F
+    G ~~~ H
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J baseNeutral;
+    linkStyle default stroke-width:2px;
 ```
+
+**Reading key:** E means set `FUNCTIONS_WORKER_RUNTIME` correctly; G means fix `__init__.py` and `function.json` in the Python v1 package. These are the historical tree's checks, not a replacement for the narrower Golden scenario or its telemetry and activation controls.
 
 ## 4) Experiment Log
 
@@ -894,19 +924,33 @@ Deployment transport remained healthy throughout the run, but runtime mismatch p
 
 <!-- diagram-id: evidence-timeline -->
 ```mermaid
+%%{init: {"gantt":{"fontSize":16,"sectionFontSize":16,"leftPadding":95,"rightPadding":35,"barHeight":24,"barGap":10},"theme":"base","themeVariables":{"doneTaskBkgColor":"#e2e8f0","critBkgColor":"#fed7aa","taskBkgColor":"#e2e8f0"},"themeCSS":".grid .tick text{font-size:16px;fill:var(--md-default-fg-color);} .section{opacity:0;} .titleText{font-size:14px;fill:var(--md-default-fg-color);} .sectionTitle{fill:var(--md-default-fg-color);} .taskTextOutsideLeft,.taskTextOutsideRight{fill:var(--md-default-fg-color)!important;} .taskText{fill:#14202e!important;}"}}%%
 gantt
+    accTitle: Historical walkthrough evidence windows
+    accDescr: UTC windows copied from the historical walkthrough: baseline deploy and verify at 03:00 for ten minutes; runtime mismatch injection at 03:10 for one minute and incident capture for ten minutes; runtime correction and redeploy at 03:20 for one minute and recovery verification for ten minutes. Done markers preserve the existing model, not new Golden validation.
     title Evidence Timeline (UTC)
     dateFormat  HH:mm
     axisFormat  %H:%M
+    tickInterval 10minute
     section Baseline
-    Baseline deploy + verify            :done, e1, 03:00, 10m
+    T1                                  :done, e1, 03:00, 10m
     section Incident
-    Runtime mismatch injection          :done, e2, 03:10, 1m
-    Incident evidence capture           :done, e3, 03:10, 10m
+    T2                                  :done, e2, 03:10, 1m
+    T3                                  :done, e3, 03:10, 10m
     section Recovery
-    Runtime correction + redeploy       :done, e4, 03:20, 1m
-    Recovery verification               :done, e5, 03:20, 10m
+    T4                                  :done, e4, 03:20, 1m
+    T5                                  :done, e5, 03:20, 10m
 ```
+
+**Reading key:** The UTC windows and completion markers repeat historical material, not validation of the NOT_RUN Golden scenario.
+
+| Key | Original task label |
+|---|---|
+| T1 | Baseline deploy + verify |
+| T2 | Runtime mismatch injection |
+| T3 | Incident evidence capture |
+| T4 | Runtime correction + redeploy |
+| T5 | Recovery verification |
 
 ### Evidence chain: why this proves the hypothesis
 

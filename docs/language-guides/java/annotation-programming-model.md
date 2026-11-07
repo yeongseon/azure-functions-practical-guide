@@ -10,7 +10,7 @@ content_sources:
     - id: main-content
       type: flowchart
       source: self-generated
-      justification: Flow view of main content, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative reading order for Java annotation metadata, summarized from the Java developer guide, which says a public method annotated with FunctionName is a function entry point and that the Maven plugin generates function.json from annotations. Stages are logical, not a network or protocol trace.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
@@ -24,6 +24,8 @@ This deep dive explains how Java functions are declared, discovered, and execute
 <!-- diagram-id: main-content -->
 ```mermaid
 flowchart TD
+    accTitle: Java annotation declaration and invocation stages
+    accDescr: Java classes and methods use FunctionName and trigger and binding annotations to define metadata used by the Functions host for invocation and execution. Arrows show logical stages, not network hops or a trigger-specific protocol.
     A[Java class and method] --> B["@FunctionName"]
     B --> C[Trigger and binding annotations]
     C --> D[Functions host metadata index]

@@ -19,21 +19,18 @@ content_sources:
     - id: poison-queue-behavior-storage-queue
       type: flowchart
       source: self-generated
-      justification: Flow view of poison queue behavior storage queue, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Storage Queue trigger attempt-limit path where the default maxDequeueCount of 5 includes the first attempt and the runtime then writes to a queue named <originalqueuename>-poison; transient failures shown, other failures also count.
       based_on:
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus-trigger
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs-trigger
     - id: operational-triage-workflow
       type: flowchart
       source: self-generated
-      justification: Operational triage workflow, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative operator triage and small-batch replay workflow after a poison or dead-letter message is found; not a Microsoft-prescribed procedure and not measured lab evidence.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus-trigger
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-idempotent
+        - https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-dead-letter-queues
 content_validation:
   status: verified
   last_reviewed: 2026-10-25
@@ -292,6 +289,8 @@ This prevents infinite reprocessing loops and preserves failed payloads for inve
 <!-- diagram-id: poison-queue-behavior-storage-queue -->
 ```mermaid
 flowchart TD
+    accTitle: Storage Queue retry and poison path
+    accDescr: A transient-failure processing path with success completion, repeated attempts and a Yes or No retry-limit decision leading to the poison queue or another receive. This figure does not imply only transient failures can become poison messages.
     A[Message received] --> B[Process message]
     B -->|Success| C[Complete]
     B -->|Transient failure| D[Retry attempt]
@@ -299,6 +298,13 @@ flowchart TD
     E -->|No| A
     E -->|Yes| F[Move to poison queue]
 ```
+
+**Reading key:** This figure follows transient failures; other processing failures
+also count toward poison handling. “Complete” means the host deletes the message
+after successful execution. “Max retries” is shorthand here for the
+`maxDequeueCount` attempt limit, which includes the first attempt; failed
+processing uses `visibilityTimeout` before the next attempt. See
+[Queue trigger poison and visibility behavior](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger#poison-messages).
 
 ### Dead-letter behavior (Service Bus)
 Service Bus uses dead-lettering semantics.
@@ -381,18 +387,34 @@ Use alerts when poison/dead-letter counts grow continuously.
 <!-- diagram-id: operational-triage-workflow -->
 ```mermaid
 flowchart TD
-    A[Poison message detected] --> B[Inspect payload and metadata]
-    B --> C{Classify failure}
-    C -->|Transient| D[Fix dependency or wait]
-    C -->|Schema| E[Fix contract or transform]
-    C -->|Business rule| F[Fix validation logic]
-    D --> G[Replay in small batch]
+    accTitle: Poison message triage and replay decisions
+    accDescr: Illustrative operations workflow preserving transient, schema and business-rule remediation before small-batch replay. Successful idempotent replay permits backlog draining; otherwise stop replay and collect evidence.
+    A(["Poison message<br/>detected"]) --> B["Inspect payload<br/>and metadata"]
+    B --> C{"Classify<br/>failure"}
+    C -->|Transient| D["D: Fix dependency<br/>or wait"]
+    C -->|Schema| E["E: Fix contract<br/>or transform"]
+    C -->|Business rule| F["F: Fix<br/>validation logic"]
+    D --> G["Replay in<br/>small batch"]
     E --> G
     F --> G
-    G --> H{Idempotent and successful?}
-    H -->|Yes| I[Drain backlog]
-    H -->|No| J[Stop replay and collect evidence]
+    G --> H{"Idempotent and<br/>successful?"}
+    H -->|Yes| I(["Drain backlog"])
+    H -->|No| J(["Stop replay;<br/>collect evidence"])
+    %% Layout-only tiers add no triage steps or semantic arrows.
+    D ~~~ E
+    E ~~~ F
+    I ~~~ J
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J neutral;
 ```
+
+**Reading key — illustrative operations choices:** D repairs a dependency or waits
+for recovery; E repairs the message contract or transforms the payload; F repairs
+validation logic. These branches converge on the same small-batch replay check,
+not three separate replay policies. Keep replay
+[idempotent](https://learn.microsoft.com/en-us/azure/azure-functions/functions-idempotent)
+and preserve failed work as described in the
+[error-handling guidance](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages).
 
 ### CLI investigation examples
 Peek poison queue messages (Storage Queue):

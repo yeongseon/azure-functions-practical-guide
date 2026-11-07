@@ -25,8 +25,18 @@ content_sources:
     - id: what-you-ll-build
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative topology of the optional Dedicated storage-networking example - outbound VNet integration, private endpoint network interfaces in a subnet, and VNet-linked Private DNS zones, not a measured trace or deployment evidence.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-overview
+        - https://learn.microsoft.com/en-us/azure/dns/private-dns-virtual-network-links
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-infrastructure-as-code
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages
+        - https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-access-restrictions#app-access
+        - https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan#always-on
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
         - https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/
         - https://learn.microsoft.com/en-us/azure/templates/microsoft.web/serverfarms
         - https://learn.microsoft.com/en-us/azure/templates/microsoft.web/sites
@@ -35,8 +45,10 @@ content_sources:
     - id: what-you-ll-build-2
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build 2, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Resource map of the standalone Dedicated Bicep example (B1 plan, storage, Linux Function App), arrows show template resources, not creation order.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-infrastructure-as-code
         - https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/
         - https://learn.microsoft.com/en-us/azure/templates/microsoft.web/serverfarms
         - https://learn.microsoft.com/en-us/azure/templates/microsoft.web/sites
@@ -70,58 +82,79 @@ You will define and deploy a Dedicated App Service Plan, storage account, and Li
 
     The app runs on a fixed App Service Plan (always on, no scale-to-zero). Basic B1 supports App Service VNet integration and private endpoints, but this guide uses Standard (S1+) for private networking scenarios to provide scale headroom, deployment slots, and a production-oriented validation path.
 
-    <!-- diagram-id: what-you-ll-build -->
+<!-- diagram-id: what-you-ll-build -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 10, 'rankSpacing': 85, 'padding': 8, 'subGraphTitleMargin': {'top': 8, 'bottom': 32}}}}%%
 flowchart TD
-    INET[Internet] -->|HTTPS| FA[Function App\nDedicated B1-P3v3\nLinux Python 3.11]
-
-    subgraph VNET["VNet 10.0.0.0/16"]
-        subgraph INT_SUB["Integration Subnet 10.0.1.0/24\nDelegation: Microsoft.Web/serverFarms"]
-            FA
+    accTitle: Python Dedicated app and optional private storage topology
+    accDescr: Private endpoints are network interfaces in the PE subnet and Private DNS zones are VNet-linked. Linux Python 3.11 and B1 describe the standalone example; the repository template defaults to S1. Optional outbound integration reaches four storage private endpoints; the app is not inside that subnet. Identity and DNS associations are configuration, not data transit or deployment proof. Public HTTPS is conditional when a site private endpoint exists.
+    INET([Internet]) -->|"[Configured]<br/>1"| FA["Function App<br/>Dedicated<br/>B1–P3v3<br/>Linux Python 3.11"]
+    FA -.->|"[Configured]<br/>2"| ENTRA{{"Microsoft<br/>Entra ID"}}
+    FA -.->|"[Configured]<br/>3"| AI>"Application<br/>Insights"]
+    FA -->|"[Configured]<br/>4"| INT
+    subgraph VNET["VNet"]
+        subgraph INT_SUB["<div style='width:140px;text-align:right'>Integration<br/>subnet</div>"]
+            INT[["Outbound<br/>integration"]]
         end
-        subgraph PE_SUB["Private Endpoint Subnet 10.0.2.0/24"]
-            PE_BLOB[PE: blob]
-            PE_QUEUE[PE: queue]
-            PE_TABLE[PE: table]
-            PE_FILE[PE: file]
+        subgraph PE_SUB["<div style='width:110px;text-align:left'>PE<br/>subnet</div>"]
+            PE[["Storage PE NICs<br/>1–4 in table"]]
         end
     end
-
-    PE_BLOB --> ST["Storage Account"]
-    PE_QUEUE --> ST
-    PE_TABLE --> ST
-    PE_FILE --> ST
-
-    subgraph DNS[Private DNS Zones]
-        DNS_BLOB[privatelink.blob.core.windows.net]
-        DNS_QUEUE[privatelink.queue.core.windows.net]
-        DNS_TABLE[privatelink.table.core.windows.net]
-        DNS_FILE[privatelink.file.core.windows.net]
+    INT -->|"[Configured]<br/>5"| PE
+    PE -->|"[Configured]<br/>6"| ST[("Storage account")]
+    subgraph DNS["<div style='width:150px;text-align:right'>Private DNS<br/>zones<br/>VNet-linked</div>"]
+        ZONES{{"Storage zones<br/>1–4 in table"}}
     end
-
-    PE_BLOB -.-> DNS_BLOB
-    PE_QUEUE -.-> DNS_QUEUE
-    PE_TABLE -.-> DNS_TABLE
-    PE_FILE -.-> DNS_FILE
-
-    FA -.->|System-Assigned MI| ENTRA[Microsoft Entra ID]
-    FA --> AI[Application Insights]
-
-    RFP["📦 Local ZIP alternative: WEBSITE_RUN_FROM_PACKAGE=1\nDo not force for remote build"] -.- FA
-    ALWAYS_ON["⚙️ Always On: true\nFixed capacity"] -.- FA
-
-    style FA fill:#5c2d91,color:#fff
-    style VNET fill:#E8F5E9,stroke:#4CAF50
-    style ST fill:#FFF3E0
-    style DNS fill:#E3F2FD
+    PE -.->|"[Configured]<br/>7"| ZONES
+    FA -.->|"8"| RFP["Local ZIP<br/>Not remote build"]
+    FA -.->|"9"| ALWAYS_ON["Always On: true<br/>Fixed capacity"]
+    %% Layout-only tiers; add no data hops, operations or visible arrows.
+    ENTRA ~~~ AI
+    AI ~~~ INT
+    ST ~~~ ZONES
+    ZONES ~~~ RFP
+    RFP ~~~ ALWAYS_ON
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e;
+    classDef netBox fill:transparent,stroke:#287ce4,stroke-width:2px,stroke-dasharray:6 3;
+    class INET,ENTRA,AI,ST,ZONES,RFP,ALWAYS_ON baseNeutral;
+    class FA,INT,PE focusActive;
+    class VNET,INT_SUB,PE_SUB,DNS netBox;
 ```
+
+**Reading key:** Plain numerals 8 and 9 are configured relationships like the other numbered arrows. This retains the optional storage-networking view, not a claim that the standalone B1 snippet provisions it. The B1–P3v3 label identifies the original Dedicated scenario range, not an exhaustive SKU catalogue. The repository template defaults to Linux S1 / Standard; all shown Python 3.11 labels describe example configuration, not a runtime-version recommendation.
+
+| Key | Relationship or configuration |
+|---|---|
+| 1 | Public HTTPS for the standalone baseline. If adding a site private endpoint, public ingress requires `publicNetworkAccess: Enabled` and applicable access rules; with that property unset, a site private endpoint disables the public endpoint by default ([app access](https://learn.microsoft.com/en-us/azure/app-service/overview-access-restrictions#app-access)). The repository template includes that site endpoint; this optional CLI storage extension does not. |
+| 2 | System-assigned managed identity in Microsoft Entra ID; a logical identity association via the app's managed-identity endpoint, not a direct Entra network hop. |
+| 3 | Telemetry to configured Application Insights, off the storage data path. |
+| 4 | Optional outbound VNet integration; it does not deploy the app into the subnet. Original example addresses: VNet `10.0.0.0/16`, integration `10.0.1.0/24`, private endpoints `10.0.2.0/24`; integration delegation `Microsoft.Web/serverFarms`. |
+| 5–6 | Outbound storage access through the four private endpoints below to their matching services in the same Storage account; the bundle is four parallel service paths, not four serial hops. |
+| 7 | Each endpoint's DNS zone-group association maps to its matching numbered zone below; these dotted links are configuration, not queries initiated by a private endpoint. Private zones are linked to the VNet, not contained in its subnets. Each private endpoint is a network interface that uses a private IP address from the PE subnet; zones are shown VNet-linked ([private endpoint overview](https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-overview), [virtual network links](https://learn.microsoft.com/en-us/azure/dns/private-dns-virtual-network-links)). |
+| 8 | Local ready-to-run ZIP alternative: `WEBSITE_RUN_FROM_PACKAGE=1`; do not preconfigure it for Python remote build ([deployment technologies](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies)). |
+| 9 | `alwaysOn: true` for reliable non-HTTP triggering on Dedicated hosting; fixed plan capacity is distinct from this setting ([Always On](https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan#always-on)). |
+
+| Endpoint / zone key | Storage private endpoint | Matching private DNS zone |
+|---|---|---|
+| 1 | `blob` | `privatelink.blob.core.windows.net` |
+| 2 | `queue` | `privatelink.queue.core.windows.net` |
+| 3 | `table` | `privatelink.table.core.windows.net` |
+| 4 | `file` | `privatelink.file.core.windows.net` |
+
+The four-service endpoint/zone set is this page's optional CLI example; the repository Dedicated template has blob, queue and table endpoints, plus a site endpoint, and no default Azure Files content share. See [Storage private endpoints](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints) for the service-to-zone mappings.
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart TD
-    A[Bicep template] --> B[App Service Plan B1]
+    accTitle: Python Dedicated standalone Bicep resource map
+    accDescr: The standalone example defines a Basic B1 App Service Plan, Storage account and Linux Python Function App. These arrows identify template resources, not serial creation; ARM resolves dependencies and can deploy independent resources in parallel. The repository template defaults to S1 instead; no successful deployment is asserted.
+    A[Bicep template] --> B["App Service Plan<br/>B1"]
     A --> C[Storage Account]
-    A --> D[Function App Linux Python]
+    A --> D["Function App<br/>Linux Python"]
+    %% Layout-only tiers; add no provisioning dependency or visible arrow.
+    B ~~~ C
+    C ~~~ D
 ```
 
 ## Steps
@@ -711,3 +744,13 @@ You now have reproducible Dedicated infrastructure in Bicep. Next you will autom
 - [Bicep documentation](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/)
 - [Microsoft.Web/serverfarms resource reference](https://learn.microsoft.com/en-us/azure/templates/microsoft.web/serverfarms)
 - [Microsoft.Web/sites resource reference](https://learn.microsoft.com/en-us/azure/templates/microsoft.web/sites)
+- [Functions infrastructure as code](https://learn.microsoft.com/en-us/azure/azure-functions/functions-infrastructure-as-code)
+- [Python version and operating-system support](https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages)
+- [Storage private endpoints and DNS](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints)
+- [Managed identities](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)
+- [App access](https://learn.microsoft.com/en-us/azure/app-service/overview-access-restrictions#app-access)
+- [Dedicated Always On](https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan#always-on)
+- [Deployment technologies](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies)
+- [Functions monitoring](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)
+- [Private endpoint overview](https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-overview)
+- [Virtual network links for private DNS zones](https://learn.microsoft.com/en-us/azure/dns/private-dns-virtual-network-links)

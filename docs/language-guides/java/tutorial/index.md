@@ -14,6 +14,7 @@ content_sources:
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
 ---
 # Tutorial — Choose Your Hosting Plan
 
@@ -24,21 +25,31 @@ This Java tutorial section includes four complete plan tracks. Every track uses 
 <!-- diagram-id: which-plan-should-i-start-with -->
 ```mermaid
 flowchart TD
-    Start[I am building an Azure Functions Java app] --> Q1{Need scale to zero?}
-    Q1 -->|Yes| Q2{Need VNet integration?}
-    Q1 -->|No| DEDI[Dedicated ASP]
-    Q2 -->|Yes| FLEX[Flex Consumption FC1]
+    accTitle: Choose a Java tutorial hosting plan
+    accDescr: Illustrative tutorial-track recommendations, not exclusive plan capabilities or a strict scale-to-zero constraint. Start with the scale-to-zero preference and VNet question, retaining both VNet answers leading to Flex, the Flex and warm-instance question loop, and the separate existing-legacy-app path. Read the trade-offs below before choosing a plan.
+    Start["I am building an<br/>Azure Functions Java app"] --> Q1{"Prefer scale<br/>to zero?"}
+    Q1 -->|Yes| Q2{"Need VNet<br/>integration?"}
+    Q1 -->|No| DEDI["Dedicated<br/>ASP"]
+    Q2 -->|Yes| FLEX["Flex Consumption<br/>FC1"]
     Q2 -->|No| FLEX
-    Start -.->|Existing legacy app| CONS[Consumption Y1]
-    FLEX --> Q3{Need always warm instances?}
-    Q3 -->|Yes| PREM[Premium EP]
+    Start -.->|Existing legacy app| CONS["Consumption<br/>Y1"]
+    FLEX --> Q3{"Need always<br/>warm instances?"}
+    Q3 -->|Yes| PREM["Premium<br/>EP"]
     Q3 -->|No| FLEX
+
+    %% Layout-only links tier alternatives; they add no decisions or semantic arrows.
+    CONS ~~~ Q1
+    DEDI ~~~ Q2
+    classDef neutral fill:#edf2f7,stroke:#64748b,color:#172033
+    class Start,Q1,Q2,Q3,DEDI,FLEX,CONS,PREM neutral
 
     click CONS "consumption/01-local-run/"
     click FLEX "flex-consumption/01-local-run/"
     click PREM "premium/01-local-run/"
     click DEDI "dedicated/01-local-run/"
 ```
+
+**Takeaway:** Treat these routes as tutorial recommendations, not exclusive capabilities. Scale to zero is a preference here: [Premium keeps at least one instance warm](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale#billing), while [Flex offers optional always-ready instances per function or scale group](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan#always-ready-instances). Both VNet answers lead to Flex in this simplified flow; the warm-instance question invites reconsidering that starting recommendation.
 
 ## Plan Comparison at a Glance
 

@@ -10,14 +10,14 @@ content_sources:
     - id: entity-lifecycle
       type: flowchart
       source: self-generated
-      justification: Flow view of the durable entity lifecycle, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative logical API view of clients signaling entities, orchestrators calling entities, serialized per-entity execution and persisted state read back from the tracking store; not a storage-provider internals diagram or a measured trace.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-entities
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
     - id: entity-messaging
       type: sequenceDiagram
       source: self-generated
-      justification: Interaction sequence for signaling versus calling an entity, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative sequence contrasting one-way signals with two-way calls from an orchestrator, and a client reading committed state from the tracking store; message timing is not a measured trace.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-entities
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
@@ -46,13 +46,25 @@ Entities are ideal for:
 <!-- diagram-id: entity-lifecycle -->
 ```mermaid
 flowchart TD
-    CLIENT["Client Function\nsignal_entity() / read_entity_state()"] -->|"signal (one-way)"| ENT["Entity Function\nCounter@key\noperations run serially"]
-    ORC["Orchestrator Function\ncall_entity() / signal_entity()"] -->|"call (two-way)"| ENT
-    ENT -->|"set_state()"| STORE["Durable Store\npersisted entity state"]
-    STORE -->|"read_entity_state()"| CLIENT
-    style ENT fill:#0078d4,color:#fff
-    style STORE fill:#107c10,color:#fff
+    accTitle: Durable entity access and persisted state
+    accDescr: Clients signal entities and query committed state in the tracking store. Orchestrators call or signal entities. Each entity runs operations serially, and the runtime persists its state. This is a logical API view.
+    CLIENT["Client<br/>C"] -->|"signal"| ENT["Entity<br/>Counter@key"]
+    ORC["Orchestrator<br/>O"] -->|"call"| ENT
+    ENT -->|"persist"| STORE["Durable store<br/>S"]
+    STORE -->|"committed state"| CLIENT
+    CLIENT -->|"read state"| STORE
+    %% Layout-only tier; adds no entity operation or semantic arrow.
+    CLIENT ~~~ ORC
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class CLIENT,ORC,ENT,STORE neutral;
 ```
+
+**Reading key:** C is the client function (`signal_entity()` and
+`read_entity_state()`); O is the orchestrator function (`call_entity()` and
+`signal_entity()`). A signal is one-way; a call waits for a result. The entity's
+operations run serially. “persist” summarizes `set_state()` and runtime-owned
+persistence in S; “read state” queries S, which returns the last committed, potentially stale state,
+not an in-progress entity operation ([entity access](https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-entities#access-entities)).
 
 ## Prerequisites
 
@@ -165,19 +177,31 @@ Orchestrators can both **call** an entity (two-way — wait for a result) and **
 
 <!-- diagram-id: entity-messaging -->
 ```mermaid
+%%{init: {"sequence": {"width": 40, "actorMargin": 10, "diagramMarginX": 5, "noteMargin": 5}}}%%
 sequenceDiagram
-    participant C as Client
-    participant O as Orchestrator
-    participant E as Entity Counter@game1
-    C->>E: signal_entity("add", 1) [one-way]
-    Note over E: operation queued, no response
-    O->>E: call_entity("get") [two-way]
-    E-->>O: current value
-    Note over E: operations run one at a time (serialized)
-    O->>E: signal_entity("add", 1) [one-way]
-    C->>E: read_entity_state()
-    E-->>C: last committed state
+    accTitle: Entity signals, calls and committed-state reads
+    accDescr: A client signals an entity without a response. An orchestrator calls for a value and then signals. Entity operations run serially. The client queries the tracking store for committed state, not the entity's in-memory state.
+    participant C as C
+    participant O as O
+    participant E as E
+    participant S as S
+    C->>E: signal add 1
+    Note over E: Queued<br/>no response
+    O->>E: call get
+    E-->>O: current<br/>value
+    Note over E: Serial<br/>operations
+    O->>E: signal add 1
+    C->>S: read state
+    S-->>C: committed<br/>state
 ```
+
+**Reading key:** C = client; O = orchestrator; E = entity `Counter@game1`;
+S = durable tracking store. “signal add 1” is the one-way
+`signal_entity("add", 1)`; “call get” is the two-way `call_entity("get")`.
+“read state” is `read_entity_state()`: its response is the last committed, potentially stale state
+from S, not an operation executed by E. Signals do not wait for operation results;
+the depicted order does not make the orchestrator's separate get and add atomic
+([entity access](https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-entities#access-entities)).
 
 ```python
 @bp.orchestration_trigger(context_name="context")

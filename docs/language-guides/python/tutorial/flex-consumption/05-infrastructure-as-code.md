@@ -21,16 +21,26 @@ content_sources:
     - id: what-you-ll-build
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative topology of the Flex Consumption template - outbound VNet integration, storage private endpoint network interfaces in a subnet, VNet-linked Private DNS zones, user-assigned identity and the Blob deployment container, not a measured trace or deployment evidence.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-overview
+        - https://learn.microsoft.com/en-us/azure/dns/private-dns-virtual-network-links
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-infrastructure-as-code
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to#configure-deployment-settings
+        - https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
         - https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
     - id: what-you-ll-build-2
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build 2, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Resource map of the Flex Consumption Bicep template (FC1 plan, app with functionAppConfig and identity-based deployment storage), arrows show template resources, not creation order.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-infrastructure-as-code
         - https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
@@ -52,62 +62,78 @@ Use Bicep to provision Flex Consumption infrastructure reproducibly, including F
 You will validate and deploy the Flex Consumption infrastructure template, then confirm FC1 runtime, networking delegation, and blob-based deployment configuration.
 
 !!! info "Infrastructure Context"
-    **Plan**: Flex Consumption (FC1) | **Network**: Full private network | **VNet**: ✅
+    **Plan**: Flex Consumption (FC1) | **Network**: Public app ingress + private storage | **VNet**: ✅
 
-    FC1 deploys with VNet integration, private endpoints for all storage services, private DNS zones, and user-assigned managed identity. Storage uses identity-based authentication (no shared keys).
+    This repository's FC1 template configures outbound VNet integration, private endpoints for blob, queue, table and file, matching private DNS zones, and user-assigned managed identity. The app ingress remains public; identity-based storage with shared keys disabled is this example's choice, not a universal Flex requirement.
 
-    <!-- diagram-id: what-you-ll-build -->
+<!-- diagram-id: what-you-ll-build -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 10, 'rankSpacing': 85, 'padding': 8, 'subGraphTitleMargin': {'top': 8, 'bottom': 32}}}}%%
 flowchart TD
-    INET[Internet] -->|HTTPS| FA[Function App\nFlex Consumption FC1\nLinux Python 3.11]
-
-    subgraph VNET["VNet 10.0.0.0/16"]
-        subgraph INT_SUB["Integration Subnet 10.0.1.0/24\nDelegation: Microsoft.App/environments"]
-            FA
+    accTitle: Python Flex Consumption FC1 infrastructure topology
+    accDescr: Private endpoints are network interfaces in the PE subnet and Private DNS zones are VNet-linked. Linux Python 3.11 is this template's default. Public HTTPS ingress is separate from outbound integration to four storage private endpoints. User-assigned identity and RBAC authorize storage; they are not data-transit hops. The example uses a Blob deployment container and disables shared keys, not a universal Flex authentication requirement or deployment proof.
+    INET([Internet]) -->|"[Configured] 1"| FA["Function App<br/>Flex Consumption FC1<br/>Linux Python 3.11"]
+    FA -.->|"[Configured] 2"| UAMI{{"User-assigned<br/>managed identity"}}
+    UAMI -.->|"[Configured] 3"| ST[("Storage account<br/>Key 7")]
+    FA -.->|"[Configured] 4"| AI>"Application<br/>Insights"]
+    FA -->|"[Configured] 5"| INT
+    subgraph VNET["VNet"]
+        subgraph INT_SUB["<div style='width:140px;text-align:left'>Integration<br/>subnet</div>"]
+            INT[["Outbound<br/>integration"]]
         end
-        subgraph PE_SUB["Private Endpoint Subnet 10.0.2.0/24"]
-            PE_BLOB[PE: blob]
-            PE_QUEUE[PE: queue]
-            PE_TABLE[PE: table]
-            PE_FILE[PE: file]
+        subgraph PE_SUB["<div style='width:110px;text-align:left'>PE<br/>subnet</div>"]
+            PE[["Storage PE NICs<br/>1–4 in table"]]
         end
     end
-
-    PE_BLOB --> ST["Storage Account\nallowPublicAccess: false\nallowSharedKeyAccess: false"]
-    PE_QUEUE --> ST
-    PE_TABLE --> ST
-    PE_FILE --> ST
-
-    subgraph DNS[Private DNS Zones]
-        DNS_BLOB[privatelink.blob.core.windows.net]
-        DNS_QUEUE[privatelink.queue.core.windows.net]
-        DNS_TABLE[privatelink.table.core.windows.net]
-        DNS_FILE[privatelink.file.core.windows.net]
+    INT -->|"[Configured] 6"| PE
+    PE -->|"[Configured] 7"| ST
+    subgraph DNS["<div style='width:150px;text-align:left'>Private DNS<br/>zones<br/>VNet-linked</div>"]
+        ZONES{{"Storage zones<br/>1–4 in table"}}
     end
-
-    PE_BLOB -.-> DNS_BLOB
-    PE_QUEUE -.-> DNS_QUEUE
-    PE_TABLE -.-> DNS_TABLE
-    PE_FILE -.-> DNS_FILE
-
-    FA -.->|User-Assigned MI| UAMI[Managed Identity]
-    UAMI -->|RBAC| ST
-    FA --> AI[Application Insights]
-
-    subgraph DEPLOY[Deployment]
-        BLOB_CTR[Blob Container\ndeployment-packages]
+    PE -.->|"[Configured] 8"| ZONES
+    subgraph DEPLOY["<div style='width:200px;text-align:right'>Deployment</div>"]
+        BLOB_CTR[("Blob container<br/>deployment-packages")]
     end
-    ST --- BLOB_CTR
-
-    style FA fill:#107c10,color:#fff
-    style VNET fill:#E8F5E9,stroke:#4CAF50
-    style ST fill:#FFF3E0
-    style DNS fill:#E3F2FD
+    ST -.->|"[Configured] 9"| BLOB_CTR
+    %% Layout-only tiers; add no data hops, dependencies or visible arrows.
+    UAMI ~~~ AI
+    AI ~~~ INT
+    ST ~~~ ZONES
+    ZONES ~~~ BLOB_CTR
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e;
+    classDef netBox fill:transparent,stroke:#287ce4,stroke-width:2px,stroke-dasharray:6 3;
+    class INET,UAMI,AI,ST,ZONES,BLOB_CTR baseNeutral;
+    class FA,INT,PE focusActive;
+    class VNET,INT_SUB,PE_SUB,DNS,DEPLOY netBox;
 ```
+
+**Reading key:** Solid arrows show request/data access; dotted arrows show identity, authorization, telemetry or resource configuration, not serial data hops. Python 3.11 is the template default, not a runtime-version recommendation.
+
+| Key | Relationship or configuration |
+|---|---|
+| 1 | HTTPS requests to the public FC1 app endpoint; storage private endpoints do not make app ingress private. |
+| 2–3 | App uses the user-assigned managed identity; RBAC grants that principal permissions on the Storage account. The dotted RBAC association carries no application data and does not prove authorization works. |
+| 4 | Telemetry to configured Application Insights, off the storage data path. |
+| 5 | Outbound VNet integration does not deploy the app into the integration subnet. Example addresses: VNet `10.0.0.0/16`, integration `10.0.1.0/24`, private endpoints `10.0.2.0/24`; Flex delegates integration to `Microsoft.App/environments`. |
+| 6–7 | Four parallel service paths through the matching storage private endpoints, not a serial chain. Repository module parameter `allowPublicAccess: false` sets Storage `publicNetworkAccess: Disabled`; `allowSharedKeyAccess: false` disables shared-key authentication. These are separate network and authentication controls. |
+| 8 | Endpoint DNS zone-group associations use matching numbered zones below; private zones are linked to the VNet, not contained in its subnets. Dotted links are configuration, not endpoint-initiated DNS queries. Each private endpoint is a network interface that uses a private IP address from the PE subnet; zones are shown VNet-linked ([private endpoint overview](https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-overview), [virtual network links](https://learn.microsoft.com/en-us/azure/dns/private-dns-virtual-network-links)). |
+| 9 | The same account contains `deployment-packages`. This example's `functionAppConfig.deployment.storage` selects `blobContainer` and `UserAssignedIdentity`; Flex also supports deployment-storage connection strings and system-assigned identity ([deployment settings](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to#configure-deployment-settings)). A `file` endpoint here does not imply a Flex Azure Files content-share dependency. |
+
+| Endpoint / zone key | Storage private endpoint | Matching private DNS zone |
+|---|---|---|
+| 1 | `blob` | `privatelink.blob.core.windows.net` |
+| 2 | `queue` | `privatelink.queue.core.windows.net` |
+| 3 | `table` | `privatelink.table.core.windows.net` |
+| 4 | `file` | `privatelink.file.core.windows.net` |
+
+These are the example's four [Storage endpoint/zone mappings](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints), not a claim that every Flex app requires all four.
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart TD
+    accTitle: Python Flex Consumption Bicep resource and configuration map
+    accDescr: The example template deploys an FC1 plan and Function App with functionAppConfig and identity-based storage. Arrows identify deployment resources and configuration, not serial creation or proof of deployment. ARM resolves dependencies and can deploy independent resources in parallel; the identity choice is example-specific.
     Bicep["infra/flex-consumption/main.bicep"] --> Deploy[Resource group deployment]
     Deploy --> Plan[FC1 plan]
     Deploy --> App[Function App]
@@ -671,3 +697,12 @@ az network vnet subnet show \
 - [Bicep overview](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview)
 - [Flex Consumption plan hosting](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan)
 - [Azure Functions networking options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)
+- [Functions infrastructure as code](https://learn.microsoft.com/en-us/azure/azure-functions/functions-infrastructure-as-code)
+- [Python version and operating-system support](https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages)
+- [Flex deployment settings](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to#configure-deployment-settings)
+- [Storage private endpoints and DNS](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints)
+- [Managed identities](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)
+- [Functions monitoring](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)
+- [Storage considerations](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations)
+- [Private endpoint overview](https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-overview)
+- [Virtual network links for private DNS zones](https://learn.microsoft.com/en-us/azure/dns/private-dns-virtual-network-links)

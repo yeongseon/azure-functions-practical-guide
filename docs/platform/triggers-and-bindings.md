@@ -17,58 +17,40 @@ content_sources:
     - id: core-model
       type: flowchart
       source: self-generated
-      justification: Flow view of core model, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Logical cardinality view (one trigger, zero or more input and output bindings per function) adapted from the triggers and bindings concepts article; arrows are data flow, not network connection initiators.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-event-grid-blob-trigger
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
-        - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
     - id: event-grid-vs-polling-blob-trigger-model
       type: flowchart
       source: self-generated
-      justification: Flow view of event grid vs polling blob trigger model, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Comparison of the event-based and polling-based Blob trigger implementations adapted from the Blob trigger article (Flex Consumption supports only the event-based implementation); groups show availability, not resource containment.
       based_on:
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-event-grid-blob-trigger
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
-        - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
     - id: input-output-binding-data-flow-multi-service
       type: flowchart
       source: self-generated
-      justification: Input output binding data flow multi service, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative logical data flow for one function with an Event Hubs trigger, a Cosmos DB input binding, Service Bus and Blob output bindings, and Application Insights telemetry, adapted from the binding concepts and per-binding reference articles; not an ordered or atomic transaction.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-event-grid-blob-trigger
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
-        - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-cosmosdb-v2-input
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus-output
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-output
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
     - id: queue-trigger-output-pattern-architectural
       type: flowchart
       source: self-generated
-      justification: Flow view of queue trigger output pattern architectural, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative HTTP-ingest, queue-output and queue-trigger work flow adapted from the binding concepts and Queue trigger articles; the runtime polls the queue, so arrows are logical work flow, not transport initiators.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-event-grid-blob-trigger
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
-        - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
     - id: durable-functions-triggers
       type: flowchart
       source: self-generated
-      justification: Flow view of durable functions triggers, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative runtime-mediated relationships among Durable orchestration, activity and entity triggers adapted from the Durable Functions bindings article; not a direct network call or an execution trace.
       based_on:
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-event-grid-blob-trigger
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
-        - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
+        - https://learn.microsoft.com/en-us/azure/durable-task/durable-functions/durable-functions-bindings
 content_validation:
   status: verified
   last_reviewed: 2026-09-11
@@ -155,6 +137,8 @@ Every function has:
 <!-- diagram-id: core-model -->
 ```mermaid
 flowchart TD
+    accTitle: Trigger and binding cardinalities
+    accDescr: An event source reaches exactly one trigger per function. Zero or more input bindings provide function data; zero or more output bindings connect results to destination services. Arrows describe logical data flow, not network connection initiators.
     S[Event Source] --> T[Trigger\nexactly 1]
     T --> F[Function]
     I[Input Bindings\n0..n] --> F
@@ -194,18 +178,30 @@ The source posts work and runtime handles completion semantics.
 Use this comparison when selecting hosting plans for blob-driven workflows.
 <!-- diagram-id: event-grid-vs-polling-blob-trigger-model -->
 ```mermaid
-flowchart TB
+flowchart TD
+    accTitle: Event-based and polling-based blob trigger models
+    accDescr: Compare two logical detection and invocation paths. Flex Consumption uses Blob Created, Event Grid Event, Functions Runtime and Blob Trigger Function. Classic Consumption, Premium and Dedicated can use Blob Created, Polling Scanner, Functions Runtime and Blob Trigger Function. Groups identify model availability, not physical resource containment; arrows are stage order, not transport direction.
     subgraph FC[Flex Consumption]
+        direction TB
         B1[Blob Created] --> EG[Event Grid Event]
         EG --> RT1[Functions Runtime]
         RT1 --> F1[Blob Trigger Function]
     end
     subgraph CL[Classic Consumption, Premium, Dedicated]
+        direction TB
         B2[Blob Created] --> POLL[Polling Scanner]
         POLL --> RT2[Functions Runtime]
         RT2 --> F2[Blob Trigger Function]
     end
+    %% Layout-only link tiers the two models; it adds no processing step or semantic arrow.
+    F1 ~~~ B2
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class B1,EG,RT1,F1,B2,POLL,RT2,F2 baseNeutral;
+    linkStyle default stroke-width:2px;
 ```
+
+**Takeaway:** Read each group as detection → runtime → invocation, not as a hosting or network boundary. The polling scanner detects blob changes; a blob does not initiate a connection to it. Flex requires the Event Grid source; [event-based Blob triggers are also an option on other supported plans](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger#choose-a-blob-storage-trigger-implementation), so the second group is not a polling-only mandate.
+
 ### Binding behavior
 Bindings reduce plumbing code but still require you to model:
 
@@ -275,12 +271,23 @@ One trigger can coordinate multiple bindings in one function boundary.
 <!-- diagram-id: input-output-binding-data-flow-multi-service -->
 ```mermaid
 flowchart TD
-    EH[Event Hub Trigger] --> FN[Function]
-    COS[(Cosmos DB Input Binding)] --> FN
-    FN --> SB[(Service Bus Output Binding)]
-    FN --> BL[(Blob Output Binding)]
-    FN --> AI[(Application Insights Telemetry)]
+    accTitle: Multi-service input and output binding data flow
+    accDescr: An Event Hub trigger and Cosmos DB input binding provide data to one function, which has Service Bus and Blob output bindings and Application Insights telemetry. This illustrative logical data flow does not specify connection initiators, output ordering or atomic fan-out; telemetry is not an output binding.
+    EH["Event Hub Trigger"] --> FN[Function]
+    COS[("Cosmos DB<br/>Input Binding")] --> FN
+    FN --> SB[("Service Bus<br/>Output Binding")]
+    FN --> BL[("Blob<br/>Output Binding")]
+    FN --> AI>"Application Insights<br/>Telemetry"]
+    %% Layout-only links tier outputs; they add no data dependency or semantic arrow.
+    SB ~~~ BL
+    BL ~~~ AI
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class EH,FN,COS,SB,BL,AI baseNeutral;
+    linkStyle default stroke-width:2px;
 ```
+
+**Takeaway:** The output branches are independent logical destinations, not an ordered transaction. Application Insights is a telemetry sink, not an output binding; [telemetry export depends on monitoring configuration](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring#collecting-telemetry-data).
+
 Design notes:
 
 - Keep one business responsibility per function.
@@ -348,6 +355,8 @@ A common pattern is HTTP ingest + queue output + queue-trigger processor.
 <!-- diagram-id: queue-trigger-output-pattern-architectural -->
 ```mermaid
 flowchart TD
+    accTitle: HTTP ingestion and queue-triggered processing
+    accDescr: Client work reaches an HTTP trigger, then a queue output binding, queue-trigger processor and storage or database. Arrows show logical work flow, not transport initiators: the runtime polls the queue. Backend processing is decoupled from the HTTP response.
     C[Client] --> H[HTTP Trigger]
     H --> Q[(Queue Output Binding)]
     Q --> P[Queue Trigger Processor]
@@ -460,13 +469,25 @@ Durable Functions adds orchestration-centric triggers:
 <!-- diagram-id: durable-functions-triggers -->
 ```mermaid
 flowchart TD
+    accTitle: Durable orchestration, activity and entity trigger relationships
+    accDescr: A client or starter reaches orchestration, which schedules Validate and Enrich activities, calls an Aggregate State entity and produces final output. The entity can pass a value back to orchestration. These are illustrative runtime-mediated logical relationships, not direct network calls or a guaranteed ordering of activities.
     C["Client/Starter"] --> O[Orchestration Trigger]
-    O --> A1[Activity Trigger: Validate]
-    O --> A2[Activity Trigger: Enrich]
-    O --> E[Entity Trigger: Aggregate State]
+    O --> A1["Activity Trigger:<br/>Validate"]
+    O --> A2["Activity Trigger:<br/>Enrich"]
+    O --> E["Entity Trigger:<br/>Aggregate State"]
     E --> O
     O --> R[Final Output]
+    %% Layout-only links tier destinations; they add no workflow steps or semantic arrows.
+    A1 ~~~ A2
+    A2 ~~~ E
+    E ~~~ R
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class C,O,A1,A2,E,R baseNeutral;
+    linkStyle default stroke-width:2px;
 ```
+
+**Takeaway:** Arrows summarize [Durable runtime-mediated scheduling and value exchange](https://learn.microsoft.com/en-us/azure/durable-task/durable-functions/durable-functions-bindings), not a direct transport or execution trace. Validate and Enrich are distinct activity examples, not a prescribed sequence; the entity-to-orchestration edge represents passing a value through the entity APIs, and Final Output is an orchestration result, not an ordinary output binding.
+
 Keep orchestrator code deterministic and move all I/O into activities.
 ### Extension bundle versioning strategy
 Treat extension bundle upgrades like dependency upgrades with staged rollout:
@@ -513,3 +534,6 @@ Use language guides for runtime-specific syntax, decorators/attributes, and pack
 - [Microsoft Learn: host.json reference for Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json)
 - [Microsoft Learn: Azure Functions identity-based connections](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection)
 - [Microsoft Learn: Azure Functions scale and hosting behavior](https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling)
+- [Microsoft Learn: Durable Functions triggers and bindings](https://learn.microsoft.com/en-us/azure/durable-task/durable-functions/durable-functions-bindings)
+- [Microsoft Learn: Queue storage trigger](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger)
+- [Microsoft Learn: Monitor function executions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)

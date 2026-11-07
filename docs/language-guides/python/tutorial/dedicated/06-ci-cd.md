@@ -25,23 +25,32 @@ content_sources:
     - id: what-you-ll-build
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Optional Dedicated private Storage context, separate from the public deployment workflow; bundled endpoints retain each service and DNS mapping in the adjacent key.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots
         - https://learn.microsoft.com/en-us/azure/app-service/overview-vnet-integration
         - https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint
+        - https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages
+        - https://learn.microsoft.com/en-us/azure/azure-functions/python-build-options
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-access-restrictions#app-access
     - id: what-you-ll-build-2
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build 2, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Intended Python GitHub Actions deployment stages for Dedicated; remote build is distinct from runner dependency installation.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots
         - https://learn.microsoft.com/en-us/azure/app-service/overview-vnet-integration
         - https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint
+        - https://learn.microsoft.com/en-us/azure/azure-functions/python-build-options
+        - https://learn.microsoft.com/en-us/azure/app-service/deploy-staging-slots
 ---
 # 06 - CI/CD (Dedicated)
 
@@ -68,57 +77,75 @@ You will package the Python Function App from `apps/python`, deploy it with Zip 
 !!! info "Infrastructure Context"
     **Plan**: Dedicated (B1) | **Network**: Public internet in this tutorial | **VNet**: Supported by platform, not configured here
 
-    The app runs on a fixed App Service Plan (always on, no scale-to-zero). Basic B1 supports App Service VNet integration and private endpoints, but this guide uses Standard (S1+) for private networking scenarios to provide scale headroom, deployment slots, and a production-oriented validation path.
+    Dedicated provides fixed plan capacity; enable Always On for reliable non-HTTP triggering. The figure retains optional private Storage context, not networking configured by this page. The baseline B1 workflow has no staging slot; Standard, Premium or Isolated tiers support slots.
 
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 10, 'rankSpacing': 70, 'padding': 8, 'subGraphTitleMargin': {'top': 8, 'bottom': 32}}}}%%
 flowchart TD
-    INET[Internet] -->|HTTPS| FA[Function App\nDedicated B1-P3v3\nLinux Python 3.11]
-
-    subgraph VNET["VNet 10.0.0.0/16"]
-        subgraph INT_SUB["Integration Subnet 10.0.1.0/24\nDelegation: Microsoft.Web/serverFarms"]
-            FA
+    accTitle: Python 3.11 Linux Dedicated optional Storage topology
+    accDescr: Dedicated B1 through P3v3 context, not networking configured by this CI/CD page. App compute is outside outbound integration; four Storage endpoints and DNS zones are expanded in the key. Identity, telemetry, package mode and Always On are associations, not data-transit hops. Public ingress depends on app access configuration.
+    client(["Internet"])
+    app_runtime["Function App<br/>Dedicated B1–P3v3<br/>Linux · Python 3.11"]
+    subgraph ASSOC["Associations"]
+        identity{{"[Illustrative]<br/>System MI<br/>Entra ID"}}
+        telemetry>"[Configured]<br/>Application<br/>Insights"]
+        RFP["[Illustrative]<br/>ZIP option R"]
+        ALWAYS_ON["[Illustrative]<br/>Always On A"]
+    end
+    subgraph DNS["Private DNS zones"]
+        dns_fn{{"Blob · Queue<br/>Table · File"}}
+    end
+    subgraph vnet_fn["VNet"]
+        subgraph INT_SUB["<div style='width:130px;text-align:right'>Integration<br/>subnet</div>"]
+            vnet_integration[["Outbound<br/>integration"]]
         end
-        subgraph PE_SUB["Private Endpoint Subnet 10.0.2.0/24"]
-            PE_BLOB[PE: blob]
-            PE_QUEUE[PE: queue]
-            PE_TABLE[PE: table]
-            PE_FILE[PE: file]
+        subgraph PE_SUB["<div style='width:100px;text-align:left'>PE<br/>subnet</div>"]
+            pe_storage[["Storage PEs<br/>blob · queue<br/>table · file"]]
         end
     end
-
-    PE_BLOB --> ST["Storage Account"]
-    PE_QUEUE --> ST
-    PE_TABLE --> ST
-    PE_FILE --> ST
-
-    subgraph DNS[Private DNS Zones]
-        DNS_BLOB[privatelink.blob.core.windows.net]
-        DNS_QUEUE[privatelink.queue.core.windows.net]
-        DNS_TABLE[privatelink.table.core.windows.net]
-        DNS_FILE[privatelink.file.core.windows.net]
-    end
-
-    PE_BLOB -.-> DNS_BLOB
-    PE_QUEUE -.-> DNS_QUEUE
-    PE_TABLE -.-> DNS_TABLE
-    PE_FILE -.-> DNS_FILE
-
-    FA -.->|System-Assigned MI| ENTRA[Microsoft Entra ID]
-    FA --> AI[Application Insights]
-
-    RFP["📦 Local ZIP alternative: WEBSITE_RUN_FROM_PACKAGE=1\nDo not force for remote build"] -.- FA
-    ALWAYS_ON["⚙️ Always On: true\nFixed capacity"] -.- FA
-
-    style FA fill:#5c2d91,color:#fff
-    style VNET fill:#E8F5E9,stroke:#4CAF50
-    style ST fill:#FFF3E0
-    style DNS fill:#E3F2FD
+    storage_db[("Storage account")]
+    client -->|"[Illustrative]<br/>HTTPS if H"| app_runtime
+    app_runtime -.->|"Identity,<br/>telemetry,<br/>package,<br/>config"| ASSOC
+    dns_fn -.->|"[Illustrative]<br/>VNet link"| vnet_fn
+    app_runtime -->|"[Illustrative]<br/>Outbound"| vnet_integration
+    vnet_integration -->|"[Illustrative]<br/>Each PE"| pe_storage
+    pe_storage -->|"[Illustrative]<br/>Each service"| storage_db
+    %% Layout-only tiers; add no requests, diagnostic steps or visible arrows.
+    identity ~~~ telemetry
+    telemetry ~~~ RFP
+    RFP ~~~ ALWAYS_ON
+    ALWAYS_ON ~~~ dns_fn
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class client,app_runtime,identity,telemetry,RFP,ALWAYS_ON,dns_fn,vnet_integration,pe_storage,storage_db baseNeutral;
 ```
+
+**Reading key:** Solid arrows show intended request/data access; dotted arrows are associations. The **Associations** box groups identity, telemetry, package option R and Always On A under one dotted association from the app, each keeping its evidence tag. The private network is **optional illustrative context**, not an assertion that these steps configure it. Outbound VNet integration does not deploy compute into its subnet. The DNS link targets the VNet boundary; the table retains endpoint-to-zone-group associations, not endpoint-originated DNS queries ([integration](https://learn.microsoft.com/en-us/azure/app-service/overview-vnet-integration), [Storage endpoints](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints)).
+
+| Key | Context / qualification |
+|---|---|
+| H | Public HTTPS is available only when app public-network access and access restrictions permit it; a prerequisite deployment with a site private endpoint can change that default |
+| VNet / integration / PE subnet | `10.0.0.0/16` / `10.0.1.0/24` / `10.0.2.0/24`; delegation `Microsoft.Web/serverFarms` |
+| R | Local ready-to-run ZIP alternative: `WEBSITE_RUN_FROM_PACKAGE=1`; do not force this setting for remote build |
+| A | Enable `Always On: true` for reliable non-HTTP triggering on Dedicated; fixed plan capacity alone does not prevent app idling |
+| Identity | Optional system-assigned identity in Microsoft Entra ID; token acquisition uses the app-local identity endpoint, not direct app-to-Entra transit |
+
+The bundled endpoints and zones expand into four independent service associations, not serial hops:
+
+| Endpoint → Storage service | Associated private DNS zone |
+|---|---|
+| `PE_BLOB` → Blob | `privatelink.blob.core.windows.net` |
+| `PE_QUEUE` → Queue | `privatelink.queue.core.windows.net` |
+| `PE_TABLE` → Table | `privatelink.table.core.windows.net` |
+| `PE_FILE` → File | `privatelink.file.core.windows.net` |
+
+These are contextual choices, not a universal four-endpoint requirement. See [Dedicated Always On](https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan#always-on), [package configuration](https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push), [identity](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity) and [app access defaults](https://learn.microsoft.com/en-us/azure/app-service/overview-access-restrictions#app-access).
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart TD
+    accTitle: Python Dedicated GitHub Actions deployment stages
+    accDescr: A push to main starts the embedded workflow with no path filter. The Functions action deploys apps/python using a publish profile and requests Oryx remote build for project requirements. This conceptual build-and-deploy stage is not a recorded successful release or a B1 slot deployment.
     A[GitHub push] --> B[GitHub Actions workflow]
     B --> C["Build and deploy apps/python"]
     C --> D[Dedicated Function App]
@@ -309,3 +336,12 @@ You now have a repeatable Dedicated deployment pipeline with optional slot-based
 - [Zip deployment for Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push)
 - [Deploy Azure Functions with GitHub Actions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions)
 - [Deployment slots in Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots)
+- [Python build and dependency packaging](https://learn.microsoft.com/en-us/azure/azure-functions/python-build-options)
+- [Supported languages and operating systems](https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages)
+- [Dedicated hosting and Always On](https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan)
+- [App Service integration](https://learn.microsoft.com/en-us/azure/app-service/overview-vnet-integration)
+- [Storage endpoints and DNS](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints)
+- [Managed identities](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)
+- [App access defaults](https://learn.microsoft.com/en-us/azure/app-service/overview-access-restrictions#app-access)
+- [Deployment-slot tiers](https://learn.microsoft.com/en-us/azure/app-service/deploy-staging-slots)
+- [Application Insights integration](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)

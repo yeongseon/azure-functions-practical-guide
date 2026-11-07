@@ -15,43 +15,32 @@ content_sources:
     - id: retry-flow-with-exponential-backoff-timing
       type: sequenceDiagram
       source: self-generated
-      justification: Interaction sequence for retry flow with exponential backoff timing, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative four-attempt sequence; the 5, 15 and 45 second waits are example values, not a platform schedule, and retry-policy support differs by trigger (policy-based for Cosmos DB, Event Hubs, Kafka and Timer; extension-level for others).
       based_on:
-        - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
-        - https://learn.microsoft.com/en-us/azure/reliability/reliability-functions
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages
     - id: queue-specific-poison-behaviors
       type: flowchart
       source: self-generated
-      justification: Flow view of queue specific poison behaviors, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Shared illustrative recovery logic for Storage Queue (<queue>-poison after the attempt limit) and Service Bus (dead-letter queue after max delivery count or explicit action); limits and settlement mechanics are service-specific.
       based_on:
-        - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
-        - https://learn.microsoft.com/en-us/azure/reliability/reliability-functions
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
+        - https://learn.microsoft.com/en-us/azure/service-bus-messaging/message-transfers-locks-settlement
     - id: availability-zones-and-high-availability
       type: flowchart
       source: self-generated
-      justification: Flow view of availability zones and high availability, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative zone-redundant regional layout; Consumption plans do not support availability zones, Flex Consumption, Premium and Dedicated plans support zone-redundant deployments subject to region and plan requirements, and host storage must be ZRS. Not a network, VNet or deployment trace.
       based_on:
-        - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
         - https://learn.microsoft.com/en-us/azure/reliability/reliability-functions
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus
+        - https://learn.microsoft.com/en-us/azure/reliability/reliability-service-bus
+        - https://learn.microsoft.com/en-us/azure/storage/common/storage-redundancy
+        - https://learn.microsoft.com/en-us/azure/frontdoor/front-door-overview
+        - https://learn.microsoft.com/en-us/azure/traffic-manager/traffic-manager-overview
     - id: reliability-architecture-pattern
       type: flowchart
       source: self-generated
-      justification: Flow view of reliability architecture pattern, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative logical retry and recovery stages; exhausting a runtime retry policy does not universally create a dead-letter message, and recovery destinations depend on the trigger or application.
       based_on:
-        - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
-        - https://learn.microsoft.com/en-us/azure/reliability/reliability-functions
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages
 content_validation:
   status: verified
   last_reviewed: 2026-09-11
@@ -176,31 +165,40 @@ Use retries for transient failures only. Non-transient failures should route to 
 #### Retry flow with exponential backoff timing
 <!-- diagram-id: retry-flow-with-exponential-backoff-timing -->
 ```mermaid
+%%{init: {'sequence': {'diagramMarginX': 5, 'actorMargin': 10, 'width': 55}}}%%
 sequenceDiagram
-    autonumber
+    accTitle: Illustrative retry timing across four attempts
+    accDescr: Trigger, Function and Dependency exchange four deliveries and calls in order. The first three fail with 503, timeout and 429, separated by illustrative waits of 5, 15 and 45 seconds. The fourth succeeds. These are not measured or guaranteed platform delays.
     participant T as Trigger
     participant F as Function
     participant D as Dependency
-    T->>F: Delivery #1
+    T->>F: Delivery 1
     F->>D: Call
-    D-->>F: 503 transient failure
-    F-->>T: Throw exception
-    Note over T,F: Retry #1 after 5s
-    T->>F: Delivery #2
+    D-->>F: 503<br/>transient failure
+    F-->>T: Throw<br/>exception
+    Note over T,F: Retry 1<br/>after 5s
+    T->>F: Delivery 2
     F->>D: Call
     D-->>F: Timeout
-    F-->>T: Throw exception
-    Note over T,F: Retry #2 after 15s
-    T->>F: Delivery #3
+    F-->>T: Throw<br/>exception
+    Note over T,F: Retry 2<br/>after 15s
+    T->>F: Delivery 3
     F->>D: Call
-    D-->>F: 429 throttled
-    F-->>T: Throw exception
-    Note over T,F: Retry #3 after 45s
-    T->>F: Delivery #4
+    D-->>F: 429<br/>throttled
+    F-->>T: Throw<br/>exception
+    Note over T,F: Retry 3<br/>after 45s
+    T->>F: Delivery 4
     F->>D: Call
     D-->>F: Success
     F-->>T: Ack/Complete
 ```
+
+**Reading key — illustrative timing:** The three lifelines retain trigger
+delivery, function execution and dependency calls. The 5/15/45-second waits are
+example backoff intervals, not a platform schedule. Functions exponential-backoff retry policies add randomization; fixed-delay policies use a specified interval. Extension retries are distinct.
+“Ack/Complete”
+summarizes trigger-specific successful completion, not a settlement API shared by
+every trigger. See [retry strategies and support](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages#retry-strategies).
 
 #### host.json retry configuration examples
 Use these examples as host-level reliability templates. Trigger-level retry declarations still apply where supported by language/runtime bindings.
@@ -291,17 +289,31 @@ Design requirements:
 <!-- diagram-id: queue-specific-poison-behaviors -->
 ```mermaid
 flowchart TD
-    A[Queued Message] --> B[Function Invocation]
-    B -->|Success| C[Complete Message]
-    B -->|Failure| D["Abandon/Release Lock"]
-    D --> E{Retry budget remaining?}
+    accTitle: Queue retry budgets and recovery decisions
+    accDescr: Illustrative shared recovery logic for Storage Queue and Service Bus. Successful invocation completes the message; failure handling checks remaining attempts before poison or dead-letter triage. Remediation permits replay; otherwise escalate and quarantine. Failure mechanics differ by service.
+    A(["Queued Message"]) --> B["Function<br/>Invocation"]
+    B -->|Success| C(["Complete<br/>Message"])
+    B -->|Failure| D["D: Failure<br/>handling"]
+    D --> E{"Retry budget<br/>remaining?"}
     E -->|Yes| B
-    E -->|No| F[Poison Queue or Dead-letter Queue]
-    F --> G[Triage + Root Cause]
-    G --> H{Remediated?}
-    H -->|Yes| I[Replay Pipeline]
-    H -->|No| J[Escalate + Quarantine]
+    E -->|No| F["F: Poison / DLQ"]
+    F --> G["Triage +<br/>Root Cause"]
+    G --> H{"Remediated?"}
+    H -->|Yes| I(["Replay Pipeline"])
+    H -->|No| J(["Escalate +<br/>Quarantine"])
+    %% Layout-only tiers add no recovery steps or semantic arrows.
+    C ~~~ D
+    I ~~~ J
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J neutral;
 ```
+
+**Reading key:** D distinguishes Storage Queue's failed-processing visibility
+delay from Service Bus abandon or lock expiry; the original “release lock” label
+is not a common API. F means `<queue>-poison` for Storage Queue or the entity's
+dead-letter queue for Service Bus. Limits are service-specific, not one shared
+runtime counter ([Queue trigger](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger#peek-lock),
+[Service Bus settlement](https://learn.microsoft.com/en-us/azure/service-bus-messaging/message-transfers-locks-settlement#peeklock)).
 
 ### Timeout design
 Timeout boundaries are part of reliability behavior.
@@ -323,31 +335,52 @@ Zone-aware architecture options are strongest on Premium, Dedicated, and Flex Co
 
 <!-- diagram-id: availability-zones-and-high-availability -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 10, 'rankSpacing': 35}}}%%
 flowchart TD
-    subgraph Region[Azure Region]
-        subgraph Z1[Zone 1]
-            F1[Function Workers]
+    accTitle: Zone-resilient compute and shared dependencies
+    accDescr: Illustrative regional architecture (all numbered links are illustrative) retains function instances in three availability zones, shared Service Bus Premium and ZRS Storage dependencies, and optional global HTTP routing outside the region. Zone boxes describe availability, not customer subnets. Traffic Manager is a DNS alternative explained in the key.
+    ingress["Front Door"]
+    subgraph Region["Azure Region"]
+        subgraph Z1[" "]
+            app_runtime_1["Zone 1<br/>Fn 1"]
         end
-        subgraph Z2[Zone 2]
-            F2[Function Workers]
+        subgraph Z2[" "]
+            app_runtime_2["Zone 2<br/>Fn 2"]
         end
-        subgraph Z3[Zone 3]
-            F3[Function Workers]
+        subgraph Z3[" "]
+            app_runtime_3["Zone 3<br/>Fn 3"]
         end
-        LB["Front Door / Traffic Manager"]
-        SB[(Service Bus Premium ZR)]
-        ST[(Storage Account ZRS)]
+        storage_db_bus[("Service Bus<br/>Premium ZR")]
+        storage_db[("Storage<br/>ZRS")]
     end
-    LB --> F1
-    LB --> F2
-    LB --> F3
-    F1 --> SB
-    F2 --> SB
-    F3 --> SB
-    F1 --> ST
-    F2 --> ST
-    F3 --> ST
+    ingress -->|"1"| app_runtime_1
+    ingress -->|"1"| app_runtime_2
+    ingress -->|"1"| app_runtime_3
+    app_runtime_1 -->|"2"| storage_db_bus
+    app_runtime_2 -->|"2"| storage_db_bus
+    app_runtime_3 -->|"2"| storage_db_bus
+    app_runtime_1 -->|"3"| storage_db
+    app_runtime_2 -->|"3"| storage_db
+    app_runtime_3 -->|"3"| storage_db
+    %% Layout-only tiers add no transport connections or zone dependencies.
+    storage_db_bus ~~~ storage_db
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e;
+    classDef netBox fill:transparent,stroke:#287ce4,stroke-width:2px,stroke-dasharray:6 3;
+    class ingress,storage_db_bus,storage_db baseNeutral;
+    class app_runtime_1,app_runtime_2,app_runtime_3 focusActive;
+    class Region,Z1,Z2,Z3 netBox;
+    linkStyle default stroke-width:2px;
 ```
+
+**Reading key — illustrative architecture, not a deployment or network trace:** every numbered link (1–3) is illustrative.
+
+| Key | Relationship and scope |
+|---|---|
+| 1 — HTTP routing | Optional global Front Door forwards HTTP requests to a regional function app; the platform distributes requests across its instances. The three arrows summarize this relationship, not direct routing to individually addressable workers. Traffic Manager is an alternative DNS endpoint selector, not an HTTP proxy or a zone selector ([Front Door](https://learn.microsoft.com/en-us/azure/frontdoor/front-door-overview), [Traffic Manager](https://learn.microsoft.com/en-us/azure/traffic-manager/traffic-manager-overview)). |
+| 2 — Messaging | Each instance initiates illustrative Service Bus operations against the shared Premium zone-redundant namespace. Event delivery is not routed through Front Door ([Service Bus reliability](https://learn.microsoft.com/en-us/azure/reliability/reliability-service-bus)). |
+| 3 — Storage | Each instance accesses the shared ZRS storage account; ZRS replicates across availability zones ([Storage redundancy](https://learn.microsoft.com/en-us/azure/storage/common/storage-redundancy#zone-redundant-storage)). |
+| Region / Zone 1–3; Fn 1–3 | Availability boundaries, not VNets or subnets. Fn means Function app instance (the original workers). Three instances show distribution conceptually, not a guaranteed count or placement. Flex Consumption, Premium and Dedicated support zone redundancy subject to plan/region requirements; Consumption does not. When zone redundancy is enabled, Flex/Premium host storage requires ZRS. ([Functions reliability](https://learn.microsoft.com/en-us/azure/reliability/reliability-functions#resilience-to-availability-zone-failures)). |
 
 ### Idempotency is mandatory
 Because retries and duplicate deliveries are normal in distributed systems, handlers must be idempotent.
@@ -402,13 +435,26 @@ Protect downstream dependencies using:
 <!-- diagram-id: reliability-architecture-pattern -->
 ```mermaid
 flowchart TD
-    In[Trigger Event] --> Fn[Function Handler]
-    Fn -->|Success| Ok["Commit / Ack"]
-    Fn -->|Transient error| Rt[Retry Policy]
+    accTitle: Reliability handling stages
+    accDescr: Illustrative logical flow from trigger event to function handler, success commitment, transient retry loop and exhausted-retry recovery with alerting, triage and replay. Recovery destinations depend on the trigger or application.
+    In(["Trigger Event"]) --> Fn["Function<br/>Handler"]
+    Fn -->|Success| Ok(["Commit / Ack"])
+    Fn -->|Transient error| Rt["Retry Policy"]
     Rt --> Fn
-    Fn -->|Exceeded retries| P["Poison / Dead-letter"]
-    P --> Ops[Alert + Triage + Replay]
+    Fn -->|Exceeded retries| P["Poison /<br/>Dead-letter"]
+    P --> Ops(["Alert + Triage<br/>+ Replay"])
+    %% Layout-only tiers add no handling steps or semantic arrows.
+    Ok ~~~ Rt
+    Rt ~~~ P
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class In,Fn,Ok,Rt,P,Ops neutral;
 ```
+
+**Reading key:** The retry loop preserves the same handler and all three
+outcomes. Poison/dead-letter destinations apply only where provided by the
+trigger/service; otherwise preserve failures in an application-owned recovery
+workflow. Exhausting a runtime retry policy does not universally create a DLQ
+message ([retry support](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages#retries)).
 
 ### CLI validation examples (PII masked)
 Use CLI checks during reviews and incidents to confirm reliability-related configuration and telemetry.
@@ -518,6 +564,13 @@ Use language-specific guidance for runtime nuances, extension bundles, and host 
 - [Troubleshooting methodology](../troubleshooting/methodology.md)
 
 ## Sources
+- [Functions retry support and error handling](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages)
+- [Queue trigger poison and visibility behavior](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger)
+- [Service Bus settlement](https://learn.microsoft.com/en-us/azure/service-bus-messaging/message-transfers-locks-settlement)
+- [Service Bus reliability](https://learn.microsoft.com/en-us/azure/reliability/reliability-service-bus)
+- [Storage redundancy](https://learn.microsoft.com/en-us/azure/storage/common/storage-redundancy)
+- [Front Door overview](https://learn.microsoft.com/en-us/azure/frontdoor/front-door-overview)
+- [Traffic Manager overview](https://learn.microsoft.com/en-us/azure/traffic-manager/traffic-manager-overview)
 - [Microsoft Learn: Design reliable Azure Functions applications](https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability)
 - [Microsoft Learn: Azure Functions reliability in Azure Well-Architected Framework](https://learn.microsoft.com/en-us/azure/reliability/reliability-functions)
 - [Microsoft Learn: Azure Functions host.json reference](https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json)

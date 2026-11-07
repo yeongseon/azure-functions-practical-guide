@@ -21,19 +21,21 @@ content_sources:
     - id: what-you-ll-build
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
+      justification: "Illustrative topology of the tutorial's public Linux Premium (EP1) Java 17 deployment: HTTPS ingress, connection-string Storage access including the default Azure Files content share, off-path Application Insights, and Premium capabilities (VNet integration, app private endpoints) that this tutorial does not provision; not a measured trace or lab evidence."
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
-        - https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-java
     - id: what-you-ll-build-2
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build 2, synthesized from Microsoft Learn documentation cited on this page.
+      justification: "Illustrative order of the tutorial's Premium deploy steps (variables, resource group and Storage, Premium plan, function app, placeholder settings, Maven build and staging-directory publish, endpoint validation); not an executed deployment trace."
       based_on:
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-java
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
 ---
 # 02 - First Deploy (Premium)
 
@@ -73,28 +75,48 @@ You will provision a Linux Premium (EP1) Function App for Java, deploy with `fun
 
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
+%%{init: {"flowchart": {"nodeSpacing": 10, "rankSpacing": 40, "padding": 8}}}%%
 flowchart TD
-    INET[Internet] -->|HTTPS| FA[Function App\nPremium EP1\nLinux Java 17]
-
-    FA -->|connection string| ST[Storage Account]
-    FA --> AI[Application Insights]
-
-    subgraph STORAGE[Storage Services]
-        ST --- FS[Azure Files\ncontent share]
-        ST --- QS[Queue Storage]
-        ST --- BS[Blob Storage]
+    accTitle: Java Linux Premium public deployment topology
+    accDescr: Internet HTTPS requests reach the Linux Java 17 Premium EP1 app, with tutorial connection-string Storage access and off-path Application Insights. The Storage group includes its default Files content share, Queue and Blob. VNet integration and app private endpoints are capabilities, not resources configured here.
+    client(["Internet<br/>HTTPS caller"])
+    app_runtime["Function App<br/>Premium EP1<br/>Linux Java 17"]
+    telemetry>"Application Insights<br/>Off-path telemetry"]
+    capabilities["Premium options<br/>VNet integration<br/>App private<br/>endpoints"]
+    subgraph STORAGE["Storage Services"]
+        storage_db[("Storage Account")]
+        storage_files[("Azure Files<br/>Content share")]
+        storage_queue[("Queue Storage")]
+        storage_blob[("Blob Storage")]
+        storage_db -.-> storage_files
+        storage_db -.-> storage_queue
+        storage_db -.-> storage_blob
+        %% Layout only; services do not forward data to each other.
+        storage_files ~~~ storage_queue
+        storage_queue ~~~ storage_blob
     end
-
-    VNET["✅ VNet integration available\n✅ Private endpoints supported"] -. capability .- FA
-
-    style FA fill:#0078d4,color:#fff
-    style VNET fill:#E8F5E9,stroke:#4CAF50
-    style STORAGE fill:#FFF3E0
+    client -->|"[Configured] HTTPS"| app_runtime
+    app_runtime -->|"[Configured]<br/>Connection<br/>string"| storage_db
+    app_runtime -.->|"[Configured]<br/>Logs"| telemetry
+    app_runtime -.->|"Available,<br/>not set up"| capabilities
+    %% Layout-only tiers; no requests or deployment steps added.
+    storage_blob ~~~ telemetry
+    telemetry ~~~ capabilities
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e
+    classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e
+    classDef bandMuted fill:#ffffff,stroke:#707e93,stroke-width:1.5px,stroke-dasharray:4 3,color:#14202e
+    class client,storage_db,storage_files,storage_queue,storage_blob baseNeutral
+    class app_runtime focusActive
+    class telemetry,capabilities bandMuted
 ```
+
+**Reading key:** Solid arrows show the initiating caller or app's configured access; dotted arrows show telemetry, available-but-not-provisioned capabilities, or account/service membership (the unlabeled dotted arrows inside Storage Services), not another request hop. VNet integration and app private endpoints are supported but not provisioned here. Integration is outbound-only and does not deploy the app into the integration subnet. Azure Files is the default content-share arrangement shown here; documented alternatives can avoid that dependency.
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart TD
+    accTitle: Java Premium first-deployment steps
+    accDescr: Tutorial order from login through Storage, Premium plan and app creation, placeholder settings, Maven build and staging-directory publish to endpoint validation; not an executed deployment trace.
     A[Set variables + login] --> B[Create RG + storage]
     B --> C[Create Premium plan]
     C --> D[Create function app]
@@ -363,6 +385,9 @@ Info endpoint response:
 
 ## Sources
 
+- [Functions storage considerations](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations)
+- [Functions networking options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)
+- [Functions monitoring](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)
 - [Azure Functions Java developer guide (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java)
 - [Azure Functions hosting options (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
 - [Create a Java function with Azure Functions Core Tools (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-java)

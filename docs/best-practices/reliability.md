@@ -21,29 +21,19 @@ content_sources:
     - id: retry-safe-processing-design
       type: flowchart
       source: self-generated
-      justification: Flow view of retry safe processing design, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative application-level retry-safe design (deduplication key, failure classification, backoff, terminal recovery, atomic completion); not a universal trigger policy, since retry support and poison or dead-letter destinations are trigger-specific.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-idempotent
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reliable-event-processing
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus-trigger
-        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale#timeout
-        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
     - id: message-processing-lifecycle-retry-and-poison-path
       type: flowchart
       source: self-generated
-      justification: Flow view of message processing lifecycle retry and poison path, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative message lifecycle with duplicate acknowledgement, transient retry and terminal triage with replay; recovery destinations and retry support are trigger-specific, and the transient or terminal split expresses application intent, not automatic runtime classification.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-idempotent
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reliable-event-processing
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus-trigger
-        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale#timeout
-        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
 content_validation:
   status: verified
   last_reviewed: 2026-09-11
@@ -150,18 +140,32 @@ Treat each invocation as potentially repeated.
 <!-- diagram-id: retry-safe-processing-design -->
 ```mermaid
 flowchart TD
-    S[Invocation starts] --> K[Compute deterministic operation key]
-    K --> D{Already completed?}
-    D -->|Yes| R1[Return cached result or ack]
-    D -->|No| E[Execute side effect]
-    E --> T{Failure type}
-    T -->|Transient| RT[Retry with backoff]
+    accTitle: Retry-safe processing decisions
+    accDescr: Illustrative application design linking deterministic keys, duplicate checks, side effects, failure classification, backoff, terminal recovery and durable completion. Retry and recovery mechanisms depend on the trigger and application.
+    S(["Invocation starts"]) --> K["K: Compute key"]
+    K --> D{"Already<br/>completed?"}
+    D -->|Yes| R1(["R1: Cached result<br/>or ack"])
+    D -->|No| E["Execute<br/>side effect"]
+    E --> T{"Failure type"}
+    T -->|Transient| RT["Retry with<br/>backoff"]
     RT --> S
-    T -->|Terminal| DL[Send to poison queue or DLQ with reason]
-    E --> OK{Succeeded?}
-    OK -->|Yes| M[Persist completion marker atomically]
-    M --> R2[Ack or complete message]
+    T -->|Terminal| DL(["DL: Poison / DLQ<br/>with reason"])
+    E --> OK{"Succeeded?"}
+    OK -->|Yes| M["M: Atomic<br/>completion marker"]
+    M --> R2(["Ack or complete<br/>message"])
+    %% Layout-only tiers add no processing steps or semantic arrows.
+    R1 ~~~ E
+    DL ~~~ OK
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class S,K,D,R1,E,T,RT,DL,OK,M,R2 neutral;
 ```
+
+**Reading key — illustrative design, not a universal trigger policy:** K computes
+a deterministic operation key; R1 returns a cached result or acknowledges an
+already-completed operation; M persists its completion marker atomically. DL
+preserves terminal work with a reason in a poison queue or dead-letter queue
+where supported, or an application-owned recovery path. See the
+[trigger-specific retry support](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages#retries).
 
 ### Queue trigger safety (Storage Queue)
 
@@ -314,19 +318,34 @@ Minimum production pattern:
 <!-- diagram-id: message-processing-lifecycle-retry-and-poison-path -->
 ```mermaid
 flowchart TD
-    T[Trigger event arrives] --> H[Function handler starts]
-    H --> D{Duplicate already processed?}
-    D -->|Yes| A1[Ack or return cached result]
-    D -->|No| X[Execute business side effect]
-    X --> S{Success?}
-    S -->|Yes| C[Persist completion marker]
-    C --> A2[Ack or complete message]
-    S -->|No transient| R[Runtime retry path]
+    accTitle: Message retry and recovery lifecycle
+    accDescr: Illustrative lifecycle preserving duplicate acknowledgement, business side effects, durable completion, transient retry and terminal triage with replay back to the handler. Recovery destinations and retry support are trigger-specific.
+    T(["Trigger event<br/>arrives"]) --> H["Function handler<br/>starts"]
+    H --> D{"Duplicate<br/>processed?"}
+    D -->|Yes| A1(["A1: Ack or<br/>cached result"])
+    D -->|No| X["X: Business<br/>side effect"]
+    X --> S{"Success?"}
+    S -->|Yes| C["C: Persist<br/>completion marker"]
+    C --> A2(["Ack or complete<br/>message"])
+    S -->|No transient| R["Runtime<br/>retry path"]
     R --> H
-    S -->|No terminal| P[Poison queue or DLQ]
-    P --> O[Ops triage and replay]
+    S -->|No terminal| P["P: Poison / DLQ"]
+    P --> O["Ops triage<br/>and replay"]
     O --> H
+    %% Layout-only tiers add no processing steps or semantic arrows.
+    A1 ~~~ X
+    A2 ~~~ R
+    R ~~~ P
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class T,H,D,A1,X,S,C,A2,R,P,O neutral;
 ```
+
+**Reading key:** A1 acknowledges or returns a cached result for a duplicate
+already processed; X executes the business side effect; C persists the completion
+marker. P means a poison queue or dead-letter queue only for triggers that
+provide one, or an application-owned terminal recovery path. The transient and
+terminal labels express the application's handling intent, not automatic runtime
+classification; consult [retry and error guidance](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages).
 
 ## Validation Checklist
 

@@ -13,48 +13,59 @@ content_sources:
     - id: reference-architecture
       type: flowchart
       source: self-generated
-      justification: Flow view of reference architecture, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative logical connectivity overview of optional Front Door or APIM ingress, outbound VNet integration, private endpoints, Firewall or NAT egress alternatives and on-premises links; not a packet-hop map or subnet containment diagram, and plan support varies.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/app-service/configure-vnet-integration-enable
         - https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint
         - https://learn.microsoft.com/en-us/azure/app-service/overview-nat-gateway-integration
+        - https://learn.microsoft.com/en-us/azure/nat-gateway/nat-overview
+        - https://learn.microsoft.com/en-us/azure/frontdoor/front-door-overview
     - id: 3-zero-trust-ingress-architecture-pattern
       type: flowchart
       source: self-generated
-      justification: Flow view of zero trust ingress architecture pattern, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative layered ingress pattern (edge, APIM, private endpoint, identity); not a complete zero-trust design and not a measured or lab-verified topology.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/app-service/configure-vnet-integration-enable
         - https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint
         - https://learn.microsoft.com/en-us/azure/app-service/overview-nat-gateway-integration
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-private-endpoint
+        - https://learn.microsoft.com/en-us/azure/api-management/integrate-vnet-outbound
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
+        - https://learn.microsoft.com/en-us/azure/frontdoor/front-door-overview
     - id: 3-nat-gateway-for-stable-outbound-ip
       type: flowchart
       source: self-generated
-      justification: Flow view of nat gateway for stable outbound ip, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative configuration relationships among VNet integration subnet, NAT gateway and public IP for stable outbound addresses; relationships, not packet hops.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/app-service/configure-vnet-integration-enable
         - https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint
         - https://learn.microsoft.com/en-us/azure/app-service/overview-nat-gateway-integration
+        - https://learn.microsoft.com/en-us/azure/nat-gateway/nat-overview
     - id: dns-design-for-private-endpoints
       type: flowchart
       source: self-generated
-      justification: Flow view of dns design for private endpoints, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative logical lookup from a VNet client through a private DNS zone to the Function App private endpoint IP; DNS identifies the destination, HTTPS does not transit the zone.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/app-service/configure-vnet-integration-enable
         - https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint
         - https://learn.microsoft.com/en-us/azure/app-service/overview-nat-gateway-integration
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-private-endpoint
+        - https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-dns
     - id: dns-design-for-private-endpoints-2
       type: sequenceDiagram
       source: self-generated
-      justification: Interaction sequence for dns design for private endpoints 2, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative DNS-resolution-then-HTTPS sequence with a placeholder private IP; not a measured trace or lab evidence.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/app-service/configure-vnet-integration-enable
         - https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint
         - https://learn.microsoft.com/en-us/azure/app-service/overview-nat-gateway-integration
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-private-endpoint
+        - https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-dns
 content_validation:
   status: verified
   last_reviewed: 2026-09-11
@@ -140,15 +151,19 @@ This section shows the Networking blade for a live Function App (Consumption Y1,
 <!-- diagram-id: reference-architecture -->
 ```mermaid
 flowchart TD
-    C["Client / Caller"] --> APIM["Optional Front Door / APIM"]
+    accTitle: Functions networking reference relationships
+    accDescr: Logical connectivity overview retains optional Front Door or APIM ingress, Function App outbound VNet integration, SQL or Cosmos or Storage private endpoints, Firewall or NAT egress alternatives, and two-way on-premises VPN or ExpressRoute connectivity. This is not a packet-hop map or subnet containment diagram.
+    C["Client / Caller"] --> APIM["Optional Front<br/>Door / APIM"]
     APIM --> FA[Function App]
-    FA -->|VNet Integration outbound| VNET[Virtual Network]
-    VNET --> PE1["Private Endpoint: SQL/Cosmos/Storage"]
+    FA -->|"VNet Integration<br/>outbound"| VNET["Virtual Network"]
+    VNET --> PE1["Private Endpoint:<br/>SQL/Cosmos/Storage"]
     VNET --> FW["Firewall/NAT"]
-    FW --> EXT[Approved external services]
-    CORP[On-premises network] <--> VPN["VPN/ExpressRoute"]
+    FW --> EXT["Approved external<br/>services"]
+    CORP["On-premises<br/>network"] <--> VPN["VPN/ExpressRoute"]
     VPN <--> VNET
 ```
+
+**Reading key:** This overview preserves logical connectivity and alternatives, not identical implementations. VNet integration is outbound-only; enabling it does not deploy the Function App into the integration subnet. NAT is associated with a subnet rather than configured as a routed firewall hop ([Functions networking](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options), [NAT Gateway routing](https://learn.microsoft.com/en-us/azure/nat-gateway/nat-overview#outbound-connectivity)).
 
 ### Inbound network controls
 
@@ -278,12 +293,16 @@ Example output (sanitized):
 <!-- diagram-id: 3-zero-trust-ingress-architecture-pattern -->
 ```mermaid
 flowchart TD
+    accTitle: Layered ingress gateways, private backend and identity
+    accDescr: Illustrative pattern retains User, Front Door with WAF, API Management, Function App private endpoint, Function App and Microsoft Entra or managed identity roles. APIM needs suitable private-backend connectivity; the identity relationship is not an additional HTTP ingress hop.
     U[User] --> FD[Front Door + WAF]
     FD --> APIM[API Management]
     APIM --> PE[Private Endpoint: Function App]
     PE --> FA[Function App]
     FA --> ID["Microsoft Entra ID / Managed Identity"]
 ```
+
+**Reading key:** This is an illustrative configured pattern, not a guarantee for every APIM tier. Configure [APIM private-backend connectivity](https://learn.microsoft.com/en-us/azure/api-management/integrate-vnet-outbound); the final identity relationship represents [token acquisition](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity#connect-to-azure-services-in-app-code), not request forwarding through Entra ID.
 
 ### Outbound network controls
 
@@ -357,11 +376,15 @@ Attach NAT Gateway to the integration subnet when downstream allowlists require 
 <!-- diagram-id: 3-nat-gateway-for-stable-outbound-ip -->
 ```mermaid
 flowchart TD
+    accTitle: Resources for stable Function App internet egress
+    accDescr: Resource configuration flow retains Function App instances, integration subnet, associated NAT Gateway, public IP or prefix and approved internet destinations. NAT and public IP are egress resources, not separate UDR next hops.
     FA[Function App instances] --> SUBNET[Integration subnet]
     SUBNET --> NAT[NAT Gateway]
     NAT --> PIP[Public IP or prefix]
     PIP --> DEST[Approved internet destinations]
 ```
+
+**Reading key:** Arrows summarize the configured resources, not separate packet hops. The [NAT gateway is associated with the integration subnet and a public IP or prefix](https://learn.microsoft.com/en-us/azure/app-service/overview-nat-gateway-integration#create-and-configure-an-azure-nat-gateway).
 
 ### Outbound SNAT and connection planning
 SNAT exhaustion appears when many outbound sockets are opened to the same destination without reuse.
@@ -401,6 +424,8 @@ Recommended baseline:
 <!-- diagram-id: dns-design-for-private-endpoints -->
 ```mermaid
 flowchart TD
+    accTitle: Private DNS lookup and Function App endpoint address
+    accDescr: Logical lookup flow from a VNet client through a private DNS zone's mapping to the Function App private IP and private endpoint. DNS resolution identifies the destination; HTTPS does not transit the DNS zone.
     VM[Client in VNet] --> DNS[Private DNS zone]
     DNS --> IP[Private IP for Function App]
     IP --> APP[Function App private endpoint]
@@ -410,16 +435,19 @@ DNS resolution sequence (private endpoint path):
 
 <!-- diagram-id: dns-design-for-private-endpoints-2 -->
 ```mermaid
+%%{init: {"sequence":{"width":86,"actorMargin":4,"diagramMarginX":2,"messageMargin":30}}}%%
 sequenceDiagram
-    participant C as Client in VNet
-    participant R as DNS Resolver
-    participant Z as Private DNS Zone
-    participant P as Function App Private Endpoint
-    C->>R: Query <app-name>.azurewebsites.net
-    R->>Z: Resolve private mapping
+    accTitle: Private DNS resolution followed by an HTTPS exchange
+    accDescr: Illustrative sequence retains the VNet client, DNS resolver, private DNS zone and Function App private endpoint. The resolver returns an illustrative private A record; the client then connects to that private IP using `<app-name>.azurewebsites.net` as the HTTPS hostname and receives a response.
+    participant C as Client<br/>in VNet
+    participant R as DNS<br/>Resolver
+    participant Z as Private<br/>DNS Zone
+    participant P as Function<br/>App Private<br/>Endpoint
+    C->>R: Query<br/>#lt;app-name#gt;<br/>.azurewebsites<br/>.net
+    R->>Z: Resolve<br/>private<br/>mapping
     Z-->>R: 10.40.2.8
-    R-->>C: Return private A record
-    C->>P: HTTPS request to private IP
+    R-->>C: Return<br/>private<br/>A record
+    C->>P: HTTPS<br/>request to<br/>private IP
     P-->>C: HTTPS response
 ```
 
@@ -546,3 +574,9 @@ Runtime focus areas:
 - [Microsoft Learn: Integrate your app with an Azure virtual network](https://learn.microsoft.com/en-us/azure/app-service/configure-vnet-integration-enable)
 - [Microsoft Learn: Use private endpoints for Azure App Service apps](https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint)
 - [Microsoft Learn: NAT Gateway integration with App Service](https://learn.microsoft.com/en-us/azure/app-service/overview-nat-gateway-integration)
+- [Microsoft Learn: NAT Gateway routing and subnet association](https://learn.microsoft.com/en-us/azure/nat-gateway/nat-overview)
+- [Microsoft Learn: Private endpoint security and DNS](https://learn.microsoft.com/en-us/azure/app-service/overview-private-endpoint)
+- [Microsoft Learn: Private endpoint DNS zone values](https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-dns)
+- [Microsoft Learn: API Management private-backend connectivity](https://learn.microsoft.com/en-us/azure/api-management/integrate-vnet-outbound)
+- [Microsoft Learn: Managed identity token acquisition](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)
+- [Microsoft Learn: Front Door overview and WAF](https://learn.microsoft.com/en-us/azure/frontdoor/front-door-overview)

@@ -15,7 +15,7 @@ content_sources:
     - id: decision-flow
       type: flowchart
       source: self-generated
-      justification: Decision flow, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative triage tree for memory pressure and worker crashes (OOM traces, restart gaps, payload or media handling, collection and disposal checks, and plan memory ceilings); branches select investigations, not proven diagnoses, and memory ceilings and telemetry availability depend on the hosting plan.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
@@ -25,7 +25,7 @@ content_sources:
     - id: signal-snapshot
       type: flowchart
       source: self-generated
-      justification: Flow view of signal snapshot, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative allocation path (trigger receipt, payload, deserializer and transform buffers, business logic and SDK buffers) with a memory-ceiling check; not a universal execution order or a measured memory profile.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
@@ -35,8 +35,9 @@ content_sources:
     - id: signal-snapshot-2
       type: sequenceDiagram
       source: self-generated
-      justification: Interaction sequence for signal snapshot 2, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative logical crash and redelivery sequence; source-to-host messages are delivery results, and visibility expiry applies to Storage queues rather than every event source.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
         - https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
@@ -45,7 +46,7 @@ content_sources:
     - id: 7-likely-root-cause-patterns
       type: flowchart
       source: self-generated
-      justification: Flow view of likely root cause patterns, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative memory-regression progression (deployment, rising memory, latency, GC pressure, OOM or worker exit, retries, backlog); not an observed timeline or inevitable order.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
@@ -82,23 +83,36 @@ On Azure Functions, memory ceilings are plan-dependent and hard in practice: Con
 ### Decision Flow
 <!-- diagram-id: decision-flow -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 10, 'rankSpacing': 35}}}%%
 flowchart TD
-    A["Incident detected: failures/timeouts/restarts"] --> B{Any OOM exceptions in traces or FunctionAppLogs?}
-    B -->|Yes| C[Correlate by role instance and operation]
-    B -->|No| D{Heartbeat gaps or worker restarts?}
-    D -->|Yes| E[Suspect crash without surfaced exception]
-    D -->|No| F[Check upstream dependencies and network]
-    C --> G{Large payload or media processing path?}
+    accTitle: Memory pressure and worker crash triage
+    accDescr: Illustrative checks distinguish OOM exceptions, restart gaps, payload or media paths, collection and disposal checks, memory ceilings and runtime behavior. Yes/No branches select investigations, not proven diagnoses.
+    A(["Incident: failures,<br/>timeouts or restarts"]) --> B{"OOM in traces<br/>or FunctionAppLogs?"}
+    B -->|Yes| C["Correlate role instance<br/>and operation"]
+    B -->|No| D{"Heartbeat gaps or<br/>worker restarts?"}
+    D -->|Yes| E("Candidate: crash<br/>without surfaced<br/>exception")
+    D -->|No| F(["Check upstream<br/>dependencies<br/>and network"])
+    C --> G{"Large payload or<br/>media processing?"}
     E --> G
-    G -->|Yes| H[Validate memory pressure pattern in AppMetrics]
-    G -->|No| I["Check unbounded collections / leaks / disposal"]
-    H --> J{Plan memory ceiling reached?}
+    G -->|Yes| H["Validate collected<br/>memory telemetry"]
+    G -->|No| I["Check unbounded<br/>collections, leaks<br/>and disposal"]
+    H --> J{"Plan memory<br/>ceiling reached?"}
     I --> J
-    J -->|Yes| K["Immediate mitigation: throttle/scale up/stream"]
-    J -->|No| L[Validate runtime config and library behavior]
-    K --> M[Confirm stabilization and no new crash gaps]
+    J -->|Yes| K["Mitigate: throttle,<br/>scale up, stream"]
+    J -->|No| L["Validate runtime<br/>config and<br/>library behavior"]
+    K --> M(["Confirm stabilization:<br/>no new crash gaps"])
     L --> M
+    %% Layout-only links tier branches; they add no diagnostic steps or arrows.
+    C ~~~ D
+    E ~~~ F
+    F ~~~ G
+    H ~~~ I
+    K ~~~ L
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J,K,L,M neutral;
 ```
+
+**Reading key:** OOM = out-of-memory exception; “collected memory telemetry” means memory metrics or performance counters available for the app's hosting plan, operating system and runtime, with collection verified before querying. Diamonds route evidence checks to candidate causes and next actions; restart gaps alone do not prove memory exhaustion. “Scale up” is a plan-dependent option, not a substitute for checking allocations and disposal ([hosting options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale), [performance guidance](https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability)).
 
 ### Severity guidance
 | Condition | Severity | Action priority |
@@ -119,31 +133,44 @@ flowchart TD
 <!-- diagram-id: signal-snapshot -->
 ```mermaid
 flowchart TD
-    A[Trigger receives event] --> B[Function worker allocates payload]
-    B --> C[Deserializer + transform buffers]
-    C --> D[Business logic allocations]
-    D --> E[Downstream SDK buffers]
-    E --> F{Memory below ceiling?}
+    accTitle: Allocation stages and memory ceiling check
+    accDescr: Illustrative allocation path retains trigger receipt, payload, deserializer and transform buffers, business allocations, downstream SDK buffers and both completion and OOM outcomes followed by possible retry pressure.
+    A[Trigger receives event] --> B["Function worker<br/>allocates payload"]
+    B --> C["Deserializer and<br/>transform buffers"]
+    C --> D["Business logic<br/>allocations"]
+    D --> E["Downstream<br/>SDK buffers"]
+    E --> F{"Memory below<br/>ceiling?"}
     F -->|Yes| G[Execution completes]
-    F -->|No| H[OOM exception or process crash]
-    H --> I["Retry/restart causes repeated pressure"]
+    F -->|No| H["OOM exception or<br/>process crash"]
+    H --> I["Retry/restart:<br/>repeated pressure"]
+    %% Layout-only link tiers outcomes; it adds no diagnostic steps or arrows.
+    G ~~~ H
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I neutral;
 ```
+
+**Takeaway:** These are illustrative allocation stages, not a universal execution order or a measured memory profile; validate the candidate against the payload, memory and disproof checks below.
 
 <!-- diagram-id: signal-snapshot-2 -->
 ```mermaid
+%%{init: {'sequence': {'diagramMarginX': 4, 'actorMargin': 8, 'width': 70, 'wrap': true, 'messageMargin': 30}}}%%
 sequenceDiagram
-    participant Q as Queue/Event Source
+    accTitle: Worker crash and conditional message redelivery
+    accDescr: Illustrative logical sequence preserves source, host, worker and telemetry roles and message order. Delivery arrows summarize trigger results, not a universal push protocol; Storage queue visibility expiry precedes a later poll and redelivery.
+    participant Q as Source
     participant H as Host
     participant W as Worker
-    participant AI as App Insights
-    Q->>H: Trigger message batch
-    H->>W: Dispatch invocation
-    W->>W: Materialize large object graph
+    participant AI as App<br/>Insights
+    Q->>H: Trigger message<br/>batch
+    H->>W: Dispatch<br/>invocation
+    W->>W: Materialize large<br/>object graph
     W--xH: Crash / OOM
-    H->>AI: traces with restart gap
-    H->>Q: Message visibility timeout expires
-    Q->>H: Message redelivered
+    H->>AI: Traces around<br/>restart gap<br/>(if collected)
+    H->>Q: Later poll after<br/>visibility expiry<br/>(Storage queue)
+    Q->>H: Message<br/>redelivered
 ```
+
+**Reading key:** Source = Queue/Event Source; App Insights = Application Insights. Source-to-host arrows show logical delivery results, not a universal push transport. For a Storage queue, the host polls; visibility expires at the service, not because the host sends an expiry message. Redelivery depends on the trigger and remaining retry attempts; a worker crash alone does not establish a host crash. Telemetry is conditional on collection ([queue trigger](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger), [telemetry](https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data)).
 
 ## 2. Common Misreadings
 | Misreading | Why incorrect | Correct interpretation |
@@ -403,6 +430,8 @@ Cross-check result interpretation:
 <!-- diagram-id: 7-likely-root-cause-patterns -->
 ```mermaid
 flowchart TD
+    accTitle: Memory regression incident progression
+    accDescr: Illustrative eight-stage progression from code deployment through rising memory, latency, GC pressure, OOM or worker exit, retries, backlog and an incident declaration; not an observed timeline or inevitable order.
     A[Deploy code change] --> B[Memory trend begins rising]
     B --> C[Latency increases]
     C --> D[GC pressure increases]
@@ -411,6 +440,8 @@ flowchart TD
     F --> G[Backlog and error rate increase]
     G --> H[Incident declared]
 ```
+
+**Takeaway:** This is a candidate regression timeline; correlate the deployment with memory and crash evidence before attributing the incident to that change.
 
 ## 8. Immediate Mitigations
 1. Reduce concurrency and batch size in `host.json`, then restart the app to reduce per-instance memory pressure.
@@ -526,6 +557,7 @@ Plan memory guidance for escalation decisions:
 - [Durable orchestration stuck playbook](./durable-orchestration-stuck.md)
 
 ## Sources
+- [Storage queue polling, visibility and retry behavior](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger)
 - [Azure Functions hosting options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
 - [Azure Functions best practices](https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices)
 - [Monitor Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data)

@@ -15,7 +15,7 @@ content_sources:
     - id: 1-summary
       type: flowchart
       source: self-generated
-      justification: Flow view of summary, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative, non-exhaustive investigation order for a blob trigger that does not fire, not a confirmed root-cause classifier or a measured trace. Learn supports that the Flex Consumption plan supports only the Event Grid source for the Blob storage trigger and that the polling-based implementation is the default elsewhere; the check order and H1-H4 grouping are this guide's own.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
@@ -56,18 +56,35 @@ Key portal blades for blob trigger investigation. Captures from a Consumption (Y
 <!-- diagram-id: 1-summary -->
 ```mermaid
 flowchart TD
-    A[Blob upload confirmed] --> B{Is app on FC1?}
-    B -->|Yes| C{Event Grid subscription exists?}
-    B -->|No| D{Blob listener started?}
-    C -->|No| H1[H1: Missing or broken Event Grid subscription]
-    C -->|Yes| E{"Storage networking/RBAC healthy?"}
-    E -->|No| H2[H2: Network or RBAC blocks notifications]
-    E -->|Yes| F{"Binding path/connection correct?"}
-    F -->|No| H3[H3: Trigger binding misconfiguration]
-    F -->|Yes| H4[H4: Polling vs Event Grid architecture mismatch]
+    accTitle: Blob trigger diagnostic decision flow
+    accDescr: Illustrative troubleshooting flow after a confirmed upload. The FC1 branch checks Event Grid subscription, storage networking or RBAC, and binding path or connection; the other branch checks listener startup. H1 through H4 are candidate hypotheses, not confirmed causes. Validate them against the evidence and disproof sections.
+    A(["Blob upload confirmed"]) --> B{"Is app on FC1?"}
+    B -->|Yes| C{"Event Grid<br/>subscription exists?"}
+    B -->|No| D{"Blob listener<br/>started?"}
+    C -->|No| H1("H1 hypothesis:<br/>Event Grid subscription")
+    C -->|Yes| E{"Storage<br/>networking/RBAC<br/>healthy?"}
+    E -->|No| H2("H2 hypothesis:<br/>Network or RBAC")
+    E -->|Yes| F{"Binding path/<br/>connection correct?"}
+    F -->|No| H3("H3 hypothesis:<br/>Trigger binding")
+    F -->|Yes| H4("H4 hypothesis:<br/>Polling vs Event Grid")
     D -->|No| H3
-    D -->|Yes| G[Investigate invocation path and code]
+    D -->|Yes| G["Investigate invocation<br/>path and code"]
+    %% Layout-only links tier the branches; they add no diagnostic steps or arrows.
+    H1 ~~~ E
+    H2 ~~~ F
+    H4 ~~~ D
+    G ~~~ H3
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H1,H2,H3,H4 neutral;
 ```
+
+**Reading key:** The start is rounded, questions are diamonds, candidate hypotheses
+are rounded boxes, and the invocation/code investigation is a rectangle. H1 means
+missing or broken Event Grid subscription; H2 means network or RBAC blocks
+notifications; H3 means trigger binding misconfiguration; H4 means polling vs
+Event Grid architecture mismatch. These are illustrative investigation candidates,
+not proven causes, and the branches are non-exhaustive (for example, storage accounts with hierarchical namespace also require the Event Grid-based trigger, and polling-based triggers can be delayed on idle Consumption apps): use the evidence and disproof sections below before choosing a
+mitigation. The arrows preserve this playbook's check order, not a network path.
 
 - Treat this playbook as a hypothesis test, not a checklist-only exercise.
 - On `FC1`, missing Event Grid subscription is a root-cause class by itself.

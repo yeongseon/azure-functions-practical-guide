@@ -9,17 +9,21 @@ content_sources:
     - id: why-this-matters
       type: flowchart
       source: self-generated
-      justification: Flow view of why this matters, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative failure chain, not a measured trace or a guaranteed progression, that links hosting-plan choice to downstream trigger, scaling, retry and storage risks. The related topics are discussed on the cited Microsoft Learn pages, but the sequence itself is this guide's synthesis.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
     - id: recommended-practices
       type: flowchart
       source: self-generated
-      justification: Flow view of recommended practices, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Suggested review routing from a symptom category to anti-pattern checks, not a confirmed-cause classifier or Azure diagnostic algorithm. The checks reflect guidance on long-running functions, idempotency, poison handling, storage account sharing, sampling and cold start (performance and best-practices pages), scaling behavior and instance limits (scale pages), and subnet sizing (networking options). The routing itself is this guide's synthesis.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
 content_validation:
   status: verified
   last_reviewed: 2026-09-11
@@ -69,6 +73,8 @@ Pair this page with [Troubleshooting Playbooks](../troubleshooting/playbooks/ind
 <!-- diagram-id: why-this-matters -->
 ```mermaid
 flowchart TD
+    accTitle: Illustrative hosting mismatch failure chain
+    accDescr: A possible illustrative chain runs from wrong hosting plan selection through trigger and networking mismatch, scale and listener instability, retries and backlog growth, and poison messages or data delay, to an incident with a cost spike and SLO breach. This is not a guaranteed progression for every hosting mismatch.
     A[Wrong hosting plan selection] --> B[Trigger and networking mismatch]
     B --> C[Scale and listener instability]
     C --> D[Retries and backlog growth]
@@ -80,21 +86,37 @@ flowchart TD
 
 <!-- diagram-id: recommended-practices -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 35}}}%%
 flowchart TD
-    A[Start: symptom or design concern] --> B{Main symptom category}
-    B -->|Cost spike| C{Telemetry-driven?}
-    C -->|Yes| C1[Check App Insights sampling and storage sharing]
-    C -->|No| C2[Check unbounded scale and wrong plan baseline]
-    B -->|"Latency/SLO breach"| D{Cold-path or long request?}
-    D -->|Cold-path| D1[Check plan fit and cold-start assumptions]
-    D -->|Long request| D2[Check long-running synchronous HTTP]
-    B -->|Data inconsistency| E{Duplicate or lost messages?}
-    E -->|Duplicate| E1[Check non-idempotent processing]
-    E -->|"Lost/Delayed"| E2[Check poison handling ownership]
-    B -->|Connectivity failure| F{Private networking enabled?}
-    F -->|Yes| F1[Check subnet size and DNS zone links]
-    F -->|No| F2[Check trigger compatibility and storage contention]
+    accTitle: Azure Functions anti-pattern review routing
+    accDescr: Suggested review checks, not confirmed causes or an exhaustive classifier. Cost spike branches on telemetry-driven: Yes checks App Insights sampling and storage sharing; No checks unbounded scale and wrong plan baseline. Latency or SLO breach branches to cold-path plan-fit and cold-start checks or long-running synchronous HTTP checks. Data inconsistency branches to duplicate non-idempotent processing checks or lost and delayed poison handling ownership checks. Connectivity failure branches on private networking: Yes checks subnet size and DNS zone links; No checks trigger compatibility and storage contention.
+    A(["Start: symptom or<br/>design concern"]) --> B{"Main symptom<br/>category"}
+    B -->|R1| C{"Telemetry-driven?"}
+    C -->|Yes| C1["Check App Insights<br/>sampling and<br/>storage sharing"]
+    C -->|No| C2["Check unbounded scale<br/>and wrong plan<br/>baseline"]
+    B -->|R2| D{"Cold-path or<br/>long request?"}
+    D -->|Cold-path| D1["Check plan fit and<br/>cold-start assumptions"]
+    D -->|Long request| D2["Check long-running<br/>synchronous HTTP"]
+    B -->|R3| E{"Duplicate or<br/>lost messages?"}
+    E -->|Duplicate| E1["Check non-idempotent<br/>processing"]
+    E -->|"Lost/Delayed"| E2["Check poison<br/>handling ownership"]
+    B -->|R4| F{"Private networking<br/>enabled?"}
+    F -->|Yes| F1["Check subnet size<br/>and DNS zone links"]
+    F -->|No| F2["Check trigger compatibility<br/>and storage contention"]
+    %% Layout-only links tier the review branches; they add no checks or semantic arrows.
+    C1 ~~~ C2
+    C2 ~~~ D
+    D1 ~~~ D2
+    D2 ~~~ E
+    E1 ~~~ E2
+    E2 ~~~ F
+    F1 ~~~ F2
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,C1,C2,D,D1,D2,E,E1,E2,F,F1,F2 baseNeutral;
+    linkStyle default stroke-width:2px;
 ```
+
+**Reading key:** R1 = Cost spike; R2 = Latency/SLO breach; R3 = Data inconsistency; R4 = Connectivity failure. These routes suggest checks, not confirmed causes.
 
 ## Common Mistakes / Anti-Patterns
 

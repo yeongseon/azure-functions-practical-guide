@@ -22,6 +22,8 @@ Apply API auth patterns for .NET isolated worker with function keys, Easy Auth, 
 <!-- diagram-id: http-authentication -->
 ```mermaid
 flowchart TD
+    accTitle: Generic service-access flow on the HTTP authentication recipe
+    accDescr: Trigger to function to binding or SDK to Azure service. This conceptual invocation and service-access path does not depict function-key checks, Easy Auth, JWT validation, or their hosting-plan and configuration prerequisites; no authentication ordering or plan-wide support is implied.
     A[Trigger] --> B[Function]
     B --> C[Binding or SDK]
     C --> D[Azure service]

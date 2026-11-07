@@ -11,7 +11,7 @@ content_sources:
     - id: prerequisites
       type: flowchart
       source: self-generated
-      justification: Flow view of prerequisites, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative, non-exhaustive triage for rising backlog or lag; plan limits, scale-controller behavior and host configuration depend on the hosting plan and trigger type, so branches suggest checks and are not confirmed causes or lab evidence.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
@@ -73,15 +73,24 @@ STORAGE_NAME="stmyappprod"
 <!-- diagram-id: prerequisites -->
 ```mermaid
 flowchart TD
-    A[Backlog or lag rising] --> B[Compare executions vs source backlog]
-    B --> C{Executions scaling with demand?}
-    C -->|No| D[Check listener and scale-controller signals]
-    C -->|Yes| E[Check dependency bottlenecks]
-    D --> F{Plan limit reached?}
-    F -->|Yes| G[Increase plan capacity]
-    F -->|No| H[Review host and trigger configuration]
-    E --> I[Target downstream service constraints]
+    accTitle: Scaling issues first-response decisions
+    accDescr: Illustrative triage for rising backlog or lag. Compare executions with source backlog. If executions do not scale with demand, check listener and scale-controller signals, then plan limits: Yes leads to capacity, No to host and trigger configuration. If executions scale with demand, check dependency bottlenecks and downstream constraints. Routes suggest investigations, not confirmed causes.
+    A(["Backlog or lag rising"]) --> B["Compare executions<br/>vs source backlog"]
+    B --> C{"Executions scaling<br/>with demand?"}
+    C -->|No| D["Check listener and<br/>scale-controller signals"]
+    D --> F{"Plan limit reached?"}
+    F -->|Yes| G(["Increase plan capacity"])
+    F -->|No| H(["Review host and<br/>trigger configuration"])
+    C -->|Yes| E["Check dependency<br/>bottlenecks"]
+    E --> I(["Target downstream<br/>service constraints"])
+    %% Layout-only links tier the branches; they add no diagnostic steps or arrows.
+    G ~~~ H
+    H ~~~ E
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I neutral;
 ```
+
+**Reading key:** Diamonds retain the Yes/No routing; endpoints suggest next actions, not confirmed causes. Use the plan-specific checks below before changing capacity.
 
 ## 1) Check Azure status and regional incidents
 

@@ -15,7 +15,7 @@ content_sources:
     - id: decision-flow
       type: flowchart
       source: self-generated
-      justification: Decision flow, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative triage order over documented host settings (storage connection, worker runtime, runtime version, content share) and Key Vault references; branches select checks, not confirmed causes, and are not an all-plan requirements list.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
@@ -25,7 +25,7 @@ content_sources:
     - id: startup-failure-progression
       type: sequenceDiagram
       source: self-generated
-      justification: Interaction sequence for startup failure progression, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative startup-failure sequence using documented settings and logging concepts; message ordering and retry steps are teaching abstractions, not a platform protocol or retained execution trace.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
@@ -35,7 +35,7 @@ content_sources:
     - id: settings-dependency-map
       type: flowchart
       source: self-generated
-      justification: Flow view of settings dependency map, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Conceptual setting-to-role dependencies synthesized from the cited settings and storage guidance; not an all-plan requirements list or execution order.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
@@ -45,7 +45,7 @@ content_sources:
     - id: function-discovery-timeline
       type: timeline
       source: self-generated
-      justification: Function discovery timeline, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Existing incident-scenario periods and event text retained for correlation; Microsoft Learn supports the configuration concepts, not these timestamps or an independently reproduced run.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
@@ -82,30 +82,59 @@ The objective is to restore host startup, function discovery, and trigger execut
 ### Decision Flow
 <!-- diagram-id: decision-flow -->
 ```mermaid
+%%{init: {"flowchart":{"nodeSpacing":10,"padding":5}}}%%
 flowchart TD
-    A[Functions unavailable or triggers not firing] --> B{Host starts cleanly?}
-    B -->|No| C[Check required app settings baseline]
-    B -->|Yes| D{Functions discovered?}
-    D -->|No| E[Validate worker runtime and extension version]
-    D -->|Yes| F{Specific trigger failing?}
-    F -->|Yes| G[Validate connection setting name and value]
-    F -->|No| H{Key Vault references present?}
-    C --> I{AzureWebJobsStorage valid for plan?}
-    I -->|No| J[Fix storage connection or identity setup]
-    I -->|Yes| K[Check content share settings]
-    E --> L[Set FUNCTIONS_WORKER_RUNTIME correctly]
-    E --> M[Set FUNCTIONS_EXTENSION_VERSION to ~4]
-    G --> N[Correct binding setting key and endpoint]
-    H -->|Yes| O[Validate @Microsoft.KeyVault syntax and identity access]
-    H -->|No| P[Inspect recent config drift and restart]
-    J --> Q[Restart and verify startup logs]
+    accTitle: App settings diagnostic decisions
+    accDescr: Illustrative checks for startup, discovery, trigger connections and Key Vault references; branches select checks, not confirmed causes. Use the evidence and disproof sections before mitigation.
+    A(["A: Unavailable<br/>or no triggers"]) --> B{"Host starts<br/>cleanly?"}
+    B -->|No| C("C: Baseline")
+    B -->|Yes| D{"Functions<br/>discovered?"}
+    D -->|No| E("E: Runtime checks")
+    D -->|Yes| F{"Specific trigger<br/>failing?"}
+    F -->|Yes| G("G: Connection")
+    F -->|No| H{"Vault refs?"}
+    C --> I{"Storage valid?"}
+    I -->|No| J("J: Storage fix")
+    I -->|Yes| K("K: Content share")
+    E --> L("L: Worker setting")
+    E --> M("M: Version ~4")
+    G --> N("N: Binding fix")
+    H -->|Yes| O("O: Vault checks")
+    H -->|No| P("P: Drift / restart")
+    J --> Q(["Q: Restart / logs"])
     K --> Q
     L --> Q
     M --> Q
     N --> Q
     O --> Q
     P --> Q
+    %% Layout-only links serialize checks; they add no diagnostic steps or arrows.
+    J ~~~ K
+    K ~~~ D
+    L ~~~ M
+    M ~~~ F
+    N ~~~ H
+    O ~~~ P
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q neutral;
 ```
+
+**Reading key:** Diamonds ask Yes/No questions; rounded boxes suggest checks or actions, and the final stadium requests recovery verification. These are diagnostic candidates, not proven causes.
+
+| Key | Check or action |
+|---|---|
+| A / Q | Functions unavailable or triggers not firing / restart and verify startup logs. |
+| C | Check required app settings baseline. |
+| E | Validate worker runtime and `FUNCTIONS_EXTENSION_VERSION` (Functions runtime version). |
+| G / H | Validate connection setting name and value / Key Vault references present? |
+| I | Is the host-storage connection valid for the hosting plan, using either `AzureWebJobsStorage` or an identity-based configuration such as `AzureWebJobsStorage__accountName` or service-specific URIs? |
+| J / K | Fix storage connection or identity setup / check content share settings. |
+| L / M | Set `FUNCTIONS_WORKER_RUNTIME` correctly / set `FUNCTIONS_EXTENSION_VERSION` to `~4` for a compatible v4 app. |
+| N | Correct binding setting key and endpoint. |
+| O | Validate `@Microsoft.KeyVault` syntax and identity access. |
+| P | Inspect recent configuration drift and restart. |
+
+Check the applicable hosting model before changing settings; changing an existing app's major runtime version also requires the [runtime migration precautions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-versions#migrate-existing-function-apps).
 
 ### Severity guidance
 | Condition | Severity | Action priority |
@@ -126,35 +155,71 @@ flowchart TD
 ### Startup failure progression
 <!-- diagram-id: startup-failure-progression -->
 ```mermaid
+%%{init: {"sequence":{"width":60,"actorMargin":10,"diagramMarginX":0,"wrap":true}}}%%
 sequenceDiagram
-    participant D as Deployment Pipeline
-    participant A as App Settings Store
-    participant H as Functions Host
+    accTitle: Settings change and startup failure progression
+    accDescr: Illustrative seven-message sequence retaining deployment, settings store, host and logs roles. The depicted errors are scenario steps, not a guaranteed failure cascade or a platform protocol trace.
+    participant D as D
+    participant A as A
+    participant H as H
     participant L as Logs
-    D->>A: Apply new app settings
-    A-->>H: Configuration snapshot on restart
-    H->>H: Validate required host settings
-    H-->>L: Error: invalid or missing setting
-    H->>H: Retry startup
-    H-->>L: Function indexing/discovery failure
-    H-->>L: Trigger listeners not started
+    D->>A: S1
+    A-->>H: S2
+    H->>H: S3
+    H-->>L: S4
+    H->>H: S5
+    H-->>L: S6
+    H-->>L: S7
 ```
+
+| Message | Meaning in this illustrative sequence |
+|---|---|
+| S1 | Apply new app settings. |
+| S2 | Configuration snapshot on restart. |
+| S3 | Validate required host settings. |
+| S4 | Error: invalid or missing setting. |
+| S5 | Retry startup. |
+| S6 | Function indexing/discovery failure. |
+| S7 | Trigger listeners not started. |
+
+**Participants:** D = Deployment Pipeline; A = App Settings Store; H = Functions Host; L = Logs. Keys reduce diagram width without combining their roles.
 
 ### Settings dependency map
 <!-- diagram-id: settings-dependency-map -->
 ```mermaid
 flowchart TD
-    S1[AzureWebJobsStorage] --> H[Host runtime state]
-    S2[FUNCTIONS_WORKER_RUNTIME] --> I[Indexing and worker selection]
-    S3[FUNCTIONS_EXTENSION_VERSION] --> E[Runtime extension bundle]
-    S4[WEBSITE_CONTENTAZUREFILECONNECTIONSTRING] --> C[Content share mount]
-    S5[WEBSITE_CONTENTSHARE] --> C
-    S6["@Microsoft.KeyVault(...)"] --> R[Reference resolver]
+    accTitle: App settings dependency map
+    accDescr: Conceptual setting-to-role dependencies, not transport or an all-plan requirements list. S1 through S6 expand in the adjacent key; runtime version is distinct from an extension bundle.
+    S1["S1: Host storage"] --> H["Host runtime<br/>state"]
+    S2["S2: Worker runtime"] --> I["Indexing and<br/>worker selection"]
+    S3["S3: Runtime version"] --> E["Functions runtime<br/>version"]
+    S4["S4: Files connection"] --> C["Content share<br/>mount"]
+    S5["S5: Share name"] --> C
+    S6["S6: Vault reference"] --> R["Reference resolver"]
     R --> H
     H --> T[Trigger listeners]
     I --> T
     C --> T
+    %% Layout-only tiers add no dependencies or execution steps.
+    H ~~~ S2
+    I ~~~ S3
+    E ~~~ S4
+    S4 ~~~ S5
+    C ~~~ S6
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class S1,S2,S3,S4,S5,S6,H,I,E,C,R,T neutral;
 ```
+
+| Key | Setting or reference |
+|---|---|
+| S1 | `AzureWebJobsStorage` |
+| S2 | `FUNCTIONS_WORKER_RUNTIME` |
+| S3 | `FUNCTIONS_EXTENSION_VERSION` |
+| S4 | `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING` |
+| S5 | `WEBSITE_CONTENTSHARE` |
+| S6 | `@Microsoft.KeyVault(...)` |
+
+**Takeaway:** `FUNCTIONS_EXTENSION_VERSION` selects the Functions runtime, not the binding extension bundle. S4/S5 concern the Azure Files content model used by Premium and Windows Consumption; Flex Consumption uses a deployment blob container instead ([settings](https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings), [storage configuration](https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices#storage-connection-settings)). The arrows group dependencies, not a startup ordering contract.
 
 ## 2. Common Misreadings
 | Misreading | Why incorrect | Correct interpretation |
@@ -395,17 +460,39 @@ If setting rollback alone restores startup and invocation flow without code roll
 ### Function discovery timeline
 <!-- diagram-id: function-discovery-timeline -->
 ```mermaid
+%%{init: {"timeline":{"padding":8,"disableMulticolor":true},"theme":"base","fontSize":60,"themeVariables":{"fontSize":"16px"},"themeCSS":".timeline-node text{font-size:60px;fill:#14202e;} .timeline-node .node-bkg{fill:#e2e8f0;} .eventWrapper{filter:none;} text:not([dy]){font-size:60px;text-anchor:middle;fill:var(--md-default-fg-color);} .lineWrapper line{stroke:var(--md-default-fg-color);}"}}%%
 timeline
+    accTitle: App settings incident timeline with periods P1-P8 and events E1-E8 listed in the adjacent legend
+    accDescr: Eight existing scenario periods from 02h30 through 02h55, in their original order. Periods P1-P8 and events E1-E8 are listed verbatim in the adjacent legend; these times are not newly collected evidence.
     title App settings incident timeline
-    02h30 : Configuration deployment applied
-    02h34 : First Key Vault reference parse error
-    02h36 : Content share mount failures begin
-    02h39 : Host initialization failures increase
-    02h41 : Function discovery drops to zero
-    02h45 : Settings corrected and host restarted
-    02h49 : Functions rediscovered
-    02h55 : Invocation rate returns to baseline
+    P1 : E1
+    P2 : E2
+    P3 : E3
+    P4 : E4
+    P5 : E5
+    P6 : E6
+    P7 : E7
+    P8 : E8
 ```
+
+| Key | Original period or event (verbatim) |
+|---|---|
+| P1 | 02h30 |
+| E1 | Configuration deployment applied |
+| P2 | 02h34 |
+| E2 | First Key Vault reference parse error |
+| P3 | 02h36 |
+| E3 | Content share mount failures begin |
+| P4 | 02h39 |
+| E4 | Host initialization failures increase |
+| P5 | 02h41 |
+| E5 | Function discovery drops to zero |
+| P6 | 02h45 |
+| E6 | Settings corrected and host restarted |
+| P7 | 02h49 |
+| E7 | Functions rediscovered |
+| P8 | 02h55 |
+| E8 | Invocation rate returns to baseline |
 
 ### Normal vs abnormal evidence matrix
 | Dimension | Normal | Abnormal | Interpretation |

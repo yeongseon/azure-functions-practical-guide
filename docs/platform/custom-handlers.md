@@ -7,7 +7,7 @@ content_sources:
     - id: custom-handler-flow
       type: flowchart
       source: self-generated
-      justification: Flow view of the custom handler request/response protocol, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative sequence of the custom handler request/response payload protocol (trigger, host, HTTP POST to the web server, response payload, output bindings), adapted from the custom handlers article; HTTP-only proxying mode is qualified in the accessible description.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-custom-handlers
 content_validation:
@@ -48,6 +48,8 @@ The Functions host translates every trigger into an HTTP request to your web ser
 <!-- diagram-id: custom-handler-flow -->
 ```mermaid
 flowchart TD
+    accTitle: Custom handler request and response flow
+    accDescr: In the standard custom-handler payload protocol, a trigger reaches the Functions host, which sends an HTTP POST payload to the custom handler web server; HTTP-only functions configured for proxying instead forward the HTTP request directly. The response returns to the host for output binding processing. The two host boxes show the same role at different stages, not separate hosts.
     EVENT[Trigger event] --> HOST[Functions host]
     HOST --> REQ[HTTP POST request payload to web server]
     REQ --> WS[Custom handler web server]

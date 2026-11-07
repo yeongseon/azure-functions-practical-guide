@@ -13,21 +13,22 @@ content_sources:
     - id: main-triage-decision-tree
       type: flowchart
       source: self-generated
-      justification: Flow view of main triage decision tree, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative symptom-first routing to twelve investigation endpoints for first-response triage; branch points are triage cues drawn from the diagnostics and monitoring references, not confirmed causes.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
     - id: trigger-specific-decision-tree
       type: flowchart
       source: self-generated
-      justification: Flow view of trigger specific decision tree, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative lookup from trigger type to a symptom question and investigation endpoint; cues such as the HTTP 230-second limit and Blob trigger behavior per plan come from the HTTP and Blob trigger references and are triage cues, not proof of cause.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-http-webhook-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-timer
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-diagnostics
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
@@ -48,60 +49,129 @@ The tree is intentionally symptom-first and optimized for the first 10–15 minu
 
 <!-- diagram-id: main-triage-decision-tree -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 5, 'rankSpacing': 35}}}%%
 flowchart TD
-    S[Incident starts: user-visible impact] --> Q1{Functions executing?}
+    accTitle: Symptom-first incident triage
+    accDescr: Illustrative routing to investigations, not confirmed causes. No invocations branches through enablement, listener, host, authentication and connection checks. Slow or failing executions branch through cold start, dependency and execution timeouts, failure type, deployment timing and memory signals. All twelve investigation endpoints remain alternatives; evidence and disproof determine the diagnosis.
+    S(["Incident starts:<br/>user-visible impact"]) --> Q1{"Functions<br/>executing?"}
 
-    Q1 -->|No invocations| Q1A{Function enabled and listener healthy?}
-    Q1 -->|"Yes but slow/failing"| Q2{Is it a latency issue?}
+    Q1 -->|"No<br/>invocations"| Q1A{"Function enabled and<br/>listener healthy?"}
+    Q1 -->|"Yes but<br/>slow/failing"| Q2{"Is it a<br/>latency issue?"}
 
-    Q1A -->|Function disabled| P1[Playbook: Functions Not Executing]
-    Q1A -->|Listener failed to start| Q1B{Auth or connection error?}
-    Q1A -->|Host not starting| P2[Playbook: App Settings Misconfiguration]
+    Q1A -->|"Function<br/>disabled"| P1(["P1: Not executing"])
+    Q1A -->|"Listener failed<br/>to start"| Q1B{"Auth or<br/>connection error?"}
+    Q1A -->|"Host not<br/>starting"| P2(["P2: App settings"])
 
-    Q1B -->|"Auth error 401/403"| P3["Playbook: Managed Identity / RBAC Failure"]
-    Q1B -->|Connection error| P4[Playbook: Functions Not Executing]
+    Q1B -->|"Auth error<br/>401/403"| P3(["P3: Identity / RBAC"])
+    Q1B -->|"Connection<br/>error"| P4(["P4: Not executing"])
 
-    Q2 -->|Yes, high latency| Q2A{Cold start or dependency?}
-    Q2 -->|"No, errors/failures"| Q3{What type of failure?}
+    Q2 -->|"Yes, high<br/>latency"| Q2A{"Cold start<br/>or dependency?"}
+    Q2 -->|"No,<br/>errors/failures"| Q3{"What type<br/>of failure?"}
 
-    Q2A -->|Cold start pattern| P5[Playbook: High Latency]
-    Q2A -->|Dependency timeout| P6[Check dependency health]
-    Q2A -->|Execution timeout| P7["Playbook: Timeout / Execution Limit Exceeded"]
+    Q2A -->|"Cold start<br/>pattern"| P5(["P5: High latency"])
+    Q2A -->|"Dependency<br/>timeout"| P6(["P6: Dependency"])
+    Q2A -->|"Execution<br/>timeout"| P7(["P7: Timeout"])
 
-    Q3 -->|5xx errors| Q3A{After deployment?}
-    Q3 -->|Exception storm| P8[Playbook: Functions Failing]
-    Q3 -->|Queue backlog growing| P9[Playbook: Queue Piling Up]
+    Q3 -->|5xx errors| Q3A{"After deployment?"}
+    Q3 -->|"Exception<br/>storm"| P8(["P8: Failing"])
+    Q3 -->|"Queue backlog<br/>growing"| P9(["P9: Queue backlog"])
 
-    Q3A -->|Yes| P10[Playbook: Deployment Failures]
-    Q3A -->|No| Q4{Memory or OOM signals?}
+    Q3A -->|Yes| P10(["P10: Deployment"])
+    Q3A -->|No| Q4{"Memory or<br/>OOM signals?"}
 
-    Q4 -->|Yes| P11["Playbook: Out of Memory / Worker Crash"]
-    Q4 -->|No| P12[Use Methodology: build hypotheses from evidence]
+    Q4 -->|Yes| P11(["P11: Memory / crash"])
+    Q4 -->|No| P12(["P12: Methodology"])
+    %% Layout-only links tier alternatives; they add no diagnostic steps or arrows.
+    P1 ~~~ Q1B
+    P3 ~~~ P4
+    P4 ~~~ P2
+    P2 ~~~ Q2
+    P5 ~~~ P6
+    P6 ~~~ P7
+    P7 ~~~ Q3
+    P8 ~~~ P9
+    P9 ~~~ Q3A
+    P10 ~~~ Q4
+    P11 ~~~ P12
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class S,Q1,Q1A,Q1B,Q2,Q2A,Q3,Q3A,Q4,P1,P2,P3,P4,P5,P6,P7,P8,P9,P10,P11,P12 baseNeutral;
+    linkStyle default stroke-width:2px;
 ```
+
+| Key | Full investigation title / destination |
+|---|---|
+| P1 | Playbook: [Functions Not Executing](playbooks/functions-not-executing.md) |
+| P2 | Playbook: [App Settings Misconfiguration](playbooks/auth-config/app-settings-misconfiguration.md) |
+| P3 | Playbook: [Managed Identity / RBAC Failure](playbooks/auth-config/managed-identity-rbac-failure.md) |
+| P4 | Playbook: [Functions Not Executing](playbooks/functions-not-executing.md) |
+| P5 | Playbook: [High Latency](playbooks/high-latency.md) |
+| P6 | Check dependency health |
+| P7 | Playbook: [Timeout / Execution Limit Exceeded](playbooks/triggers/timeout-execution-limit.md) |
+| P8 | Playbook: [Functions Failing](playbooks/functions-failing.md) |
+| P9 | Playbook: [Queue Piling Up](playbooks/queue-piling-up.md) |
+| P10 | Playbook: [Deployment Failures](playbooks/deployment-failures.md) |
+| P11 | Playbook: [Out of Memory / Worker Crash](playbooks/scaling/out-of-memory-worker-crash.md) |
+| P12 | Use Methodology: [build hypotheses from evidence](methodology/troubleshooting-method.md) |
 
 ## Trigger-specific decision tree
 
 <!-- diagram-id: trigger-specific-decision-tree -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 5, 'rankSpacing': 35}}}%%
 flowchart TD
-    A[Trigger type] --> B{Which trigger?}
-    B -->|HTTP| C{Status code pattern}
-    B -->|"Queue/Service Bus"| D{Processing pattern}
-    B -->|Blob| E{Event delivery}
-    B -->|Timer| F{Schedule pattern}
-    B -->|Event Hub| G{Lag pattern}
-    B -->|Durable| H{Orchestration state}
+    accTitle: Trigger-specific symptom routing
+    accDescr: Illustrative lookup for HTTP, Queue or Service Bus, Blob, Timer, Event Hub and Durable symptoms. Each trigger routes through its pattern question to the named investigation. FC1 and Y1 Blob cases, HTTP timeout at 230 seconds, timer flags and all nine endpoints are retained as triage cues, not proof of cause.
+    A(["Trigger type"]) --> B{"Which trigger?"}
+    B -->|HTTP| C{"C: Status?"}
+    B -->|"Queue/<br/>Service<br/>Bus"| D{"D: Work?"}
+    B -->|Blob| E{"E: Delivery?"}
+    B -->|Timer| F{"F: Due?"}
+    B -->|"Event<br/>Hub"| G{"G: Lag?"}
+    B -->|Durable| H{"H: State?"}
 
-    C -->|5xx spike| I[Functions Failing]
-    C -->|Timeout 230s| J["Timeout / Execution Limit"]
-    D -->|Backlog growing| K[Queue Piling Up]
-    D -->|Poison messages| L[Functions Failing]
-    E -->|Not firing on FC1| M[Blob Trigger Not Firing]
-    E -->|Delayed on Y1| N[Blob Trigger Not Firing]
-    F -->|Missed executions| O[Check isPastDue and RunOnStartup]
-    G -->|Checkpoint behind| P["Event Hub / Service Bus Lag"]
-    H -->|Stuck in Running| Q[Durable Orchestration Stuck]
+    C -->|"5xx<br/>spike"| I(["I: Failing"])
+    C -->|"Timeout<br/>230s"| J(["J: Timeout"])
+    D -->|"Backlog<br/>growing"| K(["K: Backlog"])
+    D -->|"Poison<br/>messages"| L(["L: Failing"])
+    E -->|"Not firing<br/>on FC1"| M(["M: Blob trigger"])
+    E -->|"Delayed<br/>on Y1"| N(["N: Blob trigger"])
+    F -->|"Missed<br/>executions"| O(["O: Timer flags"])
+    G -->|"Checkpoint<br/>behind"| P(["P: Lag"])
+    H -->|"Stuck in<br/>Running"| Q(["Q: Stuck"])
+    %% Layout-only links tier trigger families; they add no diagnostic steps or arrows.
+    I ~~~ J
+    J ~~~ D
+    K ~~~ L
+    L ~~~ E
+    M ~~~ N
+    N ~~~ F
+    O ~~~ G
+    P ~~~ H
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q baseNeutral;
+    linkStyle default stroke-width:2px;
 ```
+
+| Key | Full pattern question |
+|---|---|
+| C | Status code pattern |
+| D | Processing pattern |
+| E | Event delivery |
+| F | Schedule pattern |
+| G | Lag pattern |
+| H | Orchestration state |
+
+| Key | Full outcome / destination |
+|---|---|
+| I | [Functions Failing](playbooks/functions-failing.md) |
+| J | [Timeout / Execution Limit](playbooks/triggers/timeout-execution-limit.md) |
+| K | [Queue Piling Up](playbooks/queue-piling-up.md) |
+| L | [Functions Failing](playbooks/functions-failing.md) |
+| M | [Blob Trigger Not Firing](playbooks/blob-trigger-not-firing.md) |
+| N | [Blob Trigger Not Firing](playbooks/blob-trigger-not-firing.md) |
+| O | Check isPastDue and RunOnStartup |
+| P | [Event Hub / Service Bus Lag](playbooks/triggers/event-hub-service-bus-lag.md) |
+| Q | [Durable Orchestration Stuck](playbooks/scaling/durable-orchestration-stuck.md) |
 
 ## Playbook leaves (direct links)
 

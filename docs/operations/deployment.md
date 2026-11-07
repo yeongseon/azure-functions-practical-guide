@@ -29,6 +29,8 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-site-updates
+        - https://learn.microsoft.com/en-us/azure/app-service/deploy-staging-slots
 content_validation:
   status: verified
   last_reviewed: 2026-09-11
@@ -212,18 +214,22 @@ Follow the language-specific deployment tracks: [Linux Consumption](../language-
 <!-- diagram-id: deployment-workflow -->
 ```mermaid
 flowchart TD
+    accTitle: Plan-aware deployment workflow
+    accDescr: Illustrative release workflow. Build an artifact, deploy and verify. If slots are supported, swap; otherwise verify the selected update strategy or separate-app cutover. Both paths lead to monitoring. An issue leads to rollback; no issue leads to completion. Slot support and rollback method depend on hosting plan, OS and tier; see the adjacent reading key.
     A[Build] --> B[Artifact]
     B --> C[Deploy]
     C --> D[Verify]
     D --> E{Slots supported?}
     E -- Yes --> F[Swap]
-    E -- No --> G[Verify selected update strategy or separate-app cutover]
+    E -- No --> G["Verify selected update strategy<br/>or separate-app cutover"]
     F --> H[Monitor]
     G --> H[Monitor]
     H --> I{Issue detected?}
     I -- Yes --> J[Rollback]
     I -- No --> K[Complete]
 ```
+
+**Reading key:** The slot path applies to Windows Consumption, Elastic Premium, and Dedicated plans on [Standard, Premium or Isolated tiers](https://learn.microsoft.com/en-us/azure/app-service/deploy-staging-slots). Flex Consumption and Linux Consumption use the no-slot path here; [Flex site updates](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-site-updates) default to `Recreate`, with opt-in `RollingUpdate`. A separate-app cutover needs its own traffic and trigger-ownership plan; it is not a slot swap. “Rollback” means an approved recovery method: reverse a [supported slot swap](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots#roll-back-a-swap) where safe, or redeploy retained code/configuration for Flex; neither implies undoing external state. Monitor and verify actual trigger outcomes using the procedures below.
 
 ### Deploy with Core Tools
 ```bash
@@ -674,3 +680,4 @@ verify runtime compatibility, and validate trigger dependency identity/access.
 - [Recover from a bad Flex deployment](https://learn.microsoft.com/en-us/azure/azure-functions/functions-rollback-deployments)
 - [Azure Storage queue trigger processing and retries](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger#peek-lock)
 - [Durable orchestration versioning](https://learn.microsoft.com/en-us/azure/durable-task/common/durable-orchestration-versioning)
+- [Dedicated-plan staging slot tier requirements](https://learn.microsoft.com/en-us/azure/app-service/deploy-staging-slots)

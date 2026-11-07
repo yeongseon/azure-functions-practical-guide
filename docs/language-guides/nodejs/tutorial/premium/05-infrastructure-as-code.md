@@ -23,6 +23,7 @@ content_sources:
       source: self-generated
       justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-infrastructure-as-code
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node
         - https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
@@ -55,26 +56,34 @@ You will then verify the deployment state using Azure Resource Manager deploymen
 
     The repository template at `infra/premium/main.bicep` deploys a full production-grade Premium stack with VNet integration, private endpoints for storage (blob, queue, table, file), a site private endpoint, RBAC role assignments, and Azure Files content share.
 
-    <!-- diagram-id: what-you-ll-build -->
+<!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
-    BICEP[infra/premium/main.bicep] -->|az deployment group create| RG[Resource Group]
+    accTitle: Node.js Linux Premium EP1 infrastructure resource inventory
+    accDescr: Illustrative Bicep deployment inventory for the Node.js 20 Linux EP1 example. The Deployed Resources group contains the plan, app, Azure Files storage, Application Insights, VNet, private endpoints for blob, queue, table, file and site, and private DNS zones. This is a resource inventory, not a network topology or serial creation order, and does not prove deployment success. The runtime label describes the tutorial configuration, not a current support recommendation.
+    BICEP["infra/premium/main.bicep"] -->|"az deployment<br/>group create"| RG[Resource Group]
 
     subgraph RG_CONTENTS["Deployed Resources"]
-        PLAN[App Service Plan\nEP1 ElasticPremium]
-        FA[Function App\nLinux Node.js 20]
-        ST[Storage Account\nAzure Files]
-        AI[Application Insights]
+        PLAN["App Service Plan<br/>EP1 ElasticPremium"]
+        FA["Function App<br/>Linux Node.js 20"]
+        ST["Storage Account<br/>Azure Files"]
+        AI["Application<br/>Insights"]
         VNET[VNet 10.0.0.0/16]
-        PE[Private Endpoints\nblob, queue, table, file, site]
+        PE["Private Endpoints<br/>blob, queue, table,<br/>file, site"]
         DNS[Private DNS Zones]
+        %% Layout-only inventory tiers; add no dependencies or network arrows.
+        PLAN ~~~ FA
+        FA ~~~ ST
+        ST ~~~ AI
+        AI ~~~ VNET
+        VNET ~~~ PE
+        PE ~~~ DNS
     end
 
     RG --> RG_CONTENTS
 
-    style BICEP fill:#E3F2FD
-    style FA fill:#ff8c00,color:#fff
-    style VNET fill:#E8F5E9
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class BICEP,RG,PLAN,FA,ST,AI,VNET,PE,DNS baseNeutral;
 ```
 
 | CLI element | Explanation |

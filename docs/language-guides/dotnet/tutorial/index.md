@@ -14,6 +14,7 @@ content_sources:
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
 ---
 # Tutorial — Choose Your Hosting Plan
 
@@ -24,20 +25,31 @@ This section provides four complete .NET tracks that follow the same seven-step 
 <!-- diagram-id: which-plan-should-i-start-with -->
 ```mermaid
 flowchart TD
-    Start[Need .NET on Azure Functions] --> Q1{Need scale to zero?}
-    Q1 -->|Yes| Q2{Need VNet integration?}
+    accTitle: Choose a .NET tutorial hosting plan
+    accDescr: Illustrative tutorial-track recommendations, not exclusive plan capabilities or a strict scale-to-zero constraint. Start with the scale-to-zero preference, then the VNet and warm-baseline questions; retain the separate existing-legacy-app path. Read the trade-offs below before choosing a plan.
+    Start["Need .NET on<br/>Azure Functions"] --> Q1{"Prefer scale<br/>to zero?"}
+    Q1 -->|Yes| Q2{"Need VNet<br/>integration?"}
     Q1 -->|No| DEDI[Dedicated]
-    Q2 -->|No| FLEX[Flex Consumption]
+    Q2 -->|No| FLEX["Flex<br/>Consumption"]
     Start -.->|Existing legacy app| CONS[Consumption]
-    Q2 -->|Yes| Q3{Need always-warm baseline?}
+    Q2 -->|Yes| Q3{"Need always-warm<br/>baseline?"}
     Q3 -->|Yes| PREM[Premium]
     Q3 -->|No| FLEX
+
+    %% Layout-only links tier alternatives; they add no decisions or semantic arrows.
+    CONS ~~~ Q1
+    DEDI ~~~ Q2
+    PREM ~~~ FLEX
+    classDef neutral fill:#edf2f7,stroke:#64748b,color:#172033
+    class Start,Q1,Q2,Q3,DEDI,FLEX,CONS,PREM neutral
 
     click CONS "consumption/01-local-run/"
     click FLEX "flex-consumption/01-local-run/"
     click PREM "premium/01-local-run/"
     click DEDI "dedicated/01-local-run/"
 ```
+
+**Takeaway:** Treat these as tutorial starting points, not mutually exclusive capabilities. The Premium outcome trades away scale-to-zero; it does not satisfy a strict scale-to-zero requirement ([hosting comparison](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)). Flex Consumption also offers optional always-ready instances per function or scale group, so a warm baseline does not uniquely imply Premium ([Flex always-ready](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan#always-ready-instances)).
 
 ## Plan Comparison at a Glance
 

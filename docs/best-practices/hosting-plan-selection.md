@@ -69,13 +69,21 @@ Evaluate these factors together when choosing a hosting plan:
 <!-- diagram-id: why-this-matters -->
 ```mermaid
 flowchart TD
-    A[Start: check OS, runtime, region and release needs] --> B{Reuse suitable fixed App Service capacity?}
-    B -->|Yes| C[Evaluate Dedicated with Always On]
-    B -->|No| D{Flex meets capability requirements?}
-    D -->|No| E[Evaluate Premium or Dedicated]
-    D -->|Yes| F{Need a warm baseline?}
-    F -->|Yes| G[Compare Flex always-ready with Premium]
-    F -->|No| H[Start with Flex on demand]
+    accTitle: Hosting plan selection after capability checks
+    accDescr: Illustrative workload-fit choices, not exclusive capabilities or performance guarantees. Check OS, runtime, region and release needs first. Reuse suitable fixed capacity with Dedicated and Always On; otherwise check Flex capability fit, then compare Flex always-ready with Premium if a warm baseline is needed, or start with Flex on demand. If Flex does not fit, evaluate Premium or Dedicated.
+    A["Start: check OS, runtime,<br/>region and release needs"] --> B{"Reuse suitable fixed<br/>App Service capacity?"}
+    B -->|Yes| C["Evaluate Dedicated<br/>with Always On"]
+    B -->|No| D{"Flex meets<br/>capability requirements?"}
+    D -->|No| E["Evaluate Premium<br/>or Dedicated"]
+    D -->|Yes| F{"Need a<br/>warm baseline?"}
+    F -->|Yes| G["Compare Flex always-ready<br/>with Premium"]
+    F -->|No| H["Start with Flex<br/>on demand"]
+    %% Layout-only links tier alternatives; they add no decisions or semantic arrows.
+    C ~~~ D
+    E ~~~ F
+    G ~~~ H
+    classDef neutral fill:#edf2f7,stroke:#64748b,color:#172033
+    class A,B,C,D,E,F,G,H neutral
 ```
 
 For **new serverless apps**, Microsoft recommends Flex Consumption. For **existing Consumption apps**, assess migration rather than making an untested plan switch. Windows-dependent code can still justify legacy Windows Consumption when its constraints fit; it is not the default for new Linux workloads. [Linux Consumption retires on September 30, 2028](https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan) and receives no new features or language versions; Windows Consumption is not affected by that deadline. See the [runtime and migration reference](../reference/platform-limits.md#runtime-support-and-linux-consumption-migration).

@@ -17,8 +17,9 @@ content_sources:
     - id: cold-start-phase-timeline
       type: sequenceDiagram
       source: self-generated
-      justification: Interaction sequence for cold start phase timeline, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative phase handoffs for a cold start on event-driven plans, not a protocol trace or measured timeline. Learn supports that the scale controller monitors event sources and adds instances, and that new instances incur host and worker startup latency; the exact phase breakdown is a simplified conceptual model.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
@@ -27,13 +28,14 @@ content_sources:
     - id: operational-decision-flow
       type: flowchart
       source: self-generated
-      justification: Operational decision flow, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Self-authored operational decision guide for cold-start mitigation, not a Microsoft-prescribed procedure and not proof that startup caused latency. Per-plan branches follow Learn - Consumption has no always-ready capacity, Flex Consumption supports always-ready instances, Premium supports always-ready and pre-warmed instances, and Dedicated requires Always On for reliable operation.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
         - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
         - https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
+        - https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan
 content_validation:
   status: verified
   last_reviewed: 2026-09-11
@@ -103,21 +105,39 @@ Non-HTTP triggers can also experience startup latency when scale controller acti
 #### Cold start phase timeline
 <!-- diagram-id: cold-start-phase-timeline -->
 ```mermaid
+%%{init: {'sequence': {'actorMargin': 5, 'width': 35, 'diagramMarginX': 5, 'wrap': true}}}%%
 sequenceDiagram
+    accTitle: Cold start phases and roles
+    accDescr: Illustrative phase handoffs, not a network route or exact runtime protocol. Client or trigger, scaling, worker allocation, host startup, language worker and application initialization retain their order. The scale controller monitors demand rather than forwarding every request. Completion denotes a response for HTTP, not an HTTP response for every trigger. Full role and exchange labels are in the adjacent key.
     autonumber
-    participant C as Client/Trigger
-    participant S as Scale Controller
-    participant W as Worker Allocation
-    participant H as Host Startup
-    participant L as Language Worker
-    participant A as App Init
-    C->>S: New request/event
-    S->>W: Allocate worker instance
-    W->>H: Start Functions host
-    H->>L: Start language runtime
-    L->>A: Load dependencies and config
-    A-->>C: First request response
+    participant C as C
+    participant S as S
+    participant W as W
+    participant H as H
+    participant L as L
+    participant A as A
+    C->>S: 1
+    S->>W: 2
+    W->>H: 3
+    H->>L: 4
+    L->>A: 5
+    A-->>C: 6
 ```
+
+**Phase key:** C = client/trigger; S = scale-controller role; W = worker allocation;
+H = Functions host startup; L = language worker; A = application initialization.
+This is an illustrative ordering of startup costs, not event transport through
+the scale controller or a guaranteed sequence of internal messages. The controller
+[monitors event demand](https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling#runtime-scaling).
+
+| Exchange | Phase meaning |
+|---|---|
+| 1: C → S | New request/event creates demand. |
+| 2: S → W | Allocate a worker instance. |
+| 3: W → H | Start the Functions host. |
+| 4: H → L | Start the language runtime. |
+| 5: L → A | Load dependencies and configuration. |
+| 6: A → C | First request response for HTTP; completion for other trigger types, not an HTTP response. |
 
 ### 2) Select plan-specific mitigation
 #### Plan-specific mitigation options
@@ -295,28 +315,46 @@ For plans without strong always-ready guarantees, use conservative warmup patter
 3. If strict low-latency is mandatory, use Premium or Dedicated with warm strategy.
 <!-- diagram-id: operational-decision-flow -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 15, 'rankSpacing': 35}}}%%
 flowchart TD
-    A[Start: latency issue identified] --> B{Is p95 within SLO?}
-    B -->|Yes| C[Keep current setup and monitor weekly]
-    B -->|No| D{Startup path optimized?}
-    D -->|No| E["Reduce package/init costs"]
-    E --> F[Observe 24-72 hours]
-    F --> G{Improved?}
+    accTitle: Cold start mitigation decisions
+    accDescr: Illustrative operational guide, not proof that startup caused latency. A p95 SLO check leads to weekly monitoring or startup optimization. Reassess after the illustrative 24-to-72-hour window, then choose Consumption, Flex, Premium or Dedicated mitigation when needed. Improvement returns to monitoring. After plan-specific mitigation, re-measure p95 and p99; adopt the baseline if SLO and cost are acceptable, otherwise seek architecture review. Every Yes/No branch remains explicit.
+    A(["Start: latency<br/>issue identified"]) --> B{"Is p95<br/>within SLO?"}
+    B -->|Yes| C(["C: Keep;<br/>monitor weekly"])
+    B -->|No| D{"Startup path<br/>optimized?"}
+    D -->|No| E["Reduce package<br/>and init costs"]
+    E --> F["Observe<br/>24-72 hours"]
+    F --> G{"Improved?"}
     G -->|Yes| C
-    G -->|No| H{Hosting plan}
+    G -->|No| H{"Hosting plan"}
     D -->|Yes| H
-    H -->|Consumption| I[Move to Flex always-ready or Premium]
-    H -->|Flex| J[Increase always-ready instances]
-    H -->|Premium| K[Tune minimum elastic + pre-warmed]
-    H -->|Dedicated| L[Enable Always On]
-    I --> M[Re-measure p95 and p99]
+    H -->|Consumption| I["I: Change plan"]
+    H -->|Flex| J["J: Increase<br/>always-ready"]
+    H -->|Premium| K["K: Tune<br/>warm capacity"]
+    H -->|Dedicated| L["Enable Always On"]
+    I --> M["Re-measure<br/>p95 and p99"]
     J --> M
     K --> M
     L --> M
-    M --> N{SLO met at acceptable cost?}
-    N -->|Yes| O[Adopt baseline]
-    N -->|No| P[Escalate architecture review]
+    M --> N{"SLO met at<br/>acceptable cost?"}
+    N -->|Yes| O(["Adopt baseline"])
+    N -->|No| P(["P: Architecture<br/>review"])
+    %% Layout-only links tier alternatives; they add no operational steps or semantic arrows.
+    C ~~~ D
+    I ~~~ J
+    J ~~~ K
+    K ~~~ L
+    O ~~~ P
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P baseNeutral;
+    linkStyle default stroke-width:2px;
 ```
+
+**Outcome key:** C keeps the current setup and monitors weekly. I moves from
+Consumption to Flex with always-ready or Premium. J increases Flex always-ready
+instances. K tunes Premium always-ready capacity (`minimumElasticInstanceCount`) and, for HTTP scale-out, the pre-warmed instance buffer. P escalates
+to architecture review. The 24–72-hour observation window is illustrative;
+re-measure p95/p99 and cost rather than treating a plan change as a guaranteed fix.
 
 ### 5) Compare expected outcomes
 The following cold-start duration ranges are operational estimates from field experience and are not official Microsoft benchmark values.
@@ -450,6 +488,7 @@ Escalate to platform diagnostics if startup remains unstable after rollback and 
 - [Platform Hosting](../platform/hosting.md)
 
 ## Sources
+- [Event-driven scaling and scale-controller role](https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling)
 - [Azure Functions hosting options and scaling](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
 - [Flex Consumption plan for Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan)
 - [Azure Functions Premium plan](https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan)

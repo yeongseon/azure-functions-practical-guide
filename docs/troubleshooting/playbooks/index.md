@@ -12,11 +12,10 @@ content_sources:
     - id: incident-playbooks
       type: graph
       source: self-generated
-      justification: Flow view of incident playbooks, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Guide-authored navigation from symptom areas to the playbooks linked below; Learn diagnostics and monitoring provide troubleshooting context, not this guide's category taxonomy or a root-cause classifier.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics
 ---
 # Incident Playbooks
 
@@ -26,28 +25,48 @@ Each playbook follows a hypothesis-driven structure: start from the symptom, lis
 
 <!-- diagram-id: incident-playbooks -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 12, 'rankSpacing': 35}}}%%
 graph TD
-    A[Reported symptom] --> B{Primary symptom area}
+    accTitle: Which incident playbook should I open?
+    accDescr: Navigation from a reported symptom through seven primary symptom areas to twelve playbooks. Execution, Performance, Queue / Event Processing, Deployment, Triggers, Scaling and Auth / Config match the linked sections below. Arrows group destinations, not diagnostic evidence or confirmed causes.
+    A([Reported symptom]) --> B{Primary<br/>symptom area}
     B --> C[Execution]
+    C --> C1["Functions not<br/>executing"]
+    C --> C2["Functions failing<br/>with errors"]
     B --> D[Performance]
-    B --> E["Queue / Event Processing"]
+    D --> D1["High latency /<br/>slow responses"]
+    B --> E["Queue /<br/>Event Processing"]
+    E --> E1["Queue messages<br/>piling up"]
+    E --> E2["Blob trigger<br/>not firing"]
     B --> F[Deployment]
+    F --> F1["Deployment failures"]
     B --> G[Triggers]
+    G --> G1["Timeout /<br/>Execution Limit"]
+    G --> G2["Event Hub /<br/>Service Bus Lag"]
     B --> H[Scaling]
+    H --> H1["Out of Memory /<br/>Worker Crash"]
+    H --> H2["Durable Orchestration<br/>Stuck"]
     B --> I["Auth / Config"]
-    C --> C1[Functions not executing]
-    C --> C2[Functions failing with errors]
-    D --> D1["High latency / slow responses"]
-    E --> E1[Queue messages piling up]
-    E --> E2[Blob trigger not firing]
-    F --> F1[Deployment failures]
-    G --> G1["Timeout / Execution Limit"]
-    G --> G2["Event Hub / Service Bus Lag"]
-    H --> H1["Out of Memory / Worker Crash"]
-    H --> H2[Durable Orchestration Stuck]
-    I --> I1["Managed Identity / RBAC Failure"]
-    I --> I2[App Settings Misconfiguration]
+    I --> I1["Managed Identity /<br/>RBAC Failure"]
+    I --> I2["App Settings<br/>Misconfiguration"]
+    %% Layout-only links tier the categories; they add no navigation or diagnostic arrows.
+    C1 ~~~ C2
+    C2 ~~~ D
+    D1 ~~~ E
+    E1 ~~~ E2
+    E2 ~~~ F
+    F1 ~~~ G
+    G1 ~~~ G2
+    G2 ~~~ H
+    H1 ~~~ H2
+    H2 ~~~ I
+    I1 ~~~ I2
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,C1,C2,D1,E1,E2,F1,G1,G2,H1,H2,I1,I2 baseNeutral;
+    linkStyle default stroke-width:2px;
 ```
+
+**Takeaway:** Choose a symptom area, then open its playbook in the linked tables below. These are navigation categories, not confirmed causes; the playbook supplies the evidence and hypothesis checks.
 
 ---
 

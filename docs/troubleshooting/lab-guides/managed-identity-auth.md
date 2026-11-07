@@ -17,8 +17,9 @@ content_sources:
     - id: 1-1-managed-identity-authentication-flow
       type: sequenceDiagram
       source: self-generated
-      justification: Interaction sequence for managed identity authentication flow, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative logical sequence separating token acquisition from Blob authorization; endpoint and RBAC lifelines are roles, not a measured internal protocol.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
         - https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
@@ -28,18 +29,19 @@ content_sources:
     - id: 1-3-rbac-propagation-timeline
       type: gantt
       source: self-generated
-      justification: Rbac propagation timeline, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Timing model retaining the page's original periods and dates; propagation and cache bars are illustrative, not measurements or platform-wide timing guarantees.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
         - https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
+        - https://learn.microsoft.com/en-us/azure/role-based-access-control/troubleshooting
         - https://learn.microsoft.com/en-us/azure/storage/blobs/authorize-access-azure-active-directory
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
         - https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/activity-log
     - id: 2-2-causal-chain
       type: flowchart
       source: self-generated
-      justification: Flow view of causal chain, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Failure and recovery paths for this lab's hypothesis; the arrows do not independently establish causality or recertify historical results.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
@@ -50,18 +52,20 @@ content_sources:
     - id: 3-7-triage-decision-flow
       type: flowchart
       source: self-generated
-      justification: Triage decision flow, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Diagnostic routing for this lab, retaining every Yes/No outcome; its ten-minute checkpoint is not a universal propagation guarantee.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
         - https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
+        - https://learn.microsoft.com/en-us/azure/role-based-access-control/troubleshooting
         - https://learn.microsoft.com/en-us/azure/storage/blobs/authorize-access-azure-active-directory
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
         - https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/activity-log
     - id: evidence-timeline
       type: gantt
       source: self-generated
-      justification: Evidence timeline, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Rendering of the page's existing historical timeline with unchanged tasks and dates; source review does not validate its retained evidence.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
@@ -131,23 +135,41 @@ When `Storage Blob Data Contributor` is removed from the storage scope, token ac
 
 <!-- diagram-id: 1-1-managed-identity-authentication-flow -->
 ```mermaid
+%%{init: {"sequence":{"width":40,"actorMargin":3,"diagramMarginX":0,"mirrorActors":false}}}%%
 sequenceDiagram
+    accTitle: Managed identity token and Blob authorization sequence
+    accDescr: Illustrative logical sequence with five roles and eight ordered exchanges; the full S1 to S8 message meanings are in the adjacent key. Token acquisition is separate from Blob authorization.
     autonumber
-    participant Func as Azure Function App
-    participant IMDS as Managed Identity Endpoint (IMDS)
-    participant AAD as Microsoft Entra ID
-    participant Blob as Azure Storage Blob API
-    participant AuthZ as RBAC Authorization Engine
+    participant Func as Function<br/>app
+    participant IMDS as MI<br/>endpoint
+    participant AAD as Entra<br/>ID
+    participant Blob as Blob<br/>API
+    participant AuthZ as RBAC<br/>check
 
-    Func->>IMDS: Request token for https://storage.azure.com/
-    IMDS->>AAD: Resolve managed identity and audience
-    AAD-->>IMDS: Access token (JWT)
-    IMDS-->>Func: Return access token
-    Func->>Blob: Blob request with Bearer token
-    Blob->>AuthZ: Evaluate role assignments at scope
-    AuthZ-->>Blob: Allow or deny operation
-    Blob-->>Func: 200/201 on success, 403 on missing role
+    Func->>IMDS: S1
+    IMDS->>AAD: S2
+    AAD-->>IMDS: S3
+    IMDS-->>Func: S4
+    Func->>Blob: S5
+    Blob->>AuthZ: S6
+    AuthZ-->>Blob: S7
+    Blob-->>Func: S8
 ```
+
+**Reading key:** Function app = Azure Function App; MI endpoint = the app-local managed identity token endpoint; Entra ID = Microsoft Entra ID; Blob API = Azure Storage Blob API; RBAC check = the logical authorization evaluation role. The endpoint is not labelled as VM IMDS. The endpoint-to-Entra and Blob-to-RBAC exchanges summarize responsibilities, not measured internal network hops ([managed identities](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity), [Blob authorization](https://learn.microsoft.com/en-us/azure/storage/blobs/authorize-access-azure-active-directory)).
+
+| Key | Message meaning |
+|---|---|
+| S1 | Request token for `https://storage.azure.com/` |
+| S2 | Resolve managed identity and audience |
+| S3 | Access token (JWT) |
+| S4 | Return access token |
+| S5 | Blob request with Bearer token |
+| S6 | Evaluate role assignments at scope |
+| S7 | Allow or deny operation |
+| S8 | 200/201 on success, 403 on missing role |
+
+**Takeaway:** Token acquisition and Blob permission evaluation are separate steps; the success and missing-role responses shown are this scenario's outcomes, not an exhaustive response-code list.
 
 ### 1.2 System-assigned vs user-assigned identity
 
@@ -160,28 +182,46 @@ sequenceDiagram
 
 <!-- diagram-id: 1-3-rbac-propagation-timeline -->
 ```mermaid
+%%{init: {"gantt":{"fontSize":16,"sectionFontSize":16,"leftPadding":175,"rightPadding":35,"barHeight":24,"barGap":10},"theme":"base","themeVariables":{"doneTaskBkgColor":"#e2e8f0","critBkgColor":"#fed7aa","taskBkgColor":"#e2e8f0"},"themeCSS":".grid .tick text{font-size:16px;fill:var(--md-default-fg-color);} .section{opacity:0;} .titleText{font-size:14px;fill:var(--md-default-fg-color);} .sectionTitle{fill:var(--md-default-fg-color);} .taskTextOutsideLeft,.taskTextOutsideRight{fill:var(--md-default-fg-color)!important;} .taskText{fill:#14202e!important;}"}}%%
 gantt
+    accTitle: RBAC change and effective authorization timing model
+    accDescr: Nine original periods across Change Operations, Propagation Window, Runtime Effects and Recovery. T1 to T9 expand in the adjacent key; dates are preserved, not newly validated.
     title RBAC Change to Effective Authorization Timeline
     dateFormat  YYYY-MM-DD HH:mm:ss
-    axisFormat  %H:%M:%S
+    axisFormat  %H:%M
+    tickInterval 10minute
 
     section Change Operations
-    Role assignment deleted                 :done, a1, 2026-04-04 12:14:58, 1m
-    Function app restart initiated          :done, a2, 2026-04-04 12:15:12, 1m
+    T1 :done, a1, 2026-04-04 12:14:58, 1m
+    T2 :done, a2, 2026-04-04 12:15:12, 1m
 
     section Propagation Window
-    RBAC propagation in control plane       :active, b1, 2026-04-04 12:15:00, 8m
-    Token/cache refresh across components   :active, b2, 2026-04-04 12:15:00, 10m
+    T3 :active, b1, 2026-04-04 12:15:00, 8m
+    T4 :active, b2, 2026-04-04 12:15:00, 10m
 
     section Runtime Effects
-    Authorization failures observed         :crit, c1, 2026-04-04 12:17:54, 7m
-    Listener startup failures               :crit, c2, 2026-04-04 12:15:42, 9m
-    Host unhealthy storage signal           :crit, c3, 2026-04-04 12:22:42, 3m
+    T5 :crit, c1, 2026-04-04 12:17:54, 7m
+    T6 :crit, c2, 2026-04-04 12:15:42, 9m
+    T7 :crit, c3, 2026-04-04 12:22:42, 3m
 
     section Recovery
-    Role assignment restored                :done, d1, 2026-04-04 12:23:20, 1m
-    Access becomes effective                :done, d2, 2026-04-04 12:24:31, 1m
+    T8 :done, d1, 2026-04-04 12:23:20, 1m
+    T9 :done, d2, 2026-04-04 12:24:31, 1m
 ```
+
+| Key | Original task label |
+|---|---|
+| T1 | Role assignment deleted |
+| T2 | Function app restart initiated |
+| T3 | RBAC propagation in control plane |
+| T4 | Token/cache refresh across components |
+| T5 | Authorization failures observed |
+| T6 | Listener startup failures |
+| T7 | Host unhealthy storage signal |
+| T8 | Role assignment restored |
+| T9 | Access becomes effective |
+
+**Takeaway:** This timing model retains the original dates and approximate periods. Propagation and cache bars are illustrative explanations, not measured platform-wide delays or a new Azure validation. Microsoft Learn states that Azure RBAC role assignment changes can take up to 10 minutes to take effect and that managed-identity token caches can take up to around 24 hours to reflect group or role membership changes ([RBAC troubleshooting](https://learn.microsoft.com/en-us/azure/role-based-access-control/troubleshooting), [managed identity caching](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity#configure-the-target-resource)); treat these as upper-bound guidance that may vary, not as this lab's measured behavior.
 
 ### 1.4 Common identity failure modes
 
@@ -206,18 +246,26 @@ gantt
 <!-- diagram-id: 2-2-causal-chain -->
 ```mermaid
 flowchart TD
-    A[Role assignment removed] --> B[Blob data-plane authorization denied]
-    B --> C[403 AuthorizationPermissionMismatch]
-    C --> D[Host storage probe failures]
-    D --> E[Listener startup failure]
-    E --> F[scheduled_cleanup not executing]
-    F --> G[Operational symptom: maintenance jobs stop]
+    accTitle: Managed identity lab failure and recovery hypothesis
+    accDescr: Two ordered paths retain the lab's failure and recovery stages, including the 403 signature, host probe, listener, maintenance interruption and recovery checks. Arrows express the hypothesis, not new proof.
+    A["Role assignment<br/>removed"] --> B["Blob data-plane<br/>authorization denied"]
+    B --> C["403<br/>AuthorizationPermissionMismatch"]
+    C --> D["Host storage<br/>probe failures"]
+    D --> E["Listener startup<br/>failure"]
+    E --> F["scheduled_cleanup<br/>not executing"]
+    F --> G["Operational symptom:<br/>maintenance jobs stop"]
 
-    H[Role assignment restored] --> I[Propagation delay window]
-    I --> J[Storage probe succeeded 70ms 4 containers]
-    J --> K[Listener startup succeeds]
-    K --> L[Timer + HTTP blob flows recover]
+    H["Role assignment<br/>restored"] --> I["Propagation<br/>delay window"]
+    I --> J["Storage probe succeeded<br/>70ms, 4 containers"]
+    J --> K["Listener startup<br/>succeeds"]
+    K --> L["Timer + HTTP<br/>blob flows recover"]
+    %% Layout-only link stacks the two paths; it adds no causal step or arrow.
+    G ~~~ H
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J,K,L neutral;
 ```
+
+**Reading key:** The failure signature is `403 AuthorizationPermissionMismatch`; the recovery signature is `Storage probe succeeded (70ms, 4 containers)`. These are the existing lab labels. The arrows model the hypothesis to test against the proof and disproof criteria below; they do not establish a newly verified causal result.
 
 ### 2.3 Proof criteria
 
@@ -775,18 +823,30 @@ Confirm recovery signatures in traces:
 <!-- diagram-id: 3-7-triage-decision-flow -->
 ```mermaid
 flowchart TD
-    A[Symptom: blob operations failing or timer not running] --> B{403 AuthorizationPermissionMismatch present?}
-    B -->|No| C[Investigate non-auth causes: DNS, private endpoint, app bugs]
-    B -->|Yes| D{Function App identity enabled?}
-    D -->|No| E[Enable system-assigned identity and redeploy]
-    D -->|Yes| F{Required role present on correct scope?}
-    F -->|No| G[Create role assignment Storage Blob Data Contributor]
-    F -->|Yes| H{Propagation window elapsed 10+ minutes?}
-    H -->|No| I[Wait and re-test]
-    H -->|Yes| J{Host unhealthy storage or listener errors persist?}
-    J -->|No| K[Issue resolved]
-    J -->|Yes| L["Correlate with network/DNS/access restrictions"]
+    accTitle: Managed identity lab triage decisions
+    accDescr: Five Yes/No checks retain all outcomes: non-auth investigation, enabling identity, creating the lab role, waiting, resolution, or network correlation. This is diagnostic routing, not proof of a root cause.
+    A(["Symptom: blob operations fail<br/>or timer not running"]) --> B{"403 auth mismatch<br/>present?"}
+    B -->|No| C(["Investigate non-auth causes:<br/>DNS, private endpoint,<br/>app bugs"])
+    B -->|Yes| D{"Function App<br/>identity enabled?"}
+    D -->|No| E(["Enable system-assigned<br/>identity and redeploy"])
+    D -->|Yes| F{"Required role present<br/>on correct scope?"}
+    F -->|No| G(["Create role assignment:<br/>Storage Blob<br/>Data Contributor"])
+    F -->|Yes| H{"Propagation checkpoint:<br/>10+ minutes elapsed?"}
+    H -->|No| I(["Wait and re-test"])
+    H -->|Yes| J{"Host storage unhealthy<br/>or listener errors<br/>persist?"}
+    J -->|No| K(["Issue resolved"])
+    J -->|Yes| L(["Correlate with network,<br/>DNS, access restrictions"])
+    %% Layout-only links serialize branches; they add no diagnostic steps or arrows.
+    C ~~~ D
+    E ~~~ F
+    G ~~~ H
+    I ~~~ J
+    K ~~~ L
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J,K,L neutral;
 ```
+
+**Reading key:** “403 auth mismatch” means `403 AuthorizationPermissionMismatch`. The role action retains this lab's `Storage Blob Data Contributor` assignment; it is not a general host-storage permission prescription. The ten-minute check is the original triage checkpoint, not a universal deadline: managed-identity group or role membership caches can take around 24 hours ([managed identity caching](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity#configure-the-target-resource)). Follow the disproof criteria when symptoms persist.
 
 ### 3.8 Clean up
 
@@ -892,27 +952,44 @@ The observed incident chain supports a strict authorization-failure model: the i
 
 <!-- diagram-id: evidence-timeline -->
 ```mermaid
+%%{init: {"gantt":{"fontSize":16,"sectionFontSize":16,"leftPadding":95,"rightPadding":35,"barHeight":24,"barGap":10},"theme":"base","themeVariables":{"doneTaskBkgColor":"#e2e8f0","critBkgColor":"#fed7aa","taskBkgColor":"#e2e8f0"},"themeCSS":".grid .tick text{font-size:16px;fill:var(--md-default-fg-color);} .section{opacity:0;} .titleText{font-size:14px;fill:var(--md-default-fg-color);} .sectionTitle{fill:var(--md-default-fg-color);} .taskTextOutsideLeft,.taskTextOutsideRight{fill:var(--md-default-fg-color)!important;} .taskText{fill:#14202e!important;}"}}%%
 gantt
+    accTitle: Managed identity lab historical evidence timeline
+    accDescr: Eight original periods across Baseline, Trigger, Incident and Recovery, with unchanged dates and durations. T1 to T8 expand in the adjacent key; rendering does not recertify historical evidence.
     title Managed Identity Auth Failure Evidence Timeline
     dateFormat  YYYY-MM-DD HH:mm:ss
-    axisFormat  %H:%M:%S
+    axisFormat  %H:%M
+    tickInterval 10minute
 
     section Baseline
-    Host healthy + blob success               :done, b1, 2026-04-04 12:12:00, 3m
+    T1 :done, b1, 2026-04-04 12:12:00, 3m
 
     section Trigger
-    Remove Blob Data Contributor role         :done, t1, 2026-04-04 12:14:58, 1m
-    Restart Function App                      :done, t2, 2026-04-04 12:15:12, 1m
+    T2 :done, t1, 2026-04-04 12:14:58, 1m
+    T3 :done, t2, 2026-04-04 12:15:12, 1m
 
     section Incident
-    Listener unable to start                  :crit, i1, 2026-04-04 12:15:42, 7m
-    AuthorizationPermissionMismatch spikes    :crit, i2, 2026-04-04 12:17:54, 6m
-    Storage subsystem unhealthy               :crit, i3, 2026-04-04 12:22:42, 2m
+    T4 :crit, i1, 2026-04-04 12:15:42, 7m
+    T5 :crit, i2, 2026-04-04 12:17:54, 6m
+    T6 :crit, i3, 2026-04-04 12:22:42, 2m
 
     section Recovery
-    Restore Blob Data Contributor role        :done, r1, 2026-04-04 12:23:20, 1m
-    Storage probe success + timer resume      :done, r2, 2026-04-04 12:24:31, 2m
+    T7 :done, r1, 2026-04-04 12:23:20, 1m
+    T8 :done, r2, 2026-04-04 12:24:31, 2m
 ```
+
+| Key | Original task label |
+|---|---|
+| T1 | Host healthy + blob success |
+| T2 | Remove Blob Data Contributor role |
+| T3 | Restart Function App |
+| T4 | Listener unable to start |
+| T5 | AuthorizationPermissionMismatch spikes |
+| T6 | Storage subsystem unhealthy |
+| T7 | Restore Blob Data Contributor role |
+| T8 | Storage probe success + timer resume |
+
+**Takeaway:** Read the original periods alongside the timestamped tables above; this redraw preserves their historical content without adding a run or changing an evidence verdict.
 
 ### Evidence Chain: Why This Proves the Hypothesis
 The hypothesis requires more than one isolated signal. It requires a coherent chain:
@@ -939,6 +1016,7 @@ If recovery occurs before role restoration, the hypothesis is falsified for that
 
 ## Sources
 
+- [Managed identities for App Service and Azure Functions](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)
 - [Use managed identities in Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial)
 - [Configure identity-based connections in Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection)
 - [Assign Azure roles using Azure CLI](https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli)

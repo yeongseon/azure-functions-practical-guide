@@ -17,7 +17,7 @@ content_sources:
     - id: scale-controller-fundamentals
       type: flowchart
       source: self-generated
-      justification: Flow view of scale controller fundamentals, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Conceptual summary of event-driven scaling - the scale controller monitors event sources and adjusts instance count. Not an exact algorithm, and Dedicated plans scale differently.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
@@ -28,7 +28,7 @@ content_sources:
     - id: flex-specific-operational-constraints-affecting-scale
       type: flowchart
       source: self-generated
-      justification: Flow view of flex specific operational constraints affecting scale, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Flex Consumption per-function scaling - HTTP, Blob (Event Grid) and Durable triggers scale as groups, other functions individually, and always-ready settings apply per group or function. Examples are selective; the repeated controller boxes are logical, not separate services.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
@@ -39,7 +39,7 @@ content_sources:
     - id: autoscale-decision-flow
       type: flowchart
       source: self-generated
-      justification: Autoscale decision flow, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative reasoning model for why scale-out did or did not occur; not the scale controller's exact algorithm. Uses Learn concepts of event-driven scale-out, per-instance concurrency and plan instance limits, which vary by plan.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
@@ -50,7 +50,7 @@ content_sources:
     - id: cold-start-versus-warm-path-comparison
       type: sequenceDiagram
       source: self-generated
-      justification: Interaction sequence for cold start versus warm path comparison, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative logical comparison of a cold and warm HTTP path; not a protocol trace or latency benchmark. Learn supports that new instances incur startup delay and that always-ready or pre-warmed instances mitigate it on plans that offer them.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
@@ -123,6 +123,8 @@ Primary signals include:
 <!-- diagram-id: scale-controller-fundamentals -->
 ```mermaid
 flowchart TD
+    accTitle: Scale controller demand decisions
+    accDescr: Conceptual event-driven scaling flow, not event transport. HTTP rate, queue depth and lag inform the scale controller and target instance count. Increase leads to scale-out and new runtime host and worker instances; decrease leads to scale-in. Dedicated uses a different scaling model.
     E["Event Pressure\nHTTP rate / Queue depth / Lag"] --> SC[Scale Controller]
     SC --> O{Target instance count}
     O -->|Increase| SO[Scale out]
@@ -176,16 +178,33 @@ Flex introduces the most significant scaling architecture changes.
 <!-- diagram-id: flex-specific-operational-constraints-affecting-scale -->
 ```mermaid
 flowchart TD
-    H[HTTP Group] --> SCH[Scale Controller]
-    Q[Queue Group] --> SCQ[Scale Controller]
-    B["Blob/Event Grid Group"] --> SCB[Scale Controller]
-    SCH --> IH[HTTP instances]
-    SCQ --> IQ[Queue instances]
-    SCB --> IB[Blob instances]
-    AR[Always-ready settings] -.-> IH
+    accTitle: Flex workload scaling and always-ready capacity
+    accDescr: Selected Flex workloads, not an exhaustive group list. HTTP and Blob Event Grid functions scale in their respective groups; a queue function scales individually. Three controller boxes represent logical scaling decisions, not three separate controller services. Always-ready settings apply to the corresponding workload instances. Solid arrows relate workload demand and capacity; dotted arrows relate configuration.
+    H["HTTP Group"] --> SCH["Scale Controller"]
+    Q["Queue function"] --> SCQ["Scale Controller"]
+    B["Blob/Event Grid<br/>Group"] --> SCB["Scale Controller"]
+    SCH --> IH["HTTP instances"]
+    SCQ --> IQ["Queue instances"]
+    SCB --> IB["Blob instances"]
+    AR["Always-ready<br/>settings"] -.-> IH
     AR -.-> IQ
     AR -.-> IB
+    %% Layout-only links tier workload examples; they add no scaling steps or semantic arrows.
+    IH ~~~ Q
+    IQ ~~~ B
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class H,Q,B,SCH,SCQ,SCB,IH,IQ,IB,AR baseNeutral;
+    linkStyle default stroke-width:2px;
 ```
+
+**Workload key:** HTTP and Blob (Event Grid) are shared scale groups; Q is one
+independently scaled queue function, not a shared queue-trigger group. Durable
+Functions also has a shared group, outside these three selected examples.
+The repeated controller boxes are logical decisions, not separate services;
+solid arrows summarize demand-to-capacity relationships, not event delivery.
+[Flex per-function scaling and always-ready settings](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan#per-function-scaling)
+apply to groups or individual functions.
+
 Operational guidance:
 
 - Assign always-ready instances to latency-sensitive paths first (usually HTTP).
@@ -267,16 +286,25 @@ Use this model to reason about why scale-out did or did not happen in a short ti
 <!-- diagram-id: autoscale-decision-flow -->
 ```mermaid
 flowchart TD
-    A[Trigger receives events] --> B{Backlog or pressure above target?}
-    B -->|No| C[Keep current instance count]
-    B -->|Yes| D{Per-instance concurrency saturated?}
-    D -->|No| E[Increase in-instance parallelism effect]
-    D -->|Yes| F[Request additional instances]
-    F --> G{Capacity available in plan or region?}
-    G -->|No| H[Scale stalls at ceiling]
-    G -->|Yes| I[New instance allocation]
-    I --> J[Host start and trigger listener init]
-    J --> K[Backlog starts draining faster]
+    accTitle: Reasoning about scale-out constraints
+    accDescr: Illustrative decision model, not an exact autoscaler algorithm or a guarantee of higher throughput. No excess pressure keeps current capacity. Excess pressure checks per-instance concurrency; available concurrency permits in-instance parallelism, otherwise request instances and check plan or region capacity. No capacity stalls scale-out; available capacity leads to allocation, host and listener initialization, and the intended faster backlog drain, subject to downstream limits. Every Yes/No outcome remains explicit.
+    A(["Trigger receives<br/>events"]) --> B{"Backlog or pressure<br/>above target?"}
+    B -->|No| C(["Keep current<br/>instance count"])
+    B -->|Yes| D{"Per-instance concurrency<br/>saturated?"}
+    D -->|No| E(["Increase in-instance<br/>parallelism effect"])
+    D -->|Yes| F["Request additional<br/>instances"]
+    F --> G{"Capacity available<br/>in plan or region?"}
+    G -->|No| H(["Scale stalls<br/>at ceiling"])
+    G -->|Yes| I["New instance<br/>allocation"]
+    I --> J["Host start and<br/>trigger listener init"]
+    J --> K(["Backlog starts<br/>draining faster"])
+    %% Layout-only links tier outcomes; they add no scaling steps or semantic arrows.
+    C ~~~ D
+    E ~~~ F
+    H ~~~ I
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J,K baseNeutral;
+    linkStyle default stroke-width:2px;
 ```
 
 Interpretation: if pressure remains high without scale-out, inspect ceilings and concurrency caps before blaming the trigger source.
@@ -286,28 +314,49 @@ The path difference explains why warm floors or always-ready instances can mater
 
 <!-- diagram-id: cold-start-versus-warm-path-comparison -->
 ```mermaid
+%%{init: {'sequence': {'actorMargin': 10, 'width': 45, 'diagramMarginX': 5, 'wrap': true}}}%%
 sequenceDiagram
+    accTitle: Cold and warm HTTP paths
+    accDescr: Illustrative logical HTTP comparison, not a protocol trace or a latency benchmark. The same client, gateway, instance and function roles appear in both paths. Cold adds host allocation, worker loading, runtime and binding initialization before response; warm invokes the handler without those depicted startup stages. Numbers map to complete adjacent exchange labels; lower startup overhead does not guarantee lower total request latency.
     autonumber
-    participant Client
-    participant Gateway
-    participant Instance
-    participant Function
-    rect rgb(255, 245, 238)
+    participant Client as C
+    participant Gateway as G
+    participant Instance as I
+    participant Function as F
+    rect rgb(242, 244, 248)
     note over Client,Function: Cold start path
-    Client->>Gateway: HTTP request
-    Gateway->>Instance: Route request to new instance
-    Instance->>Instance: Allocate host + load worker
-    Instance->>Function: Initialize runtime + bindings
-    Function-->>Client: Response (higher startup latency)
+    Client->>Gateway: 1
+    Gateway->>Instance: 2
+    Instance->>Instance: 3
+    Instance->>Function: 4
+    Function-->>Client: 5
     end
-    rect rgb(235, 250, 240)
+    rect rgb(242, 244, 248)
     note over Client,Function: Warm path
-    Client->>Gateway: HTTP request
-    Gateway->>Instance: Route request to warm instance
-    Instance->>Function: Invoke handler immediately
-    Function-->>Client: Response (lower startup latency)
+    Client->>Gateway: 6
+    Gateway->>Instance: 7
+    Instance->>Function: 8
+    Function-->>Client: 9
     end
 ```
+
+**Sequence key:** C = client; G = gateway; I = instance; F = function. This is a
+logical comparison, not physical allocation ownership or an exact protocol trace.
+The warm path omits the depicted startup work, not all scheduling or dependency
+delay. [Cold-start behavior](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale#cold-start-behavior)
+depends on the hosting plan and warm capacity.
+
+| Exchange | Full meaning |
+|---|---|
+| 1: C → G | Cold path: HTTP request. |
+| 2: G → I | Route request to a new instance. |
+| 3: I → I | Allocate host and load worker (logical startup stage). |
+| 4: I → F | Initialize runtime and bindings. |
+| 5: F → C | Response with additional startup latency. |
+| 6: C → G | Warm path: HTTP request. |
+| 7: G → I | Route request to a warm instance. |
+| 8: I → F | Invoke handler without the depicted cold-start stages; not a guarantee of immediate execution. |
+| 9: F → C | Response with lower startup overhead, not a guaranteed total latency. |
 
 ### CLI inspection examples for scaling configuration
 Use CLI inspection to confirm expected scaling settings before and after load tests.

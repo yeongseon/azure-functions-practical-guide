@@ -13,8 +13,9 @@ content_sources:
     - id: security-model-overview
       type: flowchart
       source: self-generated
-      justification: Flow view of security model overview, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Conceptual map of the endpoint authorization level, optional App Service Authentication and API Management, function code, managed-identity access to Azure resources and network controls; arrows relate responsibilities, not execution order or network hops. Learn supports each layer individually; the combined layering is a guide-specific summary.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
         - https://learn.microsoft.com/en-us/azure/azure-functions/security-concepts
         - https://learn.microsoft.com/en-us/azure/app-service/overview-authentication-authorization
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
@@ -22,7 +23,7 @@ content_sources:
     - id: authentication-architecture-decision-tree
       type: flowchart
       source: self-generated
-      justification: Flow view of authentication architecture decision tree, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative caller-type decision guide, not a Microsoft decision tree or exhaustive threat model. Learn supports App Service Authentication for user sign-in, managed identity for service-to-service access, and JWT validation or API Management policies for protecting HTTP backends; the preference order and function-key fallback wording are this guide's recommendations.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/security-concepts
         - https://learn.microsoft.com/en-us/azure/app-service/overview-authentication-authorization
@@ -33,6 +34,9 @@ content_sources:
       source: self-generated
       justification: Flow view of apim as a security gateway, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
+        - https://learn.microsoft.com/en-us/azure/api-management/rate-limit-policy
+        - https://learn.microsoft.com/en-us/azure/api-management/ip-filter-policy
         - https://learn.microsoft.com/en-us/azure/azure-functions/security-concepts
         - https://learn.microsoft.com/en-us/azure/app-service/overview-authentication-authorization
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
@@ -117,29 +121,52 @@ This section shows portal blades relevant to Function App security architecture 
 <!-- diagram-id: security-model-overview -->
 ```mermaid
 flowchart TD
-    C[Caller] --> A["Endpoint auth\nanonymous/function/admin"]
-    A --> E[App Service Authentication\noptional user auth]
+    accTitle: Security layers and their responsibilities
+    accDescr: Conceptual map of endpoint authorization, optional App Service Authentication and API Management, function code, managed identity, Azure dependencies and network controls. Arrows relate responsibilities, not middleware execution order or network hops.
+    C[Caller] --> A["A: Endpoint auth<br/>anonymous/function/admin"]
+    A --> E["E: App Service<br/>Authentication - optional"]
     E --> F[Function code]
-    F --> MI[Managed Identity]
-    MI --> R[Azure resources\nStorage, Key Vault, SQL, Cosmos DB]
-    G[API Management\noptional gateway] --> A
-    F --> N[Network controls\nVNet, private endpoints, IP rules]
+    F --> MI["MI: Managed identity"]
+    MI --> R["R: Azure resources"]
+    G["G: API Management<br/>optional gateway"] --> A
+    F --> N["N: Network controls"]
+    %% Layout-only link tiers the two responsibility branches; no runtime step or arrow.
+    R ~~~ N
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class C,A,E,F,MI,R,G,N baseNeutral;
 ```
 Most production systems combine multiple controls rather than relying on one.
+
+**Reading key:** This is a responsibility map, not an ordered request trace.
+`A` is the HTTP trigger's `anonymous`/`function`/`admin` authorization level;
+`E` is optional user authentication; `G` is an optional API gateway.
+`R` includes **Storage, Key Vault, SQL and Cosmos DB**; `N` includes **VNet,
+private endpoints and IP rules**. Network controls are not a post-execution step.
+When enabled, [App Service Authentication](https://learn.microsoft.com/en-us/azure/app-service/overview-authentication-authorization#how-it-works)
+runs before application code. `MI → R` summarizes token-backed resource access,
+not an identity proxy ([managed identity](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity#connect-to-azure-services-in-app-code)).
 
 ### Authentication architecture decision tree
 <!-- diagram-id: authentication-architecture-decision-tree -->
 ```mermaid
 flowchart TD
-    S[Start: secure HTTP endpoint] --> Q1{Is the caller a user?}
-    Q1 -->|Yes| U1[Use Easy Auth\nApp Service Authentication]
-    U1 --> U2[Use provider sign-in\nand claims headers]
-    Q1 -->|No| Q2{Is the caller an internal service?}
-    Q2 -->|Yes| S1[Prefer managed identity\nfor service-to-service]
-    S1 --> S2[Use function key only\nif identity is unavailable]
-    Q2 -->|No| Q3{External API consumer?}
-    Q3 -->|Yes| E1[Validate JWT in code\nor in APIM gateway]
-    Q3 -->|No| X[Re-check threat model\nand ingress assumptions]
+    accTitle: Choose authentication by caller type
+    accDescr: Illustrative decision guide. Users lead to Easy Auth and provider sign-in with claims; internal services prefer managed identity with keys only as a fallback; external API consumers lead to JWT validation in code or APIM. Otherwise revisit the threat model and ingress assumptions.
+    S["Start: secure<br/>HTTP endpoint"] --> Q1{"Is the caller<br/>a user?"}
+    Q1 -->|Yes| U1["Use Easy Auth<br/>App Service Authentication"]
+    U1 --> U2["Use provider sign-in<br/>and claims headers"]
+    Q1 -->|No| Q2{"Is the caller an<br/>internal service?"}
+    Q2 -->|Yes| S1["Prefer managed identity<br/>for service-to-service"]
+    S1 --> S2["Use function key only<br/>if identity is unavailable"]
+    Q2 -->|No| Q3{"External API<br/>consumer?"}
+    Q3 -->|Yes| E1["Validate JWT in code<br/>or in APIM gateway"]
+    Q3 -->|No| X["Re-check threat model<br/>and ingress assumptions"]
+    %% Layout-only links tier outcomes; they add no decisions or semantic arrows.
+    U2 ~~~ Q2
+    S2 ~~~ Q3
+    E1 ~~~ X
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class S,Q1,U1,U2,Q2,S1,S2,Q3,E1,X baseNeutral;
 ```
 !!! note "Design principle"
     Function keys are shared secrets, not user identities. If you need per-user claims, conditional access, or delegated permissions, use Easy Auth or OAuth/JWT.
@@ -265,6 +292,8 @@ Place Functions behind APIM when you need centralized API security and governanc
 <!-- diagram-id: apim-as-a-security-gateway -->
 ```mermaid
 flowchart TD
+    accTitle: API Management security gateway and subscription rate limit
+    accDescr: Illustrative client-to-API Management-to-Functions flow with JWT validation, rate limiting and IP filtering at the gateway, followed by managed-identity access to Azure resources. Policies and resource permissions require configuration. The shown `rate-limit` policy applies to subscription-key traffic.
     Client[Client or partner] --> APIM[Azure API Management]
     APIM -->|validate-jwt, rate-limit, ip-filter| Func[Azure Functions]
     Func --> Resource[Azure resources via managed identity]
@@ -450,3 +479,6 @@ Defense-in-depth baseline:
 - [Microsoft Learn: App Service authentication and authorization](https://learn.microsoft.com/en-us/azure/app-service/overview-authentication-authorization)
 - [Microsoft Learn: Identity-based connections tutorial](https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial)
 - [Microsoft Learn: Protect API backend with OAuth in API Management](https://learn.microsoft.com/en-us/azure/api-management/api-management-howto-protect-backend-with-aad)
+- [Microsoft Learn: Managed identities for App Service and Azure Functions](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)
+- [Microsoft Learn: API Management rate-limit policy](https://learn.microsoft.com/en-us/azure/api-management/rate-limit-policy)
+- [Microsoft Learn: API Management ip-filter policy](https://learn.microsoft.com/en-us/azure/api-management/ip-filter-policy)

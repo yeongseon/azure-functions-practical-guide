@@ -11,7 +11,7 @@ content_sources:
     - id: prerequisites
       type: flowchart
       source: self-generated
-      justification: Flow view of prerequisites, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative investigation order for the first ten minutes of a high-latency report (platform status, latency trend, cold-start correlation, dependency and timeout checks); the branches guide hypotheses and are not confirmed causes.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
@@ -71,14 +71,22 @@ WORKSPACE_ID="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 <!-- diagram-id: prerequisites -->
 ```mermaid
 flowchart TD
-    A[High latency reported] --> B["Check regional/platform status"]
-    B --> C[Latency trend by function]
-    C --> D{Cold start correlation?}
-    D -->|Yes| E[Plan-specific cold-start mitigation]
-    D -->|No| F[Dependency latency analysis]
-    F --> G{Timeout signatures present?}
-    G -->|Yes| H["Apply timeout/architecture mitigation"]
-    G -->|No| I[Check recent deployments]
+    accTitle: First ten minutes of high-latency triage
+    accDescr: Illustrative investigation order: regional or platform status, function latency trends, then cold-start correlation. Yes routes to plan-specific mitigation; No to dependency analysis and timeout signatures. Timeout signatures route to timeout or architecture mitigation; otherwise check recent deployments. These checks guide hypotheses, not confirmed causes.
+    A(["High latency reported"]) --> B["Check regional/<br/>platform status"]
+    B --> C["Latency trend<br/>by function"]
+    C --> D{"Cold start<br/>correlation?"}
+    D -->|Yes| E(["Plan-specific<br/>cold-start mitigation"])
+    D -->|No| F["Dependency<br/>latency analysis"]
+    F --> G{"Timeout signatures<br/>present?"}
+    G -->|Yes| H(["Apply timeout/<br/>architecture mitigation"])
+    G -->|No| I(["Check recent deployments"])
+    %% Layout-only links tier alternatives; they add no diagnostic steps or arrows.
+    E ~~~ F
+    H ~~~ I
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I baseNeutral;
+    linkStyle default stroke-width:2px;
 ```
 
 ## 1) Check Azure status and regional incidents

@@ -15,17 +15,18 @@ content_sources:
     - id: the-dns-confusion-trap
       type: flowchart
       source: self-generated
-      justification: Flow view of the dns confusion trap, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative logical DNS resolver paths for linked-VNet versus unlinked or external callers; arrows show lookup and endpoint-selection order, not HTTPS transit through DNS, and not a measured trace.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-create-vnet
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options#private-endpoints
         - https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-dns
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-private-endpoint
     - id: hybrid
       type: flowchart
       source: self-generated
-      justification: Flow view of hybrid, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative comparison of fully private, hub-and-spoke and hybrid design choices with their inbound and outbound models; arrows classify choices, not packet hops, and plan support must be checked per Microsoft Learn.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-create-vnet
@@ -35,13 +36,15 @@ content_sources:
     - id: networking-decision-flowchart
       type: flowchart
       source: self-generated
-      justification: Networking decision flowchart, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative design checklist for private inbound, public-access policy, outbound VNet integration, plan-specific subnet delegation (FC1 Microsoft.App/environments vs Premium/Dedicated Microsoft.Web/serverFarms) and DNS validation; not a complete or plan-exhaustive procedure.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-create-vnet
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options#private-endpoints
         - https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-dns
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-private-endpoint
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
@@ -169,18 +172,26 @@ Root cause is usually split resolution paths without consistent zone linkage.
 <!-- diagram-id: the-dns-confusion-trap -->
 ```mermaid
 flowchart TD
-    C1[Internal caller in linked VNet] --> R1[Private DNS resolver path]
-    R1 --> PZ[privatelink.azurewebsites.net]
-    PZ --> PE[Function App private endpoint IP]
+    accTitle: Private and public DNS path comparison
+    accDescr: Logical resolver paths converge on Function App ingress. The final Yes or No decision concerns public-path policy, not whether private endpoint traffic is blocked; DNS nodes are lookup steps, not HTTPS transit hops.
+    C1["Internal caller<br/>in linked VNet"] --> R1[Private DNS resolver path]
+    R1 --> PZ["privatelink.<br/>azurewebsites.net"]
+    PZ --> PE["Function App<br/>private endpoint IP"]
     PE --> APP[Function App ingress]
-    C2[Caller in unlinked VNet or external network] --> R2[Public DNS resolver path]
-    R2 --> PUB[azurewebsites.net public record]
-    PUB --> PEP[Public endpoint path]
+    C2["Caller in unlinked VNet<br/>or external network"] --> R2[Public DNS resolver path]
+    R2 --> PUB["azurewebsites.net<br/>public record"]
+    PUB --> PEP["Public endpoint<br/>path"]
     PEP --> APP
-    APP --> S{Public network access disabled?}
+    APP --> S{"Public network<br/>access disabled?"}
     S -->|Yes| B1[Public path blocked]
-    S -->|No| B2["Mixed public/private reachability"]
+    S -->|No| B2["Mixed public/private<br/>reachability"]
+    %% Layout-only link serializes resolver paths; adds no lookup steps or arrows.
+    PE ~~~ C2
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class C1,R1,PZ,PE,APP,C2,R2,PUB,PEP,S,B1,B2 neutral;
 ```
+
+**Reading key:** Arrows show logical lookup and endpoint-selection order, not HTTPS passing through DNS. The final decision applies to the **public path**: disabling public network access does not disable private endpoint ingress ([private endpoint security considerations](https://learn.microsoft.com/en-us/azure/app-service/overview-private-endpoint#security-considerations)).
 
 ### Subnet delegation rules (including FC1 difference)
 
@@ -311,15 +322,25 @@ Minimum safe pattern:
 <!-- diagram-id: hybrid -->
 ```mermaid
 flowchart TD
+    accTitle: Networking architecture choices and their ingress and egress models
+    accDescr: Compare fully private, hub-and-spoke and hybrid choices, retaining each choice's inbound and outbound models. Arrows classify architecture choices rather than depicting physical network hops.
     A[Architecture selection] --> F1[Fully private]
     A --> F2[Hub-and-spoke]
     A --> F3[Hybrid]
-    F1 --> I1[Inbound: Private endpoint only]
-    F1 --> O1[Outbound: Private dependencies]
-    F2 --> I2["Inbound: Shared gateway/policies"]
-    F2 --> O2[Outbound: Hub firewall + centralized DNS]
-    F3 --> I3[Inbound: Azure + on-prem caller paths]
-    F3 --> O3["Outbound: VPN/ExpressRoute + forwarders"]
+    F1 --> I1["Inbound:<br/>Private endpoint only"]
+    F1 --> O1["Outbound:<br/>Private dependencies"]
+    F2 --> I2["Inbound:<br/>Shared gateway/policies"]
+    F2 --> O2["Outbound: Hub firewall<br/>+ centralized DNS"]
+    F3 --> I3["Inbound: Azure<br/>+ on-prem caller paths"]
+    F3 --> O3["Outbound: VPN/ExpressRoute<br/>+ forwarders"]
+    %% Layout-only links serialize category pairs; add no choices or traffic arrows.
+    I1 ~~~ O1
+    O1 ~~~ F2
+    I2 ~~~ O2
+    O2 ~~~ F3
+    I3 ~~~ O3
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,F1,F2,F3,I1,O1,I2,O2,I3,O3 neutral;
 ```
 
 ### Networking decision flowchart
@@ -327,25 +348,34 @@ flowchart TD
 <!-- diagram-id: networking-decision-flowchart -->
 ```mermaid
 flowchart TD
-    S[Start networking design] --> I{Need private inbound?}
-    I -->|Yes| PE[Create Function App private endpoint]
-    I -->|No| AR[Use access restrictions and gateway controls]
-    PE --> D1[Configure private DNS zones and VNet links]
-    D1 --> P1{Disable public access required?}
-    P1 -->|Yes| DP[Disable public network access]
-    P1 -->|No| MP["Keep mixed public/private with explicit policy"]
-    AR --> O{Need private or controlled outbound?}
+    accTitle: Functions ingress and egress design decisions
+    accDescr: Illustrative design checklist preserves private-inbound Yes and No branches, both public-access policy outcomes, private or controlled outbound choices, FC1 versus EP or Dedicated delegation, storage endpoint and DNS planning, and final validation. Check hosting-plan support before applying the selected actions.
+    S["Start networking<br/>design"] --> I{"Need private<br/>inbound?"}
+    I -->|Yes| PE["Create Function<br/>App private<br/>endpoint"]
+    I -->|No| AR["Use access<br/>restrictions and<br/>gateway controls"]
+    PE --> D1["Configure private<br/>DNS zones and<br/>VNet links"]
+    D1 --> P1{"Disable public<br/>access<br/>required?"}
+    P1 -->|Yes| DP["Disable public<br/>network access"]
+    P1 -->|No| MP["Keep mixed<br/>public/private<br/>with explicit<br/>policy"]
+    AR --> O{"Need private<br/>or controlled<br/>outbound?"}
     DP --> O
     MP --> O
-    O -->|Yes| VI[Enable VNet integration]
-    O -->|No| PUB[Public outbound acceptable]
-    VI --> SUB{Hosting plan}
-    SUB -->|FC1| DEL1["Delegate subnet: Microsoft.App/environments"]
-    SUB -->|EP or Dedicated| DEL2["Delegate subnet: Microsoft.Web/serverFarms"]
-    DEL1 --> ST[Add storage private endpoint and DNS]
+    O -->|Yes| VI["Enable VNet<br/>integration"]
+    O -->|No| PUB["Public outbound<br/>acceptable"]
+    VI --> SUB{"Hosting<br/>plan"}
+    SUB -->|FC1| DEL1["Delegate subnet:<br/>Microsoft.App/<br/>environments"]
+    SUB -->|EP or Dedicated| DEL2["Delegate subnet:<br/>Microsoft.Web/<br/>serverFarms"]
+    DEL1 --> ST["Add storage<br/>private endpoint<br/>and DNS"]
     DEL2 --> ST
-    ST --> VAL[Run DNS and connectivity validation checklist]
+    ST --> VAL["Run DNS and<br/>connectivity<br/>validation checklist"]
     PUB --> VAL
+    %% Layout-only links serialize alternatives; add no design steps or arrows.
+    AR ~~~ PE
+    DP ~~~ MP
+    PUB ~~~ VI
+    DEL1 ~~~ DEL2
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class S,I,PE,AR,D1,P1,DP,MP,O,VI,PUB,SUB,DEL1,DEL2,ST,VAL neutral;
 ```
 
 ## Validation Checklist
@@ -439,3 +469,4 @@ az functionapp config access-restriction show \
 - [Private endpoints for Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options#private-endpoints)
 - [Azure Private Endpoint DNS configuration](https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-dns)
 - [Azure Functions app settings reference (network-related settings)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings)
+- [Private endpoint security and DNS behavior](https://learn.microsoft.com/en-us/azure/app-service/overview-private-endpoint)

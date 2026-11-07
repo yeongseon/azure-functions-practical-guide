@@ -10,10 +10,11 @@ content_sources:
     - id: architecture
       type: flowchart
       source: self-generated
-      justification: Flow view of architecture, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Logical recipe map of an HTTP starter that schedules an orchestrator which calls activity functions and exposes status endpoints, adapted from the Learn function chaining and async HTTP API patterns. Illustrative; not a network topology, an execution trace or lab evidence.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-bindings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-http-features
 ---
 # Durable Orchestration
 
@@ -24,11 +25,13 @@ This recipe shows Java Durable Functions with an HTTP starter, orchestrator, and
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Java Durable Orchestration recipe roles
+    accDescr: Logical recipe map from a client through an HTTP starter to an orchestrator and its validate and process activities. The status-endpoint link associates the instance with its management interface; it does not represent orchestrator I/O.
     CLIENT[Client] --> STARTER[HTTP starter]
-    STARTER --> ORCH[Orchestrator function]
-    ORCH --> ACT1[Activity: validate]
-    ORCH --> ACT2[Activity: process]
-    ORCH --> STATUS[Durable status endpoints]
+    STARTER --> ORCH["Orchestrator<br/>function"]
+    ORCH --> ACT1["Activity:<br/>validate"]
+    ORCH --> ACT2["Activity:<br/>process"]
+    ORCH --> STATUS["Durable status<br/>endpoints"]
 ```
 
 ## Prerequisites

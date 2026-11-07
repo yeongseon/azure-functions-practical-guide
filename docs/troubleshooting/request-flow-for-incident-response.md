@@ -15,8 +15,9 @@ content_sources:
     - id: request-path-architecture-where-user-facing-failures-surface
       type: flowchart
       source: self-generated
-      justification: Flow view of request path architecture where user facing failures surface, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative HTTP diagnostic checkpoints and candidate failure associations, not a packet trace or a retained incident result; platform front-end and load-balancer layers are plan-dependent and not individually observable.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
@@ -25,8 +26,9 @@ content_sources:
     - id: runtime-and-worker-model-where-execution-failures-originate
       type: flowchart
       source: self-generated
-      justification: Flow view of runtime and worker model where execution failures originate, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative out-of-process runtime diagnostic roles and candidate failures; adjacent text retains host roles and language scope.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
@@ -35,8 +37,9 @@ content_sources:
     - id: deployment-path-where-release-regressions-appear
       type: flowchart
       source: self-generated
-      justification: Flow view of deployment path where release regressions appear, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative release-stage checks and candidate failures, with slot support qualified by hosting plan.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
@@ -45,8 +48,9 @@ content_sources:
     - id: network-and-outbound-path-where-external-connectivity-fails
       type: flowchart
       source: self-generated
-      justification: Flow view of network and outbound path where external connectivity fails, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative outbound diagnostic checkpoints, not serial network hops; integration and egress choices depend on plan and configuration.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/nat-gateway/nat-overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
@@ -55,7 +59,7 @@ content_sources:
     - id: observability-map-where-evidence-is-collected
       type: flowchart
       source: self-generated
-      justification: Flow view of observability map where evidence is collected, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative evidence collection and query map; record availability depends on telemetry and diagnostic configuration.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
@@ -65,7 +69,7 @@ content_sources:
     - id: suggested-incident-flow-through-architecture-layers
       type: flowchart
       source: self-generated
-      justification: Suggested incident flow through architecture layers, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative evidence-routing decisions for incident response, not an exhaustive classifier or proof of root cause.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
@@ -89,12 +93,12 @@ It is intentionally failure-oriented so you can locate where symptoms originate 
 Use it as a fast index from symptom category to architecture layer ownership.
 
 !!! info "When to use this page"
-    Use this page when you need a **request-flow and incident-flow view**: trace a symptom left-to-right through architecture layers to the evidence source that confirms it.
+    Use this page when you need a **request-flow and incident-flow view**: trace a symptom top-to-bottom through architecture layers to the evidence source to check.
     For a **component-by-component reference** (hosting, triggers, scale controller, cold start, Durable), see [Architecture components reference](architecture-components-reference.md) instead.
 
 !!! warning "How to use this document"
     This is not a design poster.
-    Read each diagram left-to-right as an evidence path: symptom → likely layer → telemetry/CLI confirmation.
+    Read each diagram top-to-bottom as a diagnostic map: symptom → candidate layer → evidence to collect, not a confirmed root cause.
 
 !!! tip "Troubleshooting workflow"
 Start with [First 10 Minutes](first-10-minutes/index.md), apply [Methodology](methodology.md), run focused queries from [KQL Query Library](kql/index.md), and then execute scenario fixes from [Functions not executing](playbooks/functions-not-executing.md), [High latency / slow responses](playbooks/high-latency.md), [Functions failing with errors](playbooks/functions-failing.md), or [Deployment failures](playbooks/deployment-failures.md).
@@ -107,21 +111,34 @@ Most `5xx`, timeout, DNS, and auth issues can be mapped to one of these nodes.
 <!-- diagram-id: request-path-architecture-where-user-facing-failures-surface -->
 ```mermaid
 flowchart TD
-    A[Client] --> B[DNS]
-    B --> C[Load Balancer]
-    C --> D[Frontend]
-    D --> E[Worker Process]
-    E --> F[Function Code]
-    F --> G[Output Binding]
-    G --> H[Downstream]
+    accTitle: Request-path diagnostic checkpoints
+    accDescr: Illustrative HTTP diagnostic order from client and DNS to frontend, worker, code, output binding and downstream, with six candidate failure associations. Arrows are not a packet trace, and the load balancer and frontend layers are platform-managed and vary by hosting plan.
+    A["Client"] --> B["DNS"]
+    B --> C["Load Balancer"]
+    C --> D["Frontend"]
+    D --> E["Worker Process"]
+    E --> F["Function Code"]
+    F --> G["Output Binding"]
+    G --> H["Downstream"]
 
-    B -. DNS failure .-> X1[Name resolution error]
-    D -. 401 or 403 auth failure .-> X2[Auth or EasyAuth reject]
-    D -. 5xx gateway failure .-> X3[Frontend-generated 5xx]
-    E -. timeout .-> X4[Execution timeout]
-    G -. 5xx or retry storm .-> X5[Binding write failure]
-    H -. timeout or 5xx .-> X6[Dependency failure]
+    B -. "DNS failure" .-> X1(["Name resolution<br/>error"])
+    D -. "401 or 403<br/>auth failure" .-> X2(["Auth or<br/>EasyAuth reject"])
+    D -. "5xx gateway<br/>failure" .-> X3(["Frontend-generated<br/>5xx"])
+    E -. "timeout" .-> X4(["Execution timeout"])
+    G -. "5xx or<br/>retry storm" .-> X5(["Binding write<br/>failure"])
+    H -. "timeout or 5xx" .-> X6(["Dependency failure"])
+    %% Layout-only links serialize callouts; they add no diagnostic steps or arrows.
+    X1 ~~~ C
+    X2 ~~~ X3
+    X3 ~~~ E
+    X4 ~~~ F
+    X5 ~~~ H
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,X1,X2,X3,X4,X5,X6 neutral;
+    linkStyle default stroke-width:2px;
 ```
+
+**Reading key:** Solid arrows order diagnostic checkpoints, not network connections through DNS. Dotted arrows associate symptoms with candidate failure locations; confirm them using the table below. The output-binding checkpoint applies when the function uses an output binding; code can also call dependencies directly.
 
 ### Request-path failure map
 
@@ -155,16 +172,28 @@ Symptoms often appear in requests, but root causes are frequently in process lif
 
 <!-- diagram-id: runtime-and-worker-model-where-execution-failures-originate -->
 ```mermaid
-flowchart TB
-    A[Functions Host Process\nTrigger listeners, bindings, scale hooks] --> B[Language Worker Process\nPython, Node.js, Java, .NET isolated]
-    B --> C[User Function Code]
+flowchart TD
+    accTitle: Host and worker failure checkpoints
+    accDescr: Illustrative out-of-process model separating host, language worker and user code, with startup, crash, Python contention, memory and blocking-call hypotheses. This is not a measured execution.
+    A["A: Functions Host<br/>Process"] --> B["B: Language Worker<br/>Process"]
+    B --> C["User Function<br/>Code"]
 
-    A -. startup failure .-> X1[Host startup failed]
-    B -. process crash .-> X2[Worker terminated]
-    B -. GIL contention .-> X3[Python throughput collapse]
-    A -. memory pressure .-> X4[Recycle or OOM risk]
-    C -. blocking call .-> X5[Execution timeout]
+    A -. "startup failure" .-> X1(["Host startup<br/>failed"])
+    B -. "process crash" .-> X2(["Worker terminated"])
+    B -. "GIL contention" .-> X3(["Python throughput<br/>collapse"])
+    A -. "memory pressure" .-> X4(["Recycle or<br/>OOM risk"])
+    C -. "blocking call" .-> X5(["Execution timeout"])
+    %% Layout-only links serialize callouts; they add no diagnostic steps or arrows.
+    X1 ~~~ X4
+    X4 ~~~ B
+    X2 ~~~ X3
+    X3 ~~~ C
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,X1,X2,X3,X4,X5 neutral;
+    linkStyle default stroke-width:2px;
 ```
+
+**Reading key:** A retains the host roles: trigger listeners, bindings and scale hooks. B covers Python, Node.js, Java and .NET isolated. This is a logical out-of-process view; .NET in-process code runs in the host instead. Dotted associations suggest hypotheses, not proof that memory pressure, GIL contention or a blocking call caused an incident.
 
 ### Runtime diagnostic table
 
@@ -194,18 +223,30 @@ Map failures by stage so rollback and forward-fix decisions are evidence-based.
 <!-- diagram-id: deployment-path-where-release-regressions-appear -->
 ```mermaid
 flowchart TD
+    accTitle: Deployment-stage failure checkpoints
+    accDescr: Illustrative code, build, artifact, deploy target, slot and production stages with five candidate release-failure associations. The slot stage applies to slot-supported hosting plans, not Flex Consumption.
     A[Code] --> B[Build]
     B --> C[Artifact]
     C --> D[Deploy Target]
     D --> E[Slot]
     E --> F[Production]
 
-    B -. dependency restore failure .-> X1[Build failed]
-    C -. runtime mismatch .-> X2[Invalid artifact]
-    D -. deploy auth failure .-> X3[Deploy rejected]
-    E -. slot config drift .-> X4[Swap risk]
-    F -. post-release 5xx .-> X5[Production regression]
+    B -. "dependency restore<br/>failure" .-> X1(["Build failed"])
+    C -. "runtime mismatch" .-> X2(["Invalid artifact"])
+    D -. "deploy auth<br/>failure" .-> X3(["Deploy rejected"])
+    E -. "slot config<br/>drift" .-> X4(["Swap risk"])
+    F -. "post-release 5xx" .-> X5(["Production<br/>regression"])
+    %% Layout-only links serialize callouts; they add no diagnostic steps or arrows.
+    X1 ~~~ C
+    X2 ~~~ D
+    X3 ~~~ E
+    X4 ~~~ F
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,X1,X2,X3,X4,X5 neutral;
+    linkStyle default stroke-width:2px;
 ```
+
+**Takeaway:** Match the failed stage to its evidence before choosing rollback or forward-fix. The slot/swap stage applies to Consumption, Premium and supported Dedicated tiers; Flex Consumption does not support deployment slots.
 
 ### Deployment stage troubleshooting table
 
@@ -250,19 +291,31 @@ Use this path to separate DNS, routing, NSG, and SNAT issues.
 <!-- diagram-id: network-and-outbound-path-where-external-connectivity-fails -->
 ```mermaid
 flowchart TD
-    A[Function App] --> B[VNet Integration]
+    accTitle: Outbound diagnostic checkpoints
+    accDescr: Illustrative checklist from function app and VNet integration to subnet policies, egress configuration and destination, with five failure associations. These are checks, not serial network appliances.
+    A[Function App] --> B["VNet Integration"]
     B --> C[Subnet]
     C --> D[NSG]
     D --> E[UDR]
     E --> F[NAT or Firewall]
-    F --> G[Internet or Private Endpoint]
+    F --> G["Internet or<br/>Private Endpoint"]
 
-    C -. SNAT exhaustion .-> X1[Ephemeral port depletion]
-    D -. NSG block .-> X2[Outbound denied]
-    E -. UDR misconfiguration .-> X3[Blackhole route]
-    F -. firewall deny .-> X4[Egress blocked]
-    G -. DNS resolution failure .-> X5[Name lookup failed]
+    C -. "SNAT exhaustion" .-> X1(["Ephemeral port<br/>depletion"])
+    D -. "NSG block" .-> X2(["Outbound denied"])
+    E -. "UDR<br/>misconfiguration" .-> X3(["Blackhole route"])
+    F -. "firewall deny" .-> X4(["Egress blocked"])
+    G -. "DNS resolution<br/>failure" .-> X5(["Name lookup<br/>failed"])
+    %% Layout-only links serialize callouts; they add no diagnostic steps or arrows.
+    X1 ~~~ D
+    X2 ~~~ E
+    X3 ~~~ F
+    X4 ~~~ G
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,X1,X2,X3,X4,X5 neutral;
+    linkStyle default stroke-width:2px;
 ```
+
+**Reading key:** This orders checks, not packet hops: NSGs and UDRs are subnet policies, and NAT is not a UDR next hop. The integration checks apply to Flex Consumption, Premium and supported Dedicated configurations, not Consumption. NAT, firewall routing and private endpoints are configuration-dependent features that can be combined; SNAT and DNS callouts are hypotheses to test, not faults proved at a subnet or destination.
 
 ### Outbound failure evidence table
 
@@ -282,14 +335,23 @@ During incidents, choose evidence source by hypothesis rather than querying ever
 <!-- diagram-id: observability-map-where-evidence-is-collected -->
 ```mermaid
 flowchart TD
-    A[Function App] --> B[Application Insights]
-    A --> C[Platform Logs]
-    B --> D[Log Analytics Workspace]
+    accTitle: Incident evidence collection map
+    accDescr: Illustrative configured collection and query relationships among the function app, Application Insights, platform logs, Log Analytics and dashboards. Evidence categories are listed in the adjacent B and C key.
+    A[Function App] --> B["B: Application<br/>Insights"]
+    A --> C["C: Platform Logs"]
+    B --> D["Log Analytics<br/>Workspace"]
     C --> D
-    D --> E[Queries and Dashboards]
-    B -. requests, traces, dependencies, exceptions .-> E
-    C -. startup, recycle, platform events .-> E
+    D --> E["Queries and<br/>Dashboards"]
+    B -. "B categories" .-> E
+    C -. "C categories" .-> E
+    %% Layout-only links serialize sources; they add no diagnostic steps or arrows.
+    B ~~~ C
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E neutral;
+    linkStyle default stroke-width:2px;
 ```
+
+**Reading key:** B categories are `requests`, `traces`, `dependencies` and `exceptions`; C categories are startup, recycle and platform events. Arrows summarize configured collection/query relationships, not a mandatory export pipeline: Application Insights integration, diagnostic settings, instrumentation, log levels and sampling determine available records.
 
 ### Observability source matrix
 
@@ -320,20 +382,32 @@ Use this as the first routing table when symptom ownership is unclear.
 <!-- diagram-id: suggested-incident-flow-through-architecture-layers -->
 ```mermaid
 flowchart TD
-    A[Symptom detected] --> B{User-facing 5xx or timeout?}
-    B -->|Yes| C[Check requests and exceptions]
-    B -->|No| D[Check trigger activity and traces]
-    C --> E{Downstream latency high?}
-    E -->|Yes| F[Inspect dependencies and outbound network path]
-    E -->|No| G[Inspect worker and host lifecycle]
-    D --> H{No listener startup events?}
-    H -->|Yes| I[Investigate host startup and config]
-    H -->|No| J[Inspect trigger source and backlog]
-    F --> K[Apply smallest safe mitigation]
+    accTitle: Incident evidence routing decisions
+    accDescr: Illustrative routing through three Yes or No checks. User-facing failures route to requests and exceptions, other symptoms to trigger activity and traces; all four investigation outcomes converge on the smallest safe mitigation.
+    A(["Symptom detected"]) --> B{"User-facing 5xx<br/>or timeout?"}
+    B -->|Yes| C["Check requests<br/>and exceptions"]
+    B -->|No| D["Check trigger activity<br/>and traces"]
+    C --> E{"Downstream<br/>latency high?"}
+    E -->|Yes| F["F: Dependencies<br/>and outbound"]
+    E -->|No| G["G: Worker and<br/>host lifecycle"]
+    D --> H{"No listener<br/>startup events?"}
+    H -->|Yes| I["I: Host startup<br/>and config"]
+    H -->|No| J["J: Trigger source<br/>and backlog"]
+    F --> K(["Apply smallest<br/>safe mitigation"])
     G --> K
     I --> K
     J --> K
+    %% Layout-only links serialize branches; they add no diagnostic steps or arrows.
+    F ~~~ G
+    G ~~~ D
+    J ~~~ K
+    I ~~~ J
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J,K neutral;
+    linkStyle default stroke-width:2px;
 ```
+
+**Reading key:** F: inspect dependencies and outbound network path; G: inspect worker and host lifecycle; I: investigate host startup and config; J: inspect trigger source and backlog. Preserve both answers at each diamond; these are investigation routes, not confirmed causes. Missing listener events can also reflect telemetry configuration, so verify collection before treating silence as host failure.
 
 ## See Also
 
@@ -354,3 +428,7 @@ flowchart TD
 - [Azure Functions scale and hosting](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
 - [Application Insights data model](https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model)
 - [Azure Monitor Activity Log](https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/activity-log)
+- [Isolated worker and in-process models](https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide)
+- [Functions deployment slots](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-slots)
+- [Functions triggers and bindings](https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings)
+- [Azure NAT Gateway overview](https://learn.microsoft.com/en-us/azure/nat-gateway/nat-overview)

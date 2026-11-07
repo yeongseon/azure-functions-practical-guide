@@ -58,21 +58,27 @@ You will deploy, send test messages, and verify trigger execution via Applicatio
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
-    FA[Function App\nPremium EP1]
+    accTitle: Node.js Premium trigger and dependency overview
+    accDescr: Conceptual timer, work-items queue, uploads blob and HTTP trigger paths to the Node.js v4 Premium EP1 app, with Storage Account and Application Insights relationships. Source arrows associate independent triggers with the app, not network initiators, a shared-instance boundary or an execution sequence; the timer label matches this page's five-minute sample.
+    FA["Function App<br/>Premium EP1"]
 
-    TIMER[Timer Trigger\nscheduledCleanup\nevery 5 min] --> FA
-    QUEUE[Queue Trigger\nqueueProcessor\nwork-items] --> FA
-    BLOB[Blob Trigger\nblobProcessor\nuploads/] --> FA
-    HTTP[HTTP Triggers\nhelloHttp, health, info] --> FA
+    TIMER["Timer Trigger<br/>scheduledCleanup<br/>every 5 min"] --> FA
+    QUEUE["Queue Trigger<br/>queueProcessor<br/>work-items"] --> FA
+    BLOB["Blob Trigger<br/>blobProcessor<br/>uploads/"] --> FA
+    HTTP["HTTP Triggers<br/>helloHttp, health, info"] --> FA
 
     FA --> ST[Storage Account]
     FA --> AI[Application Insights]
+    %% Layout-only links tier independent sources and dependencies; no execution steps or arrows added.
+    TIMER ~~~ QUEUE
+    QUEUE ~~~ BLOB
+    BLOB ~~~ HTTP
+    ST ~~~ AI
 
-    style FA fill:#ff8c00,color:#fff
-    style TIMER fill:#E3F2FD
-    style QUEUE fill:#E8F5E9
-    style BLOB fill:#FFF3E0
+    classDef default fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
 ```
+
+**Reading key:** Source arrows associate independent triggers with the Premium app, not network initiator paths or sequential executions. Storage and Application Insights are separate app relationships, not additional trigger stages.
 
 ## Steps
 

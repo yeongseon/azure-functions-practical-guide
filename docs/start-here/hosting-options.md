@@ -16,7 +16,7 @@ content_sources:
     - id: hosting-options
       type: flowchart
       source: self-generated
-      justification: Flow view of hosting options, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative orientation to this guide's four hosting-plan starting points, not exclusive capability tests or Microsoft-prescribed routing; Microsoft Learn supplies the plan qualifications below.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan
@@ -35,14 +35,24 @@ All comparisons are based on Microsoft Learn documentation.
 <!-- diagram-id: hosting-options -->
 ```mermaid
 flowchart TD
-    A[Start] --> B{New serverless app?}
-    B -->|Yes| C[Flex Consumption]
-    B -->|No| D{Need warm capacity controls?}
+    accTitle: Hosting-plan starting points in this guide
+    accDescr: Illustrative orientation, not exclusive platform guidance. Start with the new-serverless-app question; Yes leads to Flex Consumption. Otherwise the warm-capacity question leads to Premium on Yes, or the existing-App-Service-capacity question on No. That question leads to Dedicated on Yes and legacy Consumption on No. Read the plan qualifications below.
+    A[Start] --> B{"New serverless<br/>app?"}
+    B -->|Yes| C["Flex<br/>Consumption"]
+    B -->|No| D{"Need warm<br/>capacity controls?"}
     D -->|Yes| E[Premium]
-    D -->|No| F{Already on App Service capacity?}
+    D -->|No| F{"Already on<br/>App Service capacity?"}
     F -->|Yes| G[Dedicated]
-    F -->|No| H[Consumption\nlegacy only]
+    F -->|No| H["Consumption<br/>legacy only"]
+    %% Layout-only links tier outcomes; they add no decision or semantic arrow.
+    C ~~~ D
+    E ~~~ F
+    G ~~~ H
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H neutral;
 ```
+
+**Takeaway:** This is the guide's illustrative starting route, not a platform decision rule or an exhaustive capability comparison. The Flex recommendation assumes a Linux-compatible app; Flex also offers optional always-ready instances, so the warm-capacity branch does not exclude it ([Flex Consumption](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan)). Premium's prewarmed buffer serves HTTP scale-out; Dedicated's fixed-capacity shorthand means allocated App Service compute, not an unchanging instance count ([Premium](https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan), [Dedicated](https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan)). “Legacy only” describes this guide's Consumption route, not the only Windows-capable plan ([hosting comparison](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)).
 
 ## Portal Walkthrough
 

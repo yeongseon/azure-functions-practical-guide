@@ -24,9 +24,11 @@ This recipe covers Blob trigger processing plus blob input/output bindings in No
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
-    UPLOAD[Blob Upload to incoming container] --> TRIGGER[storageBlob Trigger]
-    TRIGGER --> TRANSFORM[Parse and Transform Content]
-    TRANSFORM --> OUTPUT[Blob Output Binding to processed container]
+    accTitle: Node.js Blob recipe processing and read paths
+    accDescr: The illustrated Node.js v4 processing path runs from upload to the incoming container through storageBlob trigger and transformation to output in the processed container. A separate HTTP path uses a Blob input binding and returns metadata. Arrows show logical recipe stages, not polling or Event Grid delivery internals.
+    UPLOAD["Blob Upload to<br/>incoming container"] --> TRIGGER[storageBlob Trigger]
+    TRIGGER --> TRANSFORM["Parse and<br/>Transform Content"]
+    TRANSFORM --> OUTPUT["Blob Output Binding<br/>to processed container"]
     API[HTTP Trigger] --> INPUT[Blob Input Binding]
     INPUT --> APIRESP[Return Blob Metadata]
 ```

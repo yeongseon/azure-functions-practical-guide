@@ -1,209 +1,390 @@
 (function () {
   "use strict";
 
+  // Material renders each Mermaid diagram inside a closed shadow root, so the
+  // viewer moves the whole host element into the overlay (and back on close)
+  // and zooms it with a CSS transform. It never reads the SVG itself.
+  if (window.__mermaidZoomInstalled) return;
+  window.__mermaidZoomInstalled = true;
+
   var OVERLAY_ID = "mermaid-zoom-overlay";
-  var BOUND_ATTR = "data-mermaid-zoom-bound";
+  var MAX_INITIAL_SCALE = 1.5;
+  var READABLE_SCALE = 0.75;
+  var WIDE_PROBE = 6000;
+  var MAX_SCALE = 8;
+  var MIN_SCALE = 0.3;
+  var PADDING = 24;
+  var DRAG_THRESHOLD = 4;
+  var ZOOM_STEP = 1.4;
 
-  function createOverlay() {
-    var overlay = document.createElement("div");
-    overlay.id = OVERLAY_ID;
+  var active = null;
 
-    var closeBtn = document.createElement("button");
-    closeBtn.className = "mermaid-zoom-close";
-    closeBtn.innerHTML = "&times;";
-    closeBtn.setAttribute("aria-label", "Close");
-
-    var hint = document.createElement("div");
-    hint.className = "mermaid-zoom-hint";
-    hint.textContent = "Scroll to zoom · Drag to pan · Esc to close";
-
-    var container = document.createElement("div");
-    container.className = "mermaid-zoom-container";
-
-    overlay.appendChild(closeBtn);
-    overlay.appendChild(hint);
-    overlay.appendChild(container);
-
-    return { overlay: overlay, container: container, closeBtn: closeBtn };
+  function button(className, label, text) {
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = className;
+    b.setAttribute("aria-label", label);
+    b.textContent = text;
+    return b;
   }
 
-  var currentPlaceholder = null;
-  var currentHost = null;
-  var scale = 1.5;
-  var panX = 0;
-  var panY = 0;
+  function closeOverlay(restoreFocus) {
+    if (!active) return;
+    var state = active;
+    active = null;
 
-  function closeOverlay() {
-    var overlay = document.getElementById(OVERLAY_ID);
-    if (!overlay) return;
+    document.removeEventListener("keydown", state.onKeyDown);
+    window.removeEventListener("resize", state.onResize);
 
-    if (currentPlaceholder && currentHost) {
-      currentHost.style.transform = "";
-      currentHost.style.transformOrigin = "";
-      currentHost.style.cursor = "";
-      currentPlaceholder.replaceWith(currentHost);
+    var host = state.host;
+    host.style.transform = "";
+    host.style.transformOrigin = "";
+    host.style.cursor = "";
+    if (state.placeholder.parentNode) {
+      state.placeholder.replaceWith(host);
     }
 
-    overlay.classList.add("mermaid-zoom-fade-out");
-    setTimeout(function () {
-      if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
-    }, 200);
+    if (state.overlay.parentNode) {
+      state.overlay.parentNode.removeChild(state.overlay);
+    }
+    document.body.style.overflow = state.prevOverflow;
 
-    currentPlaceholder = null;
-    currentHost = null;
-    scale = 1.5;
-    panX = 0;
-    panY = 0;
-
-    document.body.style.overflow = "";
-    document.removeEventListener("keydown", onKeyDown);
-  }
-
-  function onKeyDown(e) {
-    if (e.key === "Escape") closeOverlay();
-  }
-
-  function applyTransform() {
-    if (currentHost) {
-      currentHost.style.transform =
-        "translate(" + panX + "px, " + panY + "px) scale(" + scale + ")";
+    if (restoreFocus !== false && host.isConnected) {
+      try { host.focus({ preventScroll: true }); } catch (err) { /* ignore */ }
     }
   }
 
   function openDiagram(host) {
-    var existing = document.getElementById(OVERLAY_ID);
-    if (existing) closeOverlay();
+    if (active) closeOverlay(false);
 
-    var parts = createOverlay();
+    var overlay = document.createElement("div");
+    overlay.id = OVERLAY_ID;
+    overlay.setAttribute("role", "dialog");
+    overlay.setAttribute("aria-modal", "true");
+    overlay.setAttribute("aria-label", "Diagram viewer");
+
+    var viewport = document.createElement("div");
+    viewport.className = "mermaid-zoom-container";
+
+    var closeBtn = button("mermaid-zoom-close", "Close", "\u00d7");
+    var controls = document.createElement("div");
+    controls.className = "mermaid-zoom-controls";
+    var zoomOutBtn = button("mermaid-zoom-btn", "Zoom out", "\u2212");
+    var fitBtn = button("mermaid-zoom-btn", "Fit to screen", "Fit");
+    var zoomInBtn = button("mermaid-zoom-btn", "Zoom in", "+");
+    controls.appendChild(zoomOutBtn);
+    controls.appendChild(fitBtn);
+    controls.appendChild(zoomInBtn);
+
+    var hint = document.createElement("div");
+    hint.className = "mermaid-zoom-hint";
+    hint.textContent = "Scroll or pinch to zoom \u00b7 Drag to pan \u00b7 Esc to close";
 
     var placeholder = document.createComment("mermaid-zoom-placeholder");
     host.parentNode.insertBefore(placeholder, host);
-    currentPlaceholder = placeholder;
-    currentHost = host;
 
     host.style.transformOrigin = "center center";
     host.style.cursor = "grab";
-    parts.container.appendChild(host);
+    viewport.appendChild(host);
 
-    document.body.appendChild(parts.overlay);
-    document.body.style.overflow = "hidden";
+    overlay.appendChild(viewport);
+    overlay.appendChild(controls);
+    overlay.appendChild(hint);
+    overlay.appendChild(closeBtn);
 
-    requestAnimationFrame(function () {
-      parts.overlay.classList.add("mermaid-zoom-visible");
-      applyTransform();
-    });
+    var scale = 1;
+    var panX = 0;
+    var panY = 0;
+    var naturalW = 1;
+    var naturalW0 = null;
+    var naturalH = 1;
 
-    parts.closeBtn.addEventListener("click", closeOverlay);
-    parts.overlay.addEventListener("click", function (e) {
-      if (e.target === parts.overlay) closeOverlay();
-    });
+    // The host is centered in the viewport, so every point is expressed
+    // relative to the viewport centre (the transform origin).
+    function apply() {
+      host.style.transform =
+        "translate(" + panX + "px, " + panY + "px) scale(" + scale + ")";
+    }
 
-    var isPanning = false;
-    var startX = 0;
-    var startY = 0;
+    // The diagram lives in a closed shadow root, so its SVG cannot be read.
+    // Inside the overlay's flex container the host collapses to a default
+    // width, which shrinks wide diagrams far below their inline size. Recover
+    // the SVG's natural width from layout alone: the SVG keeps its aspect
+    // ratio, so a narrow probe width gives height/width, and a very wide probe
+    // (the SVG is capped at its own viewBox width) gives the natural height.
+    function naturalWidth() {
+      var cs = getComputedStyle(host);
+      var padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+      var padY = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+      function heightAt(w) {
+        host.style.width = w + "px";
+        return host.getBoundingClientRect().height - padY;
+      }
+      var narrow = 120;
+      var ratio = heightAt(narrow) / (narrow - padX);
+      var natural = heightAt(WIDE_PROBE) / ratio;
+      host.style.width = "";
+      if (!(ratio > 0) || !isFinite(natural) || natural < 40 || natural > WIDE_PROBE - padX) return null;
+      return natural + padX;
+    }
 
-    parts.container.addEventListener("wheel", function (e) {
+    function measure() {
+      // Size of the host at scale 1: read it with the transform cleared.
+      var current = host.style.transform;
+      host.style.transform = "";
+      host.style.width = naturalW0 ? naturalW0 + "px" : "";
+      var r = host.getBoundingClientRect();
+      host.style.transform = current;
+      naturalW = Math.max(r.width, 1);
+      naturalH = Math.max(r.height, 1);
+    }
+
+    function fitScale() {
+      var availW = Math.max(viewport.clientWidth - PADDING * 2, 1);
+      var availH = Math.max(viewport.clientHeight - PADDING * 2, 1);
+      return Math.min(availW / naturalW, availH / naturalH);
+    }
+
+    function clamp(s) {
+      return Math.min(Math.max(MIN_SCALE, s), MAX_SCALE);
+    }
+
+    // Zoom about q (offset from the viewport centre) so q stays under the
+    // pointer; (fromX, fromY) is q's previous position for pinch tracking.
+    function zoomAt(qx, qy, next, fromX, fromY) {
+      next = clamp(next);
+      var ratio = next / scale;
+      if (fromX === undefined) { fromX = qx; fromY = qy; }
+      panX = qx - (fromX - panX) * ratio;
+      panY = qy - (fromY - panY) * ratio;
+      scale = next;
+      apply();
+    }
+
+    function centerOffset(clientX, clientY) {
+      var r = viewport.getBoundingClientRect();
+      return { x: clientX - (r.left + r.width / 2), y: clientY - (r.top + r.height / 2) };
+    }
+
+    function zoomCenter(factor) { zoomAt(0, 0, scale * factor); }
+
+    function fit() {
+      scale = clamp(fitScale());
+      panX = 0;
+      panY = 0;
+      apply();
+    }
+
+    closeBtn.addEventListener("click", function () { closeOverlay(); });
+    zoomInBtn.addEventListener("click", function () { zoomCenter(ZOOM_STEP); });
+    zoomOutBtn.addEventListener("click", function () { zoomCenter(1 / ZOOM_STEP); });
+    fitBtn.addEventListener("click", fit);
+
+    viewport.addEventListener("wheel", function (e) {
       e.preventDefault();
-      var delta = e.deltaY > 0 ? -0.1 : 0.1;
-      scale = Math.min(Math.max(0.3, scale + delta), 5);
-      applyTransform();
+      var dy = e.deltaY;
+      if (e.deltaMode === 1) dy *= 16;
+      else if (e.deltaMode === 2) dy *= viewport.clientHeight;
+      var q = centerOffset(e.clientX, e.clientY);
+      zoomAt(q.x, q.y, scale * Math.exp(-dy * (e.ctrlKey ? 0.01 : 0.0015)));
     }, { passive: false });
 
-    parts.container.addEventListener("mousedown", function (e) {
-      if (e.target.closest(".mermaid-zoom-close")) return;
-      isPanning = true;
-      startX = e.clientX - panX;
-      startY = e.clientY - panY;
-      currentHost.style.cursor = "grabbing";
-      e.preventDefault();
-    });
+    // Pointer events cover mouse, touch and pen, and are scoped to the
+    // viewport so nothing is left on `document` after the overlay closes.
+    var pointers = new Map();
+    var dragged = false;
+    var downAt = null;
+    var pinchDist = 0;
+    var pinchMid = null;
 
-    document.addEventListener("mousemove", function handler(e) {
-      if (!isPanning) return;
-      panX = e.clientX - startX;
-      panY = e.clientY - startY;
-      applyTransform();
-    });
+    function pinchState() {
+      var pts = Array.from(pointers.values());
+      var mid = centerOffset((pts[0].x + pts[1].x) / 2, (pts[0].y + pts[1].y) / 2);
+      return { dist: Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y), mid: mid };
+    }
 
-    document.addEventListener("mouseup", function handler() {
-      if (isPanning) {
-        isPanning = false;
-        if (currentHost) currentHost.style.cursor = "grab";
+    viewport.addEventListener("pointerdown", function (e) {
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      try { viewport.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+      if (pointers.size === 1) {
+        dragged = false;
+        downAt = { x: e.clientX, y: e.clientY };
+      } else if (pointers.size === 2) {
+        var st = pinchState();
+        pinchDist = st.dist;
+        pinchMid = st.mid;
+        dragged = true;
       }
+      host.style.cursor = "grabbing";
     });
 
-    var lastTouchDist = 0;
-    parts.container.addEventListener("touchstart", function (e) {
-      if (e.touches.length === 1) {
-        isPanning = true;
-        startX = e.touches[0].clientX - panX;
-        startY = e.touches[0].clientY - panY;
-      } else if (e.touches.length === 2) {
-        isPanning = false;
-        lastTouchDist = Math.hypot(
-          e.touches[0].clientX - e.touches[1].clientX,
-          e.touches[0].clientY - e.touches[1].clientY
-        );
-      }
-    }, { passive: true });
-
-    parts.container.addEventListener("touchmove", function (e) {
-      if (e.touches.length === 1 && isPanning) {
-        panX = e.touches[0].clientX - startX;
-        panY = e.touches[0].clientY - startY;
-        applyTransform();
-      } else if (e.touches.length === 2) {
-        var dist = Math.hypot(
-          e.touches[0].clientX - e.touches[1].clientX,
-          e.touches[0].clientY - e.touches[1].clientY
-        );
-        if (lastTouchDist > 0) {
-          scale = Math.min(Math.max(0.3, scale * (dist / lastTouchDist)), 5);
-          applyTransform();
+    viewport.addEventListener("pointermove", function (e) {
+      var prev = pointers.get(e.pointerId);
+      if (!prev) return;
+      var cur = { x: e.clientX, y: e.clientY };
+      if (pointers.size === 1) {
+        if (downAt && Math.hypot(cur.x - downAt.x, cur.y - downAt.y) > DRAG_THRESHOLD) {
+          dragged = true;
         }
-        lastTouchDist = dist;
+        panX += cur.x - prev.x;
+        panY += cur.y - prev.y;
+        pointers.set(e.pointerId, cur);
+        apply();
+      } else if (pointers.size === 2) {
+        pointers.set(e.pointerId, cur);
+        var st = pinchState();
+        if (pinchDist > 0 && pinchMid) {
+          zoomAt(st.mid.x, st.mid.y, scale * (st.dist / pinchDist), pinchMid.x, pinchMid.y);
+        }
+        pinchDist = st.dist;
+        pinchMid = st.mid;
+        dragged = true;
       }
-    }, { passive: true });
-
-    parts.container.addEventListener("touchend", function () {
-      isPanning = false;
-      lastTouchDist = 0;
     });
 
+    function endPointer(e) {
+      if (!pointers.delete(e.pointerId)) return;
+      pinchDist = 0;
+      pinchMid = null;
+      if (pointers.size === 1) {
+        pointers.forEach(function (pt) { downAt = { x: pt.x, y: pt.y }; });
+      }
+      if (pointers.size === 0) host.style.cursor = "grab";
+    }
+    viewport.addEventListener("pointerup", endPointer);
+    viewport.addEventListener("pointercancel", endPointer);
+    viewport.addEventListener("lostpointercapture", endPointer);
+
+    // Tapping the backdrop (outside the diagram, no drag) closes the viewer.
+    // Pointer capture retargets the click to the viewport, so hit-test the
+    // diagram rectangle by coordinates.
+    viewport.addEventListener("click", function (e) {
+      if (dragged) return;
+      var r = host.getBoundingClientRect();
+      var inside =
+        e.clientX >= r.left && e.clientX <= r.right &&
+        e.clientY >= r.top && e.clientY <= r.bottom;
+      if (!inside) closeOverlay();
+    });
+
+    function onKeyDown(e) {
+      if (e.key === "Tab") {
+        var focusables = Array.from(overlay.querySelectorAll("button"));
+        if (!focusables.length) return;
+        // Move focus manually so it cycles inside the dialog in every browser
+        // (Safari does not make buttons tabbable by default).
+        var idx = focusables.indexOf(document.activeElement);
+        var next = e.shiftKey
+          ? (idx <= 0 ? focusables.length - 1 : idx - 1)
+          : (idx === -1 || idx === focusables.length - 1 ? 0 : idx + 1);
+        e.preventDefault();
+        focusables[next].focus();
+        return;
+      }
+      if (e.key === "Escape") closeOverlay();
+      else if (e.key === "+" || e.key === "=") zoomCenter(ZOOM_STEP);
+      else if (e.key === "-") zoomCenter(1 / ZOOM_STEP);
+      else if (e.key === "0") fit();
+    }
+    // Keep the user's zoom and pan on resize (mobile URL bar show/hide).
+    function onResize() { measure(); }
     document.addEventListener("keydown", onKeyDown);
+    window.addEventListener("resize", onResize);
+
+    active = {
+      host: host,
+      placeholder: placeholder,
+      overlay: overlay,
+      onKeyDown: onKeyDown,
+      onResize: onResize,
+      prevOverflow: document.body.style.overflow
+    };
+    document.body.style.overflow = "hidden";
+    document.body.appendChild(overlay);
+    naturalW0 = naturalWidth();
+    measure();
+    // Opening view: the whole diagram when its text stays legible; otherwise a
+    // readable minimum scale that overflows and is panned or fitted.
+    var fitS = fitScale();
+    scale = clamp(fitS >= READABLE_SCALE ? Math.min(fitS, MAX_INITIAL_SCALE) : READABLE_SCALE);
+    // When the diagram overflows, start at its leading (left/top) edge so it
+    // reads from the beginning instead of from the middle.
+    if (naturalW * scale > viewport.clientWidth) {
+      panX = PADDING - (viewport.clientWidth - naturalW * scale) / 2;
+    }
+    if (naturalH * scale > viewport.clientHeight) {
+      panY = PADDING - (viewport.clientHeight - naturalH * scale) / 2;
+    }
+    apply();
+    requestAnimationFrame(function () {
+      overlay.classList.add("mermaid-zoom-visible");
+    });
+    closeBtn.focus({ preventScroll: true });
   }
 
-  function bindDiagrams() {
-    var diagrams = document.querySelectorAll("div.mermaid:not([" + BOUND_ATTR + "])");
-    diagrams.forEach(function (el) {
-      el.setAttribute(BOUND_ATTR, "true");
-      el.style.cursor = "pointer";
-      el.addEventListener("click", function (e) {
-        e.stopPropagation();
-        openDiagram(el);
-      });
-    });
+  function enhance(root) {
+    if (!root.querySelectorAll) return;
+    Array.prototype.forEach.call(
+      root.querySelectorAll("div.mermaid:not([data-zoom-enhanced])"),
+      function (h) {
+        h.setAttribute("data-zoom-enhanced", "true");
+        h.setAttribute("tabindex", "0");
+        h.setAttribute("role", "button");
+        h.setAttribute("aria-label", "Open diagram in zoom viewer");
+      }
+    );
   }
+
+  function hostFor(e) {
+    var target = e.target;
+    if (!target || !target.closest) return null;
+    // Authored links inside a diagram keep their normal behavior.
+    if (target.closest("a")) return null;
+    var host = target.closest("div.mermaid");
+    // A diagram already inside the overlay must not re-open it.
+    if (!host || host.closest("#" + OVERLAY_ID)) return null;
+    return host;
+  }
+
+  // Delegated listeners are installed once, so diagrams rendered later and
+  // page navigation never stack handlers.
+  document.addEventListener("click", function (e) {
+    if (active) return;
+    var host = hostFor(e);
+    if (!host) return;
+    var sel = window.getSelection && window.getSelection();
+    if (sel && !sel.isCollapsed) return;
+    openDiagram(host);
+  });
+
+  document.addEventListener("keydown", function (e) {
+    if (active || (e.key !== "Enter" && e.key !== " ")) return;
+    var host = hostFor(e);
+    if (!host || e.target !== host) return;
+    e.preventDefault();
+    openDiagram(host);
+  });
 
   function init() {
-    bindDiagrams();
-
-    var observer = new MutationObserver(function (mutations) {
-      var shouldBind = mutations.some(function (m) {
-        return m.addedNodes.length > 0;
+    enhance(document);
+    new MutationObserver(function (mutations) {
+      mutations.forEach(function (m) {
+        Array.prototype.forEach.call(m.addedNodes, function (n) {
+          if (n.nodeType === 1) enhance(n);
+        });
       });
-      if (shouldBind) bindDiagrams();
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
+    }).observe(document.body, { childList: true, subtree: true });
   }
 
-  if (typeof document$ !== "undefined") {
-    document$.subscribe(function () {
-      init();
-    });
-  } else if (document.readyState === "loading") {
+  if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init);
   } else {
     init();
+  }
+
+  // Never leave a stale viewer (and the body scroll lock) behind when Material
+  // swaps the page content.
+  if (typeof document$ !== "undefined" && document$.subscribe) {
+    document$.subscribe(function () { closeOverlay(false); });
   }
 })();

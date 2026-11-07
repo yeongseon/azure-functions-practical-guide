@@ -25,6 +25,8 @@ content_sources:
       source: self-generated
       justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-infrastructure-as-code
+        - https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-java
@@ -53,14 +55,21 @@ You will create a Bicep template that provisions a Dedicated B1 Function App wit
 <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
-    A[Bicep template] --> B[az deployment group create]
-    B --> C[App Service Plan B1]
-    B --> D[Storage Account]
-    B --> E[Application Insights]
-    C --> F["Function App\nJava 17 Linux\nAlwaysOn"]
+    accTitle: Java Linux Dedicated B1 infrastructure map
+    accDescr: Illustrative deployment and configuration relationships for this Java 17 Linux B1 example: plan, storage and Application Insights configure the app with AlwaysOn enabled, followed by publishing from Maven staging. Arrows are logical template inputs and tutorial stages, not network connections, serial resource creation order or proof of a successful deployment.
+    A[Bicep template] --> B["az deployment<br/>group create"]
+    B --> C["App Service<br/>Plan B1"]
+    B --> D["Storage<br/>Account"]
+    B --> E["Application<br/>Insights"]
+    C --> F["Function App<br/>Java 17 Linux<br/>AlwaysOn"]
     D --> F
     E --> F
-    F --> G["func azure functionapp publish"]
+    F --> G["func azure<br/>functionapp publish"]
+    %% Layout-only tiers; add no resource dependencies, steps or visible arrows.
+    C ~~~ D
+    D ~~~ E
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G baseNeutral;
 ```
 
 | CLI element | Explanation |

@@ -18,7 +18,7 @@ content_sources:
     - id: checklists
       type: graph
       source: self-generated
-      justification: Flow view of checklists, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Editorial navigation aid routing an incident to one of three first-response checklists; the categories are this guide's triage grouping, not a Microsoft Learn taxonomy, a measured trace or a root-cause verdict. Monitoring and Service Health documentation inform the signals the checklists use.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
         - https://learn.microsoft.com/en-us/azure/service-health/overview
@@ -32,14 +32,23 @@ These checklists help you quickly narrow down the problem category and identify 
 <!-- diagram-id: checklists -->
 ```mermaid
 graph TD
-    A[Initial incident signal] --> B{Choose first-response checklist}
-    B --> C[Triggers Not Firing checklist]
-    B --> D[High Latency checklist]
-    B --> E[Scaling Issues checklist]
-    C --> F[Trigger playbooks]
-    D --> G[Performance playbooks]
-    E --> H[Scaling playbooks]
+    accTitle: First-response checklist routing
+    accDescr: An initial incident signal leads to a choice of Triggers Not Firing, High Latency or Scaling Issues checklist, then the corresponding trigger, performance or scaling playbooks. These are navigation choices, not confirmed causes.
+    A(["Initial incident signal"]) --> B{"Choose first-response<br/>checklist"}
+    B --> C["Triggers Not Firing<br/>checklist"]
+    C --> F(["Trigger playbooks"])
+    B --> D["High Latency<br/>checklist"]
+    D --> G(["Performance playbooks"])
+    B --> E["Scaling Issues<br/>checklist"]
+    E --> H(["Scaling playbooks"])
+    %% Layout-only links tier the choices; they add no diagnostic steps or arrows.
+    F ~~~ D
+    G ~~~ E
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H neutral;
 ```
+
+**Reading key:** Choose a checklist in the diamond, then follow its playbook endpoint; the three routes do not establish an incident cause.
 
 | Checklist | When to Use |
 |---|---|

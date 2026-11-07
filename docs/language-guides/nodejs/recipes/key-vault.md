@@ -24,13 +24,21 @@ This recipe covers both Key Vault reference app settings and direct SDK access w
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Node.js Key Vault secret availability paths
+    accDescr: The function app uses managed identity for Key Vault access, with secret values available to the HTTP handler through an app-setting reference or a SecretClient SDK call. Arrows summarize logical relationships and secret availability, not connection initiators; platform reference resolution is separate from application SDK retrieval.
     FUNC[Function App] --> MSI[Managed Identity]
     MSI --> KV[Azure Key Vault]
-    KV --> SETTING[App Setting via Key Vault Reference]
+    KV --> SETTING[App Setting via<br/>Key Vault Reference]
     KV --> SDK[SecretClient SDK Call]
     SETTING --> HANDLER[HTTP Trigger Handler]
     SDK --> HANDLER
 ```
+
+**Reading key:** The two branches show secret availability, not outbound request
+direction. App-setting Key Vault references are resolved by the platform;
+`SecretClient` from `@azure/keyvault-secrets` retrieves secrets in application code.
+Managed identity still needs vault permissions; references do not imply a fresh
+vault read on every invocation.
 
 ## Prerequisites
 

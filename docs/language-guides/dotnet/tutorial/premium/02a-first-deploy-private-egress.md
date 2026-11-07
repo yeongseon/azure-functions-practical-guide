@@ -23,17 +23,24 @@ content_sources:
     - id: what-you-ll-build
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Intended Linux EP1 Storage, identity, warm-capacity and ingress relationships; adjacent keys retain the individual endpoints and DNS zones, not a successful deployment claim.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
         - https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
         - https://learn.microsoft.com/en-us/azure/app-service/configure-vnet-integration-enable
         - https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-access-restrictions#app-access
     - id: deployment-verification-results
       type: flowchart
       source: self-generated
-      justification: Flow view of deployment verification results, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative Linux EP1 path, not a measured trace and not evidence that the historical blocked deployment succeeded. Inbound private access uses a site private endpoint; outbound VNet integration (delegated Microsoft.Web/serverFarms subnet) is a separate path to a private backend; pre-warmed instances are a capacity association, not a data hop.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
         - https://learn.microsoft.com/en-us/azure/app-service/configure-vnet-integration-enable
@@ -68,58 +75,77 @@ Deploy a .NET 8 isolated worker Function App to an Elastic Premium plan (`EP1`) 
 !!! info "Infrastructure Context"
     **Plan**: Premium (EP1) | **Network**: VNet + Private Endpoints | **Always warm**: ✅
 
-    Premium deploys with VNet integration (delegated subnet), a private endpoint for inbound access, private DNS zone, and pre-warmed instances. Storage uses connection string or identity-based authentication.
+    This Linux EP1 tutorial configures outbound integration and separate Storage/site private endpoints with linked DNS zones. Host storage can use a connection string or managed identity; the default Azure Files content share uses its separate connection-string configuration. Always-ready capacity and the prewarmed HTTP scale-out buffer are different settings ([Premium](https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan), [storage](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations)).
 
-    <!-- diagram-id: what-you-ll-build -->
+<!-- diagram-id: what-you-ll-build -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 10, 'rankSpacing': 70, 'padding': 8, 'subGraphTitleMargin': {'top': 8, 'bottom': 32}}}}%%
 flowchart TD
-    INET[Internet] -->|HTTPS| FA[Function App\nPremium EP1\nLinux .NET 8 isolated]
-
-    subgraph VNET["VNet 10.20.0.0/16"]
-        subgraph INT_SUB["Integration Subnet 10.20.1.0/24\nDelegation: Microsoft.Web/serverFarms"]
-            FA
+    accTitle: Linux EP1 .NET 8 network and Storage topology
+    accDescr: Public HTTPS after the site private endpoint is added requires publicNetworkAccess explicitly Enabled (H); private site ingress remains separate. Outbound integration to four Storage endpoints, system identity, telemetry and warm capacity are shown. Integration does not deploy the app into the subnet. Endpoint and DNS bundles expand in the adjacent key; historical blocked provisioning remains unchanged.
+    client(["Internet"])
+    app_runtime["Function App<br/>Premium EP1<br/>Linux .NET 8 isolated"]
+    identity{{"System MI<br/>Entra ID"}}
+    telemetry>"Application<br/>Insights"]
+    WARM["Warm capacity<br/>Key: W"]
+    subgraph DNS["Private DNS zones"]
+        dns_fn{{"Blob · Queue<br/>Table · File"}}
+    end
+    subgraph vnet_fn["VNet"]
+        subgraph subnet_int_fn["<div style='width:170px;text-align:right'>Integration<br/>subnet</div>"]
+            vnet_integration[["Outbound<br/>integration"]]
         end
-        subgraph PE_SUB["Private Endpoint Subnet 10.20.2.0/24"]
-            PE_BLOB[PE: blob]
-            PE_QUEUE[PE: queue]
-            PE_TABLE[PE: table]
-            PE_FILE[PE: file]
+        subgraph subnet_pe_fn["<div style='width:130px;text-align:left'>PE<br/>subnet</div>"]
+            pe_storage[["Storage PEs<br/>blob · queue<br/>table · file"]]
         end
     end
-
-    PE_BLOB --> ST["Storage Account\nallowPublicAccess: false\nallowSharedKeyAccess: true"]
-    PE_QUEUE --> ST
-    PE_TABLE --> ST
-    PE_FILE --> ST
-
-    subgraph DNS[Private DNS Zones]
-        DNS_BLOB[privatelink.blob.core.windows.net]
-        DNS_QUEUE[privatelink.queue.core.windows.net]
-        DNS_TABLE[privatelink.table.core.windows.net]
-        DNS_FILE[privatelink.file.core.windows.net]
+    storage_db[("Storage account<br/>Settings: S")]
+    subgraph STORAGE["<div style='width:160px;text-align:left'>Content<br/>Backend</div>"]
+        SHARE[("Azure Files<br/>content share")]
     end
-
-    PE_BLOB -.-> DNS_BLOB
-    PE_QUEUE -.-> DNS_QUEUE
-    PE_TABLE -.-> DNS_TABLE
-    PE_FILE -.-> DNS_FILE
-
-    FA -.->|System-Assigned MI| ENTRA[Microsoft Entra ID]
-    FA --> AI[Application Insights]
-
-    subgraph STORAGE[Content Backend]
-        SHARE[Azure Files\ncontent share]
-    end
-    ST --- SHARE
-
-    WARM["🔥 Pre-warmed instances\nMin: 1, Max: 20-100"] -.- FA
-
-    style FA fill:#0078d4,color:#fff
-    style VNET fill:#E8F5E9,stroke:#4CAF50
-    style ST fill:#FFF3E0
-    style DNS fill:#E3F2FD
-    style WARM fill:#FFF3E0,stroke:#FF9800
+    client -->|"[Configured]<br/>HTTPS if H"| app_runtime
+    app_runtime -.->|"[Configured]<br/>Token"| identity
+    app_runtime -.->|"[Configured]<br/>Telemetry"| telemetry
+    app_runtime -.->|"[Configured]<br/>Capacity"| WARM
+    dns_fn -.->|"[Configured]<br/>VNet link"| vnet_fn
+    app_runtime -->|"[Configured]<br/>Outbound"| vnet_integration
+    vnet_integration -->|"[Configured]<br/>Each PE"| pe_storage
+    pe_storage -->|"[Configured]<br/>Each service"| storage_db
+    storage_db -.->|"[Configured]<br/>Contains"| SHARE
+    %% Layout-only tiers; no additional traffic or deployment stages.
+    identity ~~~ telemetry
+    telemetry ~~~ WARM
+    WARM ~~~ dns_fn
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e;
+    classDef bandMuted fill:#ffffff,stroke:#707e93,stroke-width:1.5px,stroke-dasharray:4 3,color:#14202e;
+    class client,storage_db,SHARE baseNeutral;
+    class app_runtime,vnet_integration,pe_storage focusActive;
+    class identity,telemetry,dns_fn,WARM bandMuted;
+    linkStyle default stroke-width:2px;
 ```
+
+**Reading key (Linux EP1):** Solid arrows show intended request/data access; dotted arrows show local token acquisition, telemetry, capacity, the VNet DNS-link association or membership, not transport through those roles. VNet integration is outbound-only and does not deploy the app into its integration subnet. The site private endpoint from Step8 is a **separate inbound** path, summarized in the smaller diagram below the historical verification section; it is not one of the Storage endpoints. With `publicNetworkAccess` unset (`null`), adding that site PE disables public ingress by default ([app access](https://learn.microsoft.com/en-us/azure/app-service/overview-access-restrictions#app-access)). The DNS-link arrow terminates at the VNet boundary, not the integration role or a DNS-query hop ([Storage PE/DNS](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints), [networking](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options), [private ingress](https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint)).
+
+| Key | Tutorial configuration / meaning |
+|---|---|
+| H | Public HTTPS after Step8 applies only when `publicNetworkAccess` is explicitly `Enabled`, subject to site access restrictions; this tutorial does not explicitly enable it ([app access](https://learn.microsoft.com/en-us/azure/app-service/overview-access-restrictions#app-access)) |
+| VNet / integration / PE subnet | `10.20.0.0/16` / `10.20.1.0/24` / `10.20.2.0/24`; integration delegation `Microsoft.Web/serverFarms` |
+| S | `allowBlobPublicAccess: false`; shared-key content-share access permitted under the tutorial's policy-allowed scenario. Anonymous-Blob blocking is not public-network disabling |
+| Token | System-assigned managed identity from Microsoft Entra ID; acquisition through the app's local identity endpoint, not a direct app-to-Entra transport hop |
+| W | Premium always-ready instances keep app capacity warm; at least one active billed instance per plan. Prewarmed instances buffer HTTP scale-out (default1), not the overall instance maximum. Linux regional scale-out maxima20–100 are separate; Korea Central lists20 |
+| Content Backend | Azure Files content share; separate connection-string authentication, not the host-storage identity configuration. Private content-share routing must be configured for secured Files access |
+
+The bundled `pe_storage` node represents **four distinct endpoints**. Each row expands integration → endpoint → the matching Storage service and endpoint → linked DNS zone-group association; these are separate service paths, not serial hops, and a workload can use several of them.
+
+| Endpoint → Storage service | Linked private DNS zone |
+|---|---|
+| `PE_BLOB` → Blob | `privatelink.blob.core.windows.net` |
+| `PE_QUEUE` → Queue | `privatelink.queue.core.windows.net` |
+| `PE_TABLE` → Table | `privatelink.table.core.windows.net` |
+| `PE_FILE` → File | `privatelink.file.core.windows.net` |
+
+DNS zones remain outside subnet boundaries and linked to the VNet. These four endpoints are the tutorial's choices, not a universal requirement for every Premium workload. For the site PE, Step8 also links `privatelink.azurewebsites.net`; clients retain the app hostname for TLS rather than calling a bare private IP ([Storage PE/DNS](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints), [secured storage/routing](https://learn.microsoft.com/en-us/azure/azure-functions/configure-networking-how-to), [identity](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity), [Premium capacity](https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan)).
 
 ## Steps
 
@@ -701,7 +727,7 @@ flowchart TD
     |-------------------|---------|
     | `az functionapp show` | Displays function app status. |
     | `--output table` | Formats output as a table. |
-    | `curl --request GET` | Tests the public HTTP endpoint. |
+    | `curl --request GET` | Tests the health endpoint: public access requires H above; from a private-network client with DNS resolving the app hostname to the site PE IP, the request uses the private endpoint ([private ingress/DNS](https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint)). |
 
     Expected output (abridged):
 
@@ -770,12 +796,20 @@ Functions in <app-name>:
 <!-- diagram-id: deployment-verification-results -->
 ```mermaid
 flowchart TD
-    A[Internet] --> B[Private Endpoint]
-    B --> C[Function App Premium EP1]
-    C --> D[VNet Integration Subnet]
-    D --> E[Private Backend]
-    C --> F[Pre-warmed Instances]
+    accTitle: Linux EP1 conceptual private ingress and egress path
+    accDescr: An Internet-origin client needs private network reachability such as VPN or ExpressRoute before using the site private endpoint. The EP1 app uses separate outbound integration for a private backend; prewarmed instances are a capacity association, not a data hop or evidence of successful provisioning.
+    A(["Internet client<br/>with private reachability"]) -->|"[Configured] HTTPS"| B[["Site Private Endpoint"]]
+    B -->|"[Configured] Private Link"| C["Function App<br/>Premium EP1"]
+    C -->|"[Configured] Outbound"| D[["VNet Integration<br/>Subnet"]]
+    D -->|"[Configured] Private access"| E[("Private Backend")]
+    C -.->|"[Configured] HTTP buffer"| F["Pre-warmed Instances"]
+    %% Layout-only capacity tier; no extra data hop.
+    F ~~~ D
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F baseNeutral;
 ```
+
+**Takeaway:** This conceptual Linux EP1 map does **not** change the blocked provisioning result above. The client must have private-network access (for example VPN/ExpressRoute) and resolve the app hostname using the linked `privatelink.azurewebsites.net` zone. The site PE is inbound; integration is outbound; the prewarmed HTTP buffer is neither a backend nor a deployment outcome ([private endpoints](https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint), [Premium](https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan)).
 
 ## Next Steps
 
@@ -794,3 +828,4 @@ flowchart TD
 - [Azure Functions Premium plan](https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan)
 - [Integrate your app with an Azure virtual network](https://learn.microsoft.com/en-us/azure/app-service/configure-vnet-integration-enable)
 - [Use private endpoints for Azure App Service apps](https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint)
+- [App Service app access and public-network defaults](https://learn.microsoft.com/en-us/azure/app-service/overview-access-restrictions#app-access)

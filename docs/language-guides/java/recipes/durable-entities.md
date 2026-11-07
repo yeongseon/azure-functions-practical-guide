@@ -7,10 +7,10 @@ content_sources:
     - id: entity-lifecycle
       type: flowchart
       source: self-generated
-      justification: Flow view of the durable entity lifecycle, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Logical view of how a Java client function, an orchestrator and an entity function access a Counter entity, adapted from the Learn entity access model (signal is one-way, call is two-way, one entity runs operations serially, client reads return committed state). Illustrative; not a network topology or a measured trace.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-entities
-        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-types-features-overview
 ---
 # Durable Entities
 
@@ -32,9 +32,11 @@ Entities are ideal for aggregation (counters, running totals), fan-in of high-vo
 <!-- diagram-id: entity-lifecycle -->
 ```mermaid
 flowchart TD
-    CLIENT["Client Function\nsignalEntity() / getEntityMetadata()"] -->|"signal (one-way)"| ENT["Entity Function\nCounter@key\noperations run serially"]
-    ORC["Orchestrator Function\ncallEntity() / signalEntity()"] -->|"call (two-way)"| ENT
-    ENT -->|"state persisted"| STORE["Durable Store\npersisted entity state"]
+    accTitle: Java Durable Entity access and persisted state
+    accDescr: Logical view of a Counter entity. A client signals an operation without waiting for its result; an orchestrator can call and wait for a response or signal without waiting. Operations for one entity run serially and the runtime persists state. The store-to-client arrow represents reading committed state with getEntityMetadata and readStateAs, not a store-initiated connection.
+    CLIENT["Client Function<br/>signalEntity() /<br/>getEntityMetadata()"] -->|"signal (one-way)"| ENT["Entity Function<br/>Counter@key<br/>operations run serially"]
+    ORC["Orchestrator Function<br/>callEntity() /<br/>signalEntity()"] -->|"call (two-way)"| ENT
+    ENT -->|"state persisted"| STORE["Durable Store<br/>persisted entity state"]
     STORE -->|"readStateAs()"| CLIENT
 ```
 

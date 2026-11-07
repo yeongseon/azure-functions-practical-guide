@@ -1,15 +1,15 @@
 ---
 title: ADR - Diagram Composition and Shared Topology Strategy
-description: Proposed reuse boundaries and composition alternatives for the Azure Functions diagram migration.
+description: Accepted shared literal-Mermaid authoring default, Functions topology templates, and historical composition alternatives.
 ---
 
 # ADR: Diagram Composition and Shared Topology Strategy
 
-This reference records the proposed diagram reuse strategy, not an accepted composition interface or a completed migration.
+This reference records the accepted shared default authoring method and the historical inventory/alternative evaluation. It does not claim the diagram migration or human visual acceptance is complete.
 
 ## Status
 
-Proposed, pending the [App Service shared prototype #283](https://github.com/yeongseon/azure-app-service-practical-guide/issues/283). Functions #211 adopts the resulting contract; #212–#216 migrate the existing diagrams; #217 owns final coverage and rendering validation. Parent #209 remains open.
+**Accepted default authoring: literal, typed Mermaid (Option A)** for both Functions and App Service. Functions [#211](https://github.com/yeongseon/azure-functions-practical-guide/issues/211) supplies the existing templates, while #212–#216 own migrations and #217 owns coverage/rendering checks. The earlier proposed composition alternatives remain historical; the upstream opt-in generator is not a prerequisite. Parent #209 remains open.
 
 ## Context and Problem Statement
 
@@ -46,6 +46,28 @@ A published package offers central distribution but creates versioning, release 
 
 ## Decision Outcome
 
+### Functions-local choice — 2026-11-04
+
+> This paragraph documents the earlier Functions-local choice before the cross-guide decision on 2026-11-06. The accepted shared contract below supersedes its statements that no cross-guide authoring decision had yet been made.
+
+For Functions #211, adopt **Option A: typed literal Mermaid templates and documented
+copyable snippets**, with the [Functions templates](functions-topology-templates.md)
+and a small offline guard. Adopt the App Service [topology grammar v1](https://github.com/yeongseon/azure-app-service-practical-guide/blob/3429ca0/docs/reference/diagram-topology-grammar.md)
+by reference; its status remains **Proposed**. No generator, macro, new plugin or
+dependency is introduced. Literal fences remain visible to the existing validators
+and inventory; the inventory schema/scanner are unchanged.
+
+App Service PR #298 is merged, but #283 remains open with no final maintainer
+composition decision recorded. Its opt-in PoC failed its predeclared M4 size budget
+(434 generator nonblank lines against 400; 449 test lines against 260). This local
+choice neither accepts nor rejects that upstream prototype. Option A is usable
+under either outcome; children #231–#383 must not assume a generator. Repeated
+declarations are deliberate reviewed source, checked for ID/order drift rather than
+compiled from a second specification. Human visual acceptance remains pending;
+this note is not a cross-guide ruling or completion of #209/#217.
+
+### Original inventory decision
+
 Keep inline Mermaid as the reviewed source of truth. Compare Options B and C in App Service #283 using a base, distinct extensions and normal/failure overlays before Functions adopts a composition path in #211. Preserve sequence/state/timeline/chart semantics as hand-authored typed Mermaid where composition adds no value. A flowchart remains a flow or decision tree when that is its teaching purpose.
 
 For this inventory only, share `scripts/diagram_inventory.py` and `diagram-manifest.schema.json` byte-identically with Container Apps. The manifest pins the scanner and repository-specific rules by SHA-256. Schema v1 is an **inventory interchange contract**, not a composition/build API. Rules, ownership, exclusions and pages remain Functions-specific. A future scanner change must be reconciled and re-synchronized rather than independently extended here.
@@ -68,6 +90,19 @@ or completed migration. Use `--write` for structural updates, not for every labe
 edit. Existing source, PII, screenshot, evidence and strict-build checks still apply.
 
 Every entry retains a traceable source key, location, source-body hash, owning batch or explicit exclusion, and a provisional target record. `target.base` remains null and extensions/overlays empty until the prototype establishes meaningful names; this is deferred design, not an unmapped owner. Migration remains `not-started`. The [hosting/trigger plan](diagram-inventory.md#functions-specific-hosting-and-trigger-plan) derives candidate variants from paths without adding scanner fields.
+
+## Shared Mermaid authoring and review contract (2026-11-06)
+
+This is the same authoring policy for the App Service and Functions practical guides. It supersedes an earlier repository-local *proposal* where it conflicts; historical experiment and inventory observations above remain evidence, not a mandate to use a generator.
+
+1. **Single default authoring method:** write and review **literal, typed Mermaid directly in Markdown** (ADR Option A). Keep the complete diagram beside its explanatory text, `diagram-id`, and `content_sources.diagrams[]` provenance where required by that repository. Use the existing MkDocs/Mermaid toolchain. No YAML/JSON composition specification, generated fence, new macro, new renderer, or cross-repository package is required for a normal migration.
+2. **One shared visual and semantic grammar:** follow [Azure Topology Visual Grammar v1](https://github.com/yeongseon/azure-app-service-practical-guide/blob/main/docs/reference/diagram-topology-grammar.md) for component naming, official Azure icons when applicable, positions/reading order, resource/VNet/subnet/Private Endpoint boundaries, labeled one-way arrows, line/legend taxonomy, neutral styling, and accessible fault/evidence overlays. Its separate fixture/human-acceptance status remains open; adopting it as the common authoring reference does not claim every old diagram already conforms.
+3. **Accurate service adapters, not cloned architectures:** App Service shows its frontend/worker and web-app routing semantics; Functions shows trigger sources, scale/listener/host/worker and hosting-plan-specific behavior. Reuse the same conventions without representing queue/timer delivery as HTTP ingress or placing a multitenant PaaS runtime inside the customer's VNet. Keep DNS, control/management, transport, authentication, and diagnostic evidence distinct. A decision tree, sequence, state, or timing diagram keeps its proper typed form; do not force it into a topology.
+4. **No default generator:** the merged [App Service composition prototype PR #298](https://github.com/yeongseon/azure-app-service-practical-guide/pull/298) remains a bounded opt-in experiment; it failed its predeclared tool-size test, so neither guide may require it for bulk migration. Keep existing fixtures/tests intact unless a separately reviewed change removes them. The merged [Functions templates PR #396](https://github.com/yeongseon/azure-functions-practical-guide/pull/396) demonstrates the agreed literal-Mermaid approach. Do not rewrite already-running PRs solely to change the authoring mechanism.
+5. **Same acceptance standard, local execution:** inspect each changed diagram's meaning, labeled flows, boundary semantics, source attribution, stable ID and accessibility. Record before/after *rendered* inspection at desktop and narrow width (representatively 1440px and 390px), light/dark, and zoom; check readable text, arrow/key clarity, contrast and no misleading crossings or clipping. Run the repository's existing strict MkDocs, Mermaid, inventory/coverage, source/PII and relevant evidence tests on the **final PR head**. A passing build or headless capture alone is not human visual acceptance. Document untested interactions and `NOT_RUN` rather than claiming them.
+6. **Independent repositories, synchronized rules:** keep exact occurrence ownership in each guide's own manifest, and preserve its existing scanner/schema and CI without introducing a second renderer. Coordinate changes to the shared diagram grammar and acceptance expectations across App Service [#289](https://github.com/yeongseon/azure-app-service-practical-guide/issues/289) / [#395](https://github.com/yeongseon/azure-app-service-practical-guide/issues/395) and Functions [#217](https://github.com/yeongseon/azure-functions-practical-guide/issues/217) / [#394](https://github.com/yeongseon/azure-functions-practical-guide/issues/394). These review requirements are shared now; identical automated CI coverage and final rendered sign-off remain **unverified**, not assumed.
+
+Migration completion is independent of this authoring decision: App Service [#281](https://github.com/yeongseon/azure-app-service-practical-guide/issues/281) and Functions [#209](https://github.com/yeongseon/azure-functions-practical-guide/issues/209) stay open until their manifests and final checks prove completion.
 
 ## Over-Engineering Assessment
 

@@ -11,6 +11,7 @@ content_sources:
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node
         - https://learn.microsoft.com/en-us/azure/azure-functions/manage-connections
+        - https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability
 ---
 # Dependency Injection
 
@@ -21,6 +22,8 @@ The Node.js v4 programming model does not include a dependency injection (DI) co
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Node.js module-scoped client initialization and handler reuse
+    accDescr: Illustrative pooling-client pattern: module require creates a module-scoped client; trigger invocations reach a handler that reuses it. Reuse is within the loaded module in a worker process, not a singleton across scaled workers or a guarantee of one physical connection. Pool behavior depends on the client.
     LOAD[Module require] --> INIT[Create client at module scope]
     INIT --> POOL[Client holds connection pool]
     TRIG[Trigger invocation] --> HANDLER[Function handler]
@@ -119,3 +122,4 @@ app.http("submitOrder", {
 
 - [Azure Functions Node.js developer guide (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node)
 - [Manage connections in Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/manage-connections)
+- [Share and manage connections (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/performance-reliability#share-and-manage-connections)

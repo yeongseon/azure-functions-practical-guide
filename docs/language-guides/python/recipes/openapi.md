@@ -20,9 +20,11 @@ Unlike the .NET isolated worker, the Python v2 model has no first-class, Microso
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
-    FUNC[HTTP trigger functions] --> APIM[API Management import]
-    APIM --> GEN[Generated OpenAPI definition]
-    SPEC[Hand-authored openapi.json] --> SERVE[HTTP function serves /openapi.json]
+    accTitle: Python recipe OpenAPI authoring options
+    accDescr: Two authoring paths, not network hops. Import HTTP functions into API Management to generate a definition, or serve this recipe's hand-authored document and Swagger UI with HTTP functions.
+    FUNC["HTTP trigger<br/>functions"] --> APIM["API Management<br/>import"]
+    APIM --> GEN["Generated OpenAPI<br/>definition"]
+    SPEC["Hand-authored<br/>openapi.json"] --> SERVE["HTTP function serves<br/>/openapi.json"]
     SERVE --> UI[Swagger UI page]
 ```
 

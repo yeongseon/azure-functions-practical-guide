@@ -50,16 +50,23 @@ You will verify all 16 functions deployed to the Dedicated plan, covering HTTP, 
 <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
-    A[Queue message] --> B["@QueueTrigger handler"]
-    C[Blob upload] --> D["@BlobTrigger handler"]
-    E[Schedule] --> F["@TimerTrigger handler"]
-    G[Event Hub] --> H["@EventHubTrigger handler"]
-    I[HTTP request] --> J["@HttpTrigger handler"]
+    accTitle: Java Dedicated trigger paths
+    accDescr: Conceptual queue, blob, timer, Event Hub, and HTTP paths to Java annotation-based handlers and outputs or logs; the vertical arrangement does not make the independent triggers sequential or specify transport.
+    A[Queue message] --> B["@QueueTrigger<br/>handler"]
+    C[Blob upload] --> D["@BlobTrigger<br/>handler"]
+    E[Schedule] --> F["@TimerTrigger<br/>handler"]
+    G[Event Hub] --> H["@EventHubTrigger<br/>handler"]
+    I[HTTP request] --> J["@HttpTrigger<br/>handler"]
     B --> K[Outputs and logs]
     D --> K
     F --> K
     H --> K
     J --> K
+    %% Layout-only links tier independent paths; no execution steps or arrows added.
+    B ~~~ C
+    D ~~~ E
+    F ~~~ G
+    H ~~~ I
 ```
 
 ## Steps

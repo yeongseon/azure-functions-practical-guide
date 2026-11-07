@@ -14,7 +14,7 @@ content_sources:
     - id: python-v2-programming-model
       type: flowchart
       source: self-generated
-      justification: Flow view of python v2 programming model, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative reading order for the v2 model. The Python developer guide documents decorator-defined functions in function_app.py or referenced blueprint files; the worker-indexing and host trigger/route-map stages are a simplified conceptual summary, not documented protocol messages or measured behavior.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
@@ -28,6 +28,8 @@ This document provides a deep dive into the Python v2 programming model for Azur
 <!-- diagram-id: python-v2-programming-model -->
 ```mermaid
 flowchart TD
+    accTitle: Python v2 discovery-to-invocation reading flow
+    accDescr: Illustrative reading order from decorators in function_app.py and blueprints through worker indexing, host metadata, and a trigger and route map to worker invocations. Arrows summarize stages, not exact worker-host protocol messages or network hops.
     A[Decorators in function_app.py and blueprints] --> B[Python worker indexes functions]
     B --> C[Function metadata registered with host]
     C --> D[Azure Functions host builds trigger and route map]

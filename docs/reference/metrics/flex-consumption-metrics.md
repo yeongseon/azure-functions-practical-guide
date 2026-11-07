@@ -22,15 +22,22 @@ The Flex Consumption plan bills separately for **always-ready** instances (kept 
 <!-- diagram-id: flex-consumption-metrics -->
 ```mermaid
 flowchart TD
-    A[Flex Consumption App] --> B[Always Ready Instances]
-    A --> C[On Demand Instances]
-    B --> D[AlwaysReadyUnits Baseline]
-    B --> E[AlwaysReadyFunctionExecutionUnits]
-    C --> F[OnDemandFunctionExecutionUnits]
-    D --> G[GB-seconds Meters]
+    accTitle: Flex Consumption execution units and billing meters
+    accDescr: Flex Consumption splits always-ready baseline and active execution units from on-demand active execution units. All three unit metrics map to GB-second meters; exact REST names are in the adjacent key. This is a metric-to-meter reference, not a complete invoice or a scaling sequence.
+    A["Flex Consumption<br/>App"] --> B["Always Ready<br/>Instances"]
+    A --> C["On Demand<br/>Instances"]
+    B --> D["D: Always-ready<br/>baseline units"]
+    B --> E["E: Always-ready<br/>execution units"]
+    C --> F["F: On-demand<br/>execution units"]
+    D --> G["GB-seconds<br/>Meters"]
     E --> G
     F --> G
+    %% Layout-only links tier metric categories; they add no billing paths or scaling steps.
+    D ~~~ E
+    E ~~~ C
 ```
+
+**Metric key:** D = `AlwaysReadyUnits` (baseline), E = `AlwaysReadyFunctionExecutionUnits` (active always-ready execution), F = `OnDemandFunctionExecutionUnits` (active on-demand execution). These are [Flex Consumption platform metrics](https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions-reference#metrics), not Application Insights `customMetrics`. Divide each unit total by `1,024,000` for its GB-second meter; separate execution-count meters, grants and [billing rules](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan#billing) still apply. The diagram does not depict a transfer from always-ready to on-demand instances.
 
 ## Execution Metrics
 

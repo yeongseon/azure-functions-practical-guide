@@ -13,7 +13,7 @@ content_sources:
     - id: scaling-best-practices
       type: flowchart
       source: self-generated
-      justification: Flow view of scaling best practices, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative tuning guide authored for this page; it is not a Microsoft-prescribed procedure. Supported by Learn - event-driven scale-out by trigger type, concurrency controls, per-plan scaling behavior, and Flex Consumption always-ready and per-function scaling.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-concurrency
@@ -22,7 +22,7 @@ content_sources:
     - id: phase-4-recovery
       type: flowchart
       source: self-generated
-      justification: Flow view of phase 4 recovery, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Self-authored illustrative scale-test plan (baseline, burst, failure injection, recovery); the four phases are not a Learn-prescribed procedure and are not an executed experiment. Learn supports only the underlying scale and concurrency behavior referenced by the checks.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-concurrency
@@ -56,17 +56,40 @@ For platform mechanics, see [Platform: Scaling](../platform/scaling.md). This pa
 <!-- diagram-id: scaling-best-practices -->
 ```mermaid
 flowchart TD
-    A[Workload pattern] --> B{Primary trigger type}
-    B -->|HTTP| C{Latency SLO strict?}
-    B -->|"Queue/Service Bus"| D{Backlog tolerance?}
-    B -->|"Blob/Event Grid"| E{Event burst profile known?}
-    C -->|Yes| F[Premium or Flex + always-ready + HTTP concurrency tuning]
-    C -->|No| G["Consumption/Flex with max scale guardrails"]
-    D -->|Low tolerance| H[Higher concurrency + dependency protection]
-    D -->|High tolerance| I[Lower concurrency + cost-focused scaling]
-    E -->|No| J[Set conservative scale cap + observe + iterate]
-    E -->|Yes| K[Set target throughput and calibrate limits]
+    accTitle: Scaling guardrails by workload
+    accDescr: Illustrative tuning choices, not a plan-selection guarantee. HTTP branches on strict latency SLOs; Queue or Service Bus branches on backlog tolerance; Blob or Event Grid branches on whether the burst profile is known. Each branch retains its distinct guardrail outcome, expanded in the adjacent key. HTTP concurrency controls depend on the plan.
+    A(["Workload pattern"]) --> B{"Primary<br/>trigger type"}
+    B -->|HTTP| C{"Latency SLO<br/>strict?"}
+    B -->|"Queue/Service Bus"| D{"Backlog<br/>tolerance?"}
+    B -->|"Blob/Event Grid"| E{"Event burst<br/>profile known?"}
+    C -->|Yes| F(["F: Warm capacity<br/>and HTTP tuning"])
+    C -->|No| G(["G: Maximum-scale<br/>guardrails"])
+    D -->|Low tolerance| H(["H: Higher concurrency<br/>with protection"])
+    D -->|High tolerance| I(["I: Cost-focused<br/>scaling"])
+    E -->|No| J(["J: Conservative cap;<br/>observe and iterate"])
+    E -->|Yes| K(["K: Throughput target;<br/>calibrate limits"])
+    %% Layout-only links tier the branches; they add no decisions or semantic arrows.
+    F ~~~ G
+    G ~~~ D
+    H ~~~ I
+    I ~~~ E
+    J ~~~ K
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J,K baseNeutral;
+    linkStyle default stroke-width:2px;
 ```
+
+**Reading key:** This is an illustrative tuning guide. Diamonds select a branch;
+lettered endpoints expand below. Validate each choice against workload and dependency limits.
+
+| Key | Full tuning outcome |
+|---|---|
+| F | Premium or Flex with always-ready capacity, plus plan-appropriate HTTP concurrency tuning. Flex's HTTP concurrency control is Flex-only; do not apply it to Premium. |
+| G | Consumption or Flex with maximum-scale guardrails. |
+| H | Higher concurrency together with downstream dependency protection. |
+| I | Lower concurrency and cost-focused scaling. |
+| J | Set a conservative scale cap, observe results, and iterate. |
+| K | Set target throughput and calibrate limits. |
 
 ## Why This Matters
 
@@ -246,13 +269,22 @@ Scale-to-zero reduces idle cost but can increase startup latency.
 <!-- diagram-id: phase-4-recovery -->
 ```mermaid
 flowchart TD
-    A[Phase 1 Baseline] --> B[Phase 2 Burst]
-    B --> C[Phase 3 Failure injection]
-    C --> D[Phase 4 Recovery]
-    A --> A1[Define target throughput and latency SLO]
-    B --> B1[Observe scale-out, lag, error rate]
-    C --> C1[Inject dependency latency or throttling]
-    D --> D1[Validate drain time and duplicate protection]
+    accTitle: Four phases of a scale test
+    accDescr: Illustrative test plan, not an executed experiment. Baseline, burst, failure injection and recovery remain in that order. Their checks are throughput and latency SLOs; scale-out, lag and errors; dependency latency or throttling; and drain time and duplicate protection.
+    A["Phase 1<br/>Baseline"] --> B["Phase 2<br/>Burst"]
+    B --> C["Phase 3<br/>Failure injection"]
+    C --> D["Phase 4<br/>Recovery"]
+    A --> A1["Define target throughput<br/>and latency SLO"]
+    B --> B1["Observe scale-out,<br/>lag, error rate"]
+    C --> C1["Inject dependency latency<br/>or throttling"]
+    D --> D1["Validate drain time<br/>and duplicate protection"]
+    %% Layout-only links tier phase checks; they add no test steps or semantic arrows.
+    A1 ~~~ B
+    B1 ~~~ C
+    C1 ~~~ D
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,A1,B1,C1,D1 baseNeutral;
+    linkStyle default stroke-width:2px;
 ```
 
 ## Common Mistakes / Anti-Patterns

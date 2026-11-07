@@ -11,7 +11,7 @@ content_sources:
     - id: architecture
       type: flowchart
       source: self-generated
-      justification: Flow view of sub-orchestration composition, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative logical view of a parent orchestrator calling two sub-orchestrators that call activities and return results; shows call/return relationships only, not network placement, a measured trace or the sub-orchestrators running concurrently.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-sub-orchestrations
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-eternal-orchestrations
@@ -25,6 +25,8 @@ This recipe covers advanced Durable Functions patterns for Python beyond the bas
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Parent and child orchestration composition
+    accDescr: A parent calls two sub-orchestrators. Each child calls activities and returns to the parent. These are logical call and result relationships, not network placement.
     PARENT[Parent orchestrator] -->|call_sub_orchestrator| SUB1[Sub-orchestrator A]
     PARENT -->|call_sub_orchestrator| SUB2[Sub-orchestrator B]
     SUB1 --> ACT1[Activities]

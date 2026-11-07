@@ -13,7 +13,7 @@ content_sources:
     - id: 5-diagnostic-decision-tree
       type: flowchart
       source: self-generated
-      justification: Flow view of diagnostic decision tree, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Lab-derived triage heuristic that maps the lab's reported endpoint signatures to candidate auth or network checks for FC1, EP1, Y1 and S1; candidates are not proven root causes. Microsoft Learn supports the hosting-plan, VNet integration, private endpoint and identity-based connection context, not these status-code signatures.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
@@ -22,7 +22,7 @@ content_sources:
     - id: 11-recovery-decision-tree
       type: flowchart
       source: self-generated
-      justification: Flow view of recovery decision tree, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Lab recovery order for confirmed auth or network faults on EP1/S1 versus other plans; restart and propagation-window steps are lab recovery actions, not guaranteed outcomes. Microsoft Learn supports the identity, private DNS and private endpoint context, not the specific recovery sequence or timing.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
@@ -91,37 +91,67 @@ Ranked from hardest to easiest:
 
 <!-- diagram-id: 5-diagnostic-decision-tree -->
 ```mermaid
+%%{init: {"flowchart":{"nodeSpacing":20,"rankSpacing":35,"padding":6}}}%%
 flowchart TD
-    A[Start: Function endpoint failing] --> B{HTTP pattern?}
-    B -->|HTTP 000 timeout| C{Plan family?}
-    B -->|502 Server Error| D[Y1 likely; check RBAC or identity]
-    B -->|503 Function host is not running| E[EP1 or S1 likely; inspect host startup and storage auth]
-    B -->|"503 :( Application Error"| F[EP1 likely DNS or network private path issue]
-
-    C -->|FC1| G{Health endpoint green?}
-    C -->|EP1 or S1| H{Recent restart?}
-
-    G -->|Yes| I[Prioritize DNS break on storage path]
-    G -->|No| J[Check FC1 network break or RBAC break]
-
-    H -->|No| K["Restart app then re-evaluate identity/DNS fault visibility"]
-    H -->|Yes| L[Validate identity assignment and role scope immediately]
-
-    D --> M[Check role assignments and identity enablement]
-    E --> N[Check startup logs for storage auth and host runtime signals]
-    F --> O[Check private endpoint existence and DNS records]
-
-    I --> P[Verify DNS zone links and private A records]
-    J --> Q[Verify PE existence plus effective routes]
-    L --> R[Correlate restart timestamp with first error]
-
-    M --> S[Likely fault: RBAC removal or identity removal]
+    accTitle: Hosting-plan diagnostic decision tree
+    accDescr: Lab-derived triage heuristic for FC1, EP1, Y1 and S1. Follow the endpoint signature, plan, health and restart branches to candidate auth or network checks; these branches do not prove a root cause.
+    A(["Start: Function<br/>endpoint failing"]) --> B{"HTTP<br/>pattern?"}
+    B -->|000 timeout| C{"Plan<br/>family?"}
+    B -->|502| D("D: Y1 auth<br/>candidate")
+    B -->|"503 [1]"| E("E: EP1/S1<br/>startup<br/>candidate")
+    B -->|"503 [2]"| F("F: EP1<br/>private path<br/>candidate")
+    C -->|FC1| G{"Health<br/>endpoint<br/>green?"}
+    C -->|EP1 or S1| H{"Recent<br/>restart?"}
+    G -->|Yes| I["I: Storage<br/>DNS"]
+    G -->|No| J["J: FC1<br/>network/RBAC"]
+    H -->|No| K["K: Restart;<br/>re-evaluate"]
+    H -->|Yes| L["L: Identity<br/>and scope"]
+    D --> M["M: Roles and<br/>identity"]
+    E --> N["N: Startup<br/>logs"]
+    F --> O["O: PE and<br/>DNS"]
+    I --> P["P: Links and<br/>records"]
+    J --> Q["Q: PE and<br/>routes"]
+    L --> R["R: Restart<br/>correlation"]
+    M --> S(["S: Auth<br/>hypothesis"])
     N --> S
-    O --> T[Likely fault: DNS break or network break]
+    O --> T(["T: Network<br/>hypothesis"])
     P --> T
     Q --> T
     R --> S
+    %% Layout-only links serialize checks into a narrow column; they add no diagnostic steps or arrows.
+    P ~~~ J
+    Q ~~~ H
+    K ~~~ L
+    R ~~~ E
+    N ~~~ D
+    M ~~~ F
+    O ~~~ S
+    S ~~~ T
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T neutral;
 ```
+
+**Reading key:** [1] is `503 Function host is not running`; [2] is `503 :( Application Error`.
+`000 timeout` means the probe reports `HTTP 000 timeout`; `502` means `502 Server Error`.
+The branches summarize this lab's diagnostic candidates, not an exhaustive status-code classifier; confirm them with the companion lab's evidence and disproof criteria.
+
+| Key | Full diagnostic action or candidate |
+|---|---|
+| D | Y1 likely; check RBAC or identity. |
+| E | EP1 or S1 likely; inspect host startup and storage auth. |
+| F | EP1 likely DNS or network private path issue. |
+| I | Prioritize DNS break on storage path. |
+| J | Check FC1 network break or RBAC break. |
+| K | Restart app then re-evaluate identity/DNS fault visibility. |
+| L | Validate identity assignment and role scope immediately. |
+| M | Check role assignments and identity enablement. |
+| N | Check startup logs for storage auth and host runtime signals. |
+| O | Check private endpoint existence and DNS records. |
+| P | Verify DNS zone links and private A records. |
+| Q | Verify PE existence plus effective routes. |
+| R | Correlate restart timestamp with first error. |
+| S | Likely fault: RBAC removal or identity removal. |
+| T | Likely fault: DNS break or network break. |
 
 ### 6) DNS Resolution Comparison
 
@@ -188,27 +218,45 @@ Use this to avoid false negatives when a fault can remain hidden until recycle.
 <!-- diagram-id: 11-recovery-decision-tree -->
 ```mermaid
 flowchart TD
-    A[Start recovery] --> B{Fault family confirmed?}
-    B -->|Auth| C[Restore identity or RBAC]
-    B -->|Network| D["Restore DNS link and/or private endpoint"]
+    accTitle: Hosting-plan recovery decision tree
+    accDescr: Recovery branches on confirmed auth or network fault, EP1 or S1 plan, private DNS answer and final error clearance. All Yes and No outcomes remain explicit, ending in incident closure or escalation.
+    A([Start recovery]) --> B{"Fault family<br/>confirmed?"}
+    B -->|Auth| C["Restore identity<br/>or RBAC"]
+    B -->|Network| D["Restore DNS link<br/>and/or private endpoint"]
 
     C --> E{Plan is EP1 or S1?}
-    E -->|Yes| F[Restart app to flush cached state]
-    E -->|No| G[Re-test after propagation window]
+    E -->|Yes| F["Restart app;<br/>recheck cached state"]
+    E -->|No| G["Re-test after<br/>propagation window"]
 
-    D --> H{Private DNS answers expected private IP?}
-    H -->|No| I[Fix zone links and A records]
-    H -->|Yes| J[Validate private endpoint exists and is approved]
+    D --> H{"DNS: expected<br/>private IP?"}
+    H -->|No| I["Fix zone links<br/>and A records"]
+    H -->|Yes| J["J: Validate PE"]
 
-    F --> K[Re-run health plus function endpoint checks]
+    F --> K["K: Re-run checks"]
     G --> K
     I --> K
     J --> K
 
     K --> L{Error signature cleared?}
-    L -->|Yes| M[Close incident]
-    L -->|No| N[Escalate with logs, DNS capture, and Activity Log timeline]
+    L -->|Yes| M([Close incident])
+    L -->|No| N(["N: Escalate"])
+    %% Layout-only links serialize alternatives; no new recovery steps or arrows.
+    F ~~~ G
+    G ~~~ D
+    I ~~~ J
+    M ~~~ N
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J,K,L,M,N neutral;
 ```
+
+**Takeaway:** Follow the confirmed fault branch and re-test both health and function endpoints before closure. For EP1/S1, restart is a lab recovery step, not a guarantee of backend managed-identity token refresh ([managed-identity caching](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity#configure-the-target-resource)).
+The DNS decision asks whether private DNS answers the expected private IP.
+
+| Key | Full recovery action |
+|---|---|
+| J | Validate private endpoint exists and is approved. |
+| K | Re-run health plus function endpoint checks. |
+| N | Escalate with logs, DNS capture, and Activity Log timeline. |
 
 ## Usage Notes
 
@@ -254,3 +302,4 @@ flowchart TD
 - [Microsoft Learn: Azure Functions managed identity](https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial)
 - [Microsoft Learn: Private endpoints for Azure Storage](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints)
 - [Microsoft Learn: Azure Functions hosting plans](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
+- [Microsoft Learn: Managed-identity caching](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity#configure-the-target-resource)

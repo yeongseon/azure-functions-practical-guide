@@ -21,7 +21,7 @@ content_sources:
     - id: 1-1-code-storage-model-per-hosting-plan
       type: flowchart
       source: self-generated
-      justification: Flow view of code storage model per hosting plan, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Reading map for the four lab configurations, not an exhaustive catalogue of deployment options or universal plan requirements.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
@@ -34,8 +34,9 @@ content_sources:
     - id: 1-5-failure-progression-model
       type: sequenceDiagram
       source: self-generated
-      justification: Interaction sequence for failure progression model, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative logical startup comparison retaining configuration, code storage and listener roles; not a protocol trace or retained execution evidence.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-recover-storage-account
         - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
@@ -47,8 +48,9 @@ content_sources:
     - id: 2-2-causal-chain-mermaid-flowchart
       type: flowchart
       source: self-generated
-      justification: Causal chain mermaid flowchart, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Hypothesized configuration failure and recovery chain to test against this lab's proof and disproof criteria, not a deterministic platform guarantee.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-recover-storage-account
         - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
@@ -60,8 +62,9 @@ content_sources:
     - id: 3-11-triage-decision-logic-mermaid-flowchart
       type: flowchart
       source: self-generated
-      justification: Triage decision logic mermaid flowchart, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Plan-aware diagnostic reading order for the lab configurations, retaining candidate checks and escalation rather than asserting confirmed root causes.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-recover-storage-account
         - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
@@ -73,7 +76,7 @@ content_sources:
     - id: evidence-timeline-mermaid
       type: graph
       source: self-generated
-      justification: Flow view of evidence timeline mermaid, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Expected evidence workflow for the lab scenario families; not an executed chronology or recertification of projected scenarios.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
@@ -148,17 +151,26 @@ Code loading behavior in Azure Functions differs by hosting plan, and this diffe
 <!-- diagram-id: 1-1-code-storage-model-per-hosting-plan -->
 ```mermaid
 flowchart TD
-    A[Function App Plan Detection] --> B{Hosting Plan}
-    B -->|Linux Y1| C[Remote build or external package URL; never local value 1]
-    B -->|FC1 Flex| D[Blob container deployment via functionAppConfig]
-    B -->|EP Premium| E[Azure Files content share]
-    B -->|ASP Dedicated| F[App Service filesystem + WEBSITE_RUN_FROM_PACKAGE=1]
-
-    C --> G[Verify package access separately from content provisioning]
-    D --> H[Host startup validates deployment.storage blobContainer]
-    E --> I["Host startup validates Azure Files path with VNet/site topology"]
-    F --> J[Host startup validates package mount and alwaysOn behavior]
+    accTitle: Code storage models by hosting plan
+    accDescr: Reading map for the lab's Linux Y1, Flex, Premium and Dedicated configurations. Each plan retains its code location and verification step; these are not universal deployment requirements.
+    A(["Function App<br/>Plan Detection"]) --> B{"Hosting Plan"}
+    B -->|Linux Y1| C["C: Remote build<br/>or package URL"]
+    B -->|FC1 Flex| D["D: Blob deployment<br/>functionAppConfig"]
+    B -->|EP Premium| E["Azure Files<br/>content share"]
+    B -->|ASP Dedicated| F["F: Filesystem<br/>and package"]
+    C --> G(["G: Verify package<br/>access separately"])
+    D --> H(["H: Check deployment<br/>storage at startup"])
+    E --> I(["I: Check Files path<br/>and network"])
+    F --> J(["J: Check mount<br/>and alwaysOn"])
+    %% Layout-only links tier the alternatives; no verification steps or arrows added.
+    G ~~~ D
+    H ~~~ E
+    I ~~~ F
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J neutral;
 ```
+
+**Reading key (this lab's configurations):** C uses remote build or an external package URL on Linux Y1, not the unsupported local value `WEBSITE_RUN_FROM_PACKAGE=1`; D uses Blob container deployment via `functionAppConfig`; F uses the App Service filesystem with `WEBSITE_RUN_FROM_PACKAGE=1`. G separates package access from content provisioning; H checks `deployment.storage` with type `blobContainer`; I checks the Azure Files path against VNet/site topology; J checks package mount and `alwaysOn` behavior. The EP branch depicts this lab's Azure Files configuration, not a requirement for every Premium deployment ([storage considerations](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations), [package deployment](https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push)).
 
 ### 1.2 Key app settings per hosting plan
 
@@ -210,29 +222,50 @@ Operational impact pattern:
 
 <!-- diagram-id: 1-5-failure-progression-model -->
 ```mermaid
+%%{init: {'sequence': {'actorMargin': 10, 'width': 45, 'diagramMarginX': 5, 'messageMargin': 20}}}%%
 sequenceDiagram
-    participant Ops as Operator / Pipeline
-    participant App as Function App Host
-    participant Config as App Settings or FunctionAppConfig
-    participant Store as Code Storage Endpoint
-    participant Triggers as Trigger Listeners
+    accTitle: Illustrative code storage startup sequence
+    accDescr: Logical matching and mismatched configuration paths retain the operator, host, configuration, code storage and listener roles. Not a protocol trace or a new lab result; symptoms depend on the plan and fault.
+    participant Ops as Ops
+    participant App as Host
+    participant Config as Config
+    participant Store as Storage
+    participant Triggers as Listeners
 
-    Ops->>Config: Apply plan deployment settings
-    App->>Config: Read storage and deployment configuration
-    App->>Store: Resolve code package/content location
+    Ops->>Config: M1: Apply
+    App->>Config: M2: Read
+    App->>Store: M3: Resolve
 
-    alt Configuration matches plan model
-        Store-->>App: Code artifacts reachable
-        App->>Triggers: Initialize listeners
-        Triggers-->>App: Started
-        App-->>Ops: Healthy execution cadence
-    else Configuration mismatched
-        Store-->>App: Resolution/auth/path failure
-        App->>Triggers: Startup attempt
-        Triggers-->>App: Listener not started or degraded
-        App-->>Ops: Incident signature in traces and missing executions
+    alt Plan match
+        Store-->>App: M4: Reachable
+        App->>Triggers: M5: Initialize
+        Triggers-->>App: M6: Started
+        App-->>Ops: M7: Healthy
+    else Mismatch
+        Store-->>App: M8: Failure
+        App->>Triggers: M9: Attempt
+        Triggers-->>App: M10: Degraded
+        App-->>Ops: M11: Incident
     end
 ```
+
+**Role key:** Ops = operator/pipeline; Host = Function App host; Config = app settings or `functionAppConfig`; Storage = code storage endpoint; Listeners = trigger listeners. This is an illustrative logical sequence, not a claim that the host calls an ARM configuration API or that every storage fault stops execution. Compare the plan-specific historical observations and disproof criteria below; no separate language-worker exchange is depicted.
+
+| Message | Logical step retained from the failure model |
+|---|---|
+| M1 | Apply plan deployment settings |
+| M2 | Read storage and deployment configuration |
+| M3 | Resolve code package/content location |
+| Plan match | Configuration matches plan model |
+| M4 | Code artifacts reachable |
+| M5 | Initialize listeners |
+| M6 | Started |
+| M7 | Healthy execution cadence |
+| Mismatch | Configuration mismatched |
+| M8 | Resolution/auth/path failure |
+| M9 | Startup attempt |
+| M10 | Listener not started or degraded |
+| M11 | Incident signature in traces and missing executions |
 
 ### 1.6 Signal map: normal vs misconfigured
 
@@ -256,20 +289,26 @@ sequenceDiagram
 <!-- diagram-id: 2-2-causal-chain-mermaid-flowchart -->
 ```mermaid
 flowchart TD
-    A[Hosting plan selected] --> B[Plan-specific storage contract expected]
+    accTitle: Code storage hypothesis and recovery chain
+    accDescr: Hypothesized valid-contract and invalid-contract paths, including both Yes and No outcomes and restoration. Validate against the proof and disproof criteria; this is not a deterministic platform guarantee.
+    A["Hosting plan<br/>selected"] --> B["Plan-specific storage<br/>contract expected"]
     B --> C{Contract valid?}
-    C -->|Yes| D["Code package/content resolves"]
-    D --> E[Host startup completes]
-    E --> F[Listeners start and execute]
-
-    C -->|No| G[Storage or deployment resolution failure]
-    G --> H[Startup retries or listener non-start]
-    H --> I[Execution gap appears]
+    C -->|Yes| D["Code package/content<br/>resolves"]
+    D --> E["Host startup<br/>completes"]
+    E --> F(["Listeners start<br/>and execute"])
+    C -->|No| G["Storage or deployment<br/>resolution failure"]
+    G --> H["Startup retries or<br/>listener non-start"]
+    H --> I["Execution gap<br/>appears"]
     I --> J[Operational incident]
-
-    J --> K[Restore exact plan contract]
-    K --> L[Startup and execution recovery]
+    J --> K["Restore exact<br/>plan contract"]
+    K --> L(["Startup and<br/>execution recovery"])
+    %% Layout-only link tiers outcomes; no causal steps or arrows added.
+    F ~~~ G
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J,K,L neutral;
 ```
+
+**Takeaway:** Read both branches as the lab's hypothesis, then apply sections 2.3–2.5 before accepting causality. A configuration match alone does not establish healthy execution; a mismatch need not cause an immediate outage, as the historical resilience observations show.
 
 ### 2.3 Proof criteria
 
@@ -1706,42 +1745,70 @@ HTTP result: `404`
 
 <!-- diagram-id: 3-11-triage-decision-logic-mermaid-flowchart -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 5, 'rankSpacing': 30, 'padding': 4}}}%%
 flowchart TD
-    A[Functions not executing] --> B{Which hosting plan?}
-    B -->|Y1| C[Verify WEBSITE_CONTENTAZUREFILECONNECTIONSTRING and WEBSITE_CONTENTSHARE]
-    B -->|FC1| D[Verify functionAppConfig.deployment.storage.type and value]
-    B -->|EP| E["Verify Azure Files content settings and VNet/site path"]
-    B -->|ASP| F[Verify WEBSITE_RUN_FROM_PACKAGE and alwaysOn]
-
-    C --> G{Settings valid?}
-    D --> H{Deployment config valid?}
-    E --> I{Settings valid?}
-    F --> J{Settings valid?}
-
-    G -->|No| K[Restore Y1 content settings]
-    H -->|No| L[Restore FC1 blobContainer deployment config]
-    I -->|No| M[Restore EP content settings]
-    J -->|No| N[Restore ASP package settings]
-
-    G -->|Yes| O[Check identity and RBAC]
+    accTitle: Plan-aware code storage triage decisions
+    accDescr: Non-execution symptom routes to all four plan checks, all Yes and No branches, restoration, identity and RBAC investigation, network or runtime hypotheses, recovery verification and escalation. This is a diagnostic reading order, not proof of root cause.
+    A(["A:<br/>Symptom"]) --> B{"B:<br/>Plan?"}
+    B -->|Y1| C["C:<br/>Content"]
+    B -->|FC1| D["D:<br/>Deploy"]
+    B -->|EP| E["E:<br/>Files"]
+    B -->|ASP| F["F:<br/>Package"]
+    C --> G{"G:<br/>Valid?"}
+    D --> H{"H:<br/>Valid?"}
+    E --> I{"I:<br/>Valid?"}
+    F --> J{"J:<br/>Valid?"}
+    G -->|No| K["K:<br/>Restore"]
+    H -->|No| L["L:<br/>Restore"]
+    I -->|No| M["M:<br/>Restore"]
+    J -->|No| N["N:<br/>Restore"]
+    G -->|Yes| O["O:<br/>Identity"]
     H -->|Yes| O
     I -->|Yes| O
     J -->|Yes| O
-
-    O --> P{Storage access and role assignments valid?}
-    P -->|No| Q[Repair identity role assignments]
-    P -->|Yes| R[Investigate network or runtime-specific hypothesis]
-
-    K --> S[Restart app and verify]
+    O --> P{"P:<br/>Valid?"}
+    P -->|No| Q["Q:<br/>Repair"]
+    P -->|Yes| R["R:<br/>Investigate"]
+    K --> S["S:<br/>Verify"]
     L --> S
     M --> S
     N --> S
     Q --> S
-
-    S --> T{Startup and execution recovered?}
-    T -->|Yes| U[Incident resolved]
-    T -->|No| V[Escalate with evidence bundle]
+    S --> T{"T:<br/>Recovered?"}
+    T -->|Yes| U(["U:<br/>Resolved"])
+    T -->|No| V(["V:<br/>Escalate"])
+    %% Layout-only links tier branches; no diagnostic steps or arrows added.
+    N ~~~ O
+    Q ~~~ R
+    R ~~~ S
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V neutral;
 ```
+
+**Reading key:** Follow the keyed checks below; arrows retain every plan choice and Yes/No outcome. These checks refer to the lab configurations, not mandatory settings for every app on each plan. Treat a No at P as a prompt to establish the cause of failed access before repairing roles; missing telemetry or failed access alone does not prove an RBAC fault. Use the supported baseline and recovery precautions in section 3.12.
+
+| Key | Check or outcome |
+|---|---|
+| A | Functions not executing |
+| B | Which hosting plan? |
+| C | Verify Y1 `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING` and `WEBSITE_CONTENTSHARE` |
+| D | Verify FC1 `functionAppConfig.deployment.storage.type` and `.value` |
+| E | Verify EP Azure Files content settings and VNet/site path |
+| F | Verify ASP `WEBSITE_RUN_FROM_PACKAGE` and `alwaysOn` |
+| G, I, J | Are the respective plan's settings valid? |
+| H | Is the FC1 deployment configuration valid? |
+| K | Restore Y1 content settings |
+| L | Restore FC1 `blobContainer` deployment configuration |
+| M | Restore EP content settings |
+| N | Restore ASP package settings |
+| O | Check identity and RBAC |
+| P | Are storage access and role assignments valid? |
+| Q | Repair identity role assignments |
+| R | Investigate network or runtime-specific hypothesis |
+| S | Restart app and verify |
+| T | Have startup and execution recovered? |
+| U | Incident resolved |
+| V | Escalate with evidence bundle |
 
 ### 3.12 Recover from induced failures
 
@@ -2769,6 +2836,8 @@ Final verdict: **Hypothesis supported**.
 <!-- diagram-id: evidence-timeline-mermaid -->
 ```mermaid
 graph TD
+    accTitle: Expected code storage evidence workflow
+    accDescr: Expected evidence collection order for every listed scenario family, including recovery and the conditional final verdict. Not an executed chronology or recertification of projected scenarios; historical results retain their original scope.
     A[Baseline: all plans pass verification matrix] --> B[Content resilience scenarios: A P — platform auto-regeneration]
     B --> C[Validate: no degradation, config drift from IaC baseline]
     C --> D[Content + compound failure scenarios: C I J]
@@ -2793,6 +2862,8 @@ graph TD
 
     P --> Q[Final verdict: plan-specific code storage model validated]
 ```
+
+**Reading key:** This is the expected workflow, not a record that every scenario ran. The final-verdict box is conditional on the evidence chain below; retain the distinctions between historical A–D observations and projected E–S patterns in section 4, including the contradicted projections. Scenario letters and recovery stages are unchanged.
 
 ### Evidence Chain: Why This Proves the Hypothesis
 
@@ -2821,6 +2892,7 @@ graph TD
 
 ## Sources
 
+- [Troubleshoot storage-related startup issues](https://learn.microsoft.com/en-us/azure/azure-functions/functions-recover-storage-account)
 - [Azure Functions storage considerations](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations)
 - [How to use identity-based connections in Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection)
 - [Azure Functions networking options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)

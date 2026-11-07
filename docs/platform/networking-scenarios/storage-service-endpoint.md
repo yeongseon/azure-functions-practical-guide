@@ -4,7 +4,7 @@ content_sources:
     - id: storage-service-endpoint-architecture
       type: flowchart
       source: self-generated
-      justification: "Service-endpoint access pattern synthesized from Microsoft Learn storage networking and Functions networking documentation"
+      justification: "Illustrative outbound path, not a measured trace or exhaustive firewall model: Function App outbound traffic leaves through the VNet-integration subnet, which carries the Microsoft.Storage service endpoint and is authorized by a storage virtual network rule; the storage account is still reached through its public endpoint (Selected networks, other sources denied by defaultAction). Learn supports the service-endpoint behavior and storage network rules; the Function App VNet-integration step applies to plans that support outbound VNet integration."
       based_on:
         - https://learn.microsoft.com/en-us/azure/storage/common/storage-network-security
         - https://learn.microsoft.com/en-us/azure/virtual-network/virtual-network-service-endpoints-overview
@@ -62,15 +62,16 @@ The key distinction is **where the storage account lives on the network** and **
 <!-- diagram-id: storage-service-endpoint-architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Storage service-endpoint path and subnet-rule decision
+    accDescr: Illustrative outbound path from the Function App through its Microsoft.Storage integration subnet to the Storage public endpoint and Selected networks firewall decision. The depicted outcomes are a matching subnet VNet rule reaching Storage and other sources denied by defaultAction; this is not an exhaustive firewall or data-authorization model.
     FA[Function App] -->|VNet integration| SUBNET[Integration Subnet<br/>Microsoft.Storage service endpoint]
     SUBNET -->|Optimized backbone route| PUB[Storage Public Endpoint]
     PUB --> RULE{Storage firewall<br/>Selected networks}
     RULE -->|VNet rule matches subnet| ST[(Storage Account)]
     RULE -->|Other sources| DENY[Denied by defaultAction]
 
-    style FA fill:#0078d4,color:#fff
-    style ST fill:#FFF3E0
-    style DENY fill:#FCE4EC
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class FA,SUBNET,PUB,RULE,ST,DENY neutral;
 ```
 
 The Function App's outbound storage calls leave through the integration subnet. Because the subnet carries the `Microsoft.Storage` service endpoint and the storage account authorizes that subnet with a VNet rule, the request is allowed. All other sources hit the firewall's `defaultAction` (Deny) and are rejected — even though the endpoint is technically public.
