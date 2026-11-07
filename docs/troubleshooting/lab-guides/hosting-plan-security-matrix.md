@@ -15,7 +15,31 @@ content_sources:
     - id: 1-2-cross-plan-architecture-map
       type: flowchart
       source: self-generated
-      justification: Intended FC1, EP1, Y1 and S1 lab configurations; identity, DNS, inbound site access and outbound storage paths are distinct, not a new deployment observation.
+      justification: Intended FC1, EP1, Y1 and S1 lab Storage egress paths (VNet integration to Storage private endpoints for FC1, EP1 and S1; public endpoints for Y1); not a new deployment observation. Microsoft Learn supports the VNet integration, private endpoint and subnet concepts, not this lab's resource names.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
+        - https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/configure-networking-how-to
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-private-endpoint
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
+    - id: 1-2-identity-settings-and-dns
+      type: flowchart
+      source: self-generated
+      justification: Intended identity, setting and private-DNS relationships of the FC1, EP1, Y1 and S1 lab configurations; dotted arrows are configuration or name resolution, not data paths, and are not a new deployment observation.
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
+        - https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/configure-networking-how-to
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-private-endpoint
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
+    - id: 1-2-s1-site-private-endpoint
+      type: flowchart
+      source: self-generated
+      justification: Intended S1 inbound path from a private HTTPS caller through the site private endpoint to the app, kept separate from outbound Storage access; not a new deployment observation.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
@@ -94,16 +118,17 @@ In real incidents, teams often transfer a successful Premium or Dedicated triage
 
 ### 1.2 Cross-plan architecture map
 
+The map is split into three diagrams so each stays readable on a phone: outbound Storage paths per plan, then identity/settings/DNS per plan, then the S1 inbound site private endpoint. Every plan group, node and relationship of the original single map is retained across them.
+
+**Diagram 1 of 3: outbound Storage paths**
+
 <!-- diagram-id: 1-2-cross-plan-architecture-map -->
 ```mermaid
 flowchart TD
-    accTitle: Four hosting-plan lab configurations
-    accDescr: Intended FC1 Flex Consumption, EP1 Premium, Y1 Consumption and S1 Dedicated configurations. Dotted arrows describe identity, settings and DNS; solid arrows show outbound storage access or separate inbound S1 site access. Plan groups are logical comparisons, not subnets; apps are outside the integration and private-endpoint subnets.
-    subgraph FC1["FC1 Flex<br/>Consumption"]
+    accTitle: Outbound Storage paths in the four hosting-plan lab configurations
+    accDescr: Intended FC1 Flex Consumption, EP1 Premium, Y1 Consumption and S1 Dedicated lab configurations, outbound Storage paths only. FC1, EP1 and S1 reach Storage through outbound VNet integration in an integration subnet and Storage private endpoints in a separate PE subnet; Y1 reaches Storage public endpoints. Plan groups are logical comparisons, not subnets; apps are outside the integration and private-endpoint subnets. Identity, settings and DNS, and the S1 inbound site private endpoint, are shown in the next two diagrams.
+    subgraph FC1["FC1 Flex Consumption"]
         app_runtime_fc["FC1: Function app"]
-        identity_fc{{"User-assigned<br/>managed identity"}}
-        dns_fc{{"FC DNS zones"}}
-        storage_db_fc[("FC Storage<br/>Shared key disabled")]
         subgraph vnet_fc["FC customer VNet"]
             subgraph subnet_int_fc["Integration subnet"]
                 vnet_integration_fc[["Outbound integration"]]
@@ -112,21 +137,13 @@ flowchart TD
                 pe_storage_fc[["FC Storage PEs<br/>blob / queue<br/>table / file"]]
             end
         end
-        app_runtime_fc -.->|"[Configured]<br/>Identity"| identity_fc
-        app_runtime_fc -.->|"[Configured]<br/>DNS"| dns_fc
+        storage_db_fc[("FC Storage<br/>Shared key disabled")]
         app_runtime_fc -->|"[Configured]<br/>Outbound"| vnet_integration_fc
         vnet_integration_fc -->|"[Configured]<br/>Connect"| pe_storage_fc
         pe_storage_fc -->|"[Configured]<br/>Private Link"| storage_db_fc
-        %% Layout-only tiers; no new transport or diagnostic steps.
-        identity_fc ~~~ dns_fc
-        dns_fc ~~~ vnet_integration_fc
     end
     subgraph EP1["EP1 Premium"]
         app_runtime_ep["EP1: Function app"]
-        identity_ep{{"System-assigned<br/>managed identity"}}
-        config_ep["EP content setting"]
-        dns_ep{{"EP DNS zones"}}
-        storage_db_ep[("EP Storage")]
         subgraph vnet_ep["EP customer VNet"]
             subgraph subnet_int_ep["Integration subnet"]
                 vnet_integration_ep[["Outbound integration"]]
@@ -135,68 +152,124 @@ flowchart TD
                 pe_storage_ep[["EP Storage PEs<br/>blob / queue<br/>table / file"]]
             end
         end
-        app_runtime_ep -.->|"[Configured]<br/>Identity"| identity_ep
-        app_runtime_ep -.->|"[Configured]<br/>Setting"| config_ep
-        app_runtime_ep -.->|"[Configured]<br/>DNS"| dns_ep
+        storage_db_ep[("EP Storage")]
         app_runtime_ep -->|"[Configured]<br/>Outbound"| vnet_integration_ep
         vnet_integration_ep -->|"[Configured]<br/>Connect"| pe_storage_ep
         pe_storage_ep -->|"[Configured]<br/>Private Link"| storage_db_ep
-        %% Layout-only tiers; no new transport or diagnostic steps.
-        identity_ep ~~~ config_ep
-        config_ep ~~~ dns_ep
-        dns_ep ~~~ vnet_integration_ep
     end
     subgraph Y1["Y1 Consumption"]
         app_runtime_y["Y1: Function app"]
-        identity_y{{"System-assigned<br/>managed identity"}}
-        config_y["Y host-storage setting"]
         storage_db_y[("Y Storage<br/>Public endpoints")]
-        app_runtime_y -.->|"[Configured]<br/>Identity"| identity_y
-        app_runtime_y -.->|"[Configured]<br/>Setting"| config_y
         app_runtime_y -->|"[Configured]<br/>Storage"| storage_db_y
-        %% Layout-only tiers; no new transport or diagnostic steps.
-        identity_y ~~~ config_y
-        config_y ~~~ storage_db_y
     end
     subgraph S1["S1 Dedicated"]
-        client_s(["Private HTTPS caller"])
         app_runtime_s["S1: Function app"]
-        identity_s{{"System-assigned<br/>managed identity"}}
-        config_s["S package setting"]
-        dns_s{{"S DNS zones"}}
-        storage_db_s[("S Storage")]
         subgraph vnet_s["S customer VNet"]
             subgraph subnet_int_s["Integration subnet"]
                 vnet_integration_s[["Outbound integration"]]
             end
             subgraph subnet_pe_s["PE subnet"]
                 pe_storage_s[["S Storage PEs<br/>blob / queue / table"]]
-                pe_site_s[["S site PE"]]
             end
         end
-        client_s -->|"[Configured]<br/>HTTPS"| pe_site_s
-        pe_site_s -->|"[Configured]<br/>Inbound"| app_runtime_s
-        app_runtime_s -.->|"[Configured]<br/>Identity"| identity_s
-        app_runtime_s -.->|"[Configured]<br/>Setting"| config_s
-        app_runtime_s -.->|"[Configured]<br/>DNS"| dns_s
+        storage_db_s[("S Storage")]
         app_runtime_s -->|"[Configured]<br/>Outbound"| vnet_integration_s
         vnet_integration_s -->|"[Configured]<br/>Connect"| pe_storage_s
         pe_storage_s -->|"[Configured]<br/>Private Link"| storage_db_s
-        %% Layout-only tiers; no new transport or diagnostic steps.
-        identity_s ~~~ config_s
-        config_s ~~~ dns_s
-        dns_s ~~~ vnet_integration_s
     end
     %% Layout-only plan order; these invisible links are not inter-plan traffic.
     storage_db_fc ~~~ app_runtime_ep
     storage_db_ep ~~~ app_runtime_y
-    storage_db_y ~~~ client_s
+    storage_db_y ~~~ app_runtime_s
     classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
     classDef bandMuted fill:#ffffff,stroke:#707e93,stroke-width:1.5px,stroke-dasharray:4 3,color:#14202e;
     classDef netBox fill:transparent,stroke:#287ce4,stroke-width:2px,stroke-dasharray:6 3;
-    class app_runtime_fc,app_runtime_ep,app_runtime_y,app_runtime_s,client_s,storage_db_fc,storage_db_ep,storage_db_y,storage_db_s,vnet_integration_fc,vnet_integration_ep,vnet_integration_s,pe_storage_fc,pe_storage_ep,pe_storage_s,pe_site_s baseNeutral;
-    class identity_fc,identity_ep,identity_y,identity_s,dns_fc,dns_ep,dns_s,config_ep,config_y,config_s bandMuted;
-    class vnet_fc,vnet_ep,vnet_s,subnet_int_fc,subnet_int_ep,subnet_int_s,subnet_pe_fc,subnet_pe_ep,subnet_pe_s netBox;
+    class app_runtime_ep,app_runtime_fc,app_runtime_s,app_runtime_y,pe_storage_ep,pe_storage_fc,pe_storage_s,storage_db_ep,storage_db_fc,storage_db_s,storage_db_y,vnet_integration_ep,vnet_integration_fc,vnet_integration_s baseNeutral;
+    class subnet_int_ep,vnet_s,vnet_fc,vnet_ep,subnet_pe_s,subnet_int_s,subnet_pe_ep,subnet_pe_fc,subnet_int_fc netBox;
+    linkStyle default stroke-width:2px;
+```
+
+**Diagram 2 of 3: identity, settings and DNS**
+
+<!-- diagram-id: 1-2-identity-settings-and-dns -->
+```mermaid
+%%{init: {"flowchart":{"rankSpacing":10,"nodeSpacing":10,"padding":4}}}%%
+flowchart LR
+    accTitle: Identity, settings and DNS in the four hosting-plan lab configurations
+    accDescr: Intended identity, setting and DNS relationships for the FC1 Flex Consumption, EP1 Premium, Y1 Consumption and S1 Dedicated lab configurations. Dotted arrows describe identity, settings and app-initiated name resolution, not data flowing through DNS. FC1 uses a user-assigned managed identity; EP1, Y1 and S1 use system-assigned identities. Y1 has no DNS zones node because it uses public Storage endpoints. Intended lab configuration, not a new deployment observation.
+    subgraph S1["S1 Dedicated"]
+        app_runtime_s["S1:<br/>Function app"]
+        identity_s{{"System-assigned<br/>managed<br/>identity"}}
+        config_s["S package<br/>setting"]
+        dns_s{{"S DNS zones"}}
+        app_runtime_s -.->|"[Configured]<br/>Identity"| identity_s
+        app_runtime_s -.->|"[Configured]<br/>Setting"| config_s
+        app_runtime_s -.->|"[Configured]<br/>DNS"| dns_s
+        %% Layout-only order of the satellites; no new relationship.
+        identity_s ~~~ config_s
+        config_s ~~~ dns_s
+    end
+    subgraph Y1["Y1 Consumption"]
+        app_runtime_y["Y1:<br/>Function app"]
+        identity_y{{"System-assigned<br/>managed<br/>identity"}}
+        config_y["Y host-storage<br/>setting"]
+        app_runtime_y -.->|"[Configured]<br/>Identity"| identity_y
+        app_runtime_y -.->|"[Configured]<br/>Setting"| config_y
+        %% Layout-only order of the satellites; no new relationship.
+        identity_y ~~~ config_y
+    end
+    subgraph EP1["EP1 Premium"]
+        app_runtime_ep["EP1:<br/>Function app"]
+        identity_ep{{"System-assigned<br/>managed<br/>identity"}}
+        config_ep["EP content<br/>setting"]
+        dns_ep{{"EP DNS zones"}}
+        app_runtime_ep -.->|"[Configured]<br/>Identity"| identity_ep
+        app_runtime_ep -.->|"[Configured]<br/>Setting"| config_ep
+        app_runtime_ep -.->|"[Configured]<br/>DNS"| dns_ep
+        %% Layout-only order of the satellites; no new relationship.
+        identity_ep ~~~ config_ep
+        config_ep ~~~ dns_ep
+    end
+    subgraph FC1["FC1 Flex Consumption"]
+        app_runtime_fc["FC1:<br/>Function app"]
+        identity_fc{{"User-assigned<br/>managed<br/>identity"}}
+        dns_fc{{"FC DNS zones"}}
+        app_runtime_fc -.->|"[Configured]<br/>Identity"| identity_fc
+        app_runtime_fc -.->|"[Configured]<br/>DNS"| dns_fc
+        %% Layout-only order of the satellites; no new relationship.
+        identity_fc ~~~ dns_fc
+    end
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    classDef bandMuted fill:#ffffff,stroke:#707e93,stroke-width:1.5px,stroke-dasharray:4 3,color:#14202e;
+    classDef netBox fill:transparent,stroke:#287ce4,stroke-width:2px,stroke-dasharray:6 3;
+    class app_runtime_ep,app_runtime_fc,app_runtime_s,app_runtime_y baseNeutral;
+    class config_ep,config_s,config_y,dns_ep,dns_fc,dns_s,identity_ep,identity_fc,identity_s,identity_y bandMuted;
+    linkStyle default stroke-width:2px;
+```
+
+**Diagram 3 of 3: S1 inbound site private endpoint**
+
+<!-- diagram-id: 1-2-s1-site-private-endpoint -->
+```mermaid
+flowchart TD
+    accTitle: S1 Dedicated inbound path through the site private endpoint
+    accDescr: Intended S1 Dedicated inbound path. A private HTTPS caller reaches the Function app through the site private endpoint, which sits in the PE subnet shared with the S Storage private endpoints inside the S customer VNet. The site private endpoint is an inbound path, not an outbound integration target; the Storage egress path is in the first diagram. Intended lab configuration, not a new deployment observation.
+    client_s(["Private HTTPS caller"])
+    subgraph S1["S1 Dedicated"]
+        subgraph vnet_s["S customer VNet"]
+            subgraph subnet_pe_s["PE subnet"]
+                pe_site_s[["S site PE<br/>S Storage PEs share<br/>this PE subnet"]]
+            end
+        end
+        app_runtime_s["S1: Function app"]
+    end
+    client_s -->|"[Configured]<br/>HTTPS"| pe_site_s
+    pe_site_s -->|"[Configured]<br/>Inbound"| app_runtime_s
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    classDef bandMuted fill:#ffffff,stroke:#707e93,stroke-width:1.5px,stroke-dasharray:4 3,color:#14202e;
+    classDef netBox fill:transparent,stroke:#287ce4,stroke-width:2px,stroke-dasharray:6 3;
+    class app_runtime_s,client_s,pe_site_s baseNeutral;
+    class subnet_pe_s,vnet_s netBox;
     linkStyle default stroke-width:2px;
 ```
 
