@@ -54,7 +54,7 @@ Only `python3 scripts/diagram_inventory.py --write` fills these generated blocks
 <!-- BEGIN GENERATED: diagram-inventory:type -->
 | Type | Count |
 |---|---:|
-| flowchart | 511 |
+| flowchart | 512 |
 | gantt | 12 |
 | graph | 22 |
 | pie | 2 |
