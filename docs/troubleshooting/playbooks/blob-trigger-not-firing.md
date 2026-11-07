@@ -15,7 +15,7 @@ content_sources:
     - id: 1-summary
       type: flowchart
       source: self-generated
-      justification: Flow view of summary, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative, non-exhaustive investigation order for a blob trigger that does not fire, not a confirmed root-cause classifier or a measured trace. Learn supports that the Flex Consumption plan supports only the Event Grid source for the Blob storage trigger and that the polling-based implementation is the default elsewhere; the check order and H1-H4 grouping are this guide's own.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
@@ -83,7 +83,7 @@ are rounded boxes, and the invocation/code investigation is a rectangle. H1 mean
 missing or broken Event Grid subscription; H2 means network or RBAC blocks
 notifications; H3 means trigger binding misconfiguration; H4 means polling vs
 Event Grid architecture mismatch. These are illustrative investigation candidates,
-not proven causes: use the evidence and disproof sections below before choosing a
+not proven causes, and the branches are non-exhaustive (for example, storage accounts with hierarchical namespace also require the Event Grid-based trigger, and polling-based triggers can be delayed on idle Consumption apps): use the evidence and disproof sections below before choosing a
 mitigation. The arrows preserve this playbook's check order, not a network path.
 
 - Treat this playbook as a hypothesis test, not a checklist-only exercise.
