@@ -15,7 +15,7 @@ content_sources:
     - id: decision-flow
       type: flowchart
       source: self-generated
-      justification: Decision flow, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative triage tree for memory pressure and worker crashes (OOM traces, restart gaps, payload or media handling, collection and disposal checks, and plan memory ceilings); branches select investigations, not proven diagnoses, and memory ceilings and telemetry availability depend on the hosting plan.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
@@ -25,7 +25,7 @@ content_sources:
     - id: signal-snapshot
       type: flowchart
       source: self-generated
-      justification: Flow view of signal snapshot, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative allocation path (trigger receipt, payload, deserializer and transform buffers, business logic and SDK buffers) with a memory-ceiling check; not a universal execution order or a measured memory profile.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
@@ -46,7 +46,7 @@ content_sources:
     - id: 7-likely-root-cause-patterns
       type: flowchart
       source: self-generated
-      justification: Flow view of likely root cause patterns, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative memory-regression progression (deployment, rising memory, latency, GC pressure, OOM or worker exit, retries, backlog); not an observed timeline or inevitable order.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices

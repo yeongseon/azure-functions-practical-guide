@@ -34,6 +34,7 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
         - https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
+        - https://learn.microsoft.com/en-us/azure/role-based-access-control/troubleshooting
         - https://learn.microsoft.com/en-us/azure/storage/blobs/authorize-access-azure-active-directory
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
         - https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/activity-log
@@ -57,6 +58,7 @@ content_sources:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
         - https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli
+        - https://learn.microsoft.com/en-us/azure/role-based-access-control/troubleshooting
         - https://learn.microsoft.com/en-us/azure/storage/blobs/authorize-access-azure-active-directory
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
         - https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/activity-log
@@ -133,7 +135,7 @@ When `Storage Blob Data Contributor` is removed from the storage scope, token ac
 
 <!-- diagram-id: 1-1-managed-identity-authentication-flow -->
 ```mermaid
-%%{init: {"sequence":{"width":40,"actorMargin":5,"diagramMarginX":5,"mirrorActors":false}}}%%
+%%{init: {"sequence":{"width":40,"actorMargin":3,"diagramMarginX":0,"mirrorActors":false}}}%%
 sequenceDiagram
     accTitle: Managed identity token and Blob authorization sequence
     accDescr: Illustrative logical sequence with five roles and eight ordered exchanges; the full S1 to S8 message meanings are in the adjacent key. Token acquisition is separate from Blob authorization.
@@ -219,7 +221,7 @@ gantt
 | T8 | Role assignment restored |
 | T9 | Access becomes effective |
 
-**Takeaway:** This timing model retains the original dates and approximate periods. Propagation and cache bars are illustrative explanations, not measured platform-wide delays or a new Azure validation.
+**Takeaway:** This timing model retains the original dates and approximate periods. Propagation and cache bars are illustrative explanations, not measured platform-wide delays or a new Azure validation. Microsoft Learn states that Azure RBAC role assignment changes can take up to 10 minutes to take effect and that managed-identity token caches can take up to around 24 hours to reflect group or role membership changes ([RBAC troubleshooting](https://learn.microsoft.com/en-us/azure/role-based-access-control/troubleshooting), [managed identity caching](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity#configure-the-target-resource)); treat these as upper-bound guidance that may vary, not as this lab's measured behavior.
 
 ### 1.4 Common identity failure modes
 

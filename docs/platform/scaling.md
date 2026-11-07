@@ -17,7 +17,7 @@ content_sources:
     - id: scale-controller-fundamentals
       type: flowchart
       source: self-generated
-      justification: Flow view of scale controller fundamentals, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Conceptual summary of event-driven scaling - the scale controller monitors event sources and adjusts instance count. Not an exact algorithm, and Dedicated plans scale differently.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
@@ -28,7 +28,7 @@ content_sources:
     - id: flex-specific-operational-constraints-affecting-scale
       type: flowchart
       source: self-generated
-      justification: Flow view of flex specific operational constraints affecting scale, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Flex Consumption per-function scaling - HTTP, Blob (Event Grid) and Durable triggers scale as groups, other functions individually, and always-ready settings apply per group or function. Examples are selective; the repeated controller boxes are logical, not separate services.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
@@ -39,7 +39,7 @@ content_sources:
     - id: autoscale-decision-flow
       type: flowchart
       source: self-generated
-      justification: Autoscale decision flow, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative reasoning model for why scale-out did or did not occur; not the scale controller's exact algorithm. Uses Learn concepts of event-driven scale-out, per-instance concurrency and plan instance limits, which vary by plan.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
@@ -50,7 +50,7 @@ content_sources:
     - id: cold-start-versus-warm-path-comparison
       type: sequenceDiagram
       source: self-generated
-      justification: Interaction sequence for cold start versus warm path comparison, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative logical comparison of a cold and warm HTTP path; not a protocol trace or latency benchmark. Learn supports that new instances incur startup delay and that always-ready or pre-warmed instances mitigate it on plans that offer them.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling

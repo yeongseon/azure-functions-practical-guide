@@ -18,7 +18,7 @@ content_sources:
     - id: decision-tree
       type: flowchart
       source: self-generated
-      justification: Flow view of decision tree, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative symptom-routing aid across 5xx, trigger and performance symptoms to starting investigations; branch order is this guide's editorial triage, not a Microsoft Learn procedure, measured trace or root-cause verdict, and plan behavior varies.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring

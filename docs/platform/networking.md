@@ -13,7 +13,7 @@ content_sources:
     - id: reference-architecture
       type: flowchart
       source: self-generated
-      justification: Flow view of reference architecture, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative logical connectivity overview of optional Front Door or APIM ingress, outbound VNet integration, private endpoints, Firewall or NAT egress alternatives and on-premises links; not a packet-hop map or subnet containment diagram, and plan support varies.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/app-service/configure-vnet-integration-enable
@@ -24,7 +24,7 @@ content_sources:
     - id: 3-zero-trust-ingress-architecture-pattern
       type: flowchart
       source: self-generated
-      justification: Flow view of zero trust ingress architecture pattern, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative layered ingress pattern (edge, APIM, private endpoint, identity); not a complete zero-trust design and not a measured or lab-verified topology.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/app-service/configure-vnet-integration-enable
@@ -37,7 +37,7 @@ content_sources:
     - id: 3-nat-gateway-for-stable-outbound-ip
       type: flowchart
       source: self-generated
-      justification: Flow view of nat gateway for stable outbound ip, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative configuration relationships among VNet integration subnet, NAT gateway and public IP for stable outbound addresses; relationships, not packet hops.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/app-service/configure-vnet-integration-enable
@@ -47,7 +47,7 @@ content_sources:
     - id: dns-design-for-private-endpoints
       type: flowchart
       source: self-generated
-      justification: Flow view of dns design for private endpoints, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative logical lookup from a VNet client through a private DNS zone to the Function App private endpoint IP; DNS identifies the destination, HTTPS does not transit the zone.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/app-service/configure-vnet-integration-enable
@@ -58,7 +58,7 @@ content_sources:
     - id: dns-design-for-private-endpoints-2
       type: sequenceDiagram
       source: self-generated
-      justification: Interaction sequence for dns design for private endpoints 2, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative DNS-resolution-then-HTTPS sequence with a placeholder private IP; not a measured trace or lab evidence.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/app-service/configure-vnet-integration-enable
@@ -153,13 +153,13 @@ This section shows the Networking blade for a live Function App (Consumption Y1,
 flowchart TD
     accTitle: Functions networking reference relationships
     accDescr: Logical connectivity overview retains optional Front Door or APIM ingress, Function App outbound VNet integration, SQL or Cosmos or Storage private endpoints, Firewall or NAT egress alternatives, and two-way on-premises VPN or ExpressRoute connectivity. This is not a packet-hop map or subnet containment diagram.
-    C["Client / Caller"] --> APIM["Optional Front Door / APIM"]
+    C["Client / Caller"] --> APIM["Optional Front<br/>Door / APIM"]
     APIM --> FA[Function App]
-    FA -->|VNet Integration outbound| VNET[Virtual Network]
-    VNET --> PE1["Private Endpoint: SQL/Cosmos/Storage"]
+    FA -->|"VNet Integration<br/>outbound"| VNET["Virtual Network"]
+    VNET --> PE1["Private Endpoint:<br/>SQL/Cosmos/Storage"]
     VNET --> FW["Firewall/NAT"]
-    FW --> EXT[Approved external services]
-    CORP[On-premises network] <--> VPN["VPN/ExpressRoute"]
+    FW --> EXT["Approved external<br/>services"]
+    CORP["On-premises<br/>network"] <--> VPN["VPN/ExpressRoute"]
     VPN <--> VNET
 ```
 
@@ -435,18 +435,19 @@ DNS resolution sequence (private endpoint path):
 
 <!-- diagram-id: dns-design-for-private-endpoints-2 -->
 ```mermaid
+%%{init: {"sequence":{"width":86,"actorMargin":4,"diagramMarginX":2,"messageMargin":30}}}%%
 sequenceDiagram
     accTitle: Private DNS resolution followed by an HTTPS exchange
     accDescr: Illustrative sequence retains the VNet client, DNS resolver, private DNS zone and Function App private endpoint. The resolver returns an illustrative private A record; the client then connects to that private IP using `<app-name>.azurewebsites.net` as the HTTPS hostname and receives a response.
-    participant C as Client in VNet
-    participant R as DNS Resolver
-    participant Z as Private DNS Zone
-    participant P as Function App Private Endpoint
-    C->>R: Query <app-name>.azurewebsites.net
-    R->>Z: Resolve private mapping
+    participant C as Client<br/>in VNet
+    participant R as DNS<br/>Resolver
+    participant Z as Private<br/>DNS Zone
+    participant P as Function<br/>App Private<br/>Endpoint
+    C->>R: Query<br/>#lt;app-name#gt;<br/>.azurewebsites<br/>.net
+    R->>Z: Resolve<br/>private<br/>mapping
     Z-->>R: 10.40.2.8
-    R-->>C: Return private A record
-    C->>P: HTTPS request to private IP
+    R-->>C: Return<br/>private<br/>A record
+    C->>P: HTTPS<br/>request to<br/>private IP
     P-->>C: HTTPS response
 ```
 
