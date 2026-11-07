@@ -16,7 +16,6 @@ content_sources:
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics
 ---
 # Incident Playbooks
 
