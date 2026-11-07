@@ -34,9 +34,10 @@ content_sources:
     - id: what-you-ll-build-2
       type: flowchart
       source: self-generated
-      justification: Linux FC1 outbound Blob path overview; private endpoint precedes the Storage service, not a deployment verification result.
+      justification: Illustrative Linux FC1 path for the tutorial's Blob access, not a measured trace or deployment result. Public HTTPS ingress is separate from outbound VNet integration (delegated Microsoft.App/environments subnet), which reaches the Storage account through a Blob private endpoint in a separate subnet.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to
         - https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints
         - https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan

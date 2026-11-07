@@ -1745,42 +1745,39 @@ HTTP result: `404`
 
 <!-- diagram-id: 3-11-triage-decision-logic-mermaid-flowchart -->
 ```mermaid
-%%{init: {'flowchart': {'nodeSpacing': 10, 'rankSpacing': 30}}}%%
+%%{init: {'flowchart': {'nodeSpacing': 5, 'rankSpacing': 30, 'padding': 4}}}%%
 flowchart TD
     accTitle: Plan-aware code storage triage decisions
     accDescr: Non-execution symptom routes to all four plan checks, all Yes and No branches, restoration, identity and RBAC investigation, network or runtime hypotheses, recovery verification and escalation. This is a diagnostic reading order, not proof of root cause.
-    A(["A: Symptom"]) --> B{"B: Plan?"}
-    B -->|Y1| C["C: Content"]
-    B -->|FC1| D["D: Deploy"]
-    B -->|EP| E["E: Files"]
-    B -->|ASP| F["F: Package"]
-    C --> G{"G: Valid?"}
-    D --> H{"H: Valid?"}
-    E --> I{"I: Valid?"}
-    F --> J{"J: Valid?"}
-    G -->|No| K["K: Restore"]
-    H -->|No| L["L: Restore"]
-    I -->|No| M["M: Restore"]
-    J -->|No| N["N: Restore"]
-    G -->|Yes| O["O: Identity"]
+    A(["A:<br/>Symptom"]) --> B{"B:<br/>Plan?"}
+    B -->|Y1| C["C:<br/>Content"]
+    B -->|FC1| D["D:<br/>Deploy"]
+    B -->|EP| E["E:<br/>Files"]
+    B -->|ASP| F["F:<br/>Package"]
+    C --> G{"G:<br/>Valid?"}
+    D --> H{"H:<br/>Valid?"}
+    E --> I{"I:<br/>Valid?"}
+    F --> J{"J:<br/>Valid?"}
+    G -->|No| K["K:<br/>Restore"]
+    H -->|No| L["L:<br/>Restore"]
+    I -->|No| M["M:<br/>Restore"]
+    J -->|No| N["N:<br/>Restore"]
+    G -->|Yes| O["O:<br/>Identity"]
     H -->|Yes| O
     I -->|Yes| O
     J -->|Yes| O
-    O --> P{"P: Valid?"}
-    P -->|No| Q["Q: Repair"]
-    P -->|Yes| R["R: Investigate"]
-    K --> S["S: Verify"]
+    O --> P{"P:<br/>Valid?"}
+    P -->|No| Q["Q:<br/>Repair"]
+    P -->|Yes| R["R:<br/>Investigate"]
+    K --> S["S:<br/>Verify"]
     L --> S
     M --> S
     N --> S
     Q --> S
-    S --> T{"T: Recovered?"}
-    T -->|Yes| U(["U: Resolved"])
-    T -->|No| V(["V: Escalate"])
+    S --> T{"T:<br/>Recovered?"}
+    T -->|Yes| U(["U:<br/>Resolved"])
+    T -->|No| V(["V:<br/>Escalate"])
     %% Layout-only links tier branches; no diagnostic steps or arrows added.
-    K ~~~ D
-    L ~~~ E
-    M ~~~ F
     N ~~~ O
     Q ~~~ R
     R ~~~ S

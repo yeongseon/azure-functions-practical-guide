@@ -21,7 +21,7 @@ content_sources:
     - id: what-you-ll-build
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative Python 3.11 Linux Consumption (Y1) public deployment with connection-string host storage and off-path telemetry; not a measured trace or lab evidence.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages
         - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
@@ -34,7 +34,7 @@ content_sources:
     - id: step-5-verify-deployment
       type: flowchart
       source: self-generated
-      justification: Flow view of step 5 verify deployment, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Capability map of Y1 public outbound destinations; the health request does not exercise those paths and Y1 has no VNet integration.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-python

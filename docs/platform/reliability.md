@@ -15,20 +15,20 @@ content_sources:
     - id: retry-flow-with-exponential-backoff-timing
       type: sequenceDiagram
       source: self-generated
-      justification: Interaction sequence for retry flow with exponential backoff timing, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative four-attempt sequence; the 5, 15 and 45 second waits are example values, not a platform schedule, and retry-policy support differs by trigger (policy-based for Cosmos DB, Event Hubs, Kafka and Timer; extension-level for others).
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages
     - id: queue-specific-poison-behaviors
       type: flowchart
       source: self-generated
-      justification: Flow view of queue specific poison behaviors, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Shared illustrative recovery logic for Storage Queue (<queue>-poison after the attempt limit) and Service Bus (dead-letter queue after max delivery count or explicit action); limits and settlement mechanics are service-specific.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
         - https://learn.microsoft.com/en-us/azure/service-bus-messaging/message-transfers-locks-settlement
     - id: availability-zones-and-high-availability
       type: flowchart
       source: self-generated
-      justification: Flow view of availability zones and high availability, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative zone-redundant regional layout; Consumption plans do not support availability zones, Flex Consumption, Premium and Dedicated plans support zone-redundant deployments subject to region and plan requirements, and host storage must be ZRS. Not a network, VNet or deployment trace.
       based_on:
         - https://learn.microsoft.com/en-us/azure/reliability/reliability-functions
         - https://learn.microsoft.com/en-us/azure/reliability/reliability-service-bus
@@ -38,7 +38,7 @@ content_sources:
     - id: reliability-architecture-pattern
       type: flowchart
       source: self-generated
-      justification: Flow view of reliability architecture pattern, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative logical retry and recovery stages; exhausting a runtime retry policy does not universally create a dead-letter message, and recovery destinations depend on the trigger or application.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages
 content_validation:
@@ -169,7 +169,6 @@ Use retries for transient failures only. Non-transient failures should route to 
 sequenceDiagram
     accTitle: Illustrative retry timing across four attempts
     accDescr: Trigger, Function and Dependency exchange four deliveries and calls in order. The first three fail with 503, timeout and 429, separated by illustrative waits of 5, 15 and 45 seconds. The fourth succeeds. These are not measured or guaranteed platform delays.
-    autonumber
     participant T as Trigger
     participant F as Function
     participant D as Dependency
@@ -339,33 +338,31 @@ Zone-aware architecture options are strongest on Premium, Dedicated, and Flex Co
 %%{init: {'flowchart': {'nodeSpacing': 10, 'rankSpacing': 35}}}%%
 flowchart TD
     accTitle: Zone-resilient compute and shared dependencies
-    accDescr: Illustrative regional architecture retains function instances in three availability zones, shared Service Bus Premium and ZRS Storage dependencies, and optional global HTTP routing outside the region. Zone boxes describe availability, not customer subnets. Traffic Manager is a DNS alternative explained in the key.
+    accDescr: Illustrative regional architecture (all numbered links are illustrative) retains function instances in three availability zones, shared Service Bus Premium and ZRS Storage dependencies, and optional global HTTP routing outside the region. Zone boxes describe availability, not customer subnets. Traffic Manager is a DNS alternative explained in the key.
     ingress["Front Door"]
     subgraph Region["Azure Region"]
-        subgraph Z1["Zone 1"]
-            app_runtime_1["Fn 1"]
+        subgraph Z1[" "]
+            app_runtime_1["Zone 1<br/>Fn 1"]
         end
-        subgraph Z2["Zone 2"]
-            app_runtime_2["Fn 2"]
+        subgraph Z2[" "]
+            app_runtime_2["Zone 2<br/>Fn 2"]
         end
-        subgraph Z3["Zone 3"]
-            app_runtime_3["Fn 3"]
+        subgraph Z3[" "]
+            app_runtime_3["Zone 3<br/>Fn 3"]
         end
         storage_db_bus[("Service Bus<br/>Premium ZR")]
         storage_db[("Storage<br/>ZRS")]
     end
-    ingress -->|"[Illustrative]<br/>1"| app_runtime_1
-    ingress -->|"[Illustrative]<br/>1"| app_runtime_2
-    ingress -->|"[Illustrative]<br/>1"| app_runtime_3
-    app_runtime_1 -->|"[Illustrative]<br/>2"| storage_db_bus
-    app_runtime_2 -->|"[Illustrative]<br/>2"| storage_db_bus
-    app_runtime_3 -->|"[Illustrative]<br/>2"| storage_db_bus
-    app_runtime_1 -->|"[Illustrative]<br/>3"| storage_db
-    app_runtime_2 -->|"[Illustrative]<br/>3"| storage_db
-    app_runtime_3 -->|"[Illustrative]<br/>3"| storage_db
+    ingress -->|"1"| app_runtime_1
+    ingress -->|"1"| app_runtime_2
+    ingress -->|"1"| app_runtime_3
+    app_runtime_1 -->|"2"| storage_db_bus
+    app_runtime_2 -->|"2"| storage_db_bus
+    app_runtime_3 -->|"2"| storage_db_bus
+    app_runtime_1 -->|"3"| storage_db
+    app_runtime_2 -->|"3"| storage_db
+    app_runtime_3 -->|"3"| storage_db
     %% Layout-only tiers add no transport connections or zone dependencies.
-    app_runtime_1 ~~~ app_runtime_2
-    app_runtime_2 ~~~ app_runtime_3
     storage_db_bus ~~~ storage_db
     classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
     classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e;
@@ -376,7 +373,7 @@ flowchart TD
     linkStyle default stroke-width:2px;
 ```
 
-**Reading key — illustrative architecture, not a deployment or network trace:**
+**Reading key — illustrative architecture, not a deployment or network trace:** every numbered link (1–3) is illustrative.
 
 | Key | Relationship and scope |
 |---|---|

@@ -17,7 +17,7 @@ content_sources:
     - id: 1-summary
       type: flowchart
       source: self-generated
-      justification: Flow view of summary, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative, non-exhaustive triage and scoped-recovery order for a failed or degraded release, not an executed incident or a confirmed root-cause classifier. Learn supports that supported deployment technologies differ by hosting plan and operating system; the decision order and approval step are this guide's own.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
@@ -73,7 +73,7 @@ flowchart TD
     linkStyle default stroke-width:2px;
 ```
 
-**Reading key:** This illustrative flow routes evidence checks (diamonds) to further steps (rectangles) or branch endpoints (rounded boxes). The rollback branch requires approval and proven drift; the other branches stop for missing evidence or continue investigation, not a confirmed root-cause verdict.
+**Reading key:** This illustrative flow routes evidence checks (diamonds) to further steps (rectangles) or branch endpoints (rounded boxes). The rollback branch requires approval and proven drift; the other branches stop for missing evidence or continue investigation, not a confirmed root-cause verdict. The flow is illustrative and non-exhaustive; deployment technologies and constraints differ by hosting plan and operating system.
 
 ### Incident framing
 - Common symptom: deployment command succeeds, but app returns `500`, `404`, or host loops on startup.
