@@ -15,7 +15,7 @@ content_sources:
     - id: decision-flow
       type: flowchart
       source: self-generated
-      justification: Decision flow, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative triage tree for trigger lag, where the Event Hubs branch checks partition-lag distribution and dependency latency; Service Bus branch checks dead-letter growth and batch or prefetch tuning. Branches select investigations, not proven causes; extension settings depend on the extension version and processing mode.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs
@@ -26,7 +26,7 @@ content_sources:
     - id: failure-progression-timeline
       type: flowchart
       source: self-generated
-      justification: Flow view of failure progression timeline, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative escalation from producer pressure and dependency slowdown to delayed checkpoint or settlement, lag and retry risk; Event Hubs checkpoints and Service Bus locks and dead-lettering are distinct mechanisms. Not a measured incident timeline or an inevitable order.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs
@@ -37,7 +37,7 @@ content_sources:
     - id: broker-to-function-bottleneck-map
       type: flowchart
       source: self-generated
-      justification: Flow view of broker to function bottleneck map, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative logical stages from broker fetch through execution and dependency calls to checkpoint (Event Hubs) or message completion (Service Bus), with a duration check against lock or timeout budgets; arrows show diagnostic order, not network initiation, and are not a measured trace.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages

@@ -21,7 +21,7 @@ content_sources:
     - id: what-you-ll-build
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative Python Flex Consumption (FC1) public deployment with tutorial-selected deployment storage identity and off-path telemetry; not a measured trace.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages
         - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
@@ -34,7 +34,7 @@ content_sources:
     - id: what-you-ll-build-2
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build 2, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Ordered first-deployment tasks for Flex Consumption; the RBAC propagation wait is a task, not proof of authorization, and endpoint checks do not prove every trigger ran.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to
         - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity

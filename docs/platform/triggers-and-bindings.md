@@ -17,60 +17,39 @@ content_sources:
     - id: core-model
       type: flowchart
       source: self-generated
-      justification: Flow view of core model, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Logical cardinality view (one trigger, zero or more input and output bindings per function) adapted from the triggers and bindings concepts article; arrows are data flow, not network connection initiators.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-event-grid-blob-trigger
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
-        - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
     - id: event-grid-vs-polling-blob-trigger-model
       type: flowchart
       source: self-generated
-      justification: Flow view of event grid vs polling blob trigger model, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Comparison of the event-based and polling-based Blob trigger implementations adapted from the Blob trigger article (Flex Consumption supports only the event-based implementation); groups show availability, not resource containment.
       based_on:
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-event-grid-blob-trigger
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
-        - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
     - id: input-output-binding-data-flow-multi-service
       type: flowchart
       source: self-generated
-      justification: Input output binding data flow multi service, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative logical data flow for one function with an Event Hubs trigger, a Cosmos DB input binding, Service Bus and Blob output bindings, and Application Insights telemetry, adapted from the binding concepts and per-binding reference articles; not an ordered or atomic transaction.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-event-grid-blob-trigger
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
-        - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-cosmosdb-v2-input
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus-output
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-output
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
     - id: queue-trigger-output-pattern-architectural
       type: flowchart
       source: self-generated
-      justification: Flow view of queue trigger output pattern architectural, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative HTTP-ingest, queue-output and queue-trigger work flow adapted from the binding concepts and Queue trigger articles; the runtime polls the queue, so arrows are logical work flow, not transport initiators.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-event-grid-blob-trigger
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
-        - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
     - id: durable-functions-triggers
       type: flowchart
       source: self-generated
-      justification: Flow view of durable functions triggers, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative runtime-mediated relationships among Durable orchestration, activity and entity triggers adapted from the Durable Functions bindings article; not a direct network call or an execution trace.
       based_on:
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-event-grid-blob-trigger
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference#configure-an-identity-based-connection
-        - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
         - https://learn.microsoft.com/en-us/azure/durable-task/durable-functions/durable-functions-bindings
 content_validation:
   status: verified
