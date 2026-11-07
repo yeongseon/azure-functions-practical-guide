@@ -15,7 +15,7 @@ content_sources:
     - id: decision-flow
       type: flowchart
       source: self-generated
-      justification: Decision flow, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative triage order over documented host settings (storage connection, worker runtime, runtime version, content share) and Key Vault references; branches select checks, not confirmed causes, and are not an all-plan requirements list.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices
