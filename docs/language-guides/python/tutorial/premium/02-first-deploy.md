@@ -21,7 +21,7 @@ content_sources:
     - id: what-you-ll-build
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative Python 3.11 Linux Elastic Premium (EP1) public topology; the HTTP prewarm buffer differs from billed minimum capacity, and identity is optional and not assigned by these steps.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages
         - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
