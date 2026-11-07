@@ -11,7 +11,7 @@ content_sources:
     - id: prerequisites
       type: flowchart
       source: self-generated
-      justification: Flow view of prerequisites, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative, non-exhaustive triage for rising backlog or lag; plan limits, scale-controller behavior and host configuration depend on the hosting plan and trigger type, so branches suggest checks and are not confirmed causes or lab evidence.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
