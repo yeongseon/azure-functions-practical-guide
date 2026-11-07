@@ -13,7 +13,7 @@ content_sources:
     - id: troubleshooting-decision-tree
       type: flowchart
       source: self-generated
-      justification: Flow view of troubleshooting decision tree, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative incident triage choices informed by the cited monitoring and diagnostics guidance; branches select checks and actions, not proven causes, and the health probe is application-defined.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
         - https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring
@@ -171,23 +171,37 @@ Post-incident verification:
 <!-- diagram-id: troubleshooting-decision-tree -->
 ```mermaid
 flowchart TD
-    A[Incident detected] --> B{Platform health degraded?}
-    B -->|Yes| C[Check Azure Service Health and advisories]
-    C --> D[Apply platform mitigation and communicate impact]
-    B -->|No| E{"Function app healthy? /api/health"}
-    E -->|No| F[Inspect host startup logs and recent config changes]
-    F --> G{Recent deployment or setting change?}
-    G -->|Yes| H[Rollback or revert smallest change]
-    G -->|No| I[Check runtime dependencies and identity access]
-    E -->|Yes| J{Trigger-specific failure?}
-    J -->|Yes| K[Use trigger playbook and KQL filters]
-    J -->|No| L[Investigate latency and dependency bottlenecks]
-    H --> M[Verify recovery metrics and error rate]
+    accTitle: Incident triage decision tree
+    accDescr: Illustrative Yes or No triage preserves platform mitigation, startup and configuration checks, rollback, dependency and identity checks, trigger playbooks, latency investigation, recovery verification and documentation. The health endpoint is an application-defined probe.
+    A(["Incident detected"]) --> B{"Platform health<br/>degraded?"}
+    B -->|Yes| C["Check Azure<br/>Service Health<br/>and advisories"]
+    C --> D(["Apply platform<br/>mitigation and<br/>communicate impact"])
+    B -->|No| E{"Function app<br/>healthy?<br/>/api/health"}
+    E -->|No| F["Inspect host<br/>startup logs and<br/>recent config changes"]
+    F --> G{"Recent deployment<br/>or setting change?"}
+    G -->|Yes| H["Rollback or revert<br/>smallest change"]
+    G -->|No| I["Check runtime<br/>dependencies and<br/>identity access"]
+    E -->|Yes| J{"Trigger-specific<br/>failure?"}
+    J -->|Yes| K["Use trigger playbook<br/>and KQL filters"]
+    J -->|No| L["Investigate latency<br/>and dependency<br/>bottlenecks"]
+    H --> M["Verify recovery<br/>metrics and error rate"]
     I --> M
     K --> M
     L --> M
-    M --> N[Document root cause and prevention actions]
+    M --> N(["Document root cause<br/>and prevention actions"])
+    %% Layout-only links serialize branches; they add no diagnostic steps or arrows.
+    D ~~~ E
+    H ~~~ I
+    I ~~~ J
+    K ~~~ L
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class A,B,C,D,E,F,G,H,I,J,K,L,M,N neutral;
 ```
+
+**Takeaway:** Diamonds choose the next check or action, not a confirmed cause.
+`/api/health` denotes an application-defined HTTP probe, not a built-in endpoint;
+the platform [Health check feature](https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring#monitor-function-apps-using-health-check)
+is available on Premium and Dedicated, not Flex Consumption or Consumption.
 
 ## Anti-patterns to avoid
 
