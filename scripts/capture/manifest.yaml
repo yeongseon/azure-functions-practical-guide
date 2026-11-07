@@ -146,3 +146,45 @@ screenshots:
   page: Storage account → Events → Event Subscriptions
   status: planned
   diff_threshold: 0.02
+
+- id: node-flex-02-function-app-overview
+  file: language-guides/nodejs/flex-consumption/node-flex-02-function-app-overview.webp
+  alt: Planned Azure Portal capture of the Node.js Function App Overview blade, intended to show the app status and Flex Consumption hosting plan; replace with observed alt text after checking the final image
+  page: Function App → Overview
+  status: planned
+  diff_threshold: 0.02
+
+- id: node-flex-02-functions-list
+  file: language-guides/nodejs/flex-consumption/node-flex-02-functions-list.webp
+  alt: Planned Azure Portal capture of the Node.js Function App Functions blade, intended to show the functions indexed from the deployed application; replace with observed alt text after checking the final image
+  page: Function App → Functions
+  status: planned
+  diff_threshold: 0.02
+
+- id: java-premium-02-function-app-overview
+  file: language-guides/java/premium/java-premium-02-function-app-overview.webp
+  alt: Planned Azure Portal capture of the Java Function App Overview blade, intended to show the app status and Elastic Premium hosting plan; replace with observed alt text after checking the final image
+  page: Function App → Overview
+  status: planned
+  diff_threshold: 0.02
+
+- id: java-premium-02-functions-list
+  file: language-guides/java/premium/java-premium-02-functions-list.webp
+  alt: Planned Azure Portal capture of the Java Function App Functions blade, intended to show the functions indexed from the deployed application; replace with observed alt text after checking the final image
+  page: Function App → Functions
+  status: planned
+  diff_threshold: 0.02
+
+- id: dotnet-premium-02-function-app-overview
+  file: language-guides/dotnet/premium/dotnet-premium-02-function-app-overview.webp
+  alt: Planned Azure Portal capture of the .NET Function App Overview blade, intended to show the app status and Elastic Premium hosting plan; replace with observed alt text after checking the final image
+  page: Function App → Overview
+  status: planned
+  diff_threshold: 0.02
+
+- id: dotnet-premium-02-functions-list
+  file: language-guides/dotnet/premium/dotnet-premium-02-functions-list.webp
+  alt: Planned Azure Portal capture of the .NET Function App Functions blade, intended to show the functions indexed from the deployed application; replace with observed alt text after checking the final image
+  page: Function App → Functions
+  status: planned
+  diff_threshold: 0.02

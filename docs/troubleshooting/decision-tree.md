@@ -13,21 +13,22 @@ content_sources:
     - id: main-triage-decision-tree
       type: flowchart
       source: self-generated
-      justification: Flow view of main triage decision tree, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative symptom-first routing to twelve investigation endpoints for first-response triage; branch points are triage cues drawn from the diagnostics and monitoring references, not confirmed causes.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
     - id: trigger-specific-decision-tree
       type: flowchart
       source: self-generated
-      justification: Flow view of trigger specific decision tree, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative lookup from trigger type to a symptom question and investigation endpoint; cues such as the HTTP 230-second limit and Blob trigger behavior per plan come from the HTTP and Blob trigger references and are triage cues, not proof of cause.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-http-webhook-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-timer
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-diagnostics
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-diagnostics
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
