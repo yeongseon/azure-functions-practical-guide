@@ -17,7 +17,7 @@ content_sources:
     - id: common-mistakes-anti-patterns
       type: flowchart
       source: self-generated
-      justification: Flow view of common mistakes anti patterns, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative secret-rotation checklist with two retry/rollback decision loops; it is not a Microsoft-prescribed procedure or a measured trace. Learn supports Key Vault references resolved through the app's managed identity (RBAC or access policy), newer unpinned secret versions being picked up within 24 hours, and a configuration change forcing an immediate refetch; the access check, smoke tests, rollback and change-record steps are this guide's operational suggestions.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/security-concepts
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
@@ -28,7 +28,7 @@ content_sources:
     - id: security-boundary-and-identity-flow
       type: flowchart
       source: self-generated
-      justification: Security boundary and identity flow, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Conceptual responsibility map, not a network route or token protocol. Learn supports HTTP endpoint protection by function keys, App Service Authentication or API Management token validation, and managed-identity access to Key Vault and identity-based Storage, Service Bus and Event Hubs connections; the Policies grouping of dependencies is a guide-specific summary of network policy scope, not VNet containment.
       based_on:
         - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
         - https://learn.microsoft.com/en-us/azure/azure-functions/security-concepts

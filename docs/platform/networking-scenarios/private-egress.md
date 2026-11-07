@@ -17,7 +17,7 @@ content_sources:
     - id: private-egress-architecture
       type: flowchart
       source: self-generated
-      justification: "VNet integration pattern from MSLearn networking documentation"
+      justification: "Illustrative private-egress topology: public HTTPS ingress, outbound-only VNet integration on a delegated subnet, and separate Storage private endpoints for Blob, Queue, Table and File; managed identity token acquisition is shown apart from network connectivity. Which endpoints are required depends on plan and workload."
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-create-vnet
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options

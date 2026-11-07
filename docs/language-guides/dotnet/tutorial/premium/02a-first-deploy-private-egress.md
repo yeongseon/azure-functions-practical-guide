@@ -38,7 +38,7 @@ content_sources:
     - id: deployment-verification-results
       type: flowchart
       source: self-generated
-      justification: Conceptual Linux EP1 private ingress and outbound dependency path with a separate warm-capacity association; not evidence that the historical blocked deployment succeeded.
+      justification: Illustrative Linux EP1 path, not a measured trace and not evidence that the historical blocked deployment succeeded. Inbound private access uses a site private endpoint; outbound VNet integration (delegated Microsoft.Web/serverFarms subnet) is a separate path to a private backend; pre-warmed instances are a capacity association, not a data hop.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide
