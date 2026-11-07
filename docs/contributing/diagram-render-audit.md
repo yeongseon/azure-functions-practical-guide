@@ -326,6 +326,153 @@ findings remain here if temporary captures expire. Fixing site JavaScript/CSS
 is outside this audit PR; retain the interaction/contrast findings for #217 and
 diagram repairs for #234/#273.
 
+## Sample Observations — 2026-11-07 (Premium Blob Path, Fault Overlay, Sequence)
+
+**AI-reviewer observations from actual automatic browser renders**, pinned to
+`origin/main` **`bdd61acebf9a51f695fca43a69a8e37545166303`**, observed 2026-11-07
+09:06 KST (00:06 UTC). Human visual approval: **NOT_DONE**. This second sample
+covers the three cases the cross-guide parity checklist asks for that the
+2026-11-03 sample did not: an Azure network/host topology with a private-endpoint
+boundary, its fault overlay, and a non-topology typed view. No sampled diagram was
+changed by this PR; no Azure resource was created or queried.
+
+### Method
+
+Chromium **156.0.8078.4** (headless, Playwright), viewports **1440 × 900** and
+**390 × 900** CSS pixels, device scale factor 1, browser zoom 100%, the built site
+served from `site/`, default and slate palettes selected through Material's stored
+palette (checked by the rendered colours), automatic Material rendering with
+no manual Mermaid calls. Because Material installs each SVG in a closed shadow root,
+the inspection script made `attachShadow` open **before page load** (inspection
+only; it does not alter layout), then read each rendered SVG. *Effective label
+font* is the computed label font size multiplied by the SVG's rendered width over
+its `viewBox` width, i.e. the size a reader sees. Every captured image was opened
+before the notes below were written; images were kept outside Git (pattern
+`394-r2-{key}-{1440|390}-{default|slate}.png`, 32 images).
+
+### Sample Keys
+
+| Alias | Exact key | Type / role |
+|---|---|---|
+| pe-normal | `docs/reference/functions-topology-templates.md#functions-v1-network-storage-normal` | Premium Blob-only host-storage slice: outbound VNet integration and Storage inbound private endpoint in separate subnets, Private DNS zone linked to the VNet |
+| pe-fault | `docs/reference/functions-topology-templates.md#functions-v1-network-storage-failure` | Same slice with one illustrative fault on the integration → private-endpoint edge |
+| sequence | `docs/reference/functions-topology-templates.md#functions-v1-worker-sequence` | Non-topology typed sequence: host ↔ isolated worker |
+| decision | `docs/reference/troubleshooting.md#troubleshooting` | Categorical troubleshooting flow (migrated in #560) |
+
+All four have a matching `diagram-id` comment, a `content_sources.diagrams` entry
+and `accTitle`/`accDescr` (the accessible title and description exist on the
+rendered SVG in every cell; this is not a screen-reader test). The templates are
+Premium (multitenant) **illustrations**, not a measured network trace. They show the
+Function host **outside** the customer VNet: this is correct for multitenant
+hosting, where regional VNet integration provides outbound connectivity only. It
+is **not** correct for an App Service Environment, where the environment and its
+hosted apps run inside a customer-VNet subnet; the figures must not be reused for
+that hosting model without redrawing the boundary. The diagram deliberately
+omits the other storage endpoints (File, Queue, Table), as its justification says.
+
+### Measured Legibility
+
+Minimum effective label font in CSS px (identical in default and slate; no clipped
+labels in any cell):
+
+| Key | 1440 | 390 | Verdict at 390 |
+|---|---:|---:|---|
+| pe-normal | 16 | **5.4** | FAIL: boundary and edge labels unreadable inline |
+| pe-fault | 16 | **5.4** | FAIL: same; the red edge cannot be told from the red endpoint |
+| sequence | 16 | 10.4 | FAIL (marginal): readable with effort, below the 12 px target |
+| decision | 16 | 16 | PASS |
+
+The same templates' base and trigger variants measure 7.0 / 6.7 / 6.1 / 6.1 px at
+390 (all FAIL) and 16 px at 1440, so the defect is systematic: wide logical
+diagrams are scaled down to the narrow content column.
+
+### Findings
+
+- **Topology reading (1440, both palettes) — PASS with notes:** the VNet,
+  VNet-integration subnet, private-endpoints subnet, Private Endpoint and Storage
+  are distinguishable; the host, scale controller, event source and DNS zone sit
+  outside the VNet; integration NIC → Private Endpoint → Blob reads in order. The
+  bracketed boundary tags (`[VNet boundary]`, `[delegated]`, `[Inbound NIC]`) sit on
+  the dashed borders, so the nesting is harder to read than it should be.
+- **Fault overlay (1440) — PASS:** the failing edge is labelled `[FAULT /
+  Illustrative] Connection blocked` and also drawn thick and red, so the state is
+  not colour-only. The arrowhead still points at the endpoint, which could be read as an
+  active connection; the label resolves it. The accessible description correctly
+  says private DNS still resolves and to investigate routing/connectivity rather
+  than assert a DNS fault. The red endpoint can be read as "the private endpoint
+  is faulty" rather than "the connection to it is blocked"; the edge label is the
+  disambiguator.
+- **Narrow rendering (390) — FAIL:** the nested boundary titles collide with the
+  dashed borders and bracketed tags, and the fault is not distinguishable. These
+  defects belong to the template keys; they are recorded for the migrations that
+  reuse them and for follow-up on the templates themselves. Nothing was repaired
+  here.
+- **Slate palette — PASS with a note:** node text has adequate contrast; the grey
+  connector and boundary annotations are noticeably fainter than node text.
+- **Sequence — PASS at 1440, marginal at 390:** participants, message direction and
+  order are clear and the dashed return arrow does not depend on colour. The
+  participant boxes are repeated at the bottom as Mermaid always does; the
+  lifelines connect them.
+- **Decision — PASS:** all branches converge on the same outcome, labels are
+  legible at 390 in both palettes, and no topology boundary is implied.
+- **Common-grammar check:** component vocabulary, the control/metadata (dotted)
+  versus data/invocation (solid) distinction, the bracketed evidence-confidence tags
+  (`[Configured]`, `[Illustrative]`, `[FAULT / Illustrative]`) and stable component
+  identity between the normal and fault variants are consistent. DNS is drawn as a
+  VNet-linked zone outside both subnets, and the Private Endpoint as a NIC in its
+  own subnet, not as containing Storage.
+
+### Zoom Overlay Observation (Premium Blob Path)
+
+Opening **pe-normal** and inspecting the moved host's SVG:
+
+| Build | Viewport | Opening scale | SVG size | Min effective font | Clipped |
+|---|---|---:|---|---:|---|
+| `main` at `bdd61ac` | 1440 | 1.5 | 450 × 321 | **6.8** | no |
+| `main` at `bdd61ac` | 390 | 1.5 | 450 × 321 | **6.8** | yes (both sides) |
+| PR #565 head `3bc5b31` (unmerged) | 1440 | 1.10 | 1128 × 806 | 17.1 | no |
+| PR #565 head `3bc5b31` (unmerged) | 390 | 0.75 | 768 × 549 | 11.6 | pannable, opens at the left edge |
+
+On `main` the overlay shrinks this wide diagram to roughly a quarter of its inline
+size (inline 16 px → overlay 6.8 px at 1440), because the host collapses to a
+default width inside the overlay's flex container; repeated wheel events can
+enlarge it, but the opening view is worse than the inline view. That is a
+renderer finding for #217, not a template defect; PR #565 changes the opening size
+and is recorded here only as a separately measured, unmerged build.
+
+### Cross-guide Check Inventory (Workflow-file Level)
+
+The following was read from each repository's `.github/workflows/` listing on
+2026-11-07; it identifies which workflows exist and does **not** show that a
+workflow enforces the same rule or that it passed.
+
+| Check | Functions | App Service |
+|---|---|---|
+| Strict MkDocs build | `docs.yml`, `ci.yml` | `docs.yml` |
+| Mermaid format/syntax, content sources, manifest ownership/drift, PII | `validate-content-sources.yml` | `validate-content-sources.yml` |
+| Documentation repetition | `validate-repetition.yml` | `validate-repetition.yml` |
+| Visual coverage (advisory) | `validate-visual-content.yml` | `validate-visual-content.yml` |
+| PR title convention | `pr-title.yml` | `pr-title.yml` |
+| Live Azure end-to-end (guarded) | `e2e-azure.yml` | `e2e-azure.yml` |
+| Golden-status validation and refresh | **no workflow file** | `validate-golden-status.yml`, `refresh-golden-status.yml` |
+| Validation freshness | **no workflow file** | `validation-freshness.yml` |
+| Project metadata/operations | **no workflow file** | `project-operations.yml` |
+
+Possible parity gaps to be checked, not assumed, in follow-up work: the three
+App Service workflows with no Functions counterpart file. None of the Functions
+workflows renders the diagrams in a browser (the App Service workflows were read by
+file name only), so every cell of the matrices in this page is a manual or locally
+scripted observation, not an automated gate.
+
+### Outcome
+
+The Premium Blob-path pair is semantically sound for the multitenant Premium
+hosting model but fails the 390 px legibility criterion; the sequence is marginal
+at 390 and the decision flow passes. Human/maintainer visual acceptance is
+**NOT_DONE** and is not implied by this audit, by green CI or by these captures.
+200% browser zoom, instant navigation, pinch on a physical device, screen-reader
+output and cross-browser rendering were **NOT_CHECKED**.
+
 ## See Also
 
 - [Contributing](index.md)
@@ -334,6 +481,7 @@ diagram repairs for #234/#273.
 - [Composition ADR](../reference/adr-diagram-composition.md)
 - [Architecture Sample](../platform/architecture/index.md#architecture-at-a-glance)
 - [Queue Decision Sample](../troubleshooting/playbooks/queue-piling-up.md#1-summary)
+- [Functions Topology Templates](../reference/functions-topology-templates.md)
 
 ## Sources
 
@@ -343,4 +491,5 @@ diagram repairs for #234/#273.
 - [Functions networking options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)
 - [App Service Environment overview](https://learn.microsoft.com/en-us/azure/app-service/environment/overview)
 - [Queue trigger behavior](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger)
+- [Private endpoint DNS configuration](https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-dns)
 - [Material native Mermaid integration](https://squidfunk.github.io/mkdocs-material/reference/diagrams/)

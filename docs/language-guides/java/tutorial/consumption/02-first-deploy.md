@@ -21,22 +21,21 @@ content_sources:
     - id: what-you-ll-build
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
+      justification: "Illustrative topology of the tutorial's public Linux Consumption (Y1) Java 17 deployment: HTTPS ingress, connection-string Storage access with a Blob code package, off-path Application Insights, and Y1's lack of outbound VNet integration; not a measured trace or lab evidence."
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
-        - https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-java
     - id: what-you-ll-build-2
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build 2, synthesized from Microsoft Learn documentation cited on this page.
+      justification: "Illustrative order of the tutorial's Consumption deploy steps (variables, resource group and Storage, function app, placeholder settings, Maven build and staging-directory publish, endpoint validation); not an executed deployment trace."
       based_on:
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-java
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
+        - https://learn.microsoft.com/en-us/azure/azure-functions/consumption-plan
 ---
 # 02 - First Deploy (Consumption)
 
