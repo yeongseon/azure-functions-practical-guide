@@ -14,7 +14,7 @@ content_sources:
     - id: python-v2-programming-model
       type: flowchart
       source: self-generated
-      justification: Flow view of python v2 programming model, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative reading order for the v2 model. The Python developer guide documents decorator-defined functions in function_app.py or referenced blueprint files; the worker-indexing and host trigger/route-map stages are a simplified conceptual summary, not documented protocol messages or measured behavior.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
