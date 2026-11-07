@@ -31,51 +31,42 @@ content_sources:
     - id: failure-progression-model-for-this-incident
       type: flowchart
       source: self-generated
-      justification: Summary of the historical Y1 burst reported on this page; Learn supports queue-trigger and scaling concepts, not the recorded timings or a new Azure validation.
+      justification: Summary of the historical Y1 burst reported on this page; Learn documents queue-trigger processing and event-driven scale-out of instances but not the recorded 08:23-08:30 timings, throughput values or a new Azure validation.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
         - https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
-        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-query-overview
     - id: timeline-view
       type: gantt
       source: self-generated
-      justification: Timeline of the historical burst reported on this page, not a platform timing guarantee or new execution evidence.
+      justification: Gantt of the historical burst reported on this page with start times and durations copied from the lab record; Learn informs the queue-trigger and Application Insights vocabulary, not these timings, a platform guarantee or new execution evidence.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
         - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-query-overview
     - id: hypothesis-decision-flow
       type: flowchart
       source: self-generated
-      justification: Historical lab diagnostic routing, not an exhaustive classifier; Learn supports queue retry and scaling concepts, not proof of the historical causal verdict.
+      justification: Historical lab diagnostic routing, not an exhaustive classifier; Learn documents queue-trigger retries, dequeueCount, maxDequeueCount and poison queues, host.json queue settings and event-driven scale-out, but does not establish the lab's causal verdict.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
         - https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
-        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-query-overview
     - id: evidence-timeline
       type: sequenceDiagram
       source: self-generated
-      justification: Experiment-log summary of the historical Y1 burst and reported telemetry, not an internal host-worker protocol or new execution evidence.
+      justification: Experiment-log summary of the historical Y1 burst and reported Application Insights telemetry in seven numbered steps; Learn informs queue-trigger processing and monitoring vocabulary, not the recorded values, a host-worker protocol or new execution evidence.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
         - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-query-overview
     - id: evidence-timeline-2
       type: sequenceDiagram
       source: self-generated
-      justification: Expected-evidence summary of the historical Y1 burst and reported telemetry, not an internal host-worker protocol or new execution evidence.
+      justification: Expected-evidence summary of the historical Y1 burst and reported telemetry in seven numbered steps; Learn informs queue-trigger processing and monitoring vocabulary, not the recorded values, a host-worker protocol or the separate unexecuted Golden retry scenario.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/monitor-functions
         - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-query-overview
 ---
