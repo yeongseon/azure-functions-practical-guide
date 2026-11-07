@@ -473,6 +473,43 @@ at 390 and the decision flow passes. Human/maintainer visual acceptance is
 200% browser zoom, instant navigation, pinch on a physical device, screen-reader
 output and cross-browser rendering were **NOT_CHECKED**.
 
+## Full-coverage Measurement — 2026-11-08
+
+**Automated agent measurement, not human visual approval.** Every published diagram
+in the manifest (**578** diagrams on **364** pages) was rendered on a build of
+`main` at `12168ee` with Chromium (Playwright), at **390** and **1440** CSS pixels,
+default palette. *Effective label size* is the computed label font multiplied by
+the SVG's rendered width over its `viewBox` width. Material's closed shadow roots
+were opened before page load for inspection only. Per-diagram state is recorded in
+the [manifest](../reference/diagram-manifest.json): every migration-required record
+is `completed` or `exception` with a measured reason; none is `in-progress`.
+
+| Check | 390 px | 1440 px |
+|---|---:|---:|
+| Diagrams rendered / not rendered | 578 / 0 | 578 / 0 |
+| Labels clipped by the SVG | 0 | 0 |
+| Minimum effective label size under 12 px | 8 | 10 (before #618), see below |
+| Without accessible title and description | 5 | 5 |
+
+- **Under 12 px at 390 px (8):** the six topology flowchart templates in
+  [Functions Topology Templates](../reference/functions-topology-templates.md)
+  (5.4 to 7.0 px; a documented limitation, spacing and line-break experiments reach at
+  most 8.6 px) and the two generator-owned status pie charts
+  (`content-validation-status.md` 10.6 px, `validation-status.md` 9.1 px), which are
+  excluded from migration because a script regenerates them.
+- **Under 12 px at 1440 px (10):** ten lab evidence-timeline Gantt titles at 10.6 px,
+  fixed in #618 (title size 16 px; labels 12.1 px or more at both widths).
+- **Without accessible title and description (5):** the diagram-orientation example
+  in `content-contract.md` and the two generated pie charts (excluded records), and the
+  two timeline charts in the `auth-config` playbooks (Mermaid's timeline type does not
+  emit `accTitle`/`accDescr` to the SVG; their adjacent legend tables are the text
+  alternative, see the manifest exception text).
+- **Not covered by this measurement:** slate palette for every diagram (sampled in the
+  per-PR reviews only), the zoom viewer for every diagram, instant navigation, 200%
+  browser zoom, screen readers, physical phones, other browsers, and **human visual
+  approval of any diagram**. Exceptions in the manifest still need maintainer sign-off,
+  which is tracked in #217.
+
 ## See Also
 
 - [Contributing](index.md)
