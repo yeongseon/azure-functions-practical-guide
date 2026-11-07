@@ -21,22 +21,21 @@ content_sources:
     - id: what-you-ll-build
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
+      justification: "Illustrative topology of the tutorial's public Linux Flex Consumption (FC1) Java 17 deployment: HTTPS ingress, system-assigned managed identity access to Blob deployment storage, and off-path Application Insights; not a measured trace or lab evidence."
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to#configure-deployment-settings
         - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
-        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to#configure-deployment-settings
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
-        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
     - id: what-you-ll-build-2
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build 2, synthesized from Microsoft Learn documentation cited on this page.
+      justification: "Illustrative order of the tutorial's Flex Consumption deploy steps (including the deployment container and Storage Blob Data Contributor assignment for the selected managed identity, Maven build, staging-directory publish, endpoint validation); not an executed deployment trace."
       based_on:
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to#configure-deployment-settings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
 ---
 # 02 - First Deploy (Flex Consumption)
 

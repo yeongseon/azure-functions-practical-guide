@@ -13,7 +13,7 @@ content_sources:
     - id: scaling-best-practices
       type: flowchart
       source: self-generated
-      justification: Flow view of scaling best practices, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative tuning guide authored for this page; it is not a Microsoft-prescribed procedure. Supported by Learn - event-driven scale-out by trigger type, concurrency controls, per-plan scaling behavior, and Flex Consumption always-ready and per-function scaling.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-concurrency
@@ -22,7 +22,7 @@ content_sources:
     - id: phase-4-recovery
       type: flowchart
       source: self-generated
-      justification: Flow view of phase 4 recovery, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Self-authored illustrative scale-test plan (baseline, burst, failure injection, recovery); the four phases are not a Learn-prescribed procedure and are not an executed experiment. Learn supports only the underlying scale and concurrency behavior referenced by the checks.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-concurrency
