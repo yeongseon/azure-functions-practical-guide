@@ -176,7 +176,7 @@ Flex Consumption scales quickly and can instantiate new workers frequently. Each
 
 <!-- diagram-id: 1-4-failure-progression-model -->
 ```mermaid
-%%{init: {"sequence":{"width":40,"actorMargin":10,"diagramMarginX":5,"wrap":true}}}%%
+%%{init: {"sequence":{"width":62,"actorMargin":4,"diagramMarginX":4,"messageMargin":34,"wrap":true}}}%%
 sequenceDiagram
     accTitle: FC1 lab DNS and storage failure progression
     accDescr: Illustrative logical sequence with five separate roles and baseline then incident exchanges. The crossed zone exchange denotes loss of zone visibility, not a response from an unreachable zone. Historical addresses and response codes are retained in the adjacent key and signal map, not revalidated here.

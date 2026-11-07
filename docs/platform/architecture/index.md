@@ -17,24 +17,27 @@ content_sources:
     - id: functions-architecture-overview
       type: flowchart
       source: self-generated
-      justification: "Synthesized end-to-end runtime view from Azure Functions overview, hosting, and networking documentation"
+      justification: "Illustrative invocation and data path: push and timer events or polling reach trigger extensions, the Functions host invokes the language worker, and host storage and telemetry are dependencies. Management and scaling arrows are drawn in a separate figure; this is not a measured trace."
       based_on:
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
-        - https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/control-plane-and-data-plane
-        - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-timer
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-grid-trigger
         - https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide
         - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-timer
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-grid-trigger
+    - id: functions-management-and-scaling
+      type: flowchart
+      source: self-generated
+      justification: "Illustrative separation of ARM-managed configuration from scale-controller instance changes, qualified by hosting plan: event-driven scaling applies to Flex Consumption, Premium and Consumption, while Dedicated and Container Apps use their own scaling. Not a measured trace."
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
+        - https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/control-plane-and-data-plane
     - id: control-data-plane
       type: flowchart
       source: self-generated
-      justification: "Synthesized control plane versus runtime execution model from Azure Functions management, scale, and networking documentation"
+      justification: "Illustrative grouping of configuration choices versus runtime work, with platform scaling kept separate from ARM operations; scaling applicability varies by hosting plan. Not a measured trace."
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
@@ -47,7 +50,7 @@ content_sources:
     - id: runtime-execution-path
       type: flowchart
       source: self-generated
-      justification: "Summarizes the documented trigger-to-host-to-worker execution model"
+      justification: "Illustrative logical stages from trigger detection through host coordination to worker execution, with in-process .NET noted as an exception; not a measured trace or network path."
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
@@ -55,7 +58,7 @@ content_sources:
     - id: detailed-host-worker-communication-sequence
       type: sequenceDiagram
       source: self-generated
-      justification: "Expanded invocation sequence based on Functions host, worker, and binding concepts"
+      justification: "Illustrative host-to-worker invocation sequence with roles shortened for readability; exact RPC, retries and trigger-specific completion are not shown or measured."
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
@@ -64,7 +67,7 @@ content_sources:
     - id: core-resource-relationships
       type: flowchart
       source: self-generated
-      justification: "Synthesizes core Function App dependencies around hosting, storage, identity, and monitoring"
+      justification: "Logical relationships among incoming sources, hosting plan, host storage, optional managed identity, downstream services and telemetry; not an HTTP transport or network topology."
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
@@ -76,7 +79,7 @@ content_sources:
     - id: configuration-layers-diagram
       type: flowchart
       source: self-generated
-      justification: "Shows the configuration hierarchy described across hosting, app settings, host.json, and bindings documentation"
+      justification: "Illustrative configuration scopes (hosting plan, app settings, host.json, function metadata); not a strict override order or network path."
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
@@ -85,7 +88,7 @@ content_sources:
     - id: pattern-b-active-active-with-regional-affinity
       type: flowchart
       source: self-generated
-      justification: "Adapted multi-region pattern based on Azure traffic management and replicated dependency guidance"
+      justification: "Illustrative two-region active-active pattern with Front Door routing; cross-region replication is application-specific and not an automatic Functions feature."
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
@@ -94,7 +97,7 @@ content_sources:
     - id: durable-functions-orchestration-architecture
       type: flowchart
       source: self-generated
-      justification: "Summarizes Durable Functions orchestration, activities, timers, and state persistence"
+      justification: "Illustrative Durable Functions orchestration flow for the Azure Storage provider: client start, activities, timers, external events and persisted history; not a measured trace."
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview
         - https://learn.microsoft.com/en-us/azure/durable-task/durable-functions/durable-functions-azure-storage-provider
@@ -163,84 +166,94 @@ This view gives you the end-to-end mental model before you dive into individual 
 
 <!-- diagram-id: functions-architecture-overview -->
 ```mermaid
-%%{init: {'flowchart': {'nodeSpacing': 15, 'rankSpacing': 35}}}%%
+%%{init: {'flowchart': {'nodeSpacing': 8, 'rankSpacing': 40}}}%%
 flowchart TD
     accTitle: How do events, hosting and runtime roles fit together?
-    accDescr: General Functions mental model with HTTP, timers, queues, blobs and Event Grid. Hosting contains a logical app instance with host, extensions and worker plus additional scaled instances. ARM manages configuration separately from platform scaling; polling, push delivery and timer schedules are distinct.
-    subgraph Management["Platform management"]
-        control_plane["ARM"]
-        scale_controller["Scale controller"]
-        %% Layout-only: stack management roles, not an ARM-to-scaling request.
-        control_plane ~~~ scale_controller
-    end
-    Config["Configuration"]
-    subgraph Events["Event sources"]
-        client(["Push"])
-        poll_source(["Poll"])
-        timer_source(["Timer"])
-        %% Layout-only: mechanism list, not event forwarding.
-        client ~~~ poll_source
-        poll_source ~~~ timer_source
-    end
-    subgraph Plan["Hosting"]
-        hosting_plan["Hosting plan"]
-        subgraph Instance["App instance"]
-            trigger_listener["Extensions"]
-            app_runtime["Host"]
-            language_worker["Worker / code"]
-        end
-        InstanceN["More instances"]
-        %% Layout-only: plan and scale-out context stay inside Hosting.
-        hosting_plan ~~~ trigger_listener
-        language_worker ~~~ InstanceN
+    accDescr: General Functions invocation and data path, illustrative and not a measured trace. A push event is delivered to trigger extensions and a timer schedule becomes due; for polled sources the extensions poll the source. Extensions pass payload and metadata to the host, which invokes the language worker, keeps state in host storage and sends logs to telemetry off the invocation path. The worker calls downstream services. Configuration and scale control are shown in the next figure.
+    timer_source(["Timer"])
+    client(["Push event"])
+    poll_source(["Poll source"])
+    subgraph Instance["Hosting plan"]
+        trigger_listener["Extensions"]
+        app_runtime["Host"]
+        language_worker["Worker / code"]
     end
     storage_db[("Host storage")]
     dependency["Services"]
     telemetry>"Telemetry"]
-    Config -.->|"Manage"| control_plane
-    control_plane -.->|"Configure"| app_runtime
-    scale_controller -.->|"Monitor"| Events
-    scale_controller -.->|"Adjust"| app_runtime
-    scale_controller -.->|"Add / remove"| InstanceN
     client -->|"Deliver"| trigger_listener
     trigger_listener -->|"Poll"| poll_source
-    timer_source -.->|"Schedule due"| trigger_listener
+    timer_source -->|"Schedule<br/>due"| trigger_listener
     trigger_listener -->|"Payload /<br/>metadata"| app_runtime
     app_runtime -->|"Invoke"| language_worker
     app_runtime -->|"State"| storage_db
     language_worker -->|"SDK / data"| dependency
     app_runtime -.->|"Logs"| telemetry
-    %% Layout-only: external-resource tiers add no resource-to-resource calls.
-    InstanceN ~~~ storage_db
-    storage_db ~~~ dependency
-    dependency ~~~ telemetry
+    %% Layout-only: stack external resources, no resource-to-resource calls.
+    storage_db ~~~ telemetry
     classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
     classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e;
     classDef bandMuted fill:#ffffff,stroke:#707e93,stroke-width:1.5px,stroke-dasharray:4 3,color:#14202e;
-    class client,poll_source,timer_source,language_worker,trigger_listener,hosting_plan,InstanceN,Config,storage_db,dependency baseNeutral;
+    class client,poll_source,timer_source,language_worker,trigger_listener,storage_db,dependency baseNeutral;
     class app_runtime focusActive;
-    class scale_controller,control_plane,telemetry bandMuted;
+    class telemetry bandMuted;
     linkStyle default stroke-width:2px;
+    linkStyle 7 stroke-dasharray:10 4 2 4;
 ```
 
 | Figure key | Full role / claim level |
 |---|---|
-| Configuration / ARM / Manage / Configure | `[Configured]` App settings, identity and configuration managed through ARM resource management. |
-| Scale controller / Monitor / Adjust / Add / remove | `[Configured]` Event-driven plans monitor source demand and adjust the app instance and additional scaled instances, separately from ARM operations. |
-| Push / Deliver | `[Configured]` HTTP, Event Grid and event-driven blobs; push delivery to trigger extensions. |
-| Poll | `[Configured]` Queues and polling-mode blobs; extensions/listeners initiate polling. |
+| Push event / Deliver | `[Configured]` HTTP, Event Grid and event-driven blobs; push delivery to trigger extensions. |
+| Poll source / Poll | `[Configured]` Queues and polling-mode blobs; extensions/listeners initiate polling. |
 | Timer / Schedule due | `[Illustrative]` Timer schedule detected by the host, not a remote event endpoint. |
-| Hosting plan / Hosting / App instance / More instances | Consumption, Flex Consumption, Premium or Dedicated; the app instance groups host, extensions and worker, with additional instances when scaled out. |
+| Hosting plan box / Extensions | Consumption, Flex Consumption, Premium or Dedicated; the box groups the app instance (extensions, host and worker). Additional instances when scaled out are shown in the next figure. |
 | Extensions / Payload / metadata / Host / Invoke / Worker / code | `[Illustrative]` Listener/binding-extension handoff supplies payload and metadata; `[Configured]` host coordinates execution and invokes the language worker executing function code. |
 | Host storage / State | `[Configured]` Checkpoints, leases and Durable state. |
 | Services / SDK / data | `[Illustrative]` Downstream databases, messaging and APIs, via SDK calls or optional host-coordinated bindings. |
 | Telemetry / Logs | `[Configured]` Application Insights and platform logs, off the invocation path. |
 
-- **Takeaway:** Trigger-specific detection leads to host coordination and worker execution; configuration and scaling are separate responsibilities. Solid arrows show invocation and resource access with the initiator at the tail; dotted arrows show management, scheduling or off-path telemetry. Claim levels are keyed in the adjacent legend: `[Configured]` means documented/intended behavior; `[Illustrative]` marks a logical teaching exchange, not a measured trace.
-- HTTP and Event Grid use push delivery; queues and polling-mode blobs are polled; timers use a host-detected schedule, not a remote event endpoint. This does not imply local-time scheduling or storage independence: timer triggers use host storage for coordination ([timer trigger](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-timer)); Event Grid uses webhook HTTP requests ([Event Grid trigger](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-grid-trigger)). The grouping is a logical model, not an HTTP ingress path for every trigger. This worker is out-of-process; in-process .NET executes code in the host. Consumption and Premium scale apps; Flex scales functions with HTTP, Blob (Event Grid), and Durable Functions groups; Dedicated uses App Service scaling ([event-driven scaling](https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling)). Downstream access can use optional bindings coordinated by the host or SDK calls from code.
+- **Takeaway:** Trigger-specific detection leads to host coordination and worker execution. This figure shows only invocation, resource access and telemetry; configuration and scale control are drawn separately below so their arrows are not mistaken for invocation. Line key: **solid** = invocation, polling or data access, with the initiator at the tail; **dash-dot** = off-path telemetry. Claim levels are keyed in the adjacent table: `[Configured]` means documented/intended behavior; `[Illustrative]` marks a logical teaching exchange, not a measured trace.
+- HTTP and Event Grid use push delivery; queues and polling-mode blobs are polled; timers use a host-detected schedule, not a remote event endpoint. This does not imply local-time scheduling or storage independence: timer triggers use host storage for coordination ([timer trigger](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-timer)); Event Grid uses webhook HTTP requests ([Event Grid trigger](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-grid-trigger)). The grouping is a logical model, not an HTTP ingress path for every trigger. This worker is out-of-process; in-process .NET executes code in the host. Downstream access can use optional bindings coordinated by the host or SDK calls from code.
 - The hosting plan defines the runtime boundary where the Functions host, extensions, and language worker actually run.
 - Storage is a runtime dependency for checkpoints, leases, and durable state, not just a deployment prerequisite.
 - Observability flows out of the host into Application Insights and platform logs, which is why host health is central to troubleshooting.
+
+#### Configuration and scale control paths
+Configuration and scale control are separate from the invocation path above; neither is a request issued by an event source.
+
+<!-- diagram-id: functions-management-and-scaling -->
+```mermaid
+flowchart TD
+    accTitle: Which management paths configure the app and change its instance count?
+    accDescr: Illustrative management view, not a measured trace and not a universal model. App configuration is managed through ARM, and ARM configures the Functions host in the app instance. Separately, where event-driven scaling applies, the scale controller monitors event sources and adds or removes host instances. The Dedicated plan uses App Service scaling and Container Apps hosting uses Container Apps scaling.
+    Config["Configuration"]
+    control_plane["ARM"]
+    scale_controller["Scale controller<br/>(plan-dependent)"]
+    events["Event sources"]
+    app_runtime["Functions host<br/>(in hosting plan)"]
+    Config -.->|"Manage"| control_plane
+    control_plane -.->|"Configure"| app_runtime
+    scale_controller ==>|"Monitor"| events
+    scale_controller ==>|"Add / remove<br/>instances"| app_runtime
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e;
+    classDef bandMuted fill:#ffffff,stroke:#707e93,stroke-width:1.5px,stroke-dasharray:4 3,color:#14202e;
+    class Config,events baseNeutral;
+    class app_runtime focusActive;
+    class scale_controller,control_plane bandMuted;
+    linkStyle default stroke-width:2px;
+    linkStyle 2,3 stroke-width:3px;
+```
+
+| Figure key | Full role / claim level |
+|---|---|
+| Configuration / ARM / Manage / Configure | `[Configured]` **Dotted** arrows: app settings, identity and configuration managed through ARM resource management; ARM does not carry invocations. |
+| Scale controller / Monitor / Add / remove instances | `[Configured]` **Thick** arrows: where event-driven scaling applies, the scale controller monitors event sources and adds or removes instances of the Functions host. It is separate from ARM operations. |
+| Functions host / hosting plan | Consumption, Flex Consumption, Premium or Dedicated; the host is the same host shown in the invocation figure. |
+
+- **Takeaway:** Event-driven scale control applies to the Flex Consumption, Premium and Consumption plans; the scale controller monitors event rates with trigger-specific heuristics ([event-driven scaling](https://learn.microsoft.com/en-us/azure/azure-functions/event-driven-scaling)). Flex Consumption uses per-function scaling, while Premium and Consumption scale at the function-app level. The Dedicated plan uses App Service scaling and Functions on Azure Container Apps uses Container Apps scaling, so this figure does not describe those cases.
+- The arrows show management responsibility, not network traffic and not a physical topology.
+
 
 ### Control Plane vs Data Plane
 Azure Functions works best when you separate what you configure from what executes during live traffic processing.
@@ -486,6 +499,8 @@ Azure Functions behavior is controlled through layered configuration:
 <!-- diagram-id: configuration-layers-diagram -->
 ```mermaid
 flowchart TD
+    accTitle: Which configuration layers shape Functions runtime behavior?
+    accDescr: Four configuration scopes in order of reading, not a strict override order or network path: hosting plan, function app settings, host.json and function trigger and binding metadata, leading to runtime behavior.
     P["Layer 1: Hosting Plan<br/>Scale model, network capability, cold-start profile"] --> A["Layer 2: Function App Settings<br/>App settings, identity, connection references"]
     A --> H["Layer 3: host.json<br/>Concurrency, retries, extension settings"]
     H --> F["Layer 4: Function Metadata<br/>Trigger and binding definitions"]

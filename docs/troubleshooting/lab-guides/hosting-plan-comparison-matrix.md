@@ -13,7 +13,7 @@ content_sources:
     - id: 5-diagnostic-decision-tree
       type: flowchart
       source: self-generated
-      justification: Flow view of diagnostic decision tree, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Lab-derived triage heuristic that maps the lab's reported endpoint signatures to candidate auth or network checks for FC1, EP1, Y1 and S1; candidates are not proven root causes. Microsoft Learn supports the hosting-plan, VNet integration, private endpoint and identity-based connection context, not these status-code signatures.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
@@ -22,7 +22,7 @@ content_sources:
     - id: 11-recovery-decision-tree
       type: flowchart
       source: self-generated
-      justification: Flow view of recovery decision tree, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Lab recovery order for confirmed auth or network faults on EP1/S1 versus other plans; restart and propagation-window steps are lab recovery actions, not guaranteed outcomes. Microsoft Learn supports the identity, private DNS and private endpoint context, not the specific recovery sequence or timing.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
@@ -91,47 +91,42 @@ Ranked from hardest to easiest:
 
 <!-- diagram-id: 5-diagnostic-decision-tree -->
 ```mermaid
+%%{init: {"flowchart":{"nodeSpacing":20,"rankSpacing":35,"padding":6}}}%%
 flowchart TD
     accTitle: Hosting-plan diagnostic decision tree
     accDescr: Lab-derived triage heuristic for FC1, EP1, Y1 and S1. Follow the endpoint signature, plan, health and restart branches to candidate auth or network checks; these branches do not prove a root cause.
-    A(["Start: Function<br/>endpoint failing"]) --> B{HTTP pattern?}
-    B -->|000 timeout| C{Plan family?}
+    A(["Start: Function<br/>endpoint failing"]) --> B{"HTTP<br/>pattern?"}
+    B -->|000 timeout| C{"Plan<br/>family?"}
     B -->|502| D("D: Y1 auth<br/>candidate")
-    B -->|"503 [1]"| E("E: EP1/S1<br/>startup candidate")
-    B -->|"503 [2]"| F("F: EP1 private<br/>path candidate")
-
-    C -->|FC1| G{"Health endpoint<br/>green?"}
-    C -->|EP1 or S1| H{Recent restart?}
-
-    G -->|Yes| I["I: Storage DNS"]
-    G -->|No| J["J: FC1 network/RBAC"]
-
-    H -->|No| K["K: Restart; re-evaluate"]
-    H -->|Yes| L["L: Identity and scope"]
-
-    D --> M["M: Roles and identity"]
-    E --> N["N: Startup logs"]
-    F --> O["O: PE and DNS"]
-
-    I --> P["P: Links and records"]
-    J --> Q["Q: PE and routes"]
-    L --> R["R: Restart correlation"]
-
-    M --> S(["S: Auth hypothesis"])
+    B -->|"503 [1]"| E("E: EP1/S1<br/>startup<br/>candidate")
+    B -->|"503 [2]"| F("F: EP1<br/>private path<br/>candidate")
+    C -->|FC1| G{"Health<br/>endpoint<br/>green?"}
+    C -->|EP1 or S1| H{"Recent<br/>restart?"}
+    G -->|Yes| I["I: Storage<br/>DNS"]
+    G -->|No| J["J: FC1<br/>network/RBAC"]
+    H -->|No| K["K: Restart;<br/>re-evaluate"]
+    H -->|Yes| L["L: Identity<br/>and scope"]
+    D --> M["M: Roles and<br/>identity"]
+    E --> N["N: Startup<br/>logs"]
+    F --> O["O: PE and<br/>DNS"]
+    I --> P["P: Links and<br/>records"]
+    J --> Q["Q: PE and<br/>routes"]
+    L --> R["R: Restart<br/>correlation"]
+    M --> S(["S: Auth<br/>hypothesis"])
     N --> S
-    O --> T(["T: Network hypothesis"])
+    O --> T(["T: Network<br/>hypothesis"])
     P --> T
     Q --> T
     R --> S
-    %% Layout-only links serialize checks; they add no diagnostic steps or arrows.
+    %% Layout-only links serialize checks into a narrow column; they add no diagnostic steps or arrows.
     P ~~~ J
     Q ~~~ H
     K ~~~ L
-    R ~~~ D
-    M ~~~ E
-    N ~~~ F
-    O ~~~ T
-    T ~~~ S
+    R ~~~ E
+    N ~~~ D
+    M ~~~ F
+    O ~~~ S
+    S ~~~ T
     classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
     class A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T neutral;
 ```

@@ -15,13 +15,12 @@ content_sources:
     - id: evidence-path-overview
       type: flowchart
       source: self-generated
-      justification: Flow view of evidence path overview, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative lookup from symptom category to a first evidence source (telemetry, platform logs, Storage, Service Health); an evidence-routing aid, not a causal classifier. Telemetry availability depends on instrumentation and configuration.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
         - https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
         - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-query-overview
         - https://learn.microsoft.com/en-us/azure/service-health/overview
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
