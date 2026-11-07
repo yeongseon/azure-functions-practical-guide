@@ -10,7 +10,7 @@ content_sources:
     - id: main-content
       type: flowchart
       source: self-generated
-      justification: Flow view of main content, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative reading order for Java annotation metadata, summarized from the Java developer guide, which says a public method annotated with FunctionName is a function entry point and that the Maven plugin generates function.json from annotations. Stages are logical, not a network or protocol trace.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings

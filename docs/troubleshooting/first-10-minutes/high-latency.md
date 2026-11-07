@@ -11,7 +11,7 @@ content_sources:
     - id: prerequisites
       type: flowchart
       source: self-generated
-      justification: Flow view of prerequisites, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative investigation order for the first ten minutes of a high-latency report (platform status, latency trend, cold-start correlation, dependency and timeout checks); the branches guide hypotheses and are not confirmed causes.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring

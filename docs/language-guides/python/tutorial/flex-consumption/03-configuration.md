@@ -37,7 +37,7 @@ content_sources:
     - id: what-you-ll-build-2
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build 2, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative Python Flex Consumption (FC1) configuration associations among runtime properties, host storage settings and a user-assigned identity; not an execution order, data path or lab evidence.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to
