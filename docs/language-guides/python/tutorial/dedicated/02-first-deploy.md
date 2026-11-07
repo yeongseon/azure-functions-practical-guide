@@ -23,7 +23,7 @@ content_sources:
     - id: what-you-ll-build
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative Python Dedicated topology for the public B1 tutorial and its optional S1 Storage private-endpoint section; outbound integration is not compute in the subnet, and Always On is a configuration association, not a request hop or verification result.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages
         - https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan
@@ -40,7 +40,7 @@ content_sources:
     - id: step-6-verify-deployment
       type: flowchart
       source: self-generated
-      justification: Flow view of step 6 verify deployment, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Dedicated hosting association and service dependencies for the verification step; the plan arrow is hosting, not a request hop, and a health request does not prove each dependency or non-HTTP trigger.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan
         - https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages
@@ -97,7 +97,7 @@ You will provision a Basic (B1) Linux App Service Plan, create a Python Function
 
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
-%%{init: {"flowchart": {"nodeSpacing": 10, "rankSpacing": 70, "padding": 8, "subGraphTitleMargin": {"top": 8, "bottom": 32}}}}%%
+%%{init: {"flowchart": {"nodeSpacing": 10, "rankSpacing": 70, "padding": 4, "subGraphTitleMargin": {"top": 8, "bottom": 32}}}}%%
 flowchart TD
     accTitle: Python 3.11 Linux Dedicated optional Storage networking
     accDescr: The public B1 tutorial enables Always On. The optional S1 networking section adds outbound integration and four Storage endpoints with matching DNS zones, expanded in the key. Compute is outside the integration subnet. Identity, package choice, telemetry and Always On are associations, not data-transit hops or successful verification evidence.
@@ -111,28 +111,28 @@ flowchart TD
         dns_fn{{"Blob · Queue<br/>Table · File"}}
     end
     subgraph VNET["VNet: V"]
-        subgraph INT_SUB["<div style='width:170px;text-align:right'>Integration<br/>subnet: I</div>"]
+        subgraph INT_SUB["<div style='width:190px;text-align:right'>Integration subnet: I</div>"]
             vnet_integration[["Outbound<br/>integration"]]
         end
-        subgraph PE_SUB["<div style='width:130px;text-align:left'>PE<br/>subnet: E</div>"]
+        subgraph PE_SUB["<div style='width:190px;text-align:left'>PE subnet: E</div>"]
             pe_storage[["Storage PEs<br/>blob · queue<br/>table · file"]]
         end
     end
     storage_db[("Storage Account")]
     client -->|"[Configured] HTTPS"| app_runtime
-    app_runtime -.->|"[Configured]<br/>Always On"| ALWAYS_ON
-    app_runtime -.->|"[Illustrative]<br/>Package option"| RFP
+    app_runtime -.->|"[Illustrative]<br/>Package<br/>option"| RFP
     app_runtime -.->|"[Configured]<br/>Telemetry"| telemetry
     app_runtime -.->|"[Configured]<br/>Optional"| identity
+    app_runtime -.->|"[Configured]<br/>Always On"| ALWAYS_ON
     app_runtime -->|"[Configured]<br/>Optional"| vnet_integration
     vnet_integration -->|"[Configured]<br/>Each PE"| pe_storage
     pe_storage -->|"[Configured]<br/>Each service"| storage_db
     dns_fn -.->|"[Configured]<br/>VNet link"| VNET
     %% Layout-only tiers; add no requests or deployment steps.
-    ALWAYS_ON ~~~ RFP
     RFP ~~~ telemetry
     telemetry ~~~ identity
-    identity ~~~ dns_fn
+    identity ~~~ ALWAYS_ON
+    ALWAYS_ON ~~~ dns_fn
     classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
     class client,app_runtime,identity,telemetry,RFP,ALWAYS_ON,dns_fn,vnet_integration,pe_storage,storage_db baseNeutral;
 ```
