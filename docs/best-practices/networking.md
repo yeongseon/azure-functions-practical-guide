@@ -15,7 +15,7 @@ content_sources:
     - id: the-dns-confusion-trap
       type: flowchart
       source: self-generated
-      justification: Flow view of the dns confusion trap, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative logical DNS resolver paths for linked-VNet versus unlinked or external callers; arrows show lookup and endpoint-selection order, not HTTPS transit through DNS, and not a measured trace.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-create-vnet
@@ -26,7 +26,7 @@ content_sources:
     - id: hybrid
       type: flowchart
       source: self-generated
-      justification: Flow view of hybrid, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative comparison of fully private, hub-and-spoke and hybrid design choices with their inbound and outbound models; arrows classify choices, not packet hops, and plan support must be checked per Microsoft Learn.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-create-vnet
@@ -36,13 +36,15 @@ content_sources:
     - id: networking-decision-flowchart
       type: flowchart
       source: self-generated
-      justification: Networking decision flowchart, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative design checklist for private inbound, public-access policy, outbound VNet integration, plan-specific subnet delegation (FC1 Microsoft.App/environments vs Premium/Dedicated Microsoft.Web/serverFarms) and DNS validation; not a complete or plan-exhaustive procedure.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-create-vnet
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options#private-endpoints
         - https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-dns
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-how-to
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-private-endpoint
 content_validation:
   status: verified
   last_reviewed: 2026-04-12
@@ -348,24 +350,24 @@ flowchart TD
 flowchart TD
     accTitle: Functions ingress and egress design decisions
     accDescr: Illustrative design checklist preserves private-inbound Yes and No branches, both public-access policy outcomes, private or controlled outbound choices, FC1 versus EP or Dedicated delegation, storage endpoint and DNS planning, and final validation. Check hosting-plan support before applying the selected actions.
-    S[Start networking design] --> I{Need private inbound?}
-    I -->|Yes| PE["Create Function App<br/>private endpoint"]
-    I -->|No| AR["Use access restrictions<br/>and gateway controls"]
-    PE --> D1["Configure private DNS zones<br/>and VNet links"]
-    D1 --> P1{"Disable public<br/>access required?"}
+    S["Start networking<br/>design"] --> I{"Need private<br/>inbound?"}
+    I -->|Yes| PE["Create Function<br/>App private<br/>endpoint"]
+    I -->|No| AR["Use access<br/>restrictions and<br/>gateway controls"]
+    PE --> D1["Configure private<br/>DNS zones and<br/>VNet links"]
+    D1 --> P1{"Disable public<br/>access<br/>required?"}
     P1 -->|Yes| DP["Disable public<br/>network access"]
-    P1 -->|No| MP["Keep mixed public/private<br/>with explicit policy"]
-    AR --> O{"Need private or<br/>controlled outbound?"}
+    P1 -->|No| MP["Keep mixed<br/>public/private<br/>with explicit<br/>policy"]
+    AR --> O{"Need private<br/>or controlled<br/>outbound?"}
     DP --> O
     MP --> O
-    O -->|Yes| VI[Enable VNet integration]
-    O -->|No| PUB[Public outbound acceptable]
-    VI --> SUB{Hosting plan}
-    SUB -->|FC1| DEL1["Delegate subnet:<br/>Microsoft.App/environments"]
-    SUB -->|EP or Dedicated| DEL2["Delegate subnet:<br/>Microsoft.Web/serverFarms"]
-    DEL1 --> ST["Add storage private<br/>endpoint and DNS"]
+    O -->|Yes| VI["Enable VNet<br/>integration"]
+    O -->|No| PUB["Public outbound<br/>acceptable"]
+    VI --> SUB{"Hosting<br/>plan"}
+    SUB -->|FC1| DEL1["Delegate subnet:<br/>Microsoft.App/<br/>environments"]
+    SUB -->|EP or Dedicated| DEL2["Delegate subnet:<br/>Microsoft.Web/<br/>serverFarms"]
+    DEL1 --> ST["Add storage<br/>private endpoint<br/>and DNS"]
     DEL2 --> ST
-    ST --> VAL["Run DNS and connectivity<br/>validation checklist"]
+    ST --> VAL["Run DNS and<br/>connectivity<br/>validation checklist"]
     PUB --> VAL
     %% Layout-only links serialize alternatives; add no design steps or arrows.
     AR ~~~ PE
