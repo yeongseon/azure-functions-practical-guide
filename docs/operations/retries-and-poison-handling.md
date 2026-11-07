@@ -19,17 +19,18 @@ content_sources:
     - id: poison-queue-behavior-storage-queue
       type: flowchart
       source: self-generated
-      justification: Flow view of poison queue behavior storage queue, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Storage Queue trigger attempt-limit path where the default maxDequeueCount of 5 includes the first attempt and the runtime then writes to a queue named <originalqueuename>-poison; transient failures shown, other failures also count.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
     - id: operational-triage-workflow
       type: flowchart
       source: self-generated
-      justification: Operational triage workflow, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative operator triage and small-batch replay workflow after a poison or dead-letter message is found; not a Microsoft-prescribed procedure and not measured lab evidence.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-error-pages
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-idempotent
+        - https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-dead-letter-queues
 content_validation:
   status: verified
   last_reviewed: 2026-10-25
