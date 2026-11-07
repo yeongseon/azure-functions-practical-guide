@@ -41,7 +41,7 @@ Only `python3 scripts/diagram_inventory.py --write` fills these generated blocks
 | docs-root | 1 |
 | language-guides | 326 |
 | operations | 18 |
-| platform | 54 |
+| platform | 55 |
 | reference | 19 |
 | repository | 1 |
 | start-here | 5 |
@@ -54,7 +54,7 @@ Only `python3 scripts/diagram_inventory.py --write` fills these generated blocks
 <!-- BEGIN GENERATED: diagram-inventory:type -->
 | Type | Count |
 |---|---:|
-| flowchart | 510 |
+| flowchart | 511 |
 | gantt | 12 |
 | graph | 22 |
 | pie | 2 |
@@ -70,7 +70,7 @@ Only `python3 scripts/diagram_inventory.py --write` fills these generated blocks
 | Batch | Count |
 |---|---:|
 | 211 | 7 |
-| 212 | 27 |
+| 212 | 28 |
 | 213 | 22 |
 | 214 | 38 |
 | 215 | 130 |
