@@ -62,6 +62,8 @@ You will emit structured logs from Node.js v4 handlers, verify Application Insig
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
+    accTitle: Flex Consumption Node.js telemetry and query overview
+    accDescr: The Flex Consumption FC1 app sends telemetry to configured Application Insights. Azure CLI queries that resource; the KQL box represents analysis of collected traces, requests and dependencies, not a network query initiator.
     FA[Function App\nFlex Consumption FC1] -->|telemetry| AI[Application Insights]
     AI -->|query| KQL["KQL Queries\n• traces\n• requests\n• dependencies"]
     CLI["Azure CLI"] -->|"az monitor app-insights query"| AI
@@ -81,6 +83,8 @@ flowchart TD
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart TD
+    accTitle: Flex Consumption Node.js logging tutorial steps
+    accDescr: Tutorial order is log with context.log, verify Application Insights, generate telemetry and query traces using KQL. These are preparation and verification stages, not transport hops.
     A[Log with context.log] --> B[Verify App Insights]
     B --> C[Generate telemetry]
     C --> D[Query traces via KQL]

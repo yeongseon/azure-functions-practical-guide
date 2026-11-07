@@ -24,6 +24,8 @@ This recipe shows production-ready HTTP trigger patterns in the Node.js v4 progr
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Node.js HTTP API processing
+    accDescr: Successful path from an API client through the HTTP trigger to query and JSON body validation, business logic and an HTTP response with status code. Validation is application logic in this Node.js v4 handler, not automatic trigger validation; the diagram omits the sample's early error responses.
     CLIENT[API Client] --> HTTP[HTTP Trigger]
     HTTP --> VALIDATE[Validate Query and JSON Body]
     VALIDATE --> LOGIC[Business Logic]

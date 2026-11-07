@@ -21,6 +21,8 @@ The Java worker for Azure Functions does not ship a built-in dependency injectio
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Java recipe manual wiring and shared client pattern
+    accDescr: Illustrative manual-wiring path from trigger invocation through a function instance and static holder to a shared SDK client. Initialized once refers to this holder within its worker JVM classloader, not a singleton across scaled instances; connection reuse is the pattern's intent, not a guarantee of one physical connection or a restriction on Java DI integrations.
     TRIG[Trigger invocation] --> FUNC[Function class instance]
     FUNC --> HOLDER[Static singleton holder]
     HOLDER -->|initialized once| CLIENT[Shared Azure SDK client]

@@ -16,6 +16,7 @@ content_sources:
       source: self-generated
       justification: Flow view of architecture, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-event-grid-blob-trigger
         - https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan#trigger-support
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob
@@ -30,12 +31,14 @@ This recipe covers integrating Azure Blob Storage with Azure Functions Python v2
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Python blob processing flow
+    accDescr: Logical processing flow from a blob change through a Blob trigger to a function app and an illustrative downstream service. It does not specify whether detection uses polling or Event Grid, and it is not an HTTP ingress diagram.
     BLOB[Blob Storage Event] --> TRIG[Blob Trigger]
     TRIG --> FA[Function App]
     FA --> DOWN[Downstream Service]
 ```
 
-Solid arrows show runtime data/event flow. Dashed arrows show identity and authentication.
+Solid arrows show logical processing, not a single delivery protocol; no identity path is drawn here. In the Python v2 `blob_trigger` decorator below, omitting `source` uses `LogsAndContainerScan` polling. For Linux Flex Consumption, use `source="EventGrid"` and configure the event subscription; polling is not supported there. Linux Consumption, Premium and Dedicated can use the polling implementation. See [Blob trigger implementations](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger).
 
 ## Prerequisites
 

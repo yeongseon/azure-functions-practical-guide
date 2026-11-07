@@ -15,7 +15,7 @@ content_sources:
     - id: troubleshooting-decision-flow
       type: flowchart
       source: self-generated
-      justification: Illustrative investigation order for this playbook, not a confirmed root-cause classifier; synthesized from the cited Microsoft Learn monitoring and configuration guidance.
+      justification: Illustrative, non-exhaustive investigation order for this playbook, not a confirmed root-cause classifier or a measured trace. Signals S1-S3 and checks E, F and G are example discriminators; telemetry, host.json function timeout, host storage and RBAC guidance on Microsoft Learn supports the concepts, not the routing.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
         - https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
@@ -54,25 +54,25 @@ Function invocations fail repeatedly with `5xx`, listener startup errors, retry 
 
 <!-- diagram-id: troubleshooting-decision-flow -->
 ```mermaid
+%%{init: {"flowchart":{"nodeSpacing":10,"rankSpacing":35}}}%%
 flowchart TD
     accTitle: Failing Function executions diagnostic decision flow
     accDescr: Illustrative investigation order, not confirmed causes. A deployment or configuration change routes to H4; otherwise classify the dominant signal. Authorization errors route to H1, long duration then failure to H2, worker or runtime errors to H3, and mixed signals to baseline evidence. Then check host storage health, rising durations and worker churn; Yes routes to H1, H2 and H3 respectively, while the final No routes to H4. Use the evidence and disproof sections to test these hypotheses.
-    A(["Functions failing<br/>with errors"]) --> B{"B: After<br/>change?"}
-    B -->|Yes| H4("H4: Deployment<br/>hypothesis")
-    B -->|No| C{"Dominant<br/>failure signal"}
+    A(["Functions<br/>failing with<br/>errors"]) --> B{"B: After<br/>change?"}
+    B -->|Yes| H4("H4:<br/>Deployment<br/>hypothesis")
+    B -->|No| C{"Dominant<br/>failure<br/>signal"}
     C -->|S1| H1("H1: Auth<br/>hypothesis")
     C -->|S2| H2("H2: Timeout<br/>hypothesis")
     C -->|S3| H3("H3: Worker<br/>hypothesis")
-    C -->|Mixed signals| D[Collect baseline evidence]
-    D --> E{"E: Host storage<br/>unhealthy?"}
+    C -->|Mixed signals| D["Collect<br/>baseline<br/>evidence"]
+    D --> E{"E: Host<br/>storage<br/>unhealthy?"}
     E -->|Yes| H1
-    E -->|No| F{"Durations climbing<br/>toward timeout ceiling?"}
+    E -->|No| F{"Durations<br/>climbing<br/>toward<br/>timeout<br/>ceiling?"}
     F -->|Yes| H2
     F -->|No| G{"G: Worker<br/>churn?"}
     G -->|Yes| H3
     G -->|No| H4
     %% Layout-only links tier the hypotheses; they add no diagnostic steps or arrows.
-    G ~~~ H1
     H1 ~~~ H2
     H2 ~~~ H3
     H3 ~~~ H4
@@ -81,7 +81,7 @@ flowchart TD
     linkStyle default stroke-width:2px;
 ```
 
-**Reading key:** Diamonds ask diagnostic questions; rounded H1–H4 boxes are candidate hypotheses, not confirmed causes. Follow the labelled branch, then use section 6 to validate or disprove the candidate.
+**Reading key:** Diamonds ask diagnostic questions; rounded H1–H4 boxes are candidate hypotheses, not confirmed causes. The example signals and checks are illustrative and non-exhaustive: other causes and overlapping signals are possible. Follow the labelled branch, then use section 6 to validate or disprove the candidate.
 
 | Key | Full meaning |
 |---|---|

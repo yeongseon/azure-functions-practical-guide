@@ -11,6 +11,7 @@ content_sources:
       justification: Flow view of architecture, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
 ---
 # Queue Storage
 
@@ -21,12 +22,16 @@ This recipe covers integrating Azure Queue Storage with Azure Functions Python v
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Queue message processing stages
+    accDescr: Logical payload flow from a Queue Storage message through the queue trigger to function processing and an illustrative downstream service. The trigger extension polls storage; the arrows are not connection initiators.
     Q[Queue Storage Message] --> TRIG[Queue Trigger]
     TRIG --> FA[Function App]
     FA --> DOWN[Downstream Service]
 ```
 
-Solid arrows show runtime data/event flow. Dashed arrows show identity and authentication.
+Solid arrows show logical message-processing order, not a push connection from
+Storage. The [queue trigger extension polls the queue](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger#polling-algorithm);
+the downstream service is application-specific. No identity path is drawn.
 
 ## Prerequisites
 

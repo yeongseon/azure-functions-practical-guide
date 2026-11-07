@@ -33,11 +33,18 @@ Queue Storage, Blob Storage, and Service Bus triggers do **not** use retry polic
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Function-level retry decisions
+    accDescr: For a supported trigger with a finite retry budget, an uncaught exception leads to the retry-count decision. No exception succeeds; remaining retries wait and repeat execution; an exhausted budget ends in failure. Trigger-specific message redelivery is separate.
     EXEC[Function execution] --> ERR{Uncaught exception?}
     ERR -->|No| DONE[Execution succeeds]
-    ERR -->|Yes| COUNT{retry_count < max?}
+    ERR -->|Yes| COUNT{"retry_count<br/>&lt; max?"}
     COUNT -->|Yes| WAIT[Wait per strategy] --> EXEC
-    COUNT -->|No| FAIL[Give up: execution fails]
+    COUNT -->|No| FAIL["Give up:<br/>execution fails"]
+    %% Layout-only links tier outcomes; they add no decision or semantic arrow.
+    DONE ~~~ COUNT
+    FAIL ~~~ WAIT
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class EXEC,ERR,DONE,COUNT,WAIT,FAIL neutral;
 ```
 
 ## Fixed Delay

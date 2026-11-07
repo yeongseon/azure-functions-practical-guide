@@ -24,15 +24,25 @@ This section provides four independent Node.js tutorial tracks. Each track follo
 <!-- diagram-id: which-plan-should-i-start-with -->
 ```mermaid
 flowchart TD
-    S[Need Node.js Azure Functions] --> Q1{Need VNet integration?}
-    Q1 -->|No| Q2{Pay only on execution?}
-    Q1 -->|Yes| Q3{Need scale-to-zero?}
-    Q2 -->|Yes| F[Flex Consumption]
+    accTitle: Choose a Node.js tutorial hosting plan
+    accDescr: Illustrative tutorial starting points, not exclusive plan capabilities. Follow the VNet question, then either the execution-billing preference or scale-to-zero question; the separate existing-legacy-app path leads to Consumption. Flex optional always-ready billing is qualified below.
+    S["Need Node.js<br/>Azure Functions"] --> Q1{"Need VNet<br/>integration?"}
+    Q1 -->|No| Q2{"Pay only<br/>on execution?"}
+    Q1 -->|Yes| Q3{"Need scale<br/>to zero?"}
+    Q2 -->|Yes| F["Flex<br/>Consumption"]
     S -.->|Existing legacy app| C[Consumption]
     Q2 -->|No| D[Dedicated]
     Q3 -->|Yes| F
     Q3 -->|No| P[Premium]
+    %% Layout-only links tier outcomes; they add no decision or semantic arrow.
+    C ~~~ Q1
+    D ~~~ Q3
+    P ~~~ F
+    classDef neutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class S,Q1,Q2,Q3,F,C,D,P neutral;
 ```
+
+**Takeaway:** These are tutorial recommendations, not exclusive capabilities. “Pay only on execution” means Flex **on-demand compute** billing; optional always-ready instances add baseline charges, and storage/monitoring costs are separate ([Flex billing](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan#billing)). Premium and Dedicated do not scale to zero; not needing scale-to-zero does not rule out Flex ([hosting comparison](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)).
 
 ## Plan Comparison at a Glance
 

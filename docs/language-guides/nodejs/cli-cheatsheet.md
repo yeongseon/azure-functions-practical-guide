@@ -24,10 +24,14 @@ Quick command reference for developing and operating Azure Functions Node.js app
 <!-- diagram-id: topic-command-groups -->
 ```mermaid
 flowchart TD
+    accTitle: Node.js guide CLI command categories
+    accDescr: The CLI Cheatsheet groups Core Tools, Function App, Deployments and Monitoring as reference topics. Arrows identify categories, not a required execution order or network traffic.
     A[CLI Cheatsheet] --> B[Core Tools]
-    A --> C[Function App]
+    A --> C["Function<br/>App"]
     A --> D[Deployments]
     A --> E[Monitoring]
+    %% Layout-only link tiers reference categories; it adds no step or semantic arrow.
+    B ~~~ C
 ```
 
 ### Core Tools

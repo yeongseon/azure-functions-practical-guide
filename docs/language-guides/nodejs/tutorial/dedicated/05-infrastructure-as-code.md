@@ -23,6 +23,8 @@ content_sources:
       source: self-generated
       justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-infrastructure-as-code
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-node
         - https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-node
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
@@ -46,22 +48,27 @@ Deploy repeatable infrastructure with Bicep and parameterized environments.
 
     The Dedicated Bicep template uses `Microsoft.Web/serverfarms` with `kind: 'linux'` (not `kind: 'elastic'` used by Premium). Storage is configured with `allowSharedKeyAccess: false` for identity-based access.
 
-    <!-- diagram-id: what-you-ll-build -->
+<!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
-    BICEP[Bicep Template\ninfra/dedicated/main.bicep] -->|az deployment\ngroup create| ARM[Azure Resource Manager]
+    accTitle: Node.js Linux Dedicated B1 infrastructure configuration map
+    accDescr: Illustrative ARM provisioning associations for this Node.js 20 Linux B1 example, with Always On, identity-based storage, Application Insights and optional networking. The dotted RBAC association represents configured storage permissions, not proof of working authentication. Arrows do not specify serial creation or network hops, and do not prove successful deployment. The runtime label describes the tutorial configuration, not a current support recommendation.
+    BICEP["Bicep Template<br/>infra/dedicated/main.bicep"] -->|"az deployment<br/>group create"| ARM["Azure Resource<br/>Manager"]
 
-    ARM --> ST["Storage Account\nidentity-based access"]
-    ARM --> PLAN["App Service Plan\nB1 Linux"]
-    ARM --> FA["Function App\nNode.js 20\nAlways On"]
-    ARM --> AI["Application Insights"]
-    ARM --> VNET["VNet + Private Endpoints\n(optional)"]
+    ARM --> ST["Storage Account<br/>identity-based access"]
+    ARM --> PLAN["App Service Plan<br/>B1 Linux"]
+    ARM --> FA["Function App<br/>Node.js 20<br/>Always On"]
+    ARM --> AI["Application<br/>Insights"]
+    ARM --> VNET["VNet + Private<br/>Endpoints<br/>(optional)"]
 
     FA -.->|RBAC| ST
 
-    style BICEP fill:#ff8c00,color:#fff
-    style ARM fill:#E3F2FD,stroke:#1976D2
-    style FA fill:#FFF3E0
+    %% Layout-only tiers; add no provisioning dependencies or visible arrows.
+    ST ~~~ PLAN
+    PLAN ~~~ AI
+    AI ~~~ VNET
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class BICEP,ARM,ST,PLAN,FA,AI,VNET baseNeutral;
 ```
 
 | CLI element | Explanation |

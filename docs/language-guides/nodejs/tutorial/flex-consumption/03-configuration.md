@@ -62,16 +62,21 @@ You will configure runtime and host settings for a Flex Consumption Function App
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
+    accTitle: Node.js Flex Consumption FC1 app-setting configuration
+    accDescr: Azure CLI updates app settings on the Flex Consumption FC1 app. Node.js arguments are shown separately from the platform-managed FUNCTIONS_EXTENSION_VERSION setting.
     CLI["Azure CLI"] -->|"appsettings set"| FA[Function App\nFlex Consumption FC1]
-    FA -->|reads| SETTINGS["App Settings\n• FUNCTIONS_EXTENSION_VERSION\n• languageWorkers__node__arguments"]
+    FA -->|reads| SETTINGS["App settings<br/>languageWorkers__node__arguments<br/>FUNCTIONS_EXTENSION_VERSION<br/>(platform-managed on Flex)"]
 
     style FA fill:#0078d4,color:#fff
-    style SETTINGS fill:#E3F2FD
 ```
+
+**Reading key:** On Flex Consumption, `FUNCTIONS_EXTENSION_VERSION` is platform-managed and should not be set manually; language/runtime-stack selection uses `functionAppConfig.runtime`. The setting name is retained here to distinguish it from the Node.js argument setting, not to endorse manually setting it in Step 2. Size any heap-limit example to the selected instance's memory.
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart TD
+    accTitle: Node.js Flex Consumption configuration task order
+    accDescr: Set app settings, configure the host timeout, then validate effective configuration. This Flex Consumption task order does not imply runtime-stack selection through app settings or a successful Azure run.
     A[Set app settings] --> B[Configure host timeout]
     B --> C[Validate effective config]
 ```

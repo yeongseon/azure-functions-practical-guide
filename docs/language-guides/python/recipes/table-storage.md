@@ -21,6 +21,8 @@ This recipe covers reading and writing entities in Azure Table Storage from Azur
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: HTTP and Table binding data directions
+    accDescr: The Python recipe's HTTP handlers read entities through table_input or create entities through table_output. Arrows show payload direction, not a table-initiated network connection. The two table boxes denote read and write roles, not necessarily different tables.
     HTTP[HTTP Request] --> FA[Function App]
     FA -->|table_output| WRITE[(Table: entity written)]
     READ[(Table: entity read)] -->|table_input| FA

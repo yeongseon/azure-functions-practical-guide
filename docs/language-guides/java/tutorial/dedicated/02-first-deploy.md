@@ -21,19 +21,21 @@ content_sources:
     - id: what-you-ll-build
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
+      justification: "Illustrative topology of the tutorial's public Linux Dedicated (B1) Java 17 deployment: HTTPS ingress, connection-string Storage access, off-path Application Insights, and Dedicated capabilities (VNet integration, Standard+ slots) that this tutorial does not provision; not a measured trace or lab evidence."
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
-        - https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-java
     - id: what-you-ll-build-2
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build 2, synthesized from Microsoft Learn documentation cited on this page.
+      justification: "Illustrative order of the tutorial's Dedicated deploy steps (variables, resource group and Storage, App Service plan, function app, placeholder settings, Maven build and staging-directory publish, endpoint validation); not an executed deployment trace."
       based_on:
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale
         - https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-java
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java
+        - https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan
 ---
 # 02 - First Deploy (Dedicated)
 
@@ -50,7 +52,7 @@ Provision Azure resources and deploy the Java reference application to the Dedic
 | Azure subscription | Active | Target for deployment |
 
 !!! info "Dedicated plan basics"
-    Dedicated (App Service Plan) runs functions on standard App Service infrastructure with predictable pricing. B1 provides 1 vCPU, 1.75 GB memory. It supports Always On, manual/auto-scale, deployment slots, and VNet integration.
+    Dedicated (App Service Plan) runs functions on standard App Service infrastructure with predictable pricing. B1 provides 1 vCPU, 1.75 GB memory. Always On and networking capabilities are plan features; deployment slots require Standard, Premium, or Isolated tiers, not B1.
 
 ## What You'll Build
 
@@ -73,27 +75,45 @@ You will provision a Linux Dedicated (B1) Function App for Java, deploy with `fu
 
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
+%%{init: {"flowchart": {"nodeSpacing": 10, "rankSpacing": 40, "padding": 8}}}%%
 flowchart TD
-    INET[Internet] -->|HTTPS| FA[Function App\nDedicated B1\nLinux Java 17]
-
-    FA -->|connection string| ST[Storage Account]
-    FA --> AI[Application Insights]
-
-    subgraph STORAGE[Storage Services]
-        ST --- QS[Queue Storage]
-        ST --- BS[Blob Storage]
+    accTitle: Java Linux Dedicated public deployment topology
+    accDescr: Internet HTTPS requests reach the Linux Java 17 Dedicated B1 app, with tutorial connection-string Storage access and off-path Application Insights. Queue and Blob belong to the Storage account. Capability notes do not mean a VNet or slot is provisioned.
+    client(["Internet<br/>HTTPS caller"])
+    app_runtime["Function App<br/>Dedicated B1<br/>Linux Java 17"]
+    telemetry>"Application Insights<br/>Off-path telemetry"]
+    capabilities["Dedicated options<br/>VNet integration<br/>Slots: Standard+ only"]
+    subgraph STORAGE["Storage Services"]
+        storage_db[("Storage Account")]
+        storage_queue[("Queue Storage")]
+        storage_blob[("Blob Storage")]
+        storage_db -.->|"[Configured]<br/>Service"| storage_queue
+        storage_db -.->|"[Configured]<br/>Service"| storage_blob
+        %% Layout only; Queue does not forward data to Blob.
+        storage_queue ~~~ storage_blob
     end
-
-    VNET["✅ VNet integration available\n✅ Deployment slots supported"] -. capability .- FA
-
-    style FA fill:#0078d4,color:#fff
-    style VNET fill:#E8F5E9,stroke:#4CAF50
-    style STORAGE fill:#FFF3E0
+    client -->|"[Configured] HTTPS"| app_runtime
+    app_runtime -->|"[Configured]<br/>Connection string"| storage_db
+    app_runtime -.->|"[Configured]<br/>Logs"| telemetry
+    app_runtime -.->|"[Configured]<br/>Options"| capabilities
+    %% Layout-only tiers; no requests or deployment steps added.
+    storage_blob ~~~ telemetry
+    telemetry ~~~ capabilities
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e
+    classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e
+    classDef bandMuted fill:#ffffff,stroke:#707e93,stroke-width:1.5px,stroke-dasharray:4 3,color:#14202e
+    class client,storage_db,storage_queue,storage_blob baseNeutral
+    class app_runtime focusActive
+    class telemetry,capabilities bandMuted
 ```
+
+**Reading key:** Solid arrows show the initiating caller or app's configured access; dotted arrows show telemetry, capabilities, or account/service membership, not another request hop. No VNet or slot is provisioned here. Slots require Standard, Premium, or Isolated tiers; B1 has no deployment slots.
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart TD
+    accTitle: Java Dedicated first-deployment steps
+    accDescr: Tutorial order from login through Storage, App Service plan and app creation, placeholder settings, Maven build and staging-directory publish to endpoint validation; not an executed deployment trace.
     A[Set variables + login] --> B[Create RG + storage]
     B --> C[Create App Service plan]
     C --> D[Create function app]
@@ -381,6 +401,10 @@ Info endpoint response:
 
 ## Sources
 
+- [Functions storage considerations](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations)
+- [Functions networking options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)
+- [Functions monitoring](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)
+- [App Service staging slots and tiers](https://learn.microsoft.com/en-us/azure/app-service/deploy-staging-slots)
 - [Azure Functions Java developer guide (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java)
 - [Azure Functions hosting options (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale)
 - [Create a Java function with Azure Functions Core Tools (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-java)

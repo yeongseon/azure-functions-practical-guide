@@ -10,18 +10,22 @@ content_sources:
     - id: application-insights-telemetry
       type: flowchart
       source: self-generated
-      justification: Flow view of Application Insights telemetry tables emitted by the Functions host, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Reference map of configured Application Insights telemetry tables and investigation views; arrows associate topics rather than guarantee collection or depict table-to-live-stream transport.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-monitor/app/live-stream
 ---
 # Application Insights Telemetry
 
-Platform metrics count executions and instances, but they cannot tell you *why* a function failed or *what* a specific invocation did. That detail lives in **Application Insights**, which the Functions host populates with structured tables for every invocation. This page catalogs those tables and the queries that turn them into answers.
+Platform metrics provide plan/OS-specific resource signals; **Application Insights** provides collected execution telemetry when its integration is configured. Logging filters, sampling and ingestion limits can leave gaps, so a table is not a complete record of every invocation. This page catalogs telemetry tables and investigation views, not Azure Monitor platform metrics.
 
 <!-- diagram-id: application-insights-telemetry -->
 ```mermaid
 flowchart TD
+    accTitle: Application Insights telemetry tables and views
+    accDescr: Reference associations from the Functions host to configured telemetry tables, with exceptions associated with Failures and traces with live investigation. These are not guaranteed collection paths: automatic performance counters are unsupported on Linux, and Live Metrics uses a separate live channel rather than reading the traces table. See the adjacent collection key.
     A[Functions Host] --> B[traces]
     A --> C[requests]
     A --> D[exceptions]
@@ -30,7 +34,15 @@ flowchart TD
     A --> G[performanceCounters]
     D --> H[Failures Blade]
     B --> I[Live Metrics Stream]
+    %% Layout-only links tier topics; they add no telemetry paths or investigation steps.
+    I ~~~ C
+    C ~~~ D
+    H ~~~ E
+    E ~~~ F
+    F ~~~ G
 ```
+
+**Collection key:** The six table nodes retain the reference's table categories, not a promise that every app emits each one. [Log levels and sampling](https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring) affect stored requests, traces, exceptions and custom metrics/events. `dependencies` is an additional telemetry table for instrumented dependencies; [automatic collection depends on the binding/client SDK](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring#dependencies). Automatic `performanceCounters` collection is [unsupported on Linux](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring#performance-counters), including Flex Consumption and Linux Consumption. The traces → Live Metrics arrow associates investigation topics, not persisted-table ingestion: the [live channel](https://learn.microsoft.com/en-us/azure/azure-monitor/app/live-stream) requires supported instrumentation, has feature-dependent SDK support, and retains no historical data. These Application Insights metrics/tables are distinct from `Microsoft.Web/sites` platform metrics.
 
 ## Telemetry Tables
 
@@ -114,3 +126,5 @@ To read this telemetry you need **Monitoring Reader** on the Application Insight
 
 - [Analyze Azure Functions telemetry data (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/analyze-telemetry-data)
 - [Monitor executions in Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)
+- [Configure monitoring and sampling (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/configure-monitoring)
+- [Live Metrics support and retention (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-monitor/app/live-stream)

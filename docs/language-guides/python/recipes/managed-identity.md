@@ -11,12 +11,15 @@ content_sources:
       justification: Flow view of architecture, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
+        - https://learn.microsoft.com/en-us/azure/azure-functions/manage-connections
     - id: rbac-structure
       type: flowchart
       source: self-generated
       justification: Flow view of rbac structure, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial
+        - https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments
 ---
 # Managed Identity
 
@@ -27,19 +30,26 @@ Managed Identity lets your Azure Functions app authenticate to other Azure servi
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
-    FA[Function App] -.-> MI[Managed Identity]
-    MI -.-> ENTRA[Microsoft Entra ID]
-    FA --> BLOB[Blob Storage]
-    FA --> QUEUE[Queue Storage]
-    FA --> COSMOS[Cosmos DB]
-    FA --> KV[Key Vault]
+    accTitle: Configured app identity and resource relationships
+    accDescr: The function app has a configured managed identity represented in Entra ID and separate application data paths to Blob, Queue, Cosmos DB and Key Vault. Dotted links denote identity and resource-permission associations, not data transit or automatic connections.
+    FA[Function<br/>App] -.-> MI[Managed<br/>Identity]
+    MI -.-> ENTRA[Microsoft<br/>Entra ID]
+    FA --> BLOB[Blob<br/>Storage]
+    FA --> QUEUE[Queue<br/>Storage]
+    FA --> COSMOS[Cosmos<br/>DB]
+    FA --> KV[Key<br/>Vault]
     MI -.-> BLOB
     MI -.-> QUEUE
     MI -.-> COSMOS
     MI -.-> KV
+    %% Layout-only links tier the existing resources; they add no service calls or authorization steps.
+    ENTRA ~~~ BLOB
+    BLOB ~~~ QUEUE
+    QUEUE ~~~ COSMOS
+    COSMOS ~~~ KV
 ```
 
-Solid arrows show runtime data/event flow. Dashed arrows show identity and authentication.
+**Reading key:** Solid arrows are illustrative app-to-service data access; dotted arrows associate the configured app identity with Entra ID and target permissions, not data routed through an identity. [Token retrieval uses the app's managed-identity endpoint](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity#connect-to-azure-services-in-app-code). Configure the SDK credential or [supported binding's identity-based connection](https://learn.microsoft.com/en-us/azure/azure-functions/manage-connections), plus target permissions; enabling identity alone establishes neither connection nor access. Blob/Queue and Key Vault can use Azure RBAC (Key Vault also supports access policies); Cosmos DB for NoSQL uses its own data-plane RBAC, not Azure RBAC data roles.
 
 ## How RBAC Connects Identity to Resources
 
@@ -48,13 +58,20 @@ A managed identity alone does not grant access. Azure RBAC binds three elements 
 <!-- diagram-id: rbac-structure -->
 ```mermaid
 flowchart TD
-    P[Principal<br/>Who: Managed Identity or Service Principal] --> RA[Role Assignment<br/>Unique GUID per binding]
-    RD[Role Definition<br/>What: Storage Blob Data Owner, Key Vault Secrets User, etc.] --> RA
-    S[Scope<br/>Where: Subscription, Resource Group, or Resource] --> RA
+    accTitle: Azure RBAC role assignment components
+    accDescr: Principal, role definition and scope define a role assignment and the permissions it grants. These are configuration relationships, not a runtime data path; access granted means the assigned permissions at scope, not guaranteed success of a request.
+    P[Principal<br/>Who: Managed Identity<br/>or Service Principal] --> RA[Role Assignment<br/>Unique GUID per binding]
+    RD[Role Definition<br/>What: Storage Blob Data Owner,<br/>Key Vault Secrets User, etc.] --> RA
+    S[Scope<br/>Where: Subscription,<br/>Resource Group, or Resource] --> RA
     RA --> ACCESS[Access Granted]
 
+    %% Layout-only links tier the three inputs; they add no permission dependency or data hop.
+    P ~~~ RD
+    RD ~~~ S
     style RA fill:#f5c542,stroke:#333,color:#000
 ```
+
+**Reading key:** The three inputs describe a [role assignment](https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments), which authorizes a principal's role permissions at a scope; it is not a data-transit hop. “Access Granted” does not guarantee network reachability or that the role permits a particular operation, and applicable conditions still matter.
 
 | Element | Question it answers | Example |
 |---|---|---|

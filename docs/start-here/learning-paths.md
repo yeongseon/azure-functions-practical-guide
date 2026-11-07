@@ -18,7 +18,7 @@ content_sources:
     - id: learning-paths
       type: flowchart
       source: self-generated
-      justification: Flow view of learning paths, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Editorial map of this guide's four learning tracks and suggested reading connections; not an Azure prerequisite chain or ordering guarantee. The linked Learn pages support the topics within the tracks, not their arrangement.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
@@ -36,11 +36,15 @@ Each track is built around Microsoft Learn concepts and organized for different 
 <!-- diagram-id: learning-paths -->
 ```mermaid
 flowchart TD
+    accTitle: This guide's learning paths
+    accDescr: Quick Start points to Core Path. Core Path points to Production Path and Troubleshooting Path; Production Path also points to Troubleshooting Path. These are suggested reading connections in this guide, not Azure-imposed prerequisites or an ordering guarantee.
     Q[Quick Start\n30 min] --> C[Core Path\n2-3 hrs]
     C --> P[Production Path\n4-6 hrs]
     C --> T[Troubleshooting Path]
     P --> T
 ```
+
+This map connects this guide's learning tracks; choose an entry point for your goal, not an Azure-imposed prerequisite sequence or guaranteed ordering.
 
 ## How to use this page
 

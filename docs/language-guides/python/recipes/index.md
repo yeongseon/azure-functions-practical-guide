@@ -12,7 +12,7 @@ content_sources:
     - id: python-recipes
       type: graph
       source: self-generated
-      justification: Flow view of python recipes, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Documentation navigation from this recipe index to its HTTP, Storage, Security and Advanced categories; not an Azure architecture or runtime flow.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
@@ -27,6 +27,8 @@ Use these documents when you already understand the platform basics and need pra
 <!-- diagram-id: python-recipes -->
 ```mermaid
 graph TD
+    accTitle: Python recipe documentation categories
+    accDescr: Navigation map from Python Recipes to the HTTP, Storage, Security and Advanced sections on this page; arrows group documentation topics, not Azure services or execution stages.
     A[Python Recipes] --> B[HTTP]
     A --> C[Storage]
     A --> D[Security]

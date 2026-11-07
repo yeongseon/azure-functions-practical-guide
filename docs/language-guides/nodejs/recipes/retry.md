@@ -33,12 +33,19 @@ Queue Storage, Blob Storage, and Service Bus triggers do **not** use retry polic
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
-    EXEC[Function execution] --> ERR{Handler throws?}
-    ERR -->|No| DONE[Success: checkpoint/commit]
-    ERR -->|Yes| COUNT{retryCount < max?}
-    COUNT -->|Yes| WAIT[Wait per strategy] --> EXEC
-    COUNT -->|No| FAIL[Give up: execution fails]
+    accTitle: Finite runtime retry policy loop for supported Node.js triggers
+    accDescr: For a configured finite retry policy on a supported trigger and compatible extension, an uncaught handler error leads to the retry-budget decision, a wait and another execution or final failure. No error leads to success. Completion and checkpoint behavior are trigger-specific; the finite comparison does not represent minus-one unlimited retries.
+    EXEC["Function<br/>execution"] --> ERR{Handler throws?}
+    ERR -->|No| DONE[Success]
+    ERR -->|Yes| COUNT{Retries remaining?}
+    COUNT -->|Yes| WAIT["Wait per<br/>strategy"] --> EXEC
+    COUNT -->|No| FAIL["Give up:<br/>execution fails"]
+    %% Layout-only links tier the outcomes; they add no steps or semantic arrows.
+    DONE ~~~ COUNT
+    WAIT ~~~ FAIL
 ```
+
+**Reading key:** The finite comparison is `retryCount < max`; `maxRetryCount: -1` means unlimited retries instead. This runtime policy applies to supported Timer, Event Hubs, Cosmos DB and Kafka triggers with compatible extensions, not Storage queue or Service Bus retry handling. The Node.js v4 examples configure `retry` on `app.timer`. Waiting means fixed delay or exponential backoff; small randomization applies to exponential backoff only. The original “checkpoint/commit” success label is trigger-specific shorthand, not an atomic application commit: Event Hubs checkpoints wait until the retry policy finishes, including exhaustion. Counts are best-effort and instance-local, as qualified below.
 
 ## Fixed Delay
 

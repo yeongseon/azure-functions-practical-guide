@@ -65,14 +65,13 @@ content_sources:
     - id: 3-9-decision-flow-during-live-troubleshooting
       type: flowchart
       source: self-generated
-      justification: Decision flow during live troubleshooting, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative triage aid for this lab that separates host-indexing and storage-permission failures from activity slowness and orchestrator replay growth; Microsoft Learn documents replay, history growth and continue-as-new, not this decision order, and the branches are not proof of cause.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-orchestrations
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-best-practice-reference
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-eternal-orchestrations
-        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+        - https://learn.microsoft.com/en-us/azure/durable-task/durable-functions/durable-functions-azure-storage-provider
         - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
-        - https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-query-overview
     - id: evidence-timeline
       type: gantt
       source: self-generated

@@ -52,6 +52,8 @@ A Java Azure Functions app built with Maven annotations, validated locally with 
 <!-- diagram-id: steps -->
 ```mermaid
 flowchart TD
+    accTitle: Consumption tutorial Java local workflow
+    accDescr: Illustrative local workflow for this Consumption tutorial: clone the reference app, build with Maven, start the local Functions host, then test local endpoints. Arrows show procedure order, not deployment or validation of Azure Consumption behavior.
     A[Clone reference app] --> B[Build with Maven]
     B --> C[Start Functions host]
     C --> D[Test local endpoints]
@@ -201,4 +203,3 @@ Confirm that the Functions host starts, HTTP functions are listed in the endpoin
 
 !!! warning "Legacy hosting path"
     Consumption plan (Y1) content is provided for existing workloads and compatibility scenarios. For most new serverless applications, prefer [Flex Consumption](../flex-consumption/01-local-run.md).
-

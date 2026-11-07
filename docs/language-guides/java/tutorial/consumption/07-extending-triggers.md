@@ -50,9 +50,11 @@ You will add queue, blob, and timer triggers to a Java Function App using annota
 <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
-    A[Queue message] --> B["@QueueTrigger handler"]
-    C[Blob upload] --> D["@BlobTrigger handler"]
-    E[Schedule] --> F["@TimerTrigger handler"]
+    accTitle: Java Consumption trigger paths
+    accDescr: Conceptual queue, blob, and timer paths to Java annotation-based handlers and outputs or logs; arrows do not specify network transport or a required output binding.
+    A[Queue message] --> B["@QueueTrigger<br/>handler"]
+    C[Blob upload] --> D["@BlobTrigger<br/>handler"]
+    E[Schedule] --> F["@TimerTrigger<br/>handler"]
     B --> G[Outputs and logs]
     D --> G
     F --> G

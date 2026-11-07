@@ -9,7 +9,7 @@ content_sources:
     - id: public-only-architecture
       type: flowchart
       source: self-generated
-      justification: "Illustrative public-only ingress and dependency paths synthesized from Microsoft Learn; other Azure services are a generic application-specific category, not a required dependency."
+      justification: "Illustrative public-only topology, not a measured trace: Internet HTTPS reaches the Function App on its public endpoint and the app reaches Storage, Application Insights and other Azure services over their public endpoints, with no VNet integration or private endpoints. Learn supports deploying without VNet integration on supported plans and the default public Storage endpoint; other Azure services are an application-specific category, not a required dependency, and the layout-only links between dependencies are not requests."
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-python
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options

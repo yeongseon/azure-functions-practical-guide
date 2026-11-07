@@ -21,19 +21,21 @@ content_sources:
     - id: what-you-ll-build
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Tutorial-specific local Python host and Azurite relationship, not a deployed Dedicated architecture.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
         - https://learn.microsoft.com/en-us/azure/app-service/overview-hosting-plans
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-develop-local
     - id: what-you-ll-build-2
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build 2, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Local Python source, host and HTTP check order for this tutorial, not validation of Dedicated hosting behavior.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
         - https://learn.microsoft.com/en-us/azure/app-service/overview-hosting-plans
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-develop-local
 ---
 # 01 - Run Locally (Dedicated)
 
@@ -59,6 +61,8 @@ You will run the Python Function App locally from `apps/python`, load local sett
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
+    accTitle: Python local host and Azurite for the Dedicated track
+    accDescr: The local machine starts the Python Functions host on port 7071 in this example. The host uses Azurite with the illustrated UseDevelopmentStorage=true setting; this local relationship does not represent a deployed App Service plan.
     DEV[Local Machine] --> HOST[Functions Host :7071]
     HOST --> AZURITE[Azurite Local Storage]
 ```
@@ -66,6 +70,8 @@ flowchart TD
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart TD
+    accTitle: Local Python endpoint checks for the Dedicated track
+    accDescr: Start the Functions host from the sample source in apps/python, then send test requests to /api/health and /api/info on localhost port 7071. The arrows show local setup and test order, not Azure Dedicated plan behavior.
     A["Local source in apps/python"] --> B[Functions host on localhost:7071]
     B --> C["Test calls to /api/health and /api/info"]
 ```

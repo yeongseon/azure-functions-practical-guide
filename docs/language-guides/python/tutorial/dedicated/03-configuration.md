@@ -25,8 +25,17 @@ content_sources:
     - id: what-you-ll-build
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Optional Python Linux Dedicated private Storage context, with individual service and DNS mappings in the adjacent key; not deployment evidence.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+        - https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
+        - https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-access-restrictions#app-access
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
         - https://learn.microsoft.com/en-us/azure/app-service/configure-common
         - https://learn.microsoft.com/en-us/azure/app-service/overview-vnet-integration
@@ -67,57 +76,81 @@ You will configure required app settings, apply runtime options such as Always O
 !!! info "Infrastructure Context"
     **Plan**: Dedicated (B1) | **Network**: Public internet in this tutorial | **VNet**: Supported by platform, not configured here
 
-    The app runs on a fixed App Service Plan (always on, no scale-to-zero). Basic B1 supports App Service VNet integration and private endpoints, but this guide uses Standard (S1+) for private networking scenarios to provide scale headroom, deployment slots, and a production-oriented validation path.
+    The app uses fixed App Service plan capacity. Enable Always On for reliable non-HTTP triggering. The diagram retains an optional private-Storage configuration for Dedicated B1–P3v3; the steps here use public networking, while the repository's private-network template defaults to S1. Regional VNet integration is outbound-only and does not deploy the app into the integration subnet.
 
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 10, 'rankSpacing': 70, 'padding': 8, 'subGraphTitleMargin': {'top': 8, 'bottom': 32}}}}%%
 flowchart TD
-    INET[Internet] -->|HTTPS| FA[Function App\nDedicated B1-P3v3\nLinux Python 3.11]
-
-    subgraph VNET["VNet 10.0.0.0/16"]
-        subgraph INT_SUB["Integration Subnet 10.0.1.0/24\nDelegation: Microsoft.Web/serverFarms"]
-            FA
+    accTitle: Python 3.11 Linux Dedicated configuration context
+    accDescr: Dedicated B1 to P3v3 app outside its optional outbound integration subnet. Four distinct Storage private endpoints and DNS zones are expanded in the adjacent key. Identity, telemetry, package mode and Always On are separate associations, not data-transit hops. The networking is illustrative, not configured by this page's public B1 steps.
+    client(["Internet"])
+    app_runtime["Function App<br/>Dedicated: D<br/>Linux<br/>Python 3.11"]
+    identity(["System MI<br/>Microsoft<br/>Entra ID"])
+    telemetry>"Application<br/>Insights"]
+    RFP["Package mode: R<br/>Local ZIP<br/>alternative"]
+    ALWAYS_ON["Always On: true<br/>Fixed capacity"]
+    subgraph DNS["Private DNS zones"]
+        dns_fn{{"Blob · Queue<br/>Table · File"}}
+    end
+    subgraph vnet_fn["VNet"]
+        subgraph subnet_int_fn["<div style='width:170px;text-align:right'>Integration<br/>subnet</div>"]
+            vnet_integration[["Outbound<br/>integration"]]
         end
-        subgraph PE_SUB["Private Endpoint Subnet 10.0.2.0/24"]
-            PE_BLOB[PE: blob]
-            PE_QUEUE[PE: queue]
-            PE_TABLE[PE: table]
-            PE_FILE[PE: file]
+        subgraph subnet_pe_fn["<div style='width:130px;text-align:left'>PE<br/>subnet</div>"]
+            pe_storage[["Storage PEs<br/>blob · queue<br/>table · file"]]
         end
     end
-
-    PE_BLOB --> ST["Storage Account"]
-    PE_QUEUE --> ST
-    PE_TABLE --> ST
-    PE_FILE --> ST
-
-    subgraph DNS[Private DNS Zones]
-        DNS_BLOB[privatelink.blob.core.windows.net]
-        DNS_QUEUE[privatelink.queue.core.windows.net]
-        DNS_TABLE[privatelink.table.core.windows.net]
-        DNS_FILE[privatelink.file.core.windows.net]
-    end
-
-    PE_BLOB -.-> DNS_BLOB
-    PE_QUEUE -.-> DNS_QUEUE
-    PE_TABLE -.-> DNS_TABLE
-    PE_FILE -.-> DNS_FILE
-
-    FA -.->|System-Assigned MI| ENTRA[Microsoft Entra ID]
-    FA --> AI[Application Insights]
-
-    RFP["📦 Local ZIP alternative: WEBSITE_RUN_FROM_PACKAGE=1\nDo not force for remote build"] -.- FA
-    ALWAYS_ON["⚙️ Always On: true\nFixed capacity"] -.- FA
-
-    style FA fill:#5c2d91,color:#fff
-    style VNET fill:#E8F5E9,stroke:#4CAF50
-    style ST fill:#FFF3E0
-    style DNS fill:#E3F2FD
+    storage_db[("Storage account")]
+    client -->|"[Illustrative]<br/>HTTPS<br/>if H"| app_runtime
+    app_runtime -.->|"[Configured]<br/>Telemetry"| telemetry
+    app_runtime -.->|"[Illustrative]<br/>Package<br/>option"| RFP
+    app_runtime -.->|"[Configured]<br/>Setting"| ALWAYS_ON
+    app_runtime -.->|"[Configured]<br/>Identity"| identity
+    dns_fn -.->|"[Illustrative]<br/>VNet link"| vnet_fn
+    app_runtime -->|"[Illustrative]<br/>Outbound"| vnet_integration
+    vnet_integration -->|"[Illustrative]<br/>Each PE"| pe_storage
+    pe_storage -->|"[Illustrative]<br/>Each<br/>service"| storage_db
+    %% Layout-only tiers; add no requests or configuration steps.
+    identity ~~~ telemetry
+    telemetry ~~~ RFP
+    RFP ~~~ ALWAYS_ON
+    ALWAYS_ON ~~~ dns_fn
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e;
+    classDef bandMuted fill:#ffffff,stroke:#707e93,stroke-width:1.5px,stroke-dasharray:4 3,color:#14202e;
+    class client,storage_db,RFP,ALWAYS_ON baseNeutral;
+    class app_runtime,vnet_integration,pe_storage focusActive;
+    class identity,telemetry,dns_fn bandMuted;
+    linkStyle default stroke-width:2px;
 ```
+
+**Reading key (Linux Dedicated):** Solid arrows show illustrative request/data access; dotted arrows show configuration, identity, telemetry or DNS-link associations. The four-service bundle is not four serial hops. Identity tokens are acquired through the app's local endpoint; appropriate target permissions are separate from network access ([identity](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity), [networking](https://learn.microsoft.com/en-us/azure/app-service/overview-vnet-integration)).
+
+| Key | Full configuration / qualification |
+|---|---|
+| D | Dedicated B1–P3v3 scope from the original figure; this page uses B1, while the private-network template defaults to S1. |
+| H | Public HTTPS is subject to app access restrictions. If a separate site private endpoint is added with `publicNetworkAccess` unset, public ingress defaults to disabled; explicitly enable it to retain this public path. No site endpoint is configured on this page. |
+| VNet / integration / PE subnet | `10.0.0.0/16` / `10.0.1.0/24` / `10.0.2.0/24`; integration delegation `Microsoft.Web/serverFarms`. App compute is not contained in the integration subnet. |
+| R | `WEBSITE_RUN_FROM_PACKAGE=1` is the ready-to-run ZIP alternative on Linux Dedicated; do not set it when requesting a Python remote build. |
+| Always On | Enable for reliable non-HTTP triggering; without it an idled app can wake on an HTTP request or portal access. `functionTimeout` remains a separate `host.json` setting and can be overridden with `AzureFunctionsJobHost__functionTimeout`. |
+
+The bundled endpoints preserve each original endpoint → Storage service and endpoint → DNS zone-group association. DNS zones are outside the VNet and linked to it; clients keep normal Storage hostnames, resolved to private IPs for this private path.
+
+| Endpoint → Storage service | Private DNS zone |
+|---|---|
+| `PE_BLOB` → Blob | `privatelink.blob.core.windows.net` |
+| `PE_QUEUE` → Queue | `privatelink.queue.core.windows.net` |
+| `PE_TABLE` → Table | `privatelink.table.core.windows.net` |
+| `PE_FILE` → File (optional workload access, not required host content) | `privatelink.file.core.windows.net` |
+
+This is the retained optional network context, not a claim that the public B1 steps deploy it. Dedicated has no default Azure Files content-share dependency ([Storage endpoints/DNS](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints), [storage](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations), [package deployment](https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push), [Always On](https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan#always-on), [host overrides](https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json#override-hostjson-values), [app access](https://learn.microsoft.com/en-us/azure/app-service/overview-access-restrictions#app-access)).
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart TD
+    accTitle: Python Dedicated configuration task order
+    accDescr: Review Function App settings, configure runtime behavior on Dedicated hosting, then validate the effective configuration. This is the tutorial's intended task order, not an Azure execution result.
     A[Function App settings] --> B[Runtime config on Dedicated plan]
     B --> C[Validated effective configuration]
 ```

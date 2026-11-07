@@ -21,16 +21,26 @@ content_sources:
     - id: what-you-ll-build
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative topology of the Premium template - outbound VNet integration, storage and site private endpoint network interfaces in a subnet, VNet-linked Private DNS zones, Azure Files content share and HTTP prewarming, not a measured trace or deployment evidence.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-overview
+        - https://learn.microsoft.com/en-us/azure/dns/private-dns-virtual-network-links
+        - https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-access-restrictions#app-access
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-infrastructure-as-code
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
         - https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-overview
     - id: what-you-ll-build-2
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build 2, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Resource map of the Premium Bicep template (EP1 plan, app, identity-based host storage, Files content share, VNet and private endpoints), arrows show template resources, not creation order.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-infrastructure-as-code
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
         - https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-overview
@@ -54,66 +64,86 @@ Deploy Azure Functions Premium infrastructure with Bicep from `infra/premium/mai
 !!! info "Infrastructure Context"
     **Plan**: Premium (EP1) | **Network**: VNet + Private Endpoints | **Always warm**: ✅
 
-    Premium deploys with VNet integration (delegated subnet), a private endpoint for inbound access, private DNS zone, and pre-warmed instances. Storage uses connection string or identity-based authentication.
+    This example includes outbound VNet integration, storage private endpoints and a site private endpoint for inbound access. The repository template uses identity-based host storage and an Azure Files content-share connection string. Premium's prewarmed buffer is for HTTP scale-out; it is distinct from always-ready instances and the plan's maximum burst limit.
 
-    <!-- diagram-id: what-you-ll-build -->
+<!-- diagram-id: what-you-ll-build -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 10, 'rankSpacing': 85, 'padding': 8, 'subGraphTitleMargin': {'top': 8, 'bottom': 32}}}}%%
 flowchart TD
-    INET[Internet] -->|HTTPS| FA[Function App\nPremium EP1\nLinux Python 3.11]
-
-    subgraph VNET["VNet 10.0.0.0/16"]
-        subgraph INT_SUB["Integration Subnet 10.0.1.0/24\nDelegation: Microsoft.Web/serverFarms"]
-            FA
+    accTitle: Python Linux Premium EP1 infrastructure topology
+    accDescr: Private endpoints are network interfaces in the PE subnet and Private DNS zones are VNet-linked. Python 3.11 is this example's runtime configuration, not a version recommendation. The app is outside the integration subnet; outbound storage paths are separate from inbound site Private Link. Public HTTPS requires publicNetworkAccess Enabled when the site endpoint exists. Identity and Files credentials, DNS and HTTP prewarming are distinct; this is not Azure execution evidence.
+    INET([Internet]) -->|"[Configured] 1"| FA["Function App<br/>Premium EP1<br/>Linux Python 3.11"]
+    FA -.->|"[Configured] 2"| ENTRA{{"Microsoft<br/>Entra ID"}}
+    FA -.->|"[Configured] 3"| AI>"Application<br/>Insights"]
+    FA -->|"[Configured] 4"| INT
+    subgraph VNET["VNet"]
+        subgraph INT_SUB["<div style='width:140px;text-align:left'>Integration<br/>subnet</div>"]
+            INT[["Outbound<br/>integration"]]
         end
-        subgraph PE_SUB["Private Endpoint Subnet 10.0.2.0/24"]
-            PE_BLOB[PE: blob]
-            PE_QUEUE[PE: queue]
-            PE_TABLE[PE: table]
-            PE_FILE[PE: file]
+        subgraph PE_SUB["<div style='width:110px;text-align:right'>PE<br/>subnet</div>"]
+            PE[["Storage PE NICs 1–4<br/>Site PE: key 10"]]
         end
     end
-
-    PE_BLOB --> ST["Storage Account\nallowPublicAccess: false\nallowSharedKeyAccess: true"]
-    PE_QUEUE --> ST
-    PE_TABLE --> ST
-    PE_FILE --> ST
-
-    subgraph DNS[Private DNS Zones]
-        DNS_BLOB[privatelink.blob.core.windows.net]
-        DNS_QUEUE[privatelink.queue.core.windows.net]
-        DNS_TABLE[privatelink.table.core.windows.net]
-        DNS_FILE[privatelink.file.core.windows.net]
+    INT -->|"[Configured] 5"| PE
+    PE -->|"[Configured] 6"| ST[("Storage account<br/>Key 6")]
+    subgraph DNS["<div style='width:150px;text-align:left'>Private DNS<br/>zones<br/>VNet-linked</div>"]
+        ZONES{{"Storage zones 1–4<br/>Site zone: key 10"}}
     end
-
-    PE_BLOB -.-> DNS_BLOB
-    PE_QUEUE -.-> DNS_QUEUE
-    PE_TABLE -.-> DNS_TABLE
-    PE_FILE -.-> DNS_FILE
-
-    FA -.->|System-Assigned MI| ENTRA[Microsoft Entra ID]
-    FA --> AI[Application Insights]
-
-    subgraph STORAGE[Content Backend]
-        SHARE[Azure Files\ncontent share]
+    PE -.->|"[Configured] 7"| ZONES
+    subgraph STORAGE["<div style='width:180px;text-align:right'>Content<br/>Backend</div>"]
+        SHARE[("Azure Files<br/>Content share")]
     end
-    ST --- SHARE
-
-    WARM["🔥 Pre-warmed instances\nMin: 1, Max: 20-100"] -.- FA
-
-    style FA fill:#ff8c00,color:#fff
-    style VNET fill:#E8F5E9,stroke:#4CAF50
-    style ST fill:#FFF3E0
-    style DNS fill:#E3F2FD
-    style WARM fill:#FFF3E0,stroke:#FF9800
+    ST -.->|"[Configured] 8"| SHARE
+    FA -.->|"[Configured]<br/>9"| WARM["HTTP prewarmed buffer<br/>Scale limits: key 9"]
+    %% Layout-only tiers; add no data hops, dependencies or visible arrows.
+    ENTRA ~~~ AI
+    AI ~~~ INT
+    ST ~~~ ZONES
+    ZONES ~~~ SHARE
+    SHARE ~~~ WARM
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e;
+    classDef netBox fill:transparent,stroke:#287ce4,stroke-width:2px,stroke-dasharray:6 3;
+    class INET,ENTRA,AI,ST,ZONES,SHARE,WARM baseNeutral;
+    class FA,INT,PE focusActive;
+    class VNET,INT_SUB,PE_SUB,DNS,STORAGE netBox;
 ```
+
+**Reading key:** Solid arrows show request/data access; dotted arrows show identity, telemetry, DNS/resource configuration or settings, not data-transit hops. Python 3.11 / EP1 / Linux identify this example. The network view uses the repository template's addresses; the simplified inline Bicep below instead uses `10.20.0.0/16`, `10.20.1.0/24` and `10.20.2.0/24`.
+
+| Key | Relationship or configuration |
+|---|---|
+| 1 | Conditional public HTTPS: with a site private endpoint, enable `publicNetworkAccess: Enabled` explicitly and satisfy access rules to keep this path. With the property unset, the site endpoint changes the default to public access disabled; neither shown Bicep variant sets it ([app access](https://learn.microsoft.com/en-us/azure/app-service/overview-access-restrictions#app-access)). This is not a claim that the private deployment is publicly reachable. |
+| 2 | System-assigned managed identity in Microsoft Entra ID; logical token acquisition uses the app's managed-identity endpoint, not a direct Entra network hop. |
+| 3 | Telemetry to configured Application Insights, off the storage data path. |
+| 4 | Outbound VNet integration does not deploy the app into the subnet. Repository addresses: VNet `10.0.0.0/16`, integration `10.0.1.0/24`, private endpoints `10.0.2.0/24`; integration delegation `Microsoft.Web/serverFarms`. |
+| 5–6 | Four parallel service paths reach the matching storage private endpoints. Module parameter `allowPublicAccess: false` sets Storage `publicNetworkAccess: Disabled`; this example keeps `allowSharedKeyAccess: true` for its Files connection string while host storage uses `AzureWebJobsStorage__accountName` / `AzureWebJobsStorage__credential=managedidentity`. |
+| 7 | Endpoint DNS zone-group associations map to the matching numbered zones below; private zones are linked to the VNet, not contained in its subnets. These dotted links are not DNS queries initiated by an endpoint. Each private endpoint is a network interface that uses a private IP address from the PE subnet; zones are shown VNet-linked ([private endpoint overview](https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-overview), [virtual network links](https://learn.microsoft.com/en-us/azure/dns/private-dns-virtual-network-links)). |
+| 8 | Same-account Azure Files content share: `WEBSITE_CONTENTSHARE` and shared-key `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING`; this is the template's content backend, not a claim that every Premium app must use Files ([storage alternatives](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations#create-an-app-without-azure-files)). |
+| 9 | Prewarmed instances buffer HTTP scale-out; default count is 1, distinct from always-ready minimum instances. The original 20–100 range describes Linux Premium regional maximum instance limits, not the prewarmed buffer maximum or this template's configured burst setting ([Premium plan](https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan#prewarmed-instances)). |
+| 10 | The endpoint and zone bundles also include the tutorial/repository template's inbound app `sites` private endpoint and `privatelink.azurewebsites.net` zone. This is a fifth endpoint/zone pair, not another storage service: private-reachable client → site endpoint → app; site endpoint → site zone-group association. The storage arrows 5–7 apply only to pairs 1–4, not the inbound site pair. |
+
+| Endpoint / zone key | Storage private endpoint | Matching private DNS zone |
+|---|---|---|
+| 1 | `blob` | `privatelink.blob.core.windows.net` |
+| 2 | `queue` | `privatelink.queue.core.windows.net` |
+| 3 | `table` | `privatelink.table.core.windows.net` |
+| 4 | `file` | `privatelink.file.core.windows.net` |
+
+Each [Storage endpoint/zone pair](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints) remains separate despite the bundled symbols.
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart TD
-    A[Bicep deployment] --> B[Premium plan and Function App]
-    B --> C[Managed identity host storage]
-    B --> D[Azure Files content share]
-    B --> E[VNet integration and private endpoints]
+    accTitle: Python Premium Bicep resource and configuration map
+    accDescr: The example defines a Premium plan and app, identity-based host storage, a Files content share and private networking. These are configuration associations, not a serial resource-creation trace or deployment proof; ARM resolves dependencies and can deploy independent resources in parallel.
+    A[Bicep deployment] --> B["Premium plan<br/>and Function App"]
+    B --> C["Managed identity<br/>host storage"]
+    B --> D["Azure Files<br/>content share"]
+    B --> E["VNet integration<br/>and private endpoints"]
+    %% Layout-only tiers; add no provisioning dependency or visible arrow.
+    C ~~~ D
+    D ~~~ E
 ```
 
 ## Steps
@@ -789,3 +819,12 @@ pe-func-premium-demo              Microsoft.Network/privateEndpoints
 - [Azure Functions infrastructure as code](https://learn.microsoft.com/en-us/azure/azure-functions/functions-infrastructure-as-code)
 - [Azure Functions Premium plan](https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan)
 - [Azure private endpoints](https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-overview)
+- [Python version and operating-system support](https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages)
+- [Functions networking options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)
+- [Storage private endpoints and DNS](https://learn.microsoft.com/en-us/azure/storage/common/storage-private-endpoints)
+- [Managed identities](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)
+- [App access](https://learn.microsoft.com/en-us/azure/app-service/overview-access-restrictions#app-access)
+- [Storage considerations](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations)
+- [Functions monitoring](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)
+- [Private endpoint overview](https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-overview)
+- [Virtual network links for private DNS zones](https://learn.microsoft.com/en-us/azure/dns/private-dns-virtual-network-links)

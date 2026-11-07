@@ -24,6 +24,8 @@ This recipe uses App Service Authentication (Easy Auth) with Node.js v4 HTTP tri
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Node.js HTTP authentication stages
+    accDescr: Logical successful path involving the client, Microsoft Entra ID, configured App Service Authentication, the anonymous HTTP trigger and application logic. Anonymous removes the function-key requirement, not Easy Auth; arrows do not mean Entra forwards API requests or specify a token exchange, rejection paths or hosting-plan support.
     USER[User or API Client] --> ENTRA[Microsoft Entra ID]
     ENTRA --> EASYAUTH[App Service Authentication]
     EASYAUTH --> FUNC[HTTP Trigger authLevel anonymous]

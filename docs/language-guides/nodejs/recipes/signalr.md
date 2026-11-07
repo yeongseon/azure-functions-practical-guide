@@ -11,6 +11,7 @@ content_sources:
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-signalr-service
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-signalr-service-input
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-signalr-service-output
 ---
 # SignalR Service
 
@@ -21,14 +22,18 @@ This recipe covers adding real-time messaging to Azure Functions Node.js v4 with
 <!-- diagram-id: architecture -->
 ```mermaid
 flowchart TD
+    accTitle: Node.js SignalR negotiation and broadcast relationships
+    accDescr: In this serverless-mode recipe, the browser obtains connection information from the negotiate function and connects to SignalR Service over the depicted WebSocket transport. The broadcast function uses the output binding to send through the service to the client. Binding arrows show logical relationships, not a token-generation network request sequence.
     CLIENT[Browser Client] --> NEG[negotiate Function]
-    NEG --> INFO[SignalRConnectionInfo Input]
+    NEG --> INFO["SignalRConnectionInfo<br/>Input"]
     INFO --> SR[(Azure SignalR Service)]
     CLIENT -->|WebSocket| SR
     PUB[broadcast Function] --> OUT[SignalR Output]
     OUT --> SR
     SR -->|push| CLIENT
 ```
+
+**Reading key:** `SignalRConnectionInfo` is this Node.js v4 recipe's `input.generic({ type: "signalRConnectionInfo", ... })` binding, which supplies the service URL and access token returned by `negotiate`. Its arrow to the service identifies what the information is for, not a claim that every negotiation requests token generation over the network. The output path uses `output.generic({ type: "signalR", ... })`. WebSocket is the illustrated client transport, not a requirement for every SignalR connection.
 
 ## Prerequisites
 

@@ -8,9 +8,12 @@ content_sources:
     - id: environment-variables
       type: flowchart
       source: self-generated
-      justification: Flow view of environment variables, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Simplified local-versus-Azure application-setting lookup, not a complete startup trace or precedence between environments.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-develop-local#local-settings-file
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json#override-hostjson-values
 ---
 # Environment Variables
 
@@ -19,13 +22,19 @@ Azure Functions uses environment variables for runtime configuration, connection
 <!-- diagram-id: environment-variables -->
 ```mermaid
 flowchart TD
+    accTitle: Local or Azure application-setting lookup
+    accDescr: Simplified startup flow branches by environment to local.settings.json Values or Azure App Settings, then rejoins at required-variable resolution and host trigger and binding startup. It is not a complete startup trace or a guarantee that configuration is valid.
     A[Function App Start] --> B{Environment}
-    B -->|Local| C[local.settings.json Values]
+    B -->|Local| C[local.settings.json<br/>Values]
     B -->|Azure| D[App Settings]
-    C --> E[Runtime resolves required vars]
+    C --> E[Runtime resolves<br/>required vars]
     D --> E
-    E --> F[Host starts triggers and bindings]
+    E --> F[Host starts<br/>triggers and bindings]
+    %% Layout-only tier: adds no startup step, branch or precedence relationship.
+    C ~~~ D
 ```
+
+**Reading key:** Local app settings belong in `local.settings.json` → `Values`; in Azure, app settings are exposed as environment variables. The branches describe separate environments, not automatic synchronization or precedence between them. For Functions 2.x and later, an app setting named `AzureFunctionsJobHost__path__to__setting` overrides the corresponding `host.json` value; a local override belongs in `Values`. Double underscores express the hierarchy on both Windows and Linux. See [local settings](https://learn.microsoft.com/en-us/azure/azure-functions/functions-develop-local#local-settings-file), [app settings](https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings#app-setting-considerations), and [host.json overrides](https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json#override-hostjson-values).
 
 ## Configuration Locations
 
@@ -267,4 +276,7 @@ resource functionApp 'Microsoft.Web/sites@2023-01-01' = {
 - [Troubleshooting](troubleshooting.md)
 
 ## Sources
+- [Local settings file (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-develop-local#local-settings-file)
+- [App settings reference (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings)
+- [Override host.json values (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json#override-hostjson-values)
 - [Python v2 Programming Model (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python)

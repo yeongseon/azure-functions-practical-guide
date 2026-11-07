@@ -23,6 +23,10 @@ content_sources:
       source: self-generated
       justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/manage-connections
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger
@@ -54,31 +58,41 @@ You will extend the existing blueprint-based Python app with queue and blob trig
 !!! info "Infrastructure Context"
     **Plan**: Consumption (Y1) | **Network**: Public internet only | **VNet**: ❌ Not supported
 
-    Consumption has no VNet integration or private endpoint support. All traffic flows over the public internet. Storage uses connection string authentication.
+    This Linux Y1 example uses public endpoints, without outbound VNet integration or an app private endpoint. The storage connection and optional identity association are separate choices, not a requirement to combine connection-string and identity settings.
 
-    <!-- diagram-id: what-you-ll-build -->
+<!-- diagram-id: what-you-ll-build -->
 ```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 10, 'padding': 8}}}%%
 flowchart TD
-    INET[Internet] -->|HTTPS| FA[Function App\nConsumption Y1\nLinux Python 3.11]
-
-    FA -->|System-Assigned MI| ENTRA[Microsoft Entra ID]
-    FA -->|"AzureWebJobsStorage__accountName\n+ connection string"| ST[Storage Account\npublic access]
-    FA --> AI[Application Insights]
-
-    subgraph STORAGE[Storage Services]
-        ST --- FS[Azure Files\ncontent share]
+    accTitle: Python Linux Consumption public infrastructure context
+    accDescr: Public HTTPS ingress, Storage access and off-path Application Insights for the tutorial's Linux Python 3.11 Y1 app. Optional system-assigned identity is an authorization association, not a data hop. Azure Files retains Windows Consumption context, not a Linux content-share requirement.
+    client(["Internet"]) -->|"[Configured]<br/>HTTPS"| app_runtime["Function App<br/>Consumption Y1<br/>Linux Python 3.11"]
+    app_runtime -.->|"[Illustrative]<br/>Optional MI"| identity{{"Entra ID<br/>System MI"}}
+    app_runtime -->|"[Configured]<br/>Storage connection"| storage_db[("Storage account<br/>Public endpoint")]
+    app_runtime -.->|"[Configured]<br/>Telemetry"| telemetry>"Application<br/>Insights"]
+    subgraph STORAGE["Storage Services"]
+        storage_db -.->|"[Illustrative]<br/>Windows context"| FS[("Azure Files<br/>Content share")]
     end
-
-    NO_VNET["⚠️ No VNet integration\nNo private endpoints"] -. limitation .- FA
-
-    style FA fill:#0078d4,color:#fff
-    style NO_VNET fill:#FFF3E0,stroke:#FF9800
-    style STORAGE fill:#FFF3E0
+    app_runtime -.->|"[Configured]<br/>Y1 limits"| NO_VNET["No VNet<br/>integration<br/>No app<br/>private endpoint"]
+    %% Layout-only tiers; add no requests, diagnostic steps or visible arrows.
+    identity ~~~ telemetry
+    telemetry ~~~ NO_VNET
+    NO_VNET ~~~ storage_db
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    classDef focusActive fill:#e6f0fd,stroke:#287ce4,stroke-width:2.5px,color:#14202e;
+    classDef bandMuted fill:#ffffff,stroke:#707e93,stroke-width:1.5px,stroke-dasharray:4 3,color:#14202e;
+    class client,storage_db,FS,NO_VNET baseNeutral;
+    class app_runtime focusActive;
+    class identity,telemetry bandMuted;
 ```
+
+**Reading key:** Solid arrows show request/data access; dotted arrows show identity, telemetry, limitations or account membership, not transit through those roles. Entra ID / System MI = Microsoft Entra ID / system-assigned managed identity. `AzureWebJobsStorage` can hold a connection string, **or** identity-based host settings can use `AzureWebJobsStorage__accountName` with the appropriate identity and permissions; these are not one combined credential. On Linux Consumption, identity-based host storage requires deploying and running the app from an [external deployment package](https://learn.microsoft.com/en-us/azure/azure-functions/manage-connections?pivots=functions-auth-identity&tabs=host#define-connections) instead of the remote-build publishing path (`--build remote`) used here, so these tutorial steps keep the connection string. Tokens are obtained through the app's local identity endpoint ([connections](https://learn.microsoft.com/en-us/azure/azure-functions/manage-connections), [identity](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)). The Azure Files node preserves Windows Consumption context: Linux Consumption remote builds use Blob package storage, not that content-share requirement ([storage](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations), [networking](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)).
 
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart TD
+    accTitle: Python Consumption queue and blob tutorial steps
+    accDescr: Add and register Python blueprints, publish to Consumption, send a queue message and upload a blob, then inspect trigger logs. These are intended tutorial tasks, not an executed trace or an output-binding promise.
     A["Add queue/blob blueprints"] --> B["Register in apps/python/function_app.py"]
     B --> C[Publish to Consumption app]
     C --> D[Send queue message and upload blob]
@@ -241,6 +255,10 @@ You completed the Consumption tutorial track. Continue with core runtime concept
 
 ## Sources
 
+- [Functions networking options](https://learn.microsoft.com/en-us/azure/azure-functions/functions-networking-options)
+- [Functions storage considerations](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations)
+- [Functions connection settings](https://learn.microsoft.com/en-us/azure/azure-functions/manage-connections)
+- [App Service and Functions managed identity](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)
 - [Azure Functions triggers and bindings](https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings)
 - [Azure Queue Storage trigger for Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-queue-trigger)
 - [Azure Blob Storage trigger for Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger)

@@ -5,6 +5,11 @@ content_sources:
       type: flowchart
       source: mslearn-adapted
       mslearn_url: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
+      based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/migration/migrate-plan-consumption-to-flex
+        - https://learn.microsoft.com/en-us/azure/azure-functions/migrate-dotnet-to-isolated-model
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-use-azure-function-app-settings#plan-migration
   references:
     - type: mslearn-adapted
       url: https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan
@@ -47,17 +52,32 @@ Migration paths at a glance:
 <!-- diagram-id: ops-migration-paths -->
 ```mermaid
 flowchart TD
-    S["Current hosting model"] --> M{"Migration Decision Matrix"}
-    M --> PA1["Path 1: Consumption Y1 to Flex Consumption FC1"]
-    M --> PA2["Path 2: .NET In-Process to Isolated Worker"]
-    M --> PA3["Path 3: Python v1 to v2"]
-    M --> PA4["Path 4: Premium and Dedicated swap"]
+    accTitle: Migration path reading map
+    accDescr: The current hosting model leads to this guide's Migration Decision Matrix and four alternative paths, each converging on verification and rollback or troubleshooting. These are not Yes or No branches; use the adjacent path key for hosting, language and runtime qualifications.
+    S["Current hosting<br/>model"] --> M{"Migration<br/>Decision Matrix"}
+    M --> PA1["Path 1<br/>Y1 to FC1<br/>New Linux app"]
+    M --> PA2["Path 2: .NET<br/>In-process<br/>to isolated"]
+    M --> PA3["Path 3: Python<br/>Models v1 to v2"]
+    M --> PA4["Path 4: Premium<br/>and Dedicated<br/>App cutover"]
+    %% Layout-only links tier alternatives; they add no migration steps or arrows.
+    PA1 ~~~ PA2
+    PA2 ~~~ PA3
+    PA3 ~~~ PA4
     PA1 --> V["Verification"]
     PA2 --> V
     PA3 --> V
     PA4 --> V
-    V --> RB["Rollback / Troubleshooting"]
+    V --> RB["Rollback /<br/>Troubleshooting"]
 ```
+
+**Path key:** The diamond points to the matrix below, not a Yes/No test.
+
+| Path | Scope and qualification |
+|---|---|
+| 1 — Consumption Y1 → Flex Consumption FC1 | Create a new Linux app after checking supported language/version and region; Windows workloads must be Linux-compatible. Flex has no deployment slots, so this is not a slot swap. See [Consumption-to-Flex migration](https://learn.microsoft.com/en-us/azure/azure-functions/migration/migrate-plan-consumption-to-flex). |
+| 2 — .NET in-process → isolated worker | This is an application execution-model migration, not necessarily a hosting-plan change. Follow the [.NET migration recipe](../language-guides/dotnet/recipes/migrate-to-isolated.md) for runtime, dependency and support-lifecycle requirements. |
+| 3 — Python v1 → v2 | This is an application programming-model migration, not a hosting-plan or Functions runtime-version upgrade. Follow the [Python programming-model guide](../language-guides/python/v2-programming-model.md) for implementation changes. |
+| 4 — Premium and Dedicated app cutover | Treat the original “swap” label as migration between separately deployed apps with workload-specific traffic/trigger cutover, not a cross-plan deployment-slot swap or promised in-place SKU change. [Plan migration](https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-use-azure-function-app-settings#plan-migration) does not support direct migration to Dedicated. |
 
 ## Prerequisites
 
@@ -105,7 +125,7 @@ flowchart TD
 
 ### Path 2: .NET In-Process → Isolated Worker
 
-- **Motivation.** The in-process model is retired; the isolated worker model is the supported path and unlocks current .NET versions, full control of the middleware pipeline, and standard `Program.cs` startup.
+- **Motivation.** Address application execution-model support requirements; use the [.NET migration recipe](../language-guides/dotnet/recipes/migrate-to-isolated.md) for the applicable support lifecycle, runtime checks and dependency changes.
 - **Breaking-change summary.**
 
     | Area | In-process | Isolated worker |
@@ -165,3 +185,5 @@ flowchart TD
 - [Azure Functions Python developer reference (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python)
 - [Dedicated (App Service) plan for Azure Functions (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/dedicated-plan)
 - [Migrate apps to Azure Functions runtime version 4.x (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/migrate-version-3-version-4)
+- [Migrate Consumption apps to Flex Consumption (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/migration/migrate-plan-consumption-to-flex)
+- [Supported plan migrations (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-use-azure-function-app-settings#plan-migration)

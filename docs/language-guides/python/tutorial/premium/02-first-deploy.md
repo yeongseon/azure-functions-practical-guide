@@ -21,8 +21,13 @@ content_sources:
     - id: what-you-ll-build
       type: flowchart
       source: self-generated
-      justification: Flow view of what you ll build, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Illustrative Python 3.11 Linux Elastic Premium (EP1) public topology; the HTTP prewarm buffer differs from billed minimum capacity, and identity is optional and not assigned by these steps.
       based_on:
+        - https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages
+        - https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies
+        - https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring
+        - https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python
         - https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-python
         - https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan
@@ -60,27 +65,36 @@ Deploy a Python Function App to an Elastic Premium plan (`EP1`) with always-warm
 !!! info "Infrastructure Context"
     **Plan**: Premium (EP1) | **Network**: Public (VNet optional) | **Always warm**: ✅
 
-    Premium deploys with pre-warmed instances, Azure Files content share for deployment, and optional VNet integration. Storage uses connection string authentication by default.
+    This Linux EP1 workflow uses the default Azure Files content share and connection-string storage settings. Premium's default prewarmed buffer is one instance for HTTP scale-out, distinct from its minimum one active billed instance and app always-ready settings. VNet integration is optional and is not configured on this page.
 
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
+%%{init: {"flowchart": {"nodeSpacing": 10, "rankSpacing": 60, "padding": 8, "subGraphTitleMargin": {"top": 8, "bottom": 24}}}}%%
 flowchart TD
-    INET[Internet] -->|HTTPS| FA[Function App\nPremium EP1\nLinux Python 3.11]
-
-    subgraph PLAN["Elastic Premium Plan"]
-        FA
-        WARM["Pre-warmed instances\nMin: 1"]
+    accTitle: Python 3.11 Linux Premium EP1 public topology
+    accDescr: Public HTTPS reaches the Python app in an Elastic Premium plan. The default one-instance HTTP prewarm buffer is separate from billed minimum capacity. Storage retains the default Files share; telemetry and optional identity are not request hops. These CLI steps do not assign identity.
+    client(["Internet"])
+    subgraph PLAN["<div style='width:230px;text-align:right'>Elastic<br/>Premium Plan</div>"]
+        app_runtime["Function App<br/>Premium EP1<br/>Linux Python 3.11"]
+        WARM["HTTP prewarm<br/>Default: 1"]
+        app_runtime -.->|"[Configured]<br/>HTTP buffer"| WARM
     end
-
-    FA --> ST["Storage Account\nAzure Files content share"]
-    FA --> AI[Application Insights]
-    FA -.->|System-Assigned MI| ENTRA[Microsoft Entra ID]
-
-    style FA fill:#ff8c00,color:#fff
-    style PLAN fill:#E8F5E9,stroke:#4CAF50
-    style ST fill:#FFF3E0
-    style WARM fill:#FFF3E0,stroke:#FF9800
+    storage_db[("Storage Account<br/>Azure Files<br/>Content share")]
+    telemetry>"Application<br/>Insights"]
+    identity{{"Microsoft Entra ID<br/>System MI: optional"}}
+    client -->|"[Configured] HTTPS"| app_runtime
+    app_runtime -->|"[Configured]<br/>Connection string"| storage_db
+    app_runtime -.->|"[Configured]<br/>Telemetry"| telemetry
+    app_runtime -.->|"[Illustrative]<br/>Optional identity"| identity
+    %% Layout-only tiers; add no requests or deployment steps.
+    WARM ~~~ storage_db
+    storage_db ~~~ telemetry
+    telemetry ~~~ identity
+    classDef baseNeutral fill:#f2f4f8,stroke:#707e93,stroke-width:1.5px,color:#14202e;
+    class client,app_runtime,WARM,storage_db,telemetry,identity baseNeutral;
 ```
+
+**Reading key:** Solid arrows show configured HTTPS/data access; dotted arrows show HTTP capacity, telemetry or optional identity. Prewarm default 1, minimum active billed instance 1 and app always-ready configuration are different concepts. Default Files content uses a connection string; identity-based host storage and documented no-Files deployment alternatives are separate choices. If identity is configured, token acquisition uses the app-local endpoint, not direct app-to-Entra transport. Python Core Tools publishing requests remote build; do not force `WEBSITE_RUN_FROM_PACKAGE=1` for that build ([Premium](https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan), [storage](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations), [identity](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity), [deployment](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies)).
 
 ## Steps
 
@@ -355,6 +369,11 @@ The output confirms that Azure indexed your function definitions and the app ser
 
 ## Sources
 
+- [Python versions and OS support](https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages)
+- [Functions storage](https://learn.microsoft.com/en-us/azure/azure-functions/storage-considerations)
+- [Functions deployment](https://learn.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies)
+- [Functions monitoring](https://learn.microsoft.com/en-us/azure/azure-functions/functions-monitoring)
+- [App managed identity](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)
 - [Azure Functions Python developer guide (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python)
 - [Create your first Azure Function with Core Tools (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-cli-python)
 - [Azure Functions Premium plan (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-functions/functions-premium-plan)

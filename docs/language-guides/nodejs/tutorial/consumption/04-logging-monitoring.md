@@ -62,6 +62,8 @@ You will emit structured logs from Node.js v4 handlers, connect Application Insi
     <!-- diagram-id: what-you-ll-build -->
 ```mermaid
 flowchart TD
+    accTitle: Consumption Node.js telemetry and query overview
+    accDescr: The Consumption Y1 app sends telemetry to configured Application Insights. Azure CLI queries that resource; the KQL box represents analysis of collected traces, requests and dependencies, not a network query initiator.
     FA[Function App\nConsumption Y1] -->|telemetry| AI[Application Insights]
     AI -->|query| KQL["KQL Queries\n• traces\n• requests\n• dependencies"]
     CLI["Azure CLI"] -->|"az monitor app-insights query"| AI
@@ -81,6 +83,8 @@ flowchart TD
 <!-- diagram-id: what-you-ll-build-2 -->
 ```mermaid
 flowchart TD
+    accTitle: Consumption Node.js logging tutorial steps
+    accDescr: Tutorial order is log with context.log, create Application Insights if needed, set its connection string if needed, invoke the function and query traces using KQL. These are preparation and verification stages, not transport hops.
     A[Log with context.log] --> B[Create App Insights]
     B --> C[Set connection string]
     C --> D[Invoke function]

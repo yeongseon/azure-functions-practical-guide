@@ -21,6 +21,8 @@ The recipes section provides implementation-focused patterns for common integrat
 <!-- diagram-id: recipe-categories -->
 ```mermaid
 flowchart TD
+    accTitle: Node.js recipe categories
+    accDescr: Recipes branches into HTTP, Data, Security and Eventing. Arrows group this index's topics, not execution order or required implementation dependencies; the adjacent table also lists Patterns.
     A[Recipes] --> B[HTTP]
     A --> C[Data]
     A --> D[Security]
