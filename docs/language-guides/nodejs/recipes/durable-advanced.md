@@ -11,7 +11,7 @@ content_sources:
     - id: architecture
       type: flowchart
       source: self-generated
-      justification: Flow view of sub-orchestration composition, synthesized from Microsoft Learn documentation cited on this page.
+      justification: Logical composition view of a parent orchestrator calling two sub-orchestrators that call activities and return results to the parent, adapted from the Learn sub-orchestration guidance. Illustrative; not a network topology or a measured trace.
       based_on:
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-sub-orchestrations
         - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-eternal-orchestrations
