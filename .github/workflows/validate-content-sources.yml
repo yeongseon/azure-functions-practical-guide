@@ -51,11 +51,13 @@ jobs:
         run: |
           python scripts/test_diagram_inventory.py
           python scripts/test_diagram_inventory_tree.py
+          python scripts/test_check_diagram_migration_coverage.py
 
       - name: Validate diagram inventory manifest
         run: |
           python scripts/diagram_inventory.py --check
           python scripts/check_diagram_inventory_tree.py
+          python scripts/check_diagram_migration_coverage.py
 
       - name: Check frontmatter YAML style (canonical ruamel.yaml format)
         run: |

@@ -249,9 +249,20 @@ python3 scripts/test_diagram_inventory.py
 python3 scripts/diagram_inventory.py --check
 python3 scripts/diagram_inventory.py --verify-tree
 python3 scripts/diagram_inventory.py --summary
+python3 scripts/check_diagram_inventory_tree.py
+python3 scripts/test_check_diagram_migration_coverage.py
+python3 scripts/check_diagram_migration_coverage.py
 ```
 
-`--check` blocks malformed/stale inventory data and generated tables, validates the schema, reconciles keys/counts/ownership and checks scanner/rules hashes. It does **not** compare the current tree with the baseline. Deterministic fixture reproduction remains blocking; current-tree baseline reproduction is opt-in with `DIAGRAM_INVENTORY_REPRODUCE=1` when the tree is unchanged. Final migration coverage enforcement belongs to #217.
+`--check` blocks malformed/stale inventory data and generated tables, validates the schema, reconciles keys/counts/ownership and checks scanner/rules hashes. It does **not** compare the current tree with the baseline. Deterministic fixture reproduction remains blocking; current-tree baseline reproduction is opt-in with `DIAGRAM_INVENTORY_REPRODUCE=1` when the tree is unchanged. Migration coverage is enforced separately by `check_diagram_migration_coverage.py` (#217), which reads the committed manifest and fails on:
+
+- any in-scope diagram whose state is not `completed` or `exception` (for example a newly registered diagram left `not-started`);
+- an `exception` without a documented reason of at least 20 characters;
+- in-scope diagrams without declared provenance, or whose `provenance.declared` lacks a valid `source` type or its required field (`mslearn_url` or `justification`), so an ID-only entry is rejected (the one repository-only lab fence listed as existing debt is the only allowance);
+- invalid, duplicated or base-less shared component IDs in `target` (the current contract is hand-authored Mermaid, so targets stay empty);
+- excluded diagrams that carry a migration state, and non-Mermaid visuals that are in migration scope.
+
+Together with `--check` (schema, ownership, stale generated tables) and `check_diagram_inventory_tree.py` (unregistered or removed diagrams), this makes a new diagram fail CI until it is registered and migrated or given a reviewed exception. Mermaid rendering is not performed here: CI has no Mermaid CLI or browser step, and no render tool was added. Rendered review remains the manual [render audit](../contributing/diagram-render-audit.md); a passing check is not visual approval.
 
 ### Regenerating the Manifest
 
