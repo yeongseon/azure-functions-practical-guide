@@ -20,7 +20,8 @@ def fixture() -> dict[str, Any]:
     def diagram(key: str, state: str = 'completed', method: str = 'rule') -> dict[str, Any]:
         return {'key': key, 'assignment': {'method': method},
                 'migration': {'state': state, 'exception': REASON if state == 'exception' else None},
-                'provenance': {'status': 'declared'},
+                'provenance': {'status': 'declared', 'declared': {
+                    'id': 'x', 'type': 'flowchart', 'source': 'self-generated', 'justification': 'Why.'}},
                 'target': {'base': None, 'extensions': [], 'overlays': [], 'status': 'provisional'}}
     return {'diagrams': [diagram('a.md#one'), diagram('a.md#two', 'exception'),
                          diagram('b.md#skip', 'not-started', 'excluded')], 'visuals': []}
@@ -55,6 +56,17 @@ class CoverageTests(unittest.TestCase):
         manifest['diagrams'][0]['key'] = 'labs/code-storage-verification/README.md#~1'
         manifest['diagrams'][0]['provenance']['status'] = 'missing'
         self.assertEqual(coverage_errors(manifest), [])
+
+    def test_id_only_provenance_fails(self) -> None:
+        manifest = fixture()
+        manifest['diagrams'][0]['provenance']['declared'] = {'id': 'x'}
+        self.assertTrue(any('is not one of' in e for e in coverage_errors(manifest)))
+        manifest = fixture()
+        manifest['diagrams'][0]['provenance']['declared'] = {'id': 'x', 'type': 'flowchart', 'source': 'mslearn-adapted'}
+        self.assertTrue(any("['mslearn_url']" in e for e in coverage_errors(manifest)))
+        manifest = fixture()
+        manifest['diagrams'][0]['provenance']['declared']['justification'] = '  '
+        self.assertTrue(any("['justification']" in e for e in coverage_errors(manifest)))
 
     def test_invalid_component_ids_fail(self) -> None:
         for target, fragment in (({'base': 'bad id'}, 'invalid shared component ID'),

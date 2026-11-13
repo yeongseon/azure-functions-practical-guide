@@ -19,6 +19,12 @@ MANIFEST: Final = 'docs/reference/diagram-manifest.json'
 ID: Final = re.compile(r'[A-Za-z0-9][A-Za-z0-9._-]*')
 DONE: Final = ('completed', 'exception')
 MIN_EXCEPTION_CHARS: Final = 20
+# Mirrors REQUIRED_FIELDS in validate_content_sources.py (that audit is advisory in CI).
+REQUIRED_FIELDS: Final = {
+    'mslearn': ('id', 'type', 'source', 'mslearn_url'),
+    'mslearn-adapted': ('id', 'type', 'source', 'mslearn_url'),
+    'self-generated': ('id', 'type', 'source', 'justification'),
+}
 # Existing repository-only debt, mirrored from check_diagram_inventory_tree.py.
 LEGACY_MISSING_PROVENANCE: Final = 'labs/code-storage-verification/README.md#~1'
 
@@ -37,6 +43,17 @@ def coverage_errors(manifest: dict[str, Any]) -> list[str]:
                           f'{MIN_EXCEPTION_CHARS} characters')
         if diagram['provenance']['status'] != 'declared' and key != LEGACY_MISSING_PROVENANCE:
             errors.append(f'{key}: provenance is "{diagram["provenance"]["status"]}", not declared')
+        elif key != LEGACY_MISSING_PROVENANCE:
+            declared = diagram['provenance'].get('declared') or {}
+            fields = REQUIRED_FIELDS.get(declared.get('source'))
+            if fields is None:
+                errors.append(f'{key}: provenance source {declared.get("source")!r} is not one of '
+                              f'{sorted(REQUIRED_FIELDS)}')
+            else:
+                blank = [f for f in fields if not str(declared.get(f) or '').strip()]
+                if blank:
+                    errors.append(f'{key}: provenance missing required field(s) {blank} '
+                                  f'for source "{declared["source"]}"')
         target = diagram['target']
         refs = [r for r in (target['base'], *target['extensions'], *target['overlays']) if r is not None]
         bad = [r for r in refs if not isinstance(r, str) or ID.fullmatch(r) is None]

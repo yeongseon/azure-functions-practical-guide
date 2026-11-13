@@ -258,7 +258,7 @@ python3 scripts/check_diagram_migration_coverage.py
 
 - any in-scope diagram whose state is not `completed` or `exception` (for example a newly registered diagram left `not-started`);
 - an `exception` without a documented reason of at least 20 characters;
-- in-scope diagrams without declared provenance (the one repository-only lab fence listed as existing debt is the only allowance);
+- in-scope diagrams without declared provenance, or whose `provenance.declared` lacks a valid `source` type or its required field (`mslearn_url` or `justification`), so an ID-only entry is rejected (the one repository-only lab fence listed as existing debt is the only allowance);
 - invalid, duplicated or base-less shared component IDs in `target` (the current contract is hand-authored Mermaid, so targets stay empty);
 - excluded diagrams that carry a migration state, and non-Mermaid visuals that are in migration scope.
 
